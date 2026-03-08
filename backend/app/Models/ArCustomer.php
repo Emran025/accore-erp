@@ -11,6 +11,7 @@ class ArCustomer extends Model
 {
     use HasFactory;
     protected $fillable = [
+        'customer_code',
         'name',
         'phone',
         'email',

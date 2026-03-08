@@ -74,6 +74,7 @@ class ApController extends Controller
 
 
         $validated = $request->validate([
+            'supplier_code' => 'nullable|string|max:50|unique:ap_suppliers,supplier_code',
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:50',
             'email' => 'nullable|email|max:255',
@@ -114,6 +115,7 @@ class ApController extends Controller
 
         $validated = $request->validate([
             'id' => 'required|exists:ap_suppliers,id',
+            'supplier_code' => 'nullable|string|max:50|unique:ap_suppliers,supplier_code,' . $request->id,
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:50',
             'email' => 'nullable|email|max:255',

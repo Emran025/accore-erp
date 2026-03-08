@@ -56,7 +56,7 @@ export const navigationGroups: NavigationGroup[] = [
       { href: "/sales/sales", icon: "cart", label: "فواتير المبيعات", description: "إنشاء وإدارة فواتير البيع", module: "sales" },
       { href: "/sales/deferred_sales", icon: "receipt", label: "المبيعات الآجلة", description: "مبيعات بالتقسيط والآجل", module: "deferred_sales" },
       { href: "/sales/revenues", icon: "trending-up", label: "الإيرادات", description: "تسجيل الإيرادات المتنوعة", module: "revenues" },
-      { href: "/ar_customers", icon: "user-plus", label: "العملاء", description: "قاعدة بيانات العملاء", module: "ar_customers" },
+      { href: "/sales/ar_customers", icon: "user-plus", label: "العملاء", description: "قاعدة بيانات العملاء", module: "ar_customers" },
       { href: "/sales/receipts", icon: "book-open", label: "سندات القبض", description: "مقبوضات أرصدة العملاء", module: "ar_customers" },
       { href: "/system/dashboard", icon: "cart", label: "عروض الأسعار", description: "إنشاء عروض الأسعار (قريباً)", module: "dashboard" },
       { href: "/system/dashboard", icon: "cart", label: "أوامر البيع", description: "إدارة طلبات البيع (قريباً)", module: "dashboard" },
@@ -66,6 +66,25 @@ export const navigationGroups: NavigationGroup[] = [
       { href: "/representatives", icon: "tags", label: "المناديب والمسوقين", description: "إدارة المناديب والمسوقين", module: "representatives" },
       { href: "/system/dashboard", icon: "coins", label: "العمولات", description: "عمولات المبيعات (قريباً)", module: "dashboard" },
       { href: "/system/templates", icon: "coins", label: "إدارة القوالب", description: "إدارة قوالب التصاميم والفواتير وكشوفات الحساب", module: "dashboard" },
+      {
+        key: "sales-groups-number-range-interval",
+        label: "التجميع ونطاقات الترقيم",
+        icon: "shapes",
+        items: [
+          {
+            key: "cus-groups-number-range-interval",
+            label: "تجميعات العملاء",
+            icon: "users",
+            items: [
+              { href: "/sales/groups-number-range-interval/ar_customers/add-ar_customers-group", icon: "add", label: "تعريف تجميع", description: "إضافة تجميع جديد", module: "ar_customers" },
+              { href: "/sales/groups-number-range-interval/ar_customers/add-number-range-interval", icon: "add", label: "تعريف نطاق", description: "إضافة نطاق جديد", module: "ar_customers" },
+              { href: "/sales/groups-number-range-interval/ar_customers/view-ar_customers-groups", icon: "view", label: "عرض تجميعات العملاء", description: "عرض تجميعات العملاء", module: "ar_customers" },
+              { href: "/sales/groups-number-range-interval/ar_customers/view-number-range-intervals", icon: "view", label: "عرض نطاقات العملاء", description: "عرض نطاقات العملاء", module: "ar_customers" },
+              { href: "/sales/groups-number-range-interval/ar_customers/assignment", icon: "add", label: "عرض وإضافة الإسنادات", description: "عرض إسنادات نطاقات الترقيم إلى العملاء", module: "ar_customers" },
+            ]
+          }
+        ]
+      }
     ],
   },
 
@@ -79,12 +98,31 @@ export const navigationGroups: NavigationGroup[] = [
     items: [
       { href: "/purchases/purchases", icon: "shopping-bag", label: "فواتير المشتريات", description: "إدارة فواتير الشراء", module: "purchases" },
       { href: "/purchases/expenses", icon: "credit-card", label: "المصروفات", description: "تسجيل المصروفات التشغيلية", module: "expenses" },
-      { href: "/ap_suppliers", icon: "truck", label: "الموردين", description: "قاعدة بيانات الموردين", module: "ap_suppliers" },
+      { href: "/purchases/ap_suppliers", icon: "truck", label: "الموردين", description: "قاعدة بيانات الموردين", module: "ap_suppliers" },
       { href: "/finance/ap_ledger", icon: "hand-coins", label: "أستاذ الموردين", description: "حسابات الدفع والأرصدة", module: "ap_suppliers" },
       { href: "/purchases/requests", icon: "cart", label: "طلبات الشراء", description: "إنشاء أو استعراض طلبات الشراء", module: "dashboard" },
       { href: "/system/dashboard", icon: "cart", label: "أوامر الشراء", description: "إدارة أوامر الشراء (قريباً)", module: "dashboard" },
       { href: "/purchases/returns", icon: "history", label: "مردودات المشتريات", description: "إدارة مردودات المشتريات", module: "purchases" },
       { href: "/system/dashboard", icon: "calendar", label: "جدول الدفعات", description: "جدولة المدفوعات (قريباً)", module: "dashboard" },
+      {
+        key: "purchases-groups-number-range-interval",
+        label: "التجميع ونطاقات الترقيم",
+        icon: "shapes",
+        items: [
+          {
+            key: "sup-groups-number-range-interval",
+            label: "تجميعات الموردين",
+            icon: "truck",
+            items: [
+              { href: "/purchases/groups-number-range-interval/ap_suppliers/add-ap_suppliers-group", icon: "add", label: "تعريف تجميع", description: "إضافة تجميع جديد", module: "ap_suppliers" },
+              { href: "/purchases/groups-number-range-interval/ap_suppliers/add-number-range-interval", icon: "add", label: "تعريف نطاق", description: "إضافة نطاق جديد", module: "ap_suppliers" },
+              { href: "/purchases/groups-number-range-interval/ap_suppliers/view-ap_suppliers-groups", icon: "view", label: "عرض تجميعات الموردين", description: "عرض تجميعات الموردين", module: "ap_suppliers" },
+              { href: "/purchases/groups-number-range-interval/ap_suppliers/view-number-range-intervals", icon: "view", label: "عرض نطاقات الموردين", description: "عرض نطاقات الموردين", module: "ap_suppliers" },
+              { href: "/purchases/groups-number-range-interval/ap_suppliers/assignment", icon: "add", label: "عرض وإضافة الإسنادات", description: "عرض إسنادات نطاقات الترقيم إلى الموردين", module: "ap_suppliers" },
+            ]
+          }
+        ]
+      }
     ],
   },
 

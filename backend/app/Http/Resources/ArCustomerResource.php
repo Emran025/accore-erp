@@ -10,6 +10,7 @@ class ArCustomerResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'customer_code' => $this->customer_code,
             'name' => $this->name,
             'phone' => $this->phone,
             'email' => $this->email,

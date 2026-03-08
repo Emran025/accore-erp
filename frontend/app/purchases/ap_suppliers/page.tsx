@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { MainLayout, PageSubHeader } from "@/components/layout";
-import { Table, Dialog, ConfirmDialog, showToast, Column, Button } from "@/components/ui";
+import { Table, Dialog, ConfirmDialog, showToast, Column, Button, SearchableSelect } from "@/components/ui";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { fetchAPI } from "@/lib/api";
+import { API_ENDPOINTS } from "@/lib/endpoints";
 import { User, getStoredUser, getStoredPermissions, Permission, canAccess, checkAuth } from "@/lib/auth";
 import { Icon } from "@/lib/icons";
 import { Supplier } from "./types";
@@ -33,8 +35,8 @@ export default function SuppliersPage() {
     const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
 
-    // Form
     const [formData, setFormData] = useState({
+        supplier_code: "",
         name: "",
         phone: "",
         email: "",
@@ -44,6 +46,11 @@ export default function SuppliersPage() {
         payment_terms: "30",
     });
 
+    // Number Range State
+    const [nrObjectId, setNrObjectId] = useState<number | null>(null);
+    const [nrGroups, setNrGroups] = useState<any[]>([]);
+    const [selectedGroup, setSelectedGroup] = useState("");
+
     useEffect(() => {
         const init = async () => {
             const authenticated = await checkAuth();
@@ -51,6 +58,21 @@ export default function SuppliersPage() {
             setUser(getStoredUser());
             setPermissions(getStoredPermissions());
             loadSuppliers();
+
+            // Load Numbering Range Groups for Suppliers
+            try {
+                const res: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.OBJECTS.byType("ap_suppliers"));
+                if (res.success && (res.data || res.id)) {
+                    const data = res.data || res;
+                    setNrObjectId(data.id);
+                    if (data.groups && data.groups.length > 0) {
+                        setNrGroups(data.groups);
+                        setSelectedGroup(data.groups[0].id.toString());
+                    }
+                }
+            } catch (e) {
+                console.error("Failed to load number range groups", e);
+            }
         };
         init();
     }, [loadSuppliers]);
@@ -63,13 +85,14 @@ export default function SuppliersPage() {
 
     const openAddDialog = () => {
         setSelectedSupplier(null);
-        setFormData({ name: "", phone: "", email: "", address: "", tax_number: "", credit_limit: "0", payment_terms: "30" });
+        setFormData({ supplier_code: "", name: "", phone: "", email: "", address: "", tax_number: "", credit_limit: "0", payment_terms: "30" });
         setFormDialog(true);
     };
 
     const openEditDialog = (s: Supplier) => {
         setSelectedSupplier(s);
         setFormData({
+            supplier_code: s.supplier_code || "",
             name: s.name,
             phone: s.phone || "",
             email: s.email || "",
@@ -87,7 +110,28 @@ export default function SuppliersPage() {
             return;
         }
 
-        const success = await saveSupplier(formData, selectedSupplier?.id);
+        let finalCode = formData.supplier_code;
+
+        // Auto-generate code if empty and creating new
+        if (!selectedSupplier && !finalCode && selectedGroup && nrObjectId) {
+            try {
+                const numRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.NEXT_NUMBER, {
+                    method: 'POST',
+                    body: JSON.stringify({ object_id: nrObjectId, group_id: selectedGroup })
+                });
+                if (numRes.success && numRes.data?.number) {
+                    finalCode = numRes.data.number;
+                }
+            } catch (error) {
+                console.error("Failed to generate numbering code", error);
+                showToast("فشل في توليد كود المورد", "error");
+                return;
+            }
+        }
+
+        const submitData = { ...formData, supplier_code: finalCode };
+
+        const success = await saveSupplier(submitData, selectedSupplier?.id);
         if (success) {
             setFormDialog(false);
             loadSuppliers(currentPage, searchTerm);
@@ -103,6 +147,7 @@ export default function SuppliersPage() {
     };
 
     const columns: Column<Supplier>[] = [
+        { key: "supplier_code", header: "الكود", dataLabel: "الكود" },
         { key: "name", header: "اسم المورد", dataLabel: "اسم المورد" },
         { key: "phone", header: "الهاتف", dataLabel: "الهاتف" },
         {
@@ -156,25 +201,25 @@ export default function SuppliersPage() {
 
 
             <div className="sales-card animate-fade">
-                            <PageSubHeader
-                user={user}
-                searchInput={
-                    <input
-                        type="text"
-                        placeholder="بحث بالاسم أو الهاتف..."
-                        value={searchTerm}
-                        onChange={handleSearch}
-                        className="search-control"
-                    />
-                }
-                actions={
-                    canAccess(permissions, "ap_suppliers", "create") && (
-                        <Button variant="primary" icon="plus" onClick={openAddDialog}>
-                            إضافة مورد
-                        </Button>
-                    )
-                }
-            />
+                <PageSubHeader
+                    user={user}
+                    searchInput={
+                        <input
+                            type="text"
+                            placeholder="بحث بالاسم أو الهاتف..."
+                            value={searchTerm}
+                            onChange={handleSearch}
+                            className="search-control"
+                        />
+                    }
+                    actions={
+                        canAccess(permissions, "ap_suppliers", "create") && (
+                            <Button variant="primary" icon="plus" onClick={openAddDialog}>
+                                إضافة مورد
+                            </Button>
+                        )
+                    }
+                />
                 <Table
                     columns={columns}
                     data={suppliers}
@@ -201,6 +246,29 @@ export default function SuppliersPage() {
                     </>
                 }
             >
+                <div className="form-row">
+                    <div className="form-group">
+                        <label>كود المورد</label>
+                        <input
+                            type="text"
+                            value={formData.supplier_code}
+                            onChange={(e) => setFormData({ ...formData, supplier_code: e.target.value })}
+                            placeholder={selectedSupplier ? "" : (nrGroups.length > 0 ? "يتم التوليد تلقائيا..." : "أدخل الكود")}
+                        />
+                    </div>
+                    {(!selectedSupplier && nrGroups.length > 0) && (
+                        <div className="form-group" style={{ flex: 1 }}>
+                            <label>مجموعة الترقيم</label>
+                            <SearchableSelect
+                                options={nrGroups.map(grp => ({ value: grp.id.toString(), label: grp.name }))}
+                                value={selectedGroup}
+                                onChange={(val) => setSelectedGroup(val ? val.toString() : "")}
+                                placeholder="ابحث أو اختر مجموعة الترقيم"
+                            />
+                        </div>
+                    )}
+                </div>
+
                 <div className="form-group">
                     <label>اسم المورد *</label>
                     <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />

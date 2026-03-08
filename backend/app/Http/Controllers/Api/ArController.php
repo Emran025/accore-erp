@@ -100,6 +100,7 @@ class ArController extends Controller
     {
         $validated = $request->validate([
             'id' => 'required|exists:ar_customers,id',
+            'customer_code' => 'nullable|string|max:50|unique:ar_customers,customer_code,' . $request->id,
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:50',
             'email' => 'nullable|email|max:255',

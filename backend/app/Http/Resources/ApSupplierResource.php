@@ -10,6 +10,7 @@ class ApSupplierResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'supplier_code' => $this->supplier_code,
             'name' => $this->name,
             'phone' => $this->phone,
             'email' => $this->email,

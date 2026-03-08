@@ -29,6 +29,10 @@ export default function AddEmployeePage() {
     const [departments, setDepartments] = useState<Department[]>([]);
     const [employees, setEmployees] = useState<any[]>([]); // Using any for simplicity or import Employee type
 
+    const [nrObjectId, setNrObjectId] = useState<number | null>(null);
+    const [nrGroups, setNrGroups] = useState<any[]>([]);
+    const [selectedGroup, setSelectedGroup] = useState("");
+
     const [formData, setFormData] = useState({
         full_name: '',
         employee_code: '',
@@ -70,6 +74,20 @@ export default function AddEmployeePage() {
         } catch (e) {
             console.error("Failed to load options", e);
         }
+
+        try {
+            const nrRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.OBJECTS.byType("employees"));
+            if (nrRes.success && (nrRes.data || nrRes.id)) {
+                const data = nrRes.data || nrRes;
+                setNrObjectId(data.id);
+                if (data.groups && data.groups.length > 0) {
+                    setNrGroups(data.groups);
+                    setSelectedGroup(data.groups[0].id.toString());
+                }
+            }
+        } catch (e) {
+            console.error("Failed to load number range groups", e);
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -79,10 +97,31 @@ export default function AddEmployeePage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
+
+        let finalCode = formData.employee_code;
+        if (!finalCode && selectedGroup && nrObjectId) {
+            try {
+                const numRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.NEXT_NUMBER, {
+                    method: 'POST',
+                    body: JSON.stringify({ object_id: nrObjectId, group_id: selectedGroup })
+                });
+                if (numRes.success && numRes.data?.number) {
+                    finalCode = numRes.data.number;
+                }
+            } catch (error) {
+                console.error("Failed to generate numbering code", error);
+                alert("فشل في توليد الرقم الوظيفي");
+                setIsLoading(false);
+                return;
+            }
+        }
+
+        const submitData = { ...formData, employee_code: finalCode };
+
         try {
             const res = await fetchAPI(API_ENDPOINTS.HR.EMPLOYEES.BASE, {
                 method: 'POST',
-                body: JSON.stringify(formData),
+                body: JSON.stringify(submitData),
             });
 
             if (res.success !== false) {
@@ -135,7 +174,22 @@ export default function AddEmployeePage() {
                             <h4 style={{ margin: 0 }}>معلومات التوظيف</h4>
                         </div>
                         <div className="form-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
-                            <TextInput label="الرقم الوظيفي" name="employee_code" required value={formData.employee_code} onChange={handleChange} />
+                            <TextInput
+                                label="الرقم الوظيفي"
+                                name="employee_code"
+                                value={formData.employee_code}
+                                onChange={handleChange}
+                                placeholder={nrGroups.length > 0 ? "يتم التوليد تلقائيا..." : "أدخل الرقم"}
+                            />
+                            {nrGroups.length > 0 && (
+                                <Select
+                                    label="مجموعة الترقيم"
+                                    name="nr_group"
+                                    value={selectedGroup}
+                                    onChange={(e) => setSelectedGroup(e.target.value)}
+                                    options={nrGroups.map(grp => ({ value: grp.id.toString(), label: grp.name }))}
+                                />
+                            )}
                             <Select
                                 label="المسمى الوظيفي"
                                 name="role_id"

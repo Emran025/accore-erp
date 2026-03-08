@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { MainLayout, PageSubHeader } from "@/components/layout";
-import { Table, Dialog, ConfirmDialog, showToast, Column, Button, ActionButtons } from "@/components/ui";
+import { Table, Dialog, ConfirmDialog, showToast, Column, Button, ActionButtons, SearchableSelect } from "@/components/ui";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { fetchAPI } from "@/lib/api";
+import { API_ENDPOINTS } from "@/lib/endpoints";
 import { User, getStoredUser, getStoredPermissions, Permission, canAccess, checkAuth } from "@/lib/auth";
 import { Icon, getIcon } from "@/lib/icons";
 import { Customer } from "./types";
@@ -33,14 +35,19 @@ export default function ARCustomersPage() {
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
 
-    // Form
     const [formData, setFormData] = useState({
+        customer_code: "",
         name: "",
         phone: "",
         email: "",
         address: "",
         tax_number: "",
     });
+
+    // Number Range State
+    const [nrObjectId, setNrObjectId] = useState<number | null>(null);
+    const [nrGroups, setNrGroups] = useState<any[]>([]);
+    const [selectedGroup, setSelectedGroup] = useState("");
 
     useEffect(() => {
         const init = async () => {
@@ -49,6 +56,21 @@ export default function ARCustomersPage() {
             setUser(getStoredUser());
             setPermissions(getStoredPermissions());
             loadCustomers();
+
+            // Load Numbering Range Groups for Customers
+            try {
+                const res: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.OBJECTS.byType("ar_customers"));
+                if (res.success && (res.data || res.id)) {
+                    const data = res.data || res;
+                    setNrObjectId(data.id);
+                    if (data.groups && data.groups.length > 0) {
+                        setNrGroups(data.groups);
+                        setSelectedGroup(data.groups[0].id.toString());
+                    }
+                }
+            } catch (e) {
+                console.error("Failed to load number range groups", e);
+            }
         };
         init();
     }, [loadCustomers]);
@@ -61,13 +83,14 @@ export default function ARCustomersPage() {
 
     const openAddDialog = () => {
         setSelectedCustomer(null);
-        setFormData({ name: "", phone: "", email: "", address: "", tax_number: "" });
+        setFormData({ customer_code: "", name: "", phone: "", email: "", address: "", tax_number: "" });
         setFormDialog(true);
     };
 
     const openEditDialog = (c: Customer) => {
         setSelectedCustomer(c);
         setFormData({
+            customer_code: c.customer_code || "",
             name: c.name,
             phone: c.phone || "",
             email: c.email || "",
@@ -83,7 +106,28 @@ export default function ARCustomersPage() {
             return;
         }
 
-        const success = await saveCustomer(formData, selectedCustomer?.id);
+        let finalCode = formData.customer_code;
+
+        // Auto-generate code if empty and creating new
+        if (!selectedCustomer && !finalCode && selectedGroup && nrObjectId) {
+            try {
+                const numRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.NEXT_NUMBER, {
+                    method: 'POST',
+                    body: JSON.stringify({ object_id: nrObjectId, group_id: selectedGroup })
+                });
+                if (numRes.success && numRes.data?.number) {
+                    finalCode = numRes.data.number;
+                }
+            } catch (error) {
+                console.error("Failed to generate numbering code", error);
+                showToast("فشل في توليد كود العميل", "error");
+                return;
+            }
+        }
+
+        const submitData = { ...formData, customer_code: finalCode };
+
+        const success = await saveCustomer(submitData, selectedCustomer?.id);
         if (success) {
             setFormDialog(false);
             loadCustomers(currentPage, searchTerm);
@@ -99,6 +143,7 @@ export default function ARCustomersPage() {
     };
 
     const columns: Column<Customer>[] = [
+        { key: "customer_code", header: "الكود", dataLabel: "الكود" },
         { key: "name", header: "اسم العميل", dataLabel: "اسم العميل" },
         { key: "phone", header: "الهاتف", dataLabel: "الهاتف" },
         {
@@ -210,6 +255,29 @@ export default function ARCustomersPage() {
                     </>
                 }
             >
+                <div className="form-row">
+                    <div className="form-group">
+                        <label>كود العميل</label>
+                        <input
+                            type="text"
+                            value={formData.customer_code}
+                            onChange={(e) => setFormData({ ...formData, customer_code: e.target.value })}
+                            placeholder={selectedCustomer ? "" : (nrGroups.length > 0 ? "يتم التوليد تلقائيا..." : "أدخل الكود")}
+                        />
+                    </div>
+                    {(!selectedCustomer && nrGroups.length > 0) && (
+                        <div className="form-group" style={{ flex: 1 }}>
+                            <label>مجموعة الترقيم</label>
+                            <SearchableSelect
+                                options={nrGroups.map(grp => ({ value: grp.id.toString(), label: grp.name }))}
+                                value={selectedGroup}
+                                onChange={(val) => setSelectedGroup(val ? val.toString() : "")}
+                                placeholder="ابحث أو اختر مجموعة الترقيم"
+                            />
+                        </div>
+                    )}
+                </div>
+
                 <div className="form-group">
                     <label>اسم العميل *</label>
                     <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />

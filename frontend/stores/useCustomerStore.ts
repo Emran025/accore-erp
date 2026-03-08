@@ -1,6 +1,6 @@
 import { createCRUDStore } from './factories/createCRUDStore';
 import { API_ENDPOINTS } from '@/lib/endpoints';
-import { Customer } from '@/app/ar_customers/types';
+import { Customer } from '@/app/sales/ar_customers/types';
 
 /**
  * Zustand store for AR Customers.
