@@ -43,3 +43,4 @@ Route::get('/number-ranges/intervals/{intervalId}/expansion-logs', [NumberRangeC
 
 // ── Next Number Generation ─────────────────────────────────────
 Route::post('/number-ranges/next-number', [NumberRangeController::class, 'getNextNumber']);
+Route::post('/number-ranges/preview-number', [NumberRangeController::class, 'previewNextNumber']);

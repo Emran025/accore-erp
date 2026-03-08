@@ -74,26 +74,34 @@ class ArController extends Controller
     {
         $validated = $request->validated();
 
-        // Check for duplicates
-        $exists = ArCustomer::where(function ($query) use ($validated) {
-            $query->where('name', $validated['name']);
-            if (!empty($validated['phone'])) {
-                $query->orWhere('phone', $validated['phone']);
+        return DB::transaction(function () use ($validated, $request) {
+            // Check for duplicates
+            $exists = ArCustomer::where(function ($query) use ($validated) {
+                $query->where('name', $validated['name']);
+                if (!empty($validated['phone'])) {
+                    $query->orWhere('phone', $validated['phone']);
+                }
+            })->exists();
+
+            if ($exists) {
+                return $this->errorResponse('Customer with this name or phone already exists', 409);
             }
-        })->exists();
 
-        if ($exists) {
-            return $this->errorResponse('Customer with this name or phone already exists', 409);
-        }
+            // Handle Auto Number Generation
+            if (empty($validated['customer_code']) && $request->filled('nr_object_id') && $request->filled('nr_group_id')) {
+                $nrService = app(\App\Services\NumberRangeService::class);
+                $validated['customer_code'] = $nrService->getNextNumber($request->nr_object_id, $request->nr_group_id);
+            }
 
-        $customer = ArCustomer::create([
-            ...$validated,
-            'created_by' => auth()->id() ?? session('user_id'),
-        ]);
+            $customer = ArCustomer::create([
+                ...$validated,
+                'created_by' => auth()->id() ?? session('user_id'),
+            ]);
 
-        TelescopeService::logOperation('CREATE', 'ar_customers', $customer->id, null, $validated);
+            TelescopeService::logOperation('CREATE', 'ar_customers', $customer->id, null, $validated);
 
-        return $this->successResponse(['id' => $customer->id]);
+            return $this->successResponse(['id' => $customer->id]);
+        });
     }
 
     public function updateCustomer(Request $request): JsonResponse

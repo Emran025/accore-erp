@@ -20,6 +20,8 @@ class StoreArCustomerRequest extends FormRequest
             'email' => 'nullable|email|max:255',
             'address' => 'nullable|string',
             'tax_number' => 'nullable|string|max:50',
+            'nr_object_id' => 'nullable|integer',
+            'nr_group_id' => 'nullable|integer',
         ];
     }
 }

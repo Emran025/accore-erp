@@ -136,7 +136,6 @@ export default function BasicInfoTab({ employee }: BasicInfoTabProps) {
                     </div>
                 </div>
             </div>
-
             <style jsx>{`
                 .info-grid {
                     display: grid;

@@ -7,7 +7,12 @@ import { getStoredUser, User } from "@/lib/auth";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { Role, Department, Employee } from "../../../types";
-import { TabNavigation, Select, TextInput, EmailInput, PasswordInput, Button } from "@/components/ui";
+import { TabNavigation, Select, TextInput, EmailInput, PasswordInput, Button, SearchableSelect, Label } from "@/components/ui";
+import dynamic from "next/dynamic";
+
+const DocumentsTab = dynamic(() => import("../../components/DocumentsTab"), {
+    loading: () => <div className="p-10 text-center text-muted">جاري تحميل المستندات...</div>
+});
 
 export default function EditEmployeePage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
@@ -17,10 +22,12 @@ export default function EditEmployeePage({ params }: { params: Promise<{ id: str
     const [isLoading, setIsLoading] = useState(true);
     const [roles, setRoles] = useState<Role[]>([]);
     const [departments, setDepartments] = useState<Department[]>([]);
+    const [positions, setPositions] = useState<any[]>([]);
 
     const [nrObjectId, setNrObjectId] = useState<number | null>(null);
     const [nrGroups, setNrGroups] = useState<any[]>([]);
     const [selectedGroup, setSelectedGroup] = useState("");
+    const [employee, setEmployee] = useState<Employee | null>(null);
 
     const [formData, setFormData] = useState({
         full_name: '',
@@ -41,8 +48,13 @@ export default function EditEmployeePage({ params }: { params: Promise<{ id: str
         bank_name: '',
         employment_status: 'active',
         contract_type: 'full_time',
-        vacation_days_balance: 0
+        vacation_days_balance: 0,
+        position_id: '',
+        termination_date: '',
+        manager_id: '',
     });
+
+    const [managers, setManagers] = useState<Employee[]>([]);
 
     useEffect(() => {
         setUser(getStoredUser());
@@ -51,16 +63,21 @@ export default function EditEmployeePage({ params }: { params: Promise<{ id: str
 
     const loadData = async () => {
         try {
-            const [rolesRes, deptsRes, empRes] = await Promise.all([
+            const [rolesRes, deptsRes, empRes, posRes, managersRes] = await Promise.all([
                 fetchAPI(API_ENDPOINTS.SYSTEM.USERS.ROLES),
                 fetchAPI(API_ENDPOINTS.HR.DEPARTMENTS),
-                fetchAPI(API_ENDPOINTS.HR.EMPLOYEES.withId(id))
+                fetchAPI(API_ENDPOINTS.HR.EMPLOYEES.withId(id)),
+                fetchAPI(API_ENDPOINTS.HR.ADMINISTRATION.POSITIONS.BASE),
+                fetchAPI(API_ENDPOINTS.HR.EMPLOYEES.BASE) // For manager selection
             ]);
 
             setRoles(rolesRes.data as Role[] || (Array.isArray(rolesRes) ? rolesRes : []));
             setDepartments(deptsRes.data as Department[] || (Array.isArray(deptsRes) ? deptsRes : []));
+            setPositions(posRes.data as any[] || (Array.isArray(posRes) ? posRes : []));
+            setManagers(managersRes.data as Employee[] || (Array.isArray(managersRes) ? (managersRes as any).data : []) || []);
 
             const emp = empRes.data as any || empRes;
+            setEmployee(emp);
 
             // Populate form
             setFormData({
@@ -82,7 +99,10 @@ export default function EditEmployeePage({ params }: { params: Promise<{ id: str
                 bank_name: emp.bank_name || '',
                 employment_status: emp.employment_status,
                 contract_type: emp.contract_type || 'full_time',
-                vacation_days_balance: emp.vacation_days_balance || 0
+                vacation_days_balance: emp.vacation_days_balance || 0,
+                position_id: emp.position_id || '',
+                termination_date: emp.termination_date || '',
+                manager_id: emp.manager_id || '',
             });
         } catch (e) {
             console.error("Failed to load data", e);
@@ -167,7 +187,7 @@ export default function EditEmployeePage({ params }: { params: Promise<{ id: str
                     onTabChange={setActiveTab}
                 />
 
-                <div style={{ marginTop: '1.5rem' }}>
+                <div>
                     {activeTab === 'info' && (
                         <form onSubmit={handleSubmit}>
                             {/* Personal Information */}
@@ -216,20 +236,16 @@ export default function EditEmployeePage({ params }: { params: Promise<{ id: str
                                         />
                                     )}
                                     <Select
-                                        label="المسمى الوظيفي"
-                                        name="role_id"
-                                        value={formData.role_id}
+                                        label="المنصب الوظيفي"
+                                        name="position_id"
+                                        value={formData.position_id}
                                         onChange={handleChange}
-                                        placeholder="اختر المسمى الوظيفي"
-                                        options={roles.map(role => ({ value: role.id, label: role.role_name_ar }))}
-                                    />
-                                    <Select
-                                        label="القسم"
-                                        name="department_id"
-                                        value={formData.department_id}
-                                        onChange={handleChange}
-                                        placeholder="اختر القسم"
-                                        options={departments.map(dept => ({ value: dept.id, label: dept.name_ar }))}
+                                        required
+                                        placeholder="اختر المنصب الوظيفي (الهيكل التنظيمي)"
+                                        options={positions.map(pos => ({
+                                            value: pos.id,
+                                            label: `${pos.position_name_ar} (${pos.job_title?.title_ar || 'بدون مسمى'})`
+                                        }))}
                                     />
                                     <TextInput label="تاريخ التعيين" type="date" name="hire_date" required value={formData.hire_date} onChange={handleChange} />
                                     <Select
@@ -244,6 +260,21 @@ export default function EditEmployeePage({ params }: { params: Promise<{ id: str
                                             { value: 'freelance', label: 'تعاون / عمل حر' }
                                         ]}
                                     />
+                                    <div className="form-group">
+                                        <Label>المدير المباشر</Label>
+                                        <SearchableSelect
+                                            name="manager_id"
+                                            value={formData.manager_id}
+                                            onChange={(val) => setFormData({ ...formData, manager_id: val?.toString() || '' })}
+                                            options={[
+                                                { value: '', label: 'بدون مدير (إدارة عليا)' },
+                                                ...managers.filter(m => m.id.toString() !== id).map(m => ({
+                                                    value: m.id.toString(),
+                                                    label: `${m.full_name} (${m.employee_code})`
+                                                }))
+                                            ]}
+                                        />
+                                    </div>
                                     <Select
                                         label="حالة التوظيف"
                                         name="employment_status"
@@ -255,6 +286,9 @@ export default function EditEmployeePage({ params }: { params: Promise<{ id: str
                                             { value: 'terminated', label: 'منهي خدماته' }
                                         ]}
                                     />
+                                    {formData.employment_status === 'terminated' && (
+                                        <TextInput label="تاريخ إنهاء الخدمة" type="date" name="termination_date" value={formData.termination_date} onChange={handleChange} />
+                                    )}
                                 </div>
                             </div>
 
@@ -292,11 +326,8 @@ export default function EditEmployeePage({ params }: { params: Promise<{ id: str
                         </form>
                     )}
 
-                    {activeTab === 'documents' && (
-                        <div className="sales-card p-4">
-                            <h3>المستندات</h3>
-                            <p>سيتم تفعيل رفع المستندات قريباً.</p>
-                        </div>
+                    {activeTab === 'documents' && employee && (
+                        <DocumentsTab id={id} employee={employee} />
                     )}
 
                     {activeTab === 'financial' && (

@@ -165,6 +165,47 @@ class NumberRangeService
         });
     }
 
+    /**
+     * Preview the next number without consuming it.
+     */
+    public function previewNextNumber(int $objectId, int $groupId): string
+    {
+        $object = NrObject::findOrFail($objectId);
+
+        $assignment = NrGroupIntervalAssignment::where('nr_object_id', $objectId)
+            ->where('nr_group_id', $groupId)
+            ->where('is_active', true)
+            ->first();
+
+        if (!$assignment) {
+            throw new \Exception('لا يوجد نطاق أرقام مُعَيَّن لهذه المجموعة');
+        }
+
+        $interval = NrInterval::where('id', $assignment->nr_interval_id)
+            ->where('is_active', true)
+            ->where('is_external', false)
+            ->first();
+
+        if (!$interval) {
+            throw new \Exception('نطاق الأرقام المُعَيَّن غير نشط أو خارجي');
+        }
+
+        $next = $interval->current_number === 0
+            ? $interval->from_number
+            : $interval->current_number + 1;
+
+        if ($next > $interval->to_number) {
+            throw new \Exception("النطاق {$interval->code} ممتلئ");
+        }
+
+        $formatted = str_pad((string) $next, $object->number_length, '0', STR_PAD_LEFT);
+        if ($object->prefix) {
+            $formatted = $object->prefix . $formatted;
+        }
+
+        return $formatted;
+    }
+
     // ══════════════════════════════════════════════════════════════
     //  Interval Validation
     // ══════════════════════════════════════════════════════════════

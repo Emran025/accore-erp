@@ -404,6 +404,8 @@ export const API_ENDPOINTS = {
             LIST: (employeeId: string | number) => `/employee-files/${employeeId}`,
             UPLOAD: (employeeId: string | number) => `/employee-files/${employeeId}`,
             DOWNLOAD: (employeeId: string | number, documentId: string | number) => `/employee-files/${employeeId}/download/${documentId}`,
+            UPDATE: (employeeId: string | number, documentId: string | number) => `/employee-files/${employeeId}/${documentId}`,
+            DELETE: (employeeId: string | number, documentId: string | number) => `/employee-files/${employeeId}/${documentId}`,
         },
     },
     INVENTORY: {
@@ -488,5 +490,6 @@ export const API_ENDPOINTS = {
         },
         FULLNESS: (objectId: string | number) => `/number-ranges/${objectId}/fullness`,
         NEXT_NUMBER: "/number-ranges/next-number",
+        PREVIEW_NUMBER: "/number-ranges/preview-number",
     },
 };

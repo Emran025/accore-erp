@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 const BasicInfoTab = dynamic(() => import("./components/BasicInfoTab"), {
     loading: () => <div className="p-10 text-center text-muted">جاري تحميل البيانات الأساسية...</div>
 });
-const DocumentsTab = dynamic(() => import("./components/DocumentsTab"), {
+const DocumentsTab = dynamic(() => import("../../components/DocumentsTab"), {
     loading: () => <div className="p-10 text-center text-muted">جاري تحميل المستندات...</div>
 });
 const FinancialTab = dynamic(() => import("./components/FinancialTab"), {
@@ -103,7 +103,7 @@ export default function ViewEmployeePage({ params }: { params: Promise<{ id: str
                     onTabChange={setActiveTab}
                 />
 
-                <div style={{ marginTop: '1.5rem' }}>
+                <div>
                     {activeTab === 'info' && <BasicInfoTab employee={employee} />}
                     {activeTab === 'documents' && <DocumentsTab id={id} employee={employee} />}
                     {activeTab === 'financial' && <FinancialTab employee={employee} />}

@@ -443,6 +443,27 @@ class NumberRangeController extends Controller
     }
 
     /**
+     * Preview the next number without consuming it.
+     */
+    public function previewNextNumber(Request $request): JsonResponse
+    {
+        $request->validate([
+            'object_id' => 'required|exists:nr_objects,id',
+            'group_id'  => 'required|exists:nr_groups,id',
+        ]);
+
+        try {
+            $number = $this->service->previewNextNumber($request->object_id, $request->group_id);
+            return $this->successResponse([
+                'number'  => $number,
+                'message' => 'معاينة الرقم التالي',
+            ]);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage());
+        }
+    }
+
+    /**
      * System-wide summary of all NR objects.
      */
     public function systemSummary(): JsonResponse

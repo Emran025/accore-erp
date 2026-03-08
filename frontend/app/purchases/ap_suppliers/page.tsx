@@ -81,7 +81,7 @@ export default function SuppliersPage() {
         const fetchNextNumber = async () => {
             if (formDialog && !selectedSupplier && selectedGroup && nrObjectId && !formData.supplier_code) {
                 try {
-                    const numRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.NEXT_NUMBER, {
+                    const numRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.PREVIEW_NUMBER, {
                         method: 'POST',
                         body: JSON.stringify({ object_id: nrObjectId, group_id: selectedGroup })
                     });
@@ -131,7 +131,15 @@ export default function SuppliersPage() {
             return;
         }
 
-        const submitData = { ...formData };
+        const submitData = { ...formData } as any;
+
+        // If using auto-numbering for a NEW supplier, we let the backend generate it
+        if (!selectedSupplier && nrObjectId && selectedGroup) {
+            submitData.nr_object_id = nrObjectId;
+            submitData.nr_group_id = selectedGroup;
+            // Clear the preview code so backend generates a fresh sequential one
+            submitData.supplier_code = '';
+        }
 
         const success = await saveSupplier(submitData, selectedSupplier?.id);
         if (success) {

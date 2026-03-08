@@ -57,7 +57,7 @@ export function Employees() {
   const columns: Column<Employee>[] = [
     { key: "employee_code", header: "رقم الموظف", dataLabel: "رقم الموظف" },
     { key: "full_name", header: "الاسم الكامل", dataLabel: "الاسم الكامل" },
-    { key: "role", header: "المسمى الوظيفي", dataLabel: "المسمى الوظيفي", render: (item) => item.role?.role_name_ar || '-' },
+    { key: "role", header: "المنصب / المسمى", dataLabel: "المنصب / المسمى", render: (item) => item.position?.position_name_ar || item.role?.role_name_ar || '-' },
     { key: "department", header: "القسم", dataLabel: "القسم", render: (item) => item.department?.name_ar || '-' },
     { key: "base_salary", header: "الراتب الأساسي", dataLabel: "الراتب الأساسي", render: (item) => formatCurrency(item.base_salary) },
     {

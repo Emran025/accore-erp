@@ -33,8 +33,6 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(({
                     style={{
                         width: "auto",
                         minWidth: "200px",
-                        padding: "0.75rem 1rem 0.75rem 2.5rem", // Larger padding on the left for the chevron in RTL
-                        borderRadius: "var(--radius-md)",
                         border: "1px solid var(--border-color)",
                         backgroundColor: "#fff",
                         cursor: "pointer",

@@ -81,7 +81,7 @@ export default function ARCustomersPage() {
             // group/object are set, and code field is currently empty
             if (formDialog && !selectedCustomer && selectedGroup && nrObjectId && !formData.customer_code) {
                 try {
-                    const numRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.NEXT_NUMBER, {
+                    const numRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.PREVIEW_NUMBER, {
                         method: 'POST',
                         body: JSON.stringify({ object_id: nrObjectId, group_id: selectedGroup })
                     });
@@ -129,11 +129,15 @@ export default function ARCustomersPage() {
             return;
         }
 
-        // The customer_code should already be populated by the useEffect if auto-generation is active.
-        // If it's still empty for a new customer and auto-generation is expected,
-        // it means there might be an issue with number range setup or fetching.
-        // For existing customers, the code comes from selectedCustomer.
-        const submitData = { ...formData };
+        const submitData = { ...formData } as any;
+
+        // If using auto-numbering for a NEW customer, we let the backend generate it
+        if (!selectedCustomer && nrObjectId && selectedGroup) {
+            submitData.nr_object_id = nrObjectId;
+            submitData.nr_group_id = selectedGroup;
+            // Clear the preview code so backend generates a fresh sequential one
+            submitData.customer_code = '';
+        }
 
         const success = await saveCustomer(submitData, selectedCustomer?.id);
         if (success) {

@@ -71,8 +71,6 @@ class ApController extends Controller
      */
     public function storeSupplier(Request $request): JsonResponse
     {
-
-
         $validated = $request->validate([
             'supplier_code' => 'nullable|string|max:50|unique:ap_suppliers,supplier_code',
             'name' => 'required|string|max:255',
@@ -81,29 +79,39 @@ class ApController extends Controller
             'address' => 'nullable|string',
             'tax_number' => 'nullable|string|max:50',
             'payment_terms' => 'nullable|integer|min:0',
+            'nr_object_id' => 'nullable|integer', // Added for number range generation
+            'nr_group_id' => 'nullable|integer',  // Added for number range generation
         ]);
 
-        // Check for duplicates
-        $exists = ApSupplier::where('name', $validated['name'])
-            ->orWhere(function ($q) use ($validated) {
-                if (!empty($validated['phone'])) {
-                    $q->where('phone', $validated['phone']);
-                }
-            })
-            ->exists();
+        return DB::transaction(function () use ($validated, $request) {
+            // Check for duplicates
+            $exists = ApSupplier::where('name', $validated['name'])
+                ->orWhere(function ($q) use ($validated) {
+                    if (!empty($validated['phone'])) {
+                        $q->where('phone', $validated['phone']);
+                    }
+                })
+                ->exists();
 
-        if ($exists) {
-            return $this->errorResponse('Supplier with this name or phone already exists', 409);
-        }
+            if ($exists) {
+                return $this->errorResponse('Supplier with this name or phone already exists', 409);
+            }
 
-        $supplier = ApSupplier::create([
-            ...$validated,
-            'created_by' => auth()->id() ?? session('user_id'),
-        ]);
+            // Handle Auto Number Generation
+            if (empty($validated['supplier_code']) && $request->filled('nr_object_id') && $request->filled('nr_group_id')) {
+                $nrService = app(\App\Services\NumberRangeService::class);
+                $validated['supplier_code'] = $nrService->getNextNumber($request->nr_object_id, $request->nr_group_id);
+            }
 
-        TelescopeService::logOperation('CREATE', 'ap_suppliers', $supplier->id, null, $validated);
+            $supplier = ApSupplier::create([
+                ...$validated,
+                'created_by' => auth()->id() ?? session('user_id'),
+            ]);
 
-        return $this->successResponse(['id' => $supplier->id]);
+            TelescopeService::logOperation('CREATE', 'ap_suppliers', $supplier->id, null, $validated);
+
+            return $this->successResponse(['id' => $supplier->id]);
+        });
     }
 
     /**

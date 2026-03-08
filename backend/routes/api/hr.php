@@ -298,3 +298,5 @@ Route::middleware(['can:employees,edit', 'throttle:api-sensitive'])->post('/perm
 Route::middleware('can:employees,view')->get('/employee-files/{employeeId}', [\App\Http\Controllers\Api\EmployeesController::class, 'getDocuments']);
 Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/employee-files/{employeeId}', [\App\Http\Controllers\Api\EmployeesController::class, 'uploadDocument']);
 Route::middleware('can:employees,view')->get('/employee-files/{employeeId}/download/{documentId}', [\App\Http\Controllers\Api\EmployeesController::class, 'downloadDocument']);
+Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/employee-files/{employeeId}/{documentId}', [\App\Http\Controllers\Api\EmployeesController::class, 'updateDocument']);
+Route::middleware(['can:employees,delete', 'throttle:api-delete'])->delete('/employee-files/{employeeId}/{documentId}', [\App\Http\Controllers\Api\EmployeesController::class, 'destroyDocument']);

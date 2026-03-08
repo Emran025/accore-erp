@@ -13,6 +13,10 @@ export interface Employee {
   role?: Role;
   department_id?: number;
   department?: Department;
+  position_id?: number;
+  position?: Position;
+  job_title_id?: number;
+  jobTitle?: JobTitle;
   hire_date: string;
   termination_date?: string;
   employment_status: 'active' | 'suspended' | 'terminated';
@@ -51,7 +55,16 @@ export interface EmployeeDocument {
   employee_id: number;
   document_type: 'cv' | 'contract' | 'certificate' | 'guarantee' | 'id_copy' | 'passport' | 'medical' | 'other';
   document_name: string;
+  document_number?: string;
+  issue_date?: string;
+  expiration_date?: string;
+  status?: string;
   file_path: string;
+  mime_type?: string;
+  file_size?: number;
+  is_verified?: boolean;
+  verified_by?: number;
+  verified_at?: string;
   notes?: string;
   uploaded_by?: number;
   created_at: string;

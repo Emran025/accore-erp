@@ -15,7 +15,7 @@ class EmployeesController extends Controller
 
     public function index(Request $request)
     {
-        $query = Employee::with(['role', 'department']);
+        $query = Employee::with(['role', 'department', 'position.jobTitle']);
         
         if ($request->filled('search')) {
             $search = $request->search;
@@ -39,12 +39,11 @@ class EmployeesController extends Controller
         $validated = $request->validate([
             'full_name' => 'required|string|max:100',
             'email' => 'required|email|unique:employees,email|unique:users,username',
-            'employee_code' => 'required|string|unique:employees,employee_code',
+            'employee_code' => 'nullable|string|unique:employees,employee_code',
             'password' => 'required|min:6',
             'base_salary' => 'required|numeric|min:0',
             'hire_date' => 'required|date',
-            'role_id' => 'nullable|exists:roles,id',
-            'department_id' => 'nullable|exists:departments,id',
+            'position_id' => 'required|exists:positions,id',
             'national_id' => 'nullable|string|max:20',
             'gosi_number' => 'nullable|string|max:50',
             'iban' => 'nullable|string|max:34',
@@ -57,6 +56,8 @@ class EmployeesController extends Controller
             'address' => 'nullable|string',
             'employment_status' => 'nullable|in:active,suspended,terminated',
             'manager_id' => 'nullable|exists:employees,id',
+            'nr_object_id' => 'nullable|integer',
+            'nr_group_id'  => 'nullable|integer',
         ]);
 
         return \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $request) {
@@ -67,12 +68,29 @@ class EmployeesController extends Controller
                  $managerUserId = $manager ? $manager->user_id : null;
             }
 
+            // Sync from Position
+            $position = \App\Models\Position::findOrFail($request->position_id);
+            $validated['job_title_id'] = $position->job_title_id;
+            $validated['role_id'] = $position->role_id;
+            $validated['department_id'] = $position->department_id;
+
+            // Handle Auto Number Generation inside transaction
+            if (empty($validated['employee_code']) && $request->filled('nr_object_id') && $request->filled('nr_group_id')) {
+                $nrService = app(\App\Services\NumberRangeService::class);
+                $validated['employee_code'] = $nrService->getNextNumber($request->nr_object_id, $request->nr_group_id);
+            }
+
+            // Still check code is present
+            if (empty($validated['employee_code'])) {
+                return response()->json(['success' => false, 'message' => 'الرقم الوظيفي مطلوب'], 422);
+            }
+
             // Create User for Login
             $user = \App\Models\User::create([
                 'username' => $validated['email'],
                 'password' => Hash::make($request->password),
                 'full_name' => $validated['full_name'],
-                'role_id' => $validated['role_id'] ?? null,
+                'role_id' => $position->role_id,
                 'is_active' => ($validated['employment_status'] ?? 'active') === 'active',
                 'manager_id' => $managerUserId,
             ]);
@@ -89,7 +107,7 @@ class EmployeesController extends Controller
 
     public function show($id)
     {
-        return Employee::with(['role', 'department', 'documents', 'allowances', 'deductions'])->findOrFail($id);
+        return Employee::with(['role', 'department', 'position.jobTitle', 'documents', 'allowances', 'deductions', 'jobTitle'])->findOrFail($id);
     }
 
     public function update(Request $request, $id)
@@ -102,21 +120,36 @@ class EmployeesController extends Controller
             'employee_code' => ['string', Rule::unique('employees')->ignore($id)],
             'base_salary' => 'numeric|min:0',
             'hire_date' => 'date',
-            'role_id' => 'nullable|exists:roles,id',
-            'department_id' => 'nullable|exists:departments,id',
+            'position_id' => 'exists:positions,id',
             'national_id' => 'nullable|string|max:20',
             'gosi_number' => 'nullable|string|max:50',
             'iban' => 'nullable|string|max:34',
             'bank_name' => 'nullable|string|max:100',
             'contract_type' => ['nullable', Rule::in(['full_time', 'part_time', 'contract', 'freelance'])],
             'vacation_days_balance' => 'nullable|numeric|min:0',
+            'phone' => 'nullable|string|max:20',
+            'date_of_birth' => 'nullable|date',
+            'gender' => 'nullable|in:male,female',
+            'address' => 'nullable|string',
             'manager_id' => 'nullable|exists:employees,id',
+            'employment_status' => 'nullable|in:active,suspended,terminated',
+            'vacation_days_balance' => 'nullable|numeric|min:0',
         ]);
 
         return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $employee, $id) {
             $data = $request->except(['password']);
             if ($request->filled('password')) {
                 $data['password'] = Hash::make($request->password);
+            }
+
+            // Sync from Position if provided
+            if ($request->filled('position_id')) {
+                $position = \App\Models\Position::find($request->position_id);
+                if ($position) {
+                    $data['job_title_id'] = $position->job_title_id;
+                    $data['role_id'] = $position->role_id;
+                    $data['department_id'] = $position->department_id;
+                }
             }
 
             $employee->update($data);
@@ -127,7 +160,7 @@ class EmployeesController extends Controller
                 if ($user) {
                     if ($request->filled('full_name')) $user->full_name = $request->full_name;
                     if ($request->filled('email')) $user->username = $request->email;
-                    if ($request->has('role_id')) $user->role_id = $request->role_id;
+                    if (isset($data['role_id'])) $user->role_id = $data['role_id'];
                     if ($request->has('employment_status')) $user->is_active = $request->employment_status === 'active';
                     if ($request->filled('password')) $user->password = Hash::make($request->password);
                     
@@ -179,7 +212,10 @@ class EmployeesController extends Controller
         $request->validate([
             'document' => 'required|file|max:10240', // 10MB max
             'document_type' => 'required|string',
-            'document_name' => 'required|string'
+            'document_name' => 'required|string',
+            'document_number' => 'nullable|string',
+            'issue_date' => 'nullable|date',
+            'expiration_date' => 'nullable|date'
         ]);
 
         $employee = Employee::findOrFail($id);
@@ -189,7 +225,12 @@ class EmployeesController extends Controller
         $document = $employee->documents()->create([
             'document_type' => $request->document_type,
             'document_name' => $request->document_name,
+            'document_number' => $request->document_number,
+            'issue_date' => $request->issue_date,
+            'expiration_date' => $request->expiration_date,
             'file_path' => $path,
+            'mime_type' => $file->getMimeType(),
+            'file_size' => $file->getSize(),
             'uploaded_by' => auth()->id()
         ]);
 
@@ -215,5 +256,42 @@ class EmployeesController extends Controller
             $document->file_path,
             $document->document_name
         );
+    }
+    public function updateDocument(Request $request, $employeeId, $documentId)
+    {
+        $request->validate([
+            'document_type' => 'required|string',
+            'document_name' => 'required|string',
+            'document_number' => 'nullable|string',
+            'issue_date' => 'nullable|date',
+            'expiration_date' => 'nullable|date'
+        ]);
+
+        $employee = Employee::findOrFail($employeeId);
+        $document = $employee->documents()->findOrFail($documentId);
+
+        $document->update([
+            'document_type' => $request->document_type,
+            'document_name' => $request->document_name,
+            'document_number' => $request->document_number,
+            'issue_date' => $request->issue_date,
+            'expiration_date' => $request->expiration_date,
+        ]);
+
+        return response()->json($document);
+    }
+
+    public function destroyDocument($employeeId, $documentId)
+    {
+        $employee = Employee::findOrFail($employeeId);
+        $document = $employee->documents()->findOrFail($documentId);
+
+        if (\Illuminate\Support\Facades\Storage::exists($document->file_path)) {
+            \Illuminate\Support\Facades\Storage::delete($document->file_path);
+        }
+
+        $document->delete();
+
+        return response()->json(['success' => true]);
     }
 }
