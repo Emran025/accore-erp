@@ -20,6 +20,7 @@ class ApSupplierFactory extends Factory
     public function definition(): array
     {
         return [
+            'supplier_code' => 'SUP-' . fake()->unique()->numerify('####'),
             'name' => fake()->company(),
             //'contact_person' => fake()->name(),
             'email' => fake()->unique()->companyEmail(),

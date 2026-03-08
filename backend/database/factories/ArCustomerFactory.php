@@ -20,6 +20,7 @@ class ArCustomerFactory extends Factory
     public function definition(): array
     {
         return [
+            'customer_code' => 'CUST-' . fake()->unique()->numerify('####'),
             'name' => fake()->company(),
             //'contact_person' => fake()->name(),
             'email' => fake()->unique()->companyEmail(),
