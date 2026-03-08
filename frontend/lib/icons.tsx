@@ -8,7 +8,7 @@ import {
     ClipboardList, ChartBar, ChartLine, Wallet, Coins, HandHelping, ArrowRight,
     TrendingUp, Receipt, CreditCard, Banknote, UserPlus, BookOpen, PlusCircle,
     Network, FileSignature, Calendar, Timer, Scale, Activity, Gavel, Link,
-    Repeat, Layers, Truck, HandCoins, ShoppingBag, PieChart, Route, Folder,
+    Repeat2, Layers, Truck, HandCoins, ShoppingBag, PieChart, Route, Folder,
     ShieldCheck, Landmark, BarChart3, UserCog, Bell, FileSearch, BarChart,
     Tags, Ruler, Factory, Files, Hammer, Cpu, ClipboardCheck, Box, AlertTriangle,
     Briefcase, CheckSquare, Hourglass, LayoutDashboard, Save, Calculator,
@@ -16,7 +16,7 @@ import {
     CalendarDays, UserCheck, Plane, Megaphone, GraduationCap, Heart, EyeOff,
     Send, Filter, Handshake, CheckCheck, Play, Star, Pause, ThumbsUp, Upload,
     Delete, PanelRight, LucideGalleryHorizontalEnd, ArrowUp, Menu, Unlink,
-    XOctagon, Maximize2, Shapes, Group, View, Shield
+    XOctagon, Maximize2, Shapes, Group, View, Shield, Hash
 } from 'lucide-react';
 
 interface IconProps {
@@ -76,7 +76,7 @@ export const icons = {
     timer: (props: IconProps) => <Timer className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
     scale: (props: IconProps) => <Scale className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
     activity: (props: IconProps) => <Activity className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
-    repeat: (props: IconProps) => <Repeat className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
+    repeat: (props: IconProps) => <Repeat2 className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
     layers: (props: IconProps) => <Layers className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
     truck: (props: IconProps) => <Truck className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
     "hand-coins": (props: IconProps) => <HandCoins className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
@@ -158,6 +158,7 @@ export const icons = {
     view: (props: IconProps) => <View className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
     "building-2": (props: IconProps) => <Building2 className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
     shield: (props: IconProps) => <Shield className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
+    hash: (props: IconProps) => <Hash className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
     // "panel-right-close": (props: IconProps) => <PanelRightClose className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
     // "panel-right-open": (props: IconProps) => <PanelRightOpen className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
 };

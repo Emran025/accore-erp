@@ -17,58 +17,76 @@ interface NrObjectHeaderProps {
 }
 
 export function NrObjectHeader({ objectData, title }: NrObjectHeaderProps) {
+    const { summary, number_length, prefix } = objectData;
+    const maxBound = Number("9".repeat(number_length)).toLocaleString();
+
+    // Calculate status breakdown from intervals
+    const intervals = objectData.intervals || [];
+    const critical = intervals.filter(iv => iv.status === "critical").length;
+    const warning = intervals.filter(iv => iv.status === "warning").length;
+    const healthy = intervals.filter(iv => iv.status === "healthy").length;
+
+    const fullnessClass = summary.overall_fullness >= 95 ? "critical" : summary.overall_fullness >= 80 ? "warning" : "healthy";
+
     return (
-        <div className="nr-manager-header">
-            <div className="nr-header-info">
-                <div className="nr-header-icon">{getIcon("hash")}</div>
-                <div>
-                    <h2 className="nr-title">{title || objectData.name}</h2>
-                    <div className="nr-subtitle">
-                        {objectData.name_en && <span>{objectData.name_en}</span>}
-                        <span className="nr-meta-badge">
-                            {getIcon("ruler")} طول الترقيم: {objectData.number_length} أرقام
-                        </span>
-                        {objectData.prefix && (
-                            <span className="nr-meta-badge">
-                                {getIcon("tag")} البادئة: {objectData.prefix}
-                            </span>
-                        )}
-                        <span className="nr-meta-badge">
-                            الحد الأقصى: {Number("9".repeat(objectData.number_length)).toLocaleString()}
-                        </span>
+        <div className="nroh-card">
+            <div className="nroh-top">
+                <div className="nroh-identity">
+                    <div className="nroh-icon">{getIcon("hash")}</div>
+                    <div className="nroh-titles">
+                        <h2>{title || objectData.name}</h2>
+                        <div className="nroh-badges">
+                            {objectData.name_en && <span className="nroh-badge">{objectData.name_en}</span>}
+                            <span className="nroh-badge">{getIcon("ruler")} طول: {number_length}</span>
+                            {prefix && <span className="nroh-badge">{getIcon("tag")} بادئة: {prefix}</span>}
+                            <span className="nroh-badge solid">الحد الأقصى: {maxBound}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="nroh-stats-grid">
+                    <div className="nroh-stat">
+                        <div className="nroh-stat-value">{summary.total_groups.toLocaleString()}</div>
+                        <div className="nroh-stat-label">مجموعة</div>
+                    </div>
+                    <div className="nroh-stat">
+                        <div className="nroh-stat-value">{summary.total_intervals.toLocaleString()}</div>
+                        <div className="nroh-stat-label">نطاق</div>
+                    </div>
+                    <div className="nroh-stat">
+                        <div className="nroh-stat-value">{summary.total_assignments.toLocaleString()}</div>
+                        <div className="nroh-stat-label">ربط</div>
+                    </div>
+                    <div className="nroh-divider" />
+                    <div className="nroh-stat cap">
+                        <div className="nroh-stat-value blue">{summary.total_capacity.toLocaleString()}</div>
+                        <div className="nroh-stat-label">إجمالي السعة</div>
+                    </div>
+                    <div className="nroh-stat cap">
+                        <div className="nroh-stat-value purple">{summary.total_used.toLocaleString()}</div>
+                        <div className="nroh-stat-label">المستخدم</div>
+                    </div>
+                    <div className="nroh-stat cap">
+                        <div className="nroh-stat-value green">{summary.total_remaining.toLocaleString()}</div>
+                        <div className="nroh-stat-label">المتبقي</div>
                     </div>
                 </div>
             </div>
 
-            {/* Summary KPIs */}
-            <div className="nr-kpi-strip">
-                <div className="nr-kpi">
-                    <div className="nr-kpi-value" style={{ color: "#3b82f6" }}>{objectData.summary.total_groups}</div>
-                    <div className="nr-kpi-label">مجموعة</div>
-                </div>
-                <div className="nr-kpi">
-                    <div className="nr-kpi-value" style={{ color: "#8b5cf6" }}>{objectData.summary.total_intervals}</div>
-                    <div className="nr-kpi-label">نطاق</div>
-                </div>
-                <div className="nr-kpi">
-                    <div className="nr-kpi-value" style={{ color: "#10b981" }}>{objectData.summary.total_assignments}</div>
-                    <div className="nr-kpi-label">ربط</div>
-                </div>
-                <div className="nr-kpi">
-                    <div className="nr-kpi-value" style={{
-                        color: objectData.summary.overall_fullness >= 95 ? "#ef4444"
-                            : objectData.summary.overall_fullness >= 80 ? "#f59e0b"
-                                : "#10b981"
-                    }}>
-                        {objectData.summary.overall_fullness}%
+            <div className="nroh-progress-container">
+                <div className="nroh-progress-head">
+                    <span className="nroh-progress-title">الامتلاء الكلي للقدرة الاستيعابية ({summary.overall_fullness}%)</span>
+                    <div className="nroh-status-counters">
+                        <span className="nroh-counter healthy">{getIcon("check-circle")} {healthy} سليم</span>
+                        <span className="nroh-counter warning">{getIcon("alert-triangle")} {warning} تحذير</span>
+                        <span className="nroh-counter critical">{getIcon("alert-circle")} {critical} حرج</span>
                     </div>
-                    <div className="nr-kpi-label">امتلاء</div>
                 </div>
-                <div className="nr-kpi">
-                    <div className="nr-kpi-value" style={{ color: "var(--text-secondary)" }}>
-                        {objectData.summary.total_remaining.toLocaleString()}
-                    </div>
-                    <div className="nr-kpi-label">متبقي</div>
+                <div className="nroh-progress-track">
+                    <div
+                        className={`nroh-progress-fill ${fullnessClass}`}
+                        style={{ width: `${Math.min(summary.overall_fullness, 100)}%` }}
+                    />
                 </div>
             </div>
         </div>

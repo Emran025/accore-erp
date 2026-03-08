@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { Currency } from "@/app/finance/currency/types";
+import { PageSubHeader } from "@/components/layout";
+import { Button } from "@/components/ui";
 
 export function ExchangeRatesWidget() {
   const [currencies, setCurrencies] = useState<Currency[]>([]);
@@ -28,13 +30,28 @@ export function ExchangeRatesWidget() {
 
   return (
     <div className="sales-card mb-4" style={{ marginBottom: "1.5rem" }}>
-      <h3 style={{ fontSize: "1.1rem", marginBottom: "1rem" }}>
-        أسعار الصرف اليوم
-        <span style={{ fontSize: "0.8em", color: "var(--text-secondary)", marginRight: "10px" }}>
-          (مقابل {displayBase?.symbol})
-        </span>
-      </h3>
-      <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+      <PageSubHeader
+        title="أسعار الصرف اليوم"
+        titleIcon="repeat"
+        actions={
+          <>
+
+            <span style={{ fontSize: "0.9em", fontWeight: "bold", color: "var(--text-secondary)", marginRight: "10px" }}>
+              (مقابل {displayBase?.symbol})
+            </span>
+
+            <Button
+              variant="secondary"
+              icon="refresh"
+              key="refresh"
+            // onClick={() => loadDashboardData()}
+            >
+              تحديث
+            </Button>
+          </>
+        }
+      />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "0.5rem" }}>
         {displayCurrencies.map(curr => {
           // Calculate cross rate: (Foreign/Primary) / (Base/Primary)
           const baseRate = Number(displayBase?.exchange_rate) || 1;
@@ -43,20 +60,22 @@ export function ExchangeRatesWidget() {
 
           return (
             <div key={curr.id} style={{
-              padding: "0.5rem 1rem",
+              padding: "0.4rem 0.5rem",
               background: "var(--background-secondary)",
               borderRadius: "8px",
               border: "1px solid var(--border-color)",
               display: "flex",
               alignItems: "center",
-              gap: "0.5rem"
+              justifyContent: "center",
+              gap: "0.4rem",
+              fontSize: "0.9rem"
             }}>
               <strong>{curr.code}</strong>
               <span style={{ color: "var(--text-secondary)" }}>=</span>
               <span style={{ fontWeight: "bold", color: "var(--primary-color)" }}>
                 {crossRate.toFixed(2)}
               </span>
-              <span style={{ fontSize: "0.9em" }}>
+              <span style={{ fontSize: "0.85em", fontWeight: "bold" }}>
                 {displayBase?.symbol}
               </span>
             </div>

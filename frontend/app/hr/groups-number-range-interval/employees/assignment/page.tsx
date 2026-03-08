@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MainLayout } from "@/components/layout";
+import { MainLayout, PageSubHeader } from "@/components/layout";
 import { Button, Table, Column, ActionButtons, ConfirmDialog } from "@/components/ui";
 import { Select } from "@/components/ui/select";
 import { getIcon } from "@/lib/icons";
@@ -84,9 +84,6 @@ export default function NumberRangeAssignmentPage() {
     if (!objectData) {
         return (
             <MainLayout>
-                <div className="page-header">
-                    <h2>عرض وإضافة إسنادات نطاقات الترقيم</h2>
-                </div>
                 <NrSetupPrompt defaultConfig={EMP_CONFIG} onCreateObject={createObject} />
             </MainLayout>
         );
@@ -94,17 +91,15 @@ export default function NumberRangeAssignmentPage() {
 
     return (
         <MainLayout>
-            <div className="page-header">
-                <h2>عرض وإضافة إسنادات نطاقات الترقيم</h2>
-            </div>
 
             <NrObjectHeader objectData={objectData} title="إعدادات ترقيم الموظفين" />
 
             {/* Assignment Form */}
-            <div className="nr-tab-content">
-                <div className="nr-section-header">
-                    <h3>{getIcon("link")} ربط مجموعة بنطاق أرقام</h3>
-                </div>
+            <div className="sales-card compact">
+                <PageSubHeader
+                    title="ربط مجموعة بنطاق أرقام"
+                    titleIcon="link"
+                />
 
                 <form onSubmit={handleAssignSave} style={{ maxWidth: "800px", marginTop: "1rem" }}>
                     <div id="nr-alert" style={{ marginBottom: "1rem" }} />
@@ -147,10 +142,11 @@ export default function NumberRangeAssignmentPage() {
             </div>
 
             {/* Assignments Table */}
-            <div className="nr-tab-content">
-                <div className="nr-section-header">
-                    <h3>{getIcon("list")} جدول الإسنادات الحالية</h3>
-                </div>
+            <div className="sales-card compact">
+                <PageSubHeader
+                    title="جدول الإسنادات الحالية"
+                    titleIcon="list"
+                />
 
                 <div id="nr-alert-table" style={{ marginBottom: "1rem" }} />
 

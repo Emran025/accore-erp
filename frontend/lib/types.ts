@@ -483,3 +483,12 @@ export interface Payment {
   payment_date: string;
   notes?: string;
 }
+
+export const DOMAIN_COLORS: Record<number, string> = {
+    1: "#8b5cf6", 2: "#3b82f6", 3: "#06b6d4",
+    4: "#10b981", 5: "#f59e0b", 6: "#ec4899", 7: "#6366f1",
+};
+
+export function getDomainColor(domain: number): string {
+    return DOMAIN_COLORS[domain] || "#6b7280";
+}

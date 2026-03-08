@@ -8,6 +8,7 @@ import { Select } from "@/components/ui/select";
 import { TextInput } from "@/components/ui/TextInput";
 import { getIcon } from "@/lib/icons";
 import { PageSubHeader } from "@/components/layout";
+import { DOMAIN_COLORS } from "./ui";
 
 interface MetaType { id: string; display_name: string; display_name_ar?: string; level_domain: string; }
 interface StructureNode { node_uuid: string; node_type_id: string; code: string; attributes_json?: Record<string, unknown>; status: string; meta_type?: MetaType; }
@@ -18,11 +19,6 @@ interface StructureLink {
     topology_rule?: { cardinality: string; description?: string };
 }
 interface TopologyRule { id: number; source_node_type_id: string; target_node_type_id: string; cardinality: string; description?: string; }
-
-const DOMAIN_COLORS: Record<string, string> = {
-    Enterprise: "#8b5cf6", Financial: "#3b82f6", Controlling: "#06b6d4",
-    Logistics: "#10b981", Sales: "#f59e0b", HR: "#ec4899", Project: "#6366f1",
-};
 
 export function LinksTab() {
     const [nodes, setNodes] = useState<StructureNode[]>([]);

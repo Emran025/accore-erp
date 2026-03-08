@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getIcon } from "@/lib/icons";
+import { BadgeLabel } from "@/components/ui";
 
 export interface SidebarItemProps {
     href: string;
@@ -45,7 +46,7 @@ export function SidebarItem({
                     {getIcon(icon)}
                 </span>
                 <span className="sidenav-item-label">{label}</span>
-                {badgeSoon && <span className="sidenav-badge-soon">Soon</span>}
+                {badgeSoon && <BadgeLabel label="Soon" />}
                 {hasStar && !onActionClick && <span className="sidenav-item-star">★</span>}
             </Link>
             {onActionClick && (

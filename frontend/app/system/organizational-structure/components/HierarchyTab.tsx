@@ -6,6 +6,8 @@ import { API_ENDPOINTS } from "@/lib/endpoints";
 import { Button, showToast, Select } from "@/components/ui";
 import { getIcon } from "@/lib/icons";
 import { PageSubHeader } from "@/components/layout";
+import { DOMAIN_COLORS } from "./ui";
+import { BadgeLabel } from "@/components/ui";
 
 interface MetaType {
     id: string;
@@ -38,15 +40,6 @@ interface TreeNode {
     children: TreeNode[];
 }
 
-const DOMAIN_COLORS: Record<string, string> = {
-    Enterprise: "#8b5cf6",
-    Financial: "#3b82f6",
-    Controlling: "#06b6d4",
-    Logistics: "#10b981",
-    Sales: "#f59e0b",
-    HR: "#ec4899",
-    Project: "#6366f1",
-};
 
 const DOMAIN_ICONS: Record<string, string> = {
     Enterprise: "building",
@@ -58,7 +51,7 @@ const DOMAIN_ICONS: Record<string, string> = {
     Project: "clipboard",
 };
 
-function getDomainColor(domain: string): string {
+export function getDomainColor(domain: string): string {
     return DOMAIN_COLORS[domain] || "#6b7280";
 }
 
@@ -311,22 +304,14 @@ export function HierarchyTab() {
                 {/* Domain Legend */}
                 <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1rem", flexWrap: "wrap" }}>
                     {filteredDomains.map((d) => (
-                        <span
-                            key={d}
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "4px",
-                                fontSize: "0.7rem",
-                                color: getDomainColor(d),
-                                cursor: "pointer",
-                                opacity: !filterDomain || filterDomain === d ? 1 : 0.4,
-                            }}
-                            onClick={() => setFilterDomain(filterDomain === d ? "" : d)}
-                        >
-                            <span style={{ width: 8, height: 8, borderRadius: "50%", background: getDomainColor(d) }} />
-                            {d}
-                        </span>
+                        <BadgeLabel
+                            label={d}
+                            color={getDomainColor(d)}
+                            setIsFilter={() => setFilterDomain(filterDomain === d ? "" : d)}
+                            isFilter={filterDomain === d}
+                            bulletStyle="disc"
+                            fontSize={0.75}
+                        />
                     ))}
                 </div>
 

@@ -7,6 +7,7 @@ import { API_ENDPOINTS } from "@/lib/endpoints";
 import { Select } from "@/components/ui/select";
 import { PageSubHeader } from "@/components/layout";
 import { NodeFormDialog, InitialNodeSetup, NodeFormData } from "./NodeFormPanel";
+import { DOMAIN_COLORS } from "./ui";
 
 interface MetaType {
     id: string;
@@ -35,11 +36,6 @@ interface TopologyRule {
     target_node_type_id: string;
     cardinality: string;
 }
-
-const DOMAIN_COLORS: Record<string, string> = {
-    Enterprise: "#8b5cf6", Financial: "#3b82f6", Controlling: "#06b6d4",
-    Logistics: "#10b981", Sales: "#f59e0b", HR: "#ec4899", Project: "#6366f1",
-};
 
 export function NodesTab() {
     const [nodes, setNodes] = useState<StructureNode[]>([]);

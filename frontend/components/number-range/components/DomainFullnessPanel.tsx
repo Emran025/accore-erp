@@ -28,67 +28,8 @@ export function DomainFullnessPanel({ intervals, numberLength, onExpand, onViewL
     const warning = intervals.filter(iv => iv.status === "warning");
     const healthy = intervals.filter(iv => iv.status === "healthy");
 
-    return (
-        <div className="nr-fullness-panel">
-            {/* Summary Banner */}
-            <div className="nr-fullness-summary">
-                <div className="nr-fullness-summary-header">
-                    <h3>{getIcon("pie-chart")} تحليل امتلاء النطاقات</h3>
-                    <span className="nr-meta-badge">الحد الأقصى المسموح: {maxNumber.toLocaleString()}</span>
-                </div>
-
-                <div className="nr-fullness-kpis">
-                    <div className="nr-fullness-kpi">
-                        <div className="nr-fullness-kpi-label">إجمالي السعة</div>
-                        <div className="nr-fullness-kpi-value" style={{ color: "#3b82f6" }}>{totalCapacity.toLocaleString()}</div>
-                    </div>
-                    <div className="nr-fullness-kpi">
-                        <div className="nr-fullness-kpi-label">المستخدم</div>
-                        <div className="nr-fullness-kpi-value" style={{ color: "#8b5cf6" }}>{totalUsed.toLocaleString()}</div>
-                    </div>
-                    <div className="nr-fullness-kpi">
-                        <div className="nr-fullness-kpi-label">المتبقي</div>
-                        <div className="nr-fullness-kpi-value" style={{ color: totalRemaining < 100 ? "#ef4444" : "#10b981" }}>
-                            {totalRemaining.toLocaleString()}
-                        </div>
-                    </div>
-                    <div className="nr-fullness-kpi">
-                        <div className="nr-fullness-kpi-label">الامتلاء الكلي</div>
-                        <div className="nr-fullness-kpi-value" style={{
-                            color: overallFullness >= 95 ? "#ef4444" : overallFullness >= 80 ? "#f59e0b" : "#10b981"
-                        }}>
-                            {overallFullness}%
-                        </div>
-                    </div>
-                </div>
-
-                {/* Overall Progress Bar */}
-                <div className="nr-fullness-bar-container">
-                    <div className="nr-fullness-bar">
-                        <div
-                            className="nr-fullness-bar-fill"
-                            style={{
-                                width: `${Math.min(overallFullness, 100)}%`,
-                                background: overallFullness >= 95 ? "#ef4444" : overallFullness >= 80 ? "#f59e0b" : "#10b981",
-                            }}
-                        />
-                    </div>
-                </div>
-
-                {/* Status Counters */}
-                <div className="nr-status-counters">
-                    <div className="nr-status-counter" style={{ color: "#ef4444" }}>
-                        {getIcon("alert-circle")} {critical.length} حرج
-                    </div>
-                    <div className="nr-status-counter" style={{ color: "#f59e0b" }}>
-                        {getIcon("alert-triangle")} {warning.length} تحذير
-                    </div>
-                    <div className="nr-status-counter" style={{ color: "#10b981" }}>
-                        {getIcon("check-circle")} {healthy.length} سليم
-                    </div>
-                </div>
-            </div>
-
+    return critical.length > 0 || warning.length > 0 || intervals.length > 0 ? (
+        <div className="sales-card compact">
             {/* Alerts for Critical & Warning Intervals */}
             {critical.length > 0 && (
                 <div className="nr-fullness-alert nr-fullness-alert-critical">
@@ -201,5 +142,5 @@ export function DomainFullnessPanel({ intervals, numberLength, onExpand, onViewL
                 </div>
             </div>
         </div>
-    );
+    ) : null;
 }

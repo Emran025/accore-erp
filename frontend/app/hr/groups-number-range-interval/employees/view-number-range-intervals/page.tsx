@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { MainLayout } from "@/components/layout";
+import { MainLayout, PageSubHeader } from "@/components/layout";
 import { Button, Table, Column, ActionButtons, ConfirmDialog, Dialog } from "@/components/ui";
 import { TextInput } from "@/components/ui/TextInput";
 import { NumberInput } from "@/components/ui/NumberInput";
@@ -183,31 +183,26 @@ export default function ViewNumberRangeIntervalsPage() {
 
     return (
         <MainLayout>
-            <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h2>عرض نطاقات أرقام الموظفين</h2>
-                <Button variant="primary" icon="plus" onClick={() => router.push("/hr/groups-number-range-interval/employees/add-number-range-interval")}>
-                    إضافة نطاق جديد
-                </Button>
-            </div>
-
             <NrObjectHeader objectData={objectData} title="إعدادات ترقيم الموظفين" />
 
-            <div className="nr-tab-content" style={{ marginTop: "1rem" }}>
-                <DomainFullnessPanel
-                    intervals={objectData.intervals || []}
-                    numberLength={objectData.number_length}
-                    onExpand={openExpand}
-                    onViewLogs={openLogs}
+            <DomainFullnessPanel
+                intervals={objectData.intervals || []}
+                numberLength={objectData.number_length}
+                onExpand={openExpand}
+                onViewLogs={openLogs}
+            />
+
+            <div className="sales-card compact">
+                <PageSubHeader
+                    title="نطاقات الأرقام"
+                    titleIcon="hash"
+                    actions={
+                        <Button variant="primary" icon="plus" onClick={() => router.push("/hr/groups-number-range-interval/employees/add-number-range-interval")}>
+                            إضافة نطاق جديد
+                        </Button>
+                    }
                 />
-            </div>
-
-            <div className="nr-tab-content">
-                <div className="nr-section-header">
-                    <h3>{getIcon("hash")} جدول نطاقات الأرقام</h3>
-                </div>
-
                 <div id="nr-alert" style={{ marginBottom: "1rem" }} />
-
                 <Table
                     columns={intervalColumns}
                     data={objectData.intervals || []}

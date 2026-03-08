@@ -9,9 +9,11 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/Textarea";
 import { NumberInput } from "@/components/ui/NumberInput";
 import { getIcon } from "@/lib/icons";
+import { NrObjectHeader } from "./components/NrObjectHeader";
 import { DomainFullnessPanel } from "./components/DomainFullnessPanel";
 import { ExpansionLogsPanel } from "./components/ExpansionLogsPanel";
 import type { NrObject, NrGroup, NrInterval, NrAssignment, NrObjectFull } from "./types";
+import { PageSubHeader } from "../layout";
 
 // ══════════════════════════════════════════════════════════════
 //  Props
@@ -572,72 +574,26 @@ export function NumberRangeManager({
             <div id="nr-alert" />
 
             {/* ── Header ──────────────────────────────────────── */}
-            <div className="nr-manager-header">
-                <div className="nr-header-info">
-                    <div className="nr-header-icon">{getIcon("hash")}</div>
-                    <div>
-                        <h2 className="nr-title">{title || objectData.name}</h2>
-                        <div className="nr-subtitle">
-                            {objectData.name_en && <span>{objectData.name_en}</span>}
-                            <span className="nr-meta-badge">
-                                {getIcon("ruler")} طول الترقيم: {objectData.number_length} أرقام
-                            </span>
-                            {objectData.prefix && (
-                                <span className="nr-meta-badge">
-                                    {getIcon("tag")} البادئة: {objectData.prefix}
-                                </span>
-                            )}
-                            <span className="nr-meta-badge">
-                                الحد الأقصى: {Number("9".repeat(objectData.number_length)).toLocaleString()}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Summary KPIs */}
-                <div className="nr-kpi-strip">
-                    <div className="nr-kpi">
-                        <div className="nr-kpi-value" style={{ color: "#3b82f6" }}>{objectData.summary.total_groups}</div>
-                        <div className="nr-kpi-label">مجموعة</div>
-                    </div>
-                    <div className="nr-kpi">
-                        <div className="nr-kpi-value" style={{ color: "#8b5cf6" }}>{objectData.summary.total_intervals}</div>
-                        <div className="nr-kpi-label">نطاق</div>
-                    </div>
-                    <div className="nr-kpi">
-                        <div className="nr-kpi-value" style={{ color: "#10b981" }}>{objectData.summary.total_assignments}</div>
-                        <div className="nr-kpi-label">ربط</div>
-                    </div>
-                    <div className="nr-kpi">
-                        <div className="nr-kpi-value" style={{
-                            color: objectData.summary.overall_fullness >= 95 ? "#ef4444"
-                                : objectData.summary.overall_fullness >= 80 ? "#f59e0b"
-                                    : "#10b981"
-                        }}>
-                            {objectData.summary.overall_fullness}%
-                        </div>
-                        <div className="nr-kpi-label">امتلاء</div>
-                    </div>
-                    <div className="nr-kpi">
-                        <div className="nr-kpi-value" style={{ color: "var(--text-secondary)" }}>{objectData.summary.total_remaining.toLocaleString()}</div>
-                        <div className="nr-kpi-label">متبقي</div>
-                    </div>
-                </div>
-            </div>
+            <NrObjectHeader objectData={objectData} title={title} />
 
             {/* ── Tab Navigation ──────────────────────────────── */}
             <TabNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
             {/* ── Tab Content ─────────────────────────────────── */}
-            <div className="nr-tab-content">
+            <div className="sales-card compact">
 
                 {/* Groups Tab */}
                 {activeTab === "groups" && (
                     <div>
-                        <div className="nr-section-header">
-                            <h3>المجموعات</h3>
-                            <Button variant="primary" onClick={openAddGroup} icon="plus">مجموعة جديدة</Button>
-                        </div>
+                        <PageSubHeader
+                            title="المجموعات"
+                            titleIcon="layers"
+                            actions={
+                                <Button variant="primary" icon="plus" onClick={openAddGroup}>
+                                    مجموعة جديدة
+                                </Button>
+                            }
+                        />
                         <Table
                             columns={groupColumns}
                             data={objectData.groups || []}
@@ -650,10 +606,15 @@ export function NumberRangeManager({
                 {/* Intervals Tab */}
                 {activeTab === "intervals" && (
                     <div>
-                        <div className="nr-section-header">
-                            <h3>نطاقات الأرقام</h3>
-                            <Button variant="primary" onClick={openAddInterval} icon="plus">نطاق جديد</Button>
-                        </div>
+                        <PageSubHeader
+                            title="نطاقات الأرقام"
+                            titleIcon="hash"
+                            actions={
+                                <Button variant="primary" icon="plus" onClick={openAddInterval}>
+                                    نطاق جديد
+                                </Button>
+                            }
+                        />
                         <Table
                             columns={intervalColumns}
                             data={objectData.intervals || []}
@@ -666,10 +627,15 @@ export function NumberRangeManager({
                 {/* Assignments Tab */}
                 {activeTab === "assignments" && (
                     <div>
-                        <div className="nr-section-header">
-                            <h3>الربط والتعيين</h3>
-                            <Button variant="primary" onClick={openAssignment} icon="link">ربط جديد</Button>
-                        </div>
+                        <PageSubHeader
+                            title="الربط والتعيين"
+                            titleIcon="link"
+                            actions={
+                                <Button variant="primary" icon="plus" onClick={openAssignment}>
+                                    ربط جديد
+                                </Button>
+                            }
+                        />
                         <Table
                             columns={assignmentColumns}
                             data={objectData.assignments || []}

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { MainLayout } from "@/components/layout";
+import { MainLayout, PageSubHeader } from "@/components/layout";
 import { Button, Table, Column, ActionButtons, ConfirmDialog, Dialog } from "@/components/ui";
 import { TextInput } from "@/components/ui/TextInput";
 import { Textarea } from "@/components/ui/Textarea";
@@ -107,20 +107,19 @@ export default function ViewEmployeesGroupsPage() {
 
     return (
         <MainLayout>
-            <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h2>عرض تجميعات الموظفين</h2>
-                <Button variant="primary" icon="plus" onClick={() => router.push("/hr/groups-number-range-interval/employees/add-employees-group")}>
-                    إضافة تجميع جديد
-                </Button>
-            </div>
+            <PageSubHeader
+                title="عرض تجميعات الموظفين"
+                titleIcon="layers"
+                actions={
+                    <Button variant="primary" icon="plus" onClick={() => router.push("/hr/groups-number-range-interval/employees/add-employees-group")}>
+                        إضافة تجميع جديد
+                    </Button>
+                }
+            />
 
             <NrObjectHeader objectData={objectData} title="إعدادات ترقيم الموظفين" />
 
-            <div className="nr-tab-content">
-                <div className="nr-section-header">
-                    <h3>{getIcon("layers")} المجموعات المعرفة</h3>
-                </div>
-
+            <div className="sales-card compact">
                 <div id="nr-alert" style={{ marginBottom: "1rem" }} />
 
                 <Table

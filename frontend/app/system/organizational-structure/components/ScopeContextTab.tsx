@@ -7,6 +7,7 @@ import { API_ENDPOINTS } from "@/lib/endpoints";
 import { Select } from "@/components/ui/select";
 import { getIcon } from "@/lib/icons";
 import { PageSubHeader } from "@/components/layout";
+import { DOMAIN_COLORS } from "./ui";
 
 interface MetaType { id: string; display_name: string; display_name_ar?: string; level_domain: string; }
 interface StructureNode { node_uuid: string; node_type_id: string; code: string; attributes_json?: Record<string, unknown>; }
@@ -15,11 +16,6 @@ interface ScopeResult {
     anchor: { node_uuid: string; node_type_id: string; code: string; attributes: Record<string, any> };
     resolved: Record<string, { node_uuid: string; code: string; attributes: Record<string, any> }>;
 }
-
-const DOMAIN_COLORS: Record<string, string> = {
-    Enterprise: "#8b5cf6", Financial: "#3b82f6", Controlling: "#06b6d4",
-    Logistics: "#10b981", Sales: "#f59e0b", HR: "#ec4899", Project: "#6366f1",
-};
 
 export function ScopeContextTab() {
     const [nodes, setNodes] = useState<StructureNode[]>([]);
@@ -78,7 +74,6 @@ export function ScopeContextTab() {
                             className="form-control"
                             placeholder="اختر وحدة..."
                         />
-
                         <Button variant="primary" icon="search" onClick={resolveScope} disabled={!selectedUuid || isLoading}>
                             {isLoading ? "جاري التحليل..." : "تحليل السياق"}
                         </Button>

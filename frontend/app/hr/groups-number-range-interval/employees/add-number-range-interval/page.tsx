@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { MainLayout } from "@/components/layout";
+import { MainLayout, PageSubHeader } from "@/components/layout";
 import { Button } from "@/components/ui";
 import { TextInput } from "@/components/ui/TextInput";
 import { Textarea } from "@/components/ui/Textarea";
@@ -42,9 +42,6 @@ export default function AddIntervalPage() {
     if (!objectData) {
         return (
             <MainLayout>
-                <div className="page-header">
-                    <h2>إضافة نطاق جديد</h2>
-                </div>
                 <NrSetupPrompt defaultConfig={EMP_CONFIG} onCreateObject={createObject} />
             </MainLayout>
         );
@@ -52,16 +49,13 @@ export default function AddIntervalPage() {
 
     return (
         <MainLayout>
-            <div className="page-header">
-                <h2>إضافة نطاق جديد</h2>
-            </div>
-
             <NrObjectHeader objectData={objectData} title="إعدادات ترقيم الموظفين" />
 
-            <div className="nr-tab-content">
-                <div className="nr-section-header">
-                    <h3>{getIcon("hash")} بيانات النطاق الجديد</h3>
-                </div>
+            <div className="sales-card compact">
+                <PageSubHeader
+                    title="بيانات النطاق الجديد"
+                    titleIcon="hash"
+                />
 
                 <form onSubmit={handleSubmit} style={{ maxWidth: "600px", marginTop: "1rem" }}>
                     <div id="nr-alert" style={{ marginBottom: "1rem" }} />
