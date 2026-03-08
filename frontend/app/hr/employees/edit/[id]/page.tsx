@@ -18,6 +18,10 @@ export default function EditEmployeePage({ params }: { params: Promise<{ id: str
     const [roles, setRoles] = useState<Role[]>([]);
     const [departments, setDepartments] = useState<Department[]>([]);
 
+    const [nrObjectId, setNrObjectId] = useState<number | null>(null);
+    const [nrGroups, setNrGroups] = useState<any[]>([]);
+    const [selectedGroup, setSelectedGroup] = useState("");
+
     const [formData, setFormData] = useState({
         full_name: '',
         employee_code: '',
@@ -85,7 +89,42 @@ export default function EditEmployeePage({ params }: { params: Promise<{ id: str
         } finally {
             setIsLoading(false);
         }
+
+        // Load Numbering Range Groups 
+        try {
+            const nrRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.OBJECTS.byType("employees"));
+            if (nrRes.success && (nrRes.data || nrRes.id)) {
+                const data = nrRes.data || nrRes;
+                setNrObjectId(data.id);
+                if (data.groups && data.groups.length > 0) {
+                    setNrGroups(data.groups);
+                }
+            }
+        } catch (e) {
+            console.error("Failed to load number range groups", e);
+        }
     };
+
+    useEffect(() => {
+        const fetchNextNumber = async () => {
+            if (activeTab === 'info' && selectedGroup && nrObjectId && !formData.employee_code) {
+                try {
+                    const numRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.NEXT_NUMBER, {
+                        method: 'POST',
+                        body: JSON.stringify({ object_id: nrObjectId, group_id: selectedGroup })
+                    });
+
+                    const generatedNumber = numRes.number || numRes.data?.number;
+                    if (numRes.success && generatedNumber) {
+                        setFormData(prev => ({ ...prev, employee_code: generatedNumber }));
+                    }
+                } catch (error) {
+                    console.error("Failed to generate numbering code", error);
+                }
+            }
+        };
+        fetchNextNumber();
+    }, [selectedGroup, nrObjectId, activeTab]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -163,7 +202,19 @@ export default function EditEmployeePage({ params }: { params: Promise<{ id: str
                                     <h4 style={{ margin: 0 }}>معلومات التوظيف</h4>
                                 </div>
                                 <div className="form-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
-                                    <TextInput label="الرقم الوظيفي" name="employee_code" required value={formData.employee_code} onChange={handleChange} />
+                                    <TextInput label="الرقم الوظيفي" name="employee_code" required value={formData.employee_code} onChange={handleChange} placeholder={nrGroups.length > 0 ? "يتم التوليد تلقائيا..." : "أدخل الرقم"} />
+                                    {nrGroups.length > 0 && !formData.employee_code && (
+                                        <Select
+                                            label="مجموعة الترقيم"
+                                            name="nr_group"
+                                            value={selectedGroup}
+                                            onChange={(e) => setSelectedGroup(e.target.value)}
+                                            options={[
+                                                { value: '', label: 'اختر مجموعة الترقيم لتوليد رقم' },
+                                                ...nrGroups.map(grp => ({ value: grp.id.toString(), label: grp.name }))
+                                            ]}
+                                        />
+                                    )}
                                     <Select
                                         label="المسمى الوظيفي"
                                         name="role_id"

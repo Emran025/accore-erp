@@ -16,7 +16,7 @@ import {
     CalendarDays, UserCheck, Plane, Megaphone, GraduationCap, Heart, EyeOff,
     Send, Filter, Handshake, CheckCheck, Play, Star, Pause, ThumbsUp, Upload,
     Delete, PanelRight, LucideGalleryHorizontalEnd, ArrowUp, Menu, Unlink,
-    XOctagon, Maximize2, Shapes, Group, View, Shield, Hash
+    XOctagon, Maximize2, Shapes, Group, View, Shield, Hash, Award,
 } from 'lucide-react';
 
 interface IconProps {
@@ -159,6 +159,7 @@ export const icons = {
     "building-2": (props: IconProps) => <Building2 className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
     shield: (props: IconProps) => <Shield className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
     hash: (props: IconProps) => <Hash className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
+    award: (props: IconProps) => <Award className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
     // "panel-right-close": (props: IconProps) => <PanelRightClose className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
     // "panel-right-open": (props: IconProps) => <PanelRightOpen className={`icon ${props.className || ''}`} size={props.size} strokeWidth={props.strokeWidth} />,
 };

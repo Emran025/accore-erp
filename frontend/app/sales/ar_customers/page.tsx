@@ -75,6 +75,29 @@ export default function ARCustomersPage() {
         init();
     }, [loadCustomers]);
 
+    useEffect(() => {
+        const fetchNextNumber = async () => {
+            // Only fetch if dialog is open, we're not editing (no selectedCustomer), 
+            // group/object are set, and code field is currently empty
+            if (formDialog && !selectedCustomer && selectedGroup && nrObjectId && !formData.customer_code) {
+                try {
+                    const numRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.NEXT_NUMBER, {
+                        method: 'POST',
+                        body: JSON.stringify({ object_id: nrObjectId, group_id: selectedGroup })
+                    });
+
+                    const generatedNumber = numRes.number || numRes.data?.number;
+                    if (numRes.success && generatedNumber) {
+                        setFormData(prev => ({ ...prev, customer_code: generatedNumber }));
+                    }
+                } catch (error) {
+                    console.error("Failed to generate numbering code", error);
+                }
+            }
+        };
+        fetchNextNumber();
+    }, [selectedGroup, nrObjectId, formDialog, selectedCustomer]);
+
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setSearchTerm(value);
@@ -106,26 +129,11 @@ export default function ARCustomersPage() {
             return;
         }
 
-        let finalCode = formData.customer_code;
-
-        // Auto-generate code if empty and creating new
-        if (!selectedCustomer && !finalCode && selectedGroup && nrObjectId) {
-            try {
-                const numRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.NEXT_NUMBER, {
-                    method: 'POST',
-                    body: JSON.stringify({ object_id: nrObjectId, group_id: selectedGroup })
-                });
-                if (numRes.success && numRes.data?.number) {
-                    finalCode = numRes.data.number;
-                }
-            } catch (error) {
-                console.error("Failed to generate numbering code", error);
-                showToast("فشل في توليد كود العميل", "error");
-                return;
-            }
-        }
-
-        const submitData = { ...formData, customer_code: finalCode };
+        // The customer_code should already be populated by the useEffect if auto-generation is active.
+        // If it's still empty for a new customer and auto-generation is expected,
+        // it means there might be an issue with number range setup or fetching.
+        // For existing customers, the code comes from selectedCustomer.
+        const submitData = { ...formData };
 
         const success = await saveCustomer(submitData, selectedCustomer?.id);
         if (success) {

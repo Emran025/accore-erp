@@ -53,18 +53,60 @@ export const navigationGroups: NavigationGroup[] = [
     label: "المبيعات والعملاء",
     icon: "cart",
     items: [
-      { href: "/sales/sales", icon: "cart", label: "فواتير المبيعات", description: "إنشاء وإدارة فواتير البيع", module: "sales" },
-      { href: "/sales/deferred_sales", icon: "receipt", label: "المبيعات الآجلة", description: "مبيعات بالتقسيط والآجل", module: "deferred_sales" },
-      { href: "/sales/revenues", icon: "trending-up", label: "الإيرادات", description: "تسجيل الإيرادات المتنوعة", module: "revenues" },
-      { href: "/sales/ar_customers", icon: "user-plus", label: "العملاء", description: "قاعدة بيانات العملاء", module: "ar_customers" },
-      { href: "/sales/receipts", icon: "book-open", label: "سندات القبض", description: "مقبوضات أرصدة العملاء", module: "ar_customers" },
-      { href: "/system/dashboard", icon: "cart", label: "عروض الأسعار", description: "إنشاء عروض الأسعار (قريباً)", module: "dashboard" },
-      { href: "/system/dashboard", icon: "cart", label: "أوامر البيع", description: "إدارة طلبات البيع (قريباً)", module: "dashboard" },
-      { href: "/sales/returns", icon: "history", label: "مرتجعات المبيعات", description: "إدارة مرتجعات المبيعات", module: "returns" },
-      { href: "/purchases/requests", icon: "book-open", label: "طلبات الشراء", description: "إدارة طلبات الشراء أو النقل المخزني وحالتها", module: "ar_customers" },
-      //{ href: "/system/dashboard", icon: "tags", label: "قوائم الأسعار", description: "إدارة الأسعار والخصومات (قريباً)", module: "dashboard" },
-      { href: "/representatives", icon: "tags", label: "المناديب والمسوقين", description: "إدارة المناديب والمسوقين", module: "representatives" },
-      { href: "/system/dashboard", icon: "coins", label: "العمولات", description: "عمولات المبيعات (قريباً)", module: "dashboard" },
+      // Direct sales management component for goods and products
+      {
+        key: "direct-sales-management",
+        label: "مبيعات السلع والمنتجات",
+        icon: "cart",
+        items: [
+          { href: "/sales/sales", icon: "cart", label: "فواتير المبيعات", description: "إنشاء وإدارة فواتير البيع", module: "sales" },
+          { href: "/sales/deferred_sales", icon: "receipt", label: "المبيعات الآجلة", description: "مبيعات بالتقسيط والآجل", module: "deferred_sales" },
+          { href: "/sales/returns", icon: "history", label: "مرتجعات المبيعات", description: "إدارة مرتجعات المبيعات", module: "returns" },
+        ]
+      },
+
+      // Customer Management
+      {
+        key: "ar-customers",
+        label: "إدارة العملاء",
+        icon: "user-plus",
+        items: [
+          { href: "/sales/ar_customers", icon: "user-plus", label: "العملاء", description: "قاعدة بيانات العملاء", module: "ar_customers" },
+        ]
+      },
+
+      // Revenue Management and Receipts
+      {
+        key: "revenues",
+        label: "إدارة الإيرادات و سندات القبض",
+        icon: "trending-up",
+        items: [
+          { href: "/sales/revenues", icon: "trending-up", label: "الإيرادات", description: "تسجيل الإيرادات المتنوعة", module: "revenues" },
+          { href: "/sales/receipts", icon: "book-open", label: "سندات القبض", description: "مقبوضات أرصدة العملاء", module: "ar_customers" },
+        ]
+      },
+      // Internal Transactions Management
+      {
+        key: "internal-transactions",
+        label: "إدارة المعاملات الداخلية",
+        icon: "book-open",
+        items: [
+          { href: "/purchases/requests", icon: "book-open", label: "طلبات الشراء", description: "إدارة طلبات الشراء أو النقل المخزني وحالتها", module: "ar_customers" },
+          { href: "/system/dashboard", icon: "cart", label: "عروض الأسعار", description: "إنشاء عروض الأسعار (قريباً)", module: "dashboard" },
+          { href: "/system/dashboard", icon: "cart", label: "أوامر البيع", description: "إدارة طلبات البيع (قريباً)", module: "dashboard" },
+          //{ href: "/system/dashboard", icon: "tags", label: "قوائم الأسعار", description: "إدارة الأسعار والخصومات (قريباً)", module: "dashboard" },
+        ]
+      },
+      // Marketing and Promotion Management Component
+      {
+        key: "promotion-process",
+        label: "التسويق والمروجين",
+        icon: "award",
+        items: [
+          { href: "/representatives", icon: "tags", label: "المناديب والمسوقين", description: "إدارة المناديب والمسوقين", module: "representatives" },
+          { href: "/system/dashboard", icon: "coins", label: "العمولات", description: "عمولات المبيعات (قريباً)", module: "dashboard" },
+        ]
+      },
       { href: "/system/templates", icon: "coins", label: "إدارة القوالب", description: "إدارة قوالب التصاميم والفواتير وكشوفات الحساب", module: "dashboard" },
       {
         key: "sales-groups-number-range-interval",
@@ -96,14 +138,49 @@ export const navigationGroups: NavigationGroup[] = [
     label: "المشتريات والموردين",
     icon: "shopping-bag",
     items: [
-      { href: "/purchases/purchases", icon: "shopping-bag", label: "فواتير المشتريات", description: "إدارة فواتير الشراء", module: "purchases" },
-      { href: "/purchases/expenses", icon: "credit-card", label: "المصروفات", description: "تسجيل المصروفات التشغيلية", module: "expenses" },
-      { href: "/purchases/ap_suppliers", icon: "truck", label: "الموردين", description: "قاعدة بيانات الموردين", module: "ap_suppliers" },
-      { href: "/finance/ap_ledger", icon: "hand-coins", label: "أستاذ الموردين", description: "حسابات الدفع والأرصدة", module: "ap_suppliers" },
-      { href: "/purchases/requests", icon: "cart", label: "طلبات الشراء", description: "إنشاء أو استعراض طلبات الشراء", module: "dashboard" },
-      { href: "/system/dashboard", icon: "cart", label: "أوامر الشراء", description: "إدارة أوامر الشراء (قريباً)", module: "dashboard" },
-      { href: "/purchases/returns", icon: "history", label: "مردودات المشتريات", description: "إدارة مردودات المشتريات", module: "purchases" },
-      { href: "/system/dashboard", icon: "calendar", label: "جدول الدفعات", description: "جدولة المدفوعات (قريباً)", module: "dashboard" },
+      // Direct purchases management component for goods and products
+      {
+        key: "direct-purchases-management",
+        label: "مشتريات السلع والمنتجات",
+        icon: "shopping-bag",
+        items: [
+          { href: "/purchases/purchases", icon: "shopping-bag", label: "فواتير المشتريات", description: "إدارة فواتير الشراء", module: "purchases" },
+        ]
+      },
+      // Expenses Management
+      {
+        key: "expenses-management",
+        label: "المصروفات وسندات الصرف",
+        icon: "credit-card",
+        items: [
+          { href: "/purchases/expenses", icon: "credit-card", label: "المصروفات", description: "تسجيل المصروفات التشغيلية", module: "expenses" },
+          { href: "/purchases/receipts", icon: "book-open", label: "سندات الصرف", description: "صرف أرصدة الموردين", module: "ap_suppliers" },//receipts
+          { href: "/purchases/returns", icon: "history", label: "مردودات المشتريات", description: "إدارة مردودات المشتريات", module: "purchases" },
+        ]
+      },
+      // Supplier Management
+      {
+        key: "supplier-management",
+        label: "إدارة الموردين",
+        icon: "truck",
+        items: [
+          { href: "/purchases/ap_suppliers", icon: "truck", label: "الموردين", description: "قاعدة بيانات الموردين", module: "ap_suppliers" },
+          { href: "/finance/ap_ledger", icon: "hand-coins", label: "أستاذ الموردين", description: "حسابات الدفع والأرصدة", module: "ap_suppliers" },
+        ]
+      },
+      // Internal Transactions Management
+      {
+        key: "internal-transactions-management",
+        label: "إدارة المعاملات الداخلية",
+        icon: "refresh",
+        items: [
+          { href: "/purchases/requests", icon: "cart", label: "طلبات الشراء", description: "إنشاء أو استعراض طلبات الشراء", module: "dashboard" },
+          { href: "/system/dashboard", icon: "cart", label: "أوامر الشراء", description: "إدارة أوامر الشراء (قريباً)", module: "dashboard" },
+          { href: "/system/dashboard", icon: "calendar", label: "جدول الدفعات", description: "جدولة المدفوعات (قريباً)", module: "dashboard" },
+        ]
+      },
+
+      // Purchases Groups Number Range Interval
       {
         key: "purchases-groups-number-range-interval",
         label: "التجميع ونطاقات الترقيم",

@@ -7,7 +7,7 @@ import { getStoredUser, User } from "@/lib/auth";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { Role, Department } from "../../types";
-import { Label, Select, TextInput, EmailInput, PasswordInput, Button } from "@/components/ui";
+import { Label, Select, TextInput, EmailInput, PasswordInput, Button, SearchableSelect } from "@/components/ui";
 
 /**
  * Add Employee Page Component.
@@ -90,6 +90,27 @@ export default function AddEmployeePage() {
         }
     };
 
+    useEffect(() => {
+        const fetchNextNumber = async () => {
+            if (selectedGroup && nrObjectId && !formData.employee_code) {
+                try {
+                    const numRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.NEXT_NUMBER, {
+                        method: 'POST',
+                        body: JSON.stringify({ object_id: nrObjectId, group_id: selectedGroup })
+                    });
+
+                    const generatedNumber = numRes.number || numRes.data?.number;
+                    if (numRes.success && generatedNumber) {
+                        setFormData(prev => ({ ...prev, employee_code: generatedNumber }));
+                    }
+                } catch (error) {
+                    console.error("Failed to generate numbering code", error);
+                }
+            }
+        };
+        fetchNextNumber();
+    }, [selectedGroup, nrObjectId]);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -98,25 +119,7 @@ export default function AddEmployeePage() {
         e.preventDefault();
         setIsLoading(true);
 
-        let finalCode = formData.employee_code;
-        if (!finalCode && selectedGroup && nrObjectId) {
-            try {
-                const numRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.NEXT_NUMBER, {
-                    method: 'POST',
-                    body: JSON.stringify({ object_id: nrObjectId, group_id: selectedGroup })
-                });
-                if (numRes.success && numRes.data?.number) {
-                    finalCode = numRes.data.number;
-                }
-            } catch (error) {
-                console.error("Failed to generate numbering code", error);
-                alert("فشل في توليد الرقم الوظيفي");
-                setIsLoading(false);
-                return;
-            }
-        }
-
-        const submitData = { ...formData, employee_code: finalCode };
+        const submitData = { ...formData };
 
         try {
             const res = await fetchAPI(API_ENDPOINTS.HR.EMPLOYEES.BASE, {
@@ -182,13 +185,15 @@ export default function AddEmployeePage() {
                                 placeholder={nrGroups.length > 0 ? "يتم التوليد تلقائيا..." : "أدخل الرقم"}
                             />
                             {nrGroups.length > 0 && (
-                                <Select
-                                    label="مجموعة الترقيم"
-                                    name="nr_group"
-                                    value={selectedGroup}
-                                    onChange={(e) => setSelectedGroup(e.target.value)}
-                                    options={nrGroups.map(grp => ({ value: grp.id.toString(), label: grp.name }))}
-                                />
+                                <div className="form-group" style={{ flex: 1 }}>
+                                    <Label>مجموعة الترقيم</Label>
+                                    <SearchableSelect
+                                        options={nrGroups.map(grp => ({ value: grp.id.toString(), label: grp.name }))}
+                                        value={selectedGroup}
+                                        onChange={(val) => setSelectedGroup(val ? val.toString() : "")}
+                                        placeholder="اختر مجموعة الترقيم"
+                                    />
+                                </div>
                             )}
                             <Select
                                 label="المسمى الوظيفي"

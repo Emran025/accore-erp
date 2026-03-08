@@ -77,6 +77,27 @@ export default function SuppliersPage() {
         init();
     }, [loadSuppliers]);
 
+    useEffect(() => {
+        const fetchNextNumber = async () => {
+            if (formDialog && !selectedSupplier && selectedGroup && nrObjectId && !formData.supplier_code) {
+                try {
+                    const numRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.NEXT_NUMBER, {
+                        method: 'POST',
+                        body: JSON.stringify({ object_id: nrObjectId, group_id: selectedGroup })
+                    });
+
+                    const generatedNumber = numRes.number || numRes.data?.number;
+                    if (numRes.success && generatedNumber) {
+                        setFormData(prev => ({ ...prev, supplier_code: generatedNumber }));
+                    }
+                } catch (error) {
+                    console.error("Failed to generate numbering code", error);
+                }
+            }
+        };
+        fetchNextNumber();
+    }, [selectedGroup, nrObjectId, formDialog, selectedSupplier]);
+
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setSearchTerm(value);
@@ -110,26 +131,7 @@ export default function SuppliersPage() {
             return;
         }
 
-        let finalCode = formData.supplier_code;
-
-        // Auto-generate code if empty and creating new
-        if (!selectedSupplier && !finalCode && selectedGroup && nrObjectId) {
-            try {
-                const numRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.NEXT_NUMBER, {
-                    method: 'POST',
-                    body: JSON.stringify({ object_id: nrObjectId, group_id: selectedGroup })
-                });
-                if (numRes.success && numRes.data?.number) {
-                    finalCode = numRes.data.number;
-                }
-            } catch (error) {
-                console.error("Failed to generate numbering code", error);
-                showToast("فشل في توليد كود المورد", "error");
-                return;
-            }
-        }
-
-        const submitData = { ...formData, supplier_code: finalCode };
+        const submitData = { ...formData };
 
         const success = await saveSupplier(submitData, selectedSupplier?.id);
         if (success) {
