@@ -9,7 +9,7 @@ import { Select } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getIcon } from "@/lib/icons";
 import { PageSubHeader } from "@/components/layout";
-import { TaxAuthority, ZatcaSettings } from "../types";
+import { TaxAuthority, ZatcaSettings } from "@/types";
 
 export function ZatcaSettingsTab() {
     const [authority, setAuthority] = useState<TaxAuthority | null>(null);

@@ -4,7 +4,7 @@ import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { showToast, Table, Column } from "@/components/ui";
 import { formatDateTime } from "@/lib/utils";
-import { Session } from "../types";
+import { Session } from "@/types";
 
 export function SessionsTab() {
   const [sessions, setSessions] = useState<Session[]>([]);

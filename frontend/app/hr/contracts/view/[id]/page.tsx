@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { Button, showToast } from "@/components/ui";
-import { EmployeeContract } from "@/app/hr/types";
+import { EmployeeContract } from "@/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 

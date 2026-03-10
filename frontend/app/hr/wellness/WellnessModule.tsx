@@ -14,7 +14,7 @@ import { getIcon } from "@/lib/icons";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useEmployeeStore } from "@/stores/useEmployeeStore";
 
-import type { Employee, WellnessProgram, WellnessParticipation } from "../types";
+import type { Employee, WellnessProgram, WellnessParticipation } from "@/types";
 
 const programTypeLabels: Record<string, string> = { steps_challenge: "تحدي الخطوات", health_challenge: "تحدي صحي", fitness: "لياقة بدنية", nutrition: "تغذية", mental_health: "صحة نفسية", other: "أخرى" };
 const participationStatusLabels: Record<string, string> = { enrolled: "مسجل", active: "نشط", completed: "مكتمل", dropped: "انسحب" };

@@ -1,6 +1,6 @@
 
 import { formatCurrency } from "@/lib/utils";
-import { BalanceSheetView, APIBalanceSheet, APIAccountSummary } from "../types";
+import { BalanceSheetView, APIBalanceSheet, APIAccountSummary } from "@/types";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { Button, showToast } from "@/components/ui";

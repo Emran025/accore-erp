@@ -11,7 +11,7 @@ import { PageSubHeader } from "@/components/layout";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useEmployeeStore } from "@/stores/useEmployeeStore";
-import type { Course, Enrollment, Employee } from "../types";
+import type { Course, Enrollment, Employee } from "@/types";
 
 
 

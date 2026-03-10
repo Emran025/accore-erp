@@ -9,7 +9,7 @@ import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { User, getStoredUser, getStoredPermissions, Permission, canAccess, checkAuth } from "@/lib/auth";
 import { Icon } from "@/lib/icons";
-import { Supplier } from "./types";
+import { Supplier } from "@/types";
 import { useSupplierStore } from "@/stores/useSupplierStore";
 
 export default function SuppliersPage() {

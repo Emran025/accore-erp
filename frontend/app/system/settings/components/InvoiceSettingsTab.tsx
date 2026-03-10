@@ -5,7 +5,7 @@ import { getSetting } from "@/lib/settings";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { showToast, Dialog } from "@/components/ui";
 import { getIcon } from "@/lib/icons";
-import { InvoiceSettings, StoreSettings } from "../types";
+import { InvoiceSettings, StoreSettings } from "@/types";
 import { generateInvoiceHTML } from "@/lib/invoice-utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/Textarea";

@@ -12,7 +12,7 @@ import { API_ENDPOINTS } from "@/lib/endpoints";
 import { getIcon } from "@/lib/icons";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useEmployeeStore } from "@/stores/useEmployeeStore";
-import { Employee, Workflow } from "../types";
+import { Employee, Workflow } from "@/types";
 
 const workflowTypeLabels: Record<string, string> = { onboarding: "توظيف", offboarding: "إنهاء خدمة" };
 const statusLabels: Record<string, string> = { not_started: "لم يبدأ", in_progress: "قيد التنفيذ", completed: "مكتمل", cancelled: "ملغي", pending: "قيد الانتظار", blocked: "محظور" };

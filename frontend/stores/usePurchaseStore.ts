@@ -1,6 +1,6 @@
 import { createCRUDStore } from './factories/createCRUDStore';
 import { API_ENDPOINTS } from '@/lib/endpoints';
-import { Purchase } from '@/app/purchases/purchases/types';
+import { Purchase } from '@/types';
 
 /**
  * Zustand store for Purchases.

@@ -6,9 +6,9 @@ import {
     InvoiceTableColumn,
     Button,
 } from "@/components/ui";
-import { TabSubNavigation } from "../../../../components/navigation/TabNavigation";
+import { TabSubNavigation } from "@/components/navigation/TabNavigation";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
-import { LedgerTransaction } from "../../../finance/ar_ledger/types";
+import { LedgerTransaction } from "@/types";
 
 
 interface ReturnsTableProps {

@@ -7,10 +7,10 @@ import { TextInput } from "@/components/ui/TextInput";
 import { Textarea } from "@/components/ui/Textarea";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { ExpatRecord } from "@/app/hr/types";
+import { ExpatRecord } from "@/types";
 import { PageSubHeader } from "@/components/layout";
 import { useEmployeeStore } from "@/stores/useEmployeeStore";
-import { Employee } from "@/app/hr/types";
+import { Employee } from "@/types";
 
 interface ExpatFormProps {
     record?: ExpatRecord;

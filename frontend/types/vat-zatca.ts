@@ -42,6 +42,7 @@ export interface TaxAuthority {
     tax_types?: TaxType[];
 }
 
+
 export interface ZatcaSettings {
     zatca_enabled: boolean;
     zatca_environment: 'sandbox' | 'production' | 'simulation' | '';

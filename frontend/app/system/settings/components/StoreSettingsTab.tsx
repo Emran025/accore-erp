@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { showToast } from "@/components/ui";
-import { StoreSettings } from "../types";
+import { StoreSettings } from "@/types";
 import { TextInput } from "@/components/ui/TextInput";
 import { Textarea } from "@/components/ui/Textarea";
 

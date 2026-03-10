@@ -11,7 +11,7 @@ import { formatDate } from "@/lib/utils";
 import { PageSubHeader } from "@/components/layout";
 import { useEmployeeStore } from "@/stores/useEmployeeStore";
 import { useAuthStore } from "@/stores/useAuthStore";
-import type { Employee, EhsIncident, EmployeeHealthRecord, PpeRecord } from "../types";
+import type { Employee, EhsIncident, EmployeeHealthRecord, PpeRecord } from "@/types";
 
 const incidentTypeLabels: Record<string, string> = { accident: "حادث", near_miss: "شبه حادث", injury: "إصابة", illness: "مرض", property_damage: "ضرر ممتلكات", environmental: "بيئي", other: "أخرى" };
 const severityLabels: Record<string, string> = { minor: "طفيف", moderate: "متوسط", serious: "خطير", critical: "حرج", fatal: "قاتل" };

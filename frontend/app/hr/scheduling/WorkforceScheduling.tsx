@@ -9,7 +9,7 @@ import { formatDate } from "@/lib/utils";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { getIcon } from "@/lib/icons";
 import { useAuthStore } from "@/stores/useAuthStore";
-import type { Schedule } from "../types";
+import type { Schedule } from "@/types";
 
 
 const statusLabels: Record<string, string> = {

@@ -6,7 +6,7 @@ import { MainLayout } from "@/components/layout";
 
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { Role, Department, Employee } from "../../types";
+import { Role, Department, Employee } from "@/types";
 import { Label, Select, TextInput, EmailInput, PasswordInput, Button, SearchableSelect, StepNavigation, Step } from "@/components/ui";
 import DocumentsTab from "../components/DocumentsTab";
 

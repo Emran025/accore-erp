@@ -1,6 +1,6 @@
 import { FilterSection, FilterGroup } from "@/components/ui";
 import { getIcon } from "@/lib/icons";
-import { Supplier } from "../types";
+import { Supplier } from "@/types";
 
 interface SupplierInfoSectionProps {
     supplier: Supplier | null;

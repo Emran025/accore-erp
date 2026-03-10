@@ -11,7 +11,7 @@ import { formatDate } from "@/lib/utils";
 import { PageSubHeader } from "@/components/layout";
 import { useEmployeeStore } from "@/stores/useEmployeeStore";
 import { useAuthStore } from "@/stores/useAuthStore";
-import type { Employee, EmployeeRelationsCase, DisciplinaryAction } from "../types";
+import type { Employee, EmployeeRelationsCase, DisciplinaryAction } from "@/types";
 
 
 const caseTypeLabels: Record<string, string> = {

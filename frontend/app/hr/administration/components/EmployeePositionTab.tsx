@@ -6,7 +6,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useEmployeeStore } from "@/stores/useEmployeeStore";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { Position } from "@/app/hr/types";
+import { Position } from "@/types";
 import { PageSubHeader } from "@/components/layout";
 import { getIcon } from "@/lib/icons";
 import { Label } from "@/components/ui/Label";

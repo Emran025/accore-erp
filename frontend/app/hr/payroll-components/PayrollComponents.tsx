@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { ActionButtons, Table, Column, Dialog, showToast, Button, Label } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { PayrollComponent } from "../types";
+import { PayrollComponent } from "@/types";
 import { formatCurrency } from "@/lib/utils";
 import { PageSubHeader } from "@/components/layout";
 import { getIcon } from "@/lib/icons";

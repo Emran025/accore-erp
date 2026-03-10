@@ -9,7 +9,7 @@ import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import { PageSubHeader } from "@/components/layout";
-import type { PostPayrollIntegration } from "../types";
+import type { PostPayrollIntegration } from "@/types";
 
 const integrationTypeLabels: Record<string, string> = { bank_file: "ملف بنكي", gl_entry: "قيود محاسبية", third_party_pay: "مدفوعات طرف ثالث", garnishment: "حجز راتب" };
 const statusLabels: Record<string, string> = { pending: "معلق", processing: "قيد المعالجة", completed: "مكتمل", failed: "فشل", reconciled: "تمت المطابقة" };

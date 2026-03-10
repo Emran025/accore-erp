@@ -14,8 +14,8 @@ import { LedgerStatsCards } from "./components/LedgerStatsCards";
 import { LedgerTable } from "./components/LedgerTable";
 import { LedgerFilterDialog } from "./components/LedgerFilterDialog";
 import { TransactionFormDialog } from "./components/TransactionFormDialog";
-import { InvoiceDetailsDialog } from "./components/InvoiceDetailsDialog";
-import { LedgerTransaction, Pagination, LedgerStats, Customer, DetailedInvoice } from "./types";
+import { InvoiceDetailsDialog } from "@/components/ui";
+import { LedgerTransaction, Pagination, LedgerStatsCustomer, Customer, DetailedInvoiceCustomers } from "@/types";
 
 function ARLedgerPageContent() {
   const router = useRouter();
@@ -25,7 +25,7 @@ function ARLedgerPageContent() {
   const [user, setUser] = useState<User | null>(null);
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [transactions, setTransactions] = useState<LedgerTransaction[]>([]);
-  const [stats, setStats] = useState<LedgerStats>({
+  const [stats, setStats] = useState<LedgerStatsCustomer>({
     total_debit: 0,
     total_credit: 0,
     total_returns: 0,
@@ -60,7 +60,7 @@ function ARLedgerPageContent() {
   const [confirmDialog, setConfirmDialog] = useState(false);
   const [deleteTransactionId, setDeleteTransactionId] = useState<number | null>(null);
   const [restoreTransactionId, setRestoreTransactionId] = useState<number | null>(null);
-  const [selectedInvoice, setSelectedInvoice] = useState<DetailedInvoice | null>(null);
+  const [selectedInvoice, setSelectedInvoice] = useState<DetailedInvoiceCustomers | null>(null);
 
   // Returns state
   const [selectedReturnItems, setSelectedReturnItems] = useState<SelectedItem[]>([]);
@@ -128,7 +128,7 @@ function ARLedgerPageContent() {
 
           setTransactions(mappedTransactions);
           if (response.stats) {
-            setStats(response.stats as LedgerStats);
+            setStats(response.stats as LedgerStatsCustomer);
           }
 
           if (response.pagination) {
@@ -223,7 +223,7 @@ function ARLedgerPageContent() {
     try {
       const response = await fetchAPI(`${API_ENDPOINTS.SALES.INVOICE_DETAILS}?id=${id}`);
       if (response.success && response.data) {
-        setSelectedInvoice(response.data as DetailedInvoice);
+        setSelectedInvoice(response.data as DetailedInvoiceCustomers);
         setViewDialog(true);
       }
     } catch {
@@ -242,7 +242,7 @@ function ARLedgerPageContent() {
     try {
       const response = await fetchAPI(endpoint);
       if (response.success && response.data) {
-        const data = response.data as DetailedInvoice;
+        const data = response.data as DetailedInvoiceCustomers;
         return (data.items as SelectableInvoiceItem[]) || [];
       }
       return [];

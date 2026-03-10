@@ -3,7 +3,7 @@ import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { showToast, Dialog, ConfirmDialog } from "@/components/ui";
 import { getIcon } from "@/lib/icons";
-import { Role, RolePermission, ModuleData } from "../../../system/settings/types";
+import { Role, RolePermission, ModuleData } from "@/types";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export function RolesTab() {
@@ -27,7 +27,8 @@ export function RolesTab() {
         // Map backend fields to frontend Role interface
         const mappedRoles = response.data.map((r: any) => ({
           id: r.id,
-          name: r.role_name_ar || r.role_key,
+          role_name_en: r.role_name_en|| r.role_key,
+          role_name_ar: r.role_name_ar,
           description: r.description,
           permissions: [] // Will be loaded on selection
         }));
@@ -232,14 +233,14 @@ export function RolesTab() {
                 >
                   <div className="role-info">
                     <h4>
-                      {role.name}
+                      {role.role_name_ar}
                       {/* Add system badge if needed, though interface doesn't strictly have is_system yet */}
-                      {role.name === 'admin' && <span className="badge-system">نظام</span>}
+                      {role.role_name_ar === 'admin' && <span className="badge-system">نظام</span>}
                     </h4>
                     <p>{role.description || "لا يوجد وصف"}</p>
                   </div>
                   <div style={{ display: "flex", gap: "8px" }}>
-                    {role.name !== "admin" && (
+                    {role.role_name_ar !== "admin" && (
                       <button
                         className="icon-btn delete"
                         onClick={(e) => {
@@ -274,7 +275,7 @@ export function RolesTab() {
                 <div className="title-with-icon">
                   <i className="fas fa-user-tag text-primary" style={{ fontSize: "1.5rem" }}></i>
                   <div>
-                    <h3 style={{ margin: 0 }}>{selectedRole.name}</h3>
+                    <h3 style={{ margin: 0 }}>{selectedRole.role_name_ar}</h3>
                     <p className="text-muted" style={{ margin: 0, fontSize: "0.85rem" }}>
                       {selectedRole.description || "لا يوجد وصف"}
                     </p>

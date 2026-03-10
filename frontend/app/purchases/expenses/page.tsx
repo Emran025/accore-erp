@@ -8,6 +8,7 @@ import { API_ENDPOINTS } from "@/lib/endpoints";
 import { formatCurrency, formatDate, translateExpenseCategory } from "@/lib/utils";
 import { User, getStoredUser, getStoredPermissions, Permission, canAccess } from "@/lib/auth";
 import { getIcon } from "@/lib/icons";
+import { Supplier } from "@/types";
 
 interface Expense {
   id: number;
@@ -18,11 +19,6 @@ interface Expense {
   created_at: string;
   payment_type: "cash" | "credit";
   supplier_id?: number;
-}
-
-interface Supplier {
-  id: number;
-  name: string;
 }
 
 const expenseCategories = [

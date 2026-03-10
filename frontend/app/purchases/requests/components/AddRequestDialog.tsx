@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Dialog, SearchableSelect, SelectOption, Button, showToast } from "@/components/ui";
-import { Product } from "../types";
+import { Product } from "@/types";
 
 interface AddRequestDialogProps {
     isOpen: boolean;

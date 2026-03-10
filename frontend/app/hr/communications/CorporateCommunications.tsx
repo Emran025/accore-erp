@@ -11,7 +11,7 @@ import { API_ENDPOINTS } from "@/lib/endpoints";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { formatDate } from "@/lib/utils";
 import { getIcon } from "@/lib/icons";
-import type { CorporateAnnouncement, PulseSurvey } from "../types";
+import type { CorporateAnnouncement, PulseSurvey } from "@/types";
 
 const priorityLabels: Record<string, string> = { low: "منخفض", normal: "عادي", high: "مرتفع", urgent: "عاجل" };
 const priorityBadges: Record<string, string> = { low: "badge-secondary", normal: "badge-info", high: "badge-warning", urgent: "badge-danger" };

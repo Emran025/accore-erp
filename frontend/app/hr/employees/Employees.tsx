@@ -9,7 +9,7 @@ import { useEmployeeStore } from "@/stores/useEmployeeStore";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { PageSubHeader } from "@/components/layout";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { Employee } from "../types";
+import { Employee } from "@/types";
 import { getIcon } from "@/lib/icons";
 
 export function Employees() {

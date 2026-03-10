@@ -7,7 +7,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { PageSubHeader } from "@/components/layout";
-import { DocumentTemplate, Employee } from "@/app/hr/types";
+import { DocumentTemplate, Employee } from "@/types";
 import { useEmployeeStore } from "@/stores/useEmployeeStore";
 import { templateTypeLabels, templateTypeBadgeClass } from "./templates-data";
 

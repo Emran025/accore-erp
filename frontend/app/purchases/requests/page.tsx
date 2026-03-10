@@ -6,7 +6,7 @@ import { Button, ConfirmDialog, showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { User, getStoredUser, getStoredPermissions, Permission, canAccess, checkAuth } from "@/lib/auth";
-import { PurchaseRequest, Product } from "./types";
+import { PurchaseRequest, Product } from "@/types";
 import { RequestsTable } from "./components/RequestsTable";
 import { AddRequestDialog } from "./components/AddRequestDialog";
 

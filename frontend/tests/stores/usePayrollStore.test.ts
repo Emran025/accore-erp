@@ -171,7 +171,7 @@ describe('usePayrollStore', () => {
 
     describe('toggleItemStatus', () => {
         it('toggles item and reloads cycle details', async () => {
-            const item = { id: 1, payroll_cycle_id: 5, status: 'active' } as unknown as import('@/app/hr/types').PayrollItem;
+            const item = { id: 1, payroll_cycle_id: 5, status: 'active' } as unknown as import('@/types').PayrollItem;
             mockedFetchAPI
                 .mockResolvedValueOnce({ status: 'on_hold' })  // toggle
                 .mockResolvedValueOnce({ data: [] });           // reload
@@ -221,13 +221,13 @@ describe('usePayrollStore', () => {
 
     describe('setSelectedCycle', () => {
         it('sets selected cycle', () => {
-            const cycle = { id: 1, status: 'draft' } as unknown as import('@/app/hr/types').PayrollCycle;
+            const cycle = { id: 1, status: 'draft' } as unknown as import('@/types').PayrollCycle;
             usePayrollStore.getState().setSelectedCycle(cycle);
             expect(usePayrollStore.getState().selectedCycle).toEqual(cycle);
         });
 
         it('clears selected cycle', () => {
-            usePayrollStore.getState().setSelectedCycle({ id: 1 } as unknown as import('@/app/hr/types').PayrollCycle);
+            usePayrollStore.getState().setSelectedCycle({ id: 1 } as unknown as import('@/types').PayrollCycle);
             usePayrollStore.getState().setSelectedCycle(null);
             expect(usePayrollStore.getState().selectedCycle).toBeNull();
         });

@@ -12,7 +12,7 @@ import { formatDate, formatCurrency } from "@/lib/utils";
 import { getIcon } from "@/lib/icons";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useEmployeeStore } from "@/stores/useEmployeeStore";
-import type { Employee, TravelRequest, TravelExpense } from "../types";
+import type { Employee, TravelRequest, TravelExpense } from "@/types";
 
 const requestStatusLabels: Record<string, string> = {
     draft: "مسودة",
@@ -61,7 +61,7 @@ export function TravelExpenses() {
     const { allEmployees: employees, loadAllEmployees } = useEmployeeStore();
 
     const { canAccess } = useAuthStore();
-    
+
     // Travel Requests state
     const [requests, setRequests] = useState<TravelRequest[]>([]);
     const [reqLoading, setReqLoading] = useState(false);

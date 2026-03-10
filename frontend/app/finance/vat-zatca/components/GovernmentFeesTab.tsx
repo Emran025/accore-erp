@@ -9,7 +9,7 @@ import { TextInput } from "@/components/ui/TextInput";
 import { Select } from "@/components/ui/select";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { PageSubHeader } from "@/components/layout";
-import { TaxType, TaxAuthority, Account } from "../types";
+import { TaxType, TaxAuthority, Account } from "@/types";
 
 export function GovernmentFeesTab() {
     const { canAccess } = useAuthStore();

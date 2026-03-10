@@ -5,7 +5,7 @@ import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { showToast, Alert } from "@/components/ui";
 import { ConfirmDialog } from "@/components/ui/Dialog";
-import { CurrencyPolicy } from "../types";
+import { CurrencyPolicy } from "@/types";
 
 export function CurrencyPolicyTab() {
     const [policies, setPolicies] = useState<CurrencyPolicy[]>([]);

@@ -5,7 +5,7 @@ import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { showToast, Dialog, Table, Column, ActionButtons } from "@/components/ui";
 import { ConfirmDialog } from "@/components/ui/Dialog";
-import { Currency, CurrencyDenomination, PolicyStatus } from "../types";
+import { Currency, CurrencyDenomination, PolicyStatus } from "@/types";
 import { getIcon } from "@/lib/icons";
 import { Switch } from "@/components/ui/switch";
 import { TextInput } from "@/components/ui/TextInput";

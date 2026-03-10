@@ -12,7 +12,7 @@ import { formatDate, formatCurrency } from "@/lib/utils";
 import { PageSubHeader } from "@/components/layout";
 import { useEmployeeStore } from "@/stores/useEmployeeStore";
 import { useAuthStore } from "@/stores/useAuthStore";
-import type { Employee, EmployeeLoan } from "../types";
+import type { Employee, EmployeeLoan } from "@/types";
 
 const loanTypeLabels: Record<string, string> = {
     salary_advance: "سلفة راتب", housing: "قرض إسكان", car: "قرض سيارة",

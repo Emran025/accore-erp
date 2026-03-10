@@ -2,13 +2,14 @@ import { SelectableInvoice, SelectableInvoiceItem } from "@/components/ui";
 
 export interface LedgerTransaction extends SelectableInvoice {
     transaction_date: string;
-    type: "invoice" | "payment" | "return";
+    type: "invoice" | "payment" | "return" | "receipt" | "commission" | "adjustment"
     description?: string;
     amount: number;
     created_by?: string;
     is_deleted: boolean;
     reference_type?: string;
     reference_id?: number;
+    sales_representative_id?: number;
 }
 
 export interface Pagination {
@@ -16,7 +17,7 @@ export interface Pagination {
     total_pages: number;
     current_page: number;
 };
-export interface LedgerStats {
+export interface LedgerStatsSuppliers {
     total_debit: number;
     total_credit: number;
     total_returns: number;
@@ -27,13 +28,22 @@ export interface LedgerStats {
 
 export interface Supplier {
     id: number;
+    supplier_code?: string;
     name: string;
     phone?: string;
+    email?: string;
+    address?: string;
     tax_number?: string;
+    credit_limit: number;
+    payment_terms: number;
+    current_balance: number;
+    created_at: string;
 }
 
+
+
 // This interface is for the detailed view of a purchase invoice
-export interface DetailedInvoice extends SelectableInvoice {
+export interface DetailedInvoiceSuppliers extends SelectableInvoice {
     voucher_number?: string;
     supplier_name?: string;
     supplier_phone?: string;

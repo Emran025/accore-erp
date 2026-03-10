@@ -6,7 +6,7 @@ import { MainLayout } from "@/components/layout";
 import { getStoredUser, User } from "@/lib/auth";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { Role, Department, Employee } from "../../../types";
+import { Role, Department, Employee } from "@/types";
 import { TabNavigation, Select, TextInput, EmailInput, PasswordInput, Button, SearchableSelect, Label } from "@/components/ui";
 import dynamic from "next/dynamic";
 

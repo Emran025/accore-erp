@@ -8,7 +8,7 @@ import { API_ENDPOINTS } from "@/lib/endpoints";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { User, getStoredUser, getStoredPermissions, Permission, canAccess, checkAuth } from "@/lib/auth";
 import { Icon } from "@/lib/icons";
-import { Product, Purchase, PurchaseRequest, Supplier } from "./types";
+import { Product, Purchase, PurchaseRequest, Supplier } from "@/types";
 import { usePurchaseStore } from "@/stores/usePurchaseStore";
 
 /**
@@ -325,43 +325,43 @@ export default function PurchasesPage() {
         <MainLayout >
 
             <div className="sales-card animate-fade">
-            <PageSubHeader
-                title=""
-                user={user}
-                searchInput={
-                    <SearchableSelect
-                        options={[]}
-                        value={null}
-                        onChange={() => { }}
-                        onSearch={(val) => {
-                            setSearchTerm(val);
-                            loadPurchases(1, val);
-                        }}
-                        placeholder="بحث سريع..."
-                        className="header-search-bar"
-                    />
-                }
-                actions={
-                    <>
-                        <Button
-                            variant="secondary"
-                            icon="list"
-                            onClick={openRequestsDialog}
-                        >
-                            طلبيات الشراء
-                        </Button>
-                        {canAccess(permissions, "purchases", "create") && (
+                <PageSubHeader
+                    title=""
+                    user={user}
+                    searchInput={
+                        <SearchableSelect
+                            options={[]}
+                            value={null}
+                            onChange={() => { }}
+                            onSearch={(val) => {
+                                setSearchTerm(val);
+                                loadPurchases(1, val);
+                            }}
+                            placeholder="بحث سريع..."
+                            className="header-search-bar"
+                        />
+                    }
+                    actions={
+                        <>
                             <Button
-                                variant="primary"
-                                icon="plus"
-                                onClick={openAddDialog}
+                                variant="secondary"
+                                icon="list"
+                                onClick={openRequestsDialog}
                             >
-                                إضافة مشترى
+                                طلبيات الشراء
                             </Button>
-                        )}
-                    </>
-                }
-            />
+                            {canAccess(permissions, "purchases", "create") && (
+                                <Button
+                                    variant="primary"
+                                    icon="plus"
+                                    onClick={openAddDialog}
+                                >
+                                    إضافة مشترى
+                                </Button>
+                            )}
+                        </>
+                    }
+                />
                 <Table
                     columns={columns}
                     data={purchases}

@@ -1,6 +1,6 @@
 
 import { formatCurrency } from "@/lib/utils";
-import { APIComparative } from "../types";
+import { APIComparative } from "@/types";
 import { fetchAPI } from "@/lib/api";
 import { showToast, FilterSection, DateRangePicker, FilterActions, Button, Table, Column } from "@/components/ui";
 import { useState, useCallback, useEffect } from "react";
@@ -8,7 +8,7 @@ import { useState, useCallback, useEffect } from "react";
 export function ComparativeTab() {
     const [isLoading, setIsLoading] = useState(false);
     const [comparative, setComparative] = useState<APIComparative | null>(null);
-    
+
     const [currentStart, setCurrentStart] = useState("");
     const [currentEnd, setCurrentEnd] = useState("");
     const [previousStart, setPreviousStart] = useState("");

@@ -5,8 +5,8 @@ import { Button, Table, Column, Dialog, showToast, Select } from "@/components/u
 import { useAuthStore } from "@/stores/useAuthStore";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { PermissionTemplate } from "@/app/hr/types";
-import { Role } from "@/app/system/settings/types";
+import { PermissionTemplate } from "@/types";
+import { Role } from "@/types";
 import { PageSubHeader } from "@/components/layout";
 
 export function PermissionTemplatesTab() {
@@ -97,7 +97,7 @@ export function PermissionTemplatesTab() {
                         options={[{ value: "", label: "-- اختر القالب --" }, ...templates.map((t) => ({ value: t.id.toString(), label: t.template_name }))]}
                     />
                     <Select label="الدور *" value={selectedRoleId} onChange={(e) => setSelectedRoleId(e.target.value)}
-                        options={[{ value: "", label: "-- اختر الدور --" }, ...roles.map((r) => ({ value: r.id.toString(), label: r.name }))]}
+                        options={[{ value: "", label: "-- اختر الدور --" }, ...roles.map((r) => ({ value: r.id.toString(), label: r.role_name_en }))]}
                     />
                 </div>
             </Dialog>

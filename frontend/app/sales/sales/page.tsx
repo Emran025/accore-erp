@@ -10,7 +10,7 @@ import { User, getStoredUser, getStoredPermissions, Permission, checkAuth } from
 import { Icon } from "@/lib/icons";
 import { printInvoice } from "@/lib/invoice-utils";
 import { Currency } from "../../finance/currency/types";
-import { PaginatedResponse } from "@/lib/types";
+import { PaginatedResponse } from "@/types/types";
 
 interface GovernmentFee {
     id: number;

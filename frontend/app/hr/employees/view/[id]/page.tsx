@@ -6,7 +6,7 @@ import { MainLayout } from "@/components/layout";
 import { getStoredUser, User } from "@/lib/auth";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { Employee } from "../../../types";
+import { Employee } from "@/types";
 import { TabNavigation, Button } from "@/components/ui";
 import { useRouter } from "next/navigation";
 

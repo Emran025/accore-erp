@@ -8,7 +8,7 @@ import {
 } from "@/components/ui";
 import { TabSubNavigation } from "@/components/navigation/TabNavigation";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
-import { LedgerTransaction } from "../../../finance/ap_ledger/types";
+import { LedgerTransaction } from "@/types";
 
 
 interface ReturnsTableProps {

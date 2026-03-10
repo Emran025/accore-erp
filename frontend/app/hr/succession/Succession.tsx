@@ -10,7 +10,7 @@ import { API_ENDPOINTS } from "@/lib/endpoints";
 import { getIcon } from "@/lib/icons";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useEmployeeStore } from "@/stores/useEmployeeStore";
-import { Employee } from "@/app/hr/types";
+import { Employee } from "@/types";
 
 interface SuccessionPlan {
   id: number; position_title: string; incumbent_id?: number;

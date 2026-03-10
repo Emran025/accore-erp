@@ -8,7 +8,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { PageSubHeader } from "@/components/layout";
-import { BiometricDevice, BiometricSyncLog } from "@/app/hr/types";
+import { BiometricDevice, BiometricSyncLog } from "@/types";
 
 const statusLabels: Record<string, string> = {
     online: "متصل",

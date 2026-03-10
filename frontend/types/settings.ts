@@ -16,22 +16,6 @@ export interface InvoiceSettings {
   terms_text: string;
 }
 
-export interface ZatcaSettings {
-  zatca_enabled: boolean;
-  zatca_environment: 'sandbox' | 'production' | '';
-  zatca_vat_number: string;
-  zatca_org_name: string;
-  zatca_org_unit_name: string;
-  zatca_country_name: string;
-  zatca_common_name: string;
-  zatca_business_category: string;
-  zatca_otp: string;
-  zatca_csr: string;
-  zatca_binary_token: string;
-  zatca_secret: string;
-  zatca_request_id: string;
-}
-
 export interface Session {
   id: number;
   device: string;
@@ -42,9 +26,11 @@ export interface Session {
 
 export interface Role {
   id: number;
-  name: string;
+  role_key?: string;
+  role_name_ar?: string;
+  role_name_en: string;
   description?: string;
-  permissions: RolePermission[];
+  permissions?: RolePermission[];
 }
 
 export interface RolePermission {

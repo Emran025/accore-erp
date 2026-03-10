@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { ActionButtons, Table, Column, Dialog, showToast, Button, SearchableSelect, Label } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { LeaveRequest, Employee } from "../types";
+import { LeaveRequest, Employee } from "@/types";
 import { useEmployeeStore } from "@/stores/useEmployeeStore";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { formatDate } from "@/lib/utils";

@@ -7,7 +7,7 @@ import {
     SelectableInvoiceItem,
     InvoiceTableColumn,
 } from "@/components/ui";
-import { TabSubNavigation } from "../../../../components/navigation/TabNavigation";
+import { TabSubNavigation } from "@/components/navigation/TabNavigation";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { formatCurrency, formatDateTime } from "@/lib/utils";

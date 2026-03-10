@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { PageSubHeader } from "@/components/layout";
-import { Employee } from "../../../../types";
+import { Employee } from "@/types";
 import { Label, Button } from "@/components/ui";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { formatCurrency } from "@/lib/utils";

@@ -12,7 +12,7 @@ import { API_ENDPOINTS } from "@/lib/endpoints";
 import { getIcon } from "@/lib/icons";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useEmployeeStore } from "@/stores/useEmployeeStore";
-import { Employee } from "../types";
+import { Employee } from "@/types";
 
 interface Goal {
   id: number; employee_id: number; employee?: { full_name: string };

@@ -9,13 +9,13 @@ import { API_ENDPOINTS } from "@/lib/endpoints";
 import { parseNumber } from "@/lib/utils";
 import { User, getStoredUser, checkAuth } from "@/lib/auth";
 
-import { LedgerTransaction, LedgerStats, Representative, DetailedInvoice } from "./types";
+import { LedgerTransaction, LedgerStatsRepresentatives, Representative, DetailedInvoiceRepresentatives } from "@/types";
 import { RepresentativeInfoSection } from "./components/RepresentativeInfoSection";
 import { LedgerStatsCards } from "./components/LedgerStatsCards";
 import { LedgerTable } from "./components/LedgerTable";
 import { LedgerFilterDialog } from "./components/LedgerFilterDialog";
 import { TransactionFormDialog } from "./components/TransactionFormDialog";
-import { InvoiceDetailsDialog } from "./components/InvoiceDetailsDialog";
+import { InvoiceDetailsDialog } from "@/components/ui";
 
 function LedgerPageContent() {
     const router = useRouter();
@@ -25,7 +25,7 @@ function LedgerPageContent() {
     const [user, setUser] = useState<User | null>(null);
     const [representative, setRepresentative] = useState<Representative | null>(null);
     const [transactions, setTransactions] = useState<LedgerTransaction[]>([]);
-    const [stats, setStats] = useState<LedgerStats>({
+    const [stats, setStats] = useState<LedgerStatsRepresentatives>({
         total_commissions: 0,
         total_payments: 0,
         total_returns: 0,
@@ -52,7 +52,7 @@ function LedgerPageContent() {
     const [returnDialog, setReturnDialog] = useState(false);
 
     const [deleteTransactionId, setDeleteTransactionId] = useState<number | null>(null);
-    const [selectedInvoice, setSelectedInvoice] = useState<DetailedInvoice | null>(null);
+    const [selectedInvoice, setSelectedInvoice] = useState<DetailedInvoiceRepresentatives | null>(null);
     const [selectedReturnItems, setSelectedReturnItems] = useState<SelectedItem[]>([]);
 
     const [transactionType, setTransactionType] = useState<"payment" | "adjustment">("payment");
@@ -224,7 +224,7 @@ function LedgerPageContent() {
         try {
             const response = await fetchAPI(`${API_ENDPOINTS.SALES.INVOICES}/${id}`);
             if (response.success && response.data) {
-                setSelectedInvoice(response.data as DetailedInvoice);
+                setSelectedInvoice(response.data as DetailedInvoiceRepresentatives);
                 setViewInvoiceDialog(true);
             } else {
                 showToast("حدث خطأ أثناء جلب تفاصيل الفاتورة", "error");

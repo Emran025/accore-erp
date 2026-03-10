@@ -30,6 +30,8 @@
     "eslint-config-next": "^16.1.6",
     "prettier": "^3.0.0",
     "tailwindcss": "^4",
+    "ts-morph": "^27.0.2",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   },
   "overrides": {

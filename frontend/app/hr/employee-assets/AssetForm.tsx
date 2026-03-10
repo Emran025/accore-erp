@@ -8,10 +8,10 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/Textarea";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { EmployeeAsset } from "@/app/hr/types";
+import { EmployeeAsset } from "@/types";
 import { PageSubHeader } from "@/components/layout";
 import { useEmployeeStore } from "@/stores/useEmployeeStore";
-import { Employee } from "@/app/hr/types";
+import { Employee } from "@/types";
 
 interface AssetFormProps {
     asset?: EmployeeAsset;

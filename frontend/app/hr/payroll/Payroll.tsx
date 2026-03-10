@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ActionButtons, Table, Column, Dialog, showToast, Button, Label } from "@/components/ui";
-import { PayrollCycle, Employee } from "../types";
+import { PayrollCycle, Employee } from "@/types";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/utils";
 import { PageSubHeader } from "@/components/layout";
 import { getIcon } from "@/lib/icons";

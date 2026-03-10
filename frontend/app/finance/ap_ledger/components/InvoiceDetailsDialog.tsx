@@ -1,11 +1,11 @@
 import { Dialog } from "@/components/ui";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { DetailedInvoice } from "../types";
+import { DetailedInvoiceSuppliers } from "@/types";
 
 interface InvoiceDetailsDialogProps {
     isOpen: boolean;
     onClose: () => void;
-    selectedInvoice: DetailedInvoice | null;
+    selectedInvoice: DetailedInvoiceSuppliers | null;
 }
 
 export function InvoiceDetailsDialog({ isOpen, onClose, selectedInvoice }: InvoiceDetailsDialogProps) {

@@ -3,7 +3,7 @@ import { devtools } from 'zustand/middleware';
 import { fetchAPI } from '@/lib/api';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import { showToast } from '@/components/ui';
-import { Employee } from '@/app/hr/types';
+import { Employee } from '@/types';
 
 interface EmployeeState {
     // Data

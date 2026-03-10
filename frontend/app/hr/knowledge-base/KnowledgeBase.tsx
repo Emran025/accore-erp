@@ -13,7 +13,7 @@ import { API_ENDPOINTS } from "@/lib/endpoints";
 import { getIcon } from "@/lib/icons";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useEmployeeStore } from "@/stores/useEmployeeStore";
-import type { Employee } from "../types";
+import type { Employee } from "@/types";
 
 interface KnowledgeArticle {
   id: number; title: string; content?: string; category: string;

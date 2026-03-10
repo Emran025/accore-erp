@@ -8,7 +8,7 @@ import { fetchAPI } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 import { PageSubHeader } from "@/components/layout";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { EmployeeAsset } from "@/app/hr/types";
+import { EmployeeAsset } from "@/types";
 
 const assetTypeLabels: Record<string, string> = {
   laptop: "لابتوب",

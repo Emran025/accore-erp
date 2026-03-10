@@ -5,7 +5,7 @@ import { Table, Column, Dialog, showToast, Button, Label } from "@/components/ui
 import { TabNavigation } from "@/components/navigation/TabNavigation";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { PayrollItem, LeaveRequest, AttendanceRecord } from "../types";
+import { PayrollItem, LeaveRequest, AttendanceRecord } from "@/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { PageSubHeader } from "@/components/layout";
 import { TextInput } from "@/components/ui/TextInput";

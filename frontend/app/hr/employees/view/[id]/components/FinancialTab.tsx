@@ -1,6 +1,6 @@
 "use client";
 
-import { Employee, EmployeeAllowance, EmployeeDeduction } from "../../../../types";
+import { Employee, EmployeeAllowance, EmployeeDeduction } from "@/types";
 import { Label, Table, Column } from "@/components/ui";
 import { formatCurrency } from "@/lib/utils";
 

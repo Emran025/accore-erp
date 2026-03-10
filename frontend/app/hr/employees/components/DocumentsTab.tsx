@@ -3,10 +3,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { Employee, EmployeeDocument } from "../../types";
+import { Employee, EmployeeDocument } from "@/types";
 import { Label, Button, Dialog } from "@/components/ui";
 import { PageSubHeader } from "@/components/layout";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { getIcon } from "@/lib/icons";
 
 interface DocumentsTabProps {
     id?: string;
@@ -329,31 +330,35 @@ export default function DocumentsTab({
                                     const typeInfo = DOC_TYPE_MAP[pf.type] || DOC_TYPE_MAP.other;
                                     return (
                                         <div key={idx} className="document-card section-card sales-card" style={{ background: '#fff' }}>
-                                            <div className="document-card-icon" style={{ background: `${typeInfo.color}15`, color: typeInfo.color }}>
-                                                <i className={`fas ${typeInfo.icon}`}></i>
-                                            </div>
-                                            <div className="document-card-content">
-                                                <h5 className="document-card-title">{pf.name}</h5>
-                                                <div className="document-card-meta">
-                                                    <span className="document-type-badge" style={{ background: `${typeInfo.color}15`, color: typeInfo.color }}>
-                                                        {typeInfo.label}
-                                                    </span>
-                                                    <span className="document-date">
-                                                        <i className="fas fa-file"></i>
-                                                        {formatFileSize(pf.file.size)}
-                                                    </span>
+                                            <div key={idx} className="document-sub-card">
+                                                <div className="document-card-actions">
+                                                    <div className="document-card-icon" style={{ background: `${typeInfo.color}15`, color: typeInfo.color }}>
+                                                        <i className={`fas ${typeInfo.icon}`}></i>
+                                                    </div>
+                                                    <div className="document-card-content">
+                                                        <h5 className="document-card-title">{pf.name}</h5>
+                                                        <div className="document-card-meta">
+                                                            <span className="document-type-badge" style={{ background: `${typeInfo.color}15`, color: typeInfo.color }}>
+                                                                {typeInfo.label}
+                                                            </span>
+                                                            <span className="document-date">
+                                                                <i className="fas fa-file"></i>
+                                                                {formatFileSize(pf.file.size)}
+                                                            </span>
+                                                        </div>
+                                                        {pf.document_number && (
+                                                            <p className="document-notes" style={{ fontSize: '0.75rem' }}># {pf.document_number}</p>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                                {pf.document_number && (
-                                                    <p className="document-notes" style={{ fontSize: '0.75rem' }}># {pf.document_number}</p>
-                                                )}
-                                            </div>
-                                            <div className="document-card-actions">
-                                                <button className="doc-action-btn edit" onClick={() => openUploadDialog(idx)} title="تعديل">
-                                                    <i className="fas fa-pencil-alt"></i>
-                                                </button>
-                                                <button className="doc-action-btn delete" onClick={() => handleRemoveFile(idx)} title="حذف" style={{ color: 'var(--danger-color)' }}>
-                                                    <i className="fas fa-trash"></i>
-                                                </button>
+                                                <div className="document-card-actions">
+                                                    <button className="doc-action-btn edit" onClick={() => openUploadDialog(idx)} title="تعديل">
+                                                        <i className="fas fa-pencil-alt"></i>
+                                                    </button>
+                                                    <button className="doc-action-btn delete" onClick={() => handleRemoveFile(idx)} title="حذف" style={{ color: 'var(--danger-color)' }}>
+                                                        <i className="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     );
@@ -387,51 +392,65 @@ export default function DocumentsTab({
                                     const typeInfo = DOC_TYPE_MAP[doc.document_type] || DOC_TYPE_MAP.other;
                                     return (
                                         <div key={doc.id} className="document-card section-card sales-card">
-                                            <div className="document-card-icon" style={{ background: `${typeInfo.color}15`, color: typeInfo.color }}>
-                                                <i className={`fas ${typeInfo.icon}`}></i>
-                                            </div>
-                                            <div className="document-card-content">
-                                                <h5 className="document-card-title">{doc.document_name}</h5>
-                                                <div className="document-card-meta">
-                                                    <span className="document-type-badge" style={{ background: `${typeInfo.color}15`, color: typeInfo.color }}>
-                                                        {typeInfo.label}
-                                                    </span>
-                                                    <span className="document-date">
-                                                        <i className="fas fa-clock"></i>
-                                                        {new Date(doc.created_at).toLocaleDateString('ar-SA')}
-                                                    </span>
+                                            <div key={doc.id} className="document-sub-card">
+                                                <div className="document-card-actions">
+                                                    <div className="document-card-icon" style={{ background: `${typeInfo.color}15`, color: typeInfo.color }}>
+                                                        {getIcon(typeInfo.icon)}
+                                                    </div>
+                                                    <div className="document-card-content">
+                                                        <h5 className="document-card-title">{doc.document_name}</h5>
+                                                        <div className="document-card-meta">
+                                                            <span className="document-type-badge" style={{ background: `${typeInfo.color}15`, color: typeInfo.color }}>
+                                                                {typeInfo.label}
+                                                            </span>
+                                                            <span className="document-date">
+                                                                {getIcon("clock")}
+
+                                                                {new Date(doc.created_at).toLocaleDateString('ar-SA')}
+                                                            </span>
+                                                        </div>
+                                                        {doc.notes && (
+                                                            <p className="document-notes">{doc.notes}</p>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                                {doc.notes && (
-                                                    <p className="document-notes">{doc.notes}</p>
-                                                )}
-                                            </div>
-                                            <div className="document-card-actions">
-                                                <button
-                                                    className="doc-action-btn download"
-                                                    onClick={() => handleDownload(doc)}
-                                                    title="تحميل"
-                                                >
-                                                    <i className="fas fa-download"></i>
-                                                </button>
-                                                {canAccess("employees", "edit") && (
+                                                <div className="document-card-actions">
                                                     <button
-                                                        className="doc-action-btn edit"
-                                                        onClick={() => openUploadDialog(documents.indexOf(doc))}
-                                                        title="تعديل البيانات"
+                                                        className="doc-action-btn download"
+                                                        onClick={() => handleDownload(doc)}
+                                                        title="تحميل"
                                                     >
-                                                        <i className="fas fa-pencil-alt"></i>
+                                                        {getIcon("download")}
                                                     </button>
-                                                )}
-                                                {canAccess("employees", "delete") && (
-                                                    <button
-                                                        className="doc-action-btn delete"
-                                                        onClick={() => handleDelete(doc.id)}
-                                                        title="حذف"
-                                                        style={{ color: 'var(--danger-color)' }}
-                                                    >
-                                                        <i className="fas fa-trash"></i>
-                                                    </button>
-                                                )}
+                                                    {canAccess("employees", "edit") && (
+                                                        <button
+                                                            className="doc-action-btn edit"
+                                                            onClick={() => openUploadDialog(documents.indexOf(doc))}
+                                                            title="تعديل البيانات"
+                                                        >
+                                                            {getIcon("pencil")}
+                                                        </button>
+                                                    )}
+                                                    {canAccess("employees", "edit") && (
+                                                        <button
+                                                            className="doc-action-btn edit"
+                                                            onClick={() => openUploadDialog(documents.indexOf(doc))}
+                                                            title="معاينة"
+                                                        >
+                                                            {getIcon("edit")}
+                                                        </button>
+                                                    )}
+                                                    {canAccess("employees", "delete") && (
+                                                        <button
+                                                            className="doc-action-btn delete"
+                                                            onClick={() => handleDelete(doc.id)}
+                                                            title="حذف"
+                                                            style={{ color: 'var(--danger-color)' }}
+                                                        >
+                                                            {getIcon("trash")}
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     );

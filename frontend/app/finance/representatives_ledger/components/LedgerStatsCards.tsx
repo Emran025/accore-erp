@@ -1,10 +1,10 @@
 import { getIcon } from "@/lib/icons";
 import { formatCurrency } from "@/lib/utils";
 import { StatsCard } from "@/components/ui/StatsCard";
-import { LedgerStats } from "../types";
+import { LedgerStatsRepresentatives } from "@/types";
 
 interface LedgerStatsCardsProps {
-    stats: LedgerStats;
+    stats: LedgerStatsRepresentatives;
 }
 
 export function LedgerStatsCards({ stats }: LedgerStatsCardsProps) {

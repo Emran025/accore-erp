@@ -9,7 +9,7 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/Textarea";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { EmployeeContract, Employee } from "@/app/hr/types";
+import { EmployeeContract, Employee } from "@/types";
 import { useEmployeeStore } from "@/stores/useEmployeeStore";
 import { PageSubHeader } from "@/components/layout";
 

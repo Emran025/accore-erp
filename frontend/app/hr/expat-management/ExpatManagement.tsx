@@ -8,7 +8,7 @@ import { fetchAPI } from "@/lib/api";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { PageSubHeader } from "@/components/layout";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { ExpatRecord } from "@/app/hr/types";
+import { ExpatRecord } from "@/types";
 
 export function ExpatManagement() {
   const router = useRouter();

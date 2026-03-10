@@ -1,6 +1,6 @@
 import { FilterSection, FilterGroup } from "@/components/ui";
 import { getIcon } from "@/lib/icons";
-import { Customer } from "../types";
+import { Customer } from "@/types";
 
 interface CustomerInfoSectionProps {
     customer: Customer | null;

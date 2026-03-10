@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { showToast } from "@/components/ui";
-import { ExpatRecord } from "@/app/hr/types";
+import { ExpatRecord } from "@/types";
 
 export default function EditExpatPage({ params }: { params: { id: string } }) {
     const [user, setUser] = useState<any>(null);

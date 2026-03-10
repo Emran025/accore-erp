@@ -6,7 +6,7 @@ import { TemplateEditor, TemplateData } from "@/components/template-editor";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { showToast } from "@/components/ui";
-import { DocumentTemplate } from "@/app/hr/types";
+import { DocumentTemplate } from "@/types";
 import {
     HR_APPROVED_KEYS,
     HR_MOCK_CONTEXT,

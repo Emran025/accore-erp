@@ -22,8 +22,8 @@ import { ReturnsStatsCards, ReturnsStats } from "./components/ReturnsStatsCards"
 import { ReturnsTable } from "./components/ReturnsTable";
 import { ReturnsFilterDialog } from "./components/ReturnsFilterDialog";
 import { InvoiceSelectionTab } from "./components/InvoiceSelectionTab";
-import { InvoiceDetailsDialog } from "../../finance/ar_ledger/components/InvoiceDetailsDialog";
-import { LedgerTransaction, Pagination, DetailedInvoice } from "../../finance/ar_ledger/types";
+import { InvoiceDetailsDialog } from "@/components/ui";
+import { LedgerTransaction, Pagination, DetailedInvoiceSuppliers } from "@/types";
 
 /** Top-level page tabs */
 const PAGE_TABS = [
@@ -54,7 +54,7 @@ function ReturnsPageContent() {
     /* ── Dialogs ── */
     const [filterDialog, setFilterDialog] = useState(false);
     const [viewDialog, setViewDialog] = useState(false);
-    const [selectedInvoice, setSelectedInvoice] = useState<DetailedInvoice | null>(null);
+    const [selectedInvoice, setSelectedInvoice] = useState<DetailedInvoiceSuppliers | null>(null);
 
     /* ── Return creation ── */
     const [selectedReturnItems, setSelectedReturnItems] = useState<SelectedItem[]>([]);
@@ -133,7 +133,7 @@ function ReturnsPageContent() {
         try {
             const response = await fetchAPI(`${API_ENDPOINTS.SALES.INVOICE_DETAILS}?id=${id}`);
             if (response.success && response.data) {
-                setSelectedInvoice(response.data as DetailedInvoice);
+                setSelectedInvoice(response.data as DetailedInvoiceSuppliers);
                 setViewDialog(true);
             }
         } catch {
@@ -147,7 +147,7 @@ function ReturnsPageContent() {
         try {
             const response = await fetchAPI(`${API_ENDPOINTS.SALES.RETURNS.SHOW}?id=${item.reference_id}`);
             if (response.success && response.data) {
-                return ((response.data as DetailedInvoice).items as SelectableInvoiceItem[]) || [];
+                return ((response.data as DetailedInvoiceSuppliers).items as SelectableInvoiceItem[]) || [];
             }
             return [];
         } catch {

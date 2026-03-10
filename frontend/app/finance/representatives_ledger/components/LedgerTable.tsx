@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { ActionButtons, SelectableInvoiceTable, SelectedItem, SelectableInvoiceItem, InvoiceTableColumn } from "@/components/ui";
-import { TabSubNavigation } from "../../../../components/navigation/TabNavigation";
+import { TabSubNavigation } from "@/components/navigation/TabNavigation";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
-import { LedgerTransaction } from "../types";
+import { LedgerTransaction } from "@/types";
 
 interface LedgerTableProps {
     transactions: LedgerTransaction[];

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Dialog, showToast, Button, SearchableSelect, Label } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { Employee, EOSBCalculation } from "../types";
+import { Employee, EOSBCalculation } from "@/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { PageSubHeader } from "@/components/layout";
 import { TextInput } from "@/components/ui/TextInput";

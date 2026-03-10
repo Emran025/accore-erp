@@ -1,6 +1,6 @@
 import { FilterSection, FilterGroup } from "@/components/ui";
 import { getIcon } from "@/lib/icons";
-import { Representative } from "../types";
+import { Representative } from "@/types";
 
 interface RepresentativeInfoSectionProps {
     representative: Representative | null;

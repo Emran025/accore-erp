@@ -1,6 +1,6 @@
 
 import { formatCurrency } from "@/lib/utils";
-import { ProfitLossView, APIProfitLoss } from "../types";
+import { ProfitLossView, APIProfitLoss } from "@/types";
 import { fetchAPI } from "@/lib/api";
 import { showToast, FilterSection, DateRangePicker, FilterActions, Button } from "@/components/ui";
 import { useState, useCallback, useEffect } from "react";

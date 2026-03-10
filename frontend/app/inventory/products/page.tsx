@@ -11,7 +11,7 @@ import { API_ENDPOINTS } from "@/lib/endpoints";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { User, getStoredUser, getStoredPermissions, Permission, canAccess, checkAuth } from "@/lib/auth";
 import { Icon } from "@/lib/icons";
-import { Product, Category } from "./types";
+import { Product, Category } from "@/types";
 import { useProductStore } from "@/stores/useProductStore";
 
 export default function ProductsPage() {

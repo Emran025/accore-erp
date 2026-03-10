@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { JobTitle } from "@/app/hr/types";
+import { JobTitle } from "@/types";
 import { PageSubHeader } from "@/components/layout";
 
 interface JobTitleForm {

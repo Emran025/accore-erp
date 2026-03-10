@@ -2,7 +2,7 @@ import React from "react";
 import { Table, Column } from "@/components/ui";
 import { Icon } from "@/lib/icons";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { PurchaseRequest } from "../types";
+import { PurchaseRequest } from "@/types";
 import { canAccess, Permission } from "@/lib/auth";
 
 interface RequestsTableProps {

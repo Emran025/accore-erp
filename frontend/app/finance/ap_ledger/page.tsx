@@ -14,8 +14,8 @@ import { LedgerStatsCards } from "./components/LedgerStatsCards";
 import { LedgerTable } from "./components/LedgerTable";
 import { LedgerFilterDialog } from "./components/LedgerFilterDialog";
 import { TransactionFormDialog } from "./components/TransactionFormDialog";
-import { InvoiceDetailsDialog } from "./components/InvoiceDetailsDialog";
-import { LedgerTransaction, Pagination, LedgerStats, Supplier, DetailedInvoice } from "./types";
+import { InvoiceDetailsDialog } from "@/components/ui";
+import { LedgerTransaction, Pagination, LedgerStatsSuppliers, Supplier, DetailedInvoiceSuppliers } from "@/types";
 
 function APLedgerPageContent() {
   const router = useRouter();
@@ -25,7 +25,7 @@ function APLedgerPageContent() {
   const [user, setUser] = useState<User | null>(null);
   const [supplier, setSupplier] = useState<Supplier | null>(null);
   const [transactions, setTransactions] = useState<LedgerTransaction[]>([]);
-  const [stats, setStats] = useState<LedgerStats>({
+  const [stats, setStats] = useState<LedgerStatsSuppliers>({
     total_debit: 0,
     total_credit: 0,
     total_returns: 0,
@@ -60,7 +60,7 @@ function APLedgerPageContent() {
   const [confirmDialog, setConfirmDialog] = useState(false);
   const [deleteTransactionId, setDeleteTransactionId] = useState<number | null>(null);
   const [restoreTransactionId, setRestoreTransactionId] = useState<number | null>(null);
-  const [selectedInvoice, setSelectedInvoice] = useState<DetailedInvoice | null>(null);
+  const [selectedInvoice, setSelectedInvoice] = useState<DetailedInvoiceSuppliers | null>(null);
 
   // Returns state
   const [selectedReturnItems, setSelectedReturnItems] = useState<SelectedItem[]>([]);
@@ -128,7 +128,7 @@ function APLedgerPageContent() {
 
           setTransactions(mappedTransactions);
           if (response.stats) {
-            setStats(response.stats as LedgerStats);
+            setStats(response.stats as LedgerStatsSuppliers);
           }
 
           if (response.pagination) {
@@ -223,7 +223,7 @@ function APLedgerPageContent() {
     try {
       const response = await fetchAPI(`${API_ENDPOINTS.PURCHASES.BASE}?id=${id}`);
       if (response.success && response.data) {
-        setSelectedInvoice(response.data as DetailedInvoice);
+        setSelectedInvoice(response.data as DetailedInvoiceSuppliers);
         setViewDialog(true);
       }
     } catch {
@@ -242,7 +242,7 @@ function APLedgerPageContent() {
     try {
       const response = await fetchAPI(endpoint);
       if (response.success && response.data) {
-        const data = response.data as DetailedInvoice;
+        const data = response.data as DetailedInvoiceSuppliers;
         return (data.items as SelectableInvoiceItem[]) || [];
       }
       return [];

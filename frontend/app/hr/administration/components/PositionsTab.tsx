@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { Position, JobTitle } from "@/app/hr/types";
+import { Position, JobTitle } from "@/types";
 import { PageSubHeader } from "@/components/layout";
 import { StatsCard } from "@/components/ui/StatsCard";
 import { getIcon } from "@/lib/icons";
@@ -48,7 +48,7 @@ export function PositionsTab() {
 
     // Lookups
     const [jobTitles, setJobTitles] = useState<JobTitle[]>([]);
-    const [roles, setRoles] = useState<Array<{ id: number; role_name_ar: string; role_key: string }>>([]);
+    const [roles, setRoles] = useState<Array<{ id: number; role_name_en: string; role_key: string }>>([]);
     const [departments, setDepartments] = useState<Array<{ id: number; name_ar: string }>>([]);
 
     useEffect(() => {
@@ -196,7 +196,7 @@ export function PositionsTab() {
             dataLabel: "الدور",
             render: (item) =>
                 item.role ? (
-                    <span className="badge badge-info">{item.role.role_name_ar || item.role.role_key}</span>
+                    <span className="badge badge-info">{item.role.role_name_ar || item.role.role_name_en || item.role.role_key}</span>
                 ) : (
                     <span className="text-muted">غير محدد</span>
                 ),
@@ -383,7 +383,7 @@ export function PositionsTab() {
                             <SearchableSelect
                                 options={roles.map((r) => ({
                                     value: r.id.toString(),
-                                    label: r.role_name_ar || r.role_key,
+                                    label: r.role_name_en || r.role_key,
                                 }))}
                                 value={form.role_id}
                                 onChange={(val) => setForm({ ...form, role_id: val?.toString() || "" })}
@@ -526,7 +526,7 @@ export function PositionsTab() {
                                         <tbody>
                                             {detailItem.role.permissions.map((p, idx) => (
                                                 <tr key={idx}>
-                                                    <td>{p.module?.module_name_ar || p.module?.module_key || "—"}</td>
+                                                    <td>{p.module || "—"}</td>
                                                     <td>{p.can_view ? "✓" : "—"}</td>
                                                     <td>{p.can_create ? "✓" : "—"}</td>
                                                     <td>{p.can_edit ? "✓" : "—"}</td>

@@ -8,7 +8,7 @@ import { fetchAPI } from "@/lib/api";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { PageSubHeader } from "@/components/layout";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { EmployeeContract } from "@/app/hr/types";
+import { EmployeeContract } from "@/types";
 
 export function Contracts() {
     const router = useRouter();

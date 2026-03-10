@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { showToast } from "@/components/ui";
-import { EmployeeContract } from "@/app/hr/types";
+import { EmployeeContract } from "@/types";
 
 export default function EditContractPage({ params }: { params: { id: string } }) {
     const [user, setUser] = useState<any>(null);
