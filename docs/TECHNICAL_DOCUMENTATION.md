@@ -11,15 +11,16 @@
 
 1. [System Overview](#1-system-overview)
 2. [Architecture & Technology Stack](#2-architecture--technology-stack)
-3. [Backend Documentation (`/backend`)](#3-backend-documentation-backend)
-4. [Frontend Documentation (`/frontend`)](#4-frontend-documentation-frontend)
-5. [Database Schema & Models](#5-database-schema--models)
-6. [API Surface & Contracts](#6-api-surface--contracts)
-7. [Business Logic & Services](#7-business-logic--services)
-8. [Security & Authentication](#8-security--authentication)
-9. [Developer Onboarding](#9-developer-onboarding)
-10. [Troubleshooting & Common Issues](#10-troubleshooting--common-issues)
-11. [Deployment Guide](#11-deployment-guide)
+3. [User Experience & UI Architecture](#3-user-experience--ui-architecture)
+4. [Backend Documentation (`/backend`)](#4-backend-documentation-backend)
+5. [Frontend Documentation (`/frontend`)](#5-frontend-documentation-frontend)
+6. [Database Schema & Models](#6-database-schema--models)
+7. [API Surface & Contracts](#7-api-surface--contracts)
+8. [Business Logic & Services](#8-business-logic--services)
+9. [Security & Authentication](#9-security--authentication)
+10. [Developer Onboarding](#10-developer-onboarding)
+11. [Troubleshooting & Common Issues](#11-troubleshooting--common-issues)
+12. [Deployment Guide](#12-deployment-guide)
 
 ---
 
@@ -71,6 +72,7 @@ The system implements a comprehensive ERP solution with the following modules:
 | **HR & Payroll** | Employee and payroll management | Multi-level approval, salary processing, allowances/deductions |
 | **Fixed Assets** | Asset lifecycle management | Depreciation (SL/DB), disposal tracking |
 | **Multi-Currency** | International transactions | Exchange rate management, multi-currency invoicing |
+| **Tax Engine** | Multi-jurisdiction tax logic | Regulatory compliance (ZATCA), tax line audit trails, mixed rates |
 | **Fiscal Periods** | Period management | Opening/closing periods, period locking |
 | **Batch Processing** | Bulk operations | Background job processing, progress tracking |
 
@@ -133,60 +135,86 @@ The system implements a comprehensive ERP solution with the following modules:
 
 ```txt
 accsystem/
-├── backend/                          # Laravel Backend
+├── backend/                          # Laravel 12 Enterprise API
 │   ├── app/
 │   │   ├── Http/
-│   │   │   ├── Controllers/Api/  # 35 API Controllers
-│   │   │   ├── Middleware/       # Custom middleware (ApiAuth)
-│   │   │   └── Requests/         # Form validation requests
-│   │   ├── Models/               # 50 Eloquent models
-│   │   ├── Services/             # 11 Business logic services
-│   │   └── Helpers/              # 3 Helper files
+│   │   │   ├── Controllers/Api/      # 35 API Controllers
+│   │   │   ├── Middleware/           # Security & Auth (ApiAuth)
+│   │   │   └── Requests/             # Strict Validation Logic
+│   │   ├── Models/                   # 128 Eloquent Entities
+│   │   ├── Services/                 # 32 Domain Logic Services
+│   │   └── Helpers/                  # Core System Helpers
 │   ├── database/
-│   │   ├── migrations/           # 52 Migration files
-│   │   ├── seeders/              # Database seeders
-│   │   └── factories/            # Model factories
+│   │   ├── migrations/               # 139 Schema Definitions
+│   │   ├── seeders/                  # 16 Data Seeders
+│   │   └── factories/                # 45 Model Factories
 │   ├── routes/
-│   │   ├── api.php              # API routes (248 lines)
-│   │   ├── web.php              # Web routes
-│   │   └── console.php          # Artisan commands
-│   ├── config/                   # Configuration files
-│   ├── storage/                  # File storage, logs, cache
-│   └── frontend/                   # frontend assets entry point
+│   │   ├── api.php                  # Primary API Registry
+│   │   └── console.php               # System Commands
+│   ├── config/                       # Application Configuration
+│   └── storage/                      # Persistent Assets & Logs
 │
-└── frontend/                       # Next.js Frontend
-    ├── app/                      # App Router pages
-    │   ├── auth/login/          # Authentication
-    │   ├── system/              # System management
-    │   │   ├── dashboard/
-    │   │   ├── settings/
-    │   │   └── [more...]
-    │   ├── sales/               # Sales module
-    │   ├── purchases/           # Purchase module
-    │   ├── finance/             # Finance module
-    │   │   ├── general_ledger/
-    │   │   ├── chart_of_accounts/
-    │   │   ├── fiscal_periods/
-    │   │   └── [more...]
-    │   ├── hr/                  # HR & Payroll
-    │   └── navigation/          # Navigation Landing Page
-    ├── components/              # Reusable React components
-    │   ├── ui/                  # 34 UI components
-    │   ├── navigation/          # 4 Navigation components
-    │   └── layout/              # Layout components
-    ├── lib/                     # Utilities & types
-    │   ├── api.ts              # API client
-    │   ├── types.ts            # TypeScript interfaces
-    │   ├── auth.ts             # Auth utilities
-    │   └── [more...]
-    └── frontend/                  # Static assets
+└── frontend/                         # Next.js 16 Precision Frontend
+    ├── app/                          # Domain-Driven Modular Routing
+    │   ├── 01-enterprise-core/       # Identity & Governance
+    │   ├── 02-commercial/            # Sales & Revenue
+    │   ├── 03-finance/               # Ledger & Treasury
+    │   ├── 04-supply-chain/          # Inventory & AP
+    │   ├── 05-manufacturing/         # Production Control
+    │   ├── 06-human-capital/         # Payroll & Workforce
+    │   ├── 07-projects/              # Project Execution
+    │   ├── 08-assets/                # Asset Lifecycle
+    │   ├── 09-intelligence/          # Analytics & BI
+    │   ├── 10-platform/              # Extension Hub
+    │   ├── auth/                     # Authentication Guard
+    │   └── navigation/               # Shell Matrix
+    ├── components/                   # Atomic Design Components
+    │   ├── ui/                       # 41 Base Components
+    │   ├── navigation/               # Shell Pillar Components
+    │   ├── template-editor/          # Advanced Report Architect
+    │   └── [layout, tax, numbering]
+    ├── stores/                       # Global State (Zustand)
+    ├── lib/                          # Utils, types, and api.ts
+    └── public/                       # Static Assets & Media
 ```
 
 ---
 
-## 3. Backend Documentation (`/backend`)
+## 3. User Experience & UI Architecture
 
-### 3.1 Prerequisites
+ACCSYSTEM ERP utilizes a proprietary UX framework designed for high-density enterprise operations. The system is built on a **Domain-Driven, Capability-Oriented** model.
+
+### 3.1 Design Philosophy
+The platform follows a "Wide but Shallow" hierarchy to ensure all functional screens are accessible within **3 clicks**. This is inspired by modern IDEs like VS Code, prioritizing a "state of flow" for power users.
+
+- **The 4-Layer Taxonomy:** Domain → Capability → Feature Group → Screen.
+- **Zero-Borders Policy:** Separation of concerns is achieved through depth and color rather than explicit lines.
+- **Visual Discipline:** Sharp corners (Zero Radius) and high information density.
+
+### 3.2 Shell Components
+The system's outer shell consists of four permanent architectural pillars:
+1. **SideNavigationBar:** Manages the system map and favorite screens.
+2. **TopGlobalBar:** Holds global system menus and mental anchoring (Screen Title).
+3. **SearchNavigationBar:** Provides interactive breadcrumbs and a multi-layer command palette.
+4. **StatusNotificationBar:** A non-intrusive feedback layer at the foot of the system.
+
+### 3.3 The 10-Domain Map
+The codebase and UI are strictly divided into 10 enterprise domains:
+1. Core, 2. Commercial, 3. Finance, 4. Supply Chain, 5. Manufacturing, 6. Human Capital, 7. Projects, 8. Assets, 9. Intelligence, 10. Digital Platform.
+
+### 3.4 Detailed UX Documentation
+For complete details on iconography, color layering, and technical configuration, refer to the dedicated UX documentation:
+- [UX Philosophy & Vision](./user-experience/01_Philosophy_and_Vision.md)
+- [Shell Architecture](./user-experience/02_Shell_Architecture.md)
+- [Enterprise Domain Map](./user-experience/03_Enterprise_Domain_Map.md)
+- [Visual Design System](./user-experience/04_Visual_Design_System.md)
+- [Technical Implementation](./user-experience/05_Technical_Implementation.md)
+
+---
+
+## 4. Backend Documentation (`/backend`)
+
+### 4.1 Prerequisites
 
 - **PHP:** Version 8.2 or higher
 - **Composer:** Latest version
@@ -198,7 +226,7 @@ accsystem/
   - `php-json`
   - `php-curl`
 
-### 3.2 Installation & Setup
+### 4.2 Installation & Setup
 
 ```bash
 # Navigate to backend directory
@@ -223,7 +251,7 @@ php artisan db:seed
 php artisan storage:link
 ```
 
-### 3.3 Environment Configuration
+### 4.3 Environment Configuration
 
 Key `.env` variables:
 
@@ -251,7 +279,7 @@ QUEUE_CONNECTION=database
 FRONTEND_URL=http://localhost:3000
 ```
 
-### 3.4 Running the Backend
+### 4.4 Running the Backend
 
 **Development Mode:**
 
@@ -271,7 +299,7 @@ composer dev
 php artisan queue:listen
 ```
 
-### 3.5 Key Controllers
+### 4.5 Key Controllers
 
 Located in `backend/app/Http/Controllers/Api/`:
 
@@ -292,7 +320,7 @@ Located in `backend/app/Http/Controllers/Api/`:
 | `FiscalPeriodsController` | Period management | Close, lock, unlock periods |
 | `GovernmentFeesController` | Fee configuration | CRUD (apiResource) |
 
-### 3.6 Service Layer
+### 4.6 Service Layer
 
 Located in `backend/app/Services/`:
 
@@ -308,9 +336,11 @@ Located in `backend/app/Services/`:
 | `ChartOfAccountsMappingService.php` | Dynamic account code lookup |
 | `EmployeeAccountService.php` | Employee GL account creation |
 | `PermissionService.php` | Role-based access control |
+| `TaxCalculator.php` | All tax logic, rate lookup, and `TaxLine` persistence |
+| `ZATCATaxAuthority.php` | Saudi specific compliance (UBL, QR, ZATCA Submission) |
 | `TelescopeService.php` | Audit logging |
 
-### 3.7 Custom Artisan Commands
+### 4.7 Custom Artisan Commands
 
 ```bash
 # Setup script (runs all setup steps)
@@ -323,7 +353,7 @@ composer run dev
 composer run test
 ```
 
-### 3.8 Middleware
+### 4.8 Middleware
 
 Located in `backend/app/Http/Middleware/`:
 
@@ -334,14 +364,14 @@ Located in `backend/app/Http/Middleware/`:
 
 ---
 
-## 4. Frontend Documentation (`/frontend`)
+## 5. Frontend Documentation (`/frontend`)
 
-### 4.1 Prerequisites
+### 5.1 Prerequisites
 
 - **Node.js:** Version 20.x or higher
 - **npm:** Version 10.x or higher
 
-### 4.2 Installation & Setup
+### 5.2 Installation & Setup
 
 ```bash
 # Navigate to frontend directory
@@ -351,7 +381,7 @@ cd frontend
 npm install
 ```
 
-### 4.3 Configuration
+### 5.3 Configuration
 
 The frontend needs to know where the backend API is located:
 
@@ -363,7 +393,7 @@ NEXT_PUBLIC_API_BASE=http://127.0.0.1:8000/api
 
 **Important:** This environment variable is hardcoded in `lib/api.ts` with a fallback.
 
-### 4.4 Running the Frontend
+### 5.4 Running the Frontend
 
 ```bash
 # Development server
@@ -378,30 +408,26 @@ npm start
 npm run lint
 ```
 
-### 4.5 Routing Structure
+### 5.5 Routing Structure
 
 Next.js **App Router** (file-based routing):
 
 | Route | Page | Description |
 | ------- | ------ | ------------- |
-| `/auth/login` | Login page | User authentication |
-| `/system/dashboard` | Dashboard | Overview, stats, widgets |
-| `/system/settings` | Settings | Store, invoice, roles, modules |
-| `/system/reports` | Reports | Financial reports |
-| `/sales/sales` | Sales | POS interface |
-| `/sales/deferred_sales` | Deferred Sales | Credit sales management |
-| `/purchases/purchases` | Purchases | Purchase entry |
-| `/purchases/expenses` | Expenses | Expense tracking |
-| `/inventory/products` | Products | Inventory management |
-| `/finance/general_ledger` | General Ledger | GL entries |
-| `/finance/chart_of_accounts` | Chart of Accounts | Account hierarchy |
-| `/finance/fiscal_periods` | Fiscal Periods | Period management |
-| `/finance/accrual_accounting` | Accrual Accounting | Prepayments, unearned revenue |
-| `/hr` | HR & Payroll | Employee & payroll management |
-| `/ar_customers` | AR Customers | Customer management |
-| `/suppliers` | AP Suppliers | Supplier management |
+| `/auth/login` | Login | Authentication Guard |
+| `/01-enterprise-core/system-overview/dashboard` | Dashboard | Global KPI & Shell Entry |
+| `/01-enterprise-core/organization-governance/settings` | Settings | System Configuration |
+| `/02-commercial/sales-lifecycle/direct-sales` | Sales | POS & Inventory Integration |
+| `/03-finance/general-ledger/view` | General Ledger | Accounting Core |
+| `/03-finance/tax-compliance/zatca` | Tax Engine | ZATCA/Regulatory Hub |
+| `/04-supply-chain/inventory/products` | Products | Catalog & Stock Control |
+| `/04-supply-chain/payables-expenses/suppliers` | Suppliers | AP Management |
+| `/06-human-capital/workforce-admin/employees` | HR | Personnel & Documents |
+| `/06-human-capital/payroll-benefits/process` | Payroll | Salary & Accruals |
+| `/09-intelligence/business-intelligence/reports` | Reports | Financial Intelligence |
+| `/navigation` | Command Matrix | Universal Navigation Shell |
 
-### 4.6 Key Frontend Files
+### 5.6 Key Frontend Files
 
 | File | Purpose |
 | ------ | --------- |
@@ -416,7 +442,7 @@ Next.js **App Router** (file-based routing):
 | `app/layout.tsx` | Root layout |
 | `components/` | Reusable UI components |
 
-### 4.7 State Management
+### 5.7 State Management
 
 The frontend uses **React Hooks** for state management:
 
@@ -425,7 +451,7 @@ The frontend uses **React Hooks** for state management:
 - `useRouter`: Next.js navigation
 - **No Redux/Zustand**: Kept simple with built-in React capabilities
 
-### 4.8 API Integration
+### 5.8 API Integration
 
 All API calls go through `lib/api.ts`:
 
@@ -444,16 +470,25 @@ const response = await fetchAPI('invoices', {
 
 **Authentication Flow:**
 
-1. User logs in → Backend returns `session_token`
-2. Token stored in `localStorage`
-3. `fetchAPI()` automatically adds `X-Session-Token` header
 4. On 401 response → Redirect to `/auth/login`
+
+### 5.9 Advanced Components: Report Template Editor
+
+For complex document generation, the system utilizes a dedicated Template Editor. This component enables:
+- **Regex-based Syntax Highlighting** for HTML/CSS and system keys.
+- **Isolated Iframe Preview** with real-time mock data injection.
+- **Security Validation** to prevent malicious script injection.
+
+Refer to the comprehensive sub-documentation:
+- [Report Template Editor Index](./report-template-editor/index.md)
+- [Technical Architecture](./report-template-editor/architecture.md)
+- [AI & Automation Roadmap](./report-template-editor/ai-automation.md)
 
 ---
 
-## 5. Database Schema & Models
+## 6. Database Schema & Models
 
-### 5.1 Core Tables
+### 6.1 Core Tables
 
 - Users & Authentication
 
@@ -1101,7 +1136,7 @@ const response = await fetchAPI('invoices', {
 - timestamps
 ```
 
-### 5.2 Key Relationships
+### 6.2 Key Relationships
 
 ```txt
 users
@@ -1134,7 +1169,7 @@ payroll_cycles
       └─1:N→ payroll_transactions
 ```
 
-### 5.3 Multi-Currency Extension
+### 6.3 Multi-Currency Extension
 
 Tables modified with currency support:
 
@@ -1143,17 +1178,54 @@ Tables modified with currency support:
 - `ar_transactions`: Added `currency_id`, `exchange_rate`
 - `ap_transactions`: Added `currency_id`, `exchange_rate`
 
+### 6.4 Tax Engine Tables
+
+**`tax_authorities`**
+```sql
+- id (PK)
+- code (e.g. 'ZATCA')
+- name, country_code
+- is_active
+```
+
+**`tax_types`**
+```sql
+- id (PK)
+- tax_authority_id (FK)
+- code (e.g. 'VAT')
+- name, calculation_type, gl_account_code
+- applicable_areas (JSON)
+```
+
+**`tax_rates`**
+```sql
+- id (PK)
+- tax_type_id (FK)
+- rate, fixed_amount
+- effective_from, effective_to
+- is_default
+```
+
+**`tax_lines`**
+```sql
+- id (PK)
+- taxable_type, taxable_id (Polymorphic)
+- tax_authority_id, tax_type_id, tax_rate_id
+- rate, taxable_amount, tax_amount
+- metadata (JSON)
+```
+
 ---
 
-## 6. API Surface & Contracts
+## 7. API Surface & Contracts
 
-### 6.1 Base URL
+### 7.1 Base URL
 
 ```txt
 http://localhost:8000/api
 ```
 
-### 6.2 Authentication Endpoints
+### 7.2 Authentication Endpoints
 
 - POST `/login`
 
@@ -1206,7 +1278,7 @@ http://localhost:8000/api
 }
 ```
 
-### 6.3 Sales Endpoints
+### 7.3 Sales Endpoints
 
 - GET `/invoices`
 
@@ -1294,7 +1366,7 @@ http://localhost:8000/api
 }
 ```
 
-### 6.4 Purchase Endpoints
+### 7.4 Purchase Endpoints
 
 - GET `/purchases`
 
@@ -1330,7 +1402,7 @@ http://localhost:8000/api
 }
 ```
 
-### 6.5 General Ledger Endpoints
+### 7.5 General Ledger Endpoints
 
 - GET `/trial_balance?as_of_date=2026-01-09`
 
@@ -1371,7 +1443,7 @@ http://localhost:8000/api
 }
 ```
 
-### 6.6 HR & Payroll Endpoints
+### 7.6 HR & Payroll Endpoints
 
 - POST `/payroll/generate`
 
@@ -1430,7 +1502,7 @@ http://localhost:8000/api
 }
 ```
 
-### 6.7 Reports Endpoints
+### 7.7 Reports Endpoints
 
 - GET `/reports/balance_sheet?as_of_date=2026-01-09`
 
@@ -1473,7 +1545,7 @@ http://localhost:8000/api
 }
 ```
 
-### 6.8 Currency Endpoints
+### 7.8 Currency Endpoints
 
 - GET `/currencies`
 
@@ -1496,7 +1568,7 @@ http://localhost:8000/api
 }
 ```
 
-### 6.9 Standard Response Structure
+### 7.9 Standard Response Structure
 
 **Success:**
 
@@ -1530,9 +1602,9 @@ http://localhost:8000/api
 
 ---
 
-## 7. Business Logic & Services
+## 8. Business Logic & Services
 
-### 7.1 LedgerService
+### 8.1 LedgerService
 
 **Purpose:** Centralized GL posting engine
 
@@ -1574,7 +1646,7 @@ reverseTransaction(string $voucherNumber, ?string $description = null): string
 - Creates reversing entries
 - Used for invoice/purchase deletions
 
-### 7.2 SalesService
+### 8.2 SalesService
 
 **Purpose:** Invoice processing with stock and GL integration
 
@@ -1604,7 +1676,7 @@ deleteInvoice(int $id): void
 3. Reverses AR transaction
 4. Reverses GL entries
 
-### 7.3 PayrollService
+### 8.3 PayrollService
 
 **Purpose:** Multi-level payroll workflow
 
@@ -1648,7 +1720,38 @@ processPayment(int $id, ?int $paymentAccountId = null): void
    - CR: Cash/Bank
 3. Updates cycle status → 'paid'
 
-### 7.4 InventoryCostingService
+### 9.4 Tax Engine
+
+**Purpose:** Multi-jurisdiction tax calculation and regulatory compliance (ZATCA).
+
+**Key Methods (`TaxCalculator`):**
+
+```php
+calculate(
+    float $taxableAmount,
+    string $countryCode = 'SA',
+    ?DateTimeInterface $asOf = null,
+    string $taxableType = '',
+    ?int $taxableId = null,
+    string $applicableArea = 'sales'
+): TaxCalculationResult
+```
+
+1. Looks up the primary `TaxAuthority` for the country.
+2. Identifies active `TaxType` records for the authority.
+3. Retrieves the effective `TaxRate` based on the `asOf` date.
+4. Performs calculation (Percentage or Fixed).
+5. (Optional) Persists result as `TaxLine` for audit trails.
+6. Returns `TaxCalculationResult` DTO.
+
+**Regulatory Adapters (`TaxAuthorityInterface`):**
+
+- **ZATCA (Saudi Arabia)**: Generates UBL 2.1 XML and TLV-encoded QR codes.
+- **Legacy Fallback**: Uses `config('accounting.vat_rate')` if no database authority matches.
+
+**Detailed Documentation:** [Tax Engine Docs](./tax-engine/01_Overview.md)
+
+### 9.5 InventoryCostingService
 
 **Purpose:** FIFO/Average cost calculation
 
@@ -1658,7 +1761,7 @@ processPayment(int $id, ?int $paymentAccountId = null): void
 - Reads from `inventory_costing` table
 - Used by SalesService for COGS calculation
 
-### 7.5 DepreciationService
+### 9.6 DepreciationService
 
 **Purpose:** Fixed asset depreciation
 
@@ -1671,7 +1774,7 @@ processPayment(int $id, ?int $paymentAccountId = null): void
   - DR: Depreciation Expense
   - CR: Accumulated Depreciation
 
-### 7.6 PermissionService
+### 9.7 PermissionService
 
 **Purpose:** Role-based access control (RBAC)
 
@@ -1693,9 +1796,9 @@ hasPermission(User $user, string $module, string $action): bool
 
 ---
 
-## 8. Security & Authentication
+## 9. Security & Authentication
 
-### 8.1 Authentication Flow
+### 9.1 Authentication Flow
 
 ```txt
 1. User submits login (username + password)
@@ -1715,7 +1818,7 @@ hasPermission(User $user, string $module, string $action): bool
 8. Controller can access auth()->user()
 ```
 
-### 8.2 Session Management
+### 9.2 Session Management
 
 **Sessions Table Structure:**
 
@@ -1729,12 +1832,12 @@ hasPermission(User $user, string $module, string $action): bool
 - Configured in `.env`: `SESSION_LIFETIME=120` (minutes)
 - Middleware can implement auto-expiration logic
 
-### 8.3 Password Hashing
+### 9.3 Password Hashing
 
 - Uses Laravel's `Hash` facade (bcrypt)
 - Configured rounds: `BCRYPT_ROUNDS=12`
 
-### 8.4 Authorization
+### 9.4 Authorization
 
 **Role-Based Permissions:**
 
@@ -1750,7 +1853,7 @@ PermissionService::requirePermission('sales', 'create');
 // Throws 403 if current user's role lacks 'sales.create'
 ```
 
-### 8.5 Input Validation
+### 9.5 Input Validation
 
 **Form Requests:**
 
@@ -1775,28 +1878,28 @@ class StoreInvoiceRequest extends FormRequest
 }
 ```
 
-### 8.6 SQL Injection Prevention
+### 9.6 SQL Injection Prevention
 
 - **Eloquent ORM** used throughout
 - No raw queries without parameter binding
 - `DB::select()` calls use bindings
 
-### 8.7 XSS Prevention
+### 9.7 XSS Prevention
 
 - Frontend: `escapeHtml()` utility in `lib/api.ts`
 - React naturally escapes JSX content
 - API responses are JSON (not HTML)
 
-### 8.8 CORS Configuration
+### 9.8 CORS Configuration
 
 - Configured in Laravel for `localhost:3000`
 - Production: Update `config/cors.php`
 
 ---
 
-## 9. Developer Onboarding
+## 10. Developer Onboarding
 
-### 9.1 Full Stack Local Setup
+### 10.1 Full Stack Local Setup
 
 - **Step 1: Clone Repository**
 
@@ -1871,7 +1974,7 @@ php artisan --version
     - Username: `admin`
     - Password: `admin` (change in production!)
 
-### 9.2 Development Workflow
+### 10.2 Development Workflow
 
 **Making Changes:**
 
@@ -1906,7 +2009,7 @@ php artisan --version
   git push origin feature/new-module
 ```
 
-### 9.3 Code Style Guidelines
+### 10.3 Code Style Guidelines
 
 **PHP (Backend):**
 
@@ -1922,7 +2025,7 @@ php artisan --version
 - Use async/await over .then()
 - Component file = PascalCase, utils file = camelCase
 
-### 9.4 Testing
+### 10.4 Testing
 
 **Backend Tests:**
 
@@ -1936,7 +2039,7 @@ php artisan test
 - No testing framework configured yet
 - Recommend: Jest + React Testing Library
 
-### 9.5 Internal Documentation Standards
+### 10.5 Internal Documentation Standards
 
 To maintain code clarity and facilitate onboarding, the project follows strict internal documentation standards.
 
@@ -1960,9 +2063,9 @@ To maintain code clarity and facilitate onboarding, the project follows strict i
 ---
 
 
-## 10. Troubleshooting & Common Issues
+## 11. Troubleshooting & Common Issues
 
-### 10.1 Backend Issues
+### 11.1 Backend Issues
 
 - **Issue: "No application encryption key has been specified"**
 
@@ -2005,7 +2108,7 @@ php artisan route:clear
   composer dump-autoload 
 ```
 
-### 10.2 Frontend Issues
+### 11.2 Frontend Issues
 
 - **Issue: "Cannot connect to API"**
   - Verify backend is running on port 8000
@@ -2033,7 +2136,7 @@ php artisan route:clear
   npm install
 ```
 
-### 10.3 Common Development Pitfalls
+### 11.3 Common Development Pitfalls
 
 - **Problem: Changes not reflecting**
   - **Backend:** Clear cache (`php artisan config:clear`)
@@ -2053,9 +2156,9 @@ php artisan route:clear
 
 ---
 
-## 11. Deployment Guide
+## 12. Deployment Guide
 
-### 11.1 Production Checklist
+### 12.1 Production Checklist
 
 **Backend:**
 
@@ -2080,7 +2183,7 @@ php artisan route:clear
 - [ ] Use `npm start` or deploy to Vercel/Netlify
 - [ ] Configure environment variables on hosting platform
 
-### 11.2 Server Requirements
+### 12.2 Server Requirements
 
 **Backend:**
 
@@ -2096,7 +2199,7 @@ php artisan route:clear
 - npm/yarn
 - (Or deploy to Vercel/Netlify)
 
-### 11.3 Database Migration
+### 12.3 Database Migration
 
 ```bash
 # Backup production database first!
@@ -2106,7 +2209,7 @@ mysqldump -u user -p dbname > backup.sql
 php artisan migrate --force
 ```
 
-### 11.4 Queue Worker Setup (Supervisor)
+### 12.4 Queue Worker Setup (Supervisor)
 
 **`/etc/supervisor/conf.d/accounting-queue.conf`:**
 
@@ -2128,7 +2231,7 @@ sudo supervisorctl update
 sudo supervisorctl start accounting-queue:*
 ```
 
-### 11.5 Nginx Configuration Example
+### 12.5 Nginx Configuration Example
 
 ```nginx
 server {
@@ -2189,17 +2292,21 @@ backend/
 ### Frontend Key Files
 
 ```txt
-public/
+frontend/
 ├── app/
-│   ├── system/dashboard/page.tsx    # Main dashboard
-│   ├── sales/sales/page.tsx         # POS interface
-│   ├── finance/general_ledger/page.tsx
-│   └── hr/page.tsx                  # HR & Payroll UI
+│   ├── 01-enterprise-core/system-overview/dashboard/page.tsx   # Global Dashboard
+│   ├── 02-commercial/sales-lifecycle/direct-sales/page.tsx     # Enterprise POS
+│   ├── 03-finance/general-ledger/view/page.tsx                # Financial Core
+│   └── 06-human-capital/workforce-admin/employees/page.tsx    # HR & Payroll
 ├── lib/
-│   ├── api.ts                       # API client
-│   ├── types.ts                     # TypeScript interfaces
-│   └── auth.ts                      # Auth utilities
-└── components/                       # Reusable components
+│   ├── api.ts                                                 # Secure Fetch Wrapper
+│   ├── types.ts                                               # Shared Schema Definitions
+│   └── auth.ts                                                # Session Guard Logic
+├── components/
+│   ├── ui/                                                    # Atomic UI Library
+│   ├── navigation/                                            # Shell Matrix Pillars
+│   └── template-editor/                                       # Document Architect
+└── stores/                                                    # Zustand State Matrix
 ```
 
 ---

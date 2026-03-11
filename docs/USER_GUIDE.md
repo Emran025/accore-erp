@@ -532,6 +532,37 @@ ACCSYSTEM ERP is an integrated software system that connects all company departm
 
 ---
 
+### 12. 🔢 نظام الترقيم والتصنيفات | Numbering & Ranges System
+
+#### نظرة عامة | Overview
+
+هذا النظام هو المحرك المسؤول عن توليد الأرقام التسلسلية لجميع الوحدات (مثل أرقام الموظفين، أكواد العملاء، أرقام الفواتير). تم تصميمه ليعطي مرونة كاملة في كيفية تكوين الأرقام وتوزيعها.
+
+This system is the engine responsible for generating serial numbers all modules (e.g., employee numbers, customer codes, invoice numbers). It is designed to provide full flexibility in how numbers are configured and distributed.
+
+#### المفاهيم والوظائف | Concepts & Functions
+
+| المصطلح | الوصف | مثال | Term | Description |
+| ------- | ----- | ---- | ---- | ----------- |
+| **كائن الترقيم** | الإعداد الأساسي لنوع معين | ترقيم الموظفين العام | **NR Object** | Primary setup for a specific type |
+| **المجموعات** | تصنيف داخلي للكيان | موظف دائم، موظف متعاقد | **Groups** | Internal classification of entities |
+| **النطاقات** | المدى الرقمي المخصص | من 1000 إلى 5000 | **Intervals** | Allocated numeric range |
+| **التوسيع** | زيادة النطاق عند الامتلاء | زيادة الحد من 5000 إلى 7000 | **Expansion** | Increasing range when full |
+
+#### خطوات إعداد ترقيم جديد | Steps to Setup New Numbering
+
+1. **التهيئة (Initialization):** تحديد طول الرقم والبادئة | Define number length and prefix.
+2. **إضافة المجموعات (Groups):** تقسيم النوع لعدة فئات إذا لزم الأمر | Segment the type into categories if needed.
+3. **تحديد النطاقات (Intervals):** حجز أرقام معينة لكل فئة | Reserve specific numeric ranges for each category.
+4. **الربط (Assignments):** تعيين كل مجموعة للنطاق الرقمي الخاص بها | Link each group to its respective numeric range.
+
+#### مميزات النظام | System Features
+- **منع التكرار (Uniqueness):** يضمن النظام عدم صدور نفس الرقم مرتين | Ensures no duplicate numbers are issued.
+- **تنبيهات الامتلاء (Fullness Alerts):** يعطي النظام تحذيراً ملوناً عند اقتراب النطاق من النفاذ | Color-coded alerts when ranges approach capacity.
+- **الترقيم اليدوي (Manual Numbering):** يدعم النظام النطاقات الخارجية حيث يقوم المستخدم بإدخال الرقم يدوياً | Supports external ranges where users enter numbers manually.
+
+---
+
 <a name="document-cycles"></a>
 
 ## 🔄 الفصل الثالث: الدورات المستندية | Chapter 3: Document Cycles

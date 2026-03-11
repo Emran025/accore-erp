@@ -10,10 +10,10 @@
  * 
  * Usage:
  *   // New API (recommended)
- *   import { allDomains, getDomain, getNavigationTree } from '@/lib01/navigation';
+ *   import { allDomains, getDomain, getNavigationTree } from '@/lib/navigation';
  * 
  *   // Legacy API (backward-compatible)
- *   import { navigationGroups, getAllNavigationLinks } from '@/lib01/navigation';
+ *   import { navigationGroups, getAllNavigationLinks } from '@/lib/navigation';
  */
 
 // ═══════════════════════════════════════════════════════════════════════════
