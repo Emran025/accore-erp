@@ -23,8 +23,8 @@ interface MainLayoutProps {
 }
 
 /**
- * MainLayout — uses the new SideNavigationBar and global shell bars.
- * This is for testing purposes before migration.
+ * MainLayout — Core layout wrapper providing the global navigation shell.
+ * It integrates the responsive sidebar, global search, and utility bars.
  */
 export function MainLayout({
   children,
@@ -48,24 +48,8 @@ export function MainLayout({
       }
 
       if (requiredModule) {
-        const currentPermissions = useAuthStore.getState().permissions;
-        if (Array.isArray(currentPermissions)) {
-          const hasAccess = currentPermissions.some(
-            (p) =>
-              (p.module === requiredModule || p.module === "*") &&
-              (requiredAction === "view"
-                ? p.can_view
-                : requiredAction === "create"
-                  ? p.can_create
-                  : requiredAction === "edit"
-                    ? p.can_edit
-                    : p.can_delete)
-          );
-          if (!hasAccess) {
-            router.push("/navigation");
-            return;
-          }
-        } else {
+        const hasAccess = useAuthStore.getState().canAccess(requiredModule, requiredAction);
+        if (!hasAccess) {
           router.push("/navigation");
           return;
         }
@@ -115,7 +99,7 @@ export function MainLayout({
     <div className="test-shell-column">
       <div>
         <Suspense fallback={<div className="top-global-bar" />}>
-          <TopGlobalBar/>
+          <TopGlobalBar />
         </Suspense>
         <Suspense fallback={<div className="search-navigation-bar" />}>
           <SearchNavigationBar />

@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { navigationGroups, NavigationLink, getAllNavigationLinks, getNavigationGroup } from "@/lib/navigation-config";
+import { navigationGroups, NavigationLink, getAllNavigationLinks, getNavigationGroup } from "@/lib/navigation";
 
 interface GlobalTitleProps {
     titleOverride?: string;

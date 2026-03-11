@@ -97,11 +97,19 @@ export async function fetchAPI(
 
     const response = await fetch(url as string, fetchOptions);
 
-    if (response.status === 401) {
+    if (response.status === 401 || response.status === 403) {
       if (typeof window !== 'undefined') {
-        window.location.href = '/auth/login';
+        try {
+          const { useAuthStore } = await import("@/stores/useAuthStore");
+          const isStillAuth = await useAuthStore.getState().checkAuth(true); // Force sync
+          if (!isStillAuth) {
+            window.location.href = '/auth/login';
+          }
+        } catch (e) {
+          window.location.href = '/auth/login';
+        }
       }
-      return { success: false, message: 'Unauthorized' };
+      return { success: false, message: response.status === 403 ? 'Access Denied: Permissions synchronized.' : 'Unauthorized' };
     }
 
     if (!response.ok) {

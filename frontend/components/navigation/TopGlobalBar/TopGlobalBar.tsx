@@ -4,7 +4,7 @@ import { SearchableSelect, SelectOption } from "@/components/ui";
 import { GlobalMenus } from "./components/GlobalMenus";
 import { GlobalMeta } from "./components/GlobalMeta";
 import { useMemo, useState } from "react";
-import { NavigationGroup, navigationGroups, NavigationLink, getAllNavigationLinks } from "@/lib/navigation-config";
+import { NavigationGroup, navigationGroups, NavigationLink, getAllNavigationLinks } from "@/lib/navigation";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores";
 import { canAccess } from "@/lib/auth";

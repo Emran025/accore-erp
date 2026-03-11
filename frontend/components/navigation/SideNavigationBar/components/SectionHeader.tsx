@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useCallback } from "react";
 import { getIcon } from "@/lib/icons";
 
 export interface SectionHeaderProps {
@@ -36,15 +36,14 @@ export function SectionHeader({
     const dragRef = useRef<{ startY: number; moved: boolean } | null>(null);
 
     /**
-     * VS Code-style: mousedown records the start position.
-     * If the user drags beyond a threshold, we start resizing.
-     * If they release without moving, it's a click (toggle).
+     * Resize handle at the top edge of the header.
+     * Only triggers on the thin 6px hit-zone rendered as ::before.
      */
-    const handleMouseDown = (e: React.MouseEvent) => {
-        if (e.button !== 0) return;
-        if (!onResizeStart) return;
-
+    const handleResizeDown = useCallback((e: React.MouseEvent) => {
+        if (e.button !== 0 || !onResizeStart) return;
         e.preventDefault();
+        e.stopPropagation();
+
         dragRef.current = { startY: e.clientY, moved: false };
 
         const handleMouseMove = (ev: MouseEvent) => {
@@ -52,14 +51,12 @@ export function SectionHeader({
             const diff = Math.abs(ev.clientY - dragRef.current.startY);
             if (diff > 3 && !dragRef.current.moved) {
                 dragRef.current.moved = true;
-                // Trigger the resize start from the original event position
                 onResizeStart(e);
             }
         };
 
         const handleMouseUp = () => {
             if (dragRef.current && !dragRef.current.moved) {
-                // No drag occurred — treat as a click (toggle)
                 onToggle();
             }
             dragRef.current = null;
@@ -69,23 +66,22 @@ export function SectionHeader({
 
         window.addEventListener("mousemove", handleMouseMove);
         window.addEventListener("mouseup", handleMouseUp);
-    };
+    }, [onResizeStart, onToggle]);
 
     const headerContent = (
         <div
-            className={`sidenav-section-header-wrapper ${onResizeStart ? "resizable" : ""} ${isResizing ? "resizing" : ""}`}
-            onMouseDown={handleMouseDown}
+            className={`sidenav-section-header-wrapper ${isResizing ? "resizing" : ""}`}
         >
+            {/* Thin resize handle at the top edge */}
+            {onResizeStart && (
+                <div
+                    className="sidenav-resize-edge"
+                    onMouseDown={handleResizeDown}
+                />
+            )}
             <button
                 className="sidenav-section-header"
-                onClick={(e) => {
-                    // When resizable, clicks are handled via mousedown/mouseup flow
-                    if (onResizeStart) {
-                        e.preventDefault();
-                        return;
-                    }
-                    onToggle();
-                }}
+                onClick={onToggle}
             >
                 <span className={`sidenav-section-chevron ${collapsed ? "" : "rotated"}`}>
                     {getIcon("chevronLeft")}

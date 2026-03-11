@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { navigationGroups, NavigationGroup, NavigationLink, getAllNavigationLinks, isNavigationGroup, NavigationItem } from "@/lib/navigation-config";
+import { navigationGroups, NavigationGroup, NavigationLink, getAllNavigationLinks, isNavigationGroup, NavigationItem } from "@/lib/navigation";
 import { canAccess } from "@/lib/auth";
 import { useUIStore } from "@/stores/useUIStore";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -14,19 +14,38 @@ import { getIcon } from "@/lib/icons";
 import React from "react";
 
 /* ─────────────────────── Module Color Palette ─────────────────────── */
+/** Maps each of the 10 domain IDs to a signature color */
 const MODULE_COLORS: Record<string, string> = {
-    dashboard: "#3b82f6",
-    sales: "#10b981",
-    purchases: "#10b981",
-    inventory: "#06b6d4",
-    finance: "#f59e0b",
-    hr: "#8b5cf6",
-    manufacturing: "#64748b",
-    projects: "#8b5cf6",
+    core: "#3b82f6",   // Blue
+    commercial: "#10b981",   // Emerald
+    finance: "#f59e0b",   // Amber
+    "supply-chain": "#06b6d4",   // Cyan
+    manufacturing: "#64748b",   // Slate
+    "human-capital": "#8b5cf6",   // Purple
+    projects: "#6366f1",   // Indigo
+    assets: "#14b8a6",   // Teal
+    intelligence: "#f43f5e",   // Rose
+    platform: "#0ea5e9",   // Sky
 };
 
-function getModuleColor(key: string): string {
-    return MODULE_COLORS[key] || "#3b82f6";
+/**
+ * Layer-specific accent colors for the 4-tier navigation hierarchy.
+ * Domain (The Why) → Capability (The What) → Feature Group (The How) → Screen (The Do)
+ * Chosen to be vibrant, memorable, and distinct from the 10 domain module colors.
+ */
+export const LAYER_COLORS = {
+    domain: "#ffffff",       // Pure White - Strategic Center
+    capability: "#ffd32a",   // Vivid Yellow - Functional Power
+    featureGroup: "#4cd137",       // Vibrant Green - Tactical Grouping
+} as const;
+
+function getLayerColor(depth: number): string {
+    const layers = [LAYER_COLORS.domain, LAYER_COLORS.capability, LAYER_COLORS.featureGroup];
+    return layers[Math.min(depth, layers.length - 1)];
+}
+
+function getModuleColor(domainKey: string): string {
+    return MODULE_COLORS[domainKey] || "#3b82f6";
 }
 
 /* ─────────────────── SideNavigationBar Component ──────────────────── */
@@ -190,6 +209,21 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                 e.stopPropagation();
                 setIsSectionResizing(true);
 
+                // Compute max available height for all expanded sections
+                const HEADER_HEIGHT = 36; // Each section header takes ~36px
+                const sidebarEl = sidebarRef.current;
+                const totalSidebarHeight = sidebarEl ? sidebarEl.clientHeight : 600;
+                const headersSpace = HEADER_HEIGHT * 3; // All 3 section headers always visible
+                const padding = 16; // .sidenav-sections padding (0.5rem * 2)
+                const maxAvailableForContent = totalSidebarHeight - headersSpace - padding;
+
+                // Sum of heights of OTHER expanded sections (not the two being resized)
+                const otherExpandedHeight = sectionsData
+                    .filter(s => !s.collapsed && s.id !== topSection.id && s.id !== bottomSection.id)
+                    .reduce((sum, s) => sum + s.height, 0);
+
+                const maxCombined = maxAvailableForContent - otherExpandedHeight;
+
                 sectionResizeRef.current = {
                     startY: e.clientY,
                     topId: topSection.id,
@@ -203,13 +237,29 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                     const state = sectionResizeRef.current;
                     let diff = ev.clientY - state.startY;
 
-                    // Clamp to prevent collapsing sections entirely
+                    // Minimum height prevents collapsing sections entirely
                     const minHeight = 40;
+
+                    // Clamp: top section cannot shrink below minHeight
                     if (state.startTopHeight + diff < minHeight) {
                         diff = minHeight - state.startTopHeight;
                     }
+                    // Clamp: bottom section cannot shrink below minHeight
                     if (state.startBottomHeight - diff < minHeight) {
                         diff = state.startBottomHeight - minHeight;
+                    }
+
+                    // Clamp: combined must not exceed available sidebar space
+                    const newTop = state.startTopHeight + diff;
+                    const newBottom = state.startBottomHeight - diff;
+                    if (newTop + newBottom > maxCombined) {
+                        // Scale proportionally to fit
+                        const excess = (newTop + newBottom) - maxCombined;
+                        if (diff > 0) {
+                            diff -= excess;
+                        } else {
+                            diff += excess;
+                        }
                     }
 
                     // Update BOTH sections synchronously so overall height remains strictly constant
@@ -228,7 +278,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                 window.addEventListener("mouseup", handleMouseUp);
             };
         },
-        [sectionsData, setSectionHeight]
+        [sectionsData, setSectionHeight, sidebarRef]
     );
 
     /* ── Toggle ── */
@@ -361,7 +411,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                                                 href={link.href}
                                                 icon={link.icon}
                                                 label={link.label}
-                                                color={getModuleColor(group?.key || "")}
+                                                color={getModuleColor(group?.domainKey || "")}
                                                 isActive={pathname === link.href}
                                                 onClick={() => handleScreenClick(link.href)}
                                                 onContextMenu={handleContextMenu}
@@ -397,7 +447,8 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
 
                                         const isExpanded = expandedFolders.includes(group.key);
                                         const isActiveGroup = accessibleLinks.some((l) => pathname === l.href);
-                                        const color = getModuleColor(group.key);
+                                        const moduleColor = getModuleColor(group.domainKey);
+                                        const layerColor = getLayerColor(depth);
 
                                         return (
                                             <SidebarFolder
@@ -405,7 +456,9 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                                                 folderKey={group.key}
                                                 label={group.label}
                                                 icon={group.icon}
-                                                color={color}
+                                                color={moduleColor}
+                                                layerColor={layerColor}
+                                                depth={depth}
                                                 isExpanded={isExpanded}
                                                 isActiveGroup={isActiveGroup}
                                                 sideNavCollapsed={sideNavCollapsed}
@@ -424,7 +477,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                                                                 href={link.href}
                                                                 icon={link.icon}
                                                                 label={link.label}
-                                                                color={color}
+                                                                color={moduleColor}
                                                                 isActive={pathname === link.href}
                                                                 isChild={true}
                                                                 badgeSoon={link.description.includes("قريباً")}
@@ -484,7 +537,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                                                         href={link.href}
                                                         icon={link.icon}
                                                         label={link.label}
-                                                        color={getModuleColor(group?.key || "")}
+                                                        color={getModuleColor(group?.domainKey || "")}
                                                         isActive={pathname === link.href}
                                                         hasStar={true}
                                                         onClick={() => handleScreenClick(link.href)}

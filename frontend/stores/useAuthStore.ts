@@ -28,9 +28,10 @@ interface AuthState {
     isAuthenticated: boolean;
     isLoading: boolean;
     sessionToken: string | null;
+    lastSyncedAt: number | null;
 
     // Actions
-    checkAuth: () => Promise<boolean>;
+    checkAuth: (forceSync?: boolean) => Promise<boolean>;
     login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
     logout: () => Promise<void>;
     canAccess: (module: string, action?: 'view' | 'create' | 'edit' | 'delete') => boolean;
@@ -49,9 +50,20 @@ export const useAuthStore = create<AuthState>()(
                 isAuthenticated: false,
                 isLoading: true,
                 sessionToken: null,
+                lastSyncedAt: null,
 
                 // Check authentication with backend
-                checkAuth: async () => {
+                checkAuth: async (forceSync = false) => {
+                    const { isAuthenticated, lastSyncedAt, user, sessionToken } = get();
+                    const now = Date.now();
+                    const ONE_HOUR = 60 * 60 * 1000;
+
+                    // Frontend-only check if within 1 hour and already authenticated
+                    if (!forceSync && isAuthenticated && user && lastSyncedAt && (now - lastSyncedAt < ONE_HOUR)) {
+                        set({ isLoading: false });
+                        return true;
+                    }
+
                     set({ isLoading: true });
                     try {
                         const response = await fetchAPI(API_ENDPOINTS.AUTH.CHECK);
@@ -66,6 +78,7 @@ export const useAuthStore = create<AuthState>()(
                                 isAuthenticated: true,
                                 sessionToken: token,
                                 isLoading: false,
+                                lastSyncedAt: Date.now()
                             });
 
                             // Legacy compatibility: Sync with localStorage
@@ -81,7 +94,7 @@ export const useAuthStore = create<AuthState>()(
                     } catch { /* fall through */ }
 
                     // If check fails, we clear everything
-                    set({ user: null, permissions: [], isAuthenticated: false, isLoading: false, sessionToken: null });
+                    set({ user: null, permissions: [], isAuthenticated: false, isLoading: false, sessionToken: null, lastSyncedAt: null });
 
                     // Legacy compatibility: Clear localStorage
                     if (typeof window !== 'undefined') {
@@ -110,6 +123,7 @@ export const useAuthStore = create<AuthState>()(
                                 permissions,
                                 isAuthenticated: true,
                                 sessionToken: response.token as string,
+                                lastSyncedAt: Date.now()
                             });
 
                             // Legacy compatibility: Sync with localStorage
@@ -131,7 +145,7 @@ export const useAuthStore = create<AuthState>()(
                 // Logout
                 logout: async () => {
                     try { await fetchAPI(API_ENDPOINTS.AUTH.LOGOUT, { method: 'POST' }); } catch { }
-                    set({ user: null, permissions: [], isAuthenticated: false, sessionToken: null });
+                    set({ user: null, permissions: [], isAuthenticated: false, sessionToken: null, lastSyncedAt: null });
 
                     // Legacy compatibility
                     if (typeof window !== 'undefined') {
@@ -168,6 +182,7 @@ export const useAuthStore = create<AuthState>()(
                 permissions: state.permissions,
                 isAuthenticated: state.isAuthenticated,
                 sessionToken: state.sessionToken,
+                lastSyncedAt: state.lastSyncedAt,
             }),
         }
     )

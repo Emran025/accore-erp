@@ -42,7 +42,7 @@ export function SidebarItem({
                 onContextMenu={(e) => onContextMenu(e, href, "screen")}
                 title={title}
             >
-                <span className="sidenav-item-icon" style={{ color }}>
+                <span className="sidenav-item-icon" style={{ color: color }}>
                     {getIcon(icon)}
                 </span>
                 <span className="sidenav-item-label">{label}</span>

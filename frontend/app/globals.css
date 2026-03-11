@@ -4552,38 +4552,41 @@ body.nav-sidebar-is-collapsed .sidebar-toggle-btn {
   position: relative;
 }
 
-/* VS Code-style: header itself is the drag handle */
-.sidenav-section-header-wrapper.resizable {
+/* ─── Thin Resize Edge at Top of Section Header ─── */
+.sidenav-resize-edge {
+  position: absolute;
+  top: -3px;
+  left: 0;
+  right: 0;
+  height: 6px;
   cursor: ns-resize;
+  z-index: 5;
 }
 
-.sidenav-section-header-wrapper.resizable::after {
+.sidenav-resize-edge::after {
   content: '';
   position: absolute;
-  top: -1px;
+  top: 50%;
   left: 10%;
   right: 10%;
   height: 1px;
   background: transparent;
   transition: all 0.2s ease;
+  transform: translateY(-50%);
 }
 
-.sidenav-section-header-wrapper.resizable:hover::after {
-  background: rgba(255, 255, 255, 0.15);
+.sidenav-resize-edge:hover::after {
+  background: rgba(255, 255, 255, 0.2);
   left: 5%;
   right: 5%;
 }
 
-.sidenav-section-header-wrapper.resizing::after {
+.sidenav-section-header-wrapper.resizing .sidenav-resize-edge::after {
   background: var(--primary-color);
   left: 0;
   right: 0;
   height: 2px;
   box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
-}
-
-.sidenav-section-header-wrapper.resizable .sidenav-section-header {
-  cursor: ns-resize;
 }
 
 .sidenav-section-header {
@@ -4922,24 +4925,32 @@ body.nav-sidebar-is-collapsed .sidebar-toggle-btn {
   align-items: center;
   justify-content: center;
   background: transparent;
-  border: none;
-  padding: 0.2rem;
+  border: 1.5px solid transparent;
+  /* Base for inline color override */
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+  padding: 0;
   cursor: pointer;
   color: var(--sidebar-text);
-  opacity: 0.5;
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.18s ease, background 0.18s ease;
-  border-radius: 4px;
+  opacity: 0.8 !important;
+  /* Increase visibility */
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 50%;
+  /* Circle shape as requested */
   flex-shrink: 0;
+  margin-left: 0.25rem;
 }
 
 .sidenav-folder-toggle-btn:hover {
-  opacity: 1;
-  background: rgba(255, 255, 255, 0.1);
+  filter: brightness(1.2);
+  transform: scale(1.1);
 }
 
 .sidenav-folder-toggle-btn .icon {
-  width: 14px;
-  height: 14px;
+  width: 10px;
+  height: 10px;
 }
 
 .sidenav-folder-toggle-btn.rotated {

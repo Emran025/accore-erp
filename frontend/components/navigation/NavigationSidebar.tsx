@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getIcon } from "@/lib/icons";
-import { NavigationGroup } from "@/lib/navigation-config";
+import { NavigationGroup } from "@/lib/navigation";
 import { FullLogo } from "@/components/ui/Logo";
 
 interface NavigationSidebarProps {

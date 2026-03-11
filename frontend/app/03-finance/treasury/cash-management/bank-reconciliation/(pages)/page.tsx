@@ -1,0 +1,359 @@
+"use client";
+
+import { MainLayout, PageSubHeader } from "@/components/layout";
+import { ActionButtons, Button, Column, Dialog, NumberInput, Table, showAlert } from "@/components/ui";
+import { TextInput } from "@/components/ui/TextInput";
+import { Textarea } from "@/components/ui/Textarea";
+import { fetchAPI } from "@/lib/api";
+import { User, checkAuth, getStoredUser } from "@/lib/auth";
+import { API_ENDPOINTS } from "@/lib/endpoints";
+import { formatCurrency, formatDate, parseNumber } from "@/lib/utils";
+import { useCallback, useEffect, useState } from "react";
+
+interface Reconciliation {
+  id: number;
+  reconciliation_date: string;
+  bank_balance: number;
+  ledger_balance: number;
+  difference: number;
+  notes?: string;
+}
+
+export default function ReconciliationPage() {
+  const [user, setUser] = useState<User | null>(null);
+  const [reconciliations, setReconciliations] = useState<Reconciliation[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Dialogs
+  const [createDialog, setCreateDialog] = useState(false);
+  const [viewDialog, setViewDialog] = useState(false);
+  const [selectedReconciliation, setSelectedReconciliation] = useState<Reconciliation | null>(null);
+
+  // Form
+  const [reconciliationDate, setReconciliationDate] = useState(new Date().toISOString().split("T")[0]);
+  const [bankBalance, setBankBalance] = useState("");
+  const [reconciliationNotes, setReconciliationNotes] = useState("");
+  const [ledgerBalance, setLedgerBalance] = useState(0);
+
+  const itemsPerPage = 20;
+
+  const loadReconciliations = useCallback(async (page: number = 1) => {
+    try {
+      setIsLoading(true);
+      const response = await fetchAPI(`${API_ENDPOINTS.FINANCE.RECONCILIATION}?page=${page}&limit=${itemsPerPage}`);
+      if (response.success && response.data) {
+        setReconciliations(response.data as Reconciliation[]);
+        const total = Number(response.total) || 0;
+        setTotalPages(Math.ceil(total / itemsPerPage));
+        setCurrentPage(page);
+      } else {
+        showAlert("alert-container", response.message || "فشل تحميل التسويات", "error");
+      }
+    } catch {
+      showAlert("alert-container", "خطأ في الاتصال بالسيرفر", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const init = async () => {
+      const authenticated = await checkAuth();
+      if (!authenticated) return;
+
+      const storedUser = getStoredUser();
+      setUser(storedUser);
+      await loadReconciliations();
+    };
+    init();
+  }, [loadReconciliations]);
+
+  const openCreateDialog = () => {
+    setReconciliationDate(new Date().toISOString().split("T")[0]);
+    setBankBalance("");
+    setReconciliationNotes("");
+    setLedgerBalance(0);
+    setCreateDialog(true);
+  };
+
+  const calculateReconciliation = async () => {
+    if (!reconciliationDate) {
+      showAlert("alert-container", "يرجى إدخال تاريخ التسوية", "warning");
+      return;
+    }
+
+    try {
+      // Get ledger balance from API
+      const response = await fetchAPI(`${API_ENDPOINTS.FINANCE.RECONCILIATION}?action=calculate&date=${reconciliationDate}`);
+      if (response.success && response.data) {
+        setLedgerBalance((response.data as Reconciliation).ledger_balance || 0);
+      }
+    } catch {
+      // Ignore - will show in form
+    }
+  };
+
+  const saveReconciliation = async () => {
+    if (!reconciliationDate) {
+      showAlert("alert-container", "يرجى إدخال تاريخ التسوية", "warning");
+      return;
+    }
+
+    try {
+      const response = await fetchAPI(API_ENDPOINTS.FINANCE.RECONCILIATION, {
+        method: "POST",
+        body: JSON.stringify({
+          reconciliation_date: reconciliationDate,
+          bank_balance: parseNumber(bankBalance),
+          notes: reconciliationNotes,
+        }),
+      });
+
+      if (response.success) {
+        showAlert("alert-container", "تم حفظ التسوية بنجاح", "success");
+        setCreateDialog(false);
+        await loadReconciliations(1);
+      } else {
+        showAlert("alert-container", response.message || "فشل حفظ التسوية", "error");
+      }
+    } catch {
+      showAlert("alert-container", "خطأ في حفظ التسوية", "error");
+    }
+  };
+
+  const viewReconciliation = (reconciliation: Reconciliation) => {
+    setSelectedReconciliation(reconciliation);
+    setViewDialog(true);
+  };
+
+  const createAdjustment = async (reconciliationId: number) => {
+    const amount = prompt("أدخل مبلغ قيد التسوية:");
+    if (!amount || parseNumber(amount) <= 0) return;
+
+    const description = prompt("أدخل وصف قيد التسوية:");
+    if (!description) return;
+
+    const entryType = confirm("هل هذا مبلغ مدين؟ (نعم = مدين، لا = دائن)")
+      ? "DEBIT"
+      : "CREDIT";
+
+    try {
+      const response = await fetchAPI(`${API_ENDPOINTS.FINANCE.RECONCILIATION}?action=adjust`, {
+        method: "PUT",
+        body: JSON.stringify({
+          reconciliation_id: reconciliationId,
+          amount: parseNumber(amount),
+          entry_type: entryType,
+          description: description,
+        }),
+      });
+
+      if (response.success) {
+        showAlert("alert-container", "تم إنشاء قيد التسوية بنجاح", "success");
+        await loadReconciliations(currentPage);
+      } else {
+        showAlert("alert-container", response.message || "فشل إنشاء قيد التسوية", "error");
+      }
+    } catch {
+      showAlert("alert-container", "خطأ في إنشاء قيد التسوية", "error");
+    }
+  };
+
+  const getDifferenceClass = (diff: number) => {
+    return Math.abs(diff) < 0.01 ? "text-success" : "text-danger";
+  };
+
+  const columns: Column<Reconciliation>[] = [
+    {
+      key: "reconciliation_date",
+      header: "التاريخ",
+      dataLabel: "التاريخ",
+      render: (item) => formatDate(item.reconciliation_date),
+    },
+    {
+      key: "bank_balance",
+      header: "رصيد البنك",
+      dataLabel: "رصيد البنك",
+      render: (item) => formatCurrency(item.bank_balance),
+    },
+    {
+      key: "ledger_balance",
+      header: "رصيد الدفتر",
+      dataLabel: "رصيد الدفتر",
+      render: (item) => formatCurrency(item.ledger_balance),
+    },
+    {
+      key: "difference",
+      header: "الفرق",
+      dataLabel: "الفرق",
+      render: (item) => (
+        <span className={getDifferenceClass(item.difference)}>
+          {formatCurrency(item.difference)}
+        </span>
+      ),
+    },
+    {
+      key: "notes",
+      header: "ملاحظات",
+      dataLabel: "ملاحظات",
+      render: (item) => item.notes || "-",
+    },
+    {
+      key: "actions",
+      header: "الإجراءات",
+      dataLabel: "الإجراءات",
+      render: (item) => (
+        <ActionButtons
+          actions={[
+            {
+              icon: "eye",
+              title: "عرض",
+              variant: "view",
+              onClick: () => viewReconciliation(item)
+            },
+            {
+              icon: "edit",
+              title: "إنشاء قيد تسوية",
+              variant: "edit",
+              onClick: () => createAdjustment(item.id),
+              hidden: Math.abs(item.difference) <= 0.01
+            }
+          ]}
+        />
+      ),
+    },
+  ];
+
+  return (
+    <MainLayout>
+
+      <div id="alert-container"></div>
+
+      <div className="sales-card animate-fade">
+        <PageSubHeader
+          user={user}
+          actions={
+            <Button variant="primary" icon="plus" onClick={openCreateDialog}>
+              تسوية جديدة
+            </Button>
+          }
+        />
+        <Table
+          columns={columns}
+          data={reconciliations}
+          keyExtractor={(item) => item.id}
+          emptyMessage="لا توجد تسويات"
+          isLoading={isLoading}
+          pagination={{
+            currentPage,
+            totalPages,
+            onPageChange: loadReconciliations,
+          }}
+        />
+      </div>
+
+      {/* Create Reconciliation Dialog */}
+      <Dialog
+        isOpen={createDialog}
+        onClose={() => setCreateDialog(false)}
+        title="تسوية جديدة"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setCreateDialog(false)}>
+              إلغاء
+            </Button>
+            <Button variant="primary" onClick={saveReconciliation}>
+              حفظ
+            </Button>
+          </>
+        }
+      >
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            saveReconciliation();
+          }}
+          className="space-y-4"
+        >
+          <TextInput
+            type="date"
+            label="تاريخ التسوية *"
+            id="reconciliation-date"
+            value={reconciliationDate}
+            onChange={(e) => {
+              setReconciliationDate(e.target.value);
+              calculateReconciliation();
+            }}
+            required
+          />
+
+          <NumberInput
+            label="رصيد البنك *"
+            id="bank-balance"
+            value={bankBalance}
+            onChange={(val) => setBankBalance(val)}
+            step={0.01}
+            required
+          />
+
+          {ledgerBalance > 0 && (
+            <div className="summary-stat-box">
+              <div className="stat-item">
+                <span className="stat-label">رصيد الدفتر</span>
+                <span className="stat-value">{formatCurrency(ledgerBalance)}</span>
+              </div>
+            </div>
+          )}
+
+          <Textarea
+            label="ملاحظات"
+            id="reconciliation-notes"
+            value={reconciliationNotes}
+            onChange={(e) => setReconciliationNotes(e.target.value)}
+            rows={3}
+          />
+        </form>
+      </Dialog>
+
+      {/* View Reconciliation Dialog */}
+      <Dialog
+        isOpen={viewDialog}
+        onClose={() => setViewDialog(false)}
+        title="تفاصيل التسوية"
+      >
+        {selectedReconciliation && (
+          <div>
+            <div className="summary-stat-box">
+              <div className="stat-item">
+                <span className="stat-label">رصيد البنك</span>
+                <span className="stat-value">
+                  {formatCurrency(selectedReconciliation.bank_balance)}
+                </span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">رصيد الدفتر</span>
+                <span className="stat-value">
+                  {formatCurrency(selectedReconciliation.ledger_balance)}
+                </span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">الفرق</span>
+                <span className={`stat-value ${getDifferenceClass(selectedReconciliation.difference)}`}>
+                  {formatCurrency(selectedReconciliation.difference)}
+                </span>
+              </div>
+            </div>
+            {selectedReconciliation.notes && (
+              <p style={{ marginTop: "1rem" }}>
+                <strong>ملاحظات:</strong> {selectedReconciliation.notes}
+              </p>
+            )}
+          </div>
+        )}
+      </Dialog>
+    </MainLayout>
+  );
+}
+

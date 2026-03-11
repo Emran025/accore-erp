@@ -1,6 +1,7 @@
 // Authentication utilities - migrated from common.js
 
 import { useAuthStore } from "@/stores/useAuthStore";
+import { getAllNavigationLinks, navigationGroups } from "@/lib/navigation";
 
 /**
  * Represents a user in the system.
@@ -204,48 +205,18 @@ export async function logout(): Promise<void> {
   await useAuthStore.getState().logout();
 }
 
-/**
- * Filters the main navigation links based on the user's view permissions.
- * Implements RBAC (Role-Based Access Control) at the UI level.
- * 
- * @param {Permission[]} permissions List of permissions for the current user
- * @returns {Array<{ href: string; icon: string; label: string; module: string }>} Filtered links
- */
+
 export function getSidebarLinks(permissions: Permission[]): Array<{
   href: string;
   icon: string;
   label: string;
   module: string;
 }> {
-  const allLinks = [
-    { href: "/system/dashboard", icon: "dashboard", label: "لوحة التحكم", module: "dashboard" },
-    { href: "/sales/sales", icon: "cart", label: "المبيعات", module: "sales" },
-    { href: "/sales/deferred_sales", icon: "receipt", label: "المبيعات الآجلة", module: "deferred_sales" },
-    { href: "/sales/revenues", icon: "trending-up", label: "الإيرادات", module: "revenues" },
-    { href: "/inventory/products", icon: "box", label: "المنتجات", module: "products" },
-    { href: "/purchases/purchases", icon: "shopping-bag", label: "المشتريات", module: "purchases" },
-    { href: "/purchases/expenses", icon: "credit-card", label: "المصروفات", module: "expenses" },
-    { href: "/hr/employees", icon: "user", label: "الموظفين", module: "Workforce-Management" },
-    { href: "/hr/payroll", icon: "banknote", label: "الرواتب والمستحقات", module: "payroll" },
-    { href: "/ar_customers", icon: "user-plus", label: "عملاء الآجل", module: "ar_customers" },
-    { href: "/representatives", icon: "users", label: "المناديب (المبيعات)", module: "representatives" },
-    { href: "/finance/general_ledger", icon: "book-open", label: "دفتر الأستاذ", module: "general_ledger" },
-    { href: "/finance/chart_of_accounts", icon: "sitemap", label: "دليل الحسابات", module: "chart_of_accounts" },
-    { href: "/finance/journal_vouchers", icon: "file-signature", label: "سندات القيد", module: "journal_vouchers" },
-    { href: "/finance/fiscal_periods", icon: "calendar", label: "الفترات المالية", module: "fiscal_periods" },
-    { href: "/finance/accrual_accounting", icon: "timer", label: "المحاسبة الاستحقاقية", module: "accrual_accounting" },
-    { href: "/finance/reconciliation", icon: "scale", label: "التسوية البنكية", module: "reconciliation" },
-    { href: "/finance/assets", icon: "landmark", label: "الأصول", module: "assets" },
-    { href: "/system/reports", icon: "pie-chart", label: "الميزانية والتقارير", module: "reports" },
-    { href: "/system/audit_trail", icon: "activity", label: "سجل التدقيق", module: "audit_trail" },
-    { href: "/system/recurring_transactions", icon: "repeat", label: "المعاملات المتكررة", module: "recurring_transactions" },
-    { href: "/system/batch_processing", icon: "layers", label: "المعالجة الدفعية", module: "batch_processing" },
-    { href: "/suppliers", icon: "truck", label: "الموردين", module: "ap_suppliers" },
-    { href: "/finance/ap_ledger", icon: "hand-coins", label: "مدفوعات الموردين", module: "ap_suppliers" },
-    { href: "/system/settings", icon: "settings", label: "الإعدادات", module: "settings" },
-   // { href: "/finance/currency", icon: "currency", label: "العملات والسياسة النقدية", module: "currency" },
-  ];
-
-  return allLinks.filter((link) => canAccess(permissions, link.module, "view"));
+  try {
+    const allLinks = getAllNavigationLinks(navigationGroups);
+    return allLinks.filter((link) => canAccess(permissions, link.module || '', "view"));
+  } catch {
+    return [];
+  }
 }
 

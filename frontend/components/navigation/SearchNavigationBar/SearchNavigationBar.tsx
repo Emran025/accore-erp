@@ -8,7 +8,7 @@ import {
     NavigationLink,
     getAllNavigationLinks,
     getNavigationGroup
-} from "@/lib/navigation-config";
+} from "@/lib/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { canAccess } from "@/lib/auth";
 import { BreadcrumbTrail } from "./components/BreadcrumbTrail";

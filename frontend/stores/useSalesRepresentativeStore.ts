@@ -1,6 +1,6 @@
+import { SalesRepresentative } from '@/app/02-commercial/marketing-distribution/representatives/reps-list/(pages)/types';
 import { createCRUDStore } from './factories/createCRUDStore';
 import { API_ENDPOINTS } from '@/lib/endpoints';
-import { SalesRepresentative } from '@/app/representatives/types';
 
 export const useSalesRepresentativeStore = createCRUDStore<SalesRepresentative>({
     endpoint: API_ENDPOINTS.SALES.REPRESENTATIVES.BASE,
