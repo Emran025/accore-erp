@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
+use App\Domains\Commercial\Sales\Models\Invoice;
 
 return new class extends Migration
 {
@@ -22,11 +23,11 @@ return new class extends Migration
             return; // Tax tables not seeded yet
         }
 
-        $invoices = \App\Models\Invoice::with(['glEntries', 'items'])->get();
+        $invoices = Invoice::with(['glEntries', 'items'])->get();
 
         foreach ($invoices as $inv) {
             $exists = DB::table('tax_lines')
-                ->where('taxable_type', \App\Models\Invoice::class)
+                ->where('taxable_type', Invoice::class)
                 ->where('taxable_id', $inv->id)
                 ->exists();
 
@@ -63,7 +64,7 @@ return new class extends Migration
             $rate = $taxRate ? (float) $taxRate->rate : ($taxableAmount > 0 ? round($taxAmount / $taxableAmount, 4) : 0.15);
 
             DB::table('tax_lines')->insert([
-                'taxable_type' => \App\Models\Invoice::class,
+                'taxable_type' => Invoice::class,
                 'taxable_id' => $inv->id,
                 'tax_authority_id' => $authorityId,
                 'tax_type_id' => $vatTypeId,
@@ -84,7 +85,7 @@ return new class extends Migration
     public function down(): void
     {
         DB::table('tax_lines')
-            ->where('taxable_type', \App\Models\Invoice::class)
+            ->where('taxable_type', Invoice::class)
             ->where('metadata', 'like', '%"migrated":true%')
             ->delete();
     }

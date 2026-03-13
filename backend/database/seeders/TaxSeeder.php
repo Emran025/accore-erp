@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\TaxAuthority;
-use App\Models\TaxType;
-use App\Models\TaxRate;
+use App\Domains\Finance\Taxation\Models\TaxAuthority;
+use App\Domains\Finance\Taxation\Models\TaxType;
+use App\Domains\Finance\Taxation\Models\TaxRate;
 use Illuminate\Database\Seeder;
 
 /**
@@ -21,7 +21,7 @@ class TaxSeeder extends Seeder
             [
                 'name' => 'ZATCA - Saudi Tax Authority',
                 'country_code' => 'SA',
-                'adapter_class' => \App\Services\Tax\ZATCATaxAuthority::class,
+                'adapter_class' => \App\Domains\Finance\Taxation\Services\ZATCATaxAuthority::class,
                 'config' => null,
                 'is_active' => true,
                 'is_primary' => true,

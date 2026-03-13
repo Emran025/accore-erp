@@ -3,18 +3,18 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use App\Models\TaxAuthority;
-use App\Models\TaxType;
-use App\Models\TaxRate;
-use App\Models\Product;
-use App\Models\ArCustomer;
-use App\Models\Invoice;
-use App\Models\Setting;
-use App\Models\ChartOfAccount;
-use App\Models\GeneralLedger;
-use App\Models\User;
-use App\Services\SalesService;
-use App\Services\Tax\TaxCalculator;
+use App\Domains\Finance\Taxation\Models\TaxAuthority;
+use App\Domains\Finance\Taxation\Models\TaxType;
+use App\Domains\Finance\Taxation\Models\TaxRate;
+use App\Domains\SupplyChain\Inventory\Models\Product;
+use App\Domains\Commercial\AccountsReceivable\Models\ArCustomer;
+use App\Domains\Commercial\Sales\Models\Invoice;
+use App\Domains\EnterpriseCore\Governance\Models\Setting;
+use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
+use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
+use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\Commercial\Sales\Services\SalesService;
+use App\Domains\Finance\Taxation\Services\TaxCalculator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 
