@@ -3,10 +3,10 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Models\Invoice;
-use App\Models\ArCustomer;
-use App\Models\Product;
-use App\Models\FiscalPeriod;
+use App\Domains\Commercial\Sales\Models\Invoice;
+use App\Domains\Commercial\AccountsReceivable\Models\ArCustomer;
+use App\Domains\SupplyChain\Inventory\Models\Product;
+use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 

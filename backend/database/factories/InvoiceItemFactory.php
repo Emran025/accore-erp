@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\InvoiceItem;
-use App\Models\Invoice;
-use App\Models\Product;
+use App\Domains\Commercial\Sales\Models\InvoiceItem;
+use App\Domains\Commercial\Sales\Models\Invoice;
+use App\Domains\SupplyChain\Inventory\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\InvoiceItem>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Commercial\Sales\Models\InvoiceItem>
  */
 class InvoiceItemFactory extends Factory
 {

@@ -2,9 +2,9 @@
 
 namespace App\Policies;
 
-use App\Models\User;
-use App\Models\Invoice;
-use App\Models\FiscalPeriod;
+use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\Commercial\Sales\Models\Invoice;
+use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
 
 class InvoicePolicy
 {

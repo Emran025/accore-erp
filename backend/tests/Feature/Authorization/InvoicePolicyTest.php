@@ -3,18 +3,18 @@
 namespace Tests\Feature\Authorization;
 
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\Invoice;
-use App\Models\Module;
-use App\Models\FiscalPeriod;
-use App\Models\GeneralLedger;
-use App\Models\ChartOfAccount;
-use App\Models\ArTransaction;
-use App\Models\UniversalJournal;
-use App\Models\Role;
+use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\Commercial\Sales\Models\Invoice;
+use App\Domains\EnterpriseCore\Governance\Models\Module;
+use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
+use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
+use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
+use App\Domains\Commercial\AccountsReceivable\Models\ArTransaction;
+use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
+use App\Domains\EnterpriseCore\IAM\Models\Role;
 use App\Policies\InvoicePolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Services\ChartOfAccountsMappingService;
+use App\Domains\Finance\ChartOfAccounts\Services\ChartOfAccountsMappingService;
 /**
  * Test InvoicePolicy authorization rules
  */
@@ -178,7 +178,7 @@ class InvoicePolicyTest extends TestCase
 
         // Grant "sales.delete" permission to owner's role
         $role = $this->owner->roleRelation;
-        $module = \App\Models\Module::firstOrCreate(
+        $module = \App\Domains\EnterpriseCore\Governance\Models\Module::firstOrCreate(
             ['module_key' => 'sales'],
             [
                 'module_name_ar' => 'المبيعات',
