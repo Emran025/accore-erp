@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\CurrencyPolicy;
+use App\Domains\Finance\CurrencyPolicy\Models\CurrencyPolicy;
 use App\Enums\ConversionTiming;
 use App\Enums\CurrencyPolicyType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CurrencyPolicy>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Finance\CurrencyPolicy\Models\CurrencyPolicy>
  */
 class CurrencyPolicyFactory extends Factory
 {

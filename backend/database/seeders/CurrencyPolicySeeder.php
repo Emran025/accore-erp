@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\CurrencyPolicy;
 use Illuminate\Database\Seeder;
+use App\Domains\Finance\CurrencyPolicy\Models\CurrencyPolicy;
 
 /**
  * Currency Policy Seeder

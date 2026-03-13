@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Currency;
-use App\Models\CurrencyDenomination;
+use App\Domains\Finance\Currency\Models\Currency;
+use App\Domains\Finance\Currency\Models\CurrencyDenomination;
 
 class CurrencySeeder extends Seeder
 {
