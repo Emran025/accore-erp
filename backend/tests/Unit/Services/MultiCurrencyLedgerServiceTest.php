@@ -3,13 +3,13 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Models\Currency;
-use App\Models\CurrencyPolicy;
-use App\Models\CurrencyExchangeRateHistory;
-use App\Models\FiscalPeriod;
-use App\Services\MultiCurrencyLedgerService;
-use App\Services\LedgerService;
-use App\Services\CurrencyPolicyService;
+use App\Domains\Finance\Currency\Models\Currency;
+use App\Domains\Finance\CurrencyPolicy\Models\CurrencyPolicy;
+use App\Domains\Finance\Currency\Models\CurrencyExchangeRateHistory;
+use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
+use App\Domains\Finance\GeneralLedger\Services\MultiCurrencyLedgerService;
+use App\Domains\Finance\GeneralLedger\Services\LedgerService;
+use App\Domains\Finance\CurrencyPolicy\Services\CurrencyPolicyService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 

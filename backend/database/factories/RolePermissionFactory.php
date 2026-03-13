@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\RolePermission;
-use App\Models\Role;
-use App\Models\Module;
+use App\Domains\EnterpriseCore\IAM\Models\RolePermission;
+use App\Domains\EnterpriseCore\IAM\Models\Role;
+use App\Domains\EnterpriseCore\Governance\Models\Module;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class RolePermissionFactory extends Factory

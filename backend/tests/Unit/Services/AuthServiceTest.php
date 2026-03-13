@@ -3,11 +3,11 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\Session;
-use App\Models\LoginAttempt;
-use App\Services\AuthService;
-use App\Services\PermissionService;
+use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\EnterpriseCore\IAM\Models\Session;
+use App\Domains\EnterpriseCore\IAM\Models\LoginAttempt;
+use App\Domains\EnterpriseCore\IAM\Services\AuthService;
+use App\Domains\EnterpriseCore\IAM\Services\PermissionService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 

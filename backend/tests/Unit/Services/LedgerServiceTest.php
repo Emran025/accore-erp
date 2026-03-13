@@ -3,11 +3,11 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\ChartOfAccount;
-use App\Models\GeneralLedger;
-use App\Models\UniversalJournal;
-use App\Services\LedgerService;
+use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
+use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
+use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
+use App\Domains\Finance\GeneralLedger\Services\LedgerService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class LedgerServiceTest extends TestCase
@@ -123,20 +123,20 @@ class LedgerServiceTest extends TestCase
         $offsetAccount = ChartOfAccount::factory()->revenue()->create();
         
         // Add some debit entries
-        \App\Models\UniversalJournal::factory()->create(['voucher_number' => 'JV-001', 'document_type' => 'MANUAL']);
+        \App\Domains\Finance\GeneralLedger\Models\UniversalJournal::factory()->create(['voucher_number' => 'JV-001', 'document_type' => 'MANUAL']);
         $this->ledgerService->postTransaction([
             ['account_code' => $account->account_code, 'entry_type' => 'DEBIT', 'amount' => 500],
             ['account_code' => $offsetAccount->account_code, 'entry_type' => 'CREDIT', 'amount' => 500],
         ], 'MANUAL', null, 'JV-001');
         
-        \App\Models\UniversalJournal::factory()->create(['voucher_number' => 'JV-002', 'document_type' => 'MANUAL']);
+        \App\Domains\Finance\GeneralLedger\Models\UniversalJournal::factory()->create(['voucher_number' => 'JV-002', 'document_type' => 'MANUAL']);
         $this->ledgerService->postTransaction([
             ['account_code' => $account->account_code, 'entry_type' => 'DEBIT', 'amount' => 300],
             ['account_code' => $offsetAccount->account_code, 'entry_type' => 'CREDIT', 'amount' => 300],
         ], 'MANUAL', null, 'JV-002');
 
         // Add a credit entry
-        \App\Models\UniversalJournal::factory()->create(['voucher_number' => 'JV-003', 'document_type' => 'MANUAL']);
+        \App\Domains\Finance\GeneralLedger\Models\UniversalJournal::factory()->create(['voucher_number' => 'JV-003', 'document_type' => 'MANUAL']);
         $this->ledgerService->postTransaction([
             ['account_code' => $account->account_code, 'entry_type' => 'CREDIT', 'amount' => 200],
             ['account_code' => $offsetAccount->account_code, 'entry_type' => 'DEBIT', 'amount' => 200],

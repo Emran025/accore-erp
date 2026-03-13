@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Models\GeneralLedger;
-use App\Models\ChartOfAccount;
-use App\Models\User;
-use App\Models\UniversalJournal;
+use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
+use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
+use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class GeneralLedgerFactory extends Factory

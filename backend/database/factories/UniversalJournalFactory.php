@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\UniversalJournal;
+use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class UniversalJournalFactory extends Factory

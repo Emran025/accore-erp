@@ -3,10 +3,9 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Role;
-use App\Models\Module;
-use App\Models\RolePermission;
-use Illuminate\Support\Facades\DB;
+use App\Domains\EnterpriseCore\IAM\Models\Role;
+use App\Domains\EnterpriseCore\Governance\Models\Module;
+use App\Domains\EnterpriseCore\IAM\Models\RolePermission;
 
 class PermissionSeeder extends Seeder
 {

@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Module;
+use App\Domains\EnterpriseCore\Governance\Models\Module;
 
 class ModuleSeeder extends Seeder
 {
@@ -20,8 +20,10 @@ class ModuleSeeder extends Seeder
             ['module_key' => 'products', 'module_name_ar' => 'المنتجات', 'module_name_en' => 'Products', 'category' => 'inventory', 'icon' => 'box', 'sort_order' => 20],
             ['module_key' => 'purchases', 'module_name_ar' => 'المشتريات', 'module_name_en' => 'Purchases', 'category' => 'purchases', 'icon' => 'download', 'sort_order' => 30],
             ['module_key' => 'expenses', 'module_name_ar' => 'المصروفات', 'module_name_en' => 'Expenses', 'category' => 'purchases', 'icon' => 'dollar', 'sort_order' => 31],
-            ['module_key' => 'ar_customers', 'module_name_ar' => 'العملاء والديون', 'module_name_en' => 'AR Customers', 'category' => 'people', 'icon' => 'users', 'sort_order' => 40],
-            ['module_key' => 'ap_suppliers', 'module_name_ar' => 'الموردين', 'module_name_en' => 'AP Suppliers', 'category' => 'people', 'icon' => 'users', 'sort_order' => 41],
+            ['module_key' => 'ar_transactions', 'module_name_ar' => 'تحويلات العملاء', 'module_name_en' => 'AR Transactions', 'category' => 'people', 'icon' => 'users', 'sort_order' => 40],
+            ['module_key' => 'ar_customers', 'module_name_ar' => 'العملاء والديون', 'module_name_en' => 'AR Customers', 'category' => 'people', 'icon' => 'users', 'sort_order' => 41],
+            ['module_key' => 'ap_transactions', 'module_name_ar' => 'تحويلات الموردين', 'module_name_en' => 'AP Transactions', 'category' => 'people', 'icon' => 'users', 'sort_order' => 42],
+            ['module_key' => 'ap_suppliers', 'module_name_ar' => 'الموردين', 'module_name_en' => 'AP Suppliers', 'category' => 'people', 'icon' => 'users', 'sort_order' => 43],
             ['module_key' => 'chart_of_accounts', 'module_name_ar' => 'دليل الحسابات', 'module_name_en' => 'Chart of Accounts', 'category' => 'finance', 'icon' => 'box', 'sort_order' => 50],
             ['module_key' => 'general_ledger', 'module_name_ar' => 'دفتر الأستاذ العام', 'module_name_en' => 'General Ledger', 'category' => 'finance', 'icon' => 'dollar', 'sort_order' => 51],
             ['module_key' => 'journal_vouchers', 'module_name_ar' => 'سندات القيد', 'module_name_en' => 'Journal Vouchers', 'category' => 'finance', 'icon' => 'edit', 'sort_order' => 52],
