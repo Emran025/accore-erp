@@ -3,9 +3,9 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Models\RecurringTransaction;
-use App\Models\FiscalPeriod;
-use App\Models\GeneralLedger;
+use App\Domains\Finance\JournalVouchers\Models\RecurringTransaction;
+use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
+use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 

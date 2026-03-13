@@ -2,9 +2,9 @@
 
 namespace App\Policies;
 
-use App\Models\User;
-use App\Models\FiscalPeriod;
-use App\Models\GeneralLedger;
+use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
+use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 
 class JournalVoucherPolicy
 {
