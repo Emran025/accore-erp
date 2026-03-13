@@ -1,31 +1,37 @@
 <?php
 
+use App\Http\Controllers\Api\V2\AssetManagement\EmployeeAssetsController;
+use App\Http\Controllers\Api\V2\DigitalPlatform\Compliance\QaComplianceController;
+use App\Http\Controllers\Api\V2\EnterpriseCore\Governance\EhsController;
+use App\Http\Controllers\Api\V2\Finance\Expenses\TravelExpenseController;
+use App\Http\Controllers\Api\V2\HumanCapital\Communications\CorporateCommunicationsController;
+use App\Http\Controllers\Api\V2\HumanCapital\Communications\KnowledgeManagementController;
+use App\Http\Controllers\Api\V2\HumanCapital\DocumentManagement\DocumentTemplateController;
+use App\Http\Controllers\Api\V2\HumanCapital\Payroll\CompensationController;
+use App\Http\Controllers\Api\V2\HumanCapital\Payroll\EmployeeLoansController;
+use App\Http\Controllers\Api\V2\HumanCapital\Payroll\EOSBController;
+use App\Http\Controllers\Api\V2\HumanCapital\Payroll\PayrollComponentsController;
+use App\Http\Controllers\Api\V2\HumanCapital\Payroll\PayrollController;
+use App\Http\Controllers\Api\V2\HumanCapital\Payroll\PostPayrollController;
+use App\Http\Controllers\Api\V2\HumanCapital\TalentAcquisition\OnboardingController;
+use App\Http\Controllers\Api\V2\HumanCapital\TalentAcquisition\RecruitmentController;
+use App\Http\Controllers\Api\V2\HumanCapital\TalentDevelopment\LearningController;
+use App\Http\Controllers\Api\V2\HumanCapital\TalentDevelopment\PerformanceController;
+use App\Http\Controllers\Api\V2\HumanCapital\TalentDevelopment\SuccessionController;
+use App\Http\Controllers\Api\V2\HumanCapital\TimeAndAttendance\AttendanceController;
+use App\Http\Controllers\Api\V2\HumanCapital\TimeAndAttendance\BiometricController;
+use App\Http\Controllers\Api\V2\HumanCapital\TimeAndAttendance\LeaveController;
+use App\Http\Controllers\Api\V2\HumanCapital\TimeAndAttendance\WorkforceSchedulingController;
+use App\Http\Controllers\Api\V2\HumanCapital\WorkforceAdmin\BenefitsController;
+use App\Http\Controllers\Api\V2\HumanCapital\WorkforceAdmin\ContingentWorkersController;
+use App\Http\Controllers\Api\V2\HumanCapital\WorkforceAdmin\DepartmentsController;
+use App\Http\Controllers\Api\V2\HumanCapital\WorkforceAdmin\EmployeeContractsController;
+use App\Http\Controllers\Api\V2\HumanCapital\WorkforceAdmin\EmployeeRelationsController;
+use App\Http\Controllers\Api\V2\HumanCapital\WorkforceAdmin\EmployeesController;
+use App\Http\Controllers\Api\V2\HumanCapital\WorkforceAdmin\ExpatManagementController;
+use App\Http\Controllers\Api\V2\HumanCapital\WorkforceAdmin\HrAdministrationController;
+use App\Http\Controllers\Api\V2\HumanCapital\WorkforceAdmin\WellnessController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\EmployeesController;
-use App\Http\Controllers\Api\DepartmentsController;
-use App\Http\Controllers\Api\PayrollController;
-use App\Http\Controllers\Api\AttendanceController;
-use App\Http\Controllers\Api\LeaveController;
-use App\Http\Controllers\Api\EOSBController;
-use App\Http\Controllers\Api\PayrollComponentsController;
-use App\Http\Controllers\Api\RecruitmentController;
-use App\Http\Controllers\Api\EmployeeContractsController;
-use App\Http\Controllers\Api\EmployeeAssetsController;
-use App\Http\Controllers\Api\ExpatManagementController;
-use App\Http\Controllers\Api\OnboardingController;
-use App\Http\Controllers\Api\ContingentWorkersController;
-use App\Http\Controllers\Api\QaComplianceController;
-use App\Http\Controllers\Api\WorkforceSchedulingController;
-use App\Http\Controllers\Api\EmployeeRelationsController;
-use App\Http\Controllers\Api\TravelExpenseController;
-use App\Http\Controllers\Api\EmployeeLoansController;
-use App\Http\Controllers\Api\PerformanceController;
-use App\Http\Controllers\Api\LearningController;
-use App\Http\Controllers\Api\CorporateCommunicationsController;
-use App\Http\Controllers\Api\EhsController;
-use App\Http\Controllers\Api\WellnessController;
-use App\Http\Controllers\Api\CompensationController;
-use App\Http\Controllers\Api\SuccessionController;
 
 // HR & Payroll
 Route::middleware('can:employees,view')->get('/employees', [EmployeesController::class, 'index'])->name('api.employees.index');
@@ -231,72 +237,72 @@ Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/compen
 Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/compensation/entries/{id}/status', [CompensationController::class, 'updateEntryStatus'])->name('api.compensation.entries.status');
 
 // Benefits Administration
-Route::middleware('can:employees,view')->get('/benefits/plans', [\App\Http\Controllers\Api\BenefitsController::class, 'indexPlans'])->name('api.benefits.plans.index');
-Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/benefits/plans', [\App\Http\Controllers\Api\BenefitsController::class, 'storePlan'])->name('api.benefits.plans.store');
-Route::middleware('can:employees,view')->get('/benefits/plans/{id}', [\App\Http\Controllers\Api\BenefitsController::class, 'showPlan'])->name('api.benefits.plans.show');
-Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/benefits/plans/{id}', [\App\Http\Controllers\Api\BenefitsController::class, 'updatePlan'])->name('api.benefits.plans.update');
-Route::middleware('can:employees,view')->get('/benefits/enrollments', [\App\Http\Controllers\Api\BenefitsController::class, 'indexEnrollments'])->name('api.benefits.enrollments.index');
-Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/benefits/enrollments', [\App\Http\Controllers\Api\BenefitsController::class, 'storeEnrollment'])->name('api.benefits.enrollments.store');
-Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/benefits/enrollments/{id}', [\App\Http\Controllers\Api\BenefitsController::class, 'updateEnrollment'])->name('api.benefits.enrollments.update');
+Route::middleware('can:employees,view')->get('/benefits/plans', [BenefitsController::class, 'indexPlans'])->name('api.benefits.plans.index');
+Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/benefits/plans', [BenefitsController::class, 'storePlan'])->name('api.benefits.plans.store');
+Route::middleware('can:employees,view')->get('/benefits/plans/{id}', [BenefitsController::class, 'showPlan'])->name('api.benefits.plans.show');
+Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/benefits/plans/{id}', [BenefitsController::class, 'updatePlan'])->name('api.benefits.plans.update');
+Route::middleware('can:employees,view')->get('/benefits/enrollments', [BenefitsController::class, 'indexEnrollments'])->name('api.benefits.enrollments.index');
+Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/benefits/enrollments', [BenefitsController::class, 'storeEnrollment'])->name('api.benefits.enrollments.store');
+Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/benefits/enrollments/{id}', [BenefitsController::class, 'updateEnrollment'])->name('api.benefits.enrollments.update');
 
 // Post-Payroll Integrations
-Route::middleware('can:payroll,view')->get('/post-payroll', [\App\Http\Controllers\Api\PostPayrollController::class, 'index']);
-Route::middleware(['can:payroll,create', 'throttle:api-sensitive'])->post('/post-payroll', [\App\Http\Controllers\Api\PostPayrollController::class, 'store']);
-Route::middleware(['can:payroll,edit', 'throttle:api-critical'])->post('/post-payroll/{id}/process', [\App\Http\Controllers\Api\PostPayrollController::class, 'process']);
-Route::middleware(['can:payroll,edit', 'throttle:api-critical'])->post('/post-payroll/{id}/reconcile', [\App\Http\Controllers\Api\PostPayrollController::class, 'reconcile']);
+Route::middleware('can:payroll,view')->get('/post-payroll', [PostPayrollController::class, 'index']);
+Route::middleware(['can:payroll,create', 'throttle:api-sensitive'])->post('/post-payroll', [PostPayrollController::class, 'store']);
+Route::middleware(['can:payroll,edit', 'throttle:api-critical'])->post('/post-payroll/{id}/process', [PostPayrollController::class, 'process']);
+Route::middleware(['can:payroll,edit', 'throttle:api-critical'])->post('/post-payroll/{id}/reconcile', [PostPayrollController::class, 'reconcile']);
 
 // Knowledge Management
-Route::middleware('can:employees,view')->get('/knowledge-base', [\App\Http\Controllers\Api\KnowledgeManagementController::class, 'indexKnowledgeBase']);
-Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/knowledge-base', [\App\Http\Controllers\Api\KnowledgeManagementController::class, 'storeKnowledgeBase']);
-Route::middleware('can:employees,view')->get('/knowledge-base/{id}', [\App\Http\Controllers\Api\KnowledgeManagementController::class, 'showKnowledgeBase']);
-Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/knowledge-base/{id}', [\App\Http\Controllers\Api\KnowledgeManagementController::class, 'updateKnowledgeBase']);
-Route::middleware(['can:employees,edit', 'throttle:api-write'])->post('/knowledge-base/{id}/helpful', [\App\Http\Controllers\Api\KnowledgeManagementController::class, 'markHelpful']);
-Route::middleware('can:employees,view')->get('/expertise', [\App\Http\Controllers\Api\KnowledgeManagementController::class, 'indexExpertise']);
-Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/expertise', [\App\Http\Controllers\Api\KnowledgeManagementController::class, 'storeExpertise']);
-Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/expertise/{id}', [\App\Http\Controllers\Api\KnowledgeManagementController::class, 'updateExpertise']);
+Route::middleware('can:employees,view')->get('/knowledge-base', [KnowledgeManagementController::class, 'indexKnowledgeBase']);
+Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/knowledge-base', [KnowledgeManagementController::class, 'storeKnowledgeBase']);
+Route::middleware('can:employees,view')->get('/knowledge-base/{id}', [KnowledgeManagementController::class, 'showKnowledgeBase']);
+Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/knowledge-base/{id}', [KnowledgeManagementController::class, 'updateKnowledgeBase']);
+Route::middleware(['can:employees,edit', 'throttle:api-write'])->post('/knowledge-base/{id}/helpful', [KnowledgeManagementController::class, 'markHelpful']);
+Route::middleware('can:employees,view')->get('/expertise', [KnowledgeManagementController::class, 'indexExpertise']);
+Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/expertise', [KnowledgeManagementController::class, 'storeExpertise']);
+Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/expertise/{id}', [KnowledgeManagementController::class, 'updateExpertise']);
 
 // Document Templates
-Route::middleware('can:employees,view')->get('/document-templates', [\App\Http\Controllers\Api\DocumentTemplateController::class, 'index']);
-Route::middleware('can:employees,view')->get('/document-templates/approved-keys', [\App\Http\Controllers\Api\DocumentTemplateController::class, 'getApprovedKeys']);
-Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/document-templates', [\App\Http\Controllers\Api\DocumentTemplateController::class, 'store']);
-Route::middleware('can:employees,view')->get('/document-templates/{id}', [\App\Http\Controllers\Api\DocumentTemplateController::class, 'show']);
-Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/document-templates/{id}', [\App\Http\Controllers\Api\DocumentTemplateController::class, 'update']);
-Route::middleware(['can:employees,delete', 'throttle:api-delete'])->delete('/document-templates/{id}', [\App\Http\Controllers\Api\DocumentTemplateController::class, 'destroy']);
-Route::middleware(['can:employees,view', 'throttle:api-write'])->post('/document-templates/{id}/render', [\App\Http\Controllers\Api\DocumentTemplateController::class, 'render']);
+Route::middleware('can:employees,view')->get('/document-templates', [DocumentTemplateController::class, 'index']);
+Route::middleware('can:employees,view')->get('/document-templates/approved-keys', [DocumentTemplateController::class, 'getApprovedKeys']);
+Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/document-templates', [DocumentTemplateController::class, 'store']);
+Route::middleware('can:employees,view')->get('/document-templates/{id}', [DocumentTemplateController::class, 'show']);
+Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/document-templates/{id}', [DocumentTemplateController::class, 'update']);
+Route::middleware(['can:employees,delete', 'throttle:api-delete'])->delete('/document-templates/{id}', [DocumentTemplateController::class, 'destroy']);
+Route::middleware(['can:employees,view', 'throttle:api-write'])->post('/document-templates/{id}/render', [DocumentTemplateController::class, 'render']);
 
 // Biometric Device Management
-Route::middleware('can:attendance,view')->get('/biometric/devices', [\App\Http\Controllers\Api\BiometricController::class, 'indexDevices']);
-Route::middleware(['can:attendance,create', 'throttle:api-write'])->post('/biometric/devices', [\App\Http\Controllers\Api\BiometricController::class, 'storeDevice']);
-Route::middleware(['can:attendance,edit', 'throttle:api-write'])->put('/biometric/devices/{id}', [\App\Http\Controllers\Api\BiometricController::class, 'updateDevice']);
-Route::middleware(['can:attendance,delete', 'throttle:api-delete'])->delete('/biometric/devices/{id}', [\App\Http\Controllers\Api\BiometricController::class, 'destroyDevice']);
-Route::middleware(['can:attendance,edit', 'throttle:api-write'])->post('/biometric/devices/{id}/sync', [\App\Http\Controllers\Api\BiometricController::class, 'syncDevice']);
-Route::middleware('can:attendance,view')->get('/biometric/sync-logs', [\App\Http\Controllers\Api\BiometricController::class, 'syncLogs']);
-Route::middleware(['can:attendance,create', 'throttle:api-critical'])->post('/biometric/import', [\App\Http\Controllers\Api\BiometricController::class, 'importFromFile']);
+Route::middleware('can:attendance,view')->get('/biometric/devices', [BiometricController::class, 'indexDevices']);
+Route::middleware(['can:attendance,create', 'throttle:api-write'])->post('/biometric/devices', [BiometricController::class, 'storeDevice']);
+Route::middleware(['can:attendance,edit', 'throttle:api-write'])->put('/biometric/devices/{id}', [BiometricController::class, 'updateDevice']);
+Route::middleware(['can:attendance,delete', 'throttle:api-delete'])->delete('/biometric/devices/{id}', [BiometricController::class, 'destroyDevice']);
+Route::middleware(['can:attendance,edit', 'throttle:api-write'])->post('/biometric/devices/{id}/sync', [BiometricController::class, 'syncDevice']);
+Route::middleware('can:attendance,view')->get('/biometric/sync-logs', [BiometricController::class, 'syncLogs']);
+Route::middleware(['can:attendance,create', 'throttle:api-critical'])->post('/biometric/import', [BiometricController::class, 'importFromFile']);
 
 // HR Administration - Job Titles & Capacity Planning
-Route::middleware('can:employees,view')->get('/job-titles', [\App\Http\Controllers\Api\HrAdministrationController::class, 'indexJobTitles']);
-Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/job-titles', [\App\Http\Controllers\Api\HrAdministrationController::class, 'storeJobTitle']);
-Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/job-titles/{id}', [\App\Http\Controllers\Api\HrAdministrationController::class, 'updateJobTitle']);
-Route::middleware(['can:employees,delete', 'throttle:api-delete'])->delete('/job-titles/{id}', [\App\Http\Controllers\Api\HrAdministrationController::class, 'destroyJobTitle']);
+Route::middleware('can:employees,view')->get('/job-titles', [HrAdministrationController::class, 'indexJobTitles']);
+Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/job-titles', [HrAdministrationController::class, 'storeJobTitle']);
+Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/job-titles/{id}', [HrAdministrationController::class, 'updateJobTitle']);
+Route::middleware(['can:employees,delete', 'throttle:api-delete'])->delete('/job-titles/{id}', [HrAdministrationController::class, 'destroyJobTitle']);
 
 // HR Administration - Positions (Central Hierarchy Link: Employee ← Position ← Role ← Permissions, Position ← JobTitle)
-Route::middleware('can:employees,view')->get('/positions', [\App\Http\Controllers\Api\HrAdministrationController::class, 'indexPositions']);
-Route::middleware('can:employees,view')->get('/positions/{id}', [\App\Http\Controllers\Api\HrAdministrationController::class, 'showPosition']);
-Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/positions', [\App\Http\Controllers\Api\HrAdministrationController::class, 'storePosition']);
-Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/positions/{id}', [\App\Http\Controllers\Api\HrAdministrationController::class, 'updatePosition']);
-Route::middleware(['can:employees,delete', 'throttle:api-delete'])->delete('/positions/{id}', [\App\Http\Controllers\Api\HrAdministrationController::class, 'destroyPosition']);
-Route::middleware(['can:employees,edit', 'throttle:api-sensitive'])->post('/positions/assign-employee', [\App\Http\Controllers\Api\HrAdministrationController::class, 'assignEmployeeToPosition']);
-Route::middleware(['can:employees,edit', 'throttle:api-delete'])->delete('/positions/unassign-employee/{employeeId}', [\App\Http\Controllers\Api\HrAdministrationController::class, 'unassignEmployeeFromPosition']);
+Route::middleware('can:employees,view')->get('/positions', [HrAdministrationController::class, 'indexPositions']);
+Route::middleware('can:employees,view')->get('/positions/{id}', [HrAdministrationController::class, 'showPosition']);
+Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/positions', [HrAdministrationController::class, 'storePosition']);
+Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/positions/{id}', [HrAdministrationController::class, 'updatePosition']);
+Route::middleware(['can:employees,delete', 'throttle:api-delete'])->delete('/positions/{id}', [HrAdministrationController::class, 'destroyPosition']);
+Route::middleware(['can:employees,edit', 'throttle:api-sensitive'])->post('/positions/assign-employee', [HrAdministrationController::class, 'assignEmployeeToPosition']);
+Route::middleware(['can:employees,edit', 'throttle:api-delete'])->delete('/positions/unassign-employee/{employeeId}', [HrAdministrationController::class, 'unassignEmployeeFromPosition']);
 
 // HR Administration - Permission Templates
-Route::middleware('can:employees,view')->get('/permission-templates', [\App\Http\Controllers\Api\HrAdministrationController::class, 'indexTemplates']);
-Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/permission-templates', [\App\Http\Controllers\Api\HrAdministrationController::class, 'storeTemplate']);
-Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/permission-templates/{id}', [\App\Http\Controllers\Api\HrAdministrationController::class, 'updateTemplate']);
-Route::middleware(['can:employees,edit', 'throttle:api-sensitive'])->post('/permission-templates/apply', [\App\Http\Controllers\Api\HrAdministrationController::class, 'applyTemplateToRole']);
+Route::middleware('can:employees,view')->get('/permission-templates', [HrAdministrationController::class, 'indexTemplates']);
+Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/permission-templates', [HrAdministrationController::class, 'storeTemplate']);
+Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/permission-templates/{id}', [HrAdministrationController::class, 'updateTemplate']);
+Route::middleware(['can:employees,edit', 'throttle:api-sensitive'])->post('/permission-templates/apply', [HrAdministrationController::class, 'applyTemplateToRole']);
 
 // Employee File Management (enhanced)
-Route::middleware('can:employees,view')->get('/employee-files/{employeeId}', [\App\Http\Controllers\Api\EmployeesController::class, 'getDocuments']);
-Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/employee-files/{employeeId}', [\App\Http\Controllers\Api\EmployeesController::class, 'uploadDocument']);
-Route::middleware('can:employees,view')->get('/employee-files/{employeeId}/download/{documentId}', [\App\Http\Controllers\Api\EmployeesController::class, 'downloadDocument']);
-Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/employee-files/{employeeId}/{documentId}', [\App\Http\Controllers\Api\EmployeesController::class, 'updateDocument']);
-Route::middleware(['can:employees,delete', 'throttle:api-delete'])->delete('/employee-files/{employeeId}/{documentId}', [\App\Http\Controllers\Api\EmployeesController::class, 'destroyDocument']);
+Route::middleware('can:employees,view')->get('/employee-files/{employeeId}', [EmployeesController::class, 'getDocuments']);
+Route::middleware(['can:employees,create', 'throttle:api-write'])->post('/employee-files/{employeeId}', [EmployeesController::class, 'uploadDocument']);
+Route::middleware('can:employees,view')->get('/employee-files/{employeeId}/download/{documentId}', [EmployeesController::class, 'downloadDocument']);
+Route::middleware(['can:employees,edit', 'throttle:api-write'])->put('/employee-files/{employeeId}/{documentId}', [EmployeesController::class, 'updateDocument']);
+Route::middleware(['can:employees,delete', 'throttle:api-delete'])->delete('/employee-files/{employeeId}/{documentId}', [EmployeesController::class, 'destroyDocument']);

@@ -1,10 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\V2\SupplyChain\Inventory\BatchController;
+use App\Http\Controllers\Api\V2\SupplyChain\Inventory\CategoriesController;
+use App\Http\Controllers\Api\V2\SupplyChain\Inventory\PeriodicInventoryController;
+use App\Http\Controllers\Api\V2\SupplyChain\Inventory\ProductsController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\ProductsController;
-use App\Http\Controllers\Api\CategoriesController;
-use App\Http\Controllers\Api\BatchController;
-use App\Http\Controllers\Api\PeriodicInventoryController;
 
 // Products
 Route::middleware('can:products,view')->get('/products', [ProductsController::class, 'index'])->name('api.products.index');

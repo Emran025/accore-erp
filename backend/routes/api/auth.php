@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\V2\EnterpriseCore\IAM\AuthController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\AuthController;
 
 // Auth routes with strict rate limiting (by IP)
 Route::post('/login', [AuthController::class, 'login'])

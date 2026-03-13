@@ -1,19 +1,19 @@
 <?php
 
+use App\Http\Controllers\Api\V2\AssetManagement\AssetsController;
+use App\Http\Controllers\Api\V2\Finance\Accrual\AccrualAccountingController;
+use App\Http\Controllers\Api\V2\Finance\BankReconciliation\BankReconciliationController;
+use App\Http\Controllers\Api\V2\Finance\ChartOfAccounts\ChartOfAccountsController;
+use App\Http\Controllers\Api\V2\Finance\CostProfitCenters\CostProfitCenterController;
+use App\Http\Controllers\Api\V2\Finance\Currency\CurrencyController;
+use App\Http\Controllers\Api\V2\Finance\CurrencyPolicy\CurrencyPolicyController;
+use App\Http\Controllers\Api\V2\Finance\Expenses\ExpensesController;
+use App\Http\Controllers\Api\V2\Finance\FiscalPeriods\FiscalPeriodsController;
+use App\Http\Controllers\Api\V2\Finance\GeneralLedger\GeneralLedgerController;
+use App\Http\Controllers\Api\V2\Finance\GeneralLedger\RecurringTransactionsController;
+use App\Http\Controllers\Api\V2\Finance\JournalVouchers\JournalVouchersController;
+use App\Http\Controllers\Api\V2\Finance\Revenues\RevenuesController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\GeneralLedgerController;
-use App\Http\Controllers\Api\JournalVouchersController;
-use App\Http\Controllers\Api\FiscalPeriodsController;
-use App\Http\Controllers\Api\ChartOfAccountsController;
-use App\Http\Controllers\Api\AccrualAccountingController;
-use App\Http\Controllers\Api\BankReconciliationController;
-use App\Http\Controllers\Api\RecurringTransactionsController;
-use App\Http\Controllers\Api\CurrencyController;
-use App\Http\Controllers\Api\CurrencyPolicyController;
-use App\Http\Controllers\Api\ExpensesController;
-use App\Http\Controllers\Api\AssetsController;
-use App\Http\Controllers\Api\RevenuesController;
-use App\Http\Controllers\Api\CostProfitCenterController;
 
 // General Ledger (read-only views)
 Route::middleware('can:general_ledger,view')->get('/trial-balance', [GeneralLedgerController::class, 'trialBalance'])->name('api.gl.trial_balance');

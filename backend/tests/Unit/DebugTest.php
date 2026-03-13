@@ -1,8 +1,8 @@
 <?php
 namespace Tests\Unit;
 use Tests\TestCase;
-use App\Models\UniversalJournal;
-use App\Services\LedgerService;
+use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
+use App\Domains\Finance\GeneralLedger\Services\LedgerService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class DebugTest extends TestCase {

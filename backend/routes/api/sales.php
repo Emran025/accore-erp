@@ -1,11 +1,12 @@
 <?php
 
+use App\Http\Controllers\Api\V2\Commercial\SalesRepresentatives\SalesRepresentativeController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\SalesController;
-use App\Http\Controllers\Api\SalesReturnController;
-use App\Http\Controllers\Api\ZATCAInvoiceController;
-use App\Http\Controllers\Api\ArController;
-use App\Http\Controllers\Api\ArTransactionsController;
+use App\Http\Controllers\Api\V2\Commercial\Sales\SalesController;
+use App\Http\Controllers\Api\V2\Commercial\Sales\SalesReturnController;
+use App\Http\Controllers\Api\V2\Finance\Taxation\ZATCAInvoiceController;
+use App\Http\Controllers\Api\V2\Commercial\AccountsReceivable\ArController;
+use App\Http\Controllers\Api\V2\Commercial\AccountsReceivable\ArTransactionsController;
 
 // Sales/Invoices
 Route::middleware('can:sales,view')->get('/invoices', [SalesController::class, 'index'])->name('api.invoices.index');
@@ -39,10 +40,10 @@ Route::middleware('can:ar_customers,view')->get('/ar/receipts', [ArTransactionsC
 
 
 // Sales Representatives
-Route::middleware('can:sales,view')->get('/sales_representatives', [\App\Http\Controllers\Api\SalesRepresentativeController::class, 'representatives'])->name('api.sales_representatives.index');
-Route::middleware(['can:sales,create', 'throttle:api-write'])->post('/sales_representatives', [\App\Http\Controllers\Api\SalesRepresentativeController::class, 'storeRepresentative'])->name('api.sales_representatives.store');
-Route::middleware(['can:sales,edit', 'throttle:api-write'])->put('/sales_representatives', [\App\Http\Controllers\Api\SalesRepresentativeController::class, 'updateRepresentative'])->name('api.sales_representatives.update');
-Route::middleware(['can:sales,delete', 'throttle:api-delete'])->delete('/sales_representatives', [\App\Http\Controllers\Api\SalesRepresentativeController::class, 'destroyRepresentative'])->name('api.sales_representatives.destroy');
-Route::middleware('can:sales,view')->get('/sales_representatives/ledger', [\App\Http\Controllers\Api\SalesRepresentativeController::class, 'ledger'])->name('api.sales_representatives.ledger');
-Route::middleware(['can:sales,create', 'throttle:api-write'])->post('/sales_representatives/transactions', [\App\Http\Controllers\Api\SalesRepresentativeController::class, 'storeTransaction'])->name('api.sales_representatives.transactions.store');
-Route::middleware(['can:sales,delete', 'throttle:api-delete'])->delete('/sales_representatives/transactions', [\App\Http\Controllers\Api\SalesRepresentativeController::class, 'destroyTransaction'])->name('api.sales_representatives.transactions.destroy');
+Route::middleware('can:sales,view')->get('/sales_representatives', [SalesRepresentativeController::class, 'representatives'])->name('api.sales_representatives.index');
+Route::middleware(['can:sales,create', 'throttle:api-write'])->post('/sales_representatives', [SalesRepresentativeController::class, 'storeRepresentative'])->name('api.sales_representatives.store');
+Route::middleware(['can:sales,edit', 'throttle:api-write'])->put('/sales_representatives', [SalesRepresentativeController::class, 'updateRepresentative'])->name('api.sales_representatives.update');
+Route::middleware(['can:sales,delete', 'throttle:api-delete'])->delete('/sales_representatives', [SalesRepresentativeController::class, 'destroyRepresentative'])->name('api.sales_representatives.destroy');
+Route::middleware('can:sales,view')->get('/sales_representatives/ledger', [SalesRepresentativeController::class, 'ledger'])->name('api.sales_representatives.ledger');
+Route::middleware(['can:sales,create', 'throttle:api-write'])->post('/sales_representatives/transactions', [SalesRepresentativeController::class, 'storeTransaction'])->name('api.sales_representatives.transactions.store');
+Route::middleware(['can:sales,delete', 'throttle:api-delete'])->delete('/sales_representatives/transactions', [SalesRepresentativeController::class, 'destroyTransaction'])->name('api.sales_representatives.transactions.destroy');

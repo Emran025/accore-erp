@@ -3,8 +3,8 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Models\Session;
-use App\Models\User;
+use App\Domains\EnterpriseCore\IAM\Models\Session;
+use App\Domains\EnterpriseCore\IAM\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class SessionsApiTest extends TestCase

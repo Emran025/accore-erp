@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\ReportsController;
-use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\V2\DataIntelligence\Reports\ReportsController;
+use App\Http\Controllers\Api\V2\DataIntelligence\Dashboards\DashboardController;
 
 // Reports
-Route::middleware(['can:reports,view', 'throttle:api-export'])->get('/reports/balance_sheet', [ReportsController::class, 'balanceSheet'])->name('api.reports.balance_sheet');
+Route::middleware(['can:reports,view', 'throttle:api-export'])->get('/reports/balance_sheet', [App\Http\Controllers\Api\V2\DataIntelligence\Reports\ReportsController::class, 'balanceSheet'])->name('api.reports.balance_sheet');
 Route::middleware(['can:reports,view', 'throttle:api-export'])->get('/reports/profit_loss', [ReportsController::class, 'profitLoss'])->name('api.reports.profit_loss');
 Route::middleware(['can:reports,view', 'throttle:api-export'])->get('/reports/cash_flow', [ReportsController::class, 'cashFlow'])->name('api.reports.cash_flow');
 Route::middleware(['can:reports,view', 'throttle:api-export'])->get('/reports/aging_receivables', [ReportsController::class, 'agingReceivables'])->name('api.reports.aging_receivables');

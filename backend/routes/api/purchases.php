@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\PurchasesController;
-use App\Http\Controllers\Api\ApController;
-use App\Http\Controllers\Api\ApTransactionsController;
+use App\Http\Controllers\Api\V2\Commercial\Purchases\PurchasesController;
+use App\Http\Controllers\Api\V2\Commercial\AccountsPayable\ApController;
+use App\Http\Controllers\Api\V2\Commercial\AccountsPayable\ApTransactionsController;
 
 // Purchases
 Route::middleware('can:purchases,view')->get('/purchases', [PurchasesController::class, 'index'])->name('api.purchases.index');

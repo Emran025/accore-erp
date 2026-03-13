@@ -26,3 +26,13 @@ Route::middleware(['api.auth', 'throttle:api'])->group(function () {
     require __DIR__ . '/api/reports.php';
     require __DIR__ . '/api/number-ranges.php';
 });
+
+/*
+|--------------------------------------------------------------------------
+| Domain Routes (Strangler Fig – v2)
+|--------------------------------------------------------------------------
+| New domain-scoped routes using Single Action Classes. These coexist
+| with the legacy routes above. Once fully tested, legacy routes will
+| be retired incrementally.
+*/
+require __DIR__ . '/domain-loader.php';

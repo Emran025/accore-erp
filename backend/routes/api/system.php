@@ -1,16 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\SettingsController;
-use App\Http\Controllers\Api\UsersController;
-use App\Http\Controllers\Api\RolesController;
-use App\Http\Controllers\Api\AuditLogController;
-use App\Http\Controllers\Api\SessionsController;
-use App\Http\Controllers\Api\AuditTrailController;
-use App\Http\Controllers\Api\SystemTemplateController;
-use App\Http\Controllers\Api\OrgStructureController;
-use App\Http\Controllers\Api\OrgIntegrationController;
-use App\Http\Controllers\Api\TaxEngineController;
+use App\Http\Controllers\Api\V2\EnterpriseCore\Governance\SettingsController;
+use App\Http\Controllers\Api\V2\EnterpriseCore\IAM\UsersController;
+use App\Http\Controllers\Api\V2\EnterpriseCore\IAM\RolesController;
+use App\Http\Controllers\Api\V2\EnterpriseCore\Governance\AuditLogController;
+use App\Http\Controllers\Api\V2\EnterpriseCore\IAM\SessionsController;
+use App\Http\Controllers\Api\V2\EnterpriseCore\Governance\AuditTrailController;
+use App\Http\Controllers\Api\V2\DigitalPlatform\Automation\SystemTemplateController;
+use App\Http\Controllers\Api\V2\EnterpriseCore\OrgStructure\OrgStructureController;
+use App\Http\Controllers\Api\V2\EnterpriseCore\OrgIntegration\OrgIntegrationController;
+use App\Http\Controllers\Api\V2\Finance\Taxation\TaxEngineController;
 
 // Organizational Structure (SAP SPRO-style)
 Route::prefix('org-structure')->group(function () {

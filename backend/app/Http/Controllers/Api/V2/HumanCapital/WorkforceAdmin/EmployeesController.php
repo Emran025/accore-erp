@@ -1,0 +1,115 @@
+<?php
+
+namespace App\Http\Controllers\Api\V2\HumanCapital\WorkforceAdmin;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\HumanCapital\WorkforceAdmin\ListEmployeesRequest;
+use App\Http\Requests\HumanCapital\WorkforceAdmin\StoreEmployeeRequest;
+use App\Http\Requests\HumanCapital\WorkforceAdmin\UpdateEmployeeRequest;
+use App\Http\Requests\HumanCapital\WorkforceAdmin\StoreEmployeeDocumentRequest;
+use App\Http\Requests\HumanCapital\WorkforceAdmin\UpdateEmployeeDocumentRequest;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Api\V2\Shared\BaseApiController;
+use Illuminate\Support\Facades\Storage;
+use Exception;
+
+use App\Domains\HumanCapital\WorkforceAdmin\Actions\ListEmployeesAction;
+use App\Domains\HumanCapital\WorkforceAdmin\Actions\CreateEmployeeAction;
+use App\Domains\HumanCapital\WorkforceAdmin\Actions\ShowEmployeeAction;
+use App\Domains\HumanCapital\WorkforceAdmin\Actions\UpdateEmployeeAction;
+use App\Domains\HumanCapital\WorkforceAdmin\Actions\DeleteEmployeeAction;
+use App\Domains\HumanCapital\WorkforceAdmin\Actions\SuspendEmployeeAction;
+use App\Domains\HumanCapital\WorkforceAdmin\Actions\ActivateEmployeeAction;
+use App\Domains\HumanCapital\WorkforceAdmin\Actions\UploadEmployeeDocumentAction;
+use App\Domains\HumanCapital\WorkforceAdmin\Actions\ListEmployeeDocumentsAction;
+use App\Domains\HumanCapital\WorkforceAdmin\Actions\UpdateEmployeeDocumentAction;
+use App\Domains\HumanCapital\WorkforceAdmin\Actions\DeleteEmployeeDocumentAction;
+use App\Domains\HumanCapital\WorkforceAdmin\Actions\DownloadEmployeeDocumentAction;
+
+class EmployeesController extends Controller
+{
+    use BaseApiController;
+
+    public function index(ListEmployeesRequest $request, ListEmployeesAction $action)
+    {
+        $employees = $action->execute($request->validated());
+        return $this->successResponse($employees);
+    }
+
+    public function store(StoreEmployeeRequest $request, CreateEmployeeAction $action)
+    {
+        try {
+            $employee = $action->execute($request->validated());
+            return $this->successResponse($employee, 'Employee created successfully', 201);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
+    }
+
+    public function show($id, ShowEmployeeAction $action)
+    {
+        $employee = $action->execute($id);
+        return $this->successResponse($employee);
+    }
+
+    public function update(UpdateEmployeeRequest $request, $id, UpdateEmployeeAction $action)
+    {
+        $validated = $request->validated();
+        
+        $employee = $action->execute($id, $validated);
+
+        return $this->successResponse($employee, 'Employee updated successfully');
+    }
+
+    public function destroy($id, DeleteEmployeeAction $action)
+    {
+        $action->execute($id);
+        return $this->successResponse([], 'Employee deleted successfully');
+    }
+
+    public function suspend($id, SuspendEmployeeAction $action)
+    {
+        $employee = $action->execute($id);
+        return $this->successResponse($employee, 'Employee suspended successfully');
+    }
+
+    public function activate($id, ActivateEmployeeAction $action)
+    {
+        $employee = $action->execute($id);
+        return $this->successResponse($employee, 'Employee activated successfully');
+    }
+
+    public function uploadDocument(StoreEmployeeDocumentRequest $request, $id, UploadEmployeeDocumentAction $action)
+    {
+        $document = $action->execute($id, $request->validated(), $request->file('document'));
+        return $this->successResponse($document, 'Document uploaded successfully', 201);
+    }
+
+    public function getDocuments($id, ListEmployeeDocumentsAction $action)
+    {
+        $documents = $action->execute($id);
+        return $this->successResponse($documents);
+    }
+
+    public function downloadDocument($employeeId, $documentId, DownloadEmployeeDocumentAction $action)
+    {
+        try {
+            $fileInfo = $action->execute((int)$employeeId, (int)$documentId);
+            return Storage::download($fileInfo['file_path'], $fileInfo['document_name']);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 404);
+        }
+    }
+
+    public function updateDocument(UpdateEmployeeDocumentRequest $request, $employeeId, $documentId, UpdateEmployeeDocumentAction $action)
+    {
+        $document = $action->execute($employeeId, $documentId, $request->validated());
+        return $this->successResponse($document, 'Document updated successfully');
+    }
+
+    public function destroyDocument($employeeId, $documentId, DeleteEmployeeDocumentAction $action)
+    {
+        $action->execute($employeeId, $documentId);
+        return $this->successResponse([], 'Document deleted successfully');
+    }
+}
