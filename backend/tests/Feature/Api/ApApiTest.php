@@ -3,11 +3,11 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Models\ApSupplier;
-use App\Models\ApTransaction;
-use App\Models\ChartOfAccount;
-use App\Models\GeneralLedger;
-use App\Models\UniversalJournal;
+use App\Domains\Commercial\AccountsPayable\Models\ApSupplier;
+use App\Domains\Commercial\AccountsPayable\Models\ApTransaction;
+use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
+use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
+use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ApApiTest extends TestCase
@@ -105,7 +105,7 @@ class ApApiTest extends TestCase
         ]);
 
         // Seed GL for the invoice (Credit AP)
-        \App\Models\GeneralLedger::factory()->create([
+        \App\Domains\Finance\GeneralLedger\Models\GeneralLedger::factory()->create([
             'voucher_number' => $invoiceVoucher,
             'account_id' => ChartOfAccount::where('account_code', '2110')->first()->id,
             'entry_type' => 'CREDIT',

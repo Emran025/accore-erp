@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\ApSupplier;
+use App\Domains\Commercial\AccountsPayable\Models\ApSupplier;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ApSupplier>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Commercial\AccountsPayable\Models\ApSupplier>
  */
 class ApSupplierFactory extends Factory
 {

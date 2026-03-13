@@ -2,14 +2,14 @@
 
 namespace Database\Factories;
 
-use App\Models\ApTransaction;
-use App\Models\ApSupplier;
-use App\Models\User;
-use App\Models\UniversalJournal;
+use App\Domains\Commercial\AccountsPayable\Models\ApTransaction;
+use App\Domains\Commercial\AccountsPayable\Models\ApSupplier;
+use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ApTransaction>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Commercial\AccountsPayable\Models\ApTransaction>
  */
 class ApTransactionFactory extends Factory
 {
