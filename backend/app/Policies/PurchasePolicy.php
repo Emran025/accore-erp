@@ -2,9 +2,9 @@
 
 namespace App\Policies;
 
-use App\Models\User;
-use App\Models\Purchase;
-use App\Models\FiscalPeriod;
+use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\Commercial\Purchases\Models\Purchase;
+use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
 
 class PurchasePolicy
 {

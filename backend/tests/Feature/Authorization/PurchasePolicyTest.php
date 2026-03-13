@@ -3,10 +3,10 @@
 namespace Tests\Feature\Authorization;
 
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\Purchase;
-use App\Models\FiscalPeriod;
-use App\Models\Role;
+use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\Commercial\Purchases\Models\Purchase;
+use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
+use App\Domains\EnterpriseCore\IAM\Models\Role;
 use App\Policies\PurchasePolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 

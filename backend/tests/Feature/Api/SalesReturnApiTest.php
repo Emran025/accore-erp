@@ -3,12 +3,12 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Models\Invoice;
-use App\Models\InvoiceItem;
-use App\Models\Product;
-use App\Models\ArCustomer;
-use App\Models\SalesReturn;
-use App\Models\FiscalPeriod;
+use App\Domains\Commercial\Sales\Models\Invoice;
+use App\Domains\Commercial\Sales\Models\InvoiceItem;
+use App\Domains\SupplyChain\Inventory\Models\Product;
+use App\Domains\Commercial\AccountsReceivable\Models\ArCustomer;
+use App\Domains\Commercial\Sales\Models\SalesReturn;
+use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 
@@ -58,7 +58,7 @@ class SalesReturnApiTest extends TestCase
         ]);
 
         // Seed costing layer
-        app(\App\Services\InventoryCostingService::class)->recordPurchase($product->id, 1, 10, 50.00, 500.00);
+        app(\App\Domains\SupplyChain\Inventory\Services\InventoryCostingService::class)->recordPurchase($product->id, 1, 10, 50.00, 500.00);
 
         $data = [
             'invoice_id' => $invoice->id,

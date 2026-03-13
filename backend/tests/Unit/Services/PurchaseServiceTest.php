@@ -3,17 +3,17 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Models\Purchase;
-use App\Models\Product;
-use App\Models\ApSupplier;
-use App\Models\User;
-use App\Models\GeneralLedger;
-use App\Models\Setting;
-use App\Models\ApTransaction;
-use App\Services\PurchaseService;
-use App\Services\LedgerService;
-use App\Services\ChartOfAccountsMappingService;
-use App\Services\InventoryCostingService;
+use App\Domains\Commercial\Purchases\Models\Purchase;
+use App\Domains\SupplyChain\Inventory\Models\Product;
+use App\Domains\Commercial\AccountsPayable\Models\ApSupplier;
+use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
+use App\Domains\EnterpriseCore\Governance\Models\Setting;
+use App\Domains\Commercial\AccountsPayable\Models\ApTransaction;
+use App\Domains\Commercial\Purchases\Services\PurchaseService;
+use App\Domains\Finance\GeneralLedger\Services\LedgerService;
+use App\Domains\Finance\ChartOfAccounts\Services\ChartOfAccountsMappingService;
+use App\Domains\SupplyChain\Inventory\Services\InventoryCostingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 

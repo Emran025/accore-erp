@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\Purchase;
-use App\Models\Product;
-use App\Models\ApSupplier;
-use App\Models\User;
-use App\Models\UniversalJournal;
+use App\Domains\Commercial\Purchases\Models\Purchase;
+use App\Domains\SupplyChain\Inventory\Models\Product;
+use App\Domains\Commercial\AccountsPayable\Models\ApSupplier;
+use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PurchaseFactory extends Factory
