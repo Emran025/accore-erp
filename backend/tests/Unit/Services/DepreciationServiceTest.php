@@ -3,8 +3,8 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Models\Asset;
-use App\Services\DepreciationService;
+use App\Domains\AssetManagement\Models\Asset;
+use App\Domains\AssetManagement\Services\DepreciationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class DepreciationServiceTest extends TestCase
@@ -19,12 +19,12 @@ class DepreciationServiceTest extends TestCase
         $this->seedChartOfAccounts();
         
         // Seed Depreciation specific accounts
-        \App\Models\ChartOfAccount::factory()->create([
+        \App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount::factory()->create([
             'account_code' => '5300',
             'account_name' => 'Depreciation Expense',
             'account_type' => 'Expense'
         ]);
-        \App\Models\ChartOfAccount::factory()->create([
+        \App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount::factory()->create([
             'account_code' => '1290',
             'account_name' => 'Accumulated Depreciation',
             'account_type' => 'Asset' // Contra-asset usually, but Asset type in system

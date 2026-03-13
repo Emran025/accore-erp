@@ -3,7 +3,7 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Models\Batch;
+use App\Domains\SupplyChain\Inventory\Models\Batch;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class BatchApiTest extends TestCase

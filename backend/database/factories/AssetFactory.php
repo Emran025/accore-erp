@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Asset;
+use App\Domains\AssetManagement\Models\Asset;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AssetFactory extends Factory
