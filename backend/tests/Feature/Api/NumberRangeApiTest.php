@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Api;
 
-use App\Models\NrGroup;
-use App\Models\NrInterval;
-use App\Models\NrObject;
-use App\Models\NrGroupIntervalAssignment;
-use App\Models\User;
+use App\Domains\EnterpriseCore\NumberRanges\Models\NrGroup;
+use App\Domains\EnterpriseCore\NumberRanges\Models\NrInterval;
+use App\Domains\EnterpriseCore\NumberRanges\Models\NrObject;
+use App\Domains\EnterpriseCore\NumberRanges\Models\NrGroupIntervalAssignment;
+use App\Domains\EnterpriseCore\IAM\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;

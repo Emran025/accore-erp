@@ -2,12 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\NrGroup;
-use App\Models\NrObject;
+use App\Domains\EnterpriseCore\NumberRanges\Models\NrGroup;
+use App\Domains\EnterpriseCore\NumberRanges\Models\NrObject;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\NrGroup>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\EnterpriseCore\NumberRanges\Models\NrGroup>
  */
 class NrGroupFactory extends Factory
 {

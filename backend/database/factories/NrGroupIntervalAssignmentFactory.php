@@ -2,14 +2,14 @@
 
 namespace Database\Factories;
 
-use App\Models\NrGroupIntervalAssignment;
-use App\Models\NrObject;
-use App\Models\NrGroup;
-use App\Models\NrInterval;
+use App\Domains\EnterpriseCore\NumberRanges\Models\NrGroupIntervalAssignment;
+use App\Domains\EnterpriseCore\NumberRanges\Models\NrObject;
+use App\Domains\EnterpriseCore\NumberRanges\Models\NrGroup;
+use App\Domains\EnterpriseCore\NumberRanges\Models\NrInterval;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\NrGroupIntervalAssignment>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\EnterpriseCore\NumberRanges\Models\NrGroupIntervalAssignment>
  */
 class NrGroupIntervalAssignmentFactory extends Factory
 {

@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\NrObject;
+use App\Domains\EnterpriseCore\NumberRanges\Models\NrObject;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\NrObject>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\EnterpriseCore\NumberRanges\Models\NrObject>
  */
 class NrObjectFactory extends Factory
 {
