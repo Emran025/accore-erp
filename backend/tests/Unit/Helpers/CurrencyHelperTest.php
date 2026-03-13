@@ -4,7 +4,7 @@ namespace Tests\Unit\Helpers;
 
 use Tests\TestCase;
 use App\Helpers\CurrencyHelper;
-use App\Models\Currency;
+use App\Domains\Finance\Currency\Models\Currency;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 

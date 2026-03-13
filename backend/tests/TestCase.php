@@ -4,11 +4,11 @@ namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\User;
-use App\Models\Role;
-use App\Models\Session;
-use App\Models\ChartOfAccount;
-use App\Models\FiscalPeriod;
+use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\EnterpriseCore\IAM\Models\Role;
+use App\Domains\EnterpriseCore\IAM\Models\Session;
+use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
+use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Carbon\Carbon;

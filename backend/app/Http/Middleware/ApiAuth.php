@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use App\Services\AuthService;
+use App\Domains\EnterpriseCore\IAM\Services\AuthService;
 use Symfony\Component\HttpFoundation\Response;
 
 class ApiAuth
