@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\PermissionTemplate;
+use App\Domains\EnterpriseCore\IAM\Models\PermissionTemplate;
 use Illuminate\Database\Seeder;
 
 class PermissionTemplateSeeder extends Seeder

@@ -3,10 +3,10 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Services\TemplateService;
-use App\Services\TemplateRenderer;
-use App\Models\DocumentTemplate;
-use App\Services\TemplateRegistry;
+use App\Domains\HumanCapital\DocumentManagement\Services\TemplateService;
+use App\Domains\HumanCapital\DocumentManagement\Services\TemplateRenderer;
+use App\Domains\EnterpriseCore\Governance\Models\DocumentTemplate;
+use App\Domains\HumanCapital\DocumentManagement\Services\TemplateRegistry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class TemplateServiceTest extends TestCase

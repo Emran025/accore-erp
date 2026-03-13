@@ -3,11 +3,11 @@
 namespace Tests\Feature\Hr;
 
 use Tests\TestCase;
-use App\Models\JobTitle;
-use App\Models\PermissionTemplate;
-use App\Models\Employee;
-use App\Models\User;
-use App\Models\Department;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\JobTitle;
+use App\Domains\EnterpriseCore\IAM\Models\PermissionTemplate;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
+use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Department;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -52,7 +52,7 @@ class HrAdministrationTest extends TestCase
         ];
 
         // We need a department.
-        $department = \App\Models\Department::factory()->create();
+        $department = \App\Domains\HumanCapital\WorkforceAdmin\Models\Department::factory()->create();
         $data['department_id'] = $department->id;
 
         $response = $this->authPost('/api/job-titles', $data);

@@ -3,10 +3,10 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Models\Product;
-use App\Models\Invoice;
-use App\Models\GeneralLedger;
-use App\Models\ChartOfAccount;
+use App\Domains\SupplyChain\Inventory\Models\Product;
+use App\Domains\Commercial\Sales\Models\Invoice;
+use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
+use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class DashboardApiTest extends TestCase

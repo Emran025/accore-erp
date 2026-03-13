@@ -3,8 +3,8 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Models\Employee;
-use App\Models\Department;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Department;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class HRApiTest extends TestCase

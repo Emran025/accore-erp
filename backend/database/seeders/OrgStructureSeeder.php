@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\OrgMetaType;
-use App\Models\OrgMetaTypeAttribute;
-use App\Models\TopologyRule;
+use App\Domains\EnterpriseCore\OrgStructure\Models\OrgMetaType;
+use App\Domains\EnterpriseCore\OrgStructure\Models\OrgMetaTypeAttribute;
+use App\Domains\EnterpriseCore\Governance\Models\TopologyRule;
 use Illuminate\Database\Seeder;
 
 /**

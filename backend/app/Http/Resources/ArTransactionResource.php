@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources;
 
-use App\Models\GeneralLedger;
+use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
