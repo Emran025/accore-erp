@@ -3,12 +3,12 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Models\ArCustomer;
-use App\Models\ArTransaction;
-use App\Models\GeneralLedger;
-use App\Models\FiscalPeriod;
-use App\Models\UniversalJournal;
-use App\Models\ChartOfAccount;
+use App\Domains\Commercial\AccountsReceivable\Models\ArCustomer;
+use App\Domains\Commercial\AccountsReceivable\Models\ArTransaction;
+use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
+use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
+use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
+use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 

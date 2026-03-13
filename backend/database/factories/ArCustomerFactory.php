@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\ArCustomer;
+use App\Domains\Commercial\AccountsReceivable\Models\ArCustomer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ArCustomer>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Commercial\AccountsReceivable\Models\ArCustomer>
  */
 class ArCustomerFactory extends Factory
 {
