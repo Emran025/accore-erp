@@ -3,10 +3,10 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Models\Prepayment;
-use App\Models\UnearnedRevenue;
-use App\Models\FiscalPeriod;
-use App\Models\ChartOfAccount;
+use App\Domains\Finance\Accrual\Models\Prepayment;
+use App\Domains\Finance\Accrual\Models\UnearnedRevenue;
+use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
+use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 

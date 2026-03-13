@@ -3,10 +3,10 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Models\Reconciliation;
-use App\Models\ChartOfAccount;
-use App\Models\GeneralLedger;
-use App\Models\FiscalPeriod;
+use App\Domains\Finance\BankReconciliation\Models\Reconciliation;
+use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
+use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
+use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class BankReconciliationApiTest extends TestCase
