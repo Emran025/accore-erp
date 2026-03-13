@@ -3,9 +3,9 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Models\Employee;
-use App\Models\LeaveRequest;
-use App\Models\User;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
+use App\Domains\HumanCapital\TimeAndAttendance\Models\LeaveRequest;
+use App\Domains\EnterpriseCore\IAM\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class LeaveApiTest extends TestCase
@@ -105,7 +105,7 @@ class LeaveApiTest extends TestCase
 
     public function test_employee_can_view_own_leave_requests()
     {
-        $role = \App\Models\Role::where('role_key', 'employee')->first();
+        $role = \App\Domains\EnterpriseCore\IAM\Models\Role::where('role_key', 'employee')->first();
         $user = User::factory()->create(['role_id' => $role->id]);
         $employee = Employee::factory()->create(['user_id' => $user->id]);
         

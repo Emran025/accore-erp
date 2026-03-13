@@ -3,10 +3,10 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Models\Employee;
-use App\Models\LeaveRequest;
-use App\Models\Department;
-use App\Services\LeaveService;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
+use App\Domains\HumanCapital\TimeAndAttendance\Models\LeaveRequest;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Department;
+use App\Domains\HumanCapital\TimeAndAttendance\Services\LeaveService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 

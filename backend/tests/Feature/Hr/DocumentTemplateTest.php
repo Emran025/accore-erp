@@ -3,7 +3,7 @@
 namespace Tests\Feature\Hr;
 
 use Tests\TestCase;
-use App\Models\DocumentTemplate;
+use App\Domains\EnterpriseCore\Governance\Models\DocumentTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -69,7 +69,7 @@ class DocumentTemplateTest extends TestCase
             'is_active' => true,
         ]);
 
-        $employee = \App\Models\Employee::factory()->create();
+        $employee = \App\Domains\HumanCapital\WorkforceAdmin\Models\Employee::factory()->create();
 
         $renderData = [
             'employee_id' => $employee->id,

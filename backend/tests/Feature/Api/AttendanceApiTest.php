@@ -3,8 +3,8 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Models\Employee;
-use App\Models\User;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
+use App\Domains\EnterpriseCore\IAM\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AttendanceApiTest extends TestCase
@@ -105,7 +105,7 @@ class AttendanceApiTest extends TestCase
 
     public function test_employee_can_view_own_attendance()
     {
-        $role = \App\Models\Role::where('role_key', 'employee')->first();
+        $role = \App\Domains\EnterpriseCore\IAM\Models\Role::where('role_key', 'employee')->first();
         $user = User::factory()->create(['role_id' => $role->id]);
         $employee = Employee::factory()->create(['user_id' => $user->id]);
 

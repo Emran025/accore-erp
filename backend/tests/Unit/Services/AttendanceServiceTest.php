@@ -3,10 +3,10 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Models\Employee;
-use App\Models\AttendanceRecord;
-use App\Models\Department;
-use App\Services\AttendanceService;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
+use App\Domains\HumanCapital\TimeAndAttendance\Models\AttendanceRecord;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Department;
+use App\Domains\HumanCapital\TimeAndAttendance\Services\AttendanceService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 
