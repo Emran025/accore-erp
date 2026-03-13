@@ -3,11 +3,11 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Models\Employee;
-use App\Models\Department;
-use App\Services\SalaryCalculatorService;
-use App\Services\AttendanceService;
-use App\Services\LeaveService;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Department;
+use App\Domains\HumanCapital\Payroll\Services\SalaryCalculatorService;
+use App\Domains\HumanCapital\TimeAndAttendance\Services\AttendanceService;
+use App\Domains\HumanCapital\TimeAndAttendance\Services\LeaveService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class SalaryCalculatorServiceTest extends TestCase

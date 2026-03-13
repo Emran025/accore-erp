@@ -3,9 +3,9 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Models\CompensationPlan;
-use App\Models\CompensationEntry;
-use App\Models\Employee;
+use App\Domains\HumanCapital\Payroll\Models\CompensationPlan;
+use App\Domains\HumanCapital\Payroll\Models\CompensationEntry;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CompensationApiTest extends TestCase

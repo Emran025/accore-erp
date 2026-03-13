@@ -3,9 +3,9 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Models\Employee;
-use App\Models\Department;
-use App\Services\EOSBCalculatorService;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Department;
+use App\Domains\HumanCapital\Payroll\Services\EOSBCalculatorService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 

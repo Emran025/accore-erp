@@ -3,9 +3,9 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Models\BenefitsPlan;
-use App\Models\BenefitsEnrollment;
-use App\Models\Employee;
+use App\Domains\HumanCapital\Payroll\Models\BenefitsPlan;
+use App\Domains\HumanCapital\Payroll\Models\BenefitsEnrollment;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class BenefitsApiTest extends TestCase

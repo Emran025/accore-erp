@@ -3,12 +3,12 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\Employee;
-use App\Models\PayrollCycle;
-use App\Models\PayrollItem;
-use App\Models\PayrollTransaction;
-use App\Services\PayrollService;
+use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
+use App\Domains\HumanCapital\Payroll\Models\PayrollCycle;
+use App\Domains\HumanCapital\Payroll\Models\PayrollItem;
+use App\Domains\HumanCapital\Payroll\Models\PayrollTransaction;
+use App\Domains\HumanCapital\Payroll\Services\PayrollService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 
@@ -109,7 +109,7 @@ class PayrollServiceTest extends TestCase
         ]);
 
         // Mock payment account (Cash)
-        $account = \App\Models\ChartOfAccount::where('account_name', 'Cash')->first();
+        $account = \App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount::where('account_name', 'Cash')->first();
 
         $this->payrollService->processPayment($cycle->id, $account->id);
 

@@ -3,12 +3,12 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\Employee;
-use App\Models\PayrollCycle;
-use App\Models\ChartOfAccount;
-use App\Models\FiscalPeriod;
-use App\Models\PayrollItem;
+use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
+use App\Domains\HumanCapital\Payroll\Models\PayrollCycle;
+use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
+use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
+use App\Domains\HumanCapital\Payroll\Models\PayrollItem;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 
@@ -24,7 +24,7 @@ class PayrollApiTest extends TestCase
         parent::setUp();
         
         // Setup required mapping accounts
-        $this->expenseAccount = \App\Models\ChartOfAccount::create([
+        $this->expenseAccount = \App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount::create([
             'account_name' => 'Salaries Expense',
             'account_code' => '5220',
             'account_type' => 'Expense',

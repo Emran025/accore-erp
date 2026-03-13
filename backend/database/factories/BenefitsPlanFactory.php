@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\BenefitsPlan;
-use App\Models\User;
+use App\Domains\HumanCapital\Payroll\Models\BenefitsPlan;
+use App\Domains\EnterpriseCore\IAM\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class BenefitsPlanFactory extends Factory

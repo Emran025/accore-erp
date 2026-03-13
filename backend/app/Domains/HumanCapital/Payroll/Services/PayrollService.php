@@ -1,0 +1,518 @@
+<?php
+
+namespace App\Domains\HumanCapital\Payroll\Services;
+
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
+use App\Domains\HumanCapital\Payroll\Models\PayrollCycle;
+use App\Domains\HumanCapital\Payroll\Models\PayrollItem;
+use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
+use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
+use App\Domains\HumanCapital\Payroll\Models\PayrollTransaction;
+use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\HumanCapital\Payroll\Services\SalaryCalculatorInterface;
+use App\Domains\HumanCapital\TimeAndAttendance\Services\LeaveService;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
+/**
+ * Service for managing the multi-step payroll lifecycle:
+ * Generation, Multi-Level Approval, Accrual Posting, and Payment Disbursement.
+ */
+class PayrollService
+{
+    protected $accountService;
+    protected $mappingService;
+    protected $ledgerService;
+    protected $salaryCalculator;
+    protected $leaveService;
+
+    /**
+     * PayrollService constructor.
+     * 
+     * @param EmployeeAccountService $accountService
+     * @param ChartOfAccountsMappingService $mappingService
+     * @param LedgerService $ledgerService
+     * @param SalaryCalculatorInterface $salaryCalculator
+     * @param LeaveService $leaveService
+     */
+    public function __construct(
+        EmployeeAccountService $accountService, 
+        ChartOfAccountsMappingService $mappingService,
+        LedgerService $ledgerService,
+        SalaryCalculatorInterface $salaryCalculator,
+        LeaveService $leaveService
+    ) {
+        $this->accountService = $accountService;
+        $this->mappingService = $mappingService;
+        $this->ledgerService = $ledgerService;
+        $this->salaryCalculator = $salaryCalculator;
+        $this->leaveService = $leaveService;
+    }
+
+    /**
+     * Determine the next approver in the management hierarchy.
+     * Traverses the employee->manager_id relationship.
+     * 
+     * @param int $userId
+     * @return int|null User ID of the next approver, or null if no manager
+     */
+    public function getNextApprover($userId)
+    {
+        $employee = Employee::where('user_id', $userId)->first();
+        if ($employee && $employee->manager_id) {
+            $manager = Employee::find($employee->manager_id);
+            return $manager ? $manager->user_id : null;
+        }
+        return null; // No manager found, could be GM or Admin
+    }
+
+    /**
+     * Generate a new payroll cycle (Salary, Bonus, Incentive, etc.).
+     * Creates PayrollCycle and PayrollItem records for each targeted employee.
+     * Uses SalaryCalculatorService for dynamic salary computation.
+     * 
+     * @param array $data Cycle data including period_start, period_end, target_type, employee_ids
+     * @param User $user The user initiating the payroll generation
+     * @return PayrollCycle The created payroll cycle
+     * @throws \Exception If transaction fails
+     */
+    public function generatePayroll($data, $user)
+    {
+        $type = $data['cycle_type'] ?? 'salary';
+        $nature = $data['payment_nature'] ?? 'salary'; 
+        
+        DB::beginTransaction();
+        try {
+            // Find initial approver
+            $nextApproverId = $this->getNextApprover($user->id);
+            $status = $nextApproverId ? 'pending_approval' : 'approved';
+
+            $cycle = PayrollCycle::create([
+                'cycle_name' => $data['cycle_name'] ?? ($nature === 'salary' ? "Payroll " . Carbon::parse($data['period_start'])->format('F Y') : "Special Payment: " . ucfirst($nature)),
+                'cycle_type' => $nature,
+                'description' => $data['description'] ?? null,
+                'period_start' => $data['period_start'] ?? now()->startOfMonth(),
+                'period_end' => $data['period_end'] ?? now()->endOfMonth(),
+                'payment_date' => $data['payment_date'] ?? now(),
+                'status' => 'draft',
+                'current_approver_id' => null,
+                'approval_trail' => [],
+                'created_by' => $user->id
+            ]);
+
+            // Targeting logic
+            $query = Employee::where('is_active', true);
+            
+            if (($data['target_type'] ?? 'all') === 'selected') {
+                $query->whereIn('id', $data['employee_ids'] ?? []);
+            } elseif (($data['target_type'] ?? 'all') === 'excluded') {
+                $query->whereNotIn('id', $data['employee_ids'] ?? []);
+            }
+
+            if ($nature === 'salary') {
+                $query->where('employment_status', 'active');
+            }
+
+            $employees = $query->get();
+
+            $totalGross = 0;
+            $totalDeductions = 0;
+            $totalNet = 0;
+
+            $periodStart = $data['period_start'] ?? now()->startOfMonth();
+            $periodEnd = $data['period_end'] ?? now()->endOfMonth();
+
+            foreach ($employees as $employee) {
+                // Check for pending leave requests (Phase 1 requirement)
+                if ($nature === 'salary') {
+                    $hasPendingLeave = $this->leaveService->hasPendingLeaveRequests(
+                        $employee->id,
+                        $periodStart,
+                        $periodEnd
+                    );
+
+                    if ($hasPendingLeave) {
+                        // Log warning but continue (or throw exception based on business rule)
+                        \Log::warning("Employee {$employee->id} has pending leave requests for period {$periodStart} to {$periodEnd}");
+                    }
+                }
+
+                if ($nature === 'salary') {
+                    // Use SalaryCalculator for dynamic calculation
+                    $calculation = $this->salaryCalculator->calculate(
+                        $employee,
+                        $periodStart,
+                        $periodEnd
+                    );
+
+                    $baseSalary = $calculation['base_salary'];
+                    $allowances = $calculation['total_allowances'];
+                    $deductions = $calculation['total_deductions'];
+                    $overtime = $calculation['overtime'] ?? 0;
+                    $gross = $calculation['gross_salary'];
+                    $net = $calculation['net_salary'];
+                } else {
+                    // For bonuses/incentives, use static calculation
+                    $baseSalary = $data['base_amount'] ?? 0;
+                    if (isset($data['individual_amounts'][$employee->id])) {
+                        $baseSalary = $data['individual_amounts'][$employee->id];
+                    }
+                    $allowances = 0;
+                    $deductions = 0;
+                    $overtime = 0;
+                    $gross = $baseSalary;
+                    $net = $gross;
+                }
+
+                PayrollItem::create([
+                    'payroll_cycle_id' => $cycle->id,
+                    'employee_id' => $employee->id,
+                    'base_salary' => $baseSalary,
+                    'total_allowances' => $allowances + ($overtime ?? 0), // Include overtime in allowances
+                    'total_deductions' => $deductions,
+                    'gross_salary' => $gross,
+                    'net_salary' => $net,
+                    'status' => 'active'
+                ]);
+
+                $totalGross += $gross;
+                $totalDeductions += $deductions;
+                $totalNet += $net;
+            }
+
+            $cycle->update([
+                'total_gross' => $totalGross,
+                'total_deductions' => $totalDeductions,
+                'total_net' => $totalNet
+            ]);
+
+            // If no manager, we leave it as draft for the user to confirm/approve themselves
+            // or we could auto-approve if they are admin.
+            // Requirement says "it should remain pending... until it reaches gm".
+            
+            DB::commit();
+            return $cycle;
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * Approve a payroll cycle.
+     * Advances the cycle through the multi-level approval workflow.
+     * If no further approvers exist, finalizes the cycle and posts accrual GL entries.
+     * 
+     * @param int $id PayrollCycle ID
+     * @param User $user The approving user
+     * @return PayrollCycle The updated payroll cycle
+     * @throws \Exception If the user is not the current authorized approver
+     */
+    public function approvePayroll($id, $user)
+    {
+        $cycle = PayrollCycle::findOrFail($id);
+        
+        // Authorization check
+        if ($cycle->current_approver_id && $cycle->current_approver_id != $user->id) {
+            throw new \Exception("You are not the current authorized approver for this cycle.");
+        }
+
+        if ($cycle->status === 'draft' && $cycle->created_by == $user->id) {
+            // Creator approving their own draft to start workflow
+            $nextApproverId = $this->getNextApprover($user->id);
+            if ($nextApproverId) {
+                $cycle->update([
+                    'status' => 'pending_approval',
+                    'current_approver_id' => $nextApproverId
+                ]);
+                return $cycle;
+            }
+        }
+
+        DB::beginTransaction();
+        try {
+            // Update trail
+            $trail = $cycle->approval_trail ?? [];
+            $trail[] = [
+                'user_id' => $user->id,
+                'user_name' => $user->full_name,
+                'action' => 'approved',
+                'timestamp' => now()->toDateTimeString()
+            ];
+
+            // Find next approver
+            $nextApproverId = $this->getNextApprover($user->id);
+
+            if ($nextApproverId) {
+                // Move to next level
+                $cycle->update([
+                    'status' => 'pending_approval',
+                    'current_approver_id' => $nextApproverId,
+                    'approval_trail' => $trail
+                ]);
+            } else {
+                // Final approval reached
+                $cycle->update([
+                    'status' => 'approved',
+                    'current_approver_id' => null,
+                    'approval_trail' => $trail,
+                    'approved_by' => $user->id,
+                    'approved_at' => now()
+                ]);
+                
+                // Generate GL Entries
+                $this->createAccrualEntries($cycle, $user);
+            }
+
+            DB::commit();
+            return $cycle;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * Create accrual General Ledger entries upon final approval.
+     * Debits Salary Expense and Credits Salary Payable/Deductions.
+     * 
+     * @param PayrollCycle $cycle
+     * @param User $user
+     * @return void
+     */
+    protected function createAccrualEntries($cycle, $user)
+    {
+        $mappings = $this->mappingService->getStandardAccounts();
+        $entryDate = $cycle->period_end ?? now()->format('Y-m-d');
+        $glEntries = [];
+
+        // Debit Expense
+        $glEntries[] = [
+            'account_code' => $mappings['salaries_expense'],
+            'entry_type' => 'DEBIT',
+            'amount' => $cycle->total_gross,
+            'description' => "Payroll Accrual (" . ucfirst($cycle->cycle_type) . "): " . $cycle->cycle_name
+        ];
+
+        // Credit Payable
+        $glEntries[] = [
+            'account_code' => $mappings['salaries_payable'],
+            'entry_type' => 'CREDIT',
+            'amount' => $cycle->total_net,
+            'description' => "Payroll Payable (" . ucfirst($cycle->cycle_type) . "): " . $cycle->cycle_name
+        ];
+
+        if ($cycle->total_deductions > 0) {
+            $glEntries[] = [
+                'account_code' => $mappings['accounts_payable'],
+                'entry_type' => 'CREDIT',
+                'amount' => $cycle->total_deductions,
+                'description' => "Payroll Deductions Liability: " . $cycle->cycle_name
+            ];
+        }
+
+        $this->ledgerService->postTransaction(
+            $glEntries,
+            'payroll_cycle',
+            $cycle->id,
+            'PAY-ACCR-' . $cycle->id,
+            $entryDate
+        );
+    }
+
+    /**
+     * Process payment for an approved payroll cycle.
+     * Creates PayrollTransaction records and posts payment GL entries.
+     * Debits Salary Payable and Credits Cash/Bank.
+     * 
+     * @param int $id PayrollCycle ID
+     * @param int|null $paymentAccountId Optional specific payment account ID (defaults to Cash)
+     * @return PayrollCycle The updated cycle
+     * @throws \Exception If the cycle is not in 'approved' status
+     */
+    public function processPayment($id, $paymentAccountId = null)
+    {
+        $cycle = PayrollCycle::with('items')->findOrFail($id);
+        if ($cycle->status !== 'approved') {
+            throw new \Exception("Payroll cycle must be fully approved before payment.");
+        }
+
+        DB::beginTransaction();
+        try {
+            $mappings = $this->mappingService->getStandardAccounts();
+            
+            $salaryPayableAccount = ChartOfAccount::where('account_code', $mappings['salaries_payable'])->first();
+            $cashAccount = $paymentAccountId ? ChartOfAccount::find($paymentAccountId) : ChartOfAccount::where('account_code', $mappings['cash'])->first();
+
+            // Calculate total ACTUAL remaining to be paid
+            $totalRemainingToPay = 0;
+            $itemsToPay = [];
+
+            foreach($cycle->items as $item) {
+                if ($item->status !== 'active') continue;
+
+                $alreadyPaid = PayrollTransaction::where('payroll_item_id', $item->id)
+                    ->where('transaction_type', 'payment')
+                    ->sum('amount');
+
+                $remaining = $item->net_salary - $alreadyPaid;
+
+                if ($remaining > 0.01) {
+                    $totalRemainingToPay += $remaining;
+                    $itemsToPay[] = [
+                        'item' => $item,
+                        'amount' => $remaining
+                    ];
+                }
+            }
+
+            if ($totalRemainingToPay > 0) {
+                 if ($salaryPayableAccount && $cashAccount) {
+                    $glEntries = [
+                        [
+                            'account_code' => $mappings['salaries_payable'],
+                            'entry_type' => 'DEBIT',
+                            'amount' => $totalRemainingToPay,
+                            'description' => "Payroll Payment (" . ucfirst($cycle->cycle_type) . "): " . $cycle->cycle_name
+                        ],
+                        [
+                            'account_code' => $cashAccount->account_code,
+                            'entry_type' => 'CREDIT',
+                            'amount' => $totalRemainingToPay,
+                            'description' => "Payroll Payment (" . ucfirst($cycle->cycle_type) . "): " . $cycle->cycle_name
+                        ]
+                    ];
+
+                    $this->ledgerService->postTransaction(
+                        $glEntries,
+                        'payroll_cycle',
+                        $cycle->id,
+                        'PAY-PMT-' . $cycle->id . '-' . time(), // Unique voucher if partial
+                        $cycle->payment_date ?? now()->format('Y-m-d')
+                    );
+                }
+
+                foreach($itemsToPay as $payData) {
+                    $item = $payData['item'];
+                    $amount = $payData['amount'];
+
+                    PayrollTransaction::create([
+                        'payroll_item_id' => $item->id,
+                        'employee_id' => $item->employee_id,
+                        'amount' => $amount,
+                        'transaction_type' => 'payment',
+                        'transaction_date' => $cycle->payment_date ?? now(),
+                        'notes' => "Full Payment (Remainder) for cycle " . $cycle->cycle_name,
+                        'created_by' => auth()->id() ?? 1
+                    ]);
+                }
+            }
+
+            DB::commit();
+            $this->checkAndSetPaidStatus($cycle->id);
+            return $cycle->fresh(['items']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function createPaymentJournalEntry($payrollItem, $amount, $transactionId, $paymentAccountId = null)
+    {
+        $mappings = $this->mappingService->getStandardAccounts();
+        
+        $salaryPayableAccount = ChartOfAccount::where('account_code', $mappings['salaries_payable'])->first();
+        
+        // Fix BUG-003: Remove silent fallback to Cash. Require explicit account.
+        $cashAccount = $paymentAccountId ? ChartOfAccount::find($paymentAccountId) : null;
+
+        if (!$salaryPayableAccount || !$cashAccount) {
+            throw new \Exception("Payment Account is required and must be valid.");
+        }
+
+        $voucherNumber = 'PAY-IND-' . $payrollItem->id . '-' . $transactionId;
+
+        $glEntries = [
+            [
+                'account_code' => $mappings['salaries_payable'],
+                'entry_type' => 'DEBIT',
+                'amount' => $amount,
+                'description' => "Individual Salary Payment - " . ($payrollItem->employee->full_name ?? 'Employee')
+            ],
+            [
+                'account_code' => $cashAccount->account_code,
+                'entry_type' => 'CREDIT',
+                'amount' => $amount,
+                'description' => "Individual Salary Payment - " . ($payrollItem->employee->full_name ?? 'Employee')
+            ]
+        ];
+
+        $this->ledgerService->postTransaction(
+            $glEntries,
+            'payroll_transaction',
+            $transactionId,
+            $voucherNumber,
+            now()->format('Y-m-d')
+        );
+    }
+
+    public function toggleItemStatus($itemId)
+    {
+        $item = PayrollItem::findOrFail($itemId);
+        $item->status = $item->status === 'active' ? 'on_hold' : 'active';
+        $item->save();
+        return $item;
+    }
+
+    public function updatePayrollItem($itemId, $data)
+    {
+        $item = PayrollItem::findOrFail($itemId);
+        $item->update([
+            'base_salary' => $data['base_salary'],
+            'total_allowances' => $data['total_allowances'],
+            'total_deductions' => $data['total_deductions'],
+            'gross_salary' => $data['base_salary'] + $data['total_allowances'],
+            'net_salary' => ($data['base_salary'] + $data['total_allowances']) - $data['total_deductions'],
+            'notes' => $data['notes'] ?? $item->notes
+        ]);
+
+        // Update cycle totals
+        $cycle = $item->payrollCycle;
+        $items = $cycle->items;
+        $cycle->update([
+            'total_gross' => $items->sum('gross_salary'),
+            'total_deductions' => $items->sum('total_deductions'),
+            'total_net' => $items->sum('net_salary')
+        ]);
+
+        return $item;
+    }
+    public function checkAndSetPaidStatus($cycleId)
+    {
+        $cycle = PayrollCycle::with('items')->findOrFail($cycleId);
+        if ($cycle->status !== 'approved' && $cycle->status !== 'paid') return;
+
+        $items = $cycle->items;
+        $allPaid = true;
+
+        foreach ($items as $item) {
+            if ($item->status === 'on_hold') continue;
+            
+            $paidTotal = PayrollTransaction::where('payroll_item_id', $item->id)
+                ->where('transaction_type', 'payment')
+                ->sum('amount');
+
+            if ($paidTotal < $item->net_salary - 0.01) {
+                $allPaid = false;
+                break;
+            }
+        }
+
+        if ($allPaid && $cycle->status === 'approved') {
+            $cycle->update(['status' => 'paid']);
+        } elseif (!$allPaid && $cycle->status === 'paid') {
+            $cycle->update(['status' => 'approved']);
+        }
+    }
+}
