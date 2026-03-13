@@ -3,8 +3,8 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Models\ChartOfAccount;
-use App\Services\ChartOfAccountsMappingService;
+use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
+use App\Domains\Finance\ChartOfAccounts\Services\ChartOfAccountsMappingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ChartOfAccountsMappingServiceTest extends TestCase
