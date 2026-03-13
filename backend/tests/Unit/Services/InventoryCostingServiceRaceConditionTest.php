@@ -3,8 +3,8 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Services\InventoryCostingService;
-use App\Models\Product;
+use App\Domains\SupplyChain\Inventory\Services\InventoryCostingService;
+use App\Domains\SupplyChain\Inventory\Models\Product;
 use App\Exceptions\BusinessLogicException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;

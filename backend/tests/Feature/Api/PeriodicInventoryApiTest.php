@@ -3,9 +3,9 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Models\Product;
-use App\Models\InventoryCount;
-use App\Models\FiscalPeriod;
+use App\Domains\SupplyChain\Inventory\Models\Product;
+use App\Domains\SupplyChain\Inventory\Models\InventoryCount;
+use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 
@@ -69,7 +69,7 @@ class PeriodicInventoryApiTest extends TestCase
         $period = FiscalPeriod::first();
 
         // Seed costing layer
-        app(\App\Services\InventoryCostingService::class)->recordPurchase($product->id, 1, 100, 10.00, 1000.00);
+        app(\App\Domains\SupplyChain\Inventory\Services\InventoryCostingService::class)->recordPurchase($product->id, 1, 100, 10.00, 1000.00);
 
         // Create an unprocessed count with variance
         InventoryCount::create([

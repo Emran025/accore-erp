@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Product;
+use App\Domains\SupplyChain\Inventory\Models\Product;
 use Illuminate\Support\Facades\DB;
 
 class ProductSeeder extends Seeder
@@ -21,7 +21,7 @@ class ProductSeeder extends Seeder
         $adminUserId = DB::table('users')->where('role', 'admin')->value('id') ?? 1;
 
         // Fetch categories to map names to IDs
-        $categories = \App\Models\Category::pluck('id', 'name');
+        $categories = \App\Domains\SupplyChain\Inventory\Models\Category::pluck('id', 'name');
 
         $products = [
             [
@@ -156,7 +156,7 @@ class ProductSeeder extends Seeder
             ],
         ];
 
-        $costingService = app(\App\Services\InventoryCostingService::class);
+        $costingService = app(\App\Domains\SupplyChain\Inventory\Services\InventoryCostingService::class);
 
         foreach ($products as $productData) {
             $product = Product::create($productData);

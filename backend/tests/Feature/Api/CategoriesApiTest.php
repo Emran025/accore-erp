@@ -3,7 +3,7 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Models\Category;
+use App\Domains\SupplyChain\Inventory\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CategoriesApiTest extends TestCase
