@@ -3,7 +3,7 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Models\Setting;
+use App\Domains\EnterpriseCore\Governance\Models\Setting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ZatcaSettingsTest extends TestCase

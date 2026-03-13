@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\ZatcaEinvoice;
-use App\Models\Invoice;
+use App\Domains\Finance\Taxation\Models\ZatcaEinvoice;
+use App\Domains\Commercial\Sales\Models\Invoice;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ZatcaEinvoiceFactory extends Factory

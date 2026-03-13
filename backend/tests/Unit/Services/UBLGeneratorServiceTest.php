@@ -3,12 +3,12 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Services\UBLGeneratorService;
-use App\Models\Invoice;
-use App\Models\InvoiceItem;
-use App\Models\Product;
-use App\Models\ArCustomer;
-use App\Models\Setting;
+use App\Domains\Finance\Taxation\Services\UBLGeneratorService;
+use App\Domains\Commercial\Sales\Models\Invoice;
+use App\Domains\Commercial\Sales\Models\InvoiceItem;
+use App\Domains\SupplyChain\Inventory\Models\Product;
+use App\Domains\Commercial\AccountsReceivable\Models\ArCustomer;
+use App\Domains\EnterpriseCore\Governance\Models\Setting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
