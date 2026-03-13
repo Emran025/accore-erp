@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\Revenue;
-use App\Models\User;
-use App\Models\UniversalJournal;
+use App\Domains\Finance\Revenues\Models\Revenue;
+use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class RevenueFactory extends Factory

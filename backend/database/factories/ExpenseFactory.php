@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\Expense;
-use App\Models\User;
-use App\Models\UniversalJournal;
+use App\Domains\Finance\Expenses\Models\Expense;
+use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ExpenseFactory extends Factory
