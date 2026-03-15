@@ -1,3 +1,3 @@
-import SettingsPage from "./(pages)/page";
+import CurrenciesPage from "./(pages)/page";
 
-export { SettingsPage };
+export { CurrenciesPage };

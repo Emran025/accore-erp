@@ -128,7 +128,7 @@ export const FinanceDomain: Domain = {
         // ─────────────────────────────────────────────────────────────
         {
             id: "treasury",
-            title: "النقدية والسياسة المالية",
+            title: "إدارة الخزينة والنقدية",
             icon: "trending-up",
             description: "سندات القيد، التدفق النقدي، والتسوية البنكية",
             groups: [
@@ -174,9 +174,9 @@ export const FinanceDomain: Domain = {
         // ─────────────────────────────────────────────────────────────
         {
             id: "foreign-exchange",
-            title: "الخزينة والعملات الأجنبية",
+            title: "العملات الأجنبية والصرف",
             icon: "coins",
-            description: "إدارة العملات وأسعار الصرف وعمليات التداول",
+            description: "إدارة العملات وأسعار الصرف والسياسات النقدية",
             groups: [
                 {
                     id: "currency-management",
