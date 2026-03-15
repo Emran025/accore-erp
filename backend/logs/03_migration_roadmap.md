@@ -26,7 +26,7 @@ This roadmap details the Strangler Fig approach that will safely decouple massiv
 * **Objective:** Extract safe Read/Write operations across top-level domains.
 * **Tasks:**
   * [x] Extracted `GeneralLedgerController@trialBalance` → `Finance\GeneralLedger\Actions\GetTrialBalanceAction`.
-  * [x] Extracted `JournalVouchersController` (Full CRUD) → `Finance\JournalVouchers\Actions\`. (Includes critical Double-Entry validation).
+  * [x] Extracted `JournalVouchersController` (Full CRUD) → `Finance\Treasury\Actions\`. (Includes critical Double-Entry validation).
   * [x] Extracted `ChartOfAccountsController` (Full CRUD + Balances) → `Finance\ChartOfAccounts\Actions\`.
   * [x] Extracted `SalesController` (Invoices) → `Commercial\Sales\Actions\`. (Includes complex Business Rules exception handling).
   * [x] Extracted `CategoriesController` (Inventory) → `SupplyChain\Inventory\Actions\`.
@@ -47,7 +47,7 @@ This roadmap details the Strangler Fig approach that will safely decouple massiv
 * **Tasks:**
   * [ ] Transform `TaxEngineController` logic into Capability layer Actions.
   * [ ] Move BI processing (`ReportsController`, `DashboardController`) to `DataIntelligence` domain.
-  * [ ] Move `ComplianceProfileController` to `DigitalPlatform\Compliance` Actions.
+  * [ ] Move `ComplianceProfileController` to `HumanCapital\HRCompliance` Actions.
 
 ---
 **Note:** The system now contains **52 dedicated Single Action Classes** executing live atop the original database, safely cloaked under the `/api/v2/` routing prefix. Legacy routes remain entirely untouched.
