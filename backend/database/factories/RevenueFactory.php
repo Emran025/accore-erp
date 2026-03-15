@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Domains\Finance\Revenues\Models\Revenue;
-use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

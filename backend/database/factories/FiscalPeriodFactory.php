@@ -2,12 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
+use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Carbon\Carbon;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Finance\GeneralLedger\Models\FiscalPeriod>
  */
 class FiscalPeriodFactory extends Factory
 {

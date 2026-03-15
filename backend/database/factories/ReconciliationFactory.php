@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Domains\Finance\BankReconciliation\Models\Reconciliation;
+use App\Domains\Finance\Treasury\Models\Reconciliation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ReconciliationFactory extends Factory

@@ -2,14 +2,14 @@
 
 namespace Database\Factories;
 
-use App\Domains\Commercial\AccountsReceivable\Models\ArTransaction;
-use App\Domains\Commercial\AccountsReceivable\Models\ArCustomer;
-use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\Commercial\RevenueReceivables\Models\ArTransaction;
+use App\Domains\Commercial\CRM\Models\ArCustomer;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Commercial\AccountsReceivable\Models\ArTransaction>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Commercial\RevenueReceivables\Models\ArTransaction>
  */
 class ArTransactionFactory extends Factory
 {

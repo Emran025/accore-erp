@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
+use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Finance\GeneralLedger\Models\ChartOfAccount>
  */
 class ChartOfAccountFactory extends Factory
 {

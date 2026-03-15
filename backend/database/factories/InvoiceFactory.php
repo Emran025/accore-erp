@@ -2,17 +2,17 @@
 
 namespace Database\Factories;
 
-use App\Domains\Commercial\Sales\Models\Invoice;
-use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
-use App\Domains\Commercial\AccountsReceivable\Models\ArCustomer;
+use App\Domains\Commercial\CRM\Models\ArCustomer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * SAP FI: Invoice factory creates a document with NO amounts.
  * Amounts are derived from GL entries, tax_lines, and invoice_items.
  *
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Commercial\Sales\Models\Invoice>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Commercial\SalesLifecycle\Models\Invoice>
  */
 class InvoiceFactory extends Factory
 {

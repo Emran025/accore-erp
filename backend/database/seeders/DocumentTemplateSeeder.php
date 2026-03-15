@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Domains\EnterpriseCore\Governance\Models\DocumentTemplate;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\DocumentTemplate;
 use Illuminate\Database\Seeder;
 
 class DocumentTemplateSeeder extends Seeder

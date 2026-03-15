@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Domains\EnterpriseCore\Governance\Models\Setting;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Setting;
 
 class SettingsSeeder extends Seeder
 {

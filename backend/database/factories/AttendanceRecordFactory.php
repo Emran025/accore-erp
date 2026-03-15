@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use App\Domains\HumanCapital\TimeAndAttendance\Models\AttendanceRecord;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
-use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AttendanceRecordFactory extends Factory

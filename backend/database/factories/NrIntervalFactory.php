@@ -2,12 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Domains\EnterpriseCore\NumberRanges\Models\NrInterval;
-use App\Domains\EnterpriseCore\NumberRanges\Models\NrObject;
+use App\Domains\EnterpriseCore\SystemOverview\Models\NrInterval;
+use App\Domains\EnterpriseCore\SystemOverview\Models\NrObject;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\EnterpriseCore\NumberRanges\Models\NrInterval>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\EnterpriseCore\SystemOverview\Models\NrInterval>
  */
 class NrIntervalFactory extends Factory
 {

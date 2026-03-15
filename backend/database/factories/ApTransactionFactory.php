@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use App\Domains\Commercial\AccountsPayable\Models\ApTransaction;
 use App\Domains\Commercial\AccountsPayable\Models\ApSupplier;
-use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

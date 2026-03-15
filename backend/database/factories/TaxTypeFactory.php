@@ -3,9 +3,9 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Domains\Finance\Taxation\Models\TaxAuthority;
+use App\Domains\Finance\TaxCompliance\Models\TaxAuthority;
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Finance\Taxation\Models\TaxType>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Finance\TaxCompliance\Models\TaxType>
  */
 class TaxTypeFactory extends Factory
 {

@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Domains\Finance\Taxation\Models\TaxAuthority;
-use App\Domains\Finance\Taxation\Models\TaxType;
-use App\Domains\Finance\Taxation\Models\TaxRate;
+use App\Domains\Finance\TaxCompliance\Models\TaxAuthority;
+use App\Domains\Finance\TaxCompliance\Models\TaxType;
+use App\Domains\Finance\TaxCompliance\Models\TaxRate;
 use Illuminate\Database\Seeder;
 
 /**

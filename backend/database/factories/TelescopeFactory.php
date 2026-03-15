@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Domains\DigitalPlatform\Compliance\Models\Telescope;
-use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\HumanCapital\HRCompliance\Models\Telescope;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TelescopeFactory extends Factory

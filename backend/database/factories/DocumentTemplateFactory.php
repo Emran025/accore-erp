@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Domains\EnterpriseCore\Governance\Models\DocumentTemplate;
-use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\DocumentTemplate;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class DocumentTemplateFactory extends Factory
 {

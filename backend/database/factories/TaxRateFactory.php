@@ -5,7 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Finance\Taxation\Models\TaxRate>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Finance\TaxCompliance\Models\TaxRate>
  */
 class TaxRateFactory extends Factory
 {
@@ -17,7 +17,7 @@ class TaxRateFactory extends Factory
     public function definition(): array
     {
         return [
-            'tax_type_id' => \App\Domains\Finance\Taxation\Models\TaxType::factory(),
+            'tax_type_id' => \App\Domains\Finance\TaxCompliance\Models\TaxType::factory(),
             'rate' => 0.15,
             'fixed_amount' => 0.00,
             'effective_from' => '2000-01-01',

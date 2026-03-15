@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Domains\EnterpriseCore\NumberRanges\Models\NrExpansionLog;
-use App\Domains\EnterpriseCore\NumberRanges\Models\NrInterval;
+use App\Domains\EnterpriseCore\SystemOverview\Models\NrInterval;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
