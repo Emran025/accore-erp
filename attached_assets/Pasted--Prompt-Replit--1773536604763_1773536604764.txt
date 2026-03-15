@@ -1,0 +1,81 @@
+فيما يلي **Prompt عالي المستوى، مصاغ بلغة إنجليزية رفيعة، احترافية، ودقيقة**، ومهيأ ليجعل Replit يعمل بأقصى طاقاته لبناء **Laravel API Resources** بشكل كامل ومنهجي ومتوافق مع مشاريع ضخمة ومعمارية نظيفة. يمكنك نسخه كما هو واستخدامه مباشرة:
+
+---
+
+**Prompt:**
+
+You are acting as a senior Laravel architect with extensive experience in designing large-scale, enterprise-grade APIs following Clean Architecture and best practices.
+
+The project already contains a fully implemented **Actions layer** responsible for all business logic. Your task is to **design, generate, and integrate a complete and professional Resources layer** (`app/Http/Resources`) that will be used consistently across all API responses.
+
+### Core Objectives
+
+1. **Build Laravel API Resources professionally**
+
+   * Create dedicated `JsonResource` classes for all relevant domain entities.
+   * Ensure each Resource is responsible *only* for data presentation and API response shaping.
+   * Do not include business logic or decision-making logic inside Resources.
+
+2. **Strict Parameter and Data Validation Awareness**
+
+   * While validation logic itself remains in Request classes or Actions, each Resource must:
+
+     * Safely access attributes.
+     * Guard against null relations.
+     * Use conditional serialization (`when`, `whenLoaded`, `mergeWhen`) where appropriate.
+     * Prevent leaking internal, sensitive, or unintended fields.
+
+3. **Folder Structure Compliance**
+
+   * You must strictly follow and replicate the folder hierarchy defined in:
+
+     ```
+     accsystem/backend/app/Http/Resources/tree.txt
+     ```
+   * The structure reflects API versioning and domain-based organization and must be mirrored exactly.
+   * Do not flatten or simplify the hierarchy.
+
+4. **Consistency and Reusability**
+
+   * Use nested Resources for relationships instead of raw arrays.
+   * Use `ResourceCollection` or `::collection()` where collections are returned.
+   * Ensure consistent naming conventions across all Resources.
+   * All Resources must produce predictable, stable, and documented JSON shapes.
+
+5. **Controller Integration**
+
+   * Update Controllers to:
+
+     * Consume Actions for execution.
+     * Return responses exclusively through Resources (never raw Models or arrays).
+   * Ensure a clean and minimal Controller layer.
+
+6. **API Versioning Discipline**
+
+   * Respect API version boundaries (e.g., V1, V2).
+   * Avoid cross-version coupling of Resources.
+   * Each API version must own its Resources explicitly.
+
+7. **Code Quality Expectations**
+
+   * Follow PSR-12 and Laravel conventions strictly.
+   * Write clean, readable, and self-explanatory code.
+   * Use PHP type hints where applicable.
+   * Keep methods concise and expressive.
+
+### Final Deliverables
+
+* A fully built `app/Http/Resources` directory matching the provided tree structure.
+* Properly implemented `JsonResource` classes for all exposed entities.
+* Updated Controllers returning Resources consistently.
+* Clear separation of concerns between Controllers, Actions, and Resources.
+* Production-ready, scalable, and maintainable implementation.
+
+Work with maximum precision, architectural discipline, and professional rigor, as this codebase is intended for long-term growth and enterprise use.
+
+---
+
+إذا رغبت بعد ذلك، أستطيع:
+
+* تهيئة **Checklist مراجعة** للتأكد أن Replit التزم بالمعمارية.
+* أو إعادة صياغة الـ Prompt بنسخة **أكثر صرامة (Strict Mode)** مخصصة للـ API V2 تحديدًا.

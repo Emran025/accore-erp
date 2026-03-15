@@ -16,8 +16,8 @@ use App\Http\Requests\Commercial\MarketingDistribution\UpdateRepresentativeReque
 use App\Http\Requests\Commercial\MarketingDistribution\RepresentativeLedgerRequest;
 use App\Http\Requests\Commercial\MarketingDistribution\StoreRepresentativeTransactionRequest;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
-use App\Http\Resources\SalesRepresentativeResource;
-use App\Http\Resources\SalesRepresentativeTransactionResource;
+use App\Http\Resources\Commercial\MarketingDistribution\SalesRepresentativeResource;
+use App\Http\Resources\Commercial\MarketingDistribution\SalesRepresentativeTransactionResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;

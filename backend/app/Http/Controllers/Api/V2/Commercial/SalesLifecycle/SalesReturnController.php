@@ -10,7 +10,7 @@ use App\Http\Requests\Commercial\SalesLifecycle\ListSalesReturnsRequest;
 use App\Http\Requests\Commercial\SalesLifecycle\StoreSalesReturnRequest;
 use App\Http\Requests\Commercial\SalesLifecycle\LedgerSalesReturnsRequest;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
-use App\Http\Resources\SalesReturnResource;
+use App\Http\Resources\Commercial\SalesLifecycle\SalesReturnResource;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

@@ -49,3 +49,52 @@ cd backend && php artisan migrate
 ## Authentication
 
 Custom session-token based auth (not Laravel Sanctum). The `ApiAuth` middleware validates `X-Session-Token` headers on protected routes.
+
+## Laravel API Resources Layer
+
+All API responses pass through strongly-typed Resource classes. Resources live in:
+```
+backend/app/Http/Resources/
+├── Assets/AssetLifecycle/           (Asset, AssetDepreciation, EmployeeAsset)
+├── Commercial/
+│   ├── CRM/                         (ArCustomer)
+│   ├── MarketingDistribution/       (SalesRepresentative, SalesRepresentativeTransaction)
+│   ├── RevenueReceivables/          (ArTransaction)
+│   └── SalesLifecycle/              (Invoice, InvoiceItem, SalesReturn, SalesReturnItem)
+├── EnterpriseCore/
+│   ├── IdentityAccess/              (User, Role, RolePermission, PermissionTemplate, Session)
+│   ├── OrganizationGovernance/      (DocumentTemplate, Module, Setting, StructureNode, StructureLink, TopologyRule, OrgMetaType)
+│   └── SystemOverview/              (DocumentSequence, NrGroup, NrObject, NrInterval)
+├── Finance/
+│   ├── ForeignExchange/             (Currency, CurrencyPolicy, CurrencyExchangeRateHistory, CurrencyRevaluation)
+│   ├── GeneralLedger/               (ChartOfAccount, FiscalPeriod, GeneralLedger, UniversalJournal)
+│   ├── ManagementAccounting/        (CostCenter, ProfitCenter, Expense, Revenue)
+│   ├── TaxCompliance/               (TaxType, TaxRate, TaxAuthority, TaxLine, ZatcaEinvoice)
+│   └── Treasury/                    (Reconciliation, RecurringTransaction, JournalVoucher)
+├── HumanCapital/
+│   ├── WorkforceAdmin/              (Employee, Department, JobTitle, Position, EmployeeContract, ContingentWorker, ContingentContract, ExpatManagement, DisciplinaryAction, EmployeeCertification, EmployeeRelationsCase, ComplianceProfile, WellnessProgram, WellnessParticipation, OrgChangeHistory)
+│   ├── TimeProductivity/            (AttendanceRecord, LeaveRequest, WorkforceSchedule, ScheduleShift, BiometricDevice)
+│   ├── TalentRecruitment/           (RecruitmentRequisition, JobApplicant, Interview, OnboardingWorkflow, OnboardingTask)
+│   ├── PerformanceDevelopment/      (PerformanceAppraisal, PerformanceGoal, LearningCourse, LearningEnrollment, SuccessionPlan, SuccessionCandidate)
+│   ├── ServicesWellness/            (EmployeeLoan, LoanRepayment, TravelRequest, TravelExpense, EhsIncident, EmployeeHealthRecord, PpeManagement)
+│   ├── HRAdvanced/                  (EmployeeDocument)
+│   └── PayrollBenefits/             (PayrollCycle, PayrollEntry, CompensationPlan, EmployeeAllowance, EmployeeDeduction, BenefitsPlan)
+├── Manufacturing/QualityControl/    (Capa, QaCompliance)
+└── SupplyChain/
+    ├── Inventory/                   (Product, Category, Batch, BatchItem, InventoryCount)
+    ├── PayablesExpenses/            (ApTransaction)
+    ├── Procurement/                 (Purchase, PurchaseRequest)
+    └── SupplierSourcing/            (ApSupplier)
+```
+
+### Resource Conventions
+- Namespace: `App\Http\Resources\{Domain}\{Subdomain}\{Model}Resource`
+- Money fields: cast to `(float)`
+- Dates: `->toDateString()` / `->toDateTimeString()`
+- Relations: `whenLoaded()` — never eager-loads
+- Security: passwords/tokens excluded; anonymous applicant PII hidden with `when(!$this->is_anonymous, ...)`
+- AR/AP amounts: derived from `GeneralLedger` (GL is single source of truth for financial amounts)
+- BackedEnum fields: `instanceof \BackedEnum ? ->value : field`
+
+### Controllers Updated to Use Domain Resources
+ArController, SalesRepresentativeController, ArTransactionsController, SalesController, SalesReturnController, ProductsController, ApTransactionsController, PurchasesController, ApController

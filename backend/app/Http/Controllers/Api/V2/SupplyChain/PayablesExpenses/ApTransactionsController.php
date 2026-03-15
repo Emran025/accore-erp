@@ -13,7 +13,7 @@ use App\Http\Requests\SupplyChain\PayablesExpenses\StoreApTransactionRequest;
 use App\Http\Requests\SupplyChain\PayablesExpenses\RecordApPaymentRequest;
 use App\Http\Requests\SupplyChain\PayablesExpenses\UpdateApTransactionRequest;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
-use App\Http\Resources\ApTransactionResource;
+use App\Http\Resources\SupplyChain\PayablesExpenses\ApTransactionResource;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
