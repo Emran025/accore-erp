@@ -19,6 +19,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
 use App\Domains\Finance\GeneralLedger\Services\ChartOfAccountsMappingService;
+use App\Domains\SupplyChain\SupplierSourcing\Models\ApSupplier;
 use App\Http\Controllers\Controller;
 
 class ApController extends Controller
@@ -63,7 +64,8 @@ class ApController extends Controller
             $result = $action->execute($validated, (int)$userId);
             TelescopeService::logOperation('CREATE', 'ap_suppliers', $result['id'], null, $validated);
 
-            return $this->successResponse($result, 'Supplier created successfully');
+            $supplier = ApSupplier::find($result['id']);
+            return $this->successResponse(new ApSupplierResource($supplier), 'Supplier created successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 400);
         }
@@ -80,7 +82,8 @@ class ApController extends Controller
             $result = $action->execute($validated);
             TelescopeService::logOperation('UPDATE', 'ap_suppliers', $result['id'], $result['old_values'], $validated);
 
-            return $this->successResponse([], 'Supplier updated successfully');
+            $supplier = ApSupplier::find($result['id']);
+            return $this->successResponse(new ApSupplierResource($supplier), 'Supplier updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }

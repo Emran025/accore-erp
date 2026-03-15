@@ -13,6 +13,7 @@ use App\Domains\Finance\GeneralLedger\Actions\GetAccountDetailsAction;
 use App\Domains\Finance\GeneralLedger\Actions\ListGlEntriesAction;
 use App\Domains\Finance\GeneralLedger\Actions\GetAccountActivityAction;
 use App\Domains\Finance\GeneralLedger\Actions\GetAccountBalanceHistoryAction;
+use App\Http\Resources\Finance\GeneralLedger\GeneralLedgerResource;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -57,7 +58,9 @@ class GeneralLedgerController extends Controller
     public function entries(ListGlEntriesRequest $request, ListGlEntriesAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
-        return $this->successResponse($result);
+        $data = $result['data'] ?? $result;
+
+        return $this->successResponse(GeneralLedgerResource::collection($data));
     }
 
     /**

@@ -16,6 +16,10 @@ use App\Domains\HumanCapital\TimeProductivity\Actions\CreateBiometricDeviceActio
 use App\Domains\HumanCapital\TimeProductivity\Actions\DeleteBiometricDeviceAction;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Http\Resources\HumanCapital\TimeProductivity\BiometricDeviceResource;
+use App\Http\Resources\HumanCapital\TimeProductivity\BiometricSyncLogResource;
+use App\Domains\HumanCapital\TimeProductivity\Models\BiometricDevice;
+use App\Domains\HumanCapital\TimeProductivity\Models\BiometricSyncLog;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
 class BiometricController extends Controller
@@ -29,7 +33,7 @@ class BiometricController extends Controller
         $filters = $request->only(['status']);
         $devices = $action->execute($filters);
 
-        return $this->successResponse($devices);
+        return $this->successResponse(BiometricDeviceResource::collection($devices));
     }
 
     public function storeDevice(StoreBiometricDeviceRequest $request, CreateBiometricDeviceAction $action): JsonResponse
@@ -37,7 +41,8 @@ class BiometricController extends Controller
         $validated = $request->validated();
         $device = $action->execute($validated);
 
-        return $this->successResponse($device, 'Device registered');
+        $model = BiometricDevice::find($device['id'] ?? $device);
+        return $this->successResponse(new BiometricDeviceResource($model), 'Device registered');
     }
 
     public function updateDevice(UpdateBiometricDeviceRequest $request, $id, UpdateBiometricDeviceAction $action): JsonResponse
@@ -45,7 +50,8 @@ class BiometricController extends Controller
         $validated = $request->validated();
         $device = $action->execute($id, $validated);
 
-        return $this->successResponse($device, 'Device updated');
+        $model = BiometricDevice::find($device['id'] ?? $id);
+        return $this->successResponse(new BiometricDeviceResource($model), 'Device updated');
     }
 
     public function destroyDevice($id, DeleteBiometricDeviceAction $action): JsonResponse
@@ -76,7 +82,12 @@ class BiometricController extends Controller
         $filters = $request->only(['device_id']);
         $logs = $action->execute($filters);
 
-        return $this->successResponse($logs);
+        return $this->paginatedResponse(
+            BiometricSyncLogResource::collection($logs['data']),
+            $logs['total'],
+            $logs['current_page'],
+            $logs['per_page']
+        );
     }
 
     public function importFromFile(ImportBiometricDeviceRequest $request, ImportBiometricAttendanceAction $action): JsonResponse

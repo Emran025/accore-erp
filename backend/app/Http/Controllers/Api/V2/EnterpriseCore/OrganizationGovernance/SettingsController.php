@@ -12,6 +12,7 @@ use App\Domains\EnterpriseCore\OrganizationGovernance\Actions\UpdateInvoiceSetti
 use App\Domains\EnterpriseCore\OrganizationGovernance\Actions\UpdateSettingsAction;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Actions\UpdateStoreSettingsAction;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Actions\UpdateZatcaSettingsAction;
+use App\Http\Resources\EnterpriseCore\OrganizationGovernance\SettingResource;
 use App\Http\Requests\EnterpriseCore\OrganizationGovernance\OnboardZatcaRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -24,15 +25,16 @@ class SettingsController extends Controller
     public function index(): JsonResponse
     {
         $data = (new ListSettingsAction())->execute();
+        $settings = $data['data'] ?? $data;
 
-        return $this->successResponse($data);
+        return $this->successResponse(SettingResource::collection($settings));
     }
 
     public function getStoreSettings(): JsonResponse
     {
         $settings = (new GetStoreSettingsAction())->execute();
 
-        return response()->json(['success' => true, 'settings' => $settings]);
+        return $this->successResponse($settings);
     }
 
     public function updateStoreSettings(Request $request): JsonResponse
@@ -46,7 +48,7 @@ class SettingsController extends Controller
     {
         $settings = (new GetInvoiceSettingsAction())->execute();
 
-        return response()->json(['success' => true, 'settings' => $settings]);
+        return $this->successResponse($settings);
     }
 
     public function updateInvoiceSettings(Request $request): JsonResponse
@@ -67,7 +69,7 @@ class SettingsController extends Controller
     {
         $settings = (new GetZatcaSettingsAction())->execute();
 
-        return response()->json(['success' => true, 'settings' => $settings]);
+        return $this->successResponse($settings);
     }
 
     public function updateZatcaSettings(Request $request): JsonResponse
@@ -82,6 +84,6 @@ class SettingsController extends Controller
         $action = app(OnboardZatcaAction::class);
         $result = $action->execute($request->validated()['otp'], $request->validated()['csr_data'] ?? []);
 
-        return response()->json($result);
+        return $this->successResponse($result, 'ZATCA onboarding completed successfully');
     }
 }

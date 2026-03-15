@@ -8,6 +8,10 @@ use App\Http\Requests\HumanCapital\WorkforceAdmin\StoreEmployeeRequest;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\UpdateEmployeeRequest;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\StoreEmployeeDocumentRequest;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\UpdateEmployeeDocumentRequest;
+use App\Http\Resources\HumanCapital\WorkforceAdmin\EmployeeResource;
+use App\Http\Resources\HumanCapital\HRAdvanced\EmployeeDocumentResource;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
+use App\Domains\HumanCapital\HRAdvanced\Models\EmployeeDocument;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use Illuminate\Support\Facades\Storage;
@@ -33,14 +37,20 @@ class EmployeesController extends Controller
     public function index(ListEmployeesRequest $request, ListEmployeesAction $action)
     {
         $employees = $action->execute($request->validated());
-        return $this->successResponse($employees);
+        return $this->paginatedResponse(
+            EmployeeResource::collection($employees['data'] ?? $employees),
+            $employees['total'] ?? count($employees['data'] ?? $employees),
+            $employees['current_page'] ?? 1,
+            $employees['per_page'] ?? 15
+        );
     }
 
     public function store(StoreEmployeeRequest $request, CreateEmployeeAction $action)
     {
         try {
             $employee = $action->execute($request->validated());
-            return $this->successResponse($employee, 'Employee created successfully', 201);
+            $model = Employee::find($employee['id'] ?? $employee);
+            return $this->successResponse(new EmployeeResource($model), 'Employee created successfully', 201);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -49,7 +59,8 @@ class EmployeesController extends Controller
     public function show($id, ShowEmployeeAction $action)
     {
         $employee = $action->execute($id);
-        return $this->successResponse($employee);
+        $model = Employee::find($employee['id'] ?? $id);
+        return $this->successResponse(new EmployeeResource($model));
     }
 
     public function update(UpdateEmployeeRequest $request, $id, UpdateEmployeeAction $action)
@@ -58,7 +69,8 @@ class EmployeesController extends Controller
         
         $employee = $action->execute($id, $validated);
 
-        return $this->successResponse($employee, 'Employee updated successfully');
+        $model = Employee::find($employee['id'] ?? $id);
+        return $this->successResponse(new EmployeeResource($model), 'Employee updated successfully');
     }
 
     public function destroy($id, DeleteEmployeeAction $action)
@@ -70,25 +82,28 @@ class EmployeesController extends Controller
     public function suspend($id, SuspendEmployeeAction $action)
     {
         $employee = $action->execute($id);
-        return $this->successResponse($employee, 'Employee suspended successfully');
+        $model = Employee::find($employee['id'] ?? $id);
+        return $this->successResponse(new EmployeeResource($model), 'Employee suspended successfully');
     }
 
     public function activate($id, ActivateEmployeeAction $action)
     {
         $employee = $action->execute($id);
-        return $this->successResponse($employee, 'Employee activated successfully');
+        $model = Employee::find($employee['id'] ?? $id);
+        return $this->successResponse(new EmployeeResource($model), 'Employee activated successfully');
     }
 
     public function uploadDocument(StoreEmployeeDocumentRequest $request, $id, UploadEmployeeDocumentAction $action)
     {
         $document = $action->execute($id, $request->validated(), $request->file('document'));
-        return $this->successResponse($document, 'Document uploaded successfully', 201);
+        $model = EmployeeDocument::find($document['id'] ?? $document);
+        return $this->successResponse(new EmployeeDocumentResource($model), 'Document uploaded successfully', 201);
     }
 
     public function getDocuments($id, ListEmployeeDocumentsAction $action)
     {
         $documents = $action->execute($id);
-        return $this->successResponse($documents);
+        return $this->successResponse(EmployeeDocumentResource::collection($documents['data'] ?? $documents));
     }
 
     public function downloadDocument($employeeId, $documentId, DownloadEmployeeDocumentAction $action)
@@ -104,7 +119,8 @@ class EmployeesController extends Controller
     public function updateDocument(UpdateEmployeeDocumentRequest $request, $employeeId, $documentId, UpdateEmployeeDocumentAction $action)
     {
         $document = $action->execute($employeeId, $documentId, $request->validated());
-        return $this->successResponse($document, 'Document updated successfully');
+        $model = EmployeeDocument::find($document['id'] ?? $documentId);
+        return $this->successResponse(new EmployeeDocumentResource($model), 'Document updated successfully');
     }
 
     public function destroyDocument($employeeId, $documentId, DeleteEmployeeDocumentAction $action)

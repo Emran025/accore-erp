@@ -10,6 +10,8 @@ use App\Domains\Finance\ManagementAccounting\Actions\ListExpensesAction;
 use App\Domains\Finance\ManagementAccounting\Actions\CreateExpenseAction;
 use App\Domains\Finance\ManagementAccounting\Actions\UpdateExpenseAction;
 use App\Domains\Finance\ManagementAccounting\Actions\DeleteExpenseAction;
+use App\Domains\Finance\ManagementAccounting\Models\Expense;
+use App\Http\Resources\Finance\ManagementAccounting\ExpenseResource;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use Illuminate\Http\Request;
@@ -25,7 +27,7 @@ class ExpensesController extends Controller
     {
         $result = $action->execute($request->all());
         return $this->paginatedResponse(
-            $result['data'],
+            ExpenseResource::collection($result['data']),
             $result['total'],
             $result['current_page'],
             $result['per_page']
@@ -39,7 +41,8 @@ class ExpensesController extends Controller
     {
         try {
             $result = $action->execute($request->validated());
-            return $this->successResponse($result);
+            $expense = Expense::find($result['id'] ?? $result);
+            return $this->successResponse(new ExpenseResource($expense), 'Expense recorded successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }
@@ -51,8 +54,9 @@ class ExpensesController extends Controller
     public function update(UpdateExpenseRequest $request, UpdateExpenseAction $action): JsonResponse
     {
         try {
-            $action->execute($request->validated());
-            return $this->successResponse();
+            $result = $action->execute($request->validated());
+            $expense = Expense::find($result['id'] ?? $request->input('id'));
+            return $this->successResponse(new ExpenseResource($expense), 'Expense updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }

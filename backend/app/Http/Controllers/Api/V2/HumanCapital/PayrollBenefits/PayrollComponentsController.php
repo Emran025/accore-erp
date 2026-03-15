@@ -12,7 +12,7 @@ use App\Domains\HumanCapital\PayrollBenefits\Actions\CreatePayrollComponentActio
 use App\Domains\HumanCapital\PayrollBenefits\Actions\ShowPayrollComponentAction;
 use App\Domains\HumanCapital\PayrollBenefits\Actions\UpdatePayrollComponentAction;
 use App\Domains\HumanCapital\PayrollBenefits\Actions\DeletePayrollComponentAction;
-use Illuminate\Http\Request;
+use App\Http\Resources\HumanCapital\PayrollBenefits\PayrollComponentResource;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use Illuminate\Http\JsonResponse;
 
@@ -23,19 +23,23 @@ class PayrollComponentsController extends Controller
     public function index(ListPayrollComponentsRequest $request, ListPayrollComponentsAction $action): JsonResponse
     {
         $components = $action->execute();
-        return $this->successResponse($components);
+        $data = $components['data'] ?? $components;
+
+        return $this->successResponse(PayrollComponentResource::collection($data));
     }
 
     public function store(StorePayrollComponentRequest $request, CreatePayrollComponentAction $action): JsonResponse
     {
-        $component = $action->execute($request->validated());
-        return $this->successResponse($component, 'Payroll component created');
+        $result = $action->execute($request->validated());
+        $component = PayrollComponent::find($result['id'] ?? $result);
+        return $this->successResponse(new PayrollComponentResource($component), 'Payroll component created', 201);
     }
 
     public function update(UpdatePayrollComponentRequest $request, $id, UpdatePayrollComponentAction $action): JsonResponse
     {
-        $component = $action->execute((int)$id, $request->validated());
-        return $this->successResponse($component, 'Payroll component updated');
+        $result = $action->execute((int)$id, $request->validated());
+        $component = PayrollComponent::find($result['id'] ?? $id);
+        return $this->successResponse(new PayrollComponentResource($component), 'Payroll component updated');
     }
 
     public function destroy($id, DeletePayrollComponentAction $action): JsonResponse
@@ -46,7 +50,8 @@ class PayrollComponentsController extends Controller
 
     public function show($id, ShowPayrollComponentAction $action): JsonResponse
     {
-        $component = $action->execute((int)$id);
-        return $this->successResponse($component);
+        $result = $action->execute((int)$id);
+        $component = PayrollComponent::find($result['id'] ?? $id);
+        return $this->successResponse(new PayrollComponentResource($component));
     }
 }

@@ -9,6 +9,7 @@ use App\Http\Requests\Intelligence\BusinessIntelligence\GetDashboardDataRequest;
 use App\Http\Requests\Intelligence\BusinessIntelligence\ShowExecutiveDashboardRequest;
 use App\Domains\Intelligence\BusinessIntelligence\Actions\GetDashboardDataAction;
 use App\Domains\Intelligence\BusinessIntelligence\Actions\ShowExecutiveDashboardAction;
+use App\Http\Resources\Intelligence\BusinessIntelligence\DashboardResource;
 
 class DashboardController extends Controller
 {
@@ -17,12 +18,12 @@ class DashboardController extends Controller
     public function index(GetDashboardDataRequest $request, GetDashboardDataAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
-        return $this->successResponse($result);
+        return $this->successResponse(new DashboardResource($result));
     }
 
     public function executive(ShowExecutiveDashboardRequest $request, ShowExecutiveDashboardAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
-        return $this->successResponse($result);
+        return $this->successResponse(new DashboardResource($result));
     }
 }

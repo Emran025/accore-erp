@@ -11,6 +11,8 @@ use App\Domains\HumanCapital\TimeProductivity\Actions\RecordAttendanceAction;
 use App\Domains\HumanCapital\TimeProductivity\Actions\BulkImportAttendanceAction;
 use App\Domains\HumanCapital\TimeProductivity\Actions\GetAttendanceSummaryAction;
 use App\Domains\HumanCapital\TimeProductivity\Actions\GetMyAttendanceAction;
+use App\Domains\HumanCapital\TimeProductivity\Models\AttendanceRecord;
+use App\Http\Resources\HumanCapital\TimeProductivity\AttendanceRecordResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -28,8 +30,10 @@ class AttendanceController extends Controller
             $validated['start_date'],
             $validated['end_date']
         );
+        
+        $data = $records['data'] ?? $records;
 
-        return response()->json($records);
+        return $this->successResponse(AttendanceRecordResource::collection($data));
     }
 
     public function store(StoreAttendanceRequest $request, RecordAttendanceAction $action)
@@ -37,13 +41,14 @@ class AttendanceController extends Controller
         $validated = $request->validated();
 
         try {
-            $attendance = $action->execute(
+            $result = $action->execute(
                 $validated['employee_id'],
                 $validated['attendance_date'],
                 $validated
             );
+            $attendance = AttendanceRecord::find($result['id'] ?? $result);
 
-            return response()->json($attendance, 201);
+            return $this->successResponse(new AttendanceRecordResource($attendance), 'Attendance record created', 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
@@ -55,7 +60,7 @@ class AttendanceController extends Controller
 
         try {
             $imported = $action->execute($validated['records']);
-            return response()->json(['message' => 'Import successful', 'imported' => $imported], 201);
+            return $this->successResponse(['imported_count' => count($imported)], 'Import successful', 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
@@ -71,7 +76,7 @@ class AttendanceController extends Controller
             $validated['end_date']
         );
 
-        return response()->json($summary);
+        return $this->successResponse($summary);
     }
 
     public function myAttendance(Request $request, GetMyAttendanceAction $action)
@@ -81,8 +86,9 @@ class AttendanceController extends Controller
             $endDate = $request->input('end_date', now()->endOfMonth()->toDateString());
 
             $result = $action->execute($startDate, $endDate);
+            $data = $result['data'] ?? $result;
 
-            return response()->json($result);
+            return $this->successResponse(AttendanceRecordResource::collection($data));
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }

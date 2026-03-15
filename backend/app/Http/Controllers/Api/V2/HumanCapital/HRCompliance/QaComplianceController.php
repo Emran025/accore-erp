@@ -11,48 +11,58 @@ use App\Domains\HumanCapital\HRCompliance\Actions\CreateQaComplianceAction;
 use App\Domains\HumanCapital\HRCompliance\Actions\ShowQaComplianceAction;
 use App\Domains\HumanCapital\HRCompliance\Actions\UpdateQaComplianceAction;
 use App\Domains\HumanCapital\HRCompliance\Actions\CreateCapaAction;
+use App\Domains\Manufacturing\QualityControl\Models\QaCompliance;
+use App\Domains\Manufacturing\QualityControl\Models\Capa;
+use App\Http\Resources\Manufacturing\QualityControl\QaComplianceResource;
+use App\Http\Resources\Manufacturing\QualityControl\CapaResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
+use Illuminate\Http\JsonResponse;
 
 class QaComplianceController extends Controller
 {
     use BaseApiController;
 
-    public function index(Request $request, ListQaCompliancesAction $action)
+    public function index(Request $request, ListQaCompliancesAction $action): JsonResponse
     {
         $filters = $request->only(['compliance_type', 'status', 'employee_id']);
         $compliances = $action->execute($filters);
         
-        return $this->successResponse($compliances);
+        $data = $compliances['data'] ?? $compliances;
+        return $this->successResponse(QaComplianceResource::collection($data));
     }
 
-    public function store(StoreQaComplianceRequest $request, CreateQaComplianceAction $action)
+    public function store(StoreQaComplianceRequest $request, CreateQaComplianceAction $action): JsonResponse
     {
         $validated = $request->validated();
-        $compliance = $action->execute($validated);
+        $complianceData = $action->execute($validated);
+        $compliance = QaCompliance::find($complianceData['id'] ?? $complianceData);
 
-        return response()->json(array_merge(['success' => true], $compliance), 201);
+        return $this->successResponse(new QaComplianceResource($compliance), 'Compliance record created', 201);
     }
 
-    public function show($id, ShowQaComplianceAction $action)
+    public function show($id, ShowQaComplianceAction $action): JsonResponse
     {
-        $compliance = $action->execute($id);
-        return $this->successResponse($compliance);
+        $complianceData = $action->execute($id);
+        $compliance = QaCompliance::find($id);
+        return $this->successResponse(new QaComplianceResource($compliance));
     }
 
-    public function update(UpdateQaComplianceRequest $request, $id, UpdateQaComplianceAction $action)
+    public function update(UpdateQaComplianceRequest $request, $id, UpdateQaComplianceAction $action): JsonResponse
     {
         $validated = $request->validated();
-        $compliance = $action->execute($id, $validated);
+        $complianceData = $action->execute($id, $validated);
+        $compliance = QaCompliance::find($id);
         
-        return $this->successResponse($compliance);
+        return $this->successResponse(new QaComplianceResource($compliance), 'Compliance record updated');
     }
 
-    public function storeCapa(StoreCapaRequest $request, $complianceId, CreateCapaAction $action)
+    public function storeCapa(StoreCapaRequest $request, $complianceId, CreateCapaAction $action): JsonResponse
     {
         $validated = $request->validated();
-        $capa = $action->execute($complianceId, $validated);
+        $capaData = $action->execute($complianceId, $validated);
+        $capa = Capa::find($capaData['id'] ?? $capaData);
 
-        return response()->json(array_merge(['success' => true], $capa), 201);
+        return $this->successResponse(new CapaResource($capa), 'CAPA record created', 201);
     }
 }

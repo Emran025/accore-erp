@@ -22,6 +22,8 @@ use App\Domains\SupplyChain\Procurement\Actions\AutoGenerateRequestsAction;
 use App\Domains\SupplyChain\Procurement\Models\Purchase;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 use App\Http\Resources\SupplyChain\Procurement\PurchaseResource;
+use App\Http\Resources\SupplyChain\Procurement\PurchaseRequestResource;
+use App\Domains\SupplyChain\Procurement\Models\PurchaseRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
@@ -72,7 +74,8 @@ class PurchasesController extends Controller
                 $returnId = $returnAction->execute($validated, $userId);
                 TelescopeService::logOperation('CREATE', 'purchase_returns', $returnId, null, $validated);
 
-                return $this->successResponse(['id' => $returnId], 'Purchase return created successfully');
+                $returnPurchase = Purchase::find($returnId);
+                return $this->successResponse(new PurchaseResource($returnPurchase), 'Purchase return created successfully');
             }
 
             // Standard Purchase
@@ -82,7 +85,8 @@ class PurchasesController extends Controller
             $purchase = $purchaseAction->execute($validated, $userId);
             TelescopeService::logOperation('CREATE', 'purchases', $purchase['id'], null, $validated);
 
-            return $this->successResponse($purchase, 'Purchase created successfully', 201);
+            $newPurchase = Purchase::find($purchase['id']);
+            return $this->successResponse(new PurchaseResource($newPurchase), 'Purchase created successfully', 201);
         } catch (\Exception $e) {
             Log::error('Purchase Operation Error: ' . $e->getMessage());
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
@@ -111,7 +115,7 @@ class PurchasesController extends Controller
     public function requests(ListPurchaseRequestsAction $action): JsonResponse
     {
         $result = $action->execute();
-        return $this->successResponse($result);
+        return $this->successResponse(PurchaseRequestResource::collection($result));
     }
 
     /**
@@ -122,7 +126,8 @@ class PurchasesController extends Controller
         $userId = (int) (auth()->id() ?? session('user_id'));
         $result = $action->execute($request->validated(), $userId);
 
-        return $this->successResponse($result);
+        $req = PurchaseRequest::find($result['id']);
+        return $this->successResponse(new PurchaseRequestResource($req), 'Purchase request created successfully');
     }
 
     /**

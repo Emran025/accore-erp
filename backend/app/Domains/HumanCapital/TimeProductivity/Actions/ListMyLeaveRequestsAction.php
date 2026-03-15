@@ -3,15 +3,16 @@
 namespace App\Domains\HumanCapital\TimeProductivity\Actions;
 
 use App\Domains\HumanCapital\TimeProductivity\Models\LeaveRequest;
-use Illuminate\Support\Facades\DB;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Exception;
 
 class ListMyLeaveRequestsAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): LengthAwarePaginator
     {
         $user = auth()->user();
-        $employee = \App\Domains\HumanCapital\WorkforceAdmin\Models\Employee::where('user_id', $user->id)->first();
+        $employee = Employee::where('user_id', $user->id)->first();
 
         if (!$employee) {
             throw new Exception('Employee record not found');
@@ -23,6 +24,6 @@ class ListMyLeaveRequestsAction
             $query->where('status', $filters['status']);
         }
 
-        return $query->orderBy('created_at', 'desc')->paginate(15)->toArray();
+        return $query->orderBy('created_at', 'desc')->paginate(15);
     }
 }

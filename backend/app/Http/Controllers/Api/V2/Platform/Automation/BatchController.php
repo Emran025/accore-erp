@@ -9,6 +9,8 @@ use App\Domains\EnterpriseCore\Automation\Actions\CreateBatchAction;
 use App\Domains\EnterpriseCore\Automation\Actions\ShowBatchAction;
 use App\Domains\EnterpriseCore\Automation\Actions\DeleteBatchAction;
 use App\Domains\EnterpriseCore\Automation\Actions\ExecuteBatchAction;
+use App\Domains\SupplyChain\Inventory\Models\Batch;
+use App\Http\Resources\SupplyChain\Inventory\BatchResource;
 use Illuminate\Http\JsonResponse;
 
 use App\Http\Requests\Platform\Automation\ListBatchesRequest;
@@ -21,19 +23,26 @@ class BatchController extends Controller
     public function index(ListBatchesRequest $request, ListBatchesAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
-        return $this->successResponse($result);
+        return $this->paginatedResponse(
+            BatchResource::collection($result['data']),
+            $result['meta']['total'],
+            $result['meta']['current_page'],
+            $result['meta']['per_page']
+        );
     }
 
     public function show(int $id, ShowBatchAction $action): JsonResponse
     {
         $result = $action->execute($id);
-        return $this->successResponse($result);
+        $batch = Batch::find($result['id'] ?? $id);
+        return $this->successResponse(new BatchResource($batch));
     }
 
     public function store(CreateBatchRequest $request, CreateBatchAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
-        return $this->successResponse($result, 'تم إنشاء الدفعة بنجاح');
+        $batch = Batch::find($result['id'] ?? $result);
+        return $this->successResponse(new BatchResource($batch), 'تم إنشاء الدفعة بنجاح', 201);
     }
 
     public function execute(int $id, ExecuteBatchAction $action): JsonResponse

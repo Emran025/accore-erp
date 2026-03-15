@@ -13,6 +13,8 @@ use App\Domains\Finance\ManagementAccounting\Actions\ListRevenuesAction;
 use App\Domains\Finance\ManagementAccounting\Actions\CreateRevenueAction;
 use App\Domains\Finance\ManagementAccounting\Actions\UpdateRevenueAction;
 use App\Domains\Finance\ManagementAccounting\Actions\DeleteRevenueAction;
+use App\Domains\Finance\ManagementAccounting\Models\Revenue;
+use App\Http\Resources\Finance\ManagementAccounting\RevenueResource;
 
 class RevenuesController extends Controller
 {
@@ -25,7 +27,7 @@ class RevenuesController extends Controller
     {
         $result = $action->execute($request->all());
         return $this->paginatedResponse(
-            $result['items'],
+            RevenueResource::collection($result['items']),
             $result['total'],
             $result['page'],
             $result['per_page']
@@ -38,7 +40,9 @@ class RevenuesController extends Controller
     public function store(StoreRevenueRequest $request, CreateRevenueAction $action): JsonResponse
     {
         try {
-            return $this->successResponse($action->execute($request->validated()));
+            $result = $action->execute($request->validated());
+            $revenue = Revenue::find($result['id'] ?? $result);
+            return $this->successResponse(new RevenueResource($revenue), 'Revenue recorded successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }
@@ -50,8 +54,9 @@ class RevenuesController extends Controller
     public function update(UpdateRevenueRequest $request, UpdateRevenueAction $action): JsonResponse
     {
         try {
-            $action->execute($request->validated());
-            return $this->successResponse([], 'Revenue record updated');
+            $result = $action->execute($request->validated());
+            $revenue = Revenue::find($result['id'] ?? $request->input('id'));
+            return $this->successResponse(new RevenueResource($revenue), 'Revenue record updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }

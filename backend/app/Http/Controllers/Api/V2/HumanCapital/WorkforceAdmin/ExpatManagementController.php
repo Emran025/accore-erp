@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\ExpatManagement;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\StoreExpatRequest;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\UpdateExpatRequest;
+use App\Http\Resources\HumanCapital\WorkforceAdmin\ExpatManagementResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -28,7 +29,13 @@ class ExpatManagementController extends Controller
             });
         }
 
-        return $this->successResponse($query->paginate(15)->toArray());
+        $paginated = $query->paginate(15);
+        return $this->paginatedResponse(
+            ExpatManagementResource::collection($paginated->items()),
+            $paginated->total(),
+            $paginated->currentPage(),
+            $paginated->perPage()
+        );
     }
 
     public function store(StoreExpatRequest $request)
@@ -36,14 +43,13 @@ class ExpatManagementController extends Controller
         $validated = $request->validated();
         $validated['created_by'] = auth()->id();
         $expat = ExpatManagement::create($validated);
-
-        return response()->json(array_merge(['success' => true], $expat->load('employee')->toArray()), 201);
+        return $this->successResponse(new ExpatManagementResource($expat->load('employee')), 'Expat record created successfully', 201);
     }
 
     public function show($id)
     {
         $expat = ExpatManagement::with(['employee', 'documents'])->findOrFail($id);
-        return $this->successResponse($expat->toArray());
+        return $this->successResponse(new ExpatManagementResource($expat));
     }
 
     public function update(UpdateExpatRequest $request, $id)
@@ -53,7 +59,7 @@ class ExpatManagementController extends Controller
         $validated = $request->validated();
 
         $expat->update($validated);
-        return $this->successResponse($expat->load('employee', 'documents')->toArray());
+        return $this->successResponse(new ExpatManagementResource($expat->load('employee', 'documents')), 'Expat record updated successfully');
     }
 
     public function destroy($id)

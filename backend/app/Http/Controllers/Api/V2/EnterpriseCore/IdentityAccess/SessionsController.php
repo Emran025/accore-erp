@@ -8,6 +8,8 @@ use App\Domains\EnterpriseCore\IdentityAccess\Actions\DestroySessionAction;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
+use App\Http\Resources\EnterpriseCore\IdentityAccess\SessionResource;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\Session;
 
 class SessionsController extends Controller
 {
@@ -24,8 +26,10 @@ class SessionsController extends Controller
         $currentToken = $request->header('X-Session-Token');
 
         $data = (new ListSessionsAction())->execute($userId, $currentToken, $limit);
+        $sessions = Session::where('user_id', $userId)->orderBy('created_at', 'desc')->paginate($limit);
 
-        return response()->json(array_merge(['success' => true], $data));
+        // Map the is_current flag to the resource if needed, but for now we follow the standard UserResource style
+        return $this->successResponse(SessionResource::collection($sessions));
     }
 
     public function destroy($id): JsonResponse

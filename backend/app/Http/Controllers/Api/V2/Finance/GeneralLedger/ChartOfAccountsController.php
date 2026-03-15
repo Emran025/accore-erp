@@ -12,6 +12,8 @@ use App\Domains\Finance\GeneralLedger\Actions\CreateChartOfAccountAction;
 use App\Domains\Finance\GeneralLedger\Actions\UpdateChartOfAccountAction;
 use App\Domains\Finance\GeneralLedger\Actions\DeleteChartOfAccountAction;
 use App\Domains\Finance\GeneralLedger\Actions\GetChartOfAccountBalancesAction;
+use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
+use App\Http\Resources\Finance\GeneralLedger\ChartOfAccountResource;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -25,7 +27,9 @@ class ChartOfAccountsController extends Controller
     public function index(ListChartOfAccountsRequest $request, ListChartOfAccountsAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
-        return $this->successResponse($result);
+        $data = $result['data'] ?? $result;
+        
+        return $this->successResponse(ChartOfAccountResource::collection($data));
     }
 
     /**
@@ -34,7 +38,8 @@ class ChartOfAccountsController extends Controller
     public function store(StoreChartOfAccountRequest $request, CreateChartOfAccountAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
-        return $this->successResponse($result, 'Account created successfully', 201);
+        $account = ChartOfAccount::find($result['id'] ?? $result);
+        return $this->successResponse(new ChartOfAccountResource($account), 'Account created successfully', 201);
     }
 
     /**
@@ -43,7 +48,8 @@ class ChartOfAccountsController extends Controller
     public function update(UpdateChartOfAccountRequest $request, $id, UpdateChartOfAccountAction $action): JsonResponse
     {
         $result = $action->execute((int)$id, $request->validated());
-        return $this->successResponse($result, 'Account updated successfully');
+        $account = ChartOfAccount::find($result['id'] ?? $id);
+        return $this->successResponse(new ChartOfAccountResource($account), 'Account updated successfully');
     }
 
     /**

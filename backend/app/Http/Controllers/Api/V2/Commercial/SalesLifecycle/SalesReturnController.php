@@ -11,6 +11,7 @@ use App\Http\Requests\Commercial\SalesLifecycle\StoreSalesReturnRequest;
 use App\Http\Requests\Commercial\SalesLifecycle\LedgerSalesReturnsRequest;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 use App\Http\Resources\Commercial\SalesLifecycle\SalesReturnResource;
+use App\Domains\Commercial\SalesLifecycle\Models\SalesReturn;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -52,7 +53,8 @@ class SalesReturnController extends Controller
             $result = $action->execute($validated, (int)$userId);
             TelescopeService::logOperation('CREATE', 'sales_returns', $result['id'], null, $validated);
 
-            return $this->successResponse($result, 'Sales return created successfully');
+            $return = SalesReturn::find($result['id']);
+            return $this->successResponse(new SalesReturnResource($return), 'Sales return created successfully');
         } catch (\Exception $e) {
             Log::error('Sales Return Error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()

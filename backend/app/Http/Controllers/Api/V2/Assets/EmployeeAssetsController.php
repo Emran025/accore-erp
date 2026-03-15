@@ -4,79 +4,71 @@ namespace App\Http\Controllers\Api\V2\Assets;
 
 use App\Http\Controllers\Controller;
 use App\Domains\Assets\AssetLifecycle\Models\EmployeeAsset;
-use Illuminate\Http\Request;
+use App\Http\Resources\Assets\AssetLifecycle\EmployeeAssetResource;
+use App\Http\Requests\Assets\AssetLifecycle\{
+    StoreEmployeeAssetRequest,
+    UpdateEmployeeAssetRequest,
+    ListEmployeeAssetsRequest
+};
+use App\Domains\Assets\AssetLifecycle\Actions\{
+    ListEmployeeAssetsAction,
+    CreateEmployeeAssetAction,
+    ShowEmployeeAssetAction,
+    UpdateEmployeeAssetAction,
+    DeleteEmployeeAssetAction
+};
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
+use Illuminate\Http\JsonResponse;
 
 class EmployeeAssetsController extends Controller
 {
     use BaseApiController;
 
-    public function index(Request $request)
+    public function index(ListEmployeeAssetsRequest $request, ListEmployeeAssetsAction $action): JsonResponse
     {
-        $query = EmployeeAsset::with(['employee', 'costCenter']);
-        
-        if ($request->filled('employee_id')) {
-            $query->where('employee_id', $request->employee_id);
-        }
-        
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-        
-        return $this->successResponse($query->paginate(15)->toArray());
+        $paginated = $action->execute($request->validated());
+
+        return $this->paginatedResponse(
+            EmployeeAssetResource::collection($paginated->items()),
+            $paginated->total(),
+            $paginated->currentPage(),
+            $paginated->perPage()
+        );
     }
 
-    public function store(Request $request)
+    public function store(StoreEmployeeAssetRequest $request, CreateEmployeeAssetAction $action): JsonResponse
     {
-        $validated = $request->validate([
-            'employee_id' => 'required|exists:employees,id',
-            'asset_code' => 'required|string|max:50|unique:employee_assets,asset_code',
-            'asset_name' => 'required|string|max:255',
-            'asset_type' => 'required|in:laptop,phone,vehicle,key,equipment,other',
-            'serial_number' => 'nullable|string|max:100',
-            'qr_code' => 'nullable|string|max:100',
-            'allocation_date' => 'required|date',
-            'cost_center_id' => 'nullable|exists:chart_of_accounts,id',
-            'next_maintenance_date' => 'nullable|date',
-            'notes' => 'nullable|string',
-        ]);
-
-        $validated['status'] = 'allocated';
-        $validated['created_by'] = auth()->id();
-        $asset = EmployeeAsset::create($validated);
+        $asset = $action->execute($request->validated());
         
-        return response()->json(array_merge(['success' => true], $asset->load('employee')->toArray()), 201);
+        return $this->successResponse(
+            new EmployeeAssetResource($asset->load('employee')), 
+            'Asset recorded successfully', 
+            201
+        );
     }
 
-    public function show($id)
+    public function show($id, ShowEmployeeAssetAction $action): JsonResponse
     {
-        $asset = EmployeeAsset::with(['employee', 'costCenter'])->findOrFail($id);
-        return $this->successResponse($asset->toArray());
+        $asset = $action->execute($id);
+        return $this->successResponse(new EmployeeAssetResource($asset));
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateEmployeeAssetRequest $request, $id, UpdateEmployeeAssetAction $action): JsonResponse
     {
         $asset = EmployeeAsset::findOrFail($id);
-        
-        $validated = $request->validate([
-            'asset_name' => 'string|max:255',
-            'asset_type' => 'in:laptop,phone,vehicle,key,equipment,other',
-            'serial_number' => 'nullable|string|max:100',
-            'status' => 'in:allocated,returned,maintenance,lost,damaged',
-            'return_date' => 'nullable|date',
-            'next_maintenance_date' => 'nullable|date',
-            'maintenance_notes' => 'nullable|string',
-            'notes' => 'nullable|string',
-        ]);
+        $updatedAsset = $action->execute($asset, $request->validated());
 
-        $asset->update($validated);
-        return $this->successResponse($asset->load('employee', 'costCenter')->toArray());
+        return $this->successResponse(
+            new EmployeeAssetResource($updatedAsset->load('employee', 'costCenter')),
+            'Asset updated successfully'
+        );
     }
 
-    public function destroy($id)
+    public function destroy($id, DeleteEmployeeAssetAction $action): JsonResponse
     {
         $asset = EmployeeAsset::findOrFail($id);
-        $asset->delete();
-        return $this->successResponse(['message' => 'Asset deleted successfully']);
+        $action->execute($asset);
+        
+        return $this->successResponse([], 'Asset deleted successfully');
     }
 }

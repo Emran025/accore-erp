@@ -9,6 +9,8 @@ use App\Http\Requests\Assets\UpdateAssetRequest;
 use App\Http\Requests\Assets\DeleteAssetRequest;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
+use App\Domains\Assets\AssetLifecycle\Models\Asset;
+use App\Http\Resources\Assets\AssetLifecycle\AssetResource;
 use App\Domains\Assets\AssetLifecycle\Actions\ListAssetsAction;
 use App\Domains\Assets\AssetLifecycle\Actions\CreateAssetAction;
 use App\Domains\Assets\AssetLifecycle\Actions\UpdateAssetAction;
@@ -22,7 +24,7 @@ class AssetsController extends Controller
     {
         $result = $action->execute($request->validated());
         return $this->paginatedResponse(
-            $result['data'],
+            AssetResource::collection($result['data']),
             $result['total'],
             $result['current_page'],
             $result['per_page']
@@ -32,13 +34,15 @@ class AssetsController extends Controller
     public function store(StoreAssetRequest $request, CreateAssetAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
-        return $this->successResponse(['id' => $result['id']]);
+        $asset = Asset::find($result['id'] ?? $result);
+        return $this->successResponse(new AssetResource($asset), 'Asset created successfully', 201);
     }
 
     public function update(UpdateAssetRequest $request, UpdateAssetAction $action): JsonResponse
     {
-        $action->execute($request->validated());
-        return $this->successResponse();
+        $result = $action->execute($request->validated());
+        $asset = Asset::find($result['id'] ?? $request->id);
+        return $this->successResponse(new AssetResource($asset), 'Asset updated successfully');
     }
 
     public function destroy(DeleteAssetRequest $request, DeleteAssetAction $action): JsonResponse

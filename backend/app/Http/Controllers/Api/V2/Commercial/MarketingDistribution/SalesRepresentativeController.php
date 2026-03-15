@@ -18,6 +18,8 @@ use App\Http\Requests\Commercial\MarketingDistribution\StoreRepresentativeTransa
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 use App\Http\Resources\Commercial\MarketingDistribution\SalesRepresentativeResource;
 use App\Http\Resources\Commercial\MarketingDistribution\SalesRepresentativeTransactionResource;
+use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentative;
+use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentativeTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
@@ -57,7 +59,8 @@ class SalesRepresentativeController extends Controller
             $representative = $action->execute($validated, (int)$userId);
             TelescopeService::logOperation('CREATE', 'sales_representatives', $representative->id, null, $validated);
 
-            return $this->successResponse(['id' => $representative->id], 'Sales Representative created successfully');
+            $salesRep = SalesRepresentative::find($representative->id);
+            return $this->successResponse(new SalesRepresentativeResource($salesRep), 'Sales Representative created successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 400);
         }
@@ -74,7 +77,8 @@ class SalesRepresentativeController extends Controller
             $result = $action->execute($validated);
             TelescopeService::logOperation('UPDATE', 'sales_representatives', $result['id'], $result['old_values'], $validated);
 
-            return $this->successResponse([], 'Sales Representative updated successfully');
+            $salesRep = SalesRepresentative::find($result['id']);
+            return $this->successResponse(new SalesRepresentativeResource($salesRep), 'Sales Representative updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 400);
         }
@@ -127,7 +131,8 @@ class SalesRepresentativeController extends Controller
             $result = $action->execute($validated, (int)$userId);
             TelescopeService::logOperation('CREATE', 'sales_representative_transactions', $result['id'], null, $validated);
 
-            return $this->successResponse($result, 'Transaction recorded successfully');
+            $transaction = SalesRepresentativeTransaction::find($result['id']);
+            return $this->successResponse(new SalesRepresentativeTransactionResource($transaction), 'Transaction recorded successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }

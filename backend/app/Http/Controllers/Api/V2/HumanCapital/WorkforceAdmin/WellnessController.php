@@ -8,6 +8,8 @@ use App\Domains\HumanCapital\WorkforceAdmin\Models\WellnessParticipation;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\StoreWellnessProgramRequest;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\StoreWellnessParticipationRequest;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\UpdateWellnessParticipationRequest;
+use App\Http\Resources\HumanCapital\WorkforceAdmin\WellnessProgramResource;
+use App\Http\Resources\HumanCapital\WorkforceAdmin\WellnessParticipationResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -27,7 +29,13 @@ class WellnessController extends Controller
             $query->where('is_active', $request->is_active === 'true');
         }
 
-        return $this->successResponse($query->orderBy('start_date', 'desc')->paginate(15)->toArray());
+        $paginated = $query->orderBy('start_date', 'desc')->paginate(15);
+        return $this->paginatedResponse(
+            WellnessProgramResource::collection($paginated->items()),
+            $paginated->total(),
+            $paginated->currentPage(),
+            $paginated->perPage()
+        );
     }
 
     public function storeProgram(StoreWellnessProgramRequest $request)
@@ -37,7 +45,7 @@ class WellnessController extends Controller
         $validated['created_by'] = auth()->id();
 
         $program = WellnessProgram::create($validated);
-        return response()->json(array_merge(['success' => true], $program->toArray()), 201);
+        return $this->successResponse(new WellnessProgramResource($program), 'Wellness program created successfully', 201);
     }
 
     public function indexParticipations(Request $request)
@@ -52,7 +60,13 @@ class WellnessController extends Controller
             $query->where('employee_id', $request->employee_id);
         }
 
-        return $this->successResponse($query->orderBy('enrollment_date', 'desc')->paginate(15)->toArray());
+        $paginated = $query->orderBy('enrollment_date', 'desc')->paginate(15);
+        return $this->paginatedResponse(
+            WellnessParticipationResource::collection($paginated->items()),
+            $paginated->total(),
+            $paginated->currentPage(),
+            $paginated->perPage()
+        );
     }
 
     public function storeParticipation(StoreWellnessParticipationRequest $request)
@@ -65,7 +79,7 @@ class WellnessController extends Controller
         $validated['metrics_data'] = [];
 
         $participation = WellnessParticipation::create($validated);
-        return response()->json(array_merge(['success' => true], $participation->load('program', 'employee')->toArray()), 201);
+        return $this->successResponse(new WellnessParticipationResource($participation->load('program', 'employee')), 'Participation recorded successfully', 201);
     }
 
     public function updateParticipation(UpdateWellnessParticipationRequest $request, $id)
@@ -75,6 +89,6 @@ class WellnessController extends Controller
         $validated = $request->validated();
 
         $participation->update($validated);
-        return $this->successResponse($participation->load('program', 'employee')->toArray());
+        return $this->successResponse(new WellnessParticipationResource($participation->load('program', 'employee')), 'Participation updated successfully');
     }
 }

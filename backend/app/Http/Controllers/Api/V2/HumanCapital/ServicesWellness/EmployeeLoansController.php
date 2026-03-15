@@ -11,6 +11,10 @@ use App\Domains\HumanCapital\ServicesWellness\Actions\CreateEmployeeLoanAction;
 use App\Domains\HumanCapital\ServicesWellness\Actions\ShowEmployeeLoanAction;
 use App\Domains\HumanCapital\ServicesWellness\Actions\UpdateEmployeeLoanStatusAction;
 use App\Domains\HumanCapital\ServicesWellness\Actions\RecordLoanRepaymentAction;
+use App\Domains\HumanCapital\ServicesWellness\Models\EmployeeLoan;
+use App\Domains\HumanCapital\ServicesWellness\Models\LoanRepayment;
+use App\Http\Resources\HumanCapital\ServicesWellness\EmployeeLoanResource;
+use App\Http\Resources\HumanCapital\ServicesWellness\LoanRepaymentResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -24,7 +28,7 @@ class EmployeeLoansController extends Controller
         $paginated = $action->execute($filters);
 
         return $this->paginatedResponse(
-            $paginated['data'],
+            EmployeeLoanResource::collection($paginated['data']),
             $paginated['total'],
             $paginated['current_page'],
             $paginated['per_page']
@@ -34,30 +38,31 @@ class EmployeeLoansController extends Controller
     public function store(StoreEmployeeLoanRequest $request, CreateEmployeeLoanAction $action)
     {
         $validated = $request->validated();
-        $loan = $action->execute($validated);
-
-        return response()->json(array_merge(['success' => true], $loan), 201);
+        $result = $action->execute($validated);
+        $loan = EmployeeLoan::find($result['id'] ?? $result);
+        return $this->successResponse(new EmployeeLoanResource($loan), 'Loan request created successfully', 201);
     }
 
     public function show($id, ShowEmployeeLoanAction $action)
     {
-        $loan = $action->execute($id);
-        return $this->successResponse($loan);
+        $result = $action->execute($id);
+        $loan = EmployeeLoan::find($result['id'] ?? $id);
+        return $this->successResponse(new EmployeeLoanResource($loan));
     }
 
     public function updateStatus(UpdateEmployeeLoanStatusRequest $request, $id, UpdateEmployeeLoanStatusAction $action)
     {
         $validated = $request->validated();
-        $loan = $action->execute($id, $validated);
-
-        return $this->successResponse($loan);
+        $result = $action->execute($id, $validated);
+        $loan = EmployeeLoan::find($result['id'] ?? $id);
+        return $this->successResponse(new EmployeeLoanResource($loan), 'Loan status updated successfully');
     }
 
     public function recordRepayment(RecordLoanRepaymentRequest $request, $id, $repaymentId, RecordLoanRepaymentAction $action)
     {
         $validated = $request->validated();
-        $repayment = $action->execute($id, $repaymentId, $validated);
-
-        return $this->successResponse($repayment);
+        $result = $action->execute($id, $repaymentId, $validated);
+        $repayment = LoanRepayment::find($result['id'] ?? $result);
+        return $this->successResponse(new LoanRepaymentResource($repayment), 'Repayment recorded successfully');
     }
 }

@@ -3,40 +3,45 @@
 namespace App\Http\Controllers\Api\V2\HumanCapital\TimeProductivity;
 
 use App\Http\Controllers\Controller;
-use App\Domains\HumanCapital\TimeProductivity\Services\LeaveService;
-use App\Domains\HumanCapital\TimeProductivity\Models\LeaveRequest;
-use App\Http\Requests\HumanCapital\TimeProductivity\StoreLeaveRequest;
-use App\Http\Requests\HumanCapital\TimeProductivity\ActionLeaveRequest;
-use App\Domains\HumanCapital\TimeProductivity\Actions\ListLeaveRequestsAction;
-use App\Domains\HumanCapital\TimeProductivity\Actions\CreateLeaveRequestAction;
-use App\Domains\HumanCapital\TimeProductivity\Actions\ProcessLeaveRequestAction;
-use App\Domains\HumanCapital\TimeProductivity\Actions\ShowLeaveRequestAction;
-use App\Domains\HumanCapital\TimeProductivity\Actions\CancelLeaveRequestAction;
-use App\Domains\HumanCapital\TimeProductivity\Actions\ListMyLeaveRequestsAction;
-use Illuminate\Http\Request;
+use App\Http\Requests\HumanCapital\TimeProductivity\{
+    StoreLeaveRequest,
+    ActionLeaveRequest,
+    ListLeaveRequestsRequest,
+    ListMyLeaveRequestsRequest
+};
+use App\Domains\HumanCapital\TimeProductivity\Actions\{
+    ListLeaveRequestsAction,
+    CreateLeaveRequestAction,
+    ProcessLeaveRequestAction,
+    ShowLeaveRequestAction,
+    CancelLeaveRequestAction,
+    ListMyLeaveRequestsAction
+};
+use App\Http\Resources\HumanCapital\TimeProductivity\LeaveRequestResource;
+use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use Exception;
 
 class LeaveController extends Controller
 {
-    public function __construct()
-    {
-    }
+    use BaseApiController;
 
-    public function index(Request $request, ListLeaveRequestsAction $action)
+    public function index(ListLeaveRequestsRequest $request, ListLeaveRequestsAction $action)
     {
-        $filters = $request->only(['employee_id', 'status', 'start_date', 'end_date']);
-        $requests = $action->execute($filters);
-
-        return response()->json($requests);
+        $paginated = $action->execute($request->validated());
+        
+        return $this->paginatedResponse(
+            LeaveRequestResource::collection($paginated->items()),
+            $paginated->total(),
+            $paginated->currentPage(),
+            $paginated->perPage()
+        );
     }
 
     public function store(StoreLeaveRequest $request, CreateLeaveRequestAction $action)
     {
-        $validated = $request->validated();
-
         try {
-            $leaveRequest = $action->execute($validated);
-            return response()->json($leaveRequest, 201);
+            $leaveRequest = $action->execute($request->validated());
+            return $this->successResponse(new LeaveRequestResource($leaveRequest), 'Leave request created successfully', 201);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
@@ -44,11 +49,9 @@ class LeaveController extends Controller
 
     public function approve(ActionLeaveRequest $request, $id, ProcessLeaveRequestAction $action)
     {
-        $validated = $request->validated();
-
         try {
-            $leaveRequest = $action->execute($id, $validated);
-            return response()->json($leaveRequest);
+            $leaveRequest = $action->execute($id, $request->validated());
+            return $this->successResponse(new LeaveRequestResource($leaveRequest), 'Leave request processed successfully');
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
@@ -57,26 +60,30 @@ class LeaveController extends Controller
     public function show($id, ShowLeaveRequestAction $action)
     {
         $leaveRequest = $action->execute($id);
-        return response()->json($leaveRequest);
+        return $this->successResponse(new LeaveRequestResource($leaveRequest));
     }
 
     public function cancel($id, CancelLeaveRequestAction $action)
     {
         try {
             $leaveRequest = $action->execute($id);
-            return response()->json($leaveRequest);
+            return $this->successResponse(new LeaveRequestResource($leaveRequest), 'Leave request cancelled successfully');
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
 
-    public function myLeaveRequests(Request $request, ListMyLeaveRequestsAction $action)
+    public function myLeaveRequests(ListMyLeaveRequestsRequest $request, ListMyLeaveRequestsAction $action)
     {
         try {
-            $filters = $request->only(['status']);
-            $requests = $action->execute($filters);
+            $paginated = $action->execute($request->validated());
 
-            return response()->json($requests);
+            return $this->paginatedResponse(
+                LeaveRequestResource::collection($paginated->items()),
+                $paginated->total(),
+                $paginated->currentPage(),
+                $paginated->perPage()
+            );
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 404);
         }

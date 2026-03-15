@@ -10,6 +10,8 @@ use App\Domains\SupplyChain\Inventory\Actions\ListPeriodicInventoryAction;
 use App\Domains\SupplyChain\Inventory\Actions\CreatePeriodicInventoryAction;
 use App\Domains\SupplyChain\Inventory\Actions\ProcessPeriodicInventoryAction;
 use App\Domains\SupplyChain\Inventory\Actions\PeriodicInventoryValuationAction;
+use App\Http\Resources\SupplyChain\Inventory\InventoryCountResource;
+use App\Domains\SupplyChain\Inventory\Models\InventoryCount;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -21,7 +23,7 @@ class PeriodicInventoryController extends Controller
     {
         $result = $action->execute($request->validated());
         return $this->paginatedResponse(
-            $result['data'],
+            InventoryCountResource::collection($result['data']),
             $result['total'],
             $result['page'],
             $result['per_page']
@@ -31,14 +33,16 @@ class PeriodicInventoryController extends Controller
     public function store(StorePeriodicInventoryRequest $request, CreatePeriodicInventoryAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
-        return $this->successResponse($result, 'Inventory count recorded successfully');
+        $inventoryCount = InventoryCount::find($result['id']);
+        return $this->successResponse(new InventoryCountResource($inventoryCount), 'Inventory count recorded successfully');
     }
 
     public function process(ProcessPeriodicInventoryRequest $request, ProcessPeriodicInventoryAction $action): JsonResponse
     {
         try {
             $result = $action->execute($request->validated());
-            return $this->successResponse($result);
+            $inventoryCount = InventoryCount::find($result['id']);
+            return $this->successResponse(new InventoryCountResource($inventoryCount));
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }

@@ -4,47 +4,99 @@ namespace App\Http\Controllers\Api\V2\HumanCapital\ServicesWellness;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
-use App\Domains\HumanCapital\ServicesWellness\Actions\ListTravelRequestsAction;
-use App\Domains\HumanCapital\ServicesWellness\Actions\CreateTravelRequestAction;
-use App\Domains\HumanCapital\ServicesWellness\Actions\UpdateTravelRequestStatusAction;
-use App\Domains\HumanCapital\ServicesWellness\Actions\ListTravelExpensesAction;
-use App\Domains\HumanCapital\ServicesWellness\Actions\CreateTravelExpenseAction;
-use App\Domains\HumanCapital\ServicesWellness\Actions\UpdateTravelExpenseStatusAction;
+use App\Domains\HumanCapital\ServicesWellness\Models\TravelRequest;
+use App\Domains\HumanCapital\ServicesWellness\Models\TravelExpense;
+use App\Domains\HumanCapital\ServicesWellness\Actions\{
+    ListTravelRequestsAction,
+    CreateTravelRequestAction,
+    UpdateTravelRequestStatusAction,
+    ListTravelExpensesAction,
+    CreateTravelExpenseAction,
+    UpdateTravelExpenseStatusAction
+};
+use App\Http\Requests\HumanCapital\ServicesWellness\{
+    ListTravelRequestsRequest,
+    StoreTravelRequest,
+    UpdateTravelRequestStatusRequest,
+    ListTravelExpensesRequest,
+    StoreTravelExpense,
+    UpdateTravelExpenseStatusRequest
+};
+use App\Http\Resources\HumanCapital\ServicesWellness\{
+    TravelRequestResource,
+    TravelExpenseResource
+};
 use Illuminate\Http\JsonResponse;
 
 class TravelExpenseController extends Controller
 {
     use BaseApiController;
 
-    public function indexRequests(ListTravelRequestsAction $action): JsonResponse
+    public function indexRequests(ListTravelRequestsRequest $request, ListTravelRequestsAction $action): JsonResponse
     {
-        return $action->execute();
+        $paginated = $action->execute($request->validated());
+
+        return $this->paginatedResponse(
+            TravelRequestResource::collection($paginated->items()),
+            $paginated->total(),
+            $paginated->currentPage(),
+            $paginated->perPage()
+        );
     }
 
-    public function storeRequest(CreateTravelRequestAction $action): JsonResponse
+    public function storeRequest(StoreTravelRequest $request, CreateTravelRequestAction $action): JsonResponse
     {
-        return $action->execute();
+        $travelRequest = $action->execute($request->validated());
+
+        return $this->successResponse(
+            new TravelRequestResource($travelRequest->load('employee')), 
+            'Travel request created successfully', 
+            201
+        );
     }
 
-    public function updateRequestStatus($id, UpdateTravelRequestStatusAction $action): JsonResponse
+    public function updateRequestStatus($id, UpdateTravelRequestStatusRequest $request, UpdateTravelRequestStatusAction $action): JsonResponse
     {
-        return $action->execute((int)$id);
+        $travelRequest = TravelRequest::findOrFail($id);
+        $updatedRequest = $action->execute($travelRequest, $request->validated());
+
+        return $this->successResponse(
+            new TravelRequestResource($updatedRequest->load('employee')),
+            'Travel request status updated successfully'
+        );
     }
 
-    public function indexExpenses(ListTravelExpensesAction $action): JsonResponse
+    public function indexExpenses(ListTravelExpensesRequest $request, ListTravelExpensesAction $action): JsonResponse
     {
-        return $action->execute();
+        $paginated = $action->execute($request->validated());
+
+        return $this->paginatedResponse(
+            TravelExpenseResource::collection($paginated->items()),
+            $paginated->total(),
+            $paginated->currentPage(),
+            $paginated->perPage()
+        );
     }
 
-    public function storeExpense(CreateTravelExpenseAction $action): JsonResponse
+    public function storeExpense(StoreTravelExpense $request, CreateTravelExpenseAction $action): JsonResponse
     {
-        return $action->execute();
+        $expense = $action->execute($request->validated());
+
+        return $this->successResponse(
+            new TravelExpenseResource($expense->load('travelRequest', 'employee')), 
+            'Travel expense recorded successfully', 
+            201
+        );
     }
 
-    public function updateExpenseStatus($id, UpdateTravelExpenseStatusAction $action): JsonResponse
+    public function updateExpenseStatus($id, UpdateTravelExpenseStatusRequest $request, UpdateTravelExpenseStatusAction $action): JsonResponse
     {
-        return $action->execute((int)$id);
+        $expense = TravelExpense::findOrFail($id);
+        $updatedExpense = $action->execute($expense, $request->validated());
+
+        return $this->successResponse(
+            new TravelExpenseResource($updatedExpense->load('travelRequest', 'employee')),
+            'Travel expense status updated successfully'
+        );
     }
 }
-
-

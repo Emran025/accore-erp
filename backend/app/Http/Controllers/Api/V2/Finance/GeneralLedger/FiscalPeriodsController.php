@@ -10,6 +10,8 @@ use App\Domains\Finance\GeneralLedger\Actions\CreateFiscalPeriodAction;
 use App\Domains\Finance\GeneralLedger\Actions\CloseFiscalPeriodAction;
 use App\Domains\Finance\GeneralLedger\Actions\LockFiscalPeriodAction;
 use App\Domains\Finance\GeneralLedger\Actions\UnlockFiscalPeriodAction;
+use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
+use App\Http\Resources\Finance\GeneralLedger\FiscalPeriodResource;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -23,7 +25,9 @@ class FiscalPeriodsController extends Controller
     public function index(ListFiscalPeriodsAction $action): JsonResponse
     {
         $result = $action->execute();
-        return $this->successResponse($result);
+        $data = $result['data'] ?? $result;
+        
+        return $this->successResponse(FiscalPeriodResource::collection($data));
     }
 
     /**
@@ -33,7 +37,8 @@ class FiscalPeriodsController extends Controller
     {
         try {
             $result = $action->execute($request->validated());
-            return $this->successResponse($result);
+            $period = FiscalPeriod::find($result['id'] ?? $result);
+            return $this->successResponse(new FiscalPeriodResource($period), 'Fiscal period created successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }
@@ -45,8 +50,10 @@ class FiscalPeriodsController extends Controller
     public function close(FiscalPeriodIdRequest $request, CloseFiscalPeriodAction $action): JsonResponse
     {
         try {
-            $result = $action->execute((int)$request->input('id'));
-            return $this->successResponse($result);
+            $id = (int)$request->input('id');
+            $result = $action->execute($id);
+            $period = FiscalPeriod::find($result['id'] ?? $id);
+            return $this->successResponse(new FiscalPeriodResource($period));
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }
@@ -58,8 +65,10 @@ class FiscalPeriodsController extends Controller
     public function lock(FiscalPeriodIdRequest $request, LockFiscalPeriodAction $action): JsonResponse
     {
         try {
-            $result = $action->execute((int)$request->input('id'));
-            return $this->successResponse($result);
+            $id = (int)$request->input('id');
+            $result = $action->execute($id);
+            $period = FiscalPeriod::find($result['id'] ?? $id);
+            return $this->successResponse(new FiscalPeriodResource($period));
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }
@@ -71,8 +80,10 @@ class FiscalPeriodsController extends Controller
     public function unlock(FiscalPeriodIdRequest $request, UnlockFiscalPeriodAction $action): JsonResponse
     {
         try {
-            $result = $action->execute((int)$request->input('id'));
-            return $this->successResponse($result);
+            $id = (int)$request->input('id');
+            $result = $action->execute($id);
+            $period = FiscalPeriod::find($result['id'] ?? $id);
+            return $this->successResponse(new FiscalPeriodResource($period));
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }

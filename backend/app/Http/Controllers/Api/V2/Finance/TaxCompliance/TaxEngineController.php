@@ -14,6 +14,10 @@ use App\Domains\Finance\TaxCompliance\Actions\UpdateTaxAuthorityAction;
 use App\Domains\Finance\TaxCompliance\Actions\CreateTaxTypeAction;
 use App\Domains\Finance\TaxCompliance\Actions\UpdateTaxTypeAction;
 use App\Domains\Finance\TaxCompliance\Actions\DeleteTaxTypeAction;
+use App\Domains\Finance\TaxCompliance\Models\TaxAuthority;
+use App\Domains\Finance\TaxCompliance\Models\TaxType;
+use App\Http\Resources\Finance\TaxCompliance\TaxAuthorityResource;
+use App\Http\Resources\Finance\TaxCompliance\TaxTypeResource;
 
 class TaxEngineController extends Controller
 {
@@ -33,7 +37,9 @@ class TaxEngineController extends Controller
     public function updateAuthority(UpdateTaxAuthorityRequest $request, $id, UpdateTaxAuthorityAction $action): JsonResponse
     {
         try {
-            return $this->successResponse($action->execute($request->validated(), (int)$id));
+            $result = $action->execute($request->validated(), (int)$id);
+            $authority = TaxAuthority::find($result['id'] ?? $id);
+            return $this->successResponse(new TaxAuthorityResource($authority), 'Tax Authority updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }
@@ -45,7 +51,9 @@ class TaxEngineController extends Controller
     public function storeTaxType(StoreTaxTypeRequest $request, CreateTaxTypeAction $action): JsonResponse
     {
         try {
-            return $this->successResponse($action->execute($request->validated()));
+            $result = $action->execute($request->validated());
+            $taxType = TaxType::find($result['id'] ?? $result);
+            return $this->successResponse(new TaxTypeResource($taxType), 'Tax Type created successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }
@@ -57,7 +65,9 @@ class TaxEngineController extends Controller
     public function updateTaxType(UpdateTaxTypeRequest $request, $id, UpdateTaxTypeAction $action): JsonResponse
     {
         try {
-            return $this->successResponse($action->execute($request->validated(), (int)$id));
+            $result = $action->execute($request->validated(), (int)$id);
+            $taxType = TaxType::find($result['id'] ?? $id);
+            return $this->successResponse(new TaxTypeResource($taxType), 'Tax Type updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }

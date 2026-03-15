@@ -11,6 +11,7 @@ use App\Http\Requests\Commercial\SalesLifecycle\ListInvoicesRequest;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 use App\Exceptions\BusinessLogicException;
 use App\Http\Resources\Commercial\SalesLifecycle\InvoiceResource;
+use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
@@ -56,7 +57,8 @@ class SalesController extends Controller
             $result = $action->execute($validated);
             TelescopeService::logOperation('CREATE', 'invoices', $result['id'], null, $validated);
 
-            return $this->successResponse($result, 'Invoice created successfully');
+            $invoice = Invoice::find($result['id']);
+            return $this->successResponse(new InvoiceResource($invoice), 'Invoice created successfully');
         } catch (BusinessLogicException $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 400);
         } catch (ValidationException $e) {

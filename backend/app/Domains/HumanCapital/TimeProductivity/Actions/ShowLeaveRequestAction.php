@@ -6,9 +6,8 @@ use App\Domains\HumanCapital\TimeProductivity\Models\LeaveRequest;
 
 class ShowLeaveRequestAction
 {
-    public function execute(int|string $id): array
+    public function execute(int|string $id): LeaveRequest
     {
-        $leaveRequest = LeaveRequest::with(['employee', 'approver', 'creator'])->findOrFail($id);
-        return $leaveRequest->toArray();
+        return LeaveRequest::with(['employee', 'approver', 'creator'])->findOrFail($id);
     }
 }

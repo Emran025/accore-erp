@@ -6,7 +6,6 @@ use Tests\TestCase;
 use App\Domains\Finance\Treasury\Models\Reconciliation;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
-use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class BankReconciliationApiTest extends TestCase

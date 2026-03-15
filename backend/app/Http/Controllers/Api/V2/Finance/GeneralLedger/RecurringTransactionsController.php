@@ -13,6 +13,8 @@ use App\Domains\Finance\GeneralLedger\Actions\CreateRecurringTransactionAction;
 use App\Domains\Finance\GeneralLedger\Actions\UpdateRecurringTransactionAction;
 use App\Domains\Finance\GeneralLedger\Actions\DeleteRecurringTransactionAction;
 use App\Domains\Finance\GeneralLedger\Actions\ProcessRecurringTransactionAction;
+use App\Domains\Finance\Treasury\Models\RecurringTransaction;
+use App\Http\Resources\Finance\Treasury\RecurringTransactionResource;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -23,7 +25,9 @@ class RecurringTransactionsController extends Controller
     public function index(ListRecurringTransactionsRequest $request, ListRecurringTransactionsAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
-        return $this->successResponse($result);
+        $data = $result['data'] ?? $result;
+        
+        return $this->successResponse(RecurringTransactionResource::collection($data));
     }
 
     public function store(
@@ -38,11 +42,13 @@ class RecurringTransactionsController extends Controller
                 'template_id' => $request->input('template_id'),
                 'generation_date' => $request->input('generation_date'),
             ]);
-            return $this->successResponse($result);
+            $transaction = RecurringTransaction::find($result['id'] ?? $result);
+            return $this->successResponse(new RecurringTransactionResource($transaction), 'Transaction processed successfully');
         }
 
         $result = $createAction->execute($validated);
-        return $this->successResponse($result);
+        $transaction = RecurringTransaction::find($result['id'] ?? $result);
+        return $this->successResponse(new RecurringTransactionResource($transaction), 'Recurring transaction created successfully', 201);
     }
 
     public function update(UpdateRecurringTransactionRequest $request, UpdateRecurringTransactionAction $action): JsonResponse
@@ -60,6 +66,7 @@ class RecurringTransactionsController extends Controller
     public function process(ProcessRecurringTransactionRequest $request, ProcessRecurringTransactionAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
-        return $this->successResponse($result);
+        $transaction = RecurringTransaction::find($result['id'] ?? $result);
+        return $this->successResponse(new RecurringTransactionResource($transaction), 'Recurring transaction processed successfully');
     }
 }

@@ -9,6 +9,8 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use App\Http\Requests\Finance\Treasury\StoreReconciliationRequest;
 use App\Http\Requests\Finance\Treasury\UpdateReconciliationRequest;
+use App\Domains\Finance\Treasury\Models\Reconciliation;
+use App\Http\Resources\Finance\Treasury\ReconciliationResource;
 use App\Domains\Finance\Treasury\Actions\ListReconciliationsAction;
 use App\Domains\Finance\Treasury\Actions\CreateReconciliationAction;
 use App\Domains\Finance\Treasury\Actions\UpdateReconciliationAction;
@@ -39,11 +41,12 @@ class BankReconciliationController extends Controller
 
         $result = $action->execute($request->all());
 
-        return response()->json([
-            'success' => true,
-            'data' => $result['data'],
-            'total' => $result['total'] ?? count($result['data']),
-        ]);
+        return $this->paginatedResponse(
+            ReconciliationResource::collection($result['data']),
+            $result['total'] ?? count($result['data']),
+            $result['current_page'] ?? 1,
+            $result['per_page'] ?? 15
+        );
     }
 
     /**
@@ -54,7 +57,8 @@ class BankReconciliationController extends Controller
         try {
             PermissionService::requirePermission('reconciliations', 'create');
             $result = $action->execute($request->validated());
-            return $this->successResponse($result);
+            $reconciliation = Reconciliation::find($result['id'] ?? $result);
+            return $this->successResponse(new ReconciliationResource($reconciliation), 'Reconciliation created successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }
@@ -68,7 +72,8 @@ class BankReconciliationController extends Controller
         try {
             PermissionService::requirePermission('reconciliations', 'update');
             $result = $action->execute($request->validated());
-            return $this->successResponse($result);
+            $reconciliation = Reconciliation::find($result['id'] ?? $result);
+            return $this->successResponse(new ReconciliationResource($reconciliation), 'Reconciliation updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }

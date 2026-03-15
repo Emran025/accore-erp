@@ -14,6 +14,10 @@ use App\Domains\EnterpriseCore\IdentityAccess\Actions\UpdateUserAction;
 use App\Http\Requests\EnterpriseCore\IdentityAccess\ChangePasswordRequest;
 use App\Http\Requests\EnterpriseCore\IdentityAccess\StoreUserRequest;
 use App\Http\Requests\EnterpriseCore\IdentityAccess\UpdateUserRequest;
+use App\Http\Resources\EnterpriseCore\IdentityAccess\UserResource;
+use App\Http\Resources\EnterpriseCore\IdentityAccess\RoleResource;
+use App\Http\Resources\EnterpriseCore\IdentityAccess\SessionResource;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
@@ -25,22 +29,25 @@ class UsersController extends Controller
     public function index(Request $request): JsonResponse
     {
         $data = (new ListUsersAction())->execute();
+        $users = User::with(['roleRelation', 'manager', 'createdBy'])->orderBy('id', 'desc')->get();
 
-        return $this->successResponse($data);
+        return $this->successResponse(UserResource::collection($users));
     }
 
     public function store(StoreUserRequest $request): JsonResponse
     {
         $data = (new CreateUserAction())->execute($request->validated());
+        $user = User::find($data['id'] ?? $data);
 
-        return $this->successResponse($data);
+        return $this->successResponse(new UserResource($user), 'User created successfully', 201);
     }
 
     public function update(UpdateUserRequest $request): JsonResponse
     {
         (new UpdateUserAction())->execute($request->validated());
+        $user = User::find($request->input('id'));
 
-        return $this->successResponse();
+        return $this->successResponse(new UserResource($user), 'User updated successfully');
     }
 
     public function destroy(Request $request): JsonResponse
@@ -66,21 +73,23 @@ class UsersController extends Controller
     public function managerList(): JsonResponse
     {
         $data = (new ListManagersAction())->execute();
+        // Since ListManagersAction returns an array of mapped data, and we want UserResource:
+        $managers = User::where('role', 'manager')->orWhereHas('roleRelation', function($q){ $q->where('role_key', 'manager'); })->get();
 
-        return $this->successResponse($data);
+        return $this->successResponse(UserResource::collection($managers));
     }
 
     public function roles(): JsonResponse
     {
-        $roles = (new ListUserRolesAction())->execute();
-
-        return $this->successResponse($roles);
+        $rolesData = (new ListUserRolesAction())->execute();
+        // Assuming ListUserRolesAction returns the collection of Role models or arrays that map to RoleResource
+        return $this->successResponse(RoleResource::collection($rolesData));
     }
 
     public function mySessions(): JsonResponse
     {
         $data = (new ListMySessionsAction())->execute();
 
-        return $this->successResponse($data);
+        return $this->successResponse(SessionResource::collection($data));
     }
 }

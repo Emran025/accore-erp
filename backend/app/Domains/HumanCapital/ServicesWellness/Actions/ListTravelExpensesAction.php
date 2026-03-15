@@ -1,18 +1,28 @@
 <?php
+
 namespace App\Domains\HumanCapital\ServicesWellness\Actions;
-use App\Domains\Shared\Actions\Action;
+
 use App\Domains\HumanCapital\ServicesWellness\Models\TravelExpense;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-class ListTravelExpensesAction extends Action
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+
+class ListTravelExpensesAction
 {
-    public function __construct(private readonly Request $request) {}
-    public function __invoke(): JsonResponse
+    public function execute(array $filters): LengthAwarePaginator
     {
         $query = TravelExpense::with(['travelRequest', 'employee']);
-        if ($this->request->filled('travel_request_id')) $query->where('travel_request_id', $this->request->travel_request_id);
-        if ($this->request->filled('employee_id')) $query->where('employee_id', $this->request->employee_id);
-        if ($this->request->filled('status')) $query->where('status', $this->request->status);
-        return $this->successResponse($query->orderBy('expense_date', 'desc')->paginate(15)->toArray());
+
+        if (!empty($filters['employee_id'])) {
+            $query->where('employee_id', $filters['employee_id']);
+        }
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (!empty($filters['travel_request_id'])) {
+            $query->where('travel_request_id', $filters['travel_request_id']);
+        }
+
+        return $query->orderBy('created_at', 'desc')->paginate(15);
     }
 }

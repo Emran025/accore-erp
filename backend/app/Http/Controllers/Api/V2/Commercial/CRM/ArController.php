@@ -52,7 +52,8 @@ class ArController extends Controller
             $result = $action->execute($validated, (int)$userId);
             TelescopeService::logOperation('CREATE', 'ar_customers', $result['id'], null, $validated);
 
-            return $this->successResponse($result, 'Customer created successfully');
+            $customer = ArCustomer::find($result['id']);
+            return $this->successResponse(new ArCustomerResource($customer), 'Customer created successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 400);
         }
@@ -69,7 +70,8 @@ class ArController extends Controller
             $result = $action->execute($validated);
             TelescopeService::logOperation('UPDATE', 'ar_customers', $result['id'], $result['old_values'], $validated);
 
-            return $this->successResponse([], 'Customer updated successfully');
+            $customer = ArCustomer::find($result['id']);
+            return $this->successResponse(new ArCustomerResource($customer), 'Customer updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 400);
         }

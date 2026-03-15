@@ -21,6 +21,10 @@ use App\Http\Requests\EnterpriseCore\OrganizationGovernance\ValidateComplianceSt
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
+use App\Http\Resources\EnterpriseCore\MonitoringCompliance\ComplianceProfileResource;
+use App\Http\Resources\EnterpriseCore\MonitoringCompliance\ComplianceTokenResource;
+use App\Http\Resources\EnterpriseCore\MonitoringCompliance\ComplianceValidationResource;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\ComplianceProfile;
 
 class ComplianceProfileController extends Controller
 {
@@ -29,50 +33,54 @@ class ComplianceProfileController extends Controller
     /**
      * List all compliance profiles (optionally filtered by authority/policy).
      */
-    public function index(ListComplianceProfilesRequest $request): JsonResponse
+    public function index(ListComplianceProfilesRequest $request, ListComplianceProfilesAction $action): JsonResponse
     {
-        $data = (new ListComplianceProfilesAction())->execute($request->validated());
+        $data = $action->execute($request->validated());
+        $profiles = $data['profiles'] ?? $data;
 
-        return $this->successResponse($data);
+        return $this->successResponse(ComplianceProfileResource::collection($profiles));
     }
 
     /**
      * Show a single compliance profile.
      */
-    public function show($id): JsonResponse
+    public function show(int $id, ShowComplianceProfileAction $action): JsonResponse
     {
-        $data = (new ShowComplianceProfileAction())->execute((int) $id);
+        $action->execute($id);
+        $profile = ComplianceProfile::findOrFail($id);
 
-        return $this->successResponse($data);
+        return $this->successResponse(new ComplianceProfileResource($profile));
     }
 
     /**
      * Create a new compliance profile.
      */
-    public function store(StoreComplianceProfileRequest $request): JsonResponse
+    public function store(StoreComplianceProfileRequest $request, CreateComplianceProfileAction $action): JsonResponse
     {
-        $data = (new CreateComplianceProfileAction())->execute($request->validated());
+        $data = $action->execute($request->validated());
+        $profile = ComplianceProfile::findOrFail($data['profile']['id'] ?? $data['id'] ?? $data);
 
-        return $this->successResponse($data, 'Compliance profile created successfully.');
+        return $this->successResponse(new ComplianceProfileResource($profile), 'Compliance profile created successfully.', 201);
     }
 
     /**
      * Update an existing compliance profile.
      * Note: `code` is immutable after creation.
      */
-    public function update(UpdateComplianceProfileRequest $request, $id): JsonResponse
+    public function update(UpdateComplianceProfileRequest $request, int $id, UpdateComplianceProfileAction $action): JsonResponse
     {
-        $data = (new UpdateComplianceProfileAction())->execute((int) $id, $request->validated());
+        $action->execute($id, $request->validated());
+        $profile = ComplianceProfile::findOrFail($id);
 
-        return $this->successResponse($data, 'Compliance profile updated successfully.');
+        return $this->successResponse(new ComplianceProfileResource($profile), 'Compliance profile updated successfully.');
     }
 
     /**
      * Delete a compliance profile.
      */
-    public function destroy($id): JsonResponse
+    public function destroy(int $id, DeleteComplianceProfileAction $action): JsonResponse
     {
-        (new DeleteComplianceProfileAction())->execute((int) $id);
+        $action->execute($id);
 
         return $this->successResponse([], 'Compliance profile deleted successfully.');
     }
@@ -81,23 +89,23 @@ class ComplianceProfileController extends Controller
      * Generate (or regenerate) the access token for a pull-type profile.
      * Returns the raw token — this is the ONLY time it's visible in full.
      */
-    public function generateToken(GenerateComplianceTokenRequest $request, $id): JsonResponse
+    public function generateToken(GenerateComplianceTokenRequest $request, int $id, GenerateComplianceProfileTokenAction $action): JsonResponse
     {
-        $result = (new GenerateComplianceProfileTokenAction())->execute((int) $id, $request->validated());
+        $result = $action->execute($id, $request->validated());
 
         if (!$result['success']) {
             return $this->errorResponse($result['error'], 422);
         }
 
-        return $this->successResponse($result['data'], 'Access token generated successfully.');
+        return $this->successResponse(new ComplianceTokenResource($result['data']), 'Access token generated successfully.');
     }
 
     /**
      * Revoke the access token for a pull-type profile.
      */
-    public function revokeToken($id): JsonResponse
+    public function revokeToken(int $id, RevokeComplianceProfileTokenAction $action): JsonResponse
     {
-        $result = (new RevokeComplianceProfileTokenAction())->execute((int) $id);
+        $result = $action->execute($id);
 
         if (!$result['success']) {
             return $this->errorResponse($result['error'], 422);
@@ -110,9 +118,9 @@ class ComplianceProfileController extends Controller
      * Get the available system keys that can be mapped.
      * Returns all keys from the tax engine that the user can use in their mapping.
      */
-    public function getSystemKeys(): JsonResponse
+    public function getSystemKeys(GetComplianceSystemKeysAction $action): JsonResponse
     {
-        $data = (new GetComplianceSystemKeysAction())->execute();
+        $data = $action->execute();
 
         return $this->successResponse($data);
     }
@@ -120,11 +128,11 @@ class ComplianceProfileController extends Controller
     /**
      * Validate a structure template against its format.
      */
-    public function validateStructure(ValidateComplianceStructureRequest $request): JsonResponse
+    public function validateStructure(ValidateComplianceStructureRequest $request, ValidateComplianceStructureAction $action): JsonResponse
     {
-        $data = (new ValidateComplianceStructureAction())->execute($request->validated());
+        $data = $action->execute($request->validated());
 
-        return $this->successResponse($data);
+        return $this->successResponse(new ComplianceValidationResource($data));
     }
 
     // ══════════════════════════════════════════
@@ -138,9 +146,9 @@ class ComplianceProfileController extends Controller
      * Route: GET /api/compliance-pull/{code}/{path?}
      * Auth: Bearer token in Authorization header
      */
-    public function servePullData(Request $request, string $code, string $path = 'compliance-data'): JsonResponse
+    public function servePullData(Request $request, string $code, string $path = 'compliance-data', ServeCompliancePullDataAction $action): JsonResponse
     {
-        $result = (new ServeCompliancePullDataAction())->execute(
+        $result = $action->execute(
             $code,
             $request->bearerToken(),
             $request->ip()
@@ -148,12 +156,16 @@ class ComplianceProfileController extends Controller
 
         if (!$result['success']) {
             return response()->json([
-                'error' => $result['error'],
-                'code'  => $result['error_code'],
+                'success' => false,
+                'error'   => $result['error'],
+                'code'    => $result['error_code'],
             ], $result['status']);
         }
 
-        $response = response()->json($result['data']);
+        $response = response()->json([
+            'success' => true,
+            'data'    => $result['data']
+        ]);
 
         foreach ($result['headers'] as $header => $value) {
             $response->header($header, $value);

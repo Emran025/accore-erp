@@ -3,18 +3,17 @@
 namespace App\Domains\HumanCapital\TimeProductivity\Actions;
 
 use App\Domains\HumanCapital\TimeProductivity\Services\LeaveService;
+use App\Domains\HumanCapital\TimeProductivity\Models\LeaveRequest;
 
 class CreateLeaveRequestAction
 {
     public function __construct(private readonly LeaveService $leaveService) {}
 
-    public function execute(array $data): array
+    public function execute(array $data): LeaveRequest
     {
-        $leaveRequest = $this->leaveService->createLeaveRequest(
+        return $this->leaveService->createLeaveRequest(
             $data['employee_id'],
             $data
         );
-
-        return current($leaveRequest->toArray()) ?: $leaveRequest->toArray();
     }
 }

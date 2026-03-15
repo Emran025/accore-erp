@@ -8,6 +8,8 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use App\Domains\Finance\TaxCompliance\Actions\SubmitZatcaInvoiceAction;
 use App\Domains\Finance\TaxCompliance\Actions\GetZatcaStatusAction;
+use App\Domains\Finance\TaxCompliance\Models\ZatcaEinvoice;
+use App\Http\Resources\Finance\TaxCompliance\ZatcaEinvoiceResource;
 use Illuminate\Support\Facades\Log;
 
 class ZATCAInvoiceController extends Controller
@@ -24,10 +26,11 @@ class ZATCAInvoiceController extends Controller
             $result = $action->execute((int)$invoiceId, $submissionType);
 
             if (isset($result['status']) && ($result['status'] === 'skipped' || $result['status'] === 'already_submitted')) {
-                return response()->json($result, 200);
+                return $this->successResponse($result, $result['message'] ?? 'ZATCA submission skipped');
             }
 
-            return response()->json($result);
+            $einvoice = ZatcaEinvoice::where('invoice_id', $invoiceId)->first();
+            return $this->successResponse(new ZatcaEinvoiceResource($einvoice), 'ZATCA submission complete');
         } catch (\Exception $e) {
             Log::error("ZATCA Submission Error: " . $e->getMessage(), [
                 'invoice_id' => $invoiceId,
@@ -42,6 +45,8 @@ class ZATCAInvoiceController extends Controller
      */
     public function getStatus($invoiceId, GetZatcaStatusAction $action): JsonResponse
     {
-        return response()->json($action->execute((int)$invoiceId));
+        $result = $action->execute((int)$invoiceId);
+        $einvoice = ZatcaEinvoice::where('invoice_id', $invoiceId)->first();
+        return $this->successResponse(new ZatcaEinvoiceResource($einvoice));
     }
 }

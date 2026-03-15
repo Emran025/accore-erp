@@ -30,6 +30,12 @@ use App\Domains\EnterpriseCore\OrganizationGovernance\Actions\GetOrgStatisticsAc
 use App\Domains\EnterpriseCore\OrganizationGovernance\Actions\RunIntegrityCheckAction;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Actions\GetOrgChangeHistoryAction;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Actions\BulkUpdateNodeStatusAction;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\StructureNode;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\StructureLink;
+use App\Http\Resources\EnterpriseCore\OrganizationGovernance\StructureNodeResource;
+use App\Http\Resources\EnterpriseCore\OrganizationGovernance\StructureLinkResource;
+use App\Http\Resources\EnterpriseCore\OrganizationGovernance\OrgMetaTypeResource;
+use App\Http\Resources\EnterpriseCore\OrganizationGovernance\TopologyRuleResource;
 
 /**
  * Organizational Structure Configuration Engine API.
@@ -48,7 +54,7 @@ class OrgStructureController extends Controller
     public function metaTypes(ListMetaTypesRequest $request, ListMetaTypesAction $action): JsonResponse
     {
         $types = $action->execute($request->validated());
-        return $this->successResponse(['meta_types' => $types]);
+        return $this->successResponse(OrgMetaTypeResource::collection($types));
     }
 
     // ─── Topology Rules ─────────────────────────────────────────────────
@@ -56,7 +62,7 @@ class OrgStructureController extends Controller
     public function topologyRules(ListTopologyRulesAction $action): JsonResponse
     {
         $rules = $action->execute();
-        return $this->successResponse(['topology_rules' => $rules]);
+        return $this->successResponse(TopologyRuleResource::collection($rules));
     }
 
     // ─── Nodes ──────────────────────────────────────────────────────────
@@ -65,7 +71,7 @@ class OrgStructureController extends Controller
     {
         try {
             $nodes = $action->execute($request->validated());
-            return $this->successResponse(['nodes' => $nodes]);
+            return $this->successResponse(StructureNodeResource::collection($nodes));
         } catch (\Exception $e) {
             return $this->errorResponse("Internal Error: " . $e->getMessage(), 500);
         }
@@ -73,20 +79,17 @@ class OrgStructureController extends Controller
 
     public function showNode(string $uuid, ShowStructureNodeAction $action): JsonResponse
     {
-        $node = $action->execute($uuid);
-        return $this->successResponse(['node' => $node]);
+        $nodeData = $action->execute($uuid);
+        $node = StructureNode::where('uuid', $uuid)->first();
+        return $this->successResponse(new StructureNodeResource($node));
     }
 
     public function storeNode(StoreNodeRequest $request, CreateStructureNodeAction $action): JsonResponse
     {
         try {
             $result = $action->execute($request->validated());
-            return response()->json([
-                'success' => true,
-                'message' => 'Node created successfully',
-                'node'    => $result['node'],
-                'link'    => $result['link'] ?? null,
-            ], 201);
+            $node = StructureNode::find($result['node']['id'] ?? $result['node']);
+            return $this->successResponse(new StructureNodeResource($node), 'Node created successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
         }
@@ -95,8 +98,9 @@ class OrgStructureController extends Controller
     public function updateNode(UpdateNodeRequest $request, string $uuid, UpdateStructureNodeAction $action): JsonResponse
     {
         try {
-            $node = $action->execute($uuid, $request->validated());
-            return $this->successResponse(['node' => $node], 'Node updated successfully');
+            $nodeData = $action->execute($uuid, $request->validated());
+            $node = StructureNode::where('uuid', $uuid)->first();
+            return $this->successResponse(new StructureNodeResource($node), 'Node updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
         }
@@ -117,23 +121,20 @@ class OrgStructureController extends Controller
     public function links(ListLinksRequest $request, ListStructureLinksAction $action): JsonResponse
     {
         $links = $action->execute($request->validated());
-        return $this->successResponse(['links' => $links]);
+        return $this->successResponse(StructureLinkResource::collection($links));
     }
 
     public function storeLink(StoreLinkRequest $request, CreateStructureLinkAction $action): JsonResponse
     {
         try {
             $validated = $request->validated();
-            $link = $action->execute(
+            $linkResult = $action->execute(
                 $validated['source_node_uuid'],
                 $validated['target_node_uuid'],
                 $validated
             );
-            return response()->json([
-                'success' => true,
-                'message' => 'Link created successfully',
-                'link'    => $link,
-            ], 201);
+            $link = StructureLink::find($linkResult['id'] ?? $linkResult);
+            return $this->successResponse(new StructureLinkResource($link), 'Link created successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
         }
@@ -142,8 +143,9 @@ class OrgStructureController extends Controller
     public function updateLink(UpdateLinkRequest $request, int $id, UpdateStructureLinkAction $action): JsonResponse
     {
         try {
-            $link = $action->execute($id, $request->validated());
-            return $this->successResponse(['link' => $link], 'Link updated successfully');
+            $linkResult = $action->execute($id, $request->validated());
+            $link = StructureLink::find($id);
+            return $this->successResponse(new StructureLinkResource($link), 'Link updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }

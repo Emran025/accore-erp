@@ -18,6 +18,7 @@ use App\Domains\HumanCapital\HRAdvanced\Actions\UpdateHrDocumentTemplateAction;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\DocumentTemplate;
+use App\Http\Resources\EnterpriseCore\OrganizationGovernance\DocumentTemplateResource;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
 class DocumentTemplateController extends Controller
@@ -44,8 +45,10 @@ class DocumentTemplateController extends Controller
         }
 
         $result = $action->execute($request->validated());
-            
-        return $this->successResponse($result);
+        
+        $data = $result['data'] ?? $result;
+
+        return $this->successResponse(DocumentTemplateResource::collection($data));
     }
 
     public function store(StoreDocumentTemplateRequest $request, CreateHrDocumentTemplateAction $action): JsonResponse
@@ -54,7 +57,8 @@ class DocumentTemplateController extends Controller
         $this->validateHrType($validated['template_type']);
 
         $result = $action->execute($validated);
-        return $this->successResponse($result, 'Template created successfully');
+        $template = DocumentTemplate::find($result['id'] ?? $result);
+        return $this->successResponse(new DocumentTemplateResource($template), 'Template created successfully', 201);
     }
 
     public function show($id, ShowHrDocumentTemplateAction $action): JsonResponse
@@ -63,7 +67,8 @@ class DocumentTemplateController extends Controller
         $this->validateHrType($template->template_type);
         
         $result = $action->execute((int)$id);
-        return $this->successResponse($result);
+        $template = DocumentTemplate::find($result['id'] ?? $id);
+        return $this->successResponse(new DocumentTemplateResource($template));
     }
 
     public function update(UpdateDocumentTemplateRequest $request, $id, UpdateHrDocumentTemplateAction $action): JsonResponse
@@ -72,7 +77,8 @@ class DocumentTemplateController extends Controller
         $this->validateHrType($template->template_type);
 
         $result = $action->execute((int)$id, $request->validated());
-        return $this->successResponse($result, 'Template updated successfully');
+        $template = DocumentTemplate::find($result['id'] ?? $id);
+        return $this->successResponse(new DocumentTemplateResource($template), 'Template updated successfully');
     }
 
     public function destroy($id, DeleteHrDocumentTemplateAction $action): JsonResponse

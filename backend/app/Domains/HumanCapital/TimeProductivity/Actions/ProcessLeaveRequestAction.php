@@ -9,15 +9,13 @@ class ProcessLeaveRequestAction
 {
     public function __construct(private readonly LeaveService $leaveService) {}
 
-    public function execute(int|string $id, array $data): array
+    public function execute(int|string $id, array $data): LeaveRequest
     {
-        $leaveRequest = $this->leaveService->processLeaveRequest(
+        return $this->leaveService->processLeaveRequest(
             $id,
             $data['action'],
             auth()->id(),
             $data['reason'] ?? null
         );
-
-        return $leaveRequest->toArray();
     }
 }

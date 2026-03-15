@@ -10,6 +10,8 @@ use App\Domains\HumanCapital\WorkforceAdmin\Actions\CreateContractAction;
 use App\Domains\HumanCapital\WorkforceAdmin\Actions\ShowContractAction;
 use App\Domains\HumanCapital\WorkforceAdmin\Actions\UpdateContractAction;
 use App\Domains\HumanCapital\WorkforceAdmin\Actions\DeleteContractAction;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\EmployeeContract;
+use App\Http\Resources\HumanCapital\WorkforceAdmin\EmployeeContractResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
@@ -22,25 +24,33 @@ class EmployeeContractsController extends Controller
     {
         $filters = $request->only(['employee_id', 'is_current']);
         $result = $action->execute($filters);
-        return $this->successResponse($result);
+        return $this->paginatedResponse(
+            EmployeeContractResource::collection($result['data'] ?? $result),
+            $result['total'] ?? count($result['data'] ?? $result),
+            $result['current_page'] ?? 1,
+            $result['per_page'] ?? 15
+        );
     }
 
     public function store(StoreEmployeeContractRequest $request, CreateContractAction $action): JsonResponse
     {
-        $contract = $action->execute($request->validated());
-        return response()->json(array_merge(['success' => true], $contract), 201);
+        $result = $action->execute($request->validated());
+        $contract = EmployeeContract::find($result['id'] ?? $result);
+        return $this->successResponse(new EmployeeContractResource($contract), 'Contract created successfully', 201);
     }
 
     public function show($id, ShowContractAction $action): JsonResponse
     {
-        $contract = $action->execute((int)$id);
-        return $this->successResponse($contract);
+        $result = $action->execute((int)$id);
+        $contract = EmployeeContract::find($result['id'] ?? $id);
+        return $this->successResponse(new EmployeeContractResource($contract));
     }
 
     public function update(UpdateEmployeeContractRequest $request, $id, UpdateContractAction $action): JsonResponse
     {
-        $contract = $action->execute((int)$id, $request->validated());
-        return $this->successResponse($contract);
+        $result = $action->execute((int)$id, $request->validated());
+        $contract = EmployeeContract::find($result['id'] ?? $id);
+        return $this->successResponse(new EmployeeContractResource($contract), 'Contract updated successfully');
     }
 
     public function destroy($id, DeleteContractAction $action): JsonResponse

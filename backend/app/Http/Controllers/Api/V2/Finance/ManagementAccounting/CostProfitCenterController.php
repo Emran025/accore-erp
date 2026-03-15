@@ -23,6 +23,10 @@ use App\Domains\Finance\ManagementAccounting\Actions\ShowProfitCenterAction;
 use App\Domains\Finance\ManagementAccounting\Actions\UpdateProfitCenterAction;
 use App\Domains\Finance\ManagementAccounting\Actions\DeleteProfitCenterAction;
 use App\Domains\Finance\ManagementAccounting\Actions\GetCentersSummaryAction;
+use App\Domains\Finance\ManagementAccounting\Models\CostCenter;
+use App\Domains\Finance\ManagementAccounting\Models\ProfitCenter;
+use App\Http\Resources\Finance\ManagementAccounting\CostCenterResource;
+use App\Http\Resources\Finance\ManagementAccounting\ProfitCenterResource;
 
 class CostProfitCenterController extends Controller
 {
@@ -39,7 +43,7 @@ class CostProfitCenterController extends Controller
     {
         $result = $action->execute($request->all());
         return $this->paginatedResponse(
-            $result['items'],
+            CostCenterResource::collection($result['items']),
             $result['total'],
             $result['page'],
             $result['per_page']
@@ -61,10 +65,8 @@ class CostProfitCenterController extends Controller
     {
         try {
             $result = $action->execute($request->validated());
-            return $this->successResponse([
-                'id'        => $result['id'],
-                'node_uuid' => $result['node_uuid'],
-            ], 'Cost center created and linked to organizational structure');
+            $costCenter = CostCenter::find($result['id'] ?? $result);
+            return $this->successResponse(new CostCenterResource($costCenter), 'Cost center created successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }
@@ -75,7 +77,9 @@ class CostProfitCenterController extends Controller
      */
     public function costCentersShow(int $id, ShowCostCenterAction $action): JsonResponse
     {
-        return $this->successResponse(['cost_center' => $action->execute($id)]);
+        $result = $action->execute($id);
+        $costCenter = CostCenter::find($result['id'] ?? $id);
+        return $this->successResponse(new CostCenterResource($costCenter));
     }
 
     /**
@@ -85,7 +89,8 @@ class CostProfitCenterController extends Controller
     {
         try {
             $action->execute($request->validated(), $id);
-            return $this->successResponse([], 'Cost center and organizational structure updated');
+            $costCenter = CostCenter::find($id);
+            return $this->successResponse(new CostCenterResource($costCenter), 'Cost center updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }
@@ -115,7 +120,7 @@ class CostProfitCenterController extends Controller
     {
         $result = $action->execute($request->all());
         return $this->paginatedResponse(
-            $result['items'],
+            ProfitCenterResource::collection($result['items']),
             $result['total'],
             $result['page'],
             $result['per_page']
@@ -137,10 +142,8 @@ class CostProfitCenterController extends Controller
     {
         try {
             $result = $action->execute($request->validated());
-            return $this->successResponse([
-                'id'        => $result['id'],
-                'node_uuid' => $result['node_uuid'],
-            ], 'Profit center created and linked to organizational structure');
+            $profitCenter = ProfitCenter::find($result['id'] ?? $result);
+            return $this->successResponse(new ProfitCenterResource($profitCenter), 'Profit center created successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }
@@ -151,7 +154,9 @@ class CostProfitCenterController extends Controller
      */
     public function profitCentersShow(int $id, ShowProfitCenterAction $action): JsonResponse
     {
-        return $this->successResponse(['profit_center' => $action->execute($id)]);
+        $result = $action->execute($id);
+        $profitCenter = ProfitCenter::find($result['id'] ?? $id);
+        return $this->successResponse(new ProfitCenterResource($profitCenter));
     }
 
     /**
@@ -161,7 +166,8 @@ class CostProfitCenterController extends Controller
     {
         try {
             $action->execute($request->validated(), $id);
-            return $this->successResponse([], 'Profit center and organizational structure updated');
+            $profitCenter = ProfitCenter::find($id);
+            return $this->successResponse(new ProfitCenterResource($profitCenter), 'Profit center updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }

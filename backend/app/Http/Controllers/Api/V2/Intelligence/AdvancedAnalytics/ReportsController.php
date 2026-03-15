@@ -40,7 +40,7 @@ class ReportsController extends Controller
     {
         PermissionService::requirePermission('reports', 'view');
         $result = $action->execute($request->validated());
-        return $this->successResponse($result);
+        return $this->successResponse($result, 'Balance Sheet generated successfully');
     }
 
     /**
@@ -50,7 +50,7 @@ class ReportsController extends Controller
     {
         PermissionService::requirePermission('general_ledger', 'view');
         $result = $action->execute($request->validated());
-        return $this->successResponse($result);
+        return $this->successResponse($result, 'Detailed Balance Sheet generated successfully');
     }
 
     /**
@@ -60,7 +60,7 @@ class ReportsController extends Controller
     {
         PermissionService::requirePermission('reports', 'view');
         $result = $action->execute($request->validated());
-        return $this->successResponse($result);
+        return $this->successResponse($result, 'Profit & Loss report generated successfully');
     }
 
     /**
@@ -70,7 +70,7 @@ class ReportsController extends Controller
     {
         PermissionService::requirePermission('general_ledger', 'view');
         $result = $action->execute($request->validated());
-        return $this->successResponse($result);
+        return $this->successResponse($result, 'Detailed Profit & Loss report generated successfully');
     }
 
     /**
@@ -81,7 +81,7 @@ class ReportsController extends Controller
         PermissionService::requirePermission('general_ledger', 'view');
         try {
             $result = $action->execute($request->validated());
-            return $this->successResponse($result);
+            return $this->successResponse($result, 'Cash Flow statement generated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 404);
         }
@@ -94,7 +94,7 @@ class ReportsController extends Controller
     {
         PermissionService::requirePermission('reports', 'view');
         $result = $action->execute($request->validated());
-        return $this->successResponse($result);
+        return $this->successResponse($result, 'Aging summary generated successfully');
     }
 
     /**
@@ -104,7 +104,7 @@ class ReportsController extends Controller
     {
         PermissionService::requirePermission('general_ledger', 'view');
         $result = $action->execute($request->validated());
-        return $this->successResponse($result);
+        return $this->successResponse($result, 'Aging Receivables report generated successfully');
     }
 
     /**
@@ -114,7 +114,7 @@ class ReportsController extends Controller
     {
         PermissionService::requirePermission('general_ledger', 'view');
         $result = $action->execute($request->validated());
-        return $this->successResponse($result);
+        return $this->successResponse($result, 'Aging Payables report generated successfully');
     }
 
     /**
@@ -124,7 +124,7 @@ class ReportsController extends Controller
     {
         PermissionService::requirePermission('general_ledger', 'view');
         $result = $action->execute($request->validated());
-        return $this->successResponse($result);
+        return $this->successResponse($result, 'Comparative Financial Report generated successfully');
     }
 
 }

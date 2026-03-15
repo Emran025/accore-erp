@@ -6,7 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Domains\HumanCapital\PerformanceDevelopment\Models\SuccessionPlan;
 use App\Domains\HumanCapital\PerformanceDevelopment\Models\SuccessionCandidate;
 use App\Http\Requests\HumanCapital\PerformanceDevelopment\StoreSuccessionPlanRequest;
+use App\Http\Requests\HumanCapital\PerformanceDevelopment\UpdateSuccessionPlanRequest;
 use App\Http\Requests\HumanCapital\PerformanceDevelopment\StoreSuccessionCandidateRequest;
+use App\Http\Requests\HumanCapital\PerformanceDevelopment\UpdateSuccessionCandidateRequest;
+use App\Http\Resources\HumanCapital\PerformanceDevelopment\SuccessionPlanResource;
+use App\Http\Resources\HumanCapital\PerformanceDevelopment\SuccessionCandidateResource;
+use App\Domains\HumanCapital\PerformanceDevelopment\Actions\{
+    ListSuccessionPlansAction,
+    CreateSuccessionPlanAction,
+    UpdateSuccessionPlanAction,
+    ShowSuccessionPlanAction,
+    CreateSuccessionCandidateAction,
+    UpdateSuccessionCandidateAction
+};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -14,75 +26,50 @@ class SuccessionController extends Controller
 {
     use BaseApiController;
 
-    public function index(Request $request)
+    public function index(Request $request, ListSuccessionPlansAction $action)
     {
-        $query = SuccessionPlan::with(['incumbent', 'candidates.employee']);
+        $paginated = $action->execute($request->all());
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('readiness_level')) {
-            $query->where('readiness_level', $request->readiness_level);
-        }
-
-        return $this->successResponse($query->orderBy('created_at', 'desc')->paginate(15)->toArray());
+        return $this->paginatedResponse(
+            SuccessionPlanResource::collection($paginated->items()),
+            $paginated->total(),
+            $paginated->currentPage(),
+            $paginated->perPage()
+        );
     }
 
-    public function store(StoreSuccessionPlanRequest $request)
+    public function store(StoreSuccessionPlanRequest $request, CreateSuccessionPlanAction $action)
     {
-        $validated = $request->validated();
-
-        $validated['status'] = 'active';
-        $validated['created_by'] = auth()->id();
-
-        $plan = SuccessionPlan::create($validated);
-        return response()->json(array_merge(['success' => true], $plan->load('incumbent')->toArray()), 201);
+        $plan = $action->execute($request->validated());
+        return $this->successResponse(new SuccessionPlanResource($plan->load('incumbent')), 'Succession plan created successfully', 201);
     }
 
-    public function show($id)
+    public function show($id, ShowSuccessionPlanAction $action)
     {
-        $plan = SuccessionPlan::with(['incumbent', 'candidates.employee'])->findOrFail($id);
-        return $this->successResponse($plan->toArray());
+        $plan = $action->execute($id);
+        return $this->successResponse(new SuccessionPlanResource($plan));
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateSuccessionPlanRequest $request, $id, UpdateSuccessionPlanAction $action)
     {
         $plan = SuccessionPlan::findOrFail($id);
-
-        $validated = $request->validate([
-            'status'          => 'in:active,inactive,filled',
-            'readiness_level' => 'in:ready_now,ready_1_2_years,ready_3_5_years,not_ready',
-            'notes'           => 'nullable|string',
-        ]);
-
-        $plan->update($validated);
-        return $this->successResponse($plan->load('incumbent', 'candidates.employee')->toArray());
+        $updatedPlan = $action->execute($plan, $request->validated());
+        return $this->successResponse(new SuccessionPlanResource($updatedPlan->load('incumbent', 'candidates.employee')), 'Succession plan updated successfully');
     }
 
-    public function storeCandidate(StoreSuccessionCandidateRequest $request, $planId)
+    public function storeCandidate(StoreSuccessionCandidateRequest $request, $planId, CreateSuccessionCandidateAction $action)
     {
-        $validated = $request->validated();
+        $data = $request->validated();
+        $data['succession_plan_id'] = $planId;
 
-        $validated['succession_plan_id'] = $planId;
-
-        $candidate = SuccessionCandidate::create($validated);
-        return response()->json(array_merge(['success' => true], $candidate->load('employee', 'successionPlan')->toArray()), 201);
+        $candidate = $action->execute($data);
+        return $this->successResponse(new SuccessionCandidateResource($candidate->load('employee', 'successionPlan')), 'Candidate added successfully', 201);
     }
 
-    public function updateCandidate(Request $request, $planId, $candidateId)
+    public function updateCandidate(UpdateSuccessionCandidateRequest $request, $planId, $candidateId, UpdateSuccessionCandidateAction $action)
     {
         $candidate = SuccessionCandidate::where('succession_plan_id', $planId)->findOrFail($candidateId);
-
-        $validated = $request->validate([
-            'readiness_level'    => 'in:ready_now,ready_1_2_years,ready_3_5_years,not_ready',
-            'performance_rating' => 'nullable|integer|min:1|max:5',
-            'potential_rating'   => 'nullable|integer|min:1|max:5',
-            'development_plan'   => 'nullable|string',
-            'notes'              => 'nullable|string',
-        ]);
-
-        $candidate->update($validated);
-        return $this->successResponse($candidate->load('employee')->toArray());
+        $updatedCandidate = $action->execute($candidate, $request->validated());
+        return $this->successResponse(new SuccessionCandidateResource($updatedCandidate->load('employee')), 'Candidate updated successfully');
     }
 }

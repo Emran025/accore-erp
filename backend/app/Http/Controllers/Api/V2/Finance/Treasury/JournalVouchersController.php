@@ -15,6 +15,7 @@ use App\Domains\Finance\Treasury\Actions\ShowJournalVoucherAction;
 use App\Domains\Finance\Treasury\Actions\DeleteJournalVoucherAction;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
 use App\Domains\Finance\Treasury\Actions\PostJournalVoucherAction;
+use App\Http\Resources\Finance\Treasury\JournalVoucherResource;
 use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 
@@ -29,11 +30,13 @@ class JournalVouchersController extends Controller
     {
         PermissionService::requirePermission('journal_vouchers', 'view');
         $result = $action->execute($request->all());
-        return response()->json([
-            'success' => true,
-            'vouchers' => $result['vouchers'],
-            'total' => $result['total']
-        ]);
+        $objects = array_map(fn($v) => (object)$v, $result['vouchers']);
+        return $this->paginatedResponse(
+            JournalVoucherResource::collection($objects),
+            $result['total'] ?? count($result['vouchers']),
+            1,
+            15
+        );
     }
 
     /**
@@ -43,10 +46,8 @@ class JournalVouchersController extends Controller
     {
         try {
             PermissionService::requirePermission('journal_vouchers', 'view');
-            return response()->json([
-                'success' => true,
-                'voucher' => $action->execute($id)
-            ]);
+            $voucher = $action->execute($id);
+            return $this->successResponse(new JournalVoucherResource((object)$voucher));
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }
@@ -59,7 +60,8 @@ class JournalVouchersController extends Controller
     {
         try {
             PermissionService::requirePermission('journal_vouchers', 'create');
-            return $this->successResponse($action->execute($request->validated()));
+            $result = $action->execute($request->validated());
+            return $this->successResponse(new JournalVoucherResource((object)$result));
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }

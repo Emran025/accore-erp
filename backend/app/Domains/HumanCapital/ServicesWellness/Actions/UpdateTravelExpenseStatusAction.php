@@ -1,18 +1,18 @@
 <?php
+
 namespace App\Domains\HumanCapital\ServicesWellness\Actions;
-use App\Domains\Shared\Actions\Action;
+
 use App\Domains\HumanCapital\ServicesWellness\Models\TravelExpense;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-class UpdateTravelExpenseStatusAction extends Action
+
+class UpdateTravelExpenseStatusAction
 {
-    public function __construct(private readonly Request $request, private readonly int $id) {}
-    public function __invoke(): JsonResponse
+    public function execute(TravelExpense $expense, array $data): TravelExpense
     {
-        $expense = TravelExpense::findOrFail($this->id);
-        $validated = $this->request->validate(['status' => 'required|in:pending,submitted,approved,rejected,reimbursed']);
-        if (in_array($this->request->status, ['approved', 'rejected'])) $validated['approved_by'] = auth()->id();
-        $expense->update($validated);
-        return $this->successResponse($expense->load('travelRequest', 'employee')->toArray());
+        if (in_array($data['status'] ?? null, ['approved', 'rejected'])) {
+            $data['approved_by'] = auth()->id();
+        }
+
+        $expense->update($data);
+        return $expense;
     }
 }

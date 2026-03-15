@@ -11,6 +11,12 @@ use App\Domains\HumanCapital\TalentRecruitment\Actions\CreateOnboardingWorkflowA
 use App\Domains\HumanCapital\TalentRecruitment\Actions\ShowOnboardingWorkflowAction;
 use App\Domains\HumanCapital\TalentRecruitment\Actions\UpdateOnboardingTaskAction;
 use App\Domains\HumanCapital\TalentRecruitment\Actions\CreateOnboardingDocumentAction;
+use App\Domains\HumanCapital\TalentRecruitment\Models\OnboardingWorkflow;
+use App\Domains\HumanCapital\TalentRecruitment\Models\OnboardingTask;
+use App\Domains\HumanCapital\HRAdvanced\Models\OnboardingDocument;
+use App\Http\Resources\HumanCapital\TalentRecruitment\OnboardingWorkflowResource;
+use App\Http\Resources\HumanCapital\TalentRecruitment\OnboardingTaskResource;
+use App\Http\Resources\HumanCapital\TalentRecruitment\OnboardingDocumentResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -23,36 +29,42 @@ class OnboardingController extends Controller
         $filters = $request->only(['employee_id', 'workflow_type', 'status']);
         $workflows = $action->execute($filters);
 
-        return $this->successResponse($workflows);
+        return $this->paginatedResponse(
+            OnboardingWorkflowResource::collection($workflows['data'] ?? $workflows),
+            $workflows['total'] ?? count($workflows['data'] ?? $workflows),
+            $workflows['current_page'] ?? 1,
+            $workflows['per_page'] ?? 15
+        );
     }
 
     public function store(StoreOnboardingWorkflowRequest $request, CreateOnboardingWorkflowAction $action)
     {
         $validated = $request->validated();
-        $workflow = $action->execute($validated);
-
-        return response()->json(array_merge(['success' => true], $workflow), 201);
+        $result = $action->execute($validated);
+        $workflow = OnboardingWorkflow::find($result['id'] ?? $result);
+        return $this->successResponse(new OnboardingWorkflowResource($workflow), 'Onboarding workflow created successfully', 201);
     }
 
     public function show($id, ShowOnboardingWorkflowAction $action)
     {
-        $workflow = $action->execute($id);
-        return $this->successResponse($workflow);
+        $result = $action->execute($id);
+        $workflow = OnboardingWorkflow::find($result['id'] ?? $id);
+        return $this->successResponse(new OnboardingWorkflowResource($workflow));
     }
 
     public function updateTask(UpdateOnboardingTaskRequest $request, $workflowId, $taskId, UpdateOnboardingTaskAction $action)
     {
         $validated = $request->validated();
-        $task = $action->execute($workflowId, $taskId, $validated);
-
-        return $this->successResponse($task);
+        $result = $action->execute($workflowId, $taskId, $validated);
+        $task = OnboardingTask::find($result['id'] ?? $taskId);
+        return $this->successResponse(new OnboardingTaskResource($task), 'Task updated successfully');
     }
 
     public function storeDocument(StoreOnboardingDocumentRequest $request, $workflowId, CreateOnboardingDocumentAction $action)
     {
         $validated = $request->validated();
-        $document = $action->execute($workflowId, $validated);
-
-        return response()->json(array_merge(['success' => true], $document), 201);
+        $result = $action->execute($workflowId, $validated);
+        $document = OnboardingDocument::find($result['id'] ?? $result);
+        return $this->successResponse(new OnboardingDocumentResource($document), 'Document uploaded successfully', 201);
     }
 }

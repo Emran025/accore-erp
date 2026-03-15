@@ -28,6 +28,14 @@ use App\Domains\EnterpriseCore\IdentityAccess\Actions\ListPermissionTemplatesAct
 use App\Domains\EnterpriseCore\IdentityAccess\Actions\CreatePermissionTemplateAction;
 use App\Domains\EnterpriseCore\IdentityAccess\Actions\UpdatePermissionTemplateAction;
 use App\Domains\EnterpriseCore\IdentityAccess\Actions\ApplyPermissionTemplateAction;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\JobTitle;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Position;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\PermissionTemplate;
+use App\Http\Resources\HumanCapital\WorkforceAdmin\JobTitleResource;
+use App\Http\Resources\HumanCapital\WorkforceAdmin\PositionResource;
+use App\Http\Resources\HumanCapital\WorkforceAdmin\EmployeeResource;
+use App\Http\Resources\EnterpriseCore\IdentityAccess\PermissionTemplateResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
@@ -43,15 +51,21 @@ class HrAdministrationController extends Controller
     public function indexJobTitles(ListJobTitlesRequest $request, ListJobTitlesAction $action): JsonResponse
     {
         $titles = $action->execute($request->validated());
-        return $this->successResponse($titles);
+        return $this->paginatedResponse(
+            JobTitleResource::collection($titles['data'] ?? $titles),
+            $titles['total'] ?? count($titles['data'] ?? $titles),
+            $titles['current_page'] ?? 1,
+            $titles['per_page'] ?? 15
+        );
     }
 
     public function storeJobTitle(StoreJobTitleRequest $request, CreateJobTitleAction $action): JsonResponse
     {
         $validated = $request->validated();
-        $title = $action->execute($validated);
+        $result = $action->execute($validated);
+        $title = JobTitle::find($result['id'] ?? $result);
 
-        return $this->successResponse($title, 'Job title created');
+        return $this->successResponse(new JobTitleResource($title), 'Job title created');
     }
 
     public function updateJobTitle(UpdateJobTitleRequest $request, $id, UpdateJobTitleAction $action): JsonResponse
@@ -61,7 +75,7 @@ class HrAdministrationController extends Controller
         $result = $action->execute($id, $validated);
 
         return $this->successResponse(
-            $result['title'],
+            new JobTitleResource(JobTitle::find($result['title']['id'] ?? $id)),
             "تم تحديث المسمى الوظيفي — {$result['positions_synced']} منصب و {$result['employees_synced']} موظف تم مزامنتهم"
         );
     }
@@ -83,30 +97,38 @@ class HrAdministrationController extends Controller
     public function indexPositions(ListPositionsRequest $request, ListPositionsAction $action): JsonResponse
     {
         $positions = $action->execute($request->validated());
-        return $this->successResponse($positions);
+        return $this->paginatedResponse(
+            PositionResource::collection($positions['data'] ?? $positions),
+            $positions['total'] ?? count($positions['data'] ?? $positions),
+            $positions['current_page'] ?? 1,
+            $positions['per_page'] ?? 15
+        );
     }
 
     public function showPosition($id, ShowPositionAction $action): JsonResponse
     {
-        $position = $action->execute($id);
+        $result = $action->execute($id);
+        $position = Position::find($result['id'] ?? $id);
 
-        return $this->successResponse($position);
+        return $this->successResponse(new PositionResource($position));
     }
 
     public function storePosition(StorePositionRequest $request, CreatePositionAction $action): JsonResponse
     {
         $validated = $request->validated();
-        $position = $action->execute($validated);
+        $result = $action->execute($validated);
+        $position = Position::find($result['id'] ?? $result);
 
-        return $this->successResponse($position, 'Position created successfully');
+        return $this->successResponse(new PositionResource($position), 'Position created successfully');
     }
 
     public function updatePosition(UpdatePositionRequest $request, $id, UpdatePositionAction $action): JsonResponse
     {
         $validated = $request->validated();
-        $position = $action->execute($id, $validated);
+        $result = $action->execute($id, $validated);
+        $position = Position::find($result['id'] ?? $id);
 
-        return $this->successResponse($position, 'Position updated successfully');
+        return $this->successResponse(new PositionResource($position), 'Position updated successfully');
     }
 
     public function destroyPosition($id, DeletePositionAction $action): JsonResponse
@@ -122,9 +144,10 @@ class HrAdministrationController extends Controller
     public function assignEmployeeToPosition(AssignEmployeeToPositionRequest $request, AssignEmployeePositionAction $action): JsonResponse
     {
         $validated = $request->validated();
-        $employee = $action->execute($validated);
+        $result = $action->execute($validated);
+        $employee = Employee::find($result['id'] ?? $validated['employee_id']);
 
-        return $this->successResponse($employee, 'Employee assigned to position successfully');
+        return $this->successResponse(new EmployeeResource($employee), 'Employee assigned to position successfully');
     }
 
     public function unassignEmployeeFromPosition($employeeId, UnassignEmployeePositionAction $action): JsonResponse
@@ -141,23 +164,25 @@ class HrAdministrationController extends Controller
     public function indexTemplates(ListPermissionTemplatesAction $action): JsonResponse
     {
         $templates = $action->execute();
-        return $this->successResponse($templates);
+        return $this->successResponse(PermissionTemplateResource::collection($templates));
     }
 
     public function storeTemplate(StorePermissionTemplateRequest $request, CreatePermissionTemplateAction $action): JsonResponse
     {
         $validated = $request->validated();
-        $template = $action->execute($validated);
+        $result = $action->execute($validated);
+        $template = PermissionTemplate::find($result['id'] ?? $result);
 
-        return $this->successResponse($template, 'Permission template created');
+        return $this->successResponse(new PermissionTemplateResource($template), 'Permission template created');
     }
 
     public function updateTemplate(UpdatePermissionTemplateRequest $request, $id, UpdatePermissionTemplateAction $action): JsonResponse
     {
         $validated = $request->validated();
-        $template = $action->execute($id, $validated);
+        $result = $action->execute($id, $validated);
+        $template = PermissionTemplate::find($result['id'] ?? $id);
 
-        return $this->successResponse($template, 'Permission template updated');
+        return $this->successResponse(new PermissionTemplateResource($template), 'Permission template updated');
     }
 
     public function applyTemplateToRole(ApplyTemplateToRoleRequest $request, ApplyPermissionTemplateAction $action): JsonResponse

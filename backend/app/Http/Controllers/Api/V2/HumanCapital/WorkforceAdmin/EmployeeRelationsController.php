@@ -11,6 +11,10 @@ use App\Domains\HumanCapital\WorkforceAdmin\Actions\CreateRelationsCaseAction;
 use App\Domains\HumanCapital\WorkforceAdmin\Actions\ShowRelationsCaseAction;
 use App\Domains\HumanCapital\WorkforceAdmin\Actions\UpdateRelationsCaseAction;
 use App\Domains\HumanCapital\WorkforceAdmin\Actions\CreateDisciplinaryActionAction;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\EmployeeRelationsCase;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\DisciplinaryAction;
+use App\Http\Resources\HumanCapital\WorkforceAdmin\EmployeeRelationsCaseResource;
+use App\Http\Resources\HumanCapital\WorkforceAdmin\DisciplinaryActionResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
@@ -23,20 +27,27 @@ class EmployeeRelationsController extends Controller
     {
         $filters = $request->only(['case_type', 'status', 'employee_id']);
         $result = $action->execute($filters);
-        return $this->successResponse($result);
+        return $this->paginatedResponse(
+            EmployeeRelationsCaseResource::collection($result['data'] ?? $result),
+            $result['total'] ?? count($result['data'] ?? $result),
+            $result['current_page'] ?? 1,
+            $result['per_page'] ?? 15
+        );
     }
 
     public function store(StoreRelationsCaseRequest $request, CreateRelationsCaseAction $action): JsonResponse
     {
-        $case = $action->execute($request->validated());
-        return response()->json(array_merge(['success' => true], $case), 201);
+        $result = $action->execute($request->validated());
+        $case = EmployeeRelationsCase::find($result['id'] ?? $result);
+        return $this->successResponse(new EmployeeRelationsCaseResource($case), 'Relations case created successfully', 201);
     }
 
     public function show($id, ShowRelationsCaseAction $action): JsonResponse
     {
         try {
-            $case = $action->execute((int)$id);
-            return $this->successResponse($case);
+            $result = $action->execute((int)$id);
+            $case = EmployeeRelationsCase::find($result['id'] ?? $id);
+            return $this->successResponse(new EmployeeRelationsCaseResource($case));
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 404);
         }
@@ -44,13 +55,15 @@ class EmployeeRelationsController extends Controller
 
     public function update(UpdateRelationsCaseRequest $request, $id, UpdateRelationsCaseAction $action): JsonResponse
     {
-        $case = $action->execute((int)$id, $request->validated());
-        return $this->successResponse($case);
+        $result = $action->execute((int)$id, $request->validated());
+        $case = EmployeeRelationsCase::find($result['id'] ?? $id);
+        return $this->successResponse(new EmployeeRelationsCaseResource($case), 'Relations case updated successfully');
     }
 
     public function storeDisciplinaryAction(StoreDisciplinaryActionRequest $request, $caseId, CreateDisciplinaryActionAction $action): JsonResponse
     {
-        $disciplinaryAction = $action->execute((int)$caseId, $request->validated());
-        return response()->json(array_merge(['success' => true], $disciplinaryAction), 201);
+        $result = $action->execute((int)$caseId, $request->validated());
+        $disciplinaryAction = DisciplinaryAction::find($result['id'] ?? $result);
+        return $this->successResponse(new DisciplinaryActionResource($disciplinaryAction), 'Disciplinary action recorded successfully', 201);
     }
 }

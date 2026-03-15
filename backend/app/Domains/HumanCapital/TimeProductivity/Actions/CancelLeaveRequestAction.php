@@ -7,7 +7,7 @@ use Exception;
 
 class CancelLeaveRequestAction
 {
-    public function execute(int|string $id): array
+    public function execute(int|string $id): LeaveRequest
     {
         $leaveRequest = LeaveRequest::findOrFail($id);
 
@@ -16,6 +16,6 @@ class CancelLeaveRequestAction
         }
 
         $leaveRequest->update(['status' => 'cancelled']);
-        return $leaveRequest->toArray();
+        return $leaveRequest;
     }
 }

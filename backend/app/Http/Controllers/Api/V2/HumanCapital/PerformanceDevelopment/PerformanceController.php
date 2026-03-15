@@ -16,6 +16,12 @@ use App\Domains\HumanCapital\PerformanceDevelopment\Actions\CreatePerformanceApp
 use App\Domains\HumanCapital\PerformanceDevelopment\Actions\UpdatePerformanceAppraisalAction;
 use App\Domains\HumanCapital\PerformanceDevelopment\Actions\ListContinuousFeedbackAction;
 use App\Domains\HumanCapital\PerformanceDevelopment\Actions\CreateContinuousFeedbackAction;
+use App\Domains\HumanCapital\PerformanceDevelopment\Models\PerformanceGoal;
+use App\Domains\HumanCapital\PerformanceDevelopment\Models\PerformanceAppraisal;
+use App\Domains\HumanCapital\PerformanceDevelopment\Models\ContinuousFeedback;
+use App\Http\Resources\HumanCapital\PerformanceDevelopment\PerformanceGoalResource;
+use App\Http\Resources\HumanCapital\PerformanceDevelopment\PerformanceAppraisalResource;
+use App\Http\Resources\HumanCapital\PerformanceDevelopment\ContinuousFeedbackResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -29,23 +35,28 @@ class PerformanceController extends Controller
         $filters = $request->only(['employee_id', 'goal_type', 'status']);
         $goals = $action->execute($filters);
 
-        return $this->successResponse($goals);
+        return $this->paginatedResponse(
+            PerformanceGoalResource::collection($goals['data'] ?? $goals),
+            $goals['total'] ?? count($goals['data'] ?? $goals),
+            $goals['current_page'] ?? 1,
+            $goals['per_page'] ?? 15
+        );
     }
 
     public function storeGoal(StorePerformanceGoalRequest $request, CreatePerformanceGoalAction $action)
     {
         $validated = $request->validated();
-        $goal = $action->execute($validated);
-
-        return response()->json(array_merge(['success' => true], $goal), 201);
+        $result = $action->execute($validated);
+        $goal = PerformanceGoal::find($result['id'] ?? $result);
+        return $this->successResponse(new PerformanceGoalResource($goal), 'Goal created successfully', 201);
     }
 
     public function updateGoal(UpdatePerformanceGoalRequest $request, $id, UpdatePerformanceGoalAction $action)
     {
         $validated = $request->validated();
-        $goal = $action->execute($id, $validated);
-
-        return $this->successResponse($goal);
+        $result = $action->execute($id, $validated);
+        $goal = PerformanceGoal::find($result['id'] ?? $id);
+        return $this->successResponse(new PerformanceGoalResource($goal), 'Goal updated successfully');
     }
 
     // Appraisals
@@ -54,23 +65,28 @@ class PerformanceController extends Controller
         $filters = $request->only(['employee_id', 'appraisal_type', 'status']);
         $appraisals = $action->execute($filters);
 
-        return $this->successResponse($appraisals);
+        return $this->paginatedResponse(
+            PerformanceAppraisalResource::collection($appraisals['data'] ?? $appraisals),
+            $appraisals['total'] ?? count($appraisals['data'] ?? $appraisals),
+            $appraisals['current_page'] ?? 1,
+            $appraisals['per_page'] ?? 15
+        );
     }
 
     public function storeAppraisal(StorePerformanceAppraisalRequest $request, CreatePerformanceAppraisalAction $action)
     {
         $validated = $request->validated();
-        $appraisal = $action->execute($validated);
-
-        return response()->json(array_merge(['success' => true], $appraisal), 201);
+        $result = $action->execute($validated);
+        $appraisal = PerformanceAppraisal::find($result['id'] ?? $result);
+        return $this->successResponse(new PerformanceAppraisalResource($appraisal), 'Appraisal created successfully', 201);
     }
 
     public function updateAppraisal(UpdatePerformanceAppraisalRequest $request, $id, UpdatePerformanceAppraisalAction $action)
     {
         $validated = $request->validated();
-        $appraisal = $action->execute($id, $validated);
-
-        return $this->successResponse($appraisal);
+        $result = $action->execute($id, $validated);
+        $appraisal = PerformanceAppraisal::find($result['id'] ?? $id);
+        return $this->successResponse(new PerformanceAppraisalResource($appraisal), 'Appraisal updated successfully');
     }
 
     // Continuous Feedback
@@ -79,14 +95,19 @@ class PerformanceController extends Controller
         $filters = $request->only(['employee_id', 'feedback_type']);
         $feedback = $action->execute($filters);
 
-        return $this->successResponse($feedback);
+        return $this->paginatedResponse(
+            ContinuousFeedbackResource::collection($feedback['data'] ?? $feedback),
+            $feedback['total'] ?? count($feedback['data'] ?? $feedback),
+            $feedback['current_page'] ?? 1,
+            $feedback['per_page'] ?? 15
+        );
     }
 
     public function storeFeedback(StoreContinuousFeedbackRequest $request, CreateContinuousFeedbackAction $action)
     {
         $validated = $request->validated();
-        $feedback = $action->execute($validated);
-
-        return response()->json(array_merge(['success' => true], $feedback), 201);
+        $result = $action->execute($validated);
+        $feedbackModel = ContinuousFeedback::find($result['id'] ?? $result);
+        return $this->successResponse(new ContinuousFeedbackResource($feedbackModel), 'Feedback recorded successfully', 201);
     }
 }

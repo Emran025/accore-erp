@@ -1,21 +1,14 @@
 <?php
+
 namespace App\Domains\HumanCapital\PerformanceDevelopment\Actions;
-use App\Domains\Shared\Actions\Action;
+
 use App\Domains\HumanCapital\PerformanceDevelopment\Models\SuccessionPlan;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-class UpdateSuccessionPlanAction extends Action
+
+class UpdateSuccessionPlanAction
 {
-    public function __construct(private readonly Request $request, private readonly int $id) {}
-    public function __invoke(): JsonResponse
+    public function execute(SuccessionPlan $plan, array $data): SuccessionPlan
     {
-        $plan = SuccessionPlan::findOrFail($this->id);
-        $validated = $this->request->validate([
-            'status' => 'in:active,inactive,filled',
-            'readiness_level' => 'in:ready_now,ready_1_2_years,ready_3_5_years,not_ready',
-            'notes' => 'nullable|string',
-        ]);
-        $plan->update($validated);
-        return $this->successResponse($plan->load('incumbent', 'candidates.employee')->toArray());
+        $plan->update($data);
+        return $plan;
     }
 }

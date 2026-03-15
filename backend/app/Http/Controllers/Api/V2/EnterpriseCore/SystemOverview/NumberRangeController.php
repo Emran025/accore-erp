@@ -35,6 +35,12 @@ use App\Http\Requests\EnterpriseCore\SystemOverview\StoreNrGroupRequest;
 use App\Http\Requests\EnterpriseCore\SystemOverview\UpdateNrGroupRequest;
 use App\Http\Requests\EnterpriseCore\SystemOverview\UpdateNrIntervalRequest;
 use App\Http\Requests\EnterpriseCore\SystemOverview\StoreNrAssignmentRequest;
+use App\Domains\EnterpriseCore\SystemOverview\Models\NrObject;
+use App\Domains\EnterpriseCore\SystemOverview\Models\NrGroup;
+use App\Domains\EnterpriseCore\SystemOverview\Models\NrInterval;
+use App\Http\Resources\EnterpriseCore\SystemOverview\NrObjectResource;
+use App\Http\Resources\EnterpriseCore\SystemOverview\NrGroupResource;
+use App\Http\Resources\EnterpriseCore\SystemOverview\NrIntervalResource;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -59,7 +65,7 @@ class NumberRangeController extends Controller
     public function indexObjects(ListNrObjectsAction $action): JsonResponse
     {
         $objects = $action->execute();
-        return $this->successResponse(['data' => $objects]);
+        return $this->successResponse(NrObjectResource::collection($objects));
     }
 
     /**
@@ -69,7 +75,8 @@ class NumberRangeController extends Controller
     {
         try {
             $data = $action->execute($id);
-            return $this->successResponse($data);
+            $object = NrObject::find($id);
+            return $this->successResponse(new NrObjectResource($object));
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 404);
         }
@@ -84,7 +91,8 @@ class NumberRangeController extends Controller
         if (!$data) {
             return $this->errorResponse('نوع الكائن غير موجود', 404);
         }
-        return $this->successResponse($data);
+        $object = NrObject::where('object_type', $objectType)->first();
+        return $this->successResponse(new NrObjectResource($object));
     }
 
     /**
@@ -93,10 +101,8 @@ class NumberRangeController extends Controller
     public function storeObject(StoreNrObjectRequest $request, CreateNrObjectAction $action): JsonResponse
     {
         $result = $action->execute($request->validated(), $request->user()?->id);
-        return $this->successResponse([
-            'id'      => $result['id'],
-            'message' => 'تم إنشاء كائن الترقيم بنجاح',
-        ]);
+        $object = NrObject::find($result['id'] ?? $result);
+        return $this->successResponse(new NrObjectResource($object), 'تم إنشاء كائن التارقِيم بنجاح', 201);
     }
 
     /**
@@ -105,7 +111,8 @@ class NumberRangeController extends Controller
     public function updateObject(UpdateNrObjectRequest $request, int $id, UpdateNrObjectAction $action): JsonResponse
     {
         $action->execute($id, $request->validated());
-        return $this->successResponse(['message' => 'تم تحديث كائن الترقيم']);
+        $object = NrObject::find($id);
+        return $this->successResponse(new NrObjectResource($object), 'تم تحديث كائن الترقيم');
     }
 
     /**
@@ -127,7 +134,7 @@ class NumberRangeController extends Controller
     public function indexGroups(int $objectId, ListNrGroupsAction $action): JsonResponse
     {
         $groups = $action->execute($objectId);
-        return $this->successResponse(['data' => $groups]);
+        return $this->successResponse(NrGroupResource::collection($groups));
     }
 
     /**
@@ -137,10 +144,8 @@ class NumberRangeController extends Controller
     {
         try {
             $result = $action->execute($objectId, $request->validated(), $request->user()?->id);
-            return $this->successResponse([
-                'id'      => $result['id'],
-                'message' => 'تم إنشاء المجموعة بنجاح',
-            ]);
+            $group = NrGroup::find($result['id'] ?? $result);
+            return $this->successResponse(new NrGroupResource($group), 'تم إنشاء المجموعة بنجاح', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -153,7 +158,8 @@ class NumberRangeController extends Controller
     {
         try {
             $action->execute($groupId, $request->validated());
-            return $this->successResponse(['message' => 'تم تحديث المجموعة']);
+            $group = NrGroup::find($groupId);
+            return $this->successResponse(new NrGroupResource($group), 'تم تحديث المجموعة');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -182,7 +188,7 @@ class NumberRangeController extends Controller
     public function indexIntervals(int $objectId, ListNrIntervalsAction $action): JsonResponse
     {
         $intervals = $action->execute($objectId);
-        return $this->successResponse(['data' => $intervals]);
+        return $this->successResponse(NrIntervalResource::collection($intervals));
     }
 
     /**
@@ -192,10 +198,8 @@ class NumberRangeController extends Controller
     {
         try {
             $result = $action->execute($objectId, $request->validated(), $request->user()?->id);
-            return $this->successResponse([
-                'id'      => $result['id'],
-                'message' => 'تم إنشاء نطاق الأرقام بنجاح',
-            ]);
+            $interval = NrInterval::find($result['id'] ?? $result);
+            return $this->successResponse(new NrIntervalResource($interval), 'تم إنشاء نطاق الأرقام بنجاح', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -208,7 +212,8 @@ class NumberRangeController extends Controller
     {
         try {
             $action->execute($intervalId, $request->validated());
-            return $this->successResponse(['message' => 'تم تحديث نطاق الأرقام']);
+            $interval = NrInterval::find($intervalId);
+            return $this->successResponse(new NrIntervalResource($interval), 'تم تحديث نطاق الأرقام');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -237,7 +242,7 @@ class NumberRangeController extends Controller
     public function indexAssignments(int $objectId, ListNrAssignmentsAction $action): JsonResponse
     {
         $assignments = $action->execute($objectId);
-        return $this->successResponse(['data' => $assignments]);
+        return $this->successResponse($assignments);
     }
 
     /**
@@ -247,10 +252,7 @@ class NumberRangeController extends Controller
     {
         try {
             $result = $action->execute($objectId, $request->validated(), $request->user()?->id);
-            return $this->successResponse([
-                'id'      => $result['id'],
-                'message' => 'تم الربط بنجاح',
-            ]);
+            return $this->successResponse($result, 'تم الربط بنجاح', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -288,11 +290,9 @@ class NumberRangeController extends Controller
     public function expandInterval(ExpandNrIntervalRequest $request, int $intervalId, ExpandNrIntervalAction $action): JsonResponse
     {
         try {
-            $interval = $action->execute($intervalId, $request->validated(), $request->user()?->id);
-            return $this->successResponse([
-                'message'  => 'تم توسيع النطاق بنجاح',
-                'interval' => $interval,
-            ]);
+            $intervalData = $action->execute($intervalId, $request->validated(), $request->user()?->id);
+            $interval = NrInterval::find($intervalId);
+            return $this->successResponse(new NrIntervalResource($interval), 'تم توسيع النطاق بنجاح');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }

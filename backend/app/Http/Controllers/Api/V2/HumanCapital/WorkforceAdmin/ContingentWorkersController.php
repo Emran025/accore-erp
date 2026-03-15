@@ -13,6 +13,8 @@ use App\Domains\HumanCapital\WorkforceAdmin\Actions\CreateContingentWorkerAction
 use App\Domains\HumanCapital\WorkforceAdmin\Actions\ShowContingentWorkerAction;
 use App\Domains\HumanCapital\WorkforceAdmin\Actions\UpdateContingentWorkerAction;
 use App\Domains\HumanCapital\WorkforceAdmin\Actions\CreateContingentContractAction;
+use App\Http\Resources\HumanCapital\WorkforceAdmin\ContingentWorkerResource;
+use App\Http\Resources\HumanCapital\WorkforceAdmin\ContingentContractResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -25,36 +27,45 @@ class ContingentWorkersController extends Controller
         $filters = $request->only(['worker_type', 'status', 'search']);
         $workers = $action->execute($filters);
 
-        return $this->successResponse($workers);
+        return $this->paginatedResponse(
+            ContingentWorkerResource::collection($workers['data'] ?? $workers),
+            $workers['total'] ?? count($workers['data'] ?? $workers),
+            $workers['current_page'] ?? 1,
+            $workers['per_page'] ?? 15
+        );
     }
 
     public function store(StoreContingentWorkerRequest $request, CreateContingentWorkerAction $action)
     {
         $validated = $request->validated();
-        $worker = $action->execute($validated);
+        $result = $action->execute($validated);
+        $worker = ContingentWorker::find($result['id'] ?? $result);
 
-        return response()->json(array_merge(['success' => true], $worker), 201);
+        return $this->successResponse(new ContingentWorkerResource($worker), 'Contingent worker created successfully', 201);
     }
 
     public function show($id, ShowContingentWorkerAction $action)
     {
-        $worker = $action->execute($id);
-        return $this->successResponse($worker);
+        $result = $action->execute($id);
+        $worker = ContingentWorker::find($result['id'] ?? $id);
+        return $this->successResponse(new ContingentWorkerResource($worker));
     }
 
     public function update(UpdateContingentWorkerRequest $request, $id, UpdateContingentWorkerAction $action)
     {
         $validated = $request->validated();
-        $worker = $action->execute($id, $validated);
+        $result = $action->execute($id, $validated);
+        $worker = ContingentWorker::find($result['id'] ?? $id);
 
-        return $this->successResponse($worker);
+        return $this->successResponse(new ContingentWorkerResource($worker), 'Contingent worker updated successfully');
     }
 
     public function storeContract(StoreContingentContractRequest $request, $workerId, CreateContingentContractAction $action)
     {
         $validated = $request->validated();
-        $contract = $action->execute($workerId, $validated);
+        $result = $action->execute($workerId, $validated);
+        $contract = ContingentContract::find($result['id'] ?? $result);
 
-        return response()->json(array_merge(['success' => true], $contract), 201);
+        return $this->successResponse(new ContingentContractResource($contract), 'Contingent contract created successfully', 201);
     }
 }

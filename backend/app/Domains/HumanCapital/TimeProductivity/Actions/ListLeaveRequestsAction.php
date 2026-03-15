@@ -3,10 +3,11 @@
 namespace App\Domains\HumanCapital\TimeProductivity\Actions;
 
 use App\Domains\HumanCapital\TimeProductivity\Models\LeaveRequest;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ListLeaveRequestsAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): LengthAwarePaginator
     {
         $query = LeaveRequest::with(['employee', 'approver', 'creator']);
 
@@ -25,6 +26,6 @@ class ListLeaveRequestsAction
             });
         }
 
-        return $query->orderBy('created_at', 'desc')->paginate(15)->toArray();
+        return $query->orderBy('created_at', 'desc')->paginate(15);
     }
 }

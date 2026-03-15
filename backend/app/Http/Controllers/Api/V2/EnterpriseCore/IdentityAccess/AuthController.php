@@ -7,6 +7,8 @@ use App\Domains\EnterpriseCore\IdentityAccess\Actions\LoginAction;
 use App\Domains\EnterpriseCore\IdentityAccess\Actions\LogoutAction;
 use App\Domains\EnterpriseCore\IdentityAccess\Actions\CheckSessionAction;
 use App\Http\Requests\EnterpriseCore\IdentityAccess\LoginRequest;
+use App\Http\Resources\EnterpriseCore\IdentityAccess\UserResource;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
@@ -21,13 +23,17 @@ class AuthController extends Controller
         $result = $action->execute($request->validated());
 
         if (!$result['success']) {
-            return response()->json([
-                'success' => false,
-                'message' => $result['message'],
-            ], 401);
+            return $this->errorResponse($result['message'], 401);
         }
 
-        return response()->json($result);
+        // We wrap the user in our standardized resource for consistency
+        $user = User::with('roleRelation')->find($result['user']['id']);
+        
+        return $this->successResponse([
+            'user'        => new UserResource($user),
+            'token'       => $result['token'],
+            'permissions' => $result['permissions'],
+        ], 'Login successful');
     }
 
     public function logout(Request $request): JsonResponse
@@ -37,7 +43,7 @@ class AuthController extends Controller
         $action = app(LogoutAction::class);
         $action->execute($sessionToken);
 
-        return response()->json(['success' => true]);
+        return $this->successResponse([], 'Logged out successfully');
     }
 
     public function check(Request $request): JsonResponse
@@ -46,12 +52,15 @@ class AuthController extends Controller
         $result = $action->execute($request->header('X-Session-Token'));
 
         if (!$result['success']) {
-            return response()->json([
-                'success' => false,
-                'message' => $result['message'],
-            ], 401);
+            return $this->errorResponse($result['message'], 401);
         }
 
-        return response()->json($result);
+        $user = User::with('roleRelation')->find($result['user']['id']);
+
+        return $this->successResponse([
+            'user'          => new UserResource($user),
+            'permissions'   => $result['permissions'],
+            'authenticated' => true,
+        ]);
     }
 }

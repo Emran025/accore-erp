@@ -14,6 +14,9 @@ use App\Domains\EnterpriseCore\Automation\Actions\UpdateSystemTemplateAction;
 use App\Domains\EnterpriseCore\Automation\Actions\DeleteSystemTemplateAction;
 use App\Domains\EnterpriseCore\Automation\Actions\SystemTemplateOperationsAction;
 use App\Domains\HumanCapital\HRAdvanced\Services\TemplateRegistry;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\DocumentTemplate;
+use App\Http\Resources\EnterpriseCore\OrganizationGovernance\DocumentTemplateResource;
+use App\Http\Resources\EnterpriseCore\OrganizationGovernance\DocumentTemplateHistoryResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
@@ -55,7 +58,7 @@ class SystemTemplateController extends Controller
         try {
             $filters = $request->only(['type', 'search']);
             $templates = $action->execute($filters);
-            return $this->successResponse($templates);
+            return $this->successResponse(DocumentTemplateResource::collection($templates));
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
@@ -69,8 +72,9 @@ class SystemTemplateController extends Controller
     {
         try {
             $validated = $request->validated();
-            $template = $action->execute($validated);
-            return $this->successResponse($template, 'Template created successfully');
+            $result = $action->execute($validated);
+            $template = DocumentTemplate::find($result['id'] ?? $result);
+            return $this->successResponse(new DocumentTemplateResource($template), 'Template created successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
@@ -82,8 +86,9 @@ class SystemTemplateController extends Controller
     public function showByKey($key, ShowSystemTemplateAction $action): JsonResponse
     {
         try {
-            $template = $action->executeByKey($key);
-            return $this->successResponse($template);
+            $result = $action->executeByKey($key);
+            $template = DocumentTemplate::where('template_key', $key)->first();
+            return $this->successResponse(new DocumentTemplateResource($template));
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
@@ -95,8 +100,9 @@ class SystemTemplateController extends Controller
     public function showByType($type, ShowSystemTemplateAction $action): JsonResponse
     {
         try {
-            $template = $action->executeByType($type);
-            return $this->successResponse($template);
+            $result = $action->executeByType($type);
+            $template = DocumentTemplate::where('template_type', $type)->where('is_active', true)->first();
+            return $this->successResponse(new DocumentTemplateResource($template));
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
@@ -108,8 +114,9 @@ class SystemTemplateController extends Controller
     public function show($id, ShowSystemTemplateAction $action): JsonResponse
     {
         try {
-            $template = $action->executeById($id);
-            return $this->successResponse($template);
+            $result = $action->executeById($id);
+            $template = DocumentTemplate::find($id);
+            return $this->successResponse(new DocumentTemplateResource($template));
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
@@ -123,8 +130,9 @@ class SystemTemplateController extends Controller
     {
         try {
             $validated = $request->validated();
-            $template = $action->execute($id, $validated);
-            return $this->successResponse($template, 'Template updated and history recorded');
+            $result = $action->execute($id, $validated);
+            $template = DocumentTemplate::find($id);
+            return $this->successResponse(new DocumentTemplateResource($template), 'Template updated and history recorded');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
@@ -150,7 +158,8 @@ class SystemTemplateController extends Controller
     {
         try {
             $histories = $action->getHistory($id);
-            return $this->successResponse($histories, 'Template history fetched');
+            $template = DocumentTemplate::with('history')->find($id);
+            return $this->successResponse(DocumentTemplateHistoryResource::collection($template->history), 'Template history fetched');
         } catch (\Exception $e) {
             return $this->errorResponse('Template not found', 404);
         }

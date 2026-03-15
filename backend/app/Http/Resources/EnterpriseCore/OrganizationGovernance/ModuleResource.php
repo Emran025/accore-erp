@@ -11,7 +11,10 @@ class ModuleResource extends JsonResource
         return [
             'id'          => $this->id,
             'module_key'  => $this->module_key,
-            'name'        => $this->name,
+            'name'        => $this->module_name_ar,
+            'name_ar'     => $this->module_name_ar,
+            'name_en'     => $this->module_name_en,
+            'category'    => $this->category,
             'description' => $this->description,
             'is_active'   => (bool) ($this->is_active ?? true),
             'sort_order'  => (int) ($this->sort_order ?? 0),

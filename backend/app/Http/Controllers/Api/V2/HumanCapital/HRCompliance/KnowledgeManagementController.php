@@ -17,6 +17,10 @@ use App\Http\Requests\HumanCapital\HRCompliance\StoreExpertiseDirectoryRequest;
 use App\Http\Requests\HumanCapital\HRCompliance\UpdateExpertiseDirectoryRequest;
 use App\Http\Requests\HumanCapital\HRCompliance\ListKnowledgeBaseRequest;
 use App\Http\Requests\HumanCapital\HRCompliance\ListExpertiseRequest;
+use App\Domains\HumanCapital\HRCompliance\Models\KnowledgeBase;
+use App\Domains\HumanCapital\HRCompliance\Models\ExpertiseDirectory;
+use App\Http\Resources\HumanCapital\HRCompliance\KnowledgeBaseResource;
+use App\Http\Resources\HumanCapital\HRCompliance\ExpertiseDirectoryResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use Illuminate\Http\JsonResponse;
@@ -29,56 +33,64 @@ class KnowledgeManagementController extends Controller
     public function indexKnowledgeBase(ListKnowledgeBaseRequest $request, ListKnowledgeBaseEntriesAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
-        
-        return $this->successResponse($result);
+        $data = $result['data'] ?? $result;
+
+        return $this->successResponse(KnowledgeBaseResource::collection($data));
     }
 
     public function storeKnowledgeBase(StoreKnowledgeBaseRequest $request, CreateKnowledgeBaseEntryAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
+        $kb = KnowledgeBase::find($result['id'] ?? $result);
         
-        return $this->successResponse($result, 'Knowledge base entry created');
+        return $this->successResponse(new KnowledgeBaseResource($kb), 'Knowledge base entry created', 201);
     }
 
     public function showKnowledgeBase($id, ShowKnowledgeBaseEntryAction $action): JsonResponse
     {
         $result = $action->execute((int)$id);
+        $kb = KnowledgeBase::find($id);
         
-        return $this->successResponse($result);
+        return $this->successResponse(new KnowledgeBaseResource($kb));
     }
 
     public function updateKnowledgeBase(UpdateKnowledgeBaseRequest $request, $id, UpdateKnowledgeBaseEntryAction $action): JsonResponse
     {
         $result = $action->execute((int)$id, $request->validated());
+        $kb = KnowledgeBase::find($id);
         
-        return $this->successResponse($result, 'Knowledge base entry updated');
+        return $this->successResponse(new KnowledgeBaseResource($kb), 'Knowledge base entry updated');
     }
 
     public function markHelpful($id, MarkKnowledgeBaseHelpfulAction $action): JsonResponse
     {
         $result = $action->execute((int)$id);
-        return $this->successResponse($result, 'Marked as helpful');
+        $kb = KnowledgeBase::find($id);
+        return $this->successResponse(new KnowledgeBaseResource($kb), 'Marked as helpful');
     }
 
     // Expertise Directory
     public function indexExpertise(ListExpertiseRequest $request, ListExpertiseEntriesAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
+        $data = $result['data'] ?? $result;
 
-        return $this->successResponse($result);
+        return $this->successResponse(ExpertiseDirectoryResource::collection($data));
     }
 
     public function storeExpertise(StoreExpertiseDirectoryRequest $request, CreateExpertiseEntryAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
+        $expertise = ExpertiseDirectory::find($result['id'] ?? $result);
         
-        return $this->successResponse($result, 'Expertise entry created');
+        return $this->successResponse(new ExpertiseDirectoryResource($expertise), 'Expertise entry created', 201);
     }
 
     public function updateExpertise(UpdateExpertiseDirectoryRequest $request, $id, UpdateExpertiseEntryAction $action): JsonResponse
     {
         $result = $action->execute((int)$id, $request->validated());
+        $expertise = ExpertiseDirectory::find($id);
         
-        return $this->successResponse($result, 'Expertise entry updated');
+        return $this->successResponse(new ExpertiseDirectoryResource($expertise), 'Expertise entry updated');
     }
 }

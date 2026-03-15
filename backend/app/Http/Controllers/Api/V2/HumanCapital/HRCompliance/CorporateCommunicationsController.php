@@ -18,6 +18,12 @@ use App\Domains\HumanCapital\HRCompliance\Actions\CreateSurveyResponseAction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use Illuminate\Http\JsonResponse;
+use App\Http\Resources\HumanCapital\HRCompliance\CorporateAnnouncementResource;
+use App\Http\Resources\HumanCapital\HRCompliance\PulseSurveyResource;
+use App\Http\Resources\HumanCapital\HRCompliance\SurveyResponseResource;
+use App\Domains\HumanCapital\HRCompliance\Models\CorporateAnnouncement;
+use App\Domains\HumanCapital\HRCompliance\Models\PulseSurvey;
+use App\Domains\HumanCapital\HRCompliance\Models\SurveyResponse;
 
 class CorporateCommunicationsController extends Controller
 {
@@ -29,7 +35,7 @@ class CorporateCommunicationsController extends Controller
         $paginated = $action->execute($request->validated(), auth()->user());
 
         return $this->paginatedResponse(
-            $paginated['data'],
+            CorporateAnnouncementResource::collection($paginated['data']),
             $paginated['total'],
             $paginated['current_page'],
             $paginated['per_page']
@@ -38,16 +44,18 @@ class CorporateCommunicationsController extends Controller
 
     public function storeAnnouncement(StoreCorporateAnnouncementRequest $request, CreateCorporateAnnouncementAction $action): JsonResponse
     {
-        $announcement = $action->execute($request->validated(), auth()->id());
+        $result = $action->execute($request->validated(), auth()->id());
+        $announcement = CorporateAnnouncement::find($result['id'] ?? $result);
 
-        return $this->successResponse($announcement, 'Announcement created');
+        return $this->successResponse(new CorporateAnnouncementResource($announcement), 'Announcement created', 201);
     }
 
     public function updateAnnouncement(UpdateCorporateAnnouncementRequest $request, $id, UpdateCorporateAnnouncementAction $action): JsonResponse
     {
-        $announcement = $action->execute((int)$id, $request->validated());
+        $result = $action->execute((int)$id, $request->validated());
+        $announcement = CorporateAnnouncement::find($id);
 
-        return $this->successResponse($announcement, 'Announcement updated');
+        return $this->successResponse(new CorporateAnnouncementResource($announcement), 'Announcement updated');
     }
 
     // Pulse Surveys
@@ -56,7 +64,7 @@ class CorporateCommunicationsController extends Controller
         $paginated = $action->execute($request->validated());
 
         return $this->paginatedResponse(
-            $paginated['data'],
+            PulseSurveyResource::collection($paginated['data']),
             $paginated['total'],
             $paginated['current_page'],
             $paginated['per_page']
@@ -65,15 +73,17 @@ class CorporateCommunicationsController extends Controller
 
     public function storeSurvey(StorePulseSurveyRequest $request, CreatePulseSurveyAction $action): JsonResponse
     {
-        $survey = $action->execute($request->validated(), auth()->id());
+        $result = $action->execute($request->validated(), auth()->id());
+        $survey = PulseSurvey::find($result['id'] ?? $result);
 
-        return $this->successResponse($survey, 'Pulse survey created');
+        return $this->successResponse(new PulseSurveyResource($survey), 'Pulse survey created', 201);
     }
 
     public function storeSurveyResponse(StoreSurveyResponseRequest $request, $surveyId, CreateSurveyResponseAction $action): JsonResponse
     {
-        $response = $action->execute((int)$surveyId, $request->validated(), auth()->user());
+        $result = $action->execute((int)$surveyId, $request->validated(), auth()->user());
+        $response = SurveyResponse::find($result['id'] ?? $result);
 
-        return $this->successResponse($response, 'Survey response submitted');
+        return $this->successResponse(new SurveyResponseResource($response), 'Survey response submitted', 201);
     }
 }

@@ -9,35 +9,41 @@ use App\Domains\HumanCapital\PayrollBenefits\Actions\ProcessPostPayrollIntegrati
 use App\Domains\HumanCapital\PayrollBenefits\Actions\ReconcilePostPayrollIntegrationAction;
 use App\Http\Requests\HumanCapital\PayrollBenefits\StorePostPayrollIntegrationRequest;
 use App\Http\Requests\HumanCapital\PayrollBenefits\ReconcilePostPayrollIntegrationRequest;
+use App\Domains\HumanCapital\PayrollBenefits\Models\PostPayrollIntegration;
+use App\Http\Resources\HumanCapital\PayrollBenefits\PostPayrollIntegrationResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
+use Illuminate\Http\JsonResponse;
 
 class PostPayrollController extends Controller
 {
     use BaseApiController;
 
-    public function index(Request $request, ListPostPayrollIntegrationsAction $action)
+    public function index(Request $request, ListPostPayrollIntegrationsAction $action): JsonResponse
     {
         $filters = $request->only(['payroll_cycle_id', 'integration_type', 'status']);
         $result = $action->execute($filters);
         
-        return $this->successResponse($result);
+        $data = $result['data'] ?? $result;
+        return $this->successResponse(PostPayrollIntegrationResource::collection($data));
     }
 
-    public function store(StorePostPayrollIntegrationRequest $request, CreatePostPayrollIntegrationAction $action)
+    public function store(StorePostPayrollIntegrationRequest $request, CreatePostPayrollIntegrationAction $action): JsonResponse
     {
         $validated = $request->validated();
         
         $result = $action->execute($validated);
+        $integration = PostPayrollIntegration::find($result['id'] ?? $result);
         
-        return response()->json(array_merge(['success' => true], $result), 201);
+        return $this->successResponse(new PostPayrollIntegrationResource($integration), 'Integration created successfully', 201);
     }
 
-    public function process(Request $request, $id, ProcessPostPayrollIntegrationAction $action)
+    public function process(Request $request, $id, ProcessPostPayrollIntegrationAction $action): JsonResponse
     {
         try {
             $result = $action->execute($id);
-            return $this->successResponse($result);
+            $integration = PostPayrollIntegration::find($id);
+            return $this->successResponse(new PostPayrollIntegrationResource($integration), 'Integration processed successfully');
         } catch (\Exception $e) {
             $statusCode = 500;
             if ($e->getMessage() === 'Integration already processed') {
@@ -47,12 +53,13 @@ class PostPayrollController extends Controller
         }
     }
 
-    public function reconcile(ReconcilePostPayrollIntegrationRequest $request, $id, ReconcilePostPayrollIntegrationAction $action)
+    public function reconcile(ReconcilePostPayrollIntegrationRequest $request, $id, ReconcilePostPayrollIntegrationAction $action): JsonResponse
     {
         $validated = $request->validated();
 
         $result = $action->execute($id, $validated);
+        $integration = PostPayrollIntegration::find($id);
 
-        return $this->successResponse($result);
+        return $this->successResponse(new PostPayrollIntegrationResource($integration), 'Integration reconciled successfully');
     }
 }

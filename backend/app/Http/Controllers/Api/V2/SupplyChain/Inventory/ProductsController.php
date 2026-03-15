@@ -14,6 +14,7 @@ use App\Domains\SupplyChain\Inventory\Actions\DeleteProductAction;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use App\Http\Resources\SupplyChain\Inventory\ProductResource;
+use App\Domains\SupplyChain\Inventory\Models\Product;
 
 class ProductsController extends Controller
 {
@@ -34,13 +35,15 @@ class ProductsController extends Controller
     public function store(StoreProductRequest $request, CreateProductAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
-        return $this->successResponse($result, 'Product created successfully', 201);
+        $product = Product::find($result['id']);
+        return $this->successResponse(new ProductResource($product), 'Product created successfully', 201);
     }
 
     public function update(UpdateProductRequest $request, UpdateProductAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
-        return $this->successResponse($result, 'Product updated successfully');
+        $product = Product::find($result['id']);
+        return $this->successResponse(new ProductResource($product), 'Product updated successfully');
     }
 
     public function destroy(DeleteProductRequest $request, DeleteProductAction $action): JsonResponse

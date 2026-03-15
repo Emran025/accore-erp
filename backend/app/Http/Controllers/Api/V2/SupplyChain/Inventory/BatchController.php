@@ -11,6 +11,8 @@ use App\Domains\SupplyChain\Inventory\Actions\CreateBatchProcessAction;
 use App\Domains\SupplyChain\Inventory\Actions\DeleteBatchProcessAction;
 use App\Domains\SupplyChain\Inventory\Actions\ShowBatchProcessAction;
 use App\Domains\SupplyChain\Inventory\Actions\ExecuteBatchProcessAction;
+use App\Http\Resources\SupplyChain\Inventory\BatchResource;
+use App\Domains\SupplyChain\Inventory\Models\Batch;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -21,14 +23,14 @@ class BatchController extends Controller
     public function index(ListBatchesRequest $request, ListBatchProcessesAction $listAction, ShowBatchProcessAction $showAction): JsonResponse
     {
         if ($request->query('action') === 'status') {
-            $result = $showAction->execute((int)$request->query('batch_id'));
-            return $this->successResponse($result);
+            $batch = Batch::find((int)$request->query('batch_id'));
+            return $this->successResponse(new BatchResource($batch));
         }
 
         $result = $listAction->execute($request->validated());
         
         return $this->paginatedResponse(
-            $result['data'],
+            BatchResource::collection($result['data']),
             $result['total'],
             $result['current_page'],
             $result['per_page']
@@ -47,13 +49,14 @@ class BatchController extends Controller
         }
 
         $result = $createAction->execute($request->validated());
-        return $this->successResponse($result);
+        $batch = Batch::find($result['id']);
+        return $this->successResponse(new BatchResource($batch));
     }
 
     public function show(int $batchId, ShowBatchProcessAction $action): JsonResponse
     {
-        $result = $action->execute($batchId);
-        return $this->successResponse($result);
+        $batch = Batch::find($batchId);
+        return $this->successResponse(new BatchResource($batch));
     }
 
     public function destroy(DeleteBatchRequest $request, DeleteBatchProcessAction $action): JsonResponse

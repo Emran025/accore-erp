@@ -13,6 +13,8 @@ use App\Domains\HumanCapital\WorkforceAdmin\Actions\CreateDepartmentAction;
 use App\Domains\HumanCapital\WorkforceAdmin\Actions\ShowDepartmentAction;
 use App\Domains\HumanCapital\WorkforceAdmin\Actions\UpdateDepartmentAction;
 use App\Domains\HumanCapital\WorkforceAdmin\Actions\DeleteDepartmentAction;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Department;
+use App\Http\Resources\HumanCapital\WorkforceAdmin\DepartmentResource;
 
 class DepartmentsController extends Controller
 {
@@ -21,25 +23,28 @@ class DepartmentsController extends Controller
     public function index(ListDepartmentsRequest $request, ListDepartmentsAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
-        return $this->successResponse($result);
+        return $this->successResponse(DepartmentResource::collection($result));
     }
 
     public function store(StoreDepartmentRequest $request, CreateDepartmentAction $action): JsonResponse
     {
-        $department = $action->execute($request->validated());
-        return $this->successResponse($department, 'Department created successfully', 201);
+        $result = $action->execute($request->validated());
+        $department = Department::find($result['id']);
+        return $this->successResponse(new DepartmentResource($department), 'Department created successfully', 201);
     }
 
     public function show($id, ShowDepartmentAction $action): JsonResponse
     {
-        $department = $action->execute((int)$id);
-        return $this->successResponse($department);
+        $result = $action->execute((int)$id);
+        $department = Department::find($result['id'] ?? $id);
+        return $this->successResponse(new DepartmentResource($department));
     }
 
     public function update(UpdateDepartmentRequest $request, $id, UpdateDepartmentAction $action): JsonResponse
     {
-        $department = $action->execute((int)$id, $request->validated());
-        return $this->successResponse($department, 'Department updated successfully');
+        $result = $action->execute((int)$id, $request->validated());
+        $department = Department::find($result['id'] ?? $id);
+        return $this->successResponse(new DepartmentResource($department), 'Department updated successfully');
     }
 
     public function destroy($id, DeleteDepartmentAction $action): JsonResponse

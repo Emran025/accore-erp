@@ -9,6 +9,8 @@ use App\Http\Requests\HumanCapital\WorkforceAdmin\StoreBenefitsPlanRequest;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\UpdateBenefitsPlanRequest;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\StoreBenefitsEnrollmentRequest;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\UpdateBenefitsEnrollmentRequest;
+use App\Http\Resources\HumanCapital\PayrollBenefits\BenefitsPlanResource;
+use App\Http\Resources\HumanCapital\PayrollBenefits\BenefitsEnrollmentResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -31,7 +33,7 @@ class BenefitsController extends Controller
 
         $paginated = $query->orderBy('created_at', 'desc')->paginate(15);
         return $this->paginatedResponse(
-            $paginated->items(),
+            BenefitsPlanResource::collection($paginated->items()),
             $paginated->total(),
             $paginated->currentPage(),
             $paginated->perPage()
@@ -45,13 +47,13 @@ class BenefitsController extends Controller
         $validated['created_by'] = auth()->id();
 
         $plan = BenefitsPlan::create($validated);
-        return response()->json(array_merge(['success' => true], $plan->toArray()), 201);
+        return $this->successResponse(new BenefitsPlanResource($plan), 'Benefits plan created successfully', 201);
     }
 
     public function showPlan($id)
     {
         $plan = BenefitsPlan::with(['enrollments.employee'])->findOrFail($id);
-        return $this->successResponse($plan->toArray());
+        return $this->successResponse(new BenefitsPlanResource($plan));
     }
 
     public function updatePlan(UpdateBenefitsPlanRequest $request, $id)
@@ -61,7 +63,7 @@ class BenefitsController extends Controller
         $validated = $request->validated();
 
         $plan->update($validated);
-        return $this->successResponse($plan->load('enrollments')->toArray());
+        return $this->successResponse(new BenefitsPlanResource($plan->load('enrollments')), 'Benefits plan updated successfully');
     }
 
     // Enrollments
@@ -83,7 +85,7 @@ class BenefitsController extends Controller
 
         $paginated = $query->orderBy('enrollment_date', 'desc')->paginate(15);
         return $this->paginatedResponse(
-            $paginated->items(),
+            BenefitsEnrollmentResource::collection($paginated->items()),
             $paginated->total(),
             $paginated->currentPage(),
             $paginated->perPage()
@@ -98,7 +100,7 @@ class BenefitsController extends Controller
         $validated['status'] = 'enrolled';
 
         $enrollment = BenefitsEnrollment::create($validated);
-        return response()->json(array_merge(['success' => true], $enrollment->load('plan', 'employee')->toArray()), 201);
+        return $this->successResponse(new BenefitsEnrollmentResource($enrollment->load('plan', 'employee')), 'Benefits enrollment created successfully', 201);
     }
 
     public function updateEnrollment(UpdateBenefitsEnrollmentRequest $request, $id)
@@ -108,6 +110,6 @@ class BenefitsController extends Controller
         $validated = $request->validated();
 
         $enrollment->update($validated);
-        return $this->successResponse($enrollment->load('plan', 'employee')->toArray());
+        return $this->successResponse(new BenefitsEnrollmentResource($enrollment->load('plan', 'employee')), 'Benefits enrollment updated successfully');
     }
 }
