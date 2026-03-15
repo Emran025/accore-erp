@@ -37,7 +37,7 @@ export default function ViewEmployeePage({ params }: { params: Promise<{ id: str
 
     const loadData = async () => {
         try {
-            const res = await fetchAPI(API_ENDPOINTS.HR.EMPLOYEES.withId(id));
+            const res = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEES.withId(id));
             const emp = (res.data as Employee) || (res as unknown as Employee);
             setEmployee(emp);
         } catch (e) {

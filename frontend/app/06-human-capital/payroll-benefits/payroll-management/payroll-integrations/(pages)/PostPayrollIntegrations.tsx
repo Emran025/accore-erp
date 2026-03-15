@@ -33,14 +33,14 @@ export function PostPayrollIntegrations() {
     useEffect(() => { loadPayrollCycles(); }, []);
 
     const loadPayrollCycles = async () => {
-        try { const r: any = await fetchAPI(API_ENDPOINTS.HR.PAYROLL.CYCLES); setPayrollCycles(r.data || (Array.isArray(r) ? r : [])); } catch { }
+        try { const r: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.PAYROLL.CYCLES); setPayrollCycles(r.data || (Array.isArray(r) ? r : [])); } catch { }
     };
 
     const loadIntegrations = async () => {
         setIsLoading(true);
         try {
             const q = new URLSearchParams({ page: currentPage.toString(), ...(statusFilter && { status: statusFilter }), ...(typeFilter && { integration_type: typeFilter }) });
-            const r: any = await fetchAPI(`${API_ENDPOINTS.HR.POST_PAYROLL.BASE}?${q}`);
+            const r: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.POST_PAYROLL.BASE}?${q}`);
             const d = r.data || (Array.isArray(r) ? r : []);
             setIntegrations(d); setTotalPages(Number(r.last_page) || 1);
         } catch { showToast("فشل تحميل التكاملات", "error"); }
@@ -50,14 +50,14 @@ export function PostPayrollIntegrations() {
     const handleCreate = async () => {
         if (!form.payroll_cycle_id || !form.integration_type) { showToast("يرجى اختيار الدورة والنوع", "error"); return; }
         try {
-            await fetchAPI(API_ENDPOINTS.HR.POST_PAYROLL.BASE, { method: "POST", body: JSON.stringify({ payroll_cycle_id: Number(form.payroll_cycle_id), integration_type: form.integration_type, file_format: form.file_format || undefined, notes: form.notes || undefined }) });
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.POST_PAYROLL.BASE, { method: "POST", body: JSON.stringify({ payroll_cycle_id: Number(form.payroll_cycle_id), integration_type: form.integration_type, file_format: form.file_format || undefined, notes: form.notes || undefined }) });
             showToast("تم إنشاء التكامل بنجاح", "success"); setShowCreateDialog(false); loadIntegrations();
         } catch (e: any) { showToast(e.message || "فشل الإنشاء", "error"); }
     };
 
     const handleProcess = async (id: number) => {
         try {
-            await fetchAPI(API_ENDPOINTS.HR.POST_PAYROLL.PROCESS(id), { method: "POST" });
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.POST_PAYROLL.PROCESS(id), { method: "POST" });
             showToast("تم بدء المعالجة", "success"); loadIntegrations();
         } catch (e: any) { showToast(e.message || "فشل المعالجة", "error"); }
     };
@@ -65,7 +65,7 @@ export function PostPayrollIntegrations() {
     const handleReconcile = async (id: number) => {
         const item = integrations.find(i => i.id === id);
         try {
-            await fetchAPI(API_ENDPOINTS.HR.POST_PAYROLL.RECONCILE(id), { method: "POST", body: JSON.stringify({ reconciled_amount: item?.total_amount || 0 }) });
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.POST_PAYROLL.RECONCILE(id), { method: "POST", body: JSON.stringify({ reconciled_amount: item?.total_amount || 0 }) });
             showToast("تمت المطابقة بنجاح", "success"); loadIntegrations();
         } catch (e: any) { showToast(e.message || "فشل المطابقة", "error"); }
     };

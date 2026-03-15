@@ -191,7 +191,7 @@ export default function DeferredSalesPage() {
 
   const loadFees = useCallback(async () => {
     try {
-      const response: any = await fetchAPI(API_ENDPOINTS.SYSTEM.TAX_ENGINE.SETUP);
+      const response: any = await fetchAPI(API_ENDPOINTS.FINANCE.TAX_ENGINE.SETUP);
       if (response.data && response.data.authorities) {
         const activeFees: any[] = [];
         response.data.authorities.forEach((auth: any) => {
@@ -223,7 +223,7 @@ export default function DeferredSalesPage() {
 
   const loadProducts = useCallback(async () => {
     try {
-      const response = await fetchAPI(`${API_ENDPOINTS.INVENTORY.PRODUCTS}?include_purchase_price=1`);
+      const response = await fetchAPI(`${API_ENDPOINTS.SUPPLY_CHAIN.PRODUCTS}?include_purchase_price=1`);
       if (response.success && response.data) {
         const filtered = (response.data as Product[]).filter((p) => p.stock_quantity > 0);
         setProducts(filtered);
@@ -251,7 +251,7 @@ export default function DeferredSalesPage() {
   const loadInvoices = useCallback(async (page: number = 1) => {
     try {
       setIsLoading(true);
-      const response = await fetchAPI(`${API_ENDPOINTS.SALES.INVOICES}?page=${page}&limit=${itemsPerPage}&payment_type=credit`);
+      const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICES}?page=${page}&limit=${itemsPerPage}&payment_type=credit`);
       if (response.success && response.data) {
         setInvoices(response.data as Invoice[]);
 
@@ -277,7 +277,7 @@ export default function DeferredSalesPage() {
 
       // Load Settings (VAT Rate)
       try {
-        const settingsRes = await fetchAPI(API_ENDPOINTS.SYSTEM.SETTINGS.INDEX);
+        const settingsRes = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.SETTINGS.INDEX);
         if (settingsRes.success && settingsRes.data) {
           const vatSetting = (settingsRes.data as any[]).find((s: any) => s.setting_key === 'vat_rate');
           if (vatSetting) {
@@ -535,7 +535,7 @@ export default function DeferredSalesPage() {
       // Ensure subtotal matches the items
       invoiceData.subtotal = invoiceData.items.reduce((sum, item) => sum + (item.unit_price * item.quantity), 0);
 
-      const response = await fetchAPI(API_ENDPOINTS.SALES.INVOICES, {
+      const response = await fetchAPI(API_ENDPOINTS.COMMERCIAL.SALES.INVOICES, {
         method: "POST",
         body: JSON.stringify(invoiceData),
       });
@@ -579,7 +579,7 @@ export default function DeferredSalesPage() {
 
   const viewInvoice = async (id: number) => {
     try {
-      const response = await fetchAPI(`${API_ENDPOINTS.SALES.INVOICE_DETAILS}?id=${id}`);
+      const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICE_DETAILS}?id=${id}`);
       if (response.success && response.data) {
         setSelectedInvoice(response.data as Invoice);
         setViewDialog(true);
@@ -598,7 +598,7 @@ export default function DeferredSalesPage() {
     if (!deleteInvoiceId) return;
 
     try {
-      const response = await fetchAPI(`${API_ENDPOINTS.SALES.INVOICES}?id=${deleteInvoiceId}`, {
+      const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICES}?id=${deleteInvoiceId}`, {
         method: "DELETE",
       });
       if (response.success) {
@@ -619,7 +619,7 @@ export default function DeferredSalesPage() {
   // Helper to fetch invoice items for the selectable table
   const getInvoiceItemsForTable = useCallback(async (invoice: Invoice): Promise<UiInvoiceItem[]> => {
     try {
-      const response = await fetchAPI(`${API_ENDPOINTS.SALES.INVOICE_DETAILS}?id=${invoice.id}`);
+      const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICE_DETAILS}?id=${invoice.id}`);
       if (response.success && response.data) {
         const detailedInvoice = response.data as any;
         // Map API items to UI items
@@ -659,7 +659,7 @@ export default function DeferredSalesPage() {
       try {
         const newMap = { ...invoicesMap };
         await Promise.all(missingIds.map(async (id) => {
-          const res = await fetchAPI(`${API_ENDPOINTS.SALES.INVOICE_DETAILS}?id=${id}`);
+          const res = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICE_DETAILS}?id=${id}`);
           if (res.success && res.data) {
             newMap[id] = res.data as SelectableInvoice;
           }
@@ -681,7 +681,7 @@ export default function DeferredSalesPage() {
 
     try {
       for (const returnData of dataArray) {
-        const response = await fetchAPI(API_ENDPOINTS.SALES.RETURNS.BASE, {
+        const response = await fetchAPI(API_ENDPOINTS.COMMERCIAL.SALES.RETURNS.BASE, {
           method: "POST",
           body: JSON.stringify(returnData),
         });

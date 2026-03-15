@@ -39,7 +39,7 @@ export function PayrollComponents() {
   const loadComponents = async () => {
     setIsLoading(true);
     try {
-      const res: any = await fetchAPI(API_ENDPOINTS.HR.COMPONENTS);
+      const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.COMPONENTS);
       const data = res.data || (Array.isArray(res) ? res : []);
       setComponents(data);
     } catch (e) {
@@ -64,13 +64,13 @@ export function PayrollComponents() {
       };
 
       if (editingComponent) {
-        await fetchAPI(`${API_ENDPOINTS.HR.COMPONENTS}/${editingComponent.id}`, {
+        await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.COMPONENTS}/${editingComponent.id}`, {
           method: 'PUT',
           body: JSON.stringify(payload)
         });
         showToast("تم تحديث المكون بنجاح", "success");
       } else {
-        await fetchAPI(API_ENDPOINTS.HR.COMPONENTS, {
+        await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.COMPONENTS, {
           method: 'POST',
           body: JSON.stringify(payload)
         });
@@ -107,7 +107,7 @@ export function PayrollComponents() {
     if (!confirm("هل أنت متأكد من حذف هذا المكون؟")) return;
 
     try {
-      await fetchAPI(`${API_ENDPOINTS.HR.COMPONENTS}/${id}`, {
+      await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.COMPONENTS}/${id}`, {
         method: 'DELETE'
       });
       showToast("تم حذف المكون بنجاح", "success");

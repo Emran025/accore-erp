@@ -85,7 +85,7 @@ export function Compensation() {
             const query = new URLSearchParams({
                 page: currentPage.toString(),
             });
-            const res = await fetchAPI(`${API_ENDPOINTS.HR.COMPENSATION.PLANS.BASE}?${query}`);
+            const res = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.COMPENSATION.PLANS.BASE}?${query}`);
             setPlans(res.data as CompensationPlan[] || []);
             setTotalPages(Number(res.last_page) || 1);
         } catch (error) {
@@ -101,7 +101,7 @@ export function Compensation() {
             const query = new URLSearchParams({
                 page: currentPage.toString(),
             });
-            const res = await fetchAPI(`${API_ENDPOINTS.HR.COMPENSATION.ENTRIES.BASE}?${query}`);
+            const res = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.COMPENSATION.ENTRIES.BASE}?${query}`);
             setEntries(res.data as CompensationEntry[] || []);
             setTotalPages(Number(res.last_page) || 1);
         } catch (error) {

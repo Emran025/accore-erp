@@ -34,7 +34,7 @@ export function DocumentGeneration() {
         setIsLoading(true);
         try {
             const query = typeFilter ? `?type=${typeFilter}` : "";
-            const res = await fetchAPI(`${API_ENDPOINTS.HR.DOCUMENT_TEMPLATES.BASE}${query}`);
+            const res = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.DOCUMENT_TEMPLATES.BASE}${query}`);
             setTemplates((res as any).data || []);
         } catch { console.error("Failed to load templates"); }
         finally { setIsLoading(false); }
@@ -59,14 +59,14 @@ export function DocumentGeneration() {
         setPreviewName(template.template_name_ar);
 
         try {
-            const res = await fetchAPI(API_ENDPOINTS.HR.DOCUMENT_TEMPLATES.RENDER(template.id), {
+            const res = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.DOCUMENT_TEMPLATES.RENDER(template.id), {
                 method: "POST",
                 body: JSON.stringify({ employee_id: Number(selectedEmployeeId) }),
             });
             const resData = (res as any).data;
             let finalHtml = resData?.rendered_html || "";
 
-            const templateRes = await fetchAPI(API_ENDPOINTS.HR.DOCUMENT_TEMPLATES.withId(template.id));
+            const templateRes = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.DOCUMENT_TEMPLATES.withId(template.id));
             const templateData = (templateRes as any).data || templateRes;
             if (templateData) {
                 if (!finalHtml) {
@@ -88,7 +88,7 @@ export function DocumentGeneration() {
     const handleDelete = async (id: number) => {
         if (!confirm("هل أنت متأكد من حذف هذا القالب؟")) return;
         try {
-            await fetchAPI(API_ENDPOINTS.HR.DOCUMENT_TEMPLATES.withId(id), { method: "DELETE" });
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.DOCUMENT_TEMPLATES.withId(id), { method: "DELETE" });
             showToast("تم حذف القالب", "success");
             loadTemplates();
         } catch { showToast("فشل حذف القالب", "error"); }

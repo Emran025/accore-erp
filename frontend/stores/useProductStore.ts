@@ -10,7 +10,7 @@ import { Product } from '@/types';
  * so consuming components don't need to do manual mapping.
  */
 export const useProductStore = createCRUDStore<Product>({
-    endpoint: API_ENDPOINTS.INVENTORY.PRODUCTS,
+    endpoint: API_ENDPOINTS.SUPPLY_CHAIN.PRODUCTS,
     storeName: 'product-store',
     messages: {
         loadError: 'خطأ في تحميل المنتجات',

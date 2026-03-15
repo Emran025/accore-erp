@@ -3,7 +3,7 @@ import { createCRUDStore } from './factories/createCRUDStore';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 
 export const useSalesRepresentativeStore = createCRUDStore<SalesRepresentative>({
-    endpoint: API_ENDPOINTS.SALES.REPRESENTATIVES.BASE,
+    endpoint: API_ENDPOINTS.COMMERCIAL.SALES.REPRESENTATIVES.BASE,
     storeName: 'sales-representative-store',
     messages: {
         loadError: 'خطأ في تحميل المناديب',

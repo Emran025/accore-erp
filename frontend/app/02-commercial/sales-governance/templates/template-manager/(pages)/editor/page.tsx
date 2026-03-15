@@ -26,7 +26,7 @@ function DocumentEditorContent() {
     const fetchTemplate = async (templateId: string) => {
         setIsLoading(true);
         try {
-            const res = await fetchAPI(API_ENDPOINTS.SYSTEM.TEMPLATES.withId(templateId));
+            const res = await fetchAPI(API_ENDPOINTS.PLATFORM.AUTOMATION.TEMPLATES.withId(templateId));
             const templateData = (res as any).data || res;
 
             if (templateData && templateData.template_key) {
@@ -49,7 +49,7 @@ function DocumentEditorContent() {
         try {
             if (id) {
                 // Edit
-                const res = await fetchAPI(API_ENDPOINTS.SYSTEM.TEMPLATES.withId(id), {
+                const res = await fetchAPI(API_ENDPOINTS.PLATFORM.AUTOMATION.TEMPLATES.withId(id), {
                     method: "PUT",
                     body: JSON.stringify(data),
                 });
@@ -58,7 +58,7 @@ function DocumentEditorContent() {
             } else {
                 // Create
                 const body = data.body_html || "";
-                const res = await fetchAPI(API_ENDPOINTS.SYSTEM.TEMPLATES.BASE, {
+                const res = await fetchAPI(API_ENDPOINTS.PLATFORM.AUTOMATION.TEMPLATES.BASE, {
                     method: "POST",
                     body: JSON.stringify({ ...data, body_html: body }),
                 });

@@ -28,14 +28,14 @@ function DocumentPreviewContent() {
     const renderDocument = async (templateId: string, empId: string) => {
         setIsLoading(true);
         try {
-            const res = await fetchAPI(API_ENDPOINTS.HR.DOCUMENT_TEMPLATES.RENDER(templateId), {
+            const res = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.DOCUMENT_TEMPLATES.RENDER(templateId), {
                 method: "POST",
                 body: JSON.stringify({ employee_id: Number(empId) }),
             });
             const resData = (res as any).data;
             let finalHtml = resData?.rendered_html || "";
 
-            const templateRes = await fetchAPI(API_ENDPOINTS.HR.DOCUMENT_TEMPLATES.withId(templateId));
+            const templateRes = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.DOCUMENT_TEMPLATES.withId(templateId));
             const templateData = (templateRes as any).data || templateRes;
             if (templateData) {
                 setTemplateName(templateData.template_name_ar);

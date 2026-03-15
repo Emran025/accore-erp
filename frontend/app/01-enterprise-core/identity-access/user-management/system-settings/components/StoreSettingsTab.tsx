@@ -29,7 +29,7 @@ export function StoreSettingsTab() {
 
   const loadStoreSettings = useCallback(async () => {
     try {
-      const response = await fetchAPI(API_ENDPOINTS.SYSTEM.SETTINGS.STORE);
+      const response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.SETTINGS.STORE);
       if (response.settings) {
         setStoreSettings(response.settings as StoreSettings);
       }
@@ -44,7 +44,7 @@ export function StoreSettingsTab() {
 
   const saveStoreSettings = async () => {
     try {
-      await fetchAPI(API_ENDPOINTS.SYSTEM.SETTINGS.STORE, {
+      await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.SETTINGS.STORE, {
         method: "PUT",
         body: JSON.stringify(storeSettings),
       });

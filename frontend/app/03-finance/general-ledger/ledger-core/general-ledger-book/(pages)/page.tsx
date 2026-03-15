@@ -93,7 +93,7 @@ export default function GeneralLedgerPage() {
   const loadJournalEntries = useCallback(async (page: number = 1) => {
     try {
       setIsLoading(true);
-      let url = `${API_ENDPOINTS.FINANCE.GL.ENTRIES}?page=${page}&limit=${itemsPerPage}`;
+      let url = `${API_ENDPOINTS.FINANCE.GENERAL_LEDGER.ENTRIES}?page=${page}&limit=${itemsPerPage}`;
       if (journalDateFrom) url += `&date_from=${journalDateFrom}`;
       if (journalDateTo) url += `&date_to=${journalDateTo}`;
 
@@ -111,7 +111,7 @@ export default function GeneralLedgerPage() {
   const loadTrialBalance = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await fetchAPI(API_ENDPOINTS.FINANCE.GL.TRIAL_BALANCE);
+      const response = await fetchAPI(API_ENDPOINTS.FINANCE.GENERAL_LEDGER.TRIAL_BALANCE);
       setTrialBalance(response.items as TrialBalanceItem[] || []);
       setTrialTotals({
         debit: response.total_debit as number || 0,
@@ -148,7 +148,7 @@ export default function GeneralLedgerPage() {
       if (historyDateFrom) params.append('start_date', historyDateFrom);
       if (historyDateTo) params.append('end_date', historyDateTo);
 
-      const url = `${API_ENDPOINTS.FINANCE.GL.BALANCE_HISTORY}?${params.toString()}`;
+      const url = `${API_ENDPOINTS.FINANCE.GENERAL_LEDGER.BALANCE_HISTORY}?${params.toString()}`;
 
       const response = await fetchAPI(url);
 

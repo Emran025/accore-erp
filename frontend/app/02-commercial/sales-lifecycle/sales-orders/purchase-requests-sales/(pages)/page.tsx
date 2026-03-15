@@ -26,8 +26,8 @@ export default function PurchaseRequestsPage() {
         setIsLoading(true);
         try {
             const [reqRes, prodRes] = await Promise.all([
-                fetchAPI(API_ENDPOINTS.PURCHASES.REQUESTS),
-                fetchAPI(`${API_ENDPOINTS.INVENTORY.PRODUCTS}?limit=1000`),
+                fetchAPI(API_ENDPOINTS.COMMERCIAL.PROCUREMENT.REQUESTS),
+                fetchAPI(`${API_ENDPOINTS.SUPPLY_CHAIN.PRODUCTS}?limit=1000`),
             ]);
             setRequests((reqRes.data as PurchaseRequest[]) || []);
             setProducts((prodRes.data as Product[]) || []);
@@ -52,7 +52,7 @@ export default function PurchaseRequestsPage() {
 
     const handleCreateRequest = async (data: { product_id: string; product_name: string; quantity: number; notes: string }) => {
         try {
-            await fetchAPI(API_ENDPOINTS.PURCHASES.REQUESTS, {
+            await fetchAPI(API_ENDPOINTS.COMMERCIAL.PROCUREMENT.REQUESTS, {
                 method: "POST",
                 body: JSON.stringify(data),
             });
@@ -66,7 +66,7 @@ export default function PurchaseRequestsPage() {
 
     const handleUpdateStatus = async (request: PurchaseRequest, newStatus: string) => {
         try {
-            await fetchAPI(API_ENDPOINTS.PURCHASES.REQUESTS, {
+            await fetchAPI(API_ENDPOINTS.COMMERCIAL.PROCUREMENT.REQUESTS, {
                 method: "PUT",
                 body: JSON.stringify({ id: request.id, status: newStatus }),
             });
@@ -81,7 +81,7 @@ export default function PurchaseRequestsPage() {
     const handleAutoGenerate = async () => {
         setIsAutoGenerating(true);
         try {
-            const response = await fetchAPI(API_ENDPOINTS.PURCHASES.REQUESTS + "/auto-generate", {
+            const response = await fetchAPI(API_ENDPOINTS.COMMERCIAL.PROCUREMENT.REQUESTS + "/auto-generate", {
                 method: "POST",
             });
 

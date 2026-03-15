@@ -29,7 +29,7 @@ export function CurrencyPolicyTab() {
     const loadData = useCallback(async () => {
         setLoadingPolicy(true);
         try {
-            const res = await fetchAPI(API_ENDPOINTS.FINANCE.CURRENCY_POLICIES.BASE);
+            const res = await fetchAPI(API_ENDPOINTS.FINANCE.FOREIGN_EXCHANGE.POLICIES.BASE);
             if (res.success) {
                 const pols = res.data as CurrencyPolicy[];
                 setPolicies(pols);
@@ -58,7 +58,7 @@ export function CurrencyPolicyTab() {
             variant: "primary",
             onConfirm: async () => {
                 try {
-                    const res = await fetchAPI(API_ENDPOINTS.FINANCE.CURRENCY_POLICIES.ACTIVATE(selectedPolicyId), { method: "POST" });
+                    const res = await fetchAPI(API_ENDPOINTS.FINANCE.FOREIGN_EXCHANGE.POLICIES.ACTIVATE(selectedPolicyId), { method: "POST" });
                     if (res.success) {
                         showToast("تم تفعيل السياسة بنجاح", "success");
                         loadData(); // Reload to refresh status

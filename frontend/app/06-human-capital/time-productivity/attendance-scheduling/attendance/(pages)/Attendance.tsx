@@ -51,14 +51,14 @@ export function Attendance() {
     setIsLoading(true);
     try {
       const res: any = await fetchAPI(
-        `${API_ENDPOINTS.HR.ATTENDANCE.BASE}?employee_id=${selectedEmployee}&start_date=${startDate}&end_date=${endDate}&page=${currentPage}`
+        `${API_ENDPOINTS.HUMAN_CAPITAL.ATTENDANCE.BASE}?employee_id=${selectedEmployee}&start_date=${startDate}&end_date=${endDate}&page=${currentPage}`
       );
       const data = res.data || (Array.isArray(res) ? res : []);
       setAttendanceRecords(data);
       setTotalPages(res.last_page || 1);
 
       const summaryRes: any = await fetchAPI(
-        `${API_ENDPOINTS.HR.ATTENDANCE.SUMMARY}?employee_id=${selectedEmployee}&start_date=${startDate}&end_date=${endDate}`
+        `${API_ENDPOINTS.HUMAN_CAPITAL.ATTENDANCE.SUMMARY}?employee_id=${selectedEmployee}&start_date=${startDate}&end_date=${endDate}`
       );
       setSummary(summaryRes);
     } catch (e) {
@@ -75,7 +75,7 @@ export function Attendance() {
     }
 
     try {
-      await fetchAPI(API_ENDPOINTS.HR.ATTENDANCE.BASE, {
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ATTENDANCE.BASE, {
         method: 'POST',
         body: JSON.stringify(newRecord)
       });

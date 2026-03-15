@@ -45,7 +45,7 @@ export function CorporateCommunications() {
     const loadAnnouncements = async () => {
         setAnnLoading(true);
         try {
-            const res: any = await fetchAPI(`${API_ENDPOINTS.HR.COMMUNICATIONS.ANNOUNCEMENTS.BASE}?page=${annPage}&all=true`);
+            const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.COMMUNICATIONS.ANNOUNCEMENTS.BASE}?page=${annPage}&all=true`);
             const data = res.data || (Array.isArray(res) ? res : []);
             setAnnouncements(data); setAnnTotal(Number(res.last_page) || 1); setAnnTotalRecords(Number(res.total) || data.length);
         } catch (e) { console.error(e); showToast("فشل تحميل الإعلانات", "error"); }
@@ -55,7 +55,7 @@ export function CorporateCommunications() {
     const loadSurveys = async () => {
         setSurvLoading(true);
         try {
-            const res: any = await fetchAPI(`${API_ENDPOINTS.HR.COMMUNICATIONS.SURVEYS.BASE}?page=${survPage}`);
+            const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.COMMUNICATIONS.SURVEYS.BASE}?page=${survPage}`);
             const data = res.data || (Array.isArray(res) ? res : []);
             setSurveys(data); setSurvTotal(Number(res.last_page) || 1); setSurvTotalRecords(Number(res.total) || data.length);
         } catch (e) { console.error(e); showToast("فشل تحميل الاستبيانات", "error"); }
@@ -65,14 +65,14 @@ export function CorporateCommunications() {
     const handleSaveAnnouncement = async () => {
         if (!annForm.title || !annForm.content) { showToast("يرجى إدخال العنوان والمحتوى", "error"); return; }
         try {
-            await fetchAPI(API_ENDPOINTS.HR.COMMUNICATIONS.ANNOUNCEMENTS.BASE, { method: "POST", body: JSON.stringify({ ...annForm, is_published: annForm.is_published }) });
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.COMMUNICATIONS.ANNOUNCEMENTS.BASE, { method: "POST", body: JSON.stringify({ ...annForm, is_published: annForm.is_published }) });
             showToast("تم نشر الإعلان بنجاح", "success"); setShowAnnDialog(false); loadAnnouncements();
         } catch (e: any) { showToast(e.message || "فشل حفظ الإعلان", "error"); }
     };
 
     const togglePublish = async (ann: CorporateAnnouncement) => {
         try {
-            await fetchAPI(API_ENDPOINTS.HR.COMMUNICATIONS.ANNOUNCEMENTS.withId(ann.id), { method: "PUT", body: JSON.stringify({ is_published: !ann.is_published }) });
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.COMMUNICATIONS.ANNOUNCEMENTS.withId(ann.id), { method: "PUT", body: JSON.stringify({ is_published: !ann.is_published }) });
             showToast(ann.is_published ? "تم إلغاء النشر" : "تم النشر", "success"); loadAnnouncements();
         } catch (e: any) { showToast(e.message || "فشل التحديث", "error"); }
     };
@@ -82,7 +82,7 @@ export function CorporateCommunications() {
         let questions: any[];
         try { questions = JSON.parse(survForm.questions); } catch { showToast("صيغة الأسئلة غير صحيحة (JSON)", "error"); return; }
         try {
-            await fetchAPI(API_ENDPOINTS.HR.COMMUNICATIONS.SURVEYS.BASE, { method: "POST", body: JSON.stringify({ survey_name: survForm.survey_name, description: survForm.description, survey_type: survForm.survey_type, questions, start_date: survForm.start_date, end_date: survForm.end_date, is_anonymous: survForm.is_anonymous, target_audience: survForm.target_audience }) });
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.COMMUNICATIONS.SURVEYS.BASE, { method: "POST", body: JSON.stringify({ survey_name: survForm.survey_name, description: survForm.description, survey_type: survForm.survey_type, questions, start_date: survForm.start_date, end_date: survForm.end_date, is_anonymous: survForm.is_anonymous, target_audience: survForm.target_audience }) });
             showToast("تم إنشاء الاستبيان بنجاح", "success"); setShowSurvDialog(false); loadSurveys();
         } catch (e: any) { showToast(e.message || "فشل إنشاء الاستبيان", "error"); }
     };

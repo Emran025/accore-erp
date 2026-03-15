@@ -66,7 +66,7 @@ export function ChangeHistoryTab() {
             if (filterEntity) {
                 params.set("entity_type", filterEntity);
             }
-            const res = await fetchAPI(`${API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.CHANGE_HISTORY}?${params}`);
+            const res = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.ORG.CHANGE_HISTORY}?${params}`);
             setHistory((res.history as ChangeRecord[]) || []);
         } catch { showToast("خطأ في تحميل سجل التغييرات", "error"); }
         finally { setIsLoading(false); }

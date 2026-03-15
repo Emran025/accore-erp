@@ -78,13 +78,13 @@ export function AssetForm({ asset }: AssetFormProps) {
             };
 
             if (asset) {
-                await fetchAPI(`${API_ENDPOINTS.HR.EMPLOYEE_ASSETS.BASE}/${asset.id}`, {
+                await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_ASSETS.BASE}/${asset.id}`, {
                     method: 'PUT',
                     body: JSON.stringify(payload)
                 });
                 showToast("تم تحديث الفقد بنجاح", "success");
             } else {
-                await fetchAPI(API_ENDPOINTS.HR.EMPLOYEE_ASSETS.BASE, {
+                await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_ASSETS.BASE, {
                     method: 'POST',
                     body: JSON.stringify(payload)
                 });

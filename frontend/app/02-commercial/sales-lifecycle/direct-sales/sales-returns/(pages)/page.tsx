@@ -78,7 +78,7 @@ function ReturnsPageContent() {
                 if (filters.date_from) params += `&date_from=${filters.date_from}`;
                 if (filters.date_to) params += `&date_to=${filters.date_to}`;
 
-                const response = await fetchAPI(`${API_ENDPOINTS.SALES.RETURNS.LEDGER}?${params}`);
+                const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.RETURNS.LEDGER}?${params}`);
                 if (response.success && response.data) {
                     const mapped: LedgerTransaction[] = (response.data as any[]).map((item) => ({
                         ...item,
@@ -131,7 +131,7 @@ function ReturnsPageContent() {
     ────────────────────────────────────────────── */
     const viewInvoice = async (id: number) => {
         try {
-            const response = await fetchAPI(`${API_ENDPOINTS.SALES.INVOICE_DETAILS}?id=${id}`);
+            const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICE_DETAILS}?id=${id}`);
             if (response.success && response.data) {
                 setSelectedInvoice(response.data as DetailedInvoiceSuppliers);
                 setViewDialog(true);
@@ -145,7 +145,7 @@ function ReturnsPageContent() {
     const getReturnItems = async (item: LedgerTransaction): Promise<SelectableInvoiceItem[]> => {
         if (!item.reference_id) return [];
         try {
-            const response = await fetchAPI(`${API_ENDPOINTS.SALES.RETURNS.SHOW}?id=${item.reference_id}`);
+            const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.RETURNS.SHOW}?id=${item.reference_id}`);
             if (response.success && response.data) {
                 return ((response.data as DetailedInvoiceSuppliers).items as SelectableInvoiceItem[]) || [];
             }
@@ -177,7 +177,7 @@ function ReturnsPageContent() {
                 const newMap = { ...invoicesMap };
                 await Promise.all(
                     missingIds.map(async (id) => {
-                        const res = await fetchAPI(`${API_ENDPOINTS.SALES.INVOICE_DETAILS}?id=${id}`);
+                        const res = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICE_DETAILS}?id=${id}`);
                         if (res.success && res.data) newMap[id] = res.data as SelectableInvoice;
                     })
                 );
@@ -195,7 +195,7 @@ function ReturnsPageContent() {
     const handleConfirmReturn = async (data: ReturnData | ReturnData[]) => {
         const dataArray = Array.isArray(data) ? data : [data];
         for (const returnData of dataArray) {
-            const response = await fetchAPI(API_ENDPOINTS.SALES.RETURNS.BASE, {
+            const response = await fetchAPI(API_ENDPOINTS.COMMERCIAL.SALES.RETURNS.BASE, {
                 method: "POST",
                 body: JSON.stringify(returnData),
             });

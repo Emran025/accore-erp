@@ -41,7 +41,7 @@ export function JobTitlesTab() {
     const loadJobTitles = async () => {
         setIsLoading(true);
         try {
-            const res = await fetchAPI(API_ENDPOINTS.HR.ADMINISTRATION.JOB_TITLES.BASE);
+            const res = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.JOB_TITLES.BASE);
             setJobTitles((res as any).data || []);
         } catch {
             console.error("Failed to load job titles");
@@ -73,13 +73,13 @@ export function JobTitlesTab() {
             };
 
             if (editItem) {
-                await fetchAPI(API_ENDPOINTS.HR.ADMINISTRATION.JOB_TITLES.withId(editItem.id), {
+                await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.JOB_TITLES.withId(editItem.id), {
                     method: "PUT",
                     body: JSON.stringify(payload),
                 });
                 showToast("تم تحديث المسمى الوظيفي", "success");
             } else {
-                await fetchAPI(API_ENDPOINTS.HR.ADMINISTRATION.JOB_TITLES.BASE, {
+                await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.JOB_TITLES.BASE, {
                     method: "POST",
                     body: JSON.stringify(payload),
                 });
@@ -98,7 +98,7 @@ export function JobTitlesTab() {
     const handleDelete = async (id: number) => {
         if (!confirm("هل أنت متأكد من حذف هذا المسمى؟")) return;
         try {
-            await fetchAPI(API_ENDPOINTS.HR.ADMINISTRATION.JOB_TITLES.withId(id), { method: "DELETE" });
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.JOB_TITLES.withId(id), { method: "DELETE" });
             showToast("تم حذف المسمى الوظيفي", "success");
             loadJobTitles();
         } catch (e: any) {

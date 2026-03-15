@@ -7,7 +7,7 @@ import { Supplier } from '@/types';
  * Replaces the old `useSuppliers` custom hook with a global, cached store.
  */
 export const useSupplierStore = createCRUDStore<Supplier>({
-    endpoint: API_ENDPOINTS.PURCHASES.SUPPLIERS.BASE,
+    endpoint: API_ENDPOINTS.COMMERCIAL.PROCUREMENT.SUPPLIERS.BASE,
     storeName: 'supplier-store',
     messages: {
         loadError: 'خطأ في تحميل الموردين',

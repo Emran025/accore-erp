@@ -38,7 +38,7 @@ export function GovernmentFeesTab() {
 
     const loadSetup = useCallback(async () => {
         try {
-            const response: any = await fetchAPI(API_ENDPOINTS.SYSTEM.TAX_ENGINE.SETUP);
+            const response: any = await fetchAPI(API_ENDPOINTS.FINANCE.TAX_ENGINE.SETUP);
             if (response.data && response.data.authorities) {
                 const loadedAuthorities = response.data.authorities;
                 setAuthorities(loadedAuthorities);
@@ -153,13 +153,13 @@ export function GovernmentFeesTab() {
             };
 
             if (editingFeeId) {
-                await fetchAPI(API_ENDPOINTS.SYSTEM.TAX_ENGINE.TYPES.withId(editingFeeId), {
+                await fetchAPI(API_ENDPOINTS.FINANCE.TAX_ENGINE.TYPES.withId(editingFeeId), {
                     method: "PUT",
                     body: JSON.stringify(payload)
                 });
                 showToast("تم تحديث الفئة الضريبية/الالتزام بنجاح", "success");
             } else {
-                await fetchAPI(API_ENDPOINTS.SYSTEM.TAX_ENGINE.TYPES.BASE, {
+                await fetchAPI(API_ENDPOINTS.FINANCE.TAX_ENGINE.TYPES.BASE, {
                     method: "POST",
                     body: JSON.stringify(payload)
                 });
@@ -181,7 +181,7 @@ export function GovernmentFeesTab() {
     const handleConfirmDelete = async () => {
         if (!deleteId) return;
         try {
-            await fetchAPI(API_ENDPOINTS.SYSTEM.TAX_ENGINE.TYPES.withId(deleteId), { method: "DELETE" });
+            await fetchAPI(API_ENDPOINTS.FINANCE.TAX_ENGINE.TYPES.withId(deleteId), { method: "DELETE" });
             showToast("تم الحذف بنجاح", "success");
             loadSetup();
         } catch (e) {

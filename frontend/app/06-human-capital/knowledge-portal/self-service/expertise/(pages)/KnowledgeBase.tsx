@@ -61,7 +61,7 @@ export function KnowledgeBase() {
     setIsLoading(true);
     try {
       const q = new URLSearchParams({ page: currentPage.toString(), ...(searchTerm && { search: searchTerm }) });
-      const res: any = await fetchAPI(`${API_ENDPOINTS.HR.KNOWLEDGE.BASE}?${q}`);
+      const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.KNOWLEDGE.BASE}?${q}`);
       setArticles(res.data || []); setTotalPages(Number(res.last_page) || 1);
     } catch { showToast("فشل تحميل المقالات", "error"); }
     finally { setIsLoading(false); }
@@ -70,7 +70,7 @@ export function KnowledgeBase() {
   const loadExpertise = async () => {
     setIsLoading(true);
     try {
-      const res: any = await fetchAPI(`${API_ENDPOINTS.HR.EXPERTISE.BASE}?page=${currentPage}`);
+      const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EXPERTISE.BASE}?page=${currentPage}`);
       setExpertise(res.data || []); setTotalPages(Number(res.last_page) || 1);
     } catch { showToast("فشل تحميل الخبراء", "error"); }
     finally { setIsLoading(false); }
@@ -79,7 +79,7 @@ export function KnowledgeBase() {
   const handleSaveArticle = async () => {
     if (!articleForm.title || !articleForm.content) { showToast("يرجى ملء الحقول المطلوبة", "error"); return; }
     try {
-      await fetchAPI(API_ENDPOINTS.HR.KNOWLEDGE.BASE, {
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.KNOWLEDGE.BASE, {
         method: "POST", body: JSON.stringify({
           title: articleForm.title, content: articleForm.content, category: articleForm.category,
           tags: articleForm.tags ? articleForm.tags.split(",").map(t => t.trim()).filter(Boolean) : undefined,
@@ -92,21 +92,21 @@ export function KnowledgeBase() {
 
   const viewArticleDetail = async (id: number) => {
     try {
-      const res: any = await fetchAPI(API_ENDPOINTS.HR.KNOWLEDGE.withId(id));
+      const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.KNOWLEDGE.withId(id));
       setSelectedArticle(res.data || res); setShowArticleDetail(true);
     } catch { showToast("فشل تحميل التفاصيل", "error"); }
   };
 
   const handlePublishArticle = async (id: number, publish: boolean) => {
     try {
-      await fetchAPI(API_ENDPOINTS.HR.KNOWLEDGE.withId(id), { method: "PUT", body: JSON.stringify({ is_published: publish }) });
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.KNOWLEDGE.withId(id), { method: "PUT", body: JSON.stringify({ is_published: publish }) });
       showToast(publish ? "تم نشر المقال" : "تم إلغاء النشر", "success"); loadArticles();
     } catch (e: any) { showToast(e.message || "فشل التحديث", "error"); }
   };
 
   const handleMarkHelpful = async (id: number) => {
     try {
-      await fetchAPI(API_ENDPOINTS.HR.KNOWLEDGE.HELPFUL(id), { method: "POST" });
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.KNOWLEDGE.HELPFUL(id), { method: "POST" });
       showToast("شكراً لتقييمك!", "success");
       if (selectedArticle && selectedArticle.id === id) {
         setSelectedArticle({ ...selectedArticle, helpful_count: selectedArticle.helpful_count + 1 });
@@ -117,7 +117,7 @@ export function KnowledgeBase() {
   const handleSaveExpert = async () => {
     if (!expertForm.employee_id || !expertForm.skill_name) { showToast("يرجى ملء الحقول المطلوبة", "error"); return; }
     try {
-      await fetchAPI(API_ENDPOINTS.HR.EXPERTISE.BASE, {
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EXPERTISE.BASE, {
         method: "POST", body: JSON.stringify({
           employee_id: Number(expertForm.employee_id), skill_name: expertForm.skill_name,
           proficiency_level: expertForm.proficiency_level,

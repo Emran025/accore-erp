@@ -38,7 +38,7 @@ export const useSettingsStore = create<SettingsState>()(
                 try {
                     // Note: ENDPOINTS.SYSTEM.SETTINGS.INDEX is just "/settings" but API call usually needs prefix
                     // The fetchAPI handles base URL prepending.
-                    const result = await fetchAPI(API_ENDPOINTS.SYSTEM.SETTINGS.INDEX);
+                    const result = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.SETTINGS.INDEX);
                     if (result.success && result.settings) {
                         set({ settings: result.settings as SystemSettings, isLoading: false });
                         return result.settings as SystemSettings;

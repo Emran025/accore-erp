@@ -60,7 +60,7 @@ export function InvoiceSelectionTab({
                 if (search) params += `&search=${encodeURIComponent(search)}`;
                 // For Purchases, we don't naturally filter by payment_type via base URL but keeping it robust
 
-                const response = await fetchAPI(`${API_ENDPOINTS.PURCHASES.BASE}?${params}`);
+                const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.PROCUREMENT.BASE}?${params}`);
                 if (response.success && response.data) {
                     const mapped = (response.data as any[]).map(item => ({
                         ...item,
@@ -96,7 +96,7 @@ export function InvoiceSelectionTab({
     ): Promise<SelectableInvoiceItem[]> => {
         try {
             const response = await fetchAPI(
-                `${API_ENDPOINTS.PURCHASES.RETURNS.SHOW}?id=${invoice.id}`
+                `${API_ENDPOINTS.COMMERCIAL.PROCUREMENT.RETURNS.SHOW}?id=${invoice.id}`
             );
             if (response.success && response.data) {
                 return ((response.data as any).items as SelectableInvoiceItem[]) || [];

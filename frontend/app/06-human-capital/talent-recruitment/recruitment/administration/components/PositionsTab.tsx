@@ -59,7 +59,7 @@ export function PositionsTab() {
     const loadPositions = async () => {
         setIsLoading(true);
         try {
-            const res = await fetchAPI(API_ENDPOINTS.HR.ADMINISTRATION.POSITIONS.BASE);
+            const res = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.POSITIONS.BASE);
             setPositions((res as any).data || []);
         } catch {
             console.error("Failed to load positions");
@@ -71,8 +71,8 @@ export function PositionsTab() {
     const loadLookups = async () => {
         try {
             const [jtRes, roleRes, deptRes] = await Promise.all([
-                fetchAPI(API_ENDPOINTS.HR.ADMINISTRATION.JOB_TITLES.BASE),
-                fetchAPI(`${API_ENDPOINTS.SYSTEM.USERS.ROLES}?action=roles`),
+                fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.JOB_TITLES.BASE),
+                fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.IAM.USERS.ROLES}?action=roles`),
                 fetchAPI("/departments"),
             ]);
             setJobTitles((jtRes as any).data || []);
@@ -107,13 +107,13 @@ export function PositionsTab() {
             };
 
             if (editItem) {
-                await fetchAPI(API_ENDPOINTS.HR.ADMINISTRATION.POSITIONS.withId(editItem.id), {
+                await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.POSITIONS.withId(editItem.id), {
                     method: "PUT",
                     body: JSON.stringify(payload),
                 });
                 showToast("تم تحديث المنصب بنجاح", "success");
             } else {
-                await fetchAPI(API_ENDPOINTS.HR.ADMINISTRATION.POSITIONS.BASE, {
+                await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.POSITIONS.BASE, {
                     method: "POST",
                     body: JSON.stringify(payload),
                 });
@@ -132,7 +132,7 @@ export function PositionsTab() {
     const handleDelete = async (id: number) => {
         if (!confirm("هل أنت متأكد من حذف هذا المنصب؟")) return;
         try {
-            await fetchAPI(API_ENDPOINTS.HR.ADMINISTRATION.POSITIONS.withId(id), { method: "DELETE" });
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.POSITIONS.withId(id), { method: "DELETE" });
             showToast("تم حذف المنصب بنجاح", "success");
             loadPositions();
         } catch (e: any) {
@@ -158,7 +158,7 @@ export function PositionsTab() {
 
     const openDetail = async (id: number) => {
         try {
-            const res = await fetchAPI(API_ENDPOINTS.HR.ADMINISTRATION.POSITIONS.withId(id));
+            const res = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.POSITIONS.withId(id));
             setDetailItem((res as any).data || null);
             setShowDetail(true);
         } catch {

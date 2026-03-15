@@ -147,7 +147,7 @@ export const useFinanceStore = create<FinanceState>()(
                 set({ jvLoading: true });
                 try {
                     const res = await fetchAPI(
-                        `${API_ENDPOINTS.FINANCE.JOURNAL_VOUCHERS.BASE}?page=${page}&search=${encodeURIComponent(search)}`
+                        `${API_ENDPOINTS.FINANCE.TREASURY.VOUCHERS.BASE}?page=${page}&search=${encodeURIComponent(search)}`
                     );
                     if (res.success) {
                         const data = res.data as any;

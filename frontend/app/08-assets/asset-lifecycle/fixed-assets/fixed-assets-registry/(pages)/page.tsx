@@ -51,7 +51,7 @@ export default function AssetsPage() {
         try {
             setIsLoading(true);
             const response = await fetchAPI(
-                `${API_ENDPOINTS.FINANCE.ASSETS}?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`
+                `${API_ENDPOINTS.ASSETS.FIXED_ASSETS}?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`
             );
             if (response.success && response.data) {
                 setAssets(response.data as Asset[]);
@@ -151,7 +151,7 @@ export default function AssetsPage() {
             };
             if (currentAssetId) body.id = currentAssetId;
 
-            const response = await fetchAPI(API_ENDPOINTS.FINANCE.ASSETS, {
+            const response = await fetchAPI(API_ENDPOINTS.ASSETS.FIXED_ASSETS, {
                 method,
                 body: JSON.stringify(body),
             });
@@ -177,7 +177,7 @@ export default function AssetsPage() {
         if (!deleteAssetId) return;
 
         try {
-            const response = await fetchAPI(`${API_ENDPOINTS.FINANCE.ASSETS}?id=${deleteAssetId}`, { method: "DELETE" });
+            const response = await fetchAPI(`${API_ENDPOINTS.ASSETS.FIXED_ASSETS}?id=${deleteAssetId}`, { method: "DELETE" });
             if (response.success) {
                 showAlert("alert-container", "تم الحذف بنجاح", "success");
                 setConfirmDialog(false);

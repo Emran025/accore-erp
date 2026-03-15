@@ -62,7 +62,7 @@ export function Performance() {
   const loadGoals = async () => {
     setIsLoading(true);
     try {
-      const res: any = await fetchAPI(`${API_ENDPOINTS.HR.PERFORMANCE.GOALS.BASE}?page=${currentPage}`);
+      const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.PERFORMANCE.GOALS.BASE}?page=${currentPage}`);
       setGoals(res.data || []); setTotalPages(Number(res.last_page) || 1);
     } catch { showToast("فشل تحميل الأهداف", "error"); }
     finally { setIsLoading(false); }
@@ -71,7 +71,7 @@ export function Performance() {
   const loadAppraisals = async () => {
     setIsLoading(true);
     try {
-      const res: any = await fetchAPI(`${API_ENDPOINTS.HR.PERFORMANCE.APPRAISALS.BASE}?page=${currentPage}`);
+      const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.PERFORMANCE.APPRAISALS.BASE}?page=${currentPage}`);
       setAppraisals(res.data || []); setTotalPages(Number(res.last_page) || 1);
     } catch { showToast("فشل تحميل التقييمات", "error"); }
     finally { setIsLoading(false); }
@@ -80,7 +80,7 @@ export function Performance() {
   const handleSaveGoal = async () => {
     if (!goalForm.employee_id || !goalForm.goal_title || !goalForm.goal_description || !goalForm.start_date || !goalForm.target_date) { showToast("يرجى ملء الحقول المطلوبة", "error"); return; }
     try {
-      await fetchAPI(API_ENDPOINTS.HR.PERFORMANCE.GOALS.BASE, {
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.PERFORMANCE.GOALS.BASE, {
         method: "POST", body: JSON.stringify({
           employee_id: Number(goalForm.employee_id), goal_title: goalForm.goal_title, goal_description: goalForm.goal_description,
           goal_type: goalForm.goal_type, target_value: goalForm.target_value ? Number(goalForm.target_value) : undefined,
@@ -101,7 +101,7 @@ export function Performance() {
       if (updateForm.status) body.status = updateForm.status;
       if (updateForm.notes) body.notes = updateForm.notes;
       if (selectedGoal.target_value) body.target_value = selectedGoal.target_value;
-      await fetchAPI(API_ENDPOINTS.HR.PERFORMANCE.GOALS.withId(selectedGoal.id), { method: "PUT", body: JSON.stringify(body) });
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.PERFORMANCE.GOALS.withId(selectedGoal.id), { method: "PUT", body: JSON.stringify(body) });
       showToast("تم تحديث الهدف", "success"); setShowUpdateGoal(false); loadGoals();
     } catch (e: any) { showToast(e.message || "فشل التحديث", "error"); }
   };
@@ -109,7 +109,7 @@ export function Performance() {
   const handleSaveAppraisal = async () => {
     if (!appForm.employee_id || !appForm.appraisal_period || !appForm.appraisal_date) { showToast("يرجى ملء الحقول المطلوبة", "error"); return; }
     try {
-      await fetchAPI(API_ENDPOINTS.HR.PERFORMANCE.APPRAISALS.BASE, {
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.PERFORMANCE.APPRAISALS.BASE, {
         method: "POST", body: JSON.stringify({
           employee_id: Number(appForm.employee_id), appraisal_type: appForm.appraisal_type,
           appraisal_period: appForm.appraisal_period, appraisal_date: appForm.appraisal_date,
@@ -122,7 +122,7 @@ export function Performance() {
 
   const handleUpdateAppraisalStatus = async (id: number, status: string) => {
     try {
-      await fetchAPI(API_ENDPOINTS.HR.PERFORMANCE.APPRAISALS.withId(id), { method: "PUT", body: JSON.stringify({ status }) });
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.PERFORMANCE.APPRAISALS.withId(id), { method: "PUT", body: JSON.stringify({ status }) });
       showToast("تم تحديث حالة التقييم", "success"); loadAppraisals();
     } catch (e: any) { showToast(e.message || "فشل التحديث", "error"); }
   };

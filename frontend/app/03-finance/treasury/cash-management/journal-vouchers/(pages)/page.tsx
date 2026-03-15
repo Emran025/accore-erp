@@ -80,7 +80,7 @@ export default function JournalVouchersPage() {
   const loadVouchers = useCallback(async (page: number = 1) => {
     try {
       setIsLoading(true);
-      const response = await fetchAPI(`${API_ENDPOINTS.FINANCE.JOURNAL_VOUCHERS.BASE}?page=${page}&limit=${itemsPerPage}`);
+      const response = await fetchAPI(`${API_ENDPOINTS.FINANCE.TREASURY.VOUCHERS.BASE}?page=${page}&limit=${itemsPerPage}`);
       setVouchers(response.vouchers as Voucher[] || []);
       setTotalPages(Math.ceil((response.total as number || 0) / itemsPerPage));
       setCurrentPage(page);
@@ -130,7 +130,7 @@ export default function JournalVouchersPage() {
 
   const openViewDialog = async (voucher: Voucher) => {
     try {
-      const response = await fetchAPI(API_ENDPOINTS.FINANCE.JOURNAL_VOUCHERS.withId(voucher.id));
+      const response = await fetchAPI(API_ENDPOINTS.FINANCE.TREASURY.VOUCHERS.withId(voucher.id));
       setSelectedVoucher(response.voucher as Voucher || voucher);
       setViewDialog(true);
     } catch {
@@ -208,7 +208,7 @@ export default function JournalVouchersPage() {
     };
 
     try {
-      await fetchAPI(API_ENDPOINTS.FINANCE.JOURNAL_VOUCHERS.BASE, {
+      await fetchAPI(API_ENDPOINTS.FINANCE.TREASURY.VOUCHERS.BASE, {
         method: "POST",
         body: JSON.stringify(payload),
       });
@@ -222,7 +222,7 @@ export default function JournalVouchersPage() {
 
   const postVoucher = async (id: number) => {
     try {
-      await fetchAPI(API_ENDPOINTS.FINANCE.JOURNAL_VOUCHERS.POST(id), { method: "POST" });
+      await fetchAPI(API_ENDPOINTS.FINANCE.TREASURY.VOUCHERS.POST(id), { method: "POST" });
       showToast("تم ترحيل السند", "success");
       loadVouchers(currentPage);
     } catch {
@@ -239,7 +239,7 @@ export default function JournalVouchersPage() {
     if (!deleteId) return;
 
     try {
-      await fetchAPI(API_ENDPOINTS.FINANCE.JOURNAL_VOUCHERS.withId(deleteId), { method: "DELETE" });
+      await fetchAPI(API_ENDPOINTS.FINANCE.TREASURY.VOUCHERS.withId(deleteId), { method: "DELETE" });
       showToast("تم حذف السند", "success");
       loadVouchers(currentPage);
     } catch {

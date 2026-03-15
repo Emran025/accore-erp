@@ -96,7 +96,7 @@ export function EmployeeRelations() {
         page: currentPage.toString(),
         status: statusFilter,
       });
-      const res: any = await fetchAPI(`${API_ENDPOINTS.HR.EMPLOYEE_RELATIONS.BASE}?${query}`);
+      const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_RELATIONS.BASE}?${query}`);
       const data = res.data || (Array.isArray(res) ? res : []);
       setCases(data);
       setTotalPages(Number(res.last_page) || 1);
@@ -141,13 +141,13 @@ export function EmployeeRelations() {
 
     try {
       if (editingCase) {
-        await fetchAPI(`${API_ENDPOINTS.HR.EMPLOYEE_RELATIONS.withId(editingCase.id)}`, {
+        await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_RELATIONS.withId(editingCase.id)}`, {
           method: "PUT",
           body: JSON.stringify(payload),
         });
         showToast("تم تحديث القضية بنجاح", "success");
       } else {
-        await fetchAPI(API_ENDPOINTS.HR.EMPLOYEE_RELATIONS.BASE, {
+        await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_RELATIONS.BASE, {
           method: "POST",
           body: JSON.stringify(payload),
         });
@@ -199,7 +199,7 @@ export function EmployeeRelations() {
     }
 
     try {
-      await fetchAPI(API_ENDPOINTS.HR.EMPLOYEE_RELATIONS.DISCIPLINARY(selectedCase.id), {
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_RELATIONS.DISCIPLINARY(selectedCase.id), {
         method: "POST",
         body: JSON.stringify({
           action_type: disciplinaryForm.action_type,

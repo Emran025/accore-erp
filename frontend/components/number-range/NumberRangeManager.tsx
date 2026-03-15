@@ -97,7 +97,7 @@ export function NumberRangeManager({
     const loadData = useCallback(async () => {
         try {
             setIsLoading(true);
-            const res = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.OBJECTS.byType(objectType));
+            const res = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.OBJECTS.byType(objectType));
             if (res.success && res.id) {
                 setObjectData(res as unknown as NrObjectFull);
             } else {
@@ -121,7 +121,7 @@ export function NumberRangeManager({
             return;
         }
         try {
-            const res = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.OBJECTS.BASE, {
+            const res = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.OBJECTS.BASE, {
                 method: "POST",
                 body: JSON.stringify({
                     object_type: objectType,
@@ -170,8 +170,8 @@ export function NumberRangeManager({
         try {
             const isEdit = editGroupId !== null;
             const url = isEdit
-                ? API_ENDPOINTS.NUMBER_RANGES.GROUPS.update(editGroupId!)
-                : API_ENDPOINTS.NUMBER_RANGES.GROUPS.create(objectData.id);
+                ? API_ENDPOINTS.PLATFORM.NUMBER_RANGES.GROUPS.update(editGroupId!)
+                : API_ENDPOINTS.PLATFORM.NUMBER_RANGES.GROUPS.create(objectData.id);
             const method = isEdit ? "PUT" : "POST";
 
             const res = await fetchAPI(url, {
@@ -224,8 +224,8 @@ export function NumberRangeManager({
         try {
             const isEdit = editIntervalId !== null;
             const url = isEdit
-                ? API_ENDPOINTS.NUMBER_RANGES.INTERVALS.update(editIntervalId!)
-                : API_ENDPOINTS.NUMBER_RANGES.INTERVALS.create(objectData.id);
+                ? API_ENDPOINTS.PLATFORM.NUMBER_RANGES.INTERVALS.update(editIntervalId!)
+                : API_ENDPOINTS.PLATFORM.NUMBER_RANGES.INTERVALS.create(objectData.id);
             const method = isEdit ? "PUT" : "POST";
 
             const body: Record<string, unknown> = {
@@ -264,7 +264,7 @@ export function NumberRangeManager({
             return;
         }
         try {
-            const res = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.ASSIGNMENTS.create(objectData.id), {
+            const res = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.ASSIGNMENTS.create(objectData.id), {
                 method: "POST",
                 body: JSON.stringify({
                     nr_group_id: parseInt(assignGroupId),
@@ -297,7 +297,7 @@ export function NumberRangeManager({
             return;
         }
         try {
-            const res = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.INTERVALS.expand(expandIntervalId), {
+            const res = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.INTERVALS.expand(expandIntervalId), {
                 method: "POST",
                 body: JSON.stringify({
                     new_to: parseInt(expandNewTo),
@@ -326,9 +326,9 @@ export function NumberRangeManager({
         if (!deleteTarget) return;
         try {
             let url = "";
-            if (deleteTarget.type === "group") url = API_ENDPOINTS.NUMBER_RANGES.GROUPS.delete(deleteTarget.id);
-            else if (deleteTarget.type === "interval") url = API_ENDPOINTS.NUMBER_RANGES.INTERVALS.delete(deleteTarget.id);
-            else if (deleteTarget.type === "assignment") url = API_ENDPOINTS.NUMBER_RANGES.ASSIGNMENTS.delete(deleteTarget.id);
+            if (deleteTarget.type === "group") url = API_ENDPOINTS.PLATFORM.NUMBER_RANGES.GROUPS.delete(deleteTarget.id);
+            else if (deleteTarget.type === "interval") url = API_ENDPOINTS.PLATFORM.NUMBER_RANGES.INTERVALS.delete(deleteTarget.id);
+            else if (deleteTarget.type === "assignment") url = API_ENDPOINTS.PLATFORM.NUMBER_RANGES.ASSIGNMENTS.delete(deleteTarget.id);
 
             const res = await fetchAPI(url, { method: "DELETE" });
             if (res.success) {

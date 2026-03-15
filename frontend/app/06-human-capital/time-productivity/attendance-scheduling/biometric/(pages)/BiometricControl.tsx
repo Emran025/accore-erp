@@ -62,7 +62,7 @@ export function BiometricControl() {
     const loadDevices = async () => {
         setIsLoading(true);
         try {
-            const res = await fetchAPI(API_ENDPOINTS.HR.BIOMETRIC.DEVICES);
+            const res = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.BIOMETRIC.DEVICES);
             setDevices((res as any).data || []);
         } catch { console.error("Failed to load devices"); }
         finally { setIsLoading(false); }
@@ -71,7 +71,7 @@ export function BiometricControl() {
     const loadSyncLogs = async () => {
         setIsLoading(true);
         try {
-            const res = await fetchAPI(API_ENDPOINTS.HR.BIOMETRIC.SYNC_LOGS);
+            const res = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.BIOMETRIC.SYNC_LOGS);
             const data = (res as any).data;
             setSyncLogs(data?.data || data || []);
         } catch { console.error("Failed to load sync logs"); }
@@ -84,7 +84,7 @@ export function BiometricControl() {
             return;
         }
         try {
-            await fetchAPI(API_ENDPOINTS.HR.BIOMETRIC.DEVICES, {
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.BIOMETRIC.DEVICES, {
                 method: "POST",
                 body: JSON.stringify({ ...newDevice, device_port: Number(newDevice.device_port) }),
             });
@@ -115,7 +115,7 @@ export function BiometricControl() {
                 });
             }
 
-            const res = await fetchAPI(API_ENDPOINTS.HR.BIOMETRIC.SYNC(selectedDevice.id), {
+            const res = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.BIOMETRIC.SYNC(selectedDevice.id), {
                 method: "POST",
                 body: JSON.stringify({ records }),
             });
@@ -136,7 +136,7 @@ export function BiometricControl() {
         formData.append("device_id", selectedDevice.id.toString());
 
         try {
-            const res = await fetchAPI(API_ENDPOINTS.HR.BIOMETRIC.IMPORT, {
+            const res = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.BIOMETRIC.IMPORT, {
                 method: "POST",
                 body: formData as any,
                 headers: {}, // Remove JSON content-type for FormData
@@ -150,7 +150,7 @@ export function BiometricControl() {
     const handleDeleteDevice = async (id: number) => {
         if (!confirm("هل أنت متأكد من حذف هذا الجهاز؟")) return;
         try {
-            await fetchAPI(API_ENDPOINTS.HR.BIOMETRIC.DEVICE_WITH_ID(id), { method: "DELETE" });
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.BIOMETRIC.DEVICE_WITH_ID(id), { method: "DELETE" });
             showToast("تم حذف الجهاز", "success");
             loadDevices();
         } catch { showToast("فشل حذف الجهاز", "error"); }

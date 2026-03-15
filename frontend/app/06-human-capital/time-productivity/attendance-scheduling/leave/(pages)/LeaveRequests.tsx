@@ -62,7 +62,7 @@ export function LeaveRequests() {
   const loadLeaveRequests = async () => {
     setIsLoading(true);
     try {
-      let url = `${API_ENDPOINTS.HR.LEAVE.BASE}?page=${currentPage}&`;
+      let url = `${API_ENDPOINTS.HUMAN_CAPITAL.LEAVE.BASE}?page=${currentPage}&`;
       if (selectedEmployee) url += `employee_id=${selectedEmployee}&`;
       if (statusFilter !== 'all') url += `status=${statusFilter}&`;
 
@@ -84,7 +84,7 @@ export function LeaveRequests() {
     }
 
     try {
-      await fetchAPI(API_ENDPOINTS.HR.LEAVE.BASE, {
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.LEAVE.BASE, {
         method: 'POST',
         body: JSON.stringify(newRequest)
       });
@@ -112,7 +112,7 @@ export function LeaveRequests() {
     }
 
     try {
-      await fetchAPI(API_ENDPOINTS.HR.LEAVE.APPROVE(selectedRequest.id), {
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.LEAVE.APPROVE(selectedRequest.id), {
         method: 'POST',
         body: JSON.stringify(approvalData)
       });

@@ -51,7 +51,7 @@ export function EmployeeLoans() {
         setIsLoading(true);
         try {
             const q = new URLSearchParams({ page: currentPage.toString(), ...(statusFilter && { status: statusFilter }) });
-            const res: any = await fetchAPI(`${API_ENDPOINTS.HR.EMPLOYEE_LOANS.BASE}?${q}`);
+            const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_LOANS.BASE}?${q}`);
             const data = res.data || (Array.isArray(res) ? res : []);
             setLoans(data); setTotalPages(Number(res.last_page) || 1); setTotalRecords(Number(res.total) || data.length);
         } catch (e) { console.error(e); showToast("فشل تحميل القروض", "error"); }
@@ -66,7 +66,7 @@ export function EmployeeLoans() {
     const handleSave = async () => {
         if (!form.employee_id || !form.loan_amount || !form.installment_count) { showToast("يرجى ملء جميع الحقول المطلوبة", "error"); return; }
         try {
-            await fetchAPI(API_ENDPOINTS.HR.EMPLOYEE_LOANS.BASE, {
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_LOANS.BASE, {
                 method: "POST", body: JSON.stringify({
                     employee_id: Number(form.employee_id), loan_type: form.loan_type, loan_amount: Number(form.loan_amount),
                     interest_rate: Number(form.interest_rate) || 0, installment_count: Number(form.installment_count),
@@ -78,21 +78,21 @@ export function EmployeeLoans() {
     };
 
     const openDetail = async (loan: EmployeeLoan) => {
-        try { const res: any = await fetchAPI(API_ENDPOINTS.HR.EMPLOYEE_LOANS.withId(loan.id)); setSelectedLoan(res.data || res); }
+        try { const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_LOANS.withId(loan.id)); setSelectedLoan(res.data || res); }
         catch { setSelectedLoan(loan); }
         setShowDetailDialog(true);
     };
 
     const handleStatusUpdate = async (id: number, status: string) => {
         try {
-            await fetchAPI(API_ENDPOINTS.HR.EMPLOYEE_LOANS.STATUS(id), { method: "PUT", body: JSON.stringify({ status }) });
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_LOANS.STATUS(id), { method: "PUT", body: JSON.stringify({ status }) });
             showToast("تم تحديث حالة القرض", "success"); loadLoans();
         } catch (e: any) { showToast(e.message || "فشل تحديث الحالة", "error"); }
     };
 
     const handleRecordRepayment = async (loanId: number, repaymentId: number) => {
         try {
-            await fetchAPI(API_ENDPOINTS.HR.EMPLOYEE_LOANS.REPAYMENT(loanId, repaymentId), { method: "PUT", body: JSON.stringify({ paid_date: new Date().toISOString().split("T")[0] }) });
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_LOANS.REPAYMENT(loanId, repaymentId), { method: "PUT", body: JSON.stringify({ paid_date: new Date().toISOString().split("T")[0] }) });
             showToast("تم تسجيل الدفعة بنجاح", "success"); openDetail({ id: loanId } as EmployeeLoan); loadLoans();
         } catch (e: any) { showToast(e.message || "فشل تسجيل الدفعة", "error"); }
     };

@@ -10,7 +10,7 @@ export function ExchangeRatesWidget() {
   const [currencies, setCurrencies] = useState<Currency[]>([]);
 
   useEffect(() => {
-    fetchAPI(API_ENDPOINTS.FINANCE.CURRENCIES.BASE).then(res => {
+    fetchAPI(API_ENDPOINTS.FINANCE.FOREIGN_EXCHANGE.CURRENCIES.BASE).then(res => {
       if (res.success) {
         setCurrencies((res.data as Currency[]).filter(c => c.is_active));
       }

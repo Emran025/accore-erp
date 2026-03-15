@@ -48,7 +48,7 @@ export function Learning() {
   const loadCourses = async () => {
     setIsLoading(true);
     try {
-      const res: any = await fetchAPI(`${API_ENDPOINTS.HR.LEARNING.COURSES.BASE}?page=${currentPage}`);
+      const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.LEARNING.COURSES.BASE}?page=${currentPage}`);
       setCourses(res.data || []); setTotalPages(Number(res.last_page) || 1);
     } catch { showToast("فشل تحميل الدورات", "error"); }
     finally { setIsLoading(false); }
@@ -57,7 +57,7 @@ export function Learning() {
   const loadEnrollments = async () => {
     setIsLoading(true);
     try {
-      const res: any = await fetchAPI(`${API_ENDPOINTS.HR.LEARNING.ENROLLMENTS.BASE}?page=${currentPage}`);
+      const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.LEARNING.ENROLLMENTS.BASE}?page=${currentPage}`);
       setEnrollments(res.data || []); setTotalPages(Number(res.last_page) || 1);
     } catch { showToast("فشل تحميل التسجيلات", "error"); }
     finally { setIsLoading(false); }
@@ -66,7 +66,7 @@ export function Learning() {
   const handleSaveCourse = async () => {
     if (!courseForm.course_code || !courseForm.course_name) { showToast("يرجى ملء الحقول المطلوبة", "error"); return; }
     try {
-      await fetchAPI(API_ENDPOINTS.HR.LEARNING.COURSES.BASE, {
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.LEARNING.COURSES.BASE, {
         method: "POST", body: JSON.stringify({
           course_code: courseForm.course_code, course_name: courseForm.course_name,
           description: courseForm.description || undefined, delivery_method: courseForm.delivery_method,
@@ -82,14 +82,14 @@ export function Learning() {
 
   const handlePublishCourse = async (id: number, publish: boolean) => {
     try {
-      await fetchAPI(API_ENDPOINTS.HR.LEARNING.COURSES.withId(id), { method: "PUT", body: JSON.stringify({ is_published: publish }) });
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.LEARNING.COURSES.withId(id), { method: "PUT", body: JSON.stringify({ is_published: publish }) });
       showToast(publish ? "تم نشر الدورة" : "تم إلغاء نشر الدورة", "success"); loadCourses();
     } catch (e: any) { showToast(e.message || "فشل التحديث", "error"); }
   };
 
   const viewCourseDetail = async (id: number) => {
     try {
-      const res: any = await fetchAPI(API_ENDPOINTS.HR.LEARNING.COURSES.withId(id));
+      const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.LEARNING.COURSES.withId(id));
       setSelectedCourse(res.data || res); setShowCourseDetail(true);
     } catch { showToast("فشل تحميل التفاصيل", "error"); }
   };
@@ -97,7 +97,7 @@ export function Learning() {
   const handleSaveEnrollment = async () => {
     if (!enrollForm.course_id || !enrollForm.employee_id) { showToast("يرجى ملء الحقول المطلوبة", "error"); return; }
     try {
-      await fetchAPI(API_ENDPOINTS.HR.LEARNING.ENROLLMENTS.BASE, {
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.LEARNING.ENROLLMENTS.BASE, {
         method: "POST", body: JSON.stringify({
           course_id: Number(enrollForm.course_id), employee_id: Number(enrollForm.employee_id),
           enrollment_type: enrollForm.enrollment_type, due_date: enrollForm.due_date || undefined,
@@ -110,7 +110,7 @@ export function Learning() {
 
   const handleUpdateEnrollment = async (id: number, data: any) => {
     try {
-      await fetchAPI(API_ENDPOINTS.HR.LEARNING.ENROLLMENTS.withId(id), { method: "PUT", body: JSON.stringify(data) });
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.LEARNING.ENROLLMENTS.withId(id), { method: "PUT", body: JSON.stringify(data) });
       showToast("تم تحديث التسجيل", "success"); loadEnrollments();
     } catch (e: any) { showToast(e.message || "فشل التحديث", "error"); }
   };

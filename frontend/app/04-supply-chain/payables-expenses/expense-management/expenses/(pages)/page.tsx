@@ -82,7 +82,7 @@ export default function ExpensesPage() {
 
   const loadSuppliers = useCallback(async () => {
     try {
-      const response = await fetchAPI(`${API_ENDPOINTS.PURCHASES.SUPPLIERS.BASE}?limit=100`);
+      const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.PROCUREMENT.SUPPLIERS.BASE}?limit=100`);
       setSuppliers(response.data as Supplier[] || []);
     } catch (error) {
       console.error("Error loading suppliers:", error);

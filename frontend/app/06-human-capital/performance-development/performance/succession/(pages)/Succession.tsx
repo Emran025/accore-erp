@@ -52,7 +52,7 @@ export function Succession() {
   const loadPlans = async () => {
     setIsLoading(true);
     try {
-      const res: any = await fetchAPI(`${API_ENDPOINTS.HR.SUCCESSION.BASE}?page=${currentPage}`);
+      const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.SUCCESSION.BASE}?page=${currentPage}`);
       setPlans(res.data || []); setTotalPages(Number(res.last_page) || 1);
     } catch { showToast("فشل تحميل خطط الخلافة", "error"); }
     finally { setIsLoading(false); }
@@ -61,7 +61,7 @@ export function Succession() {
   const handleSavePlan = async () => {
     if (!planForm.position_title) { showToast("يرجى إدخال المسمى الوظيفي", "error"); return; }
     try {
-      await fetchAPI(API_ENDPOINTS.HR.SUCCESSION.BASE, {
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.SUCCESSION.BASE, {
         method: "POST", body: JSON.stringify({
           position_title: planForm.position_title, incumbent_id: planForm.incumbent_id ? Number(planForm.incumbent_id) : undefined,
           readiness_level: planForm.readiness_level, notes: planForm.notes || undefined,
@@ -73,14 +73,14 @@ export function Succession() {
 
   const handleUpdatePlanStatus = async (id: number, status: string) => {
     try {
-      await fetchAPI(API_ENDPOINTS.HR.SUCCESSION.withId(id), { method: "PUT", body: JSON.stringify({ status }) });
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.SUCCESSION.withId(id), { method: "PUT", body: JSON.stringify({ status }) });
       showToast("تم تحديث الحالة", "success"); loadPlans();
     } catch (e: any) { showToast(e.message || "فشل التحديث", "error"); }
   };
 
   const viewDetail = async (id: number) => {
     try {
-      const res: any = await fetchAPI(API_ENDPOINTS.HR.SUCCESSION.withId(id));
+      const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.SUCCESSION.withId(id));
       setSelectedPlan(res.data || res); setShowDetailDialog(true);
     } catch { showToast("فشل تحميل التفاصيل", "error"); }
   };
@@ -88,7 +88,7 @@ export function Succession() {
   const handleAddCandidate = async () => {
     if (!selectedPlan || !candForm.employee_id) { showToast("يرجى اختيار الموظف", "error"); return; }
     try {
-      await fetchAPI(API_ENDPOINTS.HR.SUCCESSION.CANDIDATES(selectedPlan.id), {
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.SUCCESSION.CANDIDATES(selectedPlan.id), {
         method: "POST", body: JSON.stringify({
           employee_id: Number(candForm.employee_id), readiness_level: candForm.readiness_level,
           performance_rating: candForm.performance_rating ? Number(candForm.performance_rating) : undefined,
@@ -97,7 +97,7 @@ export function Succession() {
         })
       });
       showToast("تم إضافة المرشح", "success"); setShowCandidateDialog(false);
-      const res: any = await fetchAPI(API_ENDPOINTS.HR.SUCCESSION.withId(selectedPlan.id));
+      const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.SUCCESSION.withId(selectedPlan.id));
       setSelectedPlan(res.data || res); loadPlans();
     } catch (e: any) { showToast(e.message || "فشل الحفظ", "error"); }
   };

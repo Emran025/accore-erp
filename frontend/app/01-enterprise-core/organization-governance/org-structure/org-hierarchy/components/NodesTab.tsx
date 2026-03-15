@@ -70,7 +70,7 @@ export function NodesTab() {
             if (filterType) params.set("node_type_id", filterType);
             if (filterStatus) params.set("status", filterStatus);
             if (filterDomain) params.set("level_domain", filterDomain);
-            const response = await fetchAPI(`${API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.NODES}?${params}`);
+            const response = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES}?${params}`);
             setNodes((response.nodes as StructureNode[]) || []);
             setInitialDataLoaded(true);
         } catch { showToast("خطأ في تحميل الوحدات التنظيمية", "error"); }
@@ -79,14 +79,14 @@ export function NodesTab() {
 
     const loadMetaTypes = useCallback(async () => {
         try {
-            const response = await fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.META_TYPES);
+            const response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.META_TYPES);
             setMetaTypes((response.meta_types as MetaType[]) || []);
         } catch { showToast("خطأ في تحميل أنواع الوحدات", "error"); }
     }, []);
 
     const loadTopologyRules = useCallback(async () => {
         try {
-            const response = await fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.TOPOLOGY_RULES);
+            const response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.TOPOLOGY_RULES);
             setTopologyRules((response.topology_rules as TopologyRule[]) || []);
         } catch { /* ignore */ }
     }, []);
@@ -138,7 +138,7 @@ export function NodesTab() {
         }
         try {
             if (selectedNode) {
-                await fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.NODE(selectedNode.node_uuid), {
+                await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODE(selectedNode.node_uuid), {
                     method: "PUT", body: JSON.stringify({
                         code: formData.code, attributes: attrs, status: formData.status,
                         valid_from: formData.valid_from || null, valid_to: formData.valid_to || null,
@@ -146,7 +146,7 @@ export function NodesTab() {
                 });
                 showToast("تم تحديث الوحدة بنجاح", "success");
             } else {
-                await fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.NODES, { method: "POST", body: JSON.stringify(payload) });
+                await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES, { method: "POST", body: JSON.stringify(payload) });
                 showToast("تمت إضافة الوحدة بنجاح", "success");
             }
             setFormDialog(false); loadNodes();
@@ -163,7 +163,7 @@ export function NodesTab() {
     const handleDelete = async () => {
         if (!deleteUuid) return;
         try {
-            await fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.NODE(deleteUuid), { method: "DELETE" });
+            await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODE(deleteUuid), { method: "DELETE" });
             showToast("تم حذف الوحدة", "success"); loadNodes();
         } catch (e: unknown) {
             const err = e as { message?: string };
@@ -191,7 +191,7 @@ export function NodesTab() {
     const handleBulkStatus = async () => {
         if (selectedUuids.size === 0) return;
         try {
-            await fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.BULK_STATUS, {
+            await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.BULK_STATUS, {
                 method: "POST",
                 body: JSON.stringify({ node_uuids: Array.from(selectedUuids), status: bulkStatus }),
             });

@@ -15,7 +15,7 @@ export function SessionsTab() {
   const loadSessions = useCallback(async (page: number = 1) => {
     setIsLoading(true);
     try {
-      const response = await fetchAPI(`${API_ENDPOINTS.SYSTEM.USERS.SESSIONS}?page=${page}&limit=10`);
+      const response = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.IAM.USERS.SESSIONS}?page=${page}&limit=10`);
       if (response.sessions && Array.isArray(response.sessions)) {
         setSessions(response.sessions as Session[]);
       }
@@ -35,7 +35,7 @@ export function SessionsTab() {
 
   const terminateSession = async (sessionId: number) => {
     try {
-      await fetchAPI(API_ENDPOINTS.SYSTEM.USERS.SESSIONS_WITH_ID(sessionId), { method: "DELETE" });
+      await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.IAM.USERS.SESSIONS_WITH_ID(sessionId), { method: "DELETE" });
       showToast("تم إنهاء الجلسة", "success");
       loadSessions(sessionsPage);
     } catch {

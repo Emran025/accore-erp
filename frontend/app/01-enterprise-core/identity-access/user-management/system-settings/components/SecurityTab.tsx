@@ -29,7 +29,7 @@ export function SecurityTab() {
     }
 
     try {
-      await fetchAPI(API_ENDPOINTS.SYSTEM.USERS.CHANGE_PASSWORD, {
+      await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.IAM.USERS.CHANGE_PASSWORD, {
         method: "POST",
         body: JSON.stringify({
           current_password: passwordData.current_password,

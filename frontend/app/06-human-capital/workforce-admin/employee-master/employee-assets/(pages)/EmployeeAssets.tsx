@@ -57,7 +57,7 @@ export function EmployeeAssets() {
         search: searchTerm,
         status: statusFilter,
       });
-      const res = await fetchAPI(`${API_ENDPOINTS.HR.EMPLOYEE_ASSETS.BASE}?${query}`);
+      const res = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_ASSETS.BASE}?${query}`);
       setAssets(res.data as EmployeeAsset[] || []);
       setTotalPages(Number(res.last_page) || 1);
     } catch (error) {

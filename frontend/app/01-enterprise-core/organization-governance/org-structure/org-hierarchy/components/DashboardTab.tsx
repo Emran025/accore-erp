@@ -45,7 +45,7 @@ export function DashboardTab() {
     const loadStats = useCallback(async () => {
         try {
             setIsLoading(true);
-            const res = await fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.STATISTICS);
+            const res = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.STATISTICS);
             if (res.statistics) {
                 setStats(res.statistics as Statistics);
             }

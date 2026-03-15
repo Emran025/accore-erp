@@ -53,7 +53,7 @@ export default function ExchangeRatesPage() {
 
     const loadCurrencies = useCallback(async () => {
         try {
-            const res = await fetchAPI(API_ENDPOINTS.FINANCE.CURRENCIES.BASE);
+            const res = await fetchAPI(API_ENDPOINTS.FINANCE.FOREIGN_EXCHANGE.CURRENCIES.BASE);
             if (res.success) {
                 setCurrencies(res.data as Currency[]);
             }

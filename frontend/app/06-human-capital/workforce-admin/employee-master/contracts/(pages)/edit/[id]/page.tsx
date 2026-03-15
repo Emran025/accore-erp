@@ -22,7 +22,7 @@ export default function EditContractPage({ params }: { params: { id: string } })
     const loadContract = async () => {
         setIsLoading(true);
         try {
-            const res: any = await fetchAPI(`${API_ENDPOINTS.HR.CONTRACTS.BASE}/${params.id}`);
+            const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.CONTRACTS.BASE}/${params.id}`);
             setContract(res.data || res);
         } catch (error) {
             showToast("فشل تحميل بيانات العقد", "error");

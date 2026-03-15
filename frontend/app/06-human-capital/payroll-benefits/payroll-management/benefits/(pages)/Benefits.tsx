@@ -88,7 +88,7 @@ export function Benefits() {
       const query = new URLSearchParams({
         page: currentPage.toString(),
       });
-      const res = await fetchAPI(`${API_ENDPOINTS.HR.BENEFITS.PLANS.BASE}?${query}`);
+      const res = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.BENEFITS.PLANS.BASE}?${query}`);
       setPlans(res.data as BenefitsPlan[] || []);
       setTotalPages(Number(res.last_page) || 1);
     } catch (error) {
@@ -104,7 +104,7 @@ export function Benefits() {
       const query = new URLSearchParams({
         page: currentPage.toString(),
       });
-      const res = await fetchAPI(`${API_ENDPOINTS.HR.BENEFITS.ENROLLMENTS.BASE}?${query}`);
+      const res = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.BENEFITS.ENROLLMENTS.BASE}?${query}`);
       setEnrollments(res.data as BenefitsEnrollment[] || []);
       setTotalPages(Number(res.last_page) || 1);
     } catch (error) {

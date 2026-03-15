@@ -44,20 +44,20 @@ export function WellnessModule() {
 
     const loadPrograms = async () => {
         setProgLoading(true);
-        try { const r: any = await fetchAPI(`${API_ENDPOINTS.HR.WELLNESS.PROGRAMS.BASE}?page=${progPage}`); const d = r.data || (Array.isArray(r) ? r : []); setPrograms(d); setProgTotal(Number(r.last_page) || 1); }
+        try { const r: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.WELLNESS.PROGRAMS.BASE}?page=${progPage}`); const d = r.data || (Array.isArray(r) ? r : []); setPrograms(d); setProgTotal(Number(r.last_page) || 1); }
         catch { showToast("فشل تحميل البرامج", "error"); } finally { setProgLoading(false); }
     };
 
     const loadParticipations = async () => {
         setPartLoading(true);
-        try { const r: any = await fetchAPI(`${API_ENDPOINTS.HR.WELLNESS.PARTICIPATIONS.BASE}?page=${partPage}`); const d = r.data || (Array.isArray(r) ? r : []); setParticipations(d); setPartTotal(Number(r.last_page) || 1); }
+        try { const r: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.WELLNESS.PARTICIPATIONS.BASE}?page=${partPage}`); const d = r.data || (Array.isArray(r) ? r : []); setParticipations(d); setPartTotal(Number(r.last_page) || 1); }
         catch { showToast("فشل تحميل المشاركات", "error"); } finally { setPartLoading(false); }
     };
 
     const handleSaveProgram = async () => {
         if (!progForm.program_name || !progForm.end_date) { showToast("يرجى ملء الحقول المطلوبة", "error"); return; }
         try {
-            await fetchAPI(API_ENDPOINTS.HR.WELLNESS.PROGRAMS.BASE, { method: "POST", body: JSON.stringify(progForm) });
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.WELLNESS.PROGRAMS.BASE, { method: "POST", body: JSON.stringify(progForm) });
             showToast("تم إنشاء البرنامج", "success"); setShowProgDialog(false); loadPrograms();
         } catch (e: any) { showToast(e.message || "فشل الحفظ", "error"); }
     };
@@ -65,14 +65,14 @@ export function WellnessModule() {
     const handleEnroll = async () => {
         if (!partForm.program_id || !partForm.employee_id) { showToast("يرجى اختيار البرنامج والموظف", "error"); return; }
         try {
-            await fetchAPI(API_ENDPOINTS.HR.WELLNESS.PARTICIPATIONS.BASE, { method: "POST", body: JSON.stringify({ program_id: Number(partForm.program_id), employee_id: Number(partForm.employee_id), notes: partForm.notes || undefined }) });
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.WELLNESS.PARTICIPATIONS.BASE, { method: "POST", body: JSON.stringify({ program_id: Number(partForm.program_id), employee_id: Number(partForm.employee_id), notes: partForm.notes || undefined }) });
             showToast("تم التسجيل بنجاح", "success"); setShowPartDialog(false); loadParticipations();
         } catch (e: any) { showToast(e.message || "فشل التسجيل", "error"); }
     };
 
     const handleUpdateParticipation = async (id: number, status: string) => {
         try {
-            await fetchAPI(API_ENDPOINTS.HR.WELLNESS.PARTICIPATIONS.withId(id), { method: "PUT", body: JSON.stringify({ status }) });
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.WELLNESS.PARTICIPATIONS.withId(id), { method: "PUT", body: JSON.stringify({ status }) });
             showToast("تم التحديث", "success"); loadParticipations();
         } catch (e: any) { showToast(e.message || "فشل التحديث", "error"); }
     };

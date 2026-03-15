@@ -57,7 +57,7 @@ export default function BatchProcessingPage() {
   const loadBatches = useCallback(async (page: number = 1) => {
     try {
       setIsLoading(true);
-      const response = await fetchAPI(`${API_ENDPOINTS.SYSTEM.BATCH}?page=${page}&limit=${itemsPerPage}`);
+      const response = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.BATCH}?page=${page}&limit=${itemsPerPage}`);
       if (response.success && response.data) {
         setBatches(response.data as Batch[]);
         const total = Number(response.total) || 0;
@@ -141,7 +141,7 @@ export default function BatchProcessingPage() {
     }
 
     try {
-      const response = await fetchAPI(API_ENDPOINTS.SYSTEM.BATCH, {
+      const response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.BATCH, {
         method: "POST",
         body: JSON.stringify({
           batch_name: batchName,
@@ -176,7 +176,7 @@ export default function BatchProcessingPage() {
     setItemsDialog(true);
 
     try {
-      const response = await fetchAPI(`${API_ENDPOINTS.SYSTEM.BATCH}?action=status&batch_id=${batchId}`);
+      const response = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.BATCH}?action=status&batch_id=${batchId}`);
       if (response.success && response.data) {
         const items = (response.data as { items?: BatchItem[] }).items || [];
         setBatchItems(items);
@@ -203,7 +203,7 @@ export default function BatchProcessingPage() {
 
     try {
       const action = executeBatchType === "journal_entry_import" ? "journal_entries" : "expenses";
-      const response = await fetchAPI(`${API_ENDPOINTS.SYSTEM.BATCH}?action=${action}`, {
+      const response = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.BATCH}?action=${action}`, {
         method: "POST",
         body: JSON.stringify({ batch_id: executeBatchId }),
       });
@@ -230,7 +230,7 @@ export default function BatchProcessingPage() {
     if (!deleteBatchId) return;
 
     try {
-      const response = await fetchAPI(`${API_ENDPOINTS.SYSTEM.BATCH}?id=${deleteBatchId}`, { method: "DELETE" });
+      const response = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.BATCH}?id=${deleteBatchId}`, { method: "DELETE" });
 
       if (response.success) {
         showToast("تم حذف الدفعة بنجاح", "success");

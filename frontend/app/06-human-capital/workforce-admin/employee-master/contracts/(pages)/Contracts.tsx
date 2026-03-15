@@ -30,7 +30,7 @@ export function Contracts() {
                 page: currentPage.toString(),
                 search: searchTerm,
             });
-            const res = await fetchAPI(`${API_ENDPOINTS.HR.CONTRACTS.BASE}?${query}`);
+            const res = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.CONTRACTS.BASE}?${query}`);
             setContracts(res.data as EmployeeContract[] || []);
             setTotalPages(Number(res.last_page) || 1);
         } catch (error) {

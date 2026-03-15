@@ -68,8 +68,8 @@ export function HierarchyTab() {
         try {
             setIsLoading(true);
             const [nodesRes, metaRes] = await Promise.all([
-                fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.NODES),
-                fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.META_TYPES),
+                fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES),
+                fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.META_TYPES),
             ]);
             setNodes((nodesRes.nodes as StructureNode[]) || []);
             setMetaTypes((metaRes.meta_types as MetaType[]) || []);
@@ -88,7 +88,7 @@ export function HierarchyTab() {
         if (!selectedNode) return;
         const loadLinks = async () => {
             try {
-                const res = await fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.NODE(selectedNode.node_uuid));
+                const res = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODE(selectedNode.node_uuid));
                 const n = res.node as StructureNode & {
                     outgoing_links?: StructureLink[];
                     incoming_links?: StructureLink[];
@@ -151,7 +151,7 @@ export function HierarchyTab() {
 
     const loadScopeContext = async (uuid: string) => {
         try {
-            const res = await fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.SCOPE_CONTEXT(uuid));
+            const res = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.SCOPE_CONTEXT(uuid));
             if (res.success) {
                 setContextData(res as Record<string, unknown>);
             }

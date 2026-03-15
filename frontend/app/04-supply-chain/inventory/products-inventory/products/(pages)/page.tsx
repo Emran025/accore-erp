@@ -32,7 +32,7 @@ export default function ProductsPage() {
     const [categories, setCategories] = useState<Category[]>([]);
     const loadCategories = useCallback(async () => {
         try {
-            const response = await fetchAPI(API_ENDPOINTS.INVENTORY.CATEGORIES);
+            const response = await fetchAPI(API_ENDPOINTS.SUPPLY_CHAIN.CATEGORIES);
             if (response.success) {
                 setCategories((response.data as Category[]) || []);
             }
@@ -169,7 +169,7 @@ export default function ProductsPage() {
             return;
         }
         try {
-            const res = await fetchAPI(API_ENDPOINTS.INVENTORY.CATEGORIES, {
+            const res = await fetchAPI(API_ENDPOINTS.SUPPLY_CHAIN.CATEGORIES, {
                 method: "POST",
                 body: JSON.stringify({ name: newCategoryName }),
             });

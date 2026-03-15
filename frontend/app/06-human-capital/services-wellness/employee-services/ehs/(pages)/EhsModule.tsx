@@ -56,37 +56,37 @@ export function EhsModule() {
 
     const loadIncidents = async () => {
         setIncLoading(true);
-        try { const r: any = await fetchAPI(`${API_ENDPOINTS.HR.EHS.INCIDENTS.BASE}?page=${incPage}`); const d = r.data || (Array.isArray(r) ? r : []); setIncidents(d); setIncTotal(Number(r.last_page) || 1); }
+        try { const r: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EHS.INCIDENTS.BASE}?page=${incPage}`); const d = r.data || (Array.isArray(r) ? r : []); setIncidents(d); setIncTotal(Number(r.last_page) || 1); }
         catch { showToast("فشل تحميل الحوادث", "error"); } finally { setIncLoading(false); }
     };
     const loadHealthRecords = async () => {
         setHrLoading(true);
-        try { const r: any = await fetchAPI(`${API_ENDPOINTS.HR.EHS.HEALTH_RECORDS.BASE}?page=${hrPage}`); const d = r.data || (Array.isArray(r) ? r : []); setHealthRecords(d); setHrTotal(Number(r.last_page) || 1); }
+        try { const r: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EHS.HEALTH_RECORDS.BASE}?page=${hrPage}`); const d = r.data || (Array.isArray(r) ? r : []); setHealthRecords(d); setHrTotal(Number(r.last_page) || 1); }
         catch { showToast("فشل تحميل السجلات", "error"); } finally { setHrLoading(false); }
     };
     const loadPpeRecords = async () => {
         setPpeLoading(true);
-        try { const r: any = await fetchAPI(`${API_ENDPOINTS.HR.EHS.PPE.BASE}?page=${ppePage}`); const d = r.data || (Array.isArray(r) ? r : []); setPpeRecords(d); setPpeTotal(Number(r.last_page) || 1); }
+        try { const r: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EHS.PPE.BASE}?page=${ppePage}`); const d = r.data || (Array.isArray(r) ? r : []); setPpeRecords(d); setPpeTotal(Number(r.last_page) || 1); }
         catch { showToast("فشل تحميل معدات الوقاية", "error"); } finally { setPpeLoading(false); }
     };
 
     const handleSaveIncident = async () => {
         if (!incForm.description || !incForm.incident_date) { showToast("يرجى ملء الحقول المطلوبة", "error"); return; }
         try {
-            await fetchAPI(API_ENDPOINTS.HR.EHS.INCIDENTS.BASE, { method: "POST", body: JSON.stringify({ ...incForm, employee_id: incForm.employee_id ? Number(incForm.employee_id) : undefined }) });
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EHS.INCIDENTS.BASE, { method: "POST", body: JSON.stringify({ ...incForm, employee_id: incForm.employee_id ? Number(incForm.employee_id) : undefined }) });
             showToast("تم تسجيل الحادث بنجاح", "success"); setShowIncDialog(false); loadIncidents();
         } catch (e: any) { showToast(e.message || "فشل التسجيل", "error"); }
     };
 
     const handleUpdateIncident = async (id: number, data: any) => {
-        try { await fetchAPI(API_ENDPOINTS.HR.EHS.INCIDENTS.withId(id), { method: "PUT", body: JSON.stringify(data) }); showToast("تم التحديث", "success"); loadIncidents(); }
+        try { await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EHS.INCIDENTS.withId(id), { method: "PUT", body: JSON.stringify(data) }); showToast("تم التحديث", "success"); loadIncidents(); }
         catch (e: any) { showToast(e.message || "فشل التحديث", "error"); }
     };
 
     const handleSaveHealthRecord = async () => {
         if (!hrForm.employee_id) { showToast("يرجى اختيار الموظف", "error"); return; }
         try {
-            await fetchAPI(API_ENDPOINTS.HR.EHS.HEALTH_RECORDS.BASE, { method: "POST", body: JSON.stringify({ ...hrForm, employee_id: Number(hrForm.employee_id) }) });
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EHS.HEALTH_RECORDS.BASE, { method: "POST", body: JSON.stringify({ ...hrForm, employee_id: Number(hrForm.employee_id) }) });
             showToast("تم إضافة السجل", "success"); setShowHrDialog(false); loadHealthRecords();
         } catch (e: any) { showToast(e.message || "فشل الحفظ", "error"); }
     };
@@ -94,7 +94,7 @@ export function EhsModule() {
     const handleSavePpe = async () => {
         if (!ppeForm.employee_id || !ppeForm.ppe_item) { showToast("يرجى ملء الحقول المطلوبة", "error"); return; }
         try {
-            await fetchAPI(API_ENDPOINTS.HR.EHS.PPE.BASE, { method: "POST", body: JSON.stringify({ ...ppeForm, employee_id: Number(ppeForm.employee_id) }) });
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EHS.PPE.BASE, { method: "POST", body: JSON.stringify({ ...ppeForm, employee_id: Number(ppeForm.employee_id) }) });
             showToast("تم تسجيل المعدة", "success"); setShowPpeDialog(false); loadPpeRecords();
         } catch (e: any) { showToast(e.message || "فشل الحفظ", "error"); }
     };

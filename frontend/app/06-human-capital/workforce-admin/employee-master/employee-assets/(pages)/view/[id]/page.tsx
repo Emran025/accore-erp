@@ -24,7 +24,7 @@ export default function ViewAssetPage({ params }: { params: { id: string } }) {
     const loadAsset = async () => {
         setIsLoading(true);
         try {
-            const res: any = await fetchAPI(`${API_ENDPOINTS.HR.EMPLOYEE_ASSETS.BASE}/${params.id}`);
+            const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_ASSETS.BASE}/${params.id}`);
             setAsset(res.data || res);
         } catch (error) {
             showToast("فشل تحميل بيانات الأصل", "error");

@@ -221,7 +221,7 @@ function ARLedgerPageContent() {
 
   const viewInvoice = async (id: number) => {
     try {
-      const response = await fetchAPI(`${API_ENDPOINTS.SALES.INVOICE_DETAILS}?id=${id}`);
+      const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICE_DETAILS}?id=${id}`);
       if (response.success && response.data) {
         setSelectedInvoice(response.data as DetailedInvoiceCustomers);
         setViewDialog(true);
@@ -236,8 +236,8 @@ function ARLedgerPageContent() {
     if (!item.reference_id) return [];
 
     const endpoint = item.reference_type === "sales_returns"
-      ? `${API_ENDPOINTS.SALES.RETURNS.SHOW}?id=${item.reference_id}`
-      : `${API_ENDPOINTS.SALES.INVOICE_DETAILS}?id=${item.reference_id}`;
+      ? `${API_ENDPOINTS.COMMERCIAL.SALES.RETURNS.SHOW}?id=${item.reference_id}`
+      : `${API_ENDPOINTS.COMMERCIAL.SALES.INVOICE_DETAILS}?id=${item.reference_id}`;
 
     try {
       const response = await fetchAPI(endpoint);
@@ -270,7 +270,7 @@ function ARLedgerPageContent() {
       try {
         const newMap = { ...invoicesMap };
         await Promise.all(missingIds.map(async (id) => {
-          const res = await fetchAPI(`${API_ENDPOINTS.SALES.INVOICE_DETAILS}?id=${id}`);
+          const res = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICE_DETAILS}?id=${id}`);
           if (res.success && res.data) {
             newMap[id] = res.data as SelectableInvoice;
           }
@@ -292,7 +292,7 @@ function ARLedgerPageContent() {
 
     try {
       for (const returnData of dataArray) {
-        const response = await fetchAPI(API_ENDPOINTS.SALES.RETURNS.BASE, {
+        const response = await fetchAPI(API_ENDPOINTS.COMMERCIAL.SALES.RETURNS.BASE, {
           method: "POST",
           body: JSON.stringify(returnData),
         });

@@ -22,7 +22,7 @@ export function RolesTab() {
 
   const loadRoles = useCallback(async () => {
     try {
-      const response = await fetchAPI(`${API_ENDPOINTS.SYSTEM.USERS.ROLES}?action=roles`);
+      const response = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.IAM.USERS.ROLES}?action=roles`);
       if (response.data && Array.isArray(response.data)) {
         // Map backend fields to frontend Role interface
         const mappedRoles = response.data.map((r: any) => ({
@@ -41,7 +41,7 @@ export function RolesTab() {
 
   const loadModules = useCallback(async () => {
     try {
-      const response = await fetchAPI(`${API_ENDPOINTS.SYSTEM.USERS.ROLES}?action=modules`);
+      const response = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.IAM.USERS.ROLES}?action=modules`);
       if (response.data) {
         // response.data is grouped by category: { "sales": [...], "inventory": [...] }
         setModulesByCategory(response.data as Record<string, ModuleData[]>);
@@ -69,7 +69,7 @@ export function RolesTab() {
   const selectRole = async (role: Role) => {
     setSelectedRole(role);
     try {
-      const response = await fetchAPI(`${API_ENDPOINTS.SYSTEM.USERS.ROLES}?action=role_permissions&role_id=${role.id}`);
+      const response = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.IAM.USERS.ROLES}?action=role_permissions&role_id=${role.id}`);
       if (response.data && Array.isArray(response.data)) {
         const mappedPermissions: RolePermission[] = response.data.map((p: any) => ({
           module: p.module_key,
@@ -111,7 +111,7 @@ export function RolesTab() {
     if (!selectedRole || !Array.isArray(selectedRole.permissions)) return;
 
     try {
-      await fetchAPI(`${API_ENDPOINTS.SYSTEM.USERS.ROLES}?action=update_permissions`, {
+      await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.IAM.USERS.ROLES}?action=update_permissions`, {
         method: "POST",
         body: JSON.stringify({
           role_id: selectedRole.id,
@@ -147,7 +147,7 @@ export function RolesTab() {
     }
 
     try {
-      await fetchAPI(API_ENDPOINTS.SYSTEM.USERS.ROLES, {
+      await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.IAM.USERS.ROLES, {
         method: "POST",
         body: JSON.stringify({ name: newRoleName, description: newRoleDescription }),
       });
@@ -168,7 +168,7 @@ export function RolesTab() {
     if (!deleteRoleId) return;
 
     try {
-      await fetchAPI(API_ENDPOINTS.SYSTEM.USERS.ROLES_WITH_ID(deleteRoleId), { method: "DELETE" });
+      await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.IAM.USERS.ROLES_WITH_ID(deleteRoleId), { method: "DELETE" });
       showToast("تم حذف الدور", "success");
       if (selectedRole?.id === deleteRoleId) {
         setSelectedRole(null);

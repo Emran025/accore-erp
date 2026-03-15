@@ -7,7 +7,7 @@ import { Purchase } from '@/types';
  * Replaces the old `usePurchases` custom hook with a global, cached store.
  */
 export const usePurchaseStore = createCRUDStore<Purchase>({
-    endpoint: API_ENDPOINTS.PURCHASES.BASE,
+    endpoint: API_ENDPOINTS.COMMERCIAL.PROCUREMENT.BASE,
     storeName: 'purchase-store',
     messages: {
         loadError: 'خطأ في تحميل المشتريات',

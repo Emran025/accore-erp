@@ -29,7 +29,7 @@ function TemplatePreviewContent() {
         setIsLoading(true);
         try {
             // Get original template name
-            const templateRes = await fetchAPI(API_ENDPOINTS.SYSTEM.TEMPLATES.withId(templateId));
+            const templateRes = await fetchAPI(API_ENDPOINTS.PLATFORM.AUTOMATION.TEMPLATES.withId(templateId));
             const templateData = (templateRes as any).data || templateRes;
             if (templateData) {
                 setTemplateName(templateData.template_name_ar);
@@ -37,7 +37,7 @@ function TemplatePreviewContent() {
 
             if (hId) {
                 // Fetch history
-                const histRes = await fetchAPI(API_ENDPOINTS.SYSTEM.TEMPLATES.HISTORY(templateId));
+                const histRes = await fetchAPI(API_ENDPOINTS.PLATFORM.AUTOMATION.TEMPLATES.HISTORY(templateId));
                 const histData = (histRes as any).data || [];
                 const targetHistory = histData.find((h: any) => h.id.toString() === hId);
                 if (targetHistory) {
@@ -49,7 +49,7 @@ function TemplatePreviewContent() {
                 }
             } else {
                 // Render live template
-                const res = await fetchAPI(API_ENDPOINTS.SYSTEM.TEMPLATES.RENDER(templateId), { method: "POST" });
+                const res = await fetchAPI(API_ENDPOINTS.PLATFORM.AUTOMATION.TEMPLATES.RENDER(templateId), { method: "POST" });
                 const resData = (res as any).data;
                 setRenderedHtml(resData?.rendered_html || templateData?.body_html || "");
             }

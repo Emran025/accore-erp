@@ -41,12 +41,12 @@ export function EmployeePositionTab() {
         setIsLoading(true);
         try {
             await loadAllEmployees();
-            const posRes = await fetchAPI(API_ENDPOINTS.HR.ADMINISTRATION.POSITIONS.BASE);
+            const posRes = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.POSITIONS.BASE);
             setPositions((posRes as any).data || []);
 
             // Load employees with position details
             const empRes = await fetchAPI(
-                `${API_ENDPOINTS.HR.EMPLOYEES.BASE}?per_page=999&with_position=1`
+                `${API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEES.BASE}?per_page=999&with_position=1`
             );
             const empData = (empRes as any).data || (empRes as any).employees || [];
             setEmployeesWithPositions(empData);
@@ -63,7 +63,7 @@ export function EmployeePositionTab() {
             return;
         }
         try {
-            await fetchAPI(API_ENDPOINTS.HR.ADMINISTRATION.POSITIONS.ASSIGN, {
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.POSITIONS.ASSIGN, {
                 method: "POST",
                 body: JSON.stringify({
                     employee_id: Number(selectedEmployeeId),
@@ -83,7 +83,7 @@ export function EmployeePositionTab() {
     const handleUnassign = async (employeeId: number) => {
         if (!confirm("هل أنت متأكد من إلغاء تعيين هذا الموظف من المنصب؟")) return;
         try {
-            await fetchAPI(API_ENDPOINTS.HR.ADMINISTRATION.POSITIONS.UNASSIGN(employeeId), {
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.POSITIONS.UNASSIGN(employeeId), {
                 method: "DELETE",
             });
             showToast("تم إلغاء تعيين الموظف", "success");

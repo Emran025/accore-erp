@@ -41,7 +41,7 @@ export function WorkforceScheduling() {
       const query = new URLSearchParams({
         page: currentPage.toString(),
       });
-      const res = await fetchAPI(`${API_ENDPOINTS.HR.WORKFORCE_SCHEDULING.BASE}?${query}`);
+      const res = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.WORKFORCE_SCHEDULING.BASE}?${query}`);
       setSchedules(res.data as Schedule[] || []);
       setTotalPages(Number(res.last_page) || 1);
     } catch (error) {

@@ -60,7 +60,7 @@ export function InvoiceSelectionTab({
                 if (paymentType && paymentType !== "all")
                     params += `&payment_type=${paymentType}`;
 
-                const response = await fetchAPI(`${API_ENDPOINTS.SALES.INVOICES}?${params}`);
+                const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICES}?${params}`);
                 if (response.success && response.data) {
                     setInvoices(response.data as InvoiceRow[]);
                     if (response.pagination) {
@@ -88,7 +88,7 @@ export function InvoiceSelectionTab({
     ): Promise<SelectableInvoiceItem[]> => {
         try {
             const response = await fetchAPI(
-                `${API_ENDPOINTS.SALES.INVOICE_DETAILS}?id=${invoice.id}`
+                `${API_ENDPOINTS.COMMERCIAL.SALES.INVOICE_DETAILS}?id=${invoice.id}`
             );
             if (response.success && response.data) {
                 return ((response.data as any).items as SelectableInvoiceItem[]) || [];

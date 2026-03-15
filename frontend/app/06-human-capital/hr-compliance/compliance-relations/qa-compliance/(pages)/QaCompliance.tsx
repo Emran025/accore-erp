@@ -63,7 +63,7 @@ export function QaCompliance() {
         page: currentPage.toString(),
         status: statusFilter,
       });
-      const res = await fetchAPI(`${API_ENDPOINTS.HR.QA_COMPLIANCE.BASE}?${query}`);
+      const res = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.QA_COMPLIANCE.BASE}?${query}`);
       setRecords(res.data as Compliance[] || []);
       setTotalPages(Number(res.last_page) || 1);
     } catch (error) {

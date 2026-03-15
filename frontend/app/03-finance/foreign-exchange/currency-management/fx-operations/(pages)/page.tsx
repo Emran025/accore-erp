@@ -39,7 +39,7 @@ export default function FxOperationsPage() {
     const loadCurrencies = useCallback(async () => {
         try {
             setLoading(true);
-            const res = await fetchAPI(API_ENDPOINTS.FINANCE.CURRENCIES.BASE);
+            const res = await fetchAPI(API_ENDPOINTS.FINANCE.FOREIGN_EXCHANGE.CURRENCIES.BASE);
             if (res.success) {
                 setCurrencies(res.data as Currency[]);
             }

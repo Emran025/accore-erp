@@ -109,7 +109,7 @@ export function TravelExpenses() {
         setReqLoading(true);
         try {
             const q = new URLSearchParams({ page: reqPage.toString(), ...(reqStatusFilter && { status: reqStatusFilter }) });
-            const res: any = await fetchAPI(`${API_ENDPOINTS.HR.TRAVEL.REQUESTS.BASE}?${q}`);
+            const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.TRAVEL.REQUESTS.BASE}?${q}`);
             const data = res.data || (Array.isArray(res) ? res : []);
             setRequests(data);
             setReqTotalPages(Number(res.last_page) || 1);
@@ -124,7 +124,7 @@ export function TravelExpenses() {
         setExpLoading(true);
         try {
             const q = new URLSearchParams({ page: expPage.toString(), ...(expStatusFilter && { status: expStatusFilter }) });
-            const res: any = await fetchAPI(`${API_ENDPOINTS.HR.TRAVEL.EXPENSES.BASE}?${q}`);
+            const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.TRAVEL.EXPENSES.BASE}?${q}`);
             const data = res.data || (Array.isArray(res) ? res : []);
             setExpenses(data);
             setExpTotalPages(Number(res.last_page) || 1);
@@ -151,7 +151,7 @@ export function TravelExpenses() {
             return;
         }
         try {
-            await fetchAPI(API_ENDPOINTS.HR.TRAVEL.REQUESTS.BASE, {
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.TRAVEL.REQUESTS.BASE, {
                 method: "POST",
                 body: JSON.stringify({
                     employee_id: Number(reqForm.employee_id),
@@ -173,7 +173,7 @@ export function TravelExpenses() {
 
     const handleUpdateRequestStatus = async (id: number, status: string) => {
         try {
-            await fetchAPI(API_ENDPOINTS.HR.TRAVEL.REQUESTS.STATUS(id), {
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.TRAVEL.REQUESTS.STATUS(id), {
                 method: "PUT",
                 body: JSON.stringify({ status }),
             });
@@ -200,7 +200,7 @@ export function TravelExpenses() {
             return;
         }
         try {
-            await fetchAPI(API_ENDPOINTS.HR.TRAVEL.EXPENSES.BASE, {
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.TRAVEL.EXPENSES.BASE, {
                 method: "POST",
                 body: JSON.stringify({
                     travel_request_id: expForm.travel_request_id ? Number(expForm.travel_request_id) : undefined,
@@ -224,7 +224,7 @@ export function TravelExpenses() {
 
     const handleUpdateExpenseStatus = async (id: number, status: string) => {
         try {
-            await fetchAPI(API_ENDPOINTS.HR.TRAVEL.EXPENSES.STATUS(id), {
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.TRAVEL.EXPENSES.STATUS(id), {
                 method: "PUT",
                 body: JSON.stringify({ status }),
             });

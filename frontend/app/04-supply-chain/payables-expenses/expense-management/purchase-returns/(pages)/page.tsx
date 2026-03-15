@@ -74,14 +74,14 @@ function ReturnsPageContent() {
                 const offset = (page - 1) * itemsPerPage;
                 let params = `limit=${itemsPerPage}&offset=${offset}&page=${page}`;
                 // Using ap/transactions endpoint and filtering by return type on the backend or fetching all AP ledgers.
-                // Assuming we can use API_ENDPOINTS.PURCHASES.SUPPLIERS.TRANSACTIONS filtered by type
+                // Assuming we can use API_ENDPOINTS.COMMERCIAL.PROCUREMENT.SUPPLIERS.TRANSACTIONS filtered by type
                 if (filters.search) params += `&search=${encodeURIComponent(filters.search)}`;
                 params += `&type=return`; // Enforce returns only if backend supports it; else we filter below.
                 if (filters.date_from) params += `&date_from=${filters.date_from}`;
                 if (filters.date_to) params += `&date_to=${filters.date_to}`;
 
                 // Purchase Returns Ledger Endpoint
-                const response = await fetchAPI(`${API_ENDPOINTS.PURCHASES.RETURNS.LEDGER}?${params}`);
+                const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.PROCUREMENT.RETURNS.LEDGER}?${params}`);
                 if (response.success && response.data) {
                     // Filter locally if backend doesn't filter perfectly by type=return
                     const allTrans = response.data as any[];
@@ -139,7 +139,7 @@ function ReturnsPageContent() {
     ────────────────────────────────────────────── */
     const viewInvoice = async (id: number) => {
         try {
-            const response = await fetchAPI(`${API_ENDPOINTS.PURCHASES.RETURNS.SHOW}?id=${id}`);
+            const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.PROCUREMENT.RETURNS.SHOW}?id=${id}`);
             if (response.success && response.data) {
                 setSelectedInvoice(response.data as DetailedInvoiceSuppliers);
                 setViewDialog(true);
@@ -153,7 +153,7 @@ function ReturnsPageContent() {
     const getReturnItems = async (item: LedgerTransaction): Promise<SelectableInvoiceItem[]> => {
         if (!item.reference_id) return [];
         try {
-            const response = await fetchAPI(`${API_ENDPOINTS.PURCHASES.RETURNS.SHOW}?id=${item.reference_id}`);
+            const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.PROCUREMENT.RETURNS.SHOW}?id=${item.reference_id}`);
             if (response.success && response.data) {
                 return ((response.data as DetailedInvoiceSuppliers).items as SelectableInvoiceItem[]) || [];
             }
@@ -185,7 +185,7 @@ function ReturnsPageContent() {
                 const newMap = { ...invoicesMap };
                 await Promise.all(
                     missingIds.map(async (id) => {
-                        const res = await fetchAPI(`${API_ENDPOINTS.PURCHASES.RETURNS.SHOW}?id=${id}`);
+                        const res = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.PROCUREMENT.RETURNS.SHOW}?id=${id}`);
                         if (res.success && res.data) newMap[id] = res.data as SelectableInvoice;
                     })
                 );
@@ -207,7 +207,7 @@ function ReturnsPageContent() {
                 type: "return",
                 ...returnData
             };
-            const response = await fetchAPI(API_ENDPOINTS.PURCHASES.BASE, {
+            const response = await fetchAPI(API_ENDPOINTS.COMMERCIAL.PROCUREMENT.BASE, {
                 method: "POST",
                 body: JSON.stringify(payload),
             });

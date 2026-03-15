@@ -164,7 +164,7 @@ export default function ProfitCentersPage() {
         try {
             const [accountsRes, employeesRes, summaryRes] = await Promise.all([
                 fetchAPI(`${API_ENDPOINTS.FINANCE.ACCOUNTS.BASE}?limit=500`),
-                fetchAPI(`${API_ENDPOINTS.HR.EMPLOYEES.BASE}?limit=500&status=active`),
+                fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEES.BASE}?limit=500&status=active`),
                 fetchAPI(API_ENDPOINTS.FINANCE.CENTERS_SUMMARY),
             ]);
             if (accountsRes.success && accountsRes.data) setAccounts(accountsRes.data as Account[]);
@@ -207,8 +207,8 @@ export default function ProfitCentersPage() {
     const toggleCenterStatus = async (id: number, currentlyActive: boolean) => {
         try {
             const endpoint = currentlyActive
-                ? API_ENDPOINTS.SYSTEM.ORG_INTEGRATION.CLOSE_CENTER
-                : API_ENDPOINTS.SYSTEM.ORG_INTEGRATION.OPEN_CENTER;
+                ? API_ENDPOINTS.ENTERPRISE_CORE.ORG_INTEGRATION.CLOSE_CENTER
+                : API_ENDPOINTS.ENTERPRISE_CORE.ORG_INTEGRATION.OPEN_CENTER;
 
             const response = await fetchAPI(endpoint, {
                 method: "POST",

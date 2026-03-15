@@ -64,11 +64,11 @@ export default function EditEmployeePage({ params }: { params: Promise<{ id: str
     const loadData = async () => {
         try {
             const [rolesRes, deptsRes, empRes, posRes, managersRes] = await Promise.all([
-                fetchAPI(API_ENDPOINTS.SYSTEM.USERS.ROLES),
-                fetchAPI(API_ENDPOINTS.HR.DEPARTMENTS),
-                fetchAPI(API_ENDPOINTS.HR.EMPLOYEES.withId(id)),
-                fetchAPI(API_ENDPOINTS.HR.ADMINISTRATION.POSITIONS.BASE),
-                fetchAPI(API_ENDPOINTS.HR.EMPLOYEES.BASE) // For manager selection
+                fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.IAM.USERS.ROLES),
+                fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.DEPARTMENTS),
+                fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEES.withId(id)),
+                fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.POSITIONS.BASE),
+                fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEES.BASE) // For manager selection
             ]);
 
             setRoles(rolesRes.data as Role[] || (Array.isArray(rolesRes) ? rolesRes : []));
@@ -112,7 +112,7 @@ export default function EditEmployeePage({ params }: { params: Promise<{ id: str
 
         // Load Numbering Range Groups 
         try {
-            const nrRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.OBJECTS.byType("employees"));
+            const nrRes: any = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.OBJECTS.byType("employees"));
             if (nrRes.success && (nrRes.data || nrRes.id)) {
                 const data = nrRes.data || nrRes;
                 setNrObjectId(data.id);
@@ -129,7 +129,7 @@ export default function EditEmployeePage({ params }: { params: Promise<{ id: str
         const fetchNextNumber = async () => {
             if (activeTab === 'info' && selectedGroup && nrObjectId && !formData.employee_code) {
                 try {
-                    const numRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.NEXT_NUMBER, {
+                    const numRes: any = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.NEXT_NUMBER, {
                         method: 'POST',
                         body: JSON.stringify({ object_id: nrObjectId, group_id: selectedGroup })
                     });
@@ -154,7 +154,7 @@ export default function EditEmployeePage({ params }: { params: Promise<{ id: str
         e.preventDefault();
         setIsLoading(true);
         try {
-            const res = await fetchAPI(API_ENDPOINTS.HR.EMPLOYEES.withId(id), {
+            const res = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEES.withId(id), {
                 method: 'PUT',
                 body: JSON.stringify(formData),
             });

@@ -28,7 +28,7 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
     const loadData = useCallback(async () => {
         try {
             setIsLoading(true);
-            const res = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.OBJECTS.byType(objectType));
+            const res = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.OBJECTS.byType(objectType));
             if (res.success && res.id) {
                 setObjectData(res as unknown as NrObjectFull);
             } else {
@@ -53,7 +53,7 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
         prefix?: string;
     }): Promise<boolean> => {
         try {
-            const res = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.OBJECTS.BASE, {
+            const res = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.OBJECTS.BASE, {
                 method: "POST",
                 body: JSON.stringify({
                     object_type: objectType,
@@ -84,8 +84,8 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
         try {
             const isEdit = editId != null;
             const url = isEdit
-                ? API_ENDPOINTS.NUMBER_RANGES.GROUPS.update(editId!)
-                : API_ENDPOINTS.NUMBER_RANGES.GROUPS.create(objectData.id);
+                ? API_ENDPOINTS.PLATFORM.NUMBER_RANGES.GROUPS.update(editId!)
+                : API_ENDPOINTS.PLATFORM.NUMBER_RANGES.GROUPS.create(objectData.id);
             const method = isEdit ? "PUT" : "POST";
 
             const res = await fetchAPI(url, {
@@ -107,7 +107,7 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
 
     const deleteGroup = async (id: number): Promise<boolean> => {
         try {
-            const res = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.GROUPS.delete(id), { method: "DELETE" });
+            const res = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.GROUPS.delete(id), { method: "DELETE" });
             if (res.success) {
                 alert("تم حذف المجموعة", "success");
                 await loadData();
@@ -133,8 +133,8 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
         try {
             const isEdit = editId != null;
             const url = isEdit
-                ? API_ENDPOINTS.NUMBER_RANGES.INTERVALS.update(editId!)
-                : API_ENDPOINTS.NUMBER_RANGES.INTERVALS.create(objectData.id);
+                ? API_ENDPOINTS.PLATFORM.NUMBER_RANGES.INTERVALS.update(editId!)
+                : API_ENDPOINTS.PLATFORM.NUMBER_RANGES.INTERVALS.create(objectData.id);
             const method = isEdit ? "PUT" : "POST";
 
             const res = await fetchAPI(url, {
@@ -156,7 +156,7 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
 
     const deleteInterval = async (id: number): Promise<boolean> => {
         try {
-            const res = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.INTERVALS.delete(id), { method: "DELETE" });
+            const res = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.INTERVALS.delete(id), { method: "DELETE" });
             if (res.success) {
                 alert("تم حذف النطاق", "success");
                 await loadData();
@@ -172,7 +172,7 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
 
     const expandInterval = async (intervalId: number, newTo: number, reason?: string): Promise<boolean> => {
         try {
-            const res = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.INTERVALS.expand(intervalId), {
+            const res = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.INTERVALS.expand(intervalId), {
                 method: "POST",
                 body: JSON.stringify({ new_to: newTo, reason: reason || null }),
             });
@@ -193,7 +193,7 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
     const saveAssignment = async (groupId: number, intervalId: number): Promise<boolean> => {
         if (!objectData) return false;
         try {
-            const res = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.ASSIGNMENTS.create(objectData.id), {
+            const res = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.ASSIGNMENTS.create(objectData.id), {
                 method: "POST",
                 body: JSON.stringify({
                     nr_group_id: groupId,
@@ -215,7 +215,7 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
 
     const deleteAssignment = async (id: number): Promise<boolean> => {
         try {
-            const res = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.ASSIGNMENTS.delete(id), { method: "DELETE" });
+            const res = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.ASSIGNMENTS.delete(id), { method: "DELETE" });
             if (res.success) {
                 alert("تم حذف الربط", "success");
                 await loadData();

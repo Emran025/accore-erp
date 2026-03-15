@@ -86,7 +86,7 @@ export const useEmployeeStore = create<EmployeeState>()(
                     if (roleVal && roleVal !== 'all') query.append('role', roleVal);
                     if (statusVal && statusVal !== 'all') query.append('status', statusVal);
 
-                    const res = await fetchAPI(`${API_ENDPOINTS.HR.EMPLOYEES.BASE}?${query.toString()}`);
+                    const res = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEES.BASE}?${query.toString()}`);
 
                     if (res.success) {
                         const data = res.data as { data: Employee[], last_page: number, total: number, current_page: number } | Employee[];
@@ -135,7 +135,7 @@ export const useEmployeeStore = create<EmployeeState>()(
 
                 try {
                     // Attempt to fetch all by passing a high limit
-                    const res = await fetchAPI(`${API_ENDPOINTS.HR.EMPLOYEES.BASE}?per_page=1000`);
+                    const res = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEES.BASE}?per_page=1000`);
                     if (res.success) {
                         const data = res.data as { data: Employee[] } | Employee[];
                         let allEmployees: Employee[] = [];
@@ -163,7 +163,7 @@ export const useEmployeeStore = create<EmployeeState>()(
             deleteEmployee: async (id) => {
                 set({ isLoading: true });
                 try {
-                    const res = await fetchAPI(`${API_ENDPOINTS.HR.EMPLOYEES.BASE}/${id}`, { method: 'DELETE' });
+                    const res = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEES.BASE}/${id}`, { method: 'DELETE' });
                     if (res.success) {
                         showToast('تم حذف الموظف بنجاح', 'success');
                         // Optimistic update

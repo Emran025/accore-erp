@@ -68,7 +68,7 @@ export default function DashboardPage() {
 
     const loadDashboardData = useCallback(async () => {
         try {
-            const response = await fetchAPI(API_ENDPOINTS.REPORTS.DASHBOARD);
+            const response = await fetchAPI(API_ENDPOINTS.INTELLIGENCE.DASHBOARD);
             if (response && response.success && response.data) {
                 // Fix BUG-007: Use strict typing instead of 'any'
                 const d = response.data as {
@@ -116,7 +116,7 @@ export default function DashboardPage() {
 
     const openLowStockDialog = async () => {
         try {
-            const response = await fetchAPI(`${API_ENDPOINTS.REPORTS.DASHBOARD}?detail=low_stock`);
+            const response = await fetchAPI(`${API_ENDPOINTS.INTELLIGENCE.DASHBOARD}?detail=low_stock`);
             setLowStockProducts((response.data as LowStockProduct[]) || []);
             setLowStockDialog(true);
         } catch {
@@ -126,7 +126,7 @@ export default function DashboardPage() {
 
     const openExpiringDialog = async () => {
         try {
-            const response = await fetchAPI(`${API_ENDPOINTS.REPORTS.DASHBOARD}?detail=expiring_soon`);
+            const response = await fetchAPI(`${API_ENDPOINTS.INTELLIGENCE.DASHBOARD}?detail=expiring_soon`);
             setExpiringProducts((response.data as ExpiringProduct[]) || []);
             setExpiringDialog(true);
         } catch {
@@ -136,7 +136,7 @@ export default function DashboardPage() {
 
     const initiateRestock = async (productId: number, productName: string) => {
         try {
-            await fetchAPI(API_ENDPOINTS.PURCHASES.REQUESTS, {
+            await fetchAPI(API_ENDPOINTS.COMMERCIAL.PROCUREMENT.REQUESTS, {
                 method: "POST",
                 body: JSON.stringify({
                     product_name: productName,
@@ -158,7 +158,7 @@ export default function DashboardPage() {
         }
 
         try {
-            await fetchAPI(API_ENDPOINTS.PURCHASES.REQUESTS, {
+            await fetchAPI(API_ENDPOINTS.COMMERCIAL.PROCUREMENT.REQUESTS, {
                 method: "POST",
                 body: JSON.stringify({
                     product_name: requestProduct,

@@ -73,7 +73,7 @@ export default function DocumentsTab({
         if (!id || mode === "wizard") return;
         setDocsLoading(true);
         try {
-            const res = await fetchAPI(API_ENDPOINTS.HR.EMPLOYEE_FILES.LIST(id));
+            const res = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_FILES.LIST(id));
             const data = Array.isArray(res) ? res : (res.data as EmployeeDocument[]) || [];
             setDocuments(data as EmployeeDocument[]);
         } catch (e) {
@@ -159,7 +159,7 @@ export default function DocumentsTab({
             if (editingIndex !== null) {
                 // UPDATE (Metadata only)
                 const doc = documents[editingIndex];
-                const res = await fetchAPI(API_ENDPOINTS.HR.EMPLOYEE_FILES.UPDATE(id, doc.id), {
+                const res = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_FILES.UPDATE(id, doc.id), {
                     method: 'PUT',
                     body: JSON.stringify(uploadForm)
                 });
@@ -184,7 +184,7 @@ export default function DocumentsTab({
                 const headers: Record<string, string> = { Accept: "application/json" };
                 if (token) headers["X-Session-Token"] = token;
 
-                const response = await fetch(`${getApiBase()}/${API_ENDPOINTS.HR.EMPLOYEE_FILES.UPLOAD(id).replace(/^\//, "")}`, {
+                const response = await fetch(`${getApiBase()}/${API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_FILES.UPLOAD(id).replace(/^\//, "")}`, {
                     method: "POST",
                     headers,
                     credentials: "include",
@@ -212,7 +212,7 @@ export default function DocumentsTab({
         if (!id || !confirm("هل أنت متأكد من حذف هذا المستند؟ لا يمكن التراجع عن هذه الخطوة.")) return;
 
         try {
-            const res = await fetchAPI(API_ENDPOINTS.HR.EMPLOYEE_FILES.DELETE(id, docId), {
+            const res = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_FILES.DELETE(id, docId), {
                 method: 'DELETE'
             });
 
@@ -235,7 +235,7 @@ export default function DocumentsTab({
             if (token) headers["X-Session-Token"] = token;
 
             const response = await fetch(
-                `${getApiBase()}/${API_ENDPOINTS.HR.EMPLOYEE_FILES.DOWNLOAD(id, doc.id).replace(/^\//, "")}`,
+                `${getApiBase()}/${API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_FILES.DOWNLOAD(id, doc.id).replace(/^\//, "")}`,
                 { headers, credentials: "include" }
             );
 

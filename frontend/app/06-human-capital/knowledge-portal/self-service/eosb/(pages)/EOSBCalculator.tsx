@@ -54,7 +54,7 @@ export function EOSBCalculator() {
 
     setIsLoading(true);
     try {
-      const res: any = await fetchAPI(API_ENDPOINTS.HR.EOSB.PREVIEW, {
+      const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EOSB.PREVIEW, {
         method: 'POST',
         body: JSON.stringify({
           employee_id: formData.employee_id,

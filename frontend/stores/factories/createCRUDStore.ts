@@ -23,7 +23,7 @@ export interface CRUDState<T> {
  * Configuration for creating a CRUD store.
  */
 export interface CRUDConfig<T = unknown> {
-    /** API endpoint path (e.g. API_ENDPOINTS.INVENTORY.PRODUCTS) */
+    /** API endpoint path (e.g. API_ENDPOINTS.SUPPLY_CHAIN.PRODUCTS) */
     endpoint: string;
     /** DevTools store name (e.g. 'product-store') */
     storeName: string;
@@ -54,7 +54,7 @@ export interface CRUDConfig<T = unknown> {
  * @example
  * ```ts
  * export const useProductStore = createCRUDStore<Product>({
- *   endpoint: API_ENDPOINTS.INVENTORY.PRODUCTS,
+ *   endpoint: API_ENDPOINTS.SUPPLY_CHAIN.PRODUCTS,
  *   storeName: 'product-store',
  * });
  * ```

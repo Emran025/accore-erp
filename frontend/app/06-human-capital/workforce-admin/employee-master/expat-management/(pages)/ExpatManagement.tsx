@@ -30,7 +30,7 @@ export function ExpatManagement() {
         page: currentPage.toString(),
         search: searchTerm,
       });
-      const res = await fetchAPI(`${API_ENDPOINTS.HR.EXPAT_MANAGEMENT.BASE}?${query}`);
+      const res = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EXPAT_MANAGEMENT.BASE}?${query}`);
       setRecords(res.data as ExpatRecord[] || []);
       setTotalPages(Number(res.last_page) || 1);
     } catch (error) {

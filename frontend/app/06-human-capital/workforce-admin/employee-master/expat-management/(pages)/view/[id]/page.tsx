@@ -24,7 +24,7 @@ export default function ViewExpatPage({ params }: { params: { id: string } }) {
     const loadRecord = async () => {
         setIsLoading(true);
         try {
-            const res: any = await fetchAPI(`${API_ENDPOINTS.HR.EXPAT_MANAGEMENT.BASE}/${params.id}`);
+            const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EXPAT_MANAGEMENT.BASE}/${params.id}`);
             setRecord(res.data || res);
         } catch (error) {
             showToast("فشل تحميل السجل", "error");

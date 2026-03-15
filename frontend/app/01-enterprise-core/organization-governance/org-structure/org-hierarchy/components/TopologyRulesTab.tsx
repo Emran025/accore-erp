@@ -28,8 +28,8 @@ export function TopologyRulesTab() {
         try {
             setIsLoading(true);
             const [rulesRes, metaRes] = await Promise.all([
-                fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.TOPOLOGY_RULES),
-                fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.META_TYPES),
+                fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.TOPOLOGY_RULES),
+                fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.META_TYPES),
             ]);
             setRules((rulesRes.topology_rules as TopologyRule[]) || []);
             setMetaTypes((metaRes.meta_types as MetaType[]) || []);

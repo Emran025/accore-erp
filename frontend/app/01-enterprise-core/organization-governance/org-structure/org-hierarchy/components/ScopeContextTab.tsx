@@ -27,8 +27,8 @@ export function ScopeContextTab() {
     const loadNodes = useCallback(async () => {
         try {
             const [nodesRes, metaRes] = await Promise.all([
-                fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.NODES),
-                fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.META_TYPES),
+                fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES),
+                fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.META_TYPES),
             ]);
             setNodes((nodesRes.nodes as StructureNode[]) || []);
             setMetaTypes((metaRes.meta_types as MetaType[]) || []);
@@ -44,7 +44,7 @@ export function ScopeContextTab() {
         if (!selectedUuid) { showToast("يرجى اختيار وحدة", "error"); return; }
         try {
             setIsLoading(true);
-            const res = await fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.SCOPE_CONTEXT(selectedUuid));
+            const res = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.SCOPE_CONTEXT(selectedUuid));
             if (res.success) {
                 setResult(res as unknown as ScopeResult);
             }

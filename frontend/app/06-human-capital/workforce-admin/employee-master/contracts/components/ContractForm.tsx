@@ -74,13 +74,13 @@ export function ContractForm({ contract }: ContractFormProps) {
             };
 
             if (contract) {
-                await fetchAPI(`${API_ENDPOINTS.HR.CONTRACTS.BASE}/${contract.id}`, {
+                await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.CONTRACTS.BASE}/${contract.id}`, {
                     method: 'PUT',
                     body: JSON.stringify(payload)
                 });
                 showToast("تم تحديث العقد بنجاح", "success");
             } else {
-                await fetchAPI(API_ENDPOINTS.HR.CONTRACTS.BASE, {
+                await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.CONTRACTS.BASE, {
                     method: 'POST',
                     body: JSON.stringify(payload)
                 });

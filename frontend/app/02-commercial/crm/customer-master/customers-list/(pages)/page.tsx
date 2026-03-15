@@ -59,7 +59,7 @@ export default function ARCustomersPage() {
 
             // Load Numbering Range Groups for Customers
             try {
-                const res: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.OBJECTS.byType("ar_customers"));
+                const res: any = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.OBJECTS.byType("ar_customers"));
                 if (res.success && (res.data || res.id)) {
                     const data = res.data || res;
                     setNrObjectId(data.id);
@@ -81,7 +81,7 @@ export default function ARCustomersPage() {
             // group/object are set, and code field is currently empty
             if (formDialog && !selectedCustomer && selectedGroup && nrObjectId && !formData.customer_code) {
                 try {
-                    const numRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.PREVIEW_NUMBER, {
+                    const numRes: any = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.PREVIEW_NUMBER, {
                         method: 'POST',
                         body: JSON.stringify({ object_id: nrObjectId, group_id: selectedGroup })
                     });

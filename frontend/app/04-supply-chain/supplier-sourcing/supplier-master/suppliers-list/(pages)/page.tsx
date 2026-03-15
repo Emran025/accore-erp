@@ -61,7 +61,7 @@ export default function SuppliersPage() {
 
             // Load Numbering Range Groups for Suppliers
             try {
-                const res: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.OBJECTS.byType("ap_suppliers"));
+                const res: any = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.OBJECTS.byType("ap_suppliers"));
                 if (res.success && (res.data || res.id)) {
                     const data = res.data || res;
                     setNrObjectId(data.id);
@@ -81,7 +81,7 @@ export default function SuppliersPage() {
         const fetchNextNumber = async () => {
             if (formDialog && !selectedSupplier && selectedGroup && nrObjectId && !formData.supplier_code) {
                 try {
-                    const numRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.PREVIEW_NUMBER, {
+                    const numRes: any = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.PREVIEW_NUMBER, {
                         method: 'POST',
                         body: JSON.stringify({ object_id: nrObjectId, group_id: selectedGroup })
                     });

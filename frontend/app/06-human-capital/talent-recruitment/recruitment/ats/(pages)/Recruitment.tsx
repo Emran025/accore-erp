@@ -55,13 +55,13 @@ export function Recruitment() {
   useEffect(() => { setCurrentPage(1); }, [activeTab]);
   useEffect(() => { activeTab === "requisitions" ? loadRequisitions() : loadApplicants(); }, [activeTab, currentPage, statusFilter]);
 
-  const loadDepartments = async () => { try { const r: any = await fetchAPI(API_ENDPOINTS.HR.DEPARTMENTS); setDepartments(r.data || (Array.isArray(r) ? r : [])); } catch { } };
+  const loadDepartments = async () => { try { const r: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.DEPARTMENTS); setDepartments(r.data || (Array.isArray(r) ? r : [])); } catch { } };
 
   const loadRequisitions = async () => {
     setIsLoading(true);
     try {
       const q = new URLSearchParams({ page: currentPage.toString(), ...(statusFilter && { status: statusFilter }) });
-      const res: any = await fetchAPI(`${API_ENDPOINTS.HR.RECRUITMENT.REQUISITIONS.BASE}?${q}`);
+      const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.RECRUITMENT.REQUISITIONS.BASE}?${q}`);
       const data = res.data || (Array.isArray(res) ? res : []);
       setRequisitions(data); setTotalPages(Number(res.last_page) || 1);
     } catch { showToast("فشل تحميل طلبات التوظيف", "error"); }
@@ -72,7 +72,7 @@ export function Recruitment() {
     setIsLoading(true);
     try {
       const q = new URLSearchParams({ page: currentPage.toString(), ...(statusFilter && { status: statusFilter }) });
-      const res: any = await fetchAPI(`${API_ENDPOINTS.HR.RECRUITMENT.APPLICANTS.BASE}?${q}`);
+      const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.RECRUITMENT.APPLICANTS.BASE}?${q}`);
       const data = res.data || (Array.isArray(res) ? res : []);
       setApplicants(data); setTotalPages(Number(res.last_page) || 1);
     } catch { showToast("فشل تحميل المرشحين", "error"); }
@@ -82,7 +82,7 @@ export function Recruitment() {
   const handleSaveRequisition = async () => {
     if (!reqForm.job_title || !reqForm.number_of_positions) { showToast("يرجى ملء الحقول المطلوبة", "error"); return; }
     try {
-      await fetchAPI(API_ENDPOINTS.HR.RECRUITMENT.REQUISITIONS.BASE, {
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.RECRUITMENT.REQUISITIONS.BASE, {
         method: "POST", body: JSON.stringify({
           job_title: reqForm.job_title, job_description: reqForm.job_description || undefined,
           department_id: reqForm.department_id ? Number(reqForm.department_id) : undefined,
@@ -101,7 +101,7 @@ export function Recruitment() {
 
   const handleUpdateReqStatus = async (id: number, status: string) => {
     try {
-      await fetchAPI(API_ENDPOINTS.HR.RECRUITMENT.REQUISITIONS.withId(id), { method: "PUT", body: JSON.stringify({ status }) });
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.RECRUITMENT.REQUISITIONS.withId(id), { method: "PUT", body: JSON.stringify({ status }) });
       showToast("تم تحديث الحالة", "success"); loadRequisitions();
     } catch (e: any) { showToast(e.message || "فشل التحديث", "error"); }
   };
@@ -109,7 +109,7 @@ export function Recruitment() {
   const handleSaveApplicant = async () => {
     if (!appForm.requisition_id || !appForm.first_name || !appForm.last_name || !appForm.email) { showToast("يرجى ملء الحقول المطلوبة", "error"); return; }
     try {
-      await fetchAPI(API_ENDPOINTS.HR.RECRUITMENT.APPLICANTS.BASE, {
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.RECRUITMENT.APPLICANTS.BASE, {
         method: "POST", body: JSON.stringify({
           requisition_id: Number(appForm.requisition_id), first_name: appForm.first_name,
           last_name: appForm.last_name, email: appForm.email, phone: appForm.phone || undefined,
@@ -122,14 +122,14 @@ export function Recruitment() {
 
   const handleUpdateAppStatus = async (id: number, status: string) => {
     try {
-      await fetchAPI(API_ENDPOINTS.HR.RECRUITMENT.APPLICANTS.STATUS(id), { method: "PUT", body: JSON.stringify({ status }) });
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.RECRUITMENT.APPLICANTS.STATUS(id), { method: "PUT", body: JSON.stringify({ status }) });
       showToast("تم تحديث حالة المرشح", "success"); loadApplicants();
     } catch (e: any) { showToast(e.message || "فشل التحديث", "error"); }
   };
 
   const viewReqDetail = async (id: number) => {
     try {
-      const res: any = await fetchAPI(API_ENDPOINTS.HR.RECRUITMENT.REQUISITIONS.withId(id));
+      const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.RECRUITMENT.REQUISITIONS.withId(id));
       setSelectedReq(res.data || res); setShowReqDetail(true);
     } catch { showToast("فشل تحميل التفاصيل", "error"); }
   };

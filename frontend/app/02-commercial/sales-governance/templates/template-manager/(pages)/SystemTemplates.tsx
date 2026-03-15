@@ -43,7 +43,7 @@ export function SystemTemplates() {
         setIsLoading(true);
         try {
             const query = typeFilter ? `?type=${typeFilter}` : "";
-            const res = await fetchAPI(`${API_ENDPOINTS.SYSTEM.TEMPLATES.BASE}${query}`);
+            const res = await fetchAPI(`${API_ENDPOINTS.PLATFORM.AUTOMATION.TEMPLATES.BASE}${query}`);
             console.log('SystemTemplates API Response:', res);
             setTemplates((res as any).data || []);
             console.log('Templates State:', (res as any).data || []);
@@ -63,7 +63,7 @@ export function SystemTemplates() {
         try {
             if (historyId) {
                 // Fetch history
-                const histRes = await fetchAPI(API_ENDPOINTS.SYSTEM.TEMPLATES.HISTORY(template.id));
+                const histRes = await fetchAPI(API_ENDPOINTS.PLATFORM.AUTOMATION.TEMPLATES.HISTORY(template.id));
                 const histData = (histRes as any).data || [];
                 const targetHistory = histData.find((h: any) => h.id === historyId);
                 if (targetHistory) {
@@ -75,7 +75,7 @@ export function SystemTemplates() {
                 }
             } else {
                 // Render live template
-                const res = await fetchAPI(API_ENDPOINTS.SYSTEM.TEMPLATES.RENDER(template.id), { method: "POST" });
+                const res = await fetchAPI(API_ENDPOINTS.PLATFORM.AUTOMATION.TEMPLATES.RENDER(template.id), { method: "POST" });
                 const resData = (res as any).data;
                 setPreviewHtml(resData?.rendered_html || template.body_html || "");
             }
@@ -90,7 +90,7 @@ export function SystemTemplates() {
 
     const viewHistory = async (template: SystemTemplate) => {
         try {
-            const res = await fetchAPI(API_ENDPOINTS.SYSTEM.TEMPLATES.HISTORY(template.id));
+            const res = await fetchAPI(API_ENDPOINTS.PLATFORM.AUTOMATION.TEMPLATES.HISTORY(template.id));
             setHistories((res as any).data || []);
             setSelectedTemplate(template);
             setShowHistory(true);
@@ -102,7 +102,7 @@ export function SystemTemplates() {
     const handleDelete = async (id: number) => {
         if (!confirm("هل أنت متأكد من حذف هذا القالب؟ لا يمكن التراجع عن هذه العملية!")) return;
         try {
-            await fetchAPI(API_ENDPOINTS.SYSTEM.TEMPLATES.withId(id), { method: "DELETE" });
+            await fetchAPI(API_ENDPOINTS.PLATFORM.AUTOMATION.TEMPLATES.withId(id), { method: "DELETE" });
             showToast("تم حذف القالب بنجاح", "success");
             loadTemplates();
         } catch { showToast("فشل حذف القالب", "error"); }

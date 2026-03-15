@@ -23,7 +23,7 @@ export function ZatcaSettingsTab() {
     const loadAuthority = useCallback(async () => {
         try {
             setIsLoading(true);
-            const response: any = await fetchAPI(API_ENDPOINTS.SYSTEM.TAX_ENGINE.SETUP);
+            const response: any = await fetchAPI(API_ENDPOINTS.FINANCE.TAX_ENGINE.SETUP);
             if (response.data && response.data.authorities) {
                 // Find ZATCA (or fallback to primary)
                 const zatca = response.data.authorities.find((a: TaxAuthority) => a.code === 'ZATCA' || a.is_primary);
@@ -70,7 +70,7 @@ export function ZatcaSettingsTab() {
                 config: config // Will auto-cast via eloquent
             };
 
-            await fetchAPI(API_ENDPOINTS.SYSTEM.TAX_ENGINE.AUTHORITIES.UPDATE(authority.id), {
+            await fetchAPI(API_ENDPOINTS.FINANCE.TAX_ENGINE.AUTHORITIES.UPDATE(authority.id), {
                 method: "PUT",
                 body: JSON.stringify(payload),
             });
@@ -92,7 +92,7 @@ export function ZatcaSettingsTab() {
 
         try {
             setIsOnboarding(true);
-            const response: any = await fetchAPI(API_ENDPOINTS.SYSTEM.SETTINGS.ZATCA + '/onboard', {
+            const response: any = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.SETTINGS.ZATCA + '/onboard', {
                 method: "POST", // Needs a real adapter mapping in future steps
                 body: JSON.stringify({
                     otp: config.zatca_otp,

@@ -67,7 +67,7 @@ export function ContingentWorkers() {
         search: searchTerm,
         status: statusFilter,
       });
-      const res = await fetchAPI(`${API_ENDPOINTS.HR.CONTINGENT_WORKERS.BASE}?${query}`);
+      const res = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.CONTINGENT_WORKERS.BASE}?${query}`);
       setWorkers(res.data as ContingentWorker[] || []);
       setTotalPages(Number(res.last_page) || 1);
     } catch (error) {

@@ -236,7 +236,7 @@ export function ComplianceProfileEditor({
             showToast("يجب حفظ الملف التعريفي أولاً", "warning");
             return;
         }
-        const res = await fetchAPI(API_ENDPOINTS.SYSTEM.COMPLIANCE_PROFILES.GENERATE_TOKEN(profile.id), {
+        const res = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.COMPLIANCE_PROFILES.GENERATE_TOKEN(profile.id), {
             method: "POST",
             body: JSON.stringify({ expires_in_days: 365 }),
         });
@@ -254,7 +254,7 @@ export function ComplianceProfileEditor({
     // ── Revoke token ──
     const handleRevokeToken = useCallback(async () => {
         if (!profile?.id) return;
-        const res = await fetchAPI(API_ENDPOINTS.SYSTEM.COMPLIANCE_PROFILES.REVOKE_TOKEN(profile.id), {
+        const res = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.COMPLIANCE_PROFILES.REVOKE_TOKEN(profile.id), {
             method: "POST",
         });
         if (res.success) {

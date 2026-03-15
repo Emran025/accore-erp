@@ -68,10 +68,10 @@ export default function AddEmployeePage() {
     const fetchOptions = async () => {
         try {
             const [rolesRes, deptsRes, empsRes, posRes] = await Promise.all([
-                fetchAPI(API_ENDPOINTS.SYSTEM.USERS.ROLES),
-                fetchAPI(API_ENDPOINTS.HR.DEPARTMENTS),
-                fetchAPI(API_ENDPOINTS.HR.EMPLOYEES.BASE), // Fetch potential managers
-                fetchAPI(API_ENDPOINTS.HR.ADMINISTRATION.POSITIONS.BASE)
+                fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.IAM.USERS.ROLES),
+                fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.DEPARTMENTS),
+                fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEES.BASE), // Fetch potential managers
+                fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.POSITIONS.BASE)
             ]);
             setRoles(rolesRes.data as Role[] || (Array.isArray(rolesRes) ? rolesRes : []));
             setDepartments(deptsRes.data as Department[] || (Array.isArray(deptsRes) ? deptsRes : []));
@@ -82,7 +82,7 @@ export default function AddEmployeePage() {
         }
 
         try {
-            const nrRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.OBJECTS.byType("employees"));
+            const nrRes: any = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.OBJECTS.byType("employees"));
             if (nrRes.success && (nrRes.data || nrRes.id)) {
                 const data = nrRes.data || nrRes;
                 setNrObjectId(data.id);
@@ -100,7 +100,7 @@ export default function AddEmployeePage() {
         const fetchNextNumber = async () => {
             if (selectedGroup && nrObjectId && !formData.employee_code) {
                 try {
-                    const numRes: any = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.PREVIEW_NUMBER, {
+                    const numRes: any = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.PREVIEW_NUMBER, {
                         method: 'POST',
                         body: JSON.stringify({ object_id: nrObjectId, group_id: selectedGroup })
                     });
@@ -149,7 +149,7 @@ export default function AddEmployeePage() {
                 (submissionData as any).employee_code = '';
             }
 
-            const res = await fetchAPI(API_ENDPOINTS.HR.EMPLOYEES.BASE, {
+            const res = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEES.BASE, {
                 method: 'POST',
                 body: JSON.stringify(submissionData),
             });
@@ -178,7 +178,7 @@ export default function AddEmployeePage() {
                     if (pf.expiration_date) fd.append("expiration_date", pf.expiration_date);
 
                     const envBase = process.env.NEXT_PUBLIC_API_BASE || "http://127.0.0.1:8000/api";
-                    const url = `${envBase}/${API_ENDPOINTS.HR.EMPLOYEE_FILES.UPLOAD(employeeId.toString()).replace(/^\//, "")}`;
+                    const url = `${envBase}/${API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_FILES.UPLOAD(employeeId.toString()).replace(/^\//, "")}`;
 
                     return fetch(url, {
                         method: "POST",

@@ -23,7 +23,7 @@ export function MetaTypesTab() {
     const loadMetaTypes = useCallback(async () => {
         try {
             setIsLoading(true);
-            const response = await fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.META_TYPES);
+            const response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.META_TYPES);
             setMetaTypes((response.meta_types as MetaType[]) || []);
         } catch { showToast("خطأ في تحميل أنواع الوحدات", "error"); }
         finally { setIsLoading(false); }

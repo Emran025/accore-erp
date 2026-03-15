@@ -88,7 +88,7 @@ function APLedgerPageContent() {
     if (!supplierId) return;
 
     try {
-      const response = await fetchAPI(`${API_ENDPOINTS.PURCHASES.SUPPLIERS.BASE}?id=${supplierId}`);
+      const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.PROCUREMENT.SUPPLIERS.BASE}?id=${supplierId}`);
       if (response.success && response.data) {
         const supplierData = Array.isArray(response.data) ? response.data[0] : response.data;
         setSupplier(supplierData as Supplier);
@@ -111,7 +111,7 @@ function APLedgerPageContent() {
         if (filters.date_from) params += `&date_from=${filters.date_from}`;
         if (filters.date_to) params += `&date_to=${filters.date_to}`;
 
-        const response = await fetchAPI(`${API_ENDPOINTS.PURCHASES.SUPPLIERS.LEDGER}?${params}`);
+        const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.PROCUREMENT.SUPPLIERS.LEDGER}?${params}`);
         if (response.success && response.data) {
           const rawTransactions = response.data as any[];
           const mappedTransactions: LedgerTransaction[] = rawTransactions.map((item) => ({
@@ -201,7 +201,7 @@ function APLedgerPageContent() {
       if (currentTransactionId) data.id = currentTransactionId;
 
       const method = currentTransactionId ? "PUT" : "POST";
-      const response = await fetchAPI(API_ENDPOINTS.PURCHASES.SUPPLIERS.TRANSACTIONS, {
+      const response = await fetchAPI(API_ENDPOINTS.COMMERCIAL.PROCUREMENT.SUPPLIERS.TRANSACTIONS, {
         method,
         body: JSON.stringify(data),
       });
@@ -221,7 +221,7 @@ function APLedgerPageContent() {
 
   const viewInvoice = async (id: number) => {
     try {
-      const response = await fetchAPI(`${API_ENDPOINTS.PURCHASES.BASE}?id=${id}`);
+      const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.PROCUREMENT.BASE}?id=${id}`);
       if (response.success && response.data) {
         setSelectedInvoice(response.data as DetailedInvoiceSuppliers);
         setViewDialog(true);
@@ -236,8 +236,8 @@ function APLedgerPageContent() {
     if (!item.reference_id) return [];
 
     const endpoint = item.reference_type === "purchase_returns"
-      ? `${API_ENDPOINTS.PURCHASES.BASE}?id=${item.reference_id}&type=return`
-      : `${API_ENDPOINTS.PURCHASES.BASE}?id=${item.reference_id}`;
+      ? `${API_ENDPOINTS.COMMERCIAL.PROCUREMENT.BASE}?id=${item.reference_id}&type=return`
+      : `${API_ENDPOINTS.COMMERCIAL.PROCUREMENT.BASE}?id=${item.reference_id}`;
 
     try {
       const response = await fetchAPI(endpoint);
@@ -270,7 +270,7 @@ function APLedgerPageContent() {
       try {
         const newMap = { ...invoicesMap };
         await Promise.all(missingIds.map(async (id) => {
-          const res = await fetchAPI(`${API_ENDPOINTS.PURCHASES.BASE}?id=${id}`);
+          const res = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.PROCUREMENT.BASE}?id=${id}`);
           if (res.success && res.data) {
             newMap[id] = res.data as SelectableInvoice;
           }
@@ -292,7 +292,7 @@ function APLedgerPageContent() {
 
     try {
       for (const returnData of dataArray) {
-        const response = await fetchAPI(API_ENDPOINTS.PURCHASES.BASE, {
+        const response = await fetchAPI(API_ENDPOINTS.COMMERCIAL.PROCUREMENT.BASE, {
           method: "POST",
           body: JSON.stringify({ ...returnData, type: "return" }),
         });
@@ -318,7 +318,7 @@ function APLedgerPageContent() {
     if (!deleteTransactionId) return;
 
     try {
-      const response = await fetchAPI(`${API_ENDPOINTS.PURCHASES.SUPPLIERS.TRANSACTIONS}?id=${deleteTransactionId}`, {
+      const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.PROCUREMENT.SUPPLIERS.TRANSACTIONS}?id=${deleteTransactionId}`, {
         method: "DELETE",
       });
       if (response.success) {
@@ -343,7 +343,7 @@ function APLedgerPageContent() {
     if (!restoreTransactionId) return;
 
     try {
-      const response = await fetchAPI(API_ENDPOINTS.PURCHASES.SUPPLIERS.TRANSACTIONS, {
+      const response = await fetchAPI(API_ENDPOINTS.COMMERCIAL.PROCUREMENT.SUPPLIERS.TRANSACTIONS, {
         method: "PUT",
         body: JSON.stringify({ id: restoreTransactionId, restore: true }),
       });

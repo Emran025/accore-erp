@@ -82,7 +82,7 @@ function LedgerPageContent() {
             if (filters.date_from) params += `&date_from=${filters.date_from}`;
             if (filters.date_to) params += `&date_to=${filters.date_to}`;
 
-            const response = await fetchAPI(`${API_ENDPOINTS.SALES.REPRESENTATIVES.LEDGER}?${params}`);
+            const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.REPRESENTATIVES.LEDGER}?${params}`);
             if (response.success && response.data) {
                 const dataObj = (response as any).data;
                 setTransactions(dataObj.data || []);
@@ -153,12 +153,12 @@ function LedgerPageContent() {
             let response;
             if (editingTransactionId) {
                 data.id = editingTransactionId;
-                response = await fetchAPI(`${API_ENDPOINTS.SALES.REPRESENTATIVES.TRANSACTIONS}/${editingTransactionId}`, {
+                response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.REPRESENTATIVES.TRANSACTIONS}/${editingTransactionId}`, {
                     method: "PUT",
                     body: JSON.stringify(data),
                 });
             } else {
-                response = await fetchAPI(API_ENDPOINTS.SALES.REPRESENTATIVES.TRANSACTIONS, {
+                response = await fetchAPI(API_ENDPOINTS.COMMERCIAL.SALES.REPRESENTATIVES.TRANSACTIONS, {
                     method: "POST",
                     body: JSON.stringify(data),
                 });
@@ -185,7 +185,7 @@ function LedgerPageContent() {
         if (!deleteTransactionId) return;
 
         try {
-            const response = await fetchAPI(API_ENDPOINTS.SALES.REPRESENTATIVES.TRANSACTIONS, {
+            const response = await fetchAPI(API_ENDPOINTS.COMMERCIAL.SALES.REPRESENTATIVES.TRANSACTIONS, {
                 method: "DELETE",
                 body: JSON.stringify({ id: deleteTransactionId })
             });
@@ -205,7 +205,7 @@ function LedgerPageContent() {
 
     const restoreTransaction = async (id: number) => {
         try {
-            const response = await fetchAPI(`${API_ENDPOINTS.SALES.REPRESENTATIVES.TRANSACTIONS}/${id}/restore`, {
+            const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.REPRESENTATIVES.TRANSACTIONS}/${id}/restore`, {
                 method: "POST",
             });
 
@@ -222,7 +222,7 @@ function LedgerPageContent() {
 
     const viewInvoice = async (id: number) => {
         try {
-            const response = await fetchAPI(`${API_ENDPOINTS.SALES.INVOICES}/${id}`);
+            const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICES}/${id}`);
             if (response.success && response.data) {
                 setSelectedInvoice(response.data as DetailedInvoiceRepresentatives);
                 setViewInvoiceDialog(true);
@@ -240,7 +240,7 @@ function LedgerPageContent() {
             return [];
         }
         try {
-            const res = await fetchAPI(`${API_ENDPOINTS.SALES.INVOICES}/${transaction.reference_id}`);
+            const res = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICES}/${transaction.reference_id}`);
             if (res.success && res.data) {
                 return (res.data as any).items.map((item: any) => ({
                     id: item.id || Math.random(),

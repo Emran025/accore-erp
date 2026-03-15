@@ -67,21 +67,21 @@ export default function PurchasesPage() {
 
     const loadProducts = useCallback(async () => {
         try {
-            const response = await fetchAPI(`${API_ENDPOINTS.INVENTORY.PRODUCTS}?limit=1000`);
+            const response = await fetchAPI(`${API_ENDPOINTS.SUPPLY_CHAIN.PRODUCTS}?limit=1000`);
             setProducts((response.data as Product[]) || []);
         } catch (e) { console.error(e); }
     }, []);
 
     const loadSuppliers = useCallback(async () => {
         try {
-            const response = await fetchAPI(`${API_ENDPOINTS.PURCHASES.SUPPLIERS.BASE}?limit=1000`);
+            const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.PROCUREMENT.SUPPLIERS.BASE}?limit=1000`);
             setSuppliers((response.data as Supplier[]) || []);
         } catch (e) { console.error(e); }
     }, []);
 
     const loadRequests = useCallback(async () => {
         try {
-            const response = await fetchAPI(`${API_ENDPOINTS.PURCHASES.REQUESTS}?status=pending`);
+            const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.PROCUREMENT.REQUESTS}?status=pending`);
             setRequests((response.data as PurchaseRequest[]) || []);
         } catch (e) { console.error(e); }
     }, []);
@@ -232,7 +232,7 @@ export default function PurchasesPage() {
 
     const markRequestDone = async (requestId: number) => {
         try {
-            await fetchAPI(`${API_ENDPOINTS.PURCHASES.REQUESTS}?id=${requestId}`, {
+            await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.PROCUREMENT.REQUESTS}?id=${requestId}`, {
                 method: "PUT",
                 body: JSON.stringify({ status: "done" }),
             });

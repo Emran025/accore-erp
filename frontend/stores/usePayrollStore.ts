@@ -84,7 +84,7 @@ export const usePayrollStore = create<PayrollState>()(
             loadCycles: async () => {
                 set({ cyclesLoading: true });
                 try {
-                    const res: any = await fetchAPI(API_ENDPOINTS.HR.PAYROLL.CYCLES);
+                    const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.PAYROLL.CYCLES);
                     const data = res.data?.data || res.data || res || [];
                     set({ cycles: Array.isArray(data) ? data : [] });
                 } catch (error) {
@@ -98,7 +98,7 @@ export const usePayrollStore = create<PayrollState>()(
             // ──── Load cycle details (items) ──────────────────
             loadCycleDetails: async (cycleId) => {
                 try {
-                    const res: any = await fetchAPI(API_ENDPOINTS.HR.PAYROLL.CYCLE_ITEMS(cycleId));
+                    const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.PAYROLL.CYCLE_ITEMS(cycleId));
                     const items = (res.data || (Array.isArray(res) ? res : [])) as PayrollItemExtended[];
                     const cycle = res.cycle ? (res.cycle as PayrollCycle) : get().selectedCycle;
                     set({ items, selectedCycle: cycle });
@@ -136,7 +136,7 @@ export const usePayrollStore = create<PayrollState>()(
             // ──── Load transaction history for an item ────────
             loadItemHistory: async (itemId) => {
                 try {
-                    const res: any = await fetchAPI(API_ENDPOINTS.HR.PAYROLL.ITEM_TRANSACTIONS(itemId));
+                    const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.PAYROLL.ITEM_TRANSACTIONS(itemId));
                     const transactions = (res.data as PayrollTransaction[]) || [];
                     set({ transactions });
                     return transactions;
@@ -150,7 +150,7 @@ export const usePayrollStore = create<PayrollState>()(
             // ──── Create a new payroll cycle ──────────────────
             createCycle: async (payload) => {
                 try {
-                    const res: any = await fetchAPI(API_ENDPOINTS.HR.PAYROLL.GENERATE, {
+                    const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.PAYROLL.GENERATE, {
                         method: 'POST',
                         body: JSON.stringify(payload),
                     });
@@ -170,7 +170,7 @@ export const usePayrollStore = create<PayrollState>()(
             // ──── Approve / advance cycle ─────────────────────
             approveCycle: async (id) => {
                 try {
-                    const res: any = await fetchAPI(API_ENDPOINTS.HR.PAYROLL.APPROVE(id), { method: 'POST' });
+                    const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.PAYROLL.APPROVE(id), { method: 'POST' });
                     if (res.success !== false) {
                         showToast('تمت الموافقة بنجاح', 'success');
                         get().loadCycles();
@@ -187,7 +187,7 @@ export const usePayrollStore = create<PayrollState>()(
             // ──── Bulk payment ────────────────────────────────
             bulkPayment: async (cycleId, accountId) => {
                 try {
-                    const res: any = await fetchAPI(API_ENDPOINTS.HR.PAYROLL.PROCESS_PAYMENT(cycleId), {
+                    const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.PAYROLL.PROCESS_PAYMENT(cycleId), {
                         method: 'POST',
                         body: JSON.stringify({ account_id: accountId }),
                     });
@@ -207,7 +207,7 @@ export const usePayrollStore = create<PayrollState>()(
             // ──── Toggle item on_hold / active ────────────────
             toggleItemStatus: async (item) => {
                 try {
-                    const res: any = await fetchAPI(API_ENDPOINTS.HR.PAYROLL.TOGGLE_ITEM(item.id), {
+                    const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.PAYROLL.TOGGLE_ITEM(item.id), {
                         method: 'POST',
                     });
                     if (res) {
@@ -230,7 +230,7 @@ export const usePayrollStore = create<PayrollState>()(
             // ──── Update a payroll item ───────────────────────
             updateItem: async (itemId, data) => {
                 try {
-                    const res: any = await fetchAPI(API_ENDPOINTS.HR.PAYROLL.UPDATE_ITEM(itemId), {
+                    const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.PAYROLL.UPDATE_ITEM(itemId), {
                         method: 'PUT',
                         body: JSON.stringify(data),
                     });
@@ -248,7 +248,7 @@ export const usePayrollStore = create<PayrollState>()(
             // ──── Individual payment ──────────────────────────
             individualPayment: async (itemId, data) => {
                 try {
-                    const res: any = await fetchAPI(API_ENDPOINTS.HR.PAYROLL.PAY_ITEM(itemId), {
+                    const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.PAYROLL.PAY_ITEM(itemId), {
                         method: 'POST',
                         body: JSON.stringify(data),
                     });

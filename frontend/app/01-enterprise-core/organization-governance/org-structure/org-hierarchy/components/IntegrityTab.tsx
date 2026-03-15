@@ -44,7 +44,7 @@ export function IntegrityTab() {
             setIsScanning(true);
             setIssues([]);
 
-            const res = await fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.INTEGRITY_CHECK);
+            const res = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.INTEGRITY_CHECK);
 
             if (res.success) {
                 setIssues((res.issues as IntegrityIssue[]) || []);

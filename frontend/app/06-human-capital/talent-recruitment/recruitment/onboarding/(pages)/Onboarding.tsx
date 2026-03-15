@@ -43,7 +43,7 @@ export function Onboarding() {
     setIsLoading(true);
     try {
       const q = new URLSearchParams({ page: currentPage.toString(), workflow_type: activeTab });
-      const res: any = await fetchAPI(`${API_ENDPOINTS.HR.ONBOARDING.BASE}?${q}`);
+      const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.ONBOARDING.BASE}?${q}`);
       setWorkflows(res.data || []); setTotalPages(Number(res.last_page) || 1);
     } catch { showToast("فشل تحميل البيانات", "error"); }
     finally { setIsLoading(false); }
@@ -52,7 +52,7 @@ export function Onboarding() {
   const handleCreate = async () => {
     if (!form.employee_id || !form.start_date) { showToast("يرجى ملء الحقول المطلوبة", "error"); return; }
     try {
-      await fetchAPI(API_ENDPOINTS.HR.ONBOARDING.BASE, {
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ONBOARDING.BASE, {
         method: "POST", body: JSON.stringify({
           employee_id: Number(form.employee_id), workflow_type: activeTab,
           start_date: form.start_date, target_completion_date: form.target_completion_date || undefined,
@@ -65,17 +65,17 @@ export function Onboarding() {
 
   const viewDetail = async (id: number) => {
     try {
-      const res: any = await fetchAPI(API_ENDPOINTS.HR.ONBOARDING.withId(id));
+      const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ONBOARDING.withId(id));
       setSelectedWorkflow(res.data || res); setShowDetailDialog(true);
     } catch { showToast("فشل تحميل التفاصيل", "error"); }
   };
 
   const handleUpdateTask = async (workflowId: number, taskId: number, status: string) => {
     try {
-      await fetchAPI(API_ENDPOINTS.HR.ONBOARDING.TASK(workflowId, taskId), { method: "PUT", body: JSON.stringify({ status }) });
+      await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ONBOARDING.TASK(workflowId, taskId), { method: "PUT", body: JSON.stringify({ status }) });
       showToast("تم تحديث المهمة", "success");
       // Reload detail
-      const res: any = await fetchAPI(API_ENDPOINTS.HR.ONBOARDING.withId(workflowId));
+      const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ONBOARDING.withId(workflowId));
       setSelectedWorkflow(res.data || res);
       loadWorkflows();
     } catch (e: any) { showToast(e.message || "فشل التحديث", "error"); }

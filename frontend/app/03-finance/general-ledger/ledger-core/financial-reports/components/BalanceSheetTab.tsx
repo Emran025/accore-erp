@@ -14,7 +14,7 @@ export function BalanceSheetTab({ onLoad }: { onLoad?: () => void }) {
     const loadFinancialData = useCallback(async () => {
         try {
             setIsLoading(true);
-            const response = await fetchAPI(API_ENDPOINTS.REPORTS.BALANCE_SHEET);
+            const response = await fetchAPI(API_ENDPOINTS.INTELLIGENCE.REPORTS.BALANCE_SHEET);
 
             if (response.success && response.data) {
                 const apiData = response.data as APIBalanceSheet;

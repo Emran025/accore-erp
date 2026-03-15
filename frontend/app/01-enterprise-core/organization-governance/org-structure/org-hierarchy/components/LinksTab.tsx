@@ -51,10 +51,10 @@ export function LinksTab() {
             if (showActiveOnly) params.set("active_only", "1");
 
             const [linksRes, nodesRes, metaRes, rulesRes] = await Promise.all([
-                fetchAPI(`${API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.LINKS}?${params}`),
-                fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.NODES),
-                fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.META_TYPES),
-                fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.TOPOLOGY_RULES),
+                fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.ORG.LINKS}?${params}`),
+                fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES),
+                fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.META_TYPES),
+                fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.TOPOLOGY_RULES),
             ]);
             setLinks((linksRes.links as StructureLink[]) || []);
             setNodes((nodesRes.nodes as StructureNode[]) || []);
@@ -92,7 +92,7 @@ export function LinksTab() {
     const handleCreateLink = async () => {
         if (!sourceUuid || !targetUuid) { showToast("يرجى اختيار المصدر والهدف", "error"); return; }
         try {
-            await fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.LINKS, {
+            await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.LINKS, {
                 method: "POST",
                 body: JSON.stringify({
                     source_node_uuid: sourceUuid, target_node_uuid: targetUuid,
@@ -119,7 +119,7 @@ export function LinksTab() {
     const handleUpdateLink = async () => {
         if (!selectedLink) return;
         try {
-            await fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.LINK(selectedLink.id), {
+            await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.LINK(selectedLink.id), {
                 method: "PUT",
                 body: JSON.stringify({
                     link_type: linkType, priority: parseInt(priority) || 0,
@@ -141,7 +141,7 @@ export function LinksTab() {
     const handleDeleteLink = async () => {
         if (!selectedLink) return;
         try {
-            await fetchAPI(API_ENDPOINTS.SYSTEM.ORG_STRUCTURE.LINK(selectedLink.id), { method: "DELETE" });
+            await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.LINK(selectedLink.id), { method: "DELETE" });
             showToast("تم حذف الارتباط", "success");
             setDeleteDialog(false); setSelectedLink(null); loadAll();
         } catch (e: unknown) {

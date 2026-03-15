@@ -68,7 +68,7 @@ export default function AuditTrailPage() {
       if (moduleFilter) params.append("module", moduleFilter);
       if (searchTerm) params.append("search", searchTerm);
 
-      const response = await fetchAPI(`${API_ENDPOINTS.SYSTEM.AUDIT.LOGS}?${params.toString()}`);
+      const response = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.AUDIT.LOGS}?${params.toString()}`);
       setLogs(response.logs as AuditLog[] || []);
       setTotalPages(Math.ceil((response.total as number || 0) / itemsPerPage));
       setCurrentPage(page);

@@ -22,7 +22,7 @@ export function ExpansionLogsPanel({ intervalId, isOpen, onClose }: ExpansionLog
         const load = async () => {
             setLoading(true);
             try {
-                const res = await fetchAPI(API_ENDPOINTS.NUMBER_RANGES.INTERVALS.expansionLogs(intervalId));
+                const res = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.INTERVALS.expansionLogs(intervalId));
                 if (res.success && res.data) {
                     setLogs(res.data as NrExpansionLog[]);
                 }

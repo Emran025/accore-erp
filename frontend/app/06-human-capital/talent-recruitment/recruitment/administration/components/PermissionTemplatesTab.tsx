@@ -26,7 +26,7 @@ export function PermissionTemplatesTab() {
     const loadTemplates = async () => {
         setIsLoading(true);
         try {
-            const res = await fetchAPI(API_ENDPOINTS.HR.ADMINISTRATION.PERMISSION_TEMPLATES.BASE);
+            const res = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.PERMISSION_TEMPLATES.BASE);
             setTemplates((res as any).data || []);
         } catch { console.error("Failed to load templates"); }
         finally { setIsLoading(false); }
@@ -34,7 +34,7 @@ export function PermissionTemplatesTab() {
 
     const loadRoles = async () => {
         try {
-            const res = await fetchAPI(`${API_ENDPOINTS.SYSTEM.USERS.ROLES}?action=roles`);
+            const res = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.IAM.USERS.ROLES}?action=roles`);
             setRoles((res as any).data || []);
         } catch { console.error("Failed to load roles"); }
     };
@@ -45,7 +45,7 @@ export function PermissionTemplatesTab() {
             return;
         }
         try {
-            await fetchAPI(API_ENDPOINTS.HR.ADMINISTRATION.PERMISSION_TEMPLATES.APPLY, {
+            await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.PERMISSION_TEMPLATES.APPLY, {
                 method: "POST",
                 body: JSON.stringify({ template_id: Number(selectedTemplateId), role_id: Number(selectedRoleId) }),
             });

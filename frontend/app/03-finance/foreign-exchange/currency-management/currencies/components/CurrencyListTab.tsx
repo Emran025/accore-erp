@@ -46,8 +46,8 @@ export function CurrencyListTab() {
         try {
             setLoading(true);
             const [currRes, statusRes] = await Promise.all([
-                fetchAPI(API_ENDPOINTS.FINANCE.CURRENCIES.BASE),
-                fetchAPI(API_ENDPOINTS.FINANCE.CURRENCY_POLICIES.ACTIVE)
+                fetchAPI(API_ENDPOINTS.FINANCE.FOREIGN_EXCHANGE.CURRENCIES.BASE),
+                fetchAPI(API_ENDPOINTS.FINANCE.FOREIGN_EXCHANGE.POLICIES.ACTIVE)
             ]);
 
             if (currRes.success) {
@@ -71,8 +71,8 @@ export function CurrencyListTab() {
     const handleSave = async () => {
         try {
             const url = editingCurrency
-                ? API_ENDPOINTS.FINANCE.CURRENCIES.withId(editingCurrency.id)
-                : API_ENDPOINTS.FINANCE.CURRENCIES.BASE;
+                ? API_ENDPOINTS.FINANCE.FOREIGN_EXCHANGE.CURRENCIES.withId(editingCurrency.id)
+                : API_ENDPOINTS.FINANCE.FOREIGN_EXCHANGE.CURRENCIES.BASE;
 
             const method = editingCurrency ? "PUT" : "POST";
 
@@ -114,7 +114,7 @@ export function CurrencyListTab() {
             variant: "danger",
             onConfirm: async () => {
                 try {
-                    const res = await fetchAPI(API_ENDPOINTS.FINANCE.CURRENCIES.withId(id), { method: "DELETE" });
+                    const res = await fetchAPI(API_ENDPOINTS.FINANCE.FOREIGN_EXCHANGE.CURRENCIES.withId(id), { method: "DELETE" });
                     if (res.success) {
                         showToast("تم الحذف بنجاح", "success");
                         loadData();
@@ -130,7 +130,7 @@ export function CurrencyListTab() {
 
     const handleToggleActive = async (curr: Currency) => {
         try {
-            const res = await fetchAPI(API_ENDPOINTS.FINANCE.CURRENCIES.TOGGLE(curr.id), { method: "POST" });
+            const res = await fetchAPI(API_ENDPOINTS.FINANCE.FOREIGN_EXCHANGE.CURRENCIES.TOGGLE(curr.id), { method: "POST" });
             if (res.success) {
                 loadData();
                 showToast("تم تحديث الحالة", "success");

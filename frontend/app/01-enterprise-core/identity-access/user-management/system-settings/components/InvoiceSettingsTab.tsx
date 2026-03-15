@@ -29,7 +29,7 @@ export function InvoiceSettingsTab() {
 
   const loadInvoiceSettings = useCallback(async () => {
     try {
-      const response = await fetchAPI(API_ENDPOINTS.SYSTEM.SETTINGS.INVOICE);
+      const response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.SETTINGS.INVOICE);
       if (response.settings) {
         setInvoiceSettings(response.settings as InvoiceSettings);
       }
@@ -40,7 +40,7 @@ export function InvoiceSettingsTab() {
 
   const loadStoreSettings = useCallback(async () => {
     try {
-      const response = await fetchAPI(API_ENDPOINTS.SYSTEM.SETTINGS.STORE);
+      const response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.SETTINGS.STORE);
       if (response.settings) {
         setStoreSettings(response.settings as StoreSettings);
       }
@@ -56,7 +56,7 @@ export function InvoiceSettingsTab() {
 
   const saveInvoiceSettings = async () => {
     try {
-      await fetchAPI(API_ENDPOINTS.SYSTEM.SETTINGS.INVOICE, {
+      await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.SETTINGS.INVOICE, {
         method: "PUT",
         body: JSON.stringify(invoiceSettings),
       });
@@ -78,7 +78,7 @@ export function InvoiceSettingsTab() {
       }
 
       // Get latest invoice for preview
-      const invoicesResponse = await fetchAPI(`${API_ENDPOINTS.SALES.INVOICES}?page=1&limit=1`);
+      const invoicesResponse = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICES}?page=1&limit=1`);
       const invoices = invoicesResponse.invoices as InvoiceData[] | undefined;
       if (!invoicesResponse.success || !invoices || invoices.length === 0) {
         showToast("لا توجد فواتير سابقة لإجراء المعاينة", "error");
@@ -86,7 +86,7 @@ export function InvoiceSettingsTab() {
       }
 
       const sampleInvoice = invoices[0];
-      const detailResponse = await fetchAPI(`${API_ENDPOINTS.SALES.INVOICE_DETAILS}?id=${sampleInvoice.id}`);
+      const detailResponse = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICE_DETAILS}?id=${sampleInvoice.id}`);
       if (!detailResponse.success && !detailResponse.invoice) {
         showToast("فشل تحميل تفاصيل الفاتورة", "error");
         return;

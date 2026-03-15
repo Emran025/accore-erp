@@ -55,7 +55,7 @@ let systemSettings: InvoiceSettings | null = null;
 export async function getSettings(): Promise<InvoiceSettings> {
   if (systemSettings) return systemSettings;
   try {
-    const result = await fetchAPI(API_ENDPOINTS.SYSTEM.SETTINGS.INDEX);
+    const result = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.SETTINGS.INDEX);
     const data = (result.settings || result.data || {}) as any;
     if (result.success || data.store_name) {
       systemSettings = {
@@ -406,7 +406,7 @@ export async function printInvoice(invoiceId: number): Promise<void> {
   const settings = await getSettings();
 
   // Fetch invoice details
-  const response = await fetchAPI(API_ENDPOINTS.SALES.INVOICE_BY_ID(invoiceId));
+  const response = await fetchAPI(API_ENDPOINTS.COMMERCIAL.SALES.INVOICE_BY_ID(invoiceId));
   if (!response.success && !response.invoice) {
     throw new Error("فشل تحميل تفاصيل الفاتورة");
   }

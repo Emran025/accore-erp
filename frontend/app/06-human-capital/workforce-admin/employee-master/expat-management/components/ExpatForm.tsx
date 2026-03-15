@@ -96,13 +96,13 @@ export function ExpatForm({ record }: ExpatFormProps) {
             };
 
             if (record) {
-                await fetchAPI(`${API_ENDPOINTS.HR.EXPAT_MANAGEMENT.BASE}/${record.id}`, {
+                await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EXPAT_MANAGEMENT.BASE}/${record.id}`, {
                     method: 'PUT',
                     body: JSON.stringify(payload)
                 });
                 showToast("تم تحديث السجل بنجاح", "success");
             } else {
-                await fetchAPI(API_ENDPOINTS.HR.EXPAT_MANAGEMENT.BASE, {
+                await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EXPAT_MANAGEMENT.BASE, {
                     method: 'POST',
                     body: JSON.stringify(payload)
                 });
