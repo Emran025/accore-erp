@@ -3,7 +3,7 @@
 namespace App\Domains\HumanCapital\WorkforceAdmin\Actions;
 
 use App\Domains\Shared\Actions\Action;
-use App\Domains\AssetManagement\Models\EmployeeAsset;
+use App\Domains\Assets\AssetLifecycle\Models\EmployeeAsset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

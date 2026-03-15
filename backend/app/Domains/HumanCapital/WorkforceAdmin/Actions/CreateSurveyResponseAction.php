@@ -1,8 +1,8 @@
 <?php
 namespace App\Domains\HumanCapital\WorkforceAdmin\Actions;
 use App\Domains\Shared\Actions\Action;
-use App\Domains\HumanCapital\Communications\Models\PulseSurvey;
-use App\Domains\HumanCapital\Communications\Models\SurveyResponse;
+use App\Domains\HumanCapital\HRCompliance\Models\PulseSurvey;
+use App\Domains\HumanCapital\HRCompliance\Models\SurveyResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 class CreateSurveyResponseAction extends Action

@@ -6,7 +6,7 @@ use App\Domains\Shared\Actions\Action;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Department;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Domains\EnterpriseCore\IAM\Services\PermissionService;
+use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 class CreateDepartmentAction
 {

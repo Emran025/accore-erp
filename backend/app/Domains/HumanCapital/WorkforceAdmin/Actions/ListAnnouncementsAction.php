@@ -1,7 +1,7 @@
 <?php
 namespace App\Domains\HumanCapital\WorkforceAdmin\Actions;
 use App\Domains\Shared\Actions\Action;
-use App\Domains\HumanCapital\Communications\Models\CorporateAnnouncement;
+use App\Domains\HumanCapital\HRCompliance\Models\CorporateAnnouncement;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 class ListAnnouncementsAction extends Action

@@ -3,7 +3,7 @@
 namespace App\Domains\HumanCapital\WorkforceAdmin\Actions;
 
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
-use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class DeleteEmployeeAction

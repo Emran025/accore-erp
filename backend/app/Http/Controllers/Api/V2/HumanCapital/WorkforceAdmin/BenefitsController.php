@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\V2\HumanCapital\WorkforceAdmin;
 
 use App\Http\Controllers\Controller;
-use App\Domains\HumanCapital\Payroll\Models\BenefitsPlan;
-use App\Domains\HumanCapital\Payroll\Models\BenefitsEnrollment;
+use App\Domains\HumanCapital\PayrollBenefits\Models\BenefitsPlan;
+use App\Domains\HumanCapital\PayrollBenefits\Models\BenefitsEnrollment;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\StoreBenefitsPlanRequest;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\UpdateBenefitsPlanRequest;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\StoreBenefitsEnrollmentRequest;

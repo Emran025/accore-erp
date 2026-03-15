@@ -3,7 +3,7 @@
 namespace App\Domains\HumanCapital\WorkforceAdmin\Actions;
 
 use App\Domains\HumanCapital\WorkforceAdmin\Models\JobTitle;
-use App\Domains\EnterpriseCore\OrgIntegration\Services\OrgIntegrationService;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Services\OrgIntegrationService;
 use Illuminate\Support\Facades\DB;
 
 class UpdateJobTitleAction

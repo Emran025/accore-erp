@@ -1,7 +1,7 @@
 <?php
 namespace App\Domains\HumanCapital\WorkforceAdmin\Actions;
 use App\Domains\Shared\Actions\Action;
-use App\Domains\Manufacturing\Models\QaCompliance;
+use App\Domains\Manufacturing\QualityControl\Models\QaCompliance;
 use Illuminate\Http\JsonResponse;
 class ShowComplianceAction extends Action
 {

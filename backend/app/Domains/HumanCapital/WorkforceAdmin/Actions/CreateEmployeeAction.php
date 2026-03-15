@@ -4,8 +4,8 @@ namespace App\Domains\HumanCapital\WorkforceAdmin\Actions;
 
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Position;
-use App\Domains\EnterpriseCore\IAM\Models\User;
-use App\Domains\EnterpriseCore\NumberRanges\Services\NumberRangeService;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
+use App\Domains\EnterpriseCore\SystemOverview\Services\NumberRangeService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Exception;

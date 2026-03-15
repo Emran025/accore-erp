@@ -1,7 +1,7 @@
 <?php
 namespace App\Domains\HumanCapital\WorkforceAdmin\Actions;
 use App\Domains\Shared\Actions\Action;
-use App\Domains\HumanCapital\TimeAndAttendance\Models\ScheduleShift;
+use App\Domains\HumanCapital\TimeProductivity\Models\ScheduleShift;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 class UpdateShiftAction extends Action

@@ -3,8 +3,8 @@
 namespace App\Domains\HumanCapital\WorkforceAdmin\Services;
 
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
-use App\Domains\HumanCapital\Payroll\Models\PayrollTransaction;
-use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
+use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollTransaction;
+use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use Illuminate\Support\Facades\DB;
 

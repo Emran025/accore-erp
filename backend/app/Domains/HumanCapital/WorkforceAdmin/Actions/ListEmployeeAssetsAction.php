@@ -3,8 +3,8 @@
 namespace App\Domains\HumanCapital\WorkforceAdmin\Actions;
 
 use App\Domains\Shared\Actions\Action;
-use App\Domains\AssetManagement\Models\EmployeeAsset;
-use App\Domains\EnterpriseCore\IAM\Services\PermissionService;
+use App\Domains\Assets\AssetLifecycle\Models\EmployeeAsset;
+use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
