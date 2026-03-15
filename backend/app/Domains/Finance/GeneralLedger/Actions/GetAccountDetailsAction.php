@@ -2,7 +2,7 @@
 namespace App\Domains\Finance\GeneralLedger\Actions;
 
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
-use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
+use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
 class GetAccountDetailsAction
 {

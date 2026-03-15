@@ -2,8 +2,8 @@
 namespace App\Domains\Finance\GeneralLedger\Actions;
 
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
-use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
-use App\Domains\EnterpriseCore\IAM\Services\PermissionService;
+use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
+use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 class ListGlEntriesAction
 {
     public function execute(array $filters): array

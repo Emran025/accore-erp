@@ -4,12 +4,12 @@ namespace App\Domains\Finance\GeneralLedger\Actions;
 
 use App\Domains\Shared\Actions\Action;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
-use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
+use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Domains\EnterpriseCore\IAM\Services\PermissionService;
+use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 /**
  * Single Action Class: Generate Trial Balance report.

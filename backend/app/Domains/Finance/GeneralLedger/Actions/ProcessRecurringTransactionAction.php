@@ -2,9 +2,9 @@
 
 namespace App\Domains\Finance\GeneralLedger\Actions;
 
-use App\Domains\Finance\JournalVouchers\Models\RecurringTransaction;
+use App\Domains\Finance\Treasury\Models\RecurringTransaction;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
-use App\Domains\EnterpriseCore\IAM\Services\PermissionService;
+use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 class ProcessRecurringTransactionAction
 {

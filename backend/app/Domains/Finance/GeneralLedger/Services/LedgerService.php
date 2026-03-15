@@ -2,10 +2,10 @@
 
 namespace App\Domains\Finance\GeneralLedger\Services;
 
-use App\Domains\EnterpriseCore\NumberRanges\Models\DocumentSequence;
-use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
+use App\Domains\EnterpriseCore\SystemOverview\Models\DocumentSequence;
+use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
-use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
+use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
