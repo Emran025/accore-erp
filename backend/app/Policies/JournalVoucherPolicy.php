@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Domains\EnterpriseCore\IAM\Models\User;
-use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
+use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 
 class JournalVoucherPolicy

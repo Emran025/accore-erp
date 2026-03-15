@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use App\Domains\Finance\ForeignExchange\Models\Currency;
+
 class CurrencyHelper
 {
     private static $primaryCurrency = null;
@@ -13,8 +15,8 @@ class CurrencyHelper
     {
         if (self::$primaryCurrency === null) {
             try {
-                self::$primaryCurrency = \App\Domains\Finance\Currency\Models\Currency::where('is_primary', true)->first() 
-                    ?? \App\Domains\Finance\Currency\Models\Currency::first();
+                self::$primaryCurrency = Currency::where('is_primary', true)->first() 
+                    ?? Currency::first();
             } catch (\Exception $e) {
                 // Fallback for cases where DB might not be available or model doesn't exist
                 return (object)['code' => 'SAR', 'symbol' => 'ر.س'];

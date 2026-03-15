@@ -7,11 +7,11 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
-use App\Domains\HumanCapital\Payroll\Services\SalaryCalculatorInterface;
-use App\Domains\HumanCapital\Payroll\Services\SalaryCalculatorService;
-use App\Domains\Commercial\Sales\Models\Invoice;
+use App\Domains\HumanCapital\PayrollBenefits\Services\SalaryCalculatorInterface;
+use App\Domains\HumanCapital\PayrollBenefits\Services\SalaryCalculatorService;
+use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
-use App\Domains\Commercial\Purchases\Models\Purchase;
+use App\Domains\SupplyChain\Procurement\Models\Purchase;
 use App\Policies\InvoicePolicy;
 use App\Policies\JournalVoucherPolicy;
 use App\Policies\PurchasePolicy;
@@ -68,7 +68,7 @@ class AppServiceProvider extends ServiceProvider
 
             if (isset($actionMap[$action])) {
                 $mappedAction = $actionMap[$action];
-                $permissions = \App\Domains\EnterpriseCore\IAM\Services\PermissionService::loadPermissions($user->role_id);
+                $permissions = \App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService::loadPermissions($user->role_id);
                 
                 if (isset($permissions[$module][$mappedAction])) {
                     return (bool) $permissions[$module][$mappedAction];

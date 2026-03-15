@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
-use App\Domains\Commercial\Sales\Models\Invoice;
+use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
 
 return new class extends Migration
 {

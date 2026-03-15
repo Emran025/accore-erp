@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Domains\EnterpriseCore\IAM\Services\PermissionService;
+use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 class CheckPermission
 {

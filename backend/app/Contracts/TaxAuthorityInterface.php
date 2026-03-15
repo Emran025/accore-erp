@@ -2,7 +2,7 @@
 
 namespace App\Contracts;
 
-use App\Domains\Finance\Taxation\Models\TaxAuthority;
+use App\Domains\Finance\TaxCompliance\Models\TaxAuthority;
 
 /**
  * Interface for tax authority adapters (ZATCA, FTA, etc.).
