@@ -13,11 +13,11 @@ export interface IntelligenceEndpoints {
 export const INTELLIGENCE: IntelligenceEndpoints = {
     DASHBOARD: "/v2/analytics/dashboard",
     REPORTS: {
-        BALANCE_SHEET: "/v2/analytics/reports/balance_sheet",
-        PROFIT_LOSS: "/v2/analytics/reports/profit_loss",
-        CASH_FLOW: "/v2/analytics/reports/cash_flow",
-        AGING_RECEIVABLES: "/v2/analytics/reports/aging_receivables",
-        AGING_PAYABLES: "/v2/analytics/reports/aging_payables",
+        BALANCE_SHEET: "/v2/analytics/reports/balance-sheet",
+        PROFIT_LOSS: "/v2/analytics/reports/profit-loss",
+        CASH_FLOW: "/v2/analytics/reports/cash-flow",
+        AGING_RECEIVABLES: "/v2/analytics/reports/aging-receivables",
+        AGING_PAYABLES: "/v2/analytics/reports/aging-payables",
         COMPARATIVE: "/v2/analytics/reports/comparative",
     },
 };

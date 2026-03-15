@@ -128,12 +128,12 @@ export const ENTERPRISE_CORE: EnterpriseCoreEndpoints = {
         TRAIL: "/v2/audit-trail",
     },
     COMPLIANCE_PROFILES: {
-        BASE: "/v2/compliance-profiles",
-        withId: (id: string | number) => `/v2/compliance-profiles/${id}`,
-        SYSTEM_KEYS: "/v2/compliance-profiles/system-keys",
-        GENERATE_TOKEN: (id: string | number) => `/v2/compliance-profiles/${id}/generate-token`,
-        REVOKE_TOKEN: (id: string | number) => `/v2/compliance-profiles/${id}/revoke-token`,
-        VALIDATE_STRUCTURE: "/v2/compliance-profiles/validate-structure",
+        BASE: "/v2/platform/compliance/profiles",
+        withId: (id: string | number) => `/v2/platform/compliance/profiles/${id}`,
+        SYSTEM_KEYS: "/v2/platform/compliance/keys",
+        GENERATE_TOKEN: (id: string | number) => `/v2/platform/compliance/profiles/${id}/token`,
+        REVOKE_TOKEN: (id: string | number) => `/v2/platform/compliance/profiles/${id}/revoke-token`,
+        VALIDATE_STRUCTURE: "/v2/platform/compliance/validate-structure",
     },
     BATCH: "/v2/batch",
 };

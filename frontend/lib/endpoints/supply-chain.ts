@@ -10,8 +10,8 @@ export interface SupplyChainEndpoints {
 }
 
 export const SUPPLY_CHAIN: SupplyChainEndpoints = {
-    PRODUCTS: "/v2/products",
-    CATEGORIES: "/v2/categories",
+    PRODUCTS: "/v2/inventory/products",
+    CATEGORIES: "/v2/inventory/categories",
     BATCH: "/v2/batch",
     PERIODIC: {
         BASE: "/v2/inventory/periodic",

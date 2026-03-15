@@ -253,8 +253,8 @@ export const HUMAN_CAPITAL: HumanCapitalEndpoints = {
     PAYROLL: {
         CYCLES: "/v2/payroll/cycles",
         GENERATE: "/v2/payroll/generate",
-        APPROVE: (id: string | number) => `/v2/payroll/${id}/approve`,
-        PROCESS_PAYMENT: (id: string | number) => `/v2/payroll/${id}/process-payment`,
+        APPROVE: (id: string | number) => `/v2/payroll/cycles/${id}/approve`,
+        PROCESS_PAYMENT: (id: string | number) => `/v2/payroll/cycles/${id}/pay`,
         CYCLE_ITEMS: (cycleId: string | number) => `/v2/payroll/cycles/${cycleId}/items`,
         ITEM_TRANSACTIONS: (itemId: string | number) => `/v2/payroll/items/${itemId}/transactions`,
         PAY_ITEM: (itemId: string | number) => `/v2/payroll/items/${itemId}/pay`,
@@ -325,10 +325,10 @@ export const HUMAN_CAPITAL: HumanCapitalEndpoints = {
         CAPA: (complianceId: string | number) => `/v2/qa-compliance/${complianceId}/capa`,
     },
     WORKFORCE_SCHEDULING: {
-        BASE: "/v2/workforce-schedules",
-        withId: (id: string | number) => `/v2/workforce-schedules/${id}`,
-        SHIFTS: (scheduleId: string | number) => `/v2/workforce-schedules/${scheduleId}/shifts`,
-        SHIFT: (scheduleId: string | number, shiftId: string | number) => `/v2/workforce-schedules/${scheduleId}/shifts/${shiftId}`,
+        BASE: "/v2/schedules",
+        withId: (id: string | number) => `/v2/schedules/${id}`,
+        SHIFTS: (scheduleId: string | number) => `/v2/schedules/${scheduleId}/shifts`,
+        SHIFT: (scheduleId: string | number, shiftId: string | number) => `/v2/schedules/${scheduleId}/shifts/${shiftId}`,
     },
     EMPLOYEE_RELATIONS: {
         BASE: "/v2/employee-relations",
@@ -337,12 +337,12 @@ export const HUMAN_CAPITAL: HumanCapitalEndpoints = {
     },
     TRAVEL: {
         REQUESTS: {
-            BASE: "/v2/travel-requests",
-            STATUS: (id: string | number) => `/v2/travel-requests/${id}/status`,
+            BASE: "/v2/travel/requests",
+            STATUS: (id: string | number) => `/v2/travel/requests/${id}/status`,
         },
         EXPENSES: {
-            BASE: "/v2/travel-expenses",
-            STATUS: (id: string | number) => `/v2/travel-expenses/${id}/status`,
+            BASE: "/v2/travel/expenses",
+            STATUS: (id: string | number) => `/v2/travel/expenses/${id}/status`,
         },
     },
     EMPLOYEE_LOANS: {
@@ -446,10 +446,10 @@ export const HUMAN_CAPITAL: HumanCapitalEndpoints = {
         withId: (id: string | number) => `/v2/expertise/${id}`,
     },
     DOCUMENT_TEMPLATES: {
-        BASE: "/v2/document-templates",
-        withId: (id: string | number) => `/v2/document-templates/${id}`,
-        RENDER: (id: string | number) => `/v2/document-templates/${id}/render`,
-        APPROVED_KEYS: "/v2/document-templates/approved-keys",
+        BASE: "/v2/hr-templates",
+        withId: (id: string | number) => `/v2/hr-templates/${id}`,
+        RENDER: (id: string | number) => `/v2/hr-templates/${id}/render`,
+        APPROVED_KEYS: "/v2/hr-templates/approved-keys",
     },
     BIOMETRIC: {
         DEVICES: "/v2/biometric/devices",
