@@ -2,37 +2,34 @@
 
 use Illuminate\Support\Facades\Route;
 
-
 /*
 |--------------------------------------------------------------------------
-| API Routes
+| API Routes v2 
 |--------------------------------------------------------------------------
 */
 
-// Auth
-require __DIR__ . '/api/auth.php';
+Route::group(['prefix' => 'v2'], function () {
+    require __DIR__ . '/domains/00-auth.php';
+    require __DIR__ . '/domains/10-platform.php';
 
-// Compliance & Tax Transmission (Handles both public pull-endpoints & management)
-require __DIR__ . '/api/compliance.php';
+    Route::group([ 'middleware' => ['api.auth', 'throttle:api']], function () {
+        /*
+        |--------------------------------------------------------------------------
+        | Domain Routes (Strangler Fig – v2)
+        |--------------------------------------------------------------------------
+        | New domain-scoped routes using Single Action Classes. These coexist
+        | with the legacy routes above. Once fully tested, legacy routes will
+        | be retired incrementally.
+        */
+        require __DIR__ . '/domains/01-enterprise-core.php';
+        require __DIR__ . '/domains/02-commercial.php';
+        require __DIR__ . '/domains/03-finance.php';
+        require __DIR__ . '/domains/04-supply-chain.php';
+        require __DIR__ . '/domains/05-manufacturing.php';
+        require __DIR__ . '/domains/06-human-capital.php';
+        require __DIR__ . '/domains/07-projects.php';
+        require __DIR__ . '/domains/08-assets.php';
+        require __DIR__ . '/domains/09-intelligence.php';
 
-// Protected Routes (tiered rate limiting defined in AppServiceProvider)
-Route::middleware(['api.auth', 'throttle:api'])->group(function () {
-    require __DIR__ . '/api/system.php';
-    require __DIR__ . '/api/finance.php';
-    require __DIR__ . '/api/hr.php';
-    require __DIR__ . '/api/inventory.php';
-    require __DIR__ . '/api/sales.php';
-    require __DIR__ . '/api/purchases.php';
-    require __DIR__ . '/api/reports.php';
-    require __DIR__ . '/api/number-ranges.php';
+    });
 });
-
-/*
-|--------------------------------------------------------------------------
-| Domain Routes (Strangler Fig – v2)
-|--------------------------------------------------------------------------
-| New domain-scoped routes using Single Action Classes. These coexist
-| with the legacy routes above. Once fully tested, legacy routes will
-| be retired incrementally.
-*/
-require __DIR__ . '/domain-loader.php';

@@ -8,10 +8,8 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-Route::group(['prefix' => 'v2', 'middleware' => ['api.auth', 'throttle:api']], function () {
 
-    Route::group(['prefix' => 'projects', 'middleware' => 'can:sales,view'], function () {
-        // Placeholder for future Actions: ListProjectsAction, etc.
-    });
-
+Route::group(['prefix' => 'projects', 'middleware' => 'can:sales,view'], function () {
+    // Placeholder for future Actions: ListProjectsAction, etc.
 });
+

@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\V2\EnterpriseCore\OrganizationGovernance\{
 };
 use App\Http\Controllers\Api\V2\EnterpriseCore\IdentityAccess\{
     PermissionTemplateController, SessionsController, RolesController, 
-    UsersController, AuthController
+    UsersController
 };
 use App\Http\Controllers\Api\V2\EnterpriseCore\Automation\SystemTemplateController;
 
@@ -23,22 +23,9 @@ use App\Http\Controllers\Api\V2\EnterpriseCore\Automation\SystemTemplateControll
 |--------------------------------------------------------------------------
 */
 
-Route::group(['prefix' => 'v2'], function () {
 
-    // ── Authentication (IdentityAccess)
-    Route::post('/login', [AuthController::class, 'login'])
-        ->middleware('throttle:api-auth')
-        ->name('v2.login');
-    
-    Route::group(['middleware' => 'api.auth'], function () {
-        Route::post('/logout', [AuthController::class, 'logout'])
-            ->name('v2.logout');
-        Route::get('/check', [AuthController::class, 'check'])
-            ->name('v2.check');
-    });
 
     // ── Protected Core Routes
-    Route::group(['middleware' => ['api.auth', 'throttle:api']], function () {
 
         // ── 01. Number Ranges (SystemOverview)
         Route::group(['prefix' => 'number-ranges', 'middleware' => 'can:settings,view'], function() {
@@ -72,13 +59,14 @@ Route::group(['prefix' => 'v2'], function () {
             // Reports & Generation
             Route::get('/objects/{objectId}/fullness', [NumberRangeController::class, 'fullnessReport'])->name('v2.nr.fullness');
             Route::post('/get-next', [NumberRangeController::class, 'getNextNumber'])->name('v2.nr.get_next');
+            Route::post('/next-number', [NumberRangeController::class, 'getNextNumber'])->name('v2.nr.get_next.legacy'); // Alias
             Route::post('/preview-number', [NumberRangeController::class, 'previewNextNumber'])->name('v2.nr.preview_next');
         });
 
         // ── 02. Org Integration (OrganizationGovernance)
         Route::group(['prefix' => 'org-integration', 'middleware' => 'can:settings,view'], function () {
-            Route::post('/sync/cost-center/{uuid}', [OrgIntegrationController::class, 'syncCostCenter'])->name('v2.org_integration.sync_cost_center');
-            Route::post('/sync/profit-center/{uuid}', [OrgIntegrationController::class, 'syncProfitCenter'])->name('v2.org_integration.sync_profit_center');
+            Route::post('/sync/cost-center/{id}', [OrgIntegrationController::class, 'syncCostCenter'])->name('v2.org_integration.sync_cost_center');
+            Route::post('/sync/profit-center/{id}', [OrgIntegrationController::class, 'syncProfitCenter'])->name('v2.org_integration.sync_profit_center');
             Route::post('/sync/node/{uuid}', [OrgIntegrationController::class, 'syncNodeToTable'])->name('v2.org_integration.sync_node');
             Route::post('/sync/job-title/{id}', [OrgIntegrationController::class, 'syncJobTitle'])->name('v2.org_integration.sync_job_title');
             Route::get('/job-titles/{id}/mapping', [OrgIntegrationController::class, 'jobTitleMapping'])->name('v2.org_integration.job_title_mapping');
@@ -177,6 +165,7 @@ Route::group(['prefix' => 'v2'], function () {
 
         Route::post('/change_password', [UsersController::class, 'changePassword'])->middleware('throttle:api-sensitive')->name('v2.change_password');
         Route::get('/my_sessions', [UsersController::class, 'mySessions'])->name('v2.my_sessions');
+        Route::get('/manager_list', [UsersController::class, 'managerList'])->name('v2.manager_list');
         Route::get('/user-roles', [UsersController::class, 'roles'])->name('v2.user_roles.index');
 
         // ── 10. Governance: Templates (Automation)
@@ -192,7 +181,10 @@ Route::group(['prefix' => 'v2'], function () {
             Route::middleware(['can:settings,edit', 'throttle:api-write'])->put('/{id}', [SystemTemplateController::class, 'update'])->name('v2.templates.update');
             Route::middleware(['can:settings,delete', 'throttle:api-delete'])->delete('/{id}', [SystemTemplateController::class, 'destroy'])->name('v2.templates.destroy');
             Route::post('/render', [SystemTemplateController::class, 'render'])->name('v2.templates.render');
-        });
 
-    });
-});
+            // Legacy Compatibility Alias
+            Route::group(['prefix' => 'legacy'], function () {
+                Route::get('/templates', [SystemTemplateController::class, 'index'])->name('v2.legacy.templates.index');
+                Route::post('/templates', [SystemTemplateController::class, 'store'])->name('v2.legacy.templates.store');
+            });
+        });
