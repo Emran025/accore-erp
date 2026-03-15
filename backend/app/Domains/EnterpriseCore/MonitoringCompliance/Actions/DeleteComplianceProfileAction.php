@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Domains\EnterpriseCore\MonitoringCompliance\Actions;
+
+use App\Domains\HumanCapital\WorkforceAdmin\Models\ComplianceProfile;
+
+class DeleteComplianceProfileAction
+{
+    public function execute(int $id): void
+    {
+        $profile = ComplianceProfile::findOrFail($id);
+        $profile->delete();
+    }
+}

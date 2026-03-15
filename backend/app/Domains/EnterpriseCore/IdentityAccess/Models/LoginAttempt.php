@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Domains\EnterpriseCore\IdentityAccess\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class LoginAttempt extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'username',
+        'attempts',
+        'last_attempt',
+        'locked_until',
+    ];
+
+    public $timestamps = false;
+
+    protected function casts(): array
+    {
+        return [
+            'attempts' => 'integer',
+            'last_attempt' => 'datetime',
+            'locked_until' => 'datetime',
+        ];
+    }
+}
