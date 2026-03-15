@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\V2\EnterpriseCore\Governance\ComplianceProfileController;
+use App\Http\Controllers\Api\V2\EnterpriseCore\OrganizationGovernance\ComplianceProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*

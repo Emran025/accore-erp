@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\V2\EnterpriseCore\IAM\AuthController;
+use App\Http\Controllers\Api\V2\EnterpriseCore\IdentityAccess\AuthController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes with strict rate limiting (by IP)

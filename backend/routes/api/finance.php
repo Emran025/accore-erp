@@ -1,18 +1,18 @@
 <?php
 
-use App\Http\Controllers\Api\V2\AssetManagement\AssetsController;
+use App\Http\Controllers\Api\V2\Assets\AssetsController;
 use App\Http\Controllers\Api\V2\Finance\Accrual\AccrualAccountingController;
-use App\Http\Controllers\Api\V2\Finance\BankReconciliation\BankReconciliationController;
-use App\Http\Controllers\Api\V2\Finance\ChartOfAccounts\ChartOfAccountsController;
-use App\Http\Controllers\Api\V2\Finance\CostProfitCenters\CostProfitCenterController;
-use App\Http\Controllers\Api\V2\Finance\Currency\CurrencyController;
-use App\Http\Controllers\Api\V2\Finance\CurrencyPolicy\CurrencyPolicyController;
-use App\Http\Controllers\Api\V2\Finance\Expenses\ExpensesController;
-use App\Http\Controllers\Api\V2\Finance\FiscalPeriods\FiscalPeriodsController;
+use App\Http\Controllers\Api\V2\Finance\Treasury\TreasuryController;
+use App\Http\Controllers\Api\V2\Finance\GeneralLedger\ChartOfAccountsController;
+use App\Http\Controllers\Api\V2\Finance\ManagementAccounting\CostProfitCenterController;
+use App\Http\Controllers\Api\V2\Finance\ForeignExchange\ForeignExchangeController;
+use App\Http\Controllers\Api\V2\Finance\ForeignExchange\CurrencyPolicyController;
+use App\Http\Controllers\Api\V2\Finance\ManagementAccounting\ExpensesController;
+use App\Http\Controllers\Api\V2\Finance\GeneralLedger\FiscalPeriodsController;
 use App\Http\Controllers\Api\V2\Finance\GeneralLedger\GeneralLedgerController;
 use App\Http\Controllers\Api\V2\Finance\GeneralLedger\RecurringTransactionsController;
-use App\Http\Controllers\Api\V2\Finance\JournalVouchers\JournalVouchersController;
-use App\Http\Controllers\Api\V2\Finance\Revenues\RevenuesController;
+use App\Http\Controllers\Api\V2\Finance\Treasury\JournalVouchersController;
+use App\Http\Controllers\Api\V2\Finance\ManagementAccounting\RevenuesController;
 use Illuminate\Support\Facades\Route;
 
 // General Ledger (read-only views)

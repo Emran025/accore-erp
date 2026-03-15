@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\V2\EnterpriseCore\NumberRanges\NumberRangeController;
+use App\Http\Controllers\Api\V2\EnterpriseCore\SystemOverview\NumberRangeController;
 use Illuminate\Support\Facades\Route;
 
 /*

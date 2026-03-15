@@ -1,12 +1,12 @@
 <?php
 
-use App\Http\Controllers\Api\V2\Commercial\SalesRepresentatives\SalesRepresentativeController;
+use App\Http\Controllers\Api\V2\Commercial\MarketingDistribution\SalesRepresentativeController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\V2\Commercial\Sales\SalesController;
-use App\Http\Controllers\Api\V2\Commercial\Sales\SalesReturnController;
-use App\Http\Controllers\Api\V2\Finance\Taxation\ZATCAInvoiceController;
-use App\Http\Controllers\Api\V2\Commercial\AccountsReceivable\ArController;
-use App\Http\Controllers\Api\V2\Commercial\AccountsReceivable\ArTransactionsController;
+use App\Http\Controllers\Api\V2\Commercial\SalesLifecycle\SalesController;
+use App\Http\Controllers\Api\V2\Commercial\SalesLifecycle\SalesReturnController;
+use App\Http\Controllers\Api\V2\Finance\TaxCompliance\ZATCAInvoiceController;
+use App\Http\Controllers\Api\V2\Commercial\CRM\ArController;
+use App\Http\Controllers\Api\V2\Commercial\RevenueReceivables\ArTransactionsController;
 
 // Sales/Invoices
 Route::middleware('can:sales,view')->get('/invoices', [SalesController::class, 'index'])->name('api.invoices.index');
