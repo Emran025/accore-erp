@@ -1,0 +1,19 @@
+<?php
+
+namespace App\Domains\HumanCapital\PayrollBenefits\Actions;
+
+use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollCycle;
+
+class ListPayrollCyclesAction
+{
+    public function execute(): array
+    {
+        $cycles = PayrollCycle::with(['current_approver', 'creator'])->orderBy('created_at', 'desc')->paginate(15);
+        return [
+            'data' => $cycles->items(),
+            'total' => $cycles->total(),
+            'current_page' => $cycles->currentPage(),
+            'per_page' => $cycles->perPage(),
+        ];
+    }
+}
