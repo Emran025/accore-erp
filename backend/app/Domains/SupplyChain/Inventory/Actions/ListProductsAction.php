@@ -2,13 +2,11 @@
 namespace App\Domains\SupplyChain\Inventory\Actions;
 
 use App\Domains\SupplyChain\Inventory\Models\Product;
-use App\Domains\EnterpriseCore\IAM\Services\PermissionService;
 
 class ListProductsAction
 {
     public function execute(array $filters): array
     {
-        PermissionService::requirePermission('products', 'view');
 
         $search = $filters['search'] ?? '';
         $page = max(1, (int)($filters['page'] ?? 1));

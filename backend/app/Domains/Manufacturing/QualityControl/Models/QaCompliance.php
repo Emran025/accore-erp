@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domains\Manufacturing\Models;
+namespace App\Domains\Manufacturing\QualityControl\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;

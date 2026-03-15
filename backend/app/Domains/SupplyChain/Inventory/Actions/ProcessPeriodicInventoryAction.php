@@ -2,10 +2,9 @@
 namespace App\Domains\SupplyChain\Inventory\Actions;
 
 use App\Domains\SupplyChain\Inventory\Models\InventoryCount;
-use App\Domains\EnterpriseCore\IAM\Services\PermissionService;
-use App\Domains\DigitalPlatform\Automation\Services\TelescopeService;
+use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
-use App\Domains\Finance\ChartOfAccounts\Services\ChartOfAccountsMappingService;
+use App\Domains\Finance\GeneralLedger\Services\ChartOfAccountsMappingService;
 use App\Domains\SupplyChain\Inventory\Services\InventoryCostingService;
 
 use Illuminate\Support\Facades\DB;
@@ -19,7 +18,6 @@ class ProcessPeriodicInventoryAction
 
     public function execute(array $data): array
     {
-        PermissionService::requirePermission('products', 'edit');
 
         $fiscalPeriodId = $data['fiscal_period_id'];
 

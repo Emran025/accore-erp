@@ -2,8 +2,7 @@
 namespace App\Domains\SupplyChain\Inventory\Actions;
 
 use App\Domains\SupplyChain\Inventory\Models\Product;
-use App\Domains\DigitalPlatform\Automation\Services\TelescopeService;
-use App\Domains\EnterpriseCore\IAM\Services\PermissionService;
+use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 use App\Domains\SupplyChain\Inventory\Services\InventoryCostingService;
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +14,6 @@ class CreateProductAction
 
     public function execute(array $data): array
     {
-        PermissionService::requirePermission('products', 'create');
         
         $data['created_by'] = auth()->id() ?? session('user_id');
 

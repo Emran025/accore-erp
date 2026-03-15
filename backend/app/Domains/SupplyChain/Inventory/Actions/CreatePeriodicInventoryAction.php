@@ -3,14 +3,12 @@ namespace App\Domains\SupplyChain\Inventory\Actions;
 
 use App\Domains\SupplyChain\Inventory\Models\InventoryCount;
 use App\Domains\SupplyChain\Inventory\Models\Product;
-use App\Domains\EnterpriseCore\IAM\Services\PermissionService;
-use App\Domains\DigitalPlatform\Automation\Services\TelescopeService;
+use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 
 class CreatePeriodicInventoryAction
 {
     public function execute(array $data): array
     {
-        PermissionService::requirePermission('products', 'create');
 
         $product = Product::findOrFail($data['product_id']);
         $bookQuantity = $product->stock_quantity;

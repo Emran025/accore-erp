@@ -2,7 +2,7 @@
 namespace App\Domains\SupplyChain\Inventory\Actions;
 
 use App\Domains\SupplyChain\Inventory\Models\Product;
-use App\Domains\DigitalPlatform\Automation\Services\TelescopeService;
+use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 class DeleteProductAction
 {
     public function execute(int $id): void

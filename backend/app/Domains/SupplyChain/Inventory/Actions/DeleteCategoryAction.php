@@ -3,7 +3,7 @@
 namespace App\Domains\SupplyChain\Inventory\Actions;
 
 use App\Domains\SupplyChain\Inventory\Models\Category;
-use App\Domains\DigitalPlatform\Automation\Services\TelescopeService;
+use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 
 class DeleteCategoryAction
 {

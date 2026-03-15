@@ -2,11 +2,8 @@
 
 namespace App\Domains\SupplyChain\Inventory\Actions;
 
-use App\Domains\Shared\Actions\Action;
 use App\Domains\SupplyChain\Inventory\Models\Category;
-use App\Domains\DigitalPlatform\Automation\Services\TelescopeService;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 
 class UpdateCategoryAction
 {
