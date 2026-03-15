@@ -13,7 +13,7 @@ use App\Domains\SupplyChain\Inventory\Actions\UpdateProductAction;
 use App\Domains\SupplyChain\Inventory\Actions\DeleteProductAction;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
-use App\Http\Resources\ProductResource;
+use App\Http\Resources\SupplyChain\Inventory\ProductResource;
 
 class ProductsController extends Controller
 {
