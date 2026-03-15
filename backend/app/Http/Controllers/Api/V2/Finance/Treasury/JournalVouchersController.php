@@ -16,6 +16,7 @@ use App\Domains\Finance\Treasury\Actions\DeleteJournalVoucherAction;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
 use App\Domains\Finance\Treasury\Actions\PostJournalVoucherAction;
 use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
+use App\Http\Resources\Finance\Treasury\JournalVoucherResource;
 
 
 class JournalVouchersController extends Controller
@@ -29,9 +30,9 @@ class JournalVouchersController extends Controller
     {
         PermissionService::requirePermission('journal_vouchers', 'view');
         $result = $action->execute($request->all());
-        return response()->json([
-            'success' => true,
-            'vouchers' => $result['vouchers'],
+
+        return $this->successResponse([
+            'vouchers' => JournalVoucherResource::collection($result['vouchers']),
             'total' => $result['total']
         ]);
     }
@@ -43,9 +44,8 @@ class JournalVouchersController extends Controller
     {
         try {
             PermissionService::requirePermission('journal_vouchers', 'view');
-            return response()->json([
-                'success' => true,
-                'voucher' => $action->execute($id)
+            return $this->successResponse([
+                'voucher' => new JournalVoucherResource($action->execute($id))
             ]);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);

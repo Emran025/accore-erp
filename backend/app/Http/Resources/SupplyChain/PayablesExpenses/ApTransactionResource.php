@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\SupplyChain\PayablesExpenses;
 
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * AR Transaction Resource — financial amounts derived from GL (single source of truth).
+ * AP Transaction Resource — financial amounts derived from GL (single source of truth).
  */
-class ArTransactionResource extends JsonResource
+class ApTransactionResource extends JsonResource
 {
     public function toArray($request)
     {
@@ -22,7 +22,8 @@ class ArTransactionResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'customer_id' => $this->customer_id,
+            'supplier_id' => $this->supplier_id,
+            'supplier_name' => $this->supplier?->name,
             'type' => $this->type,
             'amount' => $amount, // Derived from GL
             'voucher_number' => $this->voucher_number,

@@ -25,6 +25,7 @@ use App\Domains\HumanCapital\WorkforceAdmin\Actions\ListEmployeeDocumentsAction;
 use App\Domains\HumanCapital\WorkforceAdmin\Actions\UpdateEmployeeDocumentAction;
 use App\Domains\HumanCapital\WorkforceAdmin\Actions\DeleteEmployeeDocumentAction;
 use App\Domains\HumanCapital\WorkforceAdmin\Actions\DownloadEmployeeDocumentAction;
+use App\Http\Resources\HumanCapital\WorkforceAdmin\EmployeeResource;
 
 class EmployeesController extends Controller
 {
@@ -32,15 +33,21 @@ class EmployeesController extends Controller
 
     public function index(ListEmployeesRequest $request, ListEmployeesAction $action)
     {
-        $employees = $action->execute($request->validated());
-        return $this->successResponse($employees);
+        $result = $action->execute($request->validated());
+
+        return $this->paginatedResponse(
+            EmployeeResource::collection($result['data']),
+            $result['total'],
+            $result['current_page'],
+            $result['per_page']
+        );
     }
 
     public function store(StoreEmployeeRequest $request, CreateEmployeeAction $action)
     {
         try {
             $employee = $action->execute($request->validated());
-            return $this->successResponse($employee, 'Employee created successfully', 201);
+            return $this->successResponse(new EmployeeResource($employee), 'Employee created successfully', 201);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -49,7 +56,7 @@ class EmployeesController extends Controller
     public function show($id, ShowEmployeeAction $action)
     {
         $employee = $action->execute($id);
-        return $this->successResponse($employee);
+        return $this->successResponse(new EmployeeResource($employee));
     }
 
     public function update(UpdateEmployeeRequest $request, $id, UpdateEmployeeAction $action)
@@ -58,7 +65,7 @@ class EmployeesController extends Controller
         
         $employee = $action->execute($id, $validated);
 
-        return $this->successResponse($employee, 'Employee updated successfully');
+        return $this->successResponse(new EmployeeResource($employee), 'Employee updated successfully');
     }
 
     public function destroy($id, DeleteEmployeeAction $action)
@@ -70,13 +77,13 @@ class EmployeesController extends Controller
     public function suspend($id, SuspendEmployeeAction $action)
     {
         $employee = $action->execute($id);
-        return $this->successResponse($employee, 'Employee suspended successfully');
+        return $this->successResponse(new EmployeeResource($employee), 'Employee suspended successfully');
     }
 
     public function activate($id, ActivateEmployeeAction $action)
     {
         $employee = $action->execute($id);
-        return $this->successResponse($employee, 'Employee activated successfully');
+        return $this->successResponse(new EmployeeResource($employee), 'Employee activated successfully');
     }
 
     public function uploadDocument(StoreEmployeeDocumentRequest $request, $id, UploadEmployeeDocumentAction $action)

@@ -10,7 +10,7 @@ use App\Http\Requests\Commercial\SalesLifecycle\StoreInvoiceRequest;
 use App\Http\Requests\Commercial\SalesLifecycle\ListInvoicesRequest;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 use App\Exceptions\BusinessLogicException;
-use App\Http\Resources\InvoiceResource;
+use App\Http\Resources\Commercial\SalesLifecycle\InvoiceResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;

@@ -13,6 +13,7 @@ use App\Domains\Assets\AssetLifecycle\Actions\ListAssetsAction;
 use App\Domains\Assets\AssetLifecycle\Actions\CreateAssetAction;
 use App\Domains\Assets\AssetLifecycle\Actions\UpdateAssetAction;
 use App\Domains\Assets\AssetLifecycle\Actions\DeleteAssetAction;
+use App\Http\Resources\Assets\AssetLifecycle\AssetResource;
 
 class AssetsController extends Controller
 {
@@ -22,7 +23,7 @@ class AssetsController extends Controller
     {
         $result = $action->execute($request->validated());
         return $this->paginatedResponse(
-            $result['data'],
+            AssetResource::collection($result['data']),
             $result['total'],
             $result['current_page'],
             $result['per_page']
@@ -32,7 +33,7 @@ class AssetsController extends Controller
     public function store(StoreAssetRequest $request, CreateAssetAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
-        return $this->successResponse(['id' => $result['id']]);
+        return $this->successResponse(new AssetResource($result));
     }
 
     public function update(UpdateAssetRequest $request, UpdateAssetAction $action): JsonResponse
@@ -46,4 +47,4 @@ class AssetsController extends Controller
         $action->execute($request->validated()['id']);
         return $this->successResponse();
     }
-}
+}

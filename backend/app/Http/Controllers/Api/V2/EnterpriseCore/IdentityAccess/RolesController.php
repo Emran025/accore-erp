@@ -11,6 +11,7 @@ use App\Http\Requests\EnterpriseCore\IdentityAccess\UpdatePermissionsRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
+use App\Http\Resources\EnterpriseCore\IdentityAccess\RoleResource;
 
 class RolesController extends Controller
 {
@@ -26,7 +27,14 @@ class RolesController extends Controller
             return $this->errorResponse($result['message'] ?? 'Error');
         }
 
-        return response()->json(['success' => true, $result['key'] => $result['data']]);
+        $data = $result['data'];
+        if ($result['key'] === 'roles') {
+            $data = RoleResource::collection($data);
+        } elseif ($result['key'] === 'role') {
+            $data = new RoleResource($data);
+        }
+
+        return $this->successResponse([$result['key'] => $data]);
     }
 
     public function store(Request $request, CreateRoleAction $action): JsonResponse

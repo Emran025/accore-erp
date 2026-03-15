@@ -17,6 +17,7 @@ use App\Http\Requests\EnterpriseCore\IdentityAccess\UpdateUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
+use App\Http\Resources\EnterpriseCore\IdentityAccess\UserResource;
 
 class UsersController extends Controller
 {
@@ -26,14 +27,14 @@ class UsersController extends Controller
     {
         $data = (new ListUsersAction())->execute();
 
-        return $this->successResponse($data);
+        return $this->successResponse(UserResource::collection($data));
     }
 
     public function store(StoreUserRequest $request): JsonResponse
     {
-        $data = (new CreateUserAction())->execute($request->validated());
+        $user = (new CreateUserAction())->execute($request->validated());
 
-        return $this->successResponse($data);
+        return $this->successResponse(new UserResource($user));
     }
 
     public function update(UpdateUserRequest $request): JsonResponse

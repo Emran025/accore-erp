@@ -21,7 +21,7 @@ use App\Domains\SupplyChain\Procurement\Actions\UpdatePurchaseRequestAction;
 use App\Domains\SupplyChain\Procurement\Actions\AutoGenerateRequestsAction;
 use App\Domains\SupplyChain\Procurement\Models\Purchase;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
-use App\Http\Resources\PurchaseResource;
+use App\Http\Resources\SupplyChain\Procurement\PurchaseResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;

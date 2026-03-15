@@ -14,6 +14,7 @@ use App\Domains\Finance\ForeignExchange\Actions\ToggleCurrencyStatusAction;
 use App\Domains\Finance\ForeignExchange\Actions\SetPrimaryCurrencyAction;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
+use App\Http\Resources\Finance\ForeignExchange\CurrencyResource;
 
 class CurrencyController extends Controller
 {
@@ -24,7 +25,7 @@ class CurrencyController extends Controller
      */
     public function index(ListCurrenciesAction $action): JsonResponse
     {
-        return $this->successResponse($action->execute());
+        return $this->successResponse(CurrencyResource::collection($action->execute()));
     }
 
     /**
@@ -33,7 +34,7 @@ class CurrencyController extends Controller
     public function store(StoreCurrencyRequest $request, CreateCurrencyAction $action): JsonResponse
     {
         try {
-            return $this->successResponse($action->execute($request->validated()));
+            return $this->successResponse(new CurrencyResource($action->execute($request->validated())));
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }
@@ -45,7 +46,7 @@ class CurrencyController extends Controller
     public function update(UpdateCurrencyRequest $request, int $id, UpdateCurrencyAction $action): JsonResponse
     {
         try {
-            return $this->successResponse($action->execute($request->validated(), $id));
+            return $this->successResponse(new CurrencyResource($action->execute($request->validated(), $id)));
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }

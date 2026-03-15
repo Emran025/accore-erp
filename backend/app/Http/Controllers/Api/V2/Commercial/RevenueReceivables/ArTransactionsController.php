@@ -9,7 +9,7 @@ use App\Http\Requests\Commercial\RevenueReceivables\ListArTransactionsRequest;
 use App\Http\Requests\Commercial\RevenueReceivables\StoreArTransactionRequest;
 use App\Domains\Commercial\RevenueReceivables\Models\ArTransaction;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
-use App\Http\Resources\ArTransactionResource;
+use App\Http\Resources\Commercial\RevenueReceivables\ArTransactionResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;

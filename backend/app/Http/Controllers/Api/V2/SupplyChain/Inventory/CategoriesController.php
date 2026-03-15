@@ -12,6 +12,7 @@ use App\Domains\SupplyChain\Inventory\Actions\UpdateCategoryAction;
 use App\Domains\SupplyChain\Inventory\Actions\DeleteCategoryAction;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
+use App\Http\Resources\SupplyChain\Inventory\CategoryResource;
 
 class CategoriesController extends Controller
 {
@@ -20,13 +21,13 @@ class CategoriesController extends Controller
     public function index(ListCategoriesAction $action): JsonResponse
     {
         $result = $action->execute();
-        return $this->successResponse($result);
+        return $this->successResponse(CategoryResource::collection($result));
     }
 
     public function store(StoreCategoryRequest $request, CreateCategoryAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
-        return $this->successResponse($result, 'Category created successfully');
+        return $this->successResponse(new CategoryResource($result), 'Category created successfully');
     }
 
     public function update(UpdateCategoryRequest $request, UpdateCategoryAction $action): JsonResponse
