@@ -3,7 +3,7 @@
 namespace Tests\Feature\Hr;
 
 use Tests\TestCase;
-use App\Domains\EnterpriseCore\Governance\Models\DocumentTemplate;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\DocumentTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 

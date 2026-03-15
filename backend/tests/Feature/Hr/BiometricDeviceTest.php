@@ -3,7 +3,7 @@
 namespace Tests\Feature\Hr;
 
 use Tests\TestCase;
-use App\Domains\HumanCapital\TimeAndAttendance\Models\BiometricDevice;
+use App\Domains\HumanCapital\TimeProductivity\Models\BiometricDevice;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 

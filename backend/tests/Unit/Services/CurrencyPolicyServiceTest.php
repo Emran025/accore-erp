@@ -3,10 +3,10 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Domains\Finance\Currency\Models\Currency;
-use App\Domains\Finance\CurrencyPolicy\Models\CurrencyPolicy;
-use App\Domains\Finance\Currency\Models\CurrencyExchangeRateHistory;
-use App\Domains\Finance\CurrencyPolicy\Services\CurrencyPolicyService;
+use App\Domains\Finance\ForeignExchange\Models\Currency;
+use App\Domains\Finance\ForeignExchange\Models\CurrencyPolicy;
+use App\Domains\Finance\ForeignExchange\Models\CurrencyExchangeRateHistory;
+use App\Domains\Finance\ForeignExchange\Services\CurrencyPolicyService;
 use App\Enums\ConversionDecision;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 

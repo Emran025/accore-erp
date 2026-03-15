@@ -5,8 +5,8 @@ namespace Tests\Unit\Services;
 use Tests\TestCase;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Department;
-use App\Domains\HumanCapital\DocumentManagement\Services\EmployeeContextBuilder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Domains\HumanCapital\HRAdvanced\Services\EmployeeContextBuilder;
 
 class EmployeeContextBuilderTest extends TestCase
 {

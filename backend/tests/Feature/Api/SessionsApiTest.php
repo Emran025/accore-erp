@@ -3,8 +3,8 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Domains\EnterpriseCore\IAM\Models\Session;
-use App\Domains\EnterpriseCore\IAM\Models\User;
+use Symfony\Component\HttpFoundation\Session\Session;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class SessionsApiTest extends TestCase

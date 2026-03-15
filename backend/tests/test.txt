@@ -4,7 +4,7 @@ Journal in DB? Yes (ID:1)
    PASS  Tests\Unit\DebugTest
   ✓ journal creation                                                              18.93s  
 
-   PASS  Tests\Unit\Helpers\CurrencyHelperTest
+   PASS  Tests\Unit\Helpers\ForeignExchangeHelperTest
   ✓ get primary currency returns primary currency                                  0.51s  
   ✓ get primary currency falls back if no primary defined                          0.42s  
   ✓ get primary currency returns default object on exception                       0.47s  
@@ -243,7 +243,7 @@ Journal in DB? Yes (ID:1)
   ✓ unauthorized user cannot access invoices                                       0.62s  
   ✓ unauthorized user cannot create product                                        0.67s  
 
-   PASS  Tests\Feature\Api\BankReconciliationApiTest
+   PASS  Tests\Feature\Api\TreasuryApiTest
   ✓ can list reconciliations                                                       0.94s  
   ✓ can calculate ledger balance                                                   0.65s  
   ✓ can create reconciliation                                                      0.57s  
@@ -294,7 +294,7 @@ Journal in DB? Yes (ID:1)
   ✓ can create compensation entry                                                  0.48s  
   ✓ can update compensation entry status                                           0.53s  
 
-   PASS  Tests\Feature\Api\CurrencyApiTest
+   PASS  Tests\Feature\Api\ForeignExchangeApiTest
   ✓ can list currencies                                                            0.59s  
   ✓ can create currency                                                            0.50s  
   ✓ create currency rejects duplicate code                                         0.56s  

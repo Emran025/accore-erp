@@ -3,7 +3,7 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Domains\Finance\Currency\Models\Currency;
+use App\Domains\Finance\ForeignExchange\Models\Currency;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CurrencyApiTest extends TestCase

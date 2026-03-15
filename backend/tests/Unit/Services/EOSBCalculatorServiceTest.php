@@ -5,9 +5,9 @@ namespace Tests\Unit\Services;
 use Tests\TestCase;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Department;
-use App\Domains\HumanCapital\Payroll\Services\EOSBCalculatorService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
+use App\Domains\HumanCapital\PayrollBenefits\Services\EOSBCalculatorService;
 
 class EOSBCalculatorServiceTest extends TestCase
 {

@@ -3,8 +3,8 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Domains\EnterpriseCore\IAM\Models\User;
-use App\Domains\Commercial\Purchases\Models\Purchase;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
+use App\Domains\SupplyChain\Procurement\Models\Purchase;
 use App\Domains\SupplyChain\Inventory\Models\Product;
 use App\Domains\Commercial\AccountsPayable\Models\ApSupplier;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;

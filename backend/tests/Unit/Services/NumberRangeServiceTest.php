@@ -2,13 +2,13 @@
 
 namespace Tests\Unit\Services;
 
-use App\Domains\EnterpriseCore\NumberRanges\Models\NrGroup;
-use App\Domains\EnterpriseCore\NumberRanges\Models\NrInterval;
-use App\Domains\EnterpriseCore\NumberRanges\Models\NrObject;
-use App\Domains\EnterpriseCore\NumberRanges\Models\NrGroupIntervalAssignment;
-use App\Domains\EnterpriseCore\NumberRanges\Services\NumberRangeService;
+use App\Domains\EnterpriseCore\SystemOverview\Models\NrGroup;
+use App\Domains\EnterpriseCore\SystemOverview\Models\NrInterval;
+use App\Domains\EnterpriseCore\SystemOverview\Models\NrObject;
+use App\Domains\EnterpriseCore\SystemOverview\Models\NrGroupIntervalAssignment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use App\Domains\EnterpriseCore\SystemOverview\Services\NumberRangeService;
 
 class NumberRangeServiceTest extends TestCase
 {

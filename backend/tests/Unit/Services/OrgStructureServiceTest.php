@@ -3,12 +3,12 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Domains\EnterpriseCore\OrgStructure\Models\StructureNode;
-use App\Domains\EnterpriseCore\OrgStructure\Models\StructureLink;
-use App\Domains\EnterpriseCore\OrgStructure\Models\OrgMetaType;
-use App\Domains\EnterpriseCore\Governance\Models\TopologyRule;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\StructureNode;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\OrgMetaType;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\StructureLink;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\TopologyRule;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\OrgChangeHistory;
-use App\Domains\EnterpriseCore\OrgStructure\Services\OrgStructureService;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Services\OrgStructureService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;

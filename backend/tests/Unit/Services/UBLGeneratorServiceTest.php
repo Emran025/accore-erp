@@ -3,13 +3,14 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Domains\Finance\Taxation\Services\UBLGeneratorService;
-use App\Domains\Commercial\Sales\Models\Invoice;
-use App\Domains\Commercial\Sales\Models\InvoiceItem;
+use App\Domains\Finance\TaxCompliance\Services\UBLGeneratorService;
+use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
+use App\Domains\Commercial\SalesLifecycle\Models\InvoiceItem;
 use App\Domains\SupplyChain\Inventory\Models\Product;
-use App\Domains\Commercial\AccountsReceivable\Models\ArCustomer;
-use App\Domains\EnterpriseCore\Governance\Models\Setting;
+use App\Domains\Commercial\CRM\Models\ArCustomer;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Setting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+
 
 /**
  * Test UBLGeneratorService XML generation

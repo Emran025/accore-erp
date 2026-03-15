@@ -3,9 +3,9 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Domains\Commercial\Sales\Models\Invoice;
-use App\Domains\EnterpriseCore\Governance\Models\Setting;
-use App\Domains\Commercial\Sales\Models\InvoiceItem;
+use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Setting;
+use App\Domains\Commercial\SalesLifecycle\Models\InvoiceItem;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ZatcaApiTest extends TestCase

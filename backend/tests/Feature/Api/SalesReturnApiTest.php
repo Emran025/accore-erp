@@ -3,12 +3,12 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Domains\Commercial\Sales\Models\Invoice;
-use App\Domains\Commercial\Sales\Models\InvoiceItem;
+use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
+use App\Domains\Commercial\SalesLifecycle\Models\InvoiceItem;
 use App\Domains\SupplyChain\Inventory\Models\Product;
-use App\Domains\Commercial\AccountsReceivable\Models\ArCustomer;
+use App\Domains\Commercial\CRM\Models\ArCustomer;
 use App\Domains\Commercial\Sales\Models\SalesReturn;
-use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
+use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 

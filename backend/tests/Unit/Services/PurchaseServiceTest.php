@@ -3,19 +3,19 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Domains\Commercial\Purchases\Models\Purchase;
+use App\Domains\SupplyChain\Procurement\Models\Purchase;
 use App\Domains\SupplyChain\Inventory\Models\Product;
-use App\Domains\Commercial\AccountsPayable\Models\ApSupplier;
-use App\Domains\EnterpriseCore\IAM\Models\User;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
-use App\Domains\EnterpriseCore\Governance\Models\Setting;
-use App\Domains\Commercial\AccountsPayable\Models\ApTransaction;
+use App\Domains\Commercial\IdentityAccess\Models\ApTransaction;
 use App\Domains\Commercial\Purchases\Services\PurchaseService;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
 use App\Domains\Finance\ChartOfAccounts\Services\ChartOfAccountsMappingService;
 use App\Domains\SupplyChain\Inventory\Services\InventoryCostingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
+use App\Domains\SupplyChain\SupplierSourcing\Models\ApSupplier;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Setting;
 
 class PurchaseServiceTest extends TestCase
 {

@@ -5,7 +5,7 @@ namespace Tests\Feature\Api;
 use Tests\TestCase;
 use App\Domains\Commercial\AccountsPayable\Models\ApSupplier;
 use App\Domains\Commercial\AccountsPayable\Models\ApTransaction;
-use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
+use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
 use Illuminate\Foundation\Testing\RefreshDatabase;

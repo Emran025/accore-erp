@@ -4,9 +4,9 @@ namespace Tests\Unit\Services;
 
 use Tests\TestCase;
 use App\Domains\HumanCapital\DocumentManagement\Services\TemplateService;
-use App\Domains\HumanCapital\DocumentManagement\Services\TemplateRenderer;
-use App\Domains\EnterpriseCore\Governance\Models\DocumentTemplate;
-use App\Domains\HumanCapital\DocumentManagement\Services\TemplateRegistry;
+use App\Domains\HumanCapital\HRAdvanced\Services\TemplateRenderer;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\DocumentTemplate;
+use App\Domains\HumanCapital\HRAdvanced\Services\TemplateRegistry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class TemplateServiceTest extends TestCase

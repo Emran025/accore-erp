@@ -3,9 +3,9 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Domains\EnterpriseCore\IAM\Models\Role;
-use App\Domains\EnterpriseCore\Governance\Models\Module;
-use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\Role;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Module;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class RolesApiTest extends TestCase

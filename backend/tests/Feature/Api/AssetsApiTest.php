@@ -3,7 +3,7 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Domains\AssetManagement\Models\Asset;
+use App\Domains\Assets\AssetLifecycle\Models\Asset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AssetsApiTest extends TestCase

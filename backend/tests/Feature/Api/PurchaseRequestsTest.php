@@ -4,7 +4,7 @@ namespace Tests\Feature\Api;
 
 use Tests\TestCase;
 use App\Domains\SupplyChain\Inventory\Models\Product;
-use App\Domains\Commercial\Purchases\Models\PurchaseRequest;
+use App\Domains\SupplyChain\Procurement\Models\PurchaseRequest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PurchaseRequestsTest extends TestCase

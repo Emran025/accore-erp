@@ -4,8 +4,8 @@ namespace Tests\Unit\Services;
 
 use Tests\TestCase;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
-use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
-use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
+use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
+use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;

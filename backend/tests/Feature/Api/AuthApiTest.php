@@ -3,8 +3,8 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Domains\EnterpriseCore\IAM\Models\User;
-use App\Domains\EnterpriseCore\IAM\Models\Session;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 

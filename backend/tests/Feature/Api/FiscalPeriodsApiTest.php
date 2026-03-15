@@ -3,8 +3,8 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
-use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
+use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
+use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 

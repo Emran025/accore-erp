@@ -3,13 +3,13 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Domains\EnterpriseCore\IAM\Models\User;
-use App\Domains\EnterpriseCore\IAM\Models\Session;
-use App\Domains\EnterpriseCore\IAM\Models\LoginAttempt;
-use App\Domains\EnterpriseCore\IAM\Services\AuthService;
-use App\Domains\EnterpriseCore\IAM\Services\PermissionService;
+use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Domains\EnterpriseCore\IdentityAccess\Services\AuthService;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\LoginAttempt;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\Session;
 
 class AuthServiceTest extends TestCase
 {

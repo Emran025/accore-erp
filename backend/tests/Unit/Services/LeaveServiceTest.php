@@ -4,9 +4,9 @@ namespace Tests\Unit\Services;
 
 use Tests\TestCase;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
-use App\Domains\HumanCapital\TimeAndAttendance\Models\LeaveRequest;
+use App\Domains\HumanCapital\TimeProductivity\Models\LeaveRequest;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Department;
-use App\Domains\HumanCapital\TimeAndAttendance\Services\LeaveService;
+use App\Domains\HumanCapital\TimeProductivity\Services\LeaveService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 

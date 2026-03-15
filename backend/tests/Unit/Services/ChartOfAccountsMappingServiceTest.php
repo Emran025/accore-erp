@@ -3,9 +3,9 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
-use App\Domains\Finance\ChartOfAccounts\Services\ChartOfAccountsMappingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
+use App\Domains\Finance\GeneralLedger\Services\ChartOfAccountsMappingService;
 
 class ChartOfAccountsMappingServiceTest extends TestCase
 {

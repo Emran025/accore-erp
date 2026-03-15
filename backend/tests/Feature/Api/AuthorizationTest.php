@@ -3,8 +3,8 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Domains\EnterpriseCore\IAM\Models\User;
-use App\Domains\EnterpriseCore\IAM\Models\Role;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AuthorizationTest extends TestCase

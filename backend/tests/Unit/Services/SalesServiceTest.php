@@ -3,22 +3,22 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Domains\Commercial\Sales\Models\Invoice;
-use App\Domains\Commercial\Sales\Models\InvoiceItem;
+use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
+use App\Domains\Commercial\SalesLifecycle\Models\InvoiceItem;
 use App\Domains\SupplyChain\Inventory\Models\Product;
-use App\Domains\Commercial\AccountsReceivable\Models\ArCustomer;
-use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
-use App\Domains\EnterpriseCore\IAM\Models\User;
-use App\Domains\Commercial\Sales\Services\SalesService;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
-use App\Domains\Finance\ChartOfAccounts\Services\ChartOfAccountsMappingService;
 use App\Domains\SupplyChain\Inventory\Services\InventoryCostingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
-use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
 use Mockery;
+use App\Domains\Finance\GeneralLedger\Services\ChartOfAccountsMappingService;
+use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
+use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
+use App\Domains\Commercial\CRM\Models\ArCustomer;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
+use App\Domains\Commercial\SalesLifecycle\Services\SalesService;
 
 
 class SalesServiceTest extends TestCase
@@ -115,7 +115,7 @@ class SalesServiceTest extends TestCase
         ]);
 
         // Seed costing layer
-        app(\App\Domains\SupplyChain\Inventory\Services\InventoryCostingService::class)->recordPurchase($product->id, 1, 10, 50.00, 500.00);
+        app(InventoryCostingService::class)->recordPurchase($product->id, 1, 10, 50.00, 500.00);
 
         $data = [
             'customer_id' => $customer->id,

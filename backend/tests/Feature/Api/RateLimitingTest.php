@@ -3,7 +3,7 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\RateLimiter;
@@ -96,8 +96,8 @@ class RateLimitingTest extends TestCase
         
         // Ensure necessary data for ZATCA (Invoice, Customer)
         $this->seedChartOfAccounts();
-        $customer = \App\Domains\Commercial\AccountsReceivable\Models\ArCustomer::factory()->create();
-        $invoice = \App\Domains\Commercial\Sales\Models\Invoice::factory()->create(['customer_id' => $customer->id]);
+        $customer = \App\Domains\Commercial\CRM\Models\ArCustomer::factory()->create();
+        $invoice = \App\Domains\Commercial\SalesLifecycle\Models\Invoice::factory()->create(['customer_id' => $customer->id]);
 
         // Make 5 requests (should succeed)
         for ($i = 0; $i < 5; $i++) {

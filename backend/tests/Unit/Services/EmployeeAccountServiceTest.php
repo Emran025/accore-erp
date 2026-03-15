@@ -5,10 +5,10 @@ namespace Tests\Unit\Services;
 use Tests\TestCase;
 use App\Domains\HumanCapital\WorkforceAdmin\Services\EmployeeAccountService;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
-use App\Domains\Finance\ChartOfAccounts\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\HumanCapital\Payroll\Models\PayrollTransaction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 
 class EmployeeAccountServiceTest extends TestCase
 {

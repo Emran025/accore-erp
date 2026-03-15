@@ -3,16 +3,17 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Services\ZATCAService;
-use App\Services\UBLGeneratorService;
-use App\Services\QRCodeService;
-use App\Models\Invoice;
-use App\Models\Setting;
-use App\Models\InvoiceItem;
-use App\Models\Product;
+use App\Domains\Finance\TaxCompliance\Services\ZATCAService;
+use App\Domains\Finance\TaxCompliance\Services\UBLGeneratorService;
+use App\Domains\Shared\Services\QRCodeService;
+
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Mockery;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Setting;
+use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
+use App\Domains\SupplyChain\Inventory\Models\Product;
+use App\Domains\Commercial\SalesLifecycle\Models\InvoiceItem;
 
 /**
  * Test ZATCAService functionality

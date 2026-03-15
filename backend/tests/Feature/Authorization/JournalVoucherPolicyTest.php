@@ -3,10 +3,10 @@
 namespace Tests\Feature\Authorization;
 
 use Tests\TestCase;
-use App\Domains\EnterpriseCore\IAM\Models\User;
-use App\Domains\EnterpriseCore\IAM\Models\Role;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\Role;
 // using GeneralLedger directly
-use App\Domains\Finance\FiscalPeriods\Models\FiscalPeriod;
+use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Policies\JournalVoucherPolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;

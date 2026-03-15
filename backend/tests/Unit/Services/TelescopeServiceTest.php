@@ -3,10 +3,10 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Domains\DigitalPlatform\Automation\Services\TelescopeService;
-use App\Domains\DigitalPlatform\Compliance\Models\Telescope;
-use App\Domains\EnterpriseCore\IAM\Models\User;
+use App\Domains\HumanCapital\HRCompliance\Models\Telescope;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 
 class TelescopeServiceTest extends TestCase
 {

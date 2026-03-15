@@ -7,7 +7,7 @@ use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Department;
 use App\Domains\HumanCapital\Payroll\Services\SalaryCalculatorService;
 use App\Domains\HumanCapital\TimeAndAttendance\Services\AttendanceService;
-use App\Domains\HumanCapital\TimeAndAttendance\Services\LeaveService;
+use App\Domains\HumanCapital\TimeProductivity\Services\LeaveService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class SalaryCalculatorServiceTest extends TestCase

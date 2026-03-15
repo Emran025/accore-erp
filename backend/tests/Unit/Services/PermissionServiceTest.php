@@ -3,10 +3,10 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Domains\EnterpriseCore\IAM\Services\PermissionService;
-use App\Domains\EnterpriseCore\IAM\Models\Role;
-use App\Domains\EnterpriseCore\Governance\Models\Module;
-use App\Domains\EnterpriseCore\IAM\Models\RolePermission;
+use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\Role;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Module;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\RolePermission;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PermissionServiceTest extends TestCase
