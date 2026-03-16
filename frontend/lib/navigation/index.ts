@@ -244,16 +244,44 @@ export function getNavigationGroup(
     key: string,
     groups: NavigationGroup[] = navigationGroups
 ): NavigationGroup | undefined {
+    // Normalize key: remove trailing slash
+    const cleanKey = key.endsWith("/") ? key.slice(0, -1) : key;
+
     for (const group of groups) {
-        if (group.key === key) return group;
+        if (group.key === cleanKey) return group;
         if (group.items && group.items.length > 0) {
             for (const item of group.items) {
                 if (isNavigationGroup(item)) {
-                    const found = getNavigationGroup(key, [item]);
+                    const found = getNavigationGroup(cleanKey, [item]);
                     if (found) return found;
                 }
             }
         }
     }
+    return undefined;
+}
+
+/**
+ * Find a navigation group by URL segment path
+ * Handles 01-, 02- prefixes and deep paths.
+ */
+export function getNavigationGroupFromPath(path: string | string[]): NavigationGroup | undefined {
+    const segments = Array.isArray(path) ? path : path.replace(/^\//, '').replace(/\/$/, '').split('/');
+    if (segments.length === 0) return undefined;
+
+    // Try segments from last to first
+    for (let i = segments.length - 1; i >= 0; i--) {
+        const rawSegment = segments[i];
+        // Remove 01-, 02- prefixes if present (e.g. 02-commercial -> commercial)
+        const cleanSegment = rawSegment.replace(/^\d+-/, '');
+        
+        const found = getNavigationGroup(cleanSegment);
+        if (found) return found;
+        
+        // Also try the raw segment
+        const foundRaw = getNavigationGroup(rawSegment);
+        if (foundRaw) return foundRaw;
+    }
+
     return undefined;
 }
