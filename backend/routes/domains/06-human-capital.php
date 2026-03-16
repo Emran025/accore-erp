@@ -9,9 +9,7 @@ use App\Http\Controllers\Api\V2\HumanCapital\{
     HRAdvanced\DocumentTemplateController,
     ServicesWellness\EhsController,
     ServicesWellness\TravelExpenseController,
-    ServicesWellness\WellnessController,
     ServicesWellness\EmployeeLoansController,
-    PayrollBenefits\BenefitsController,
     PayrollBenefits\CompensationController,
     PayrollBenefits\EOSBController,
     PayrollBenefits\PayrollComponentsController,
@@ -26,6 +24,7 @@ use App\Http\Controllers\Api\V2\HumanCapital\{
     TimeProductivity\BiometricController,
     TimeProductivity\LeaveController,
     TimeProductivity\WorkforceSchedulingController,
+    WorkforceAdmin\BenefitsController,
     WorkforceAdmin\ContingentWorkersController,
     WorkforceAdmin\DepartmentsController,
     WorkforceAdmin\EmployeeContractsController,
@@ -33,6 +32,7 @@ use App\Http\Controllers\Api\V2\HumanCapital\{
     WorkforceAdmin\EmployeesController,
     WorkforceAdmin\ExpatManagementController,
     WorkforceAdmin\HrAdministrationController,
+    WorkforceAdmin\WellnessController,
 };
 
 use App\Http\Controllers\Api\V2\Assets\EmployeeAssetsController;
