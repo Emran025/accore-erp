@@ -30,7 +30,7 @@ class LeaveController extends Controller
         $paginated = $action->execute($request->validated());
         
         return $this->paginatedResponse(
-            LeaveRequestResource::collection($paginated->items()),
+            LeaveRequestResource::collection($paginated->items())->resolve(),
             $paginated->total(),
             $paginated->currentPage(),
             $paginated->perPage()
@@ -41,9 +41,9 @@ class LeaveController extends Controller
     {
         try {
             $leaveRequest = $action->execute($request->validated());
-            return $this->successResponse(new LeaveRequestResource($leaveRequest), 'Leave request created successfully', 201);
+            return $this->successResponse((new LeaveRequestResource($leaveRequest))->resolve(), 'Leave request created successfully', 201);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400);
         }
     }
 
@@ -51,25 +51,25 @@ class LeaveController extends Controller
     {
         try {
             $leaveRequest = $action->execute($id, $request->validated());
-            return $this->successResponse(new LeaveRequestResource($leaveRequest), 'Leave request processed successfully');
+            return $this->successResponse((new LeaveRequestResource($leaveRequest))->resolve(), 'Leave request processed successfully');
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400);
         }
     }
 
     public function show($id, ShowLeaveRequestAction $action)
     {
         $leaveRequest = $action->execute($id);
-        return $this->successResponse(new LeaveRequestResource($leaveRequest));
+        return $this->successResponse((new LeaveRequestResource($leaveRequest))->resolve());
     }
 
     public function cancel($id, CancelLeaveRequestAction $action)
     {
         try {
             $leaveRequest = $action->execute($id);
-            return $this->successResponse(new LeaveRequestResource($leaveRequest), 'Leave request cancelled successfully');
+            return $this->successResponse((new LeaveRequestResource($leaveRequest))->resolve(), 'Leave request cancelled successfully');
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400);
         }
     }
 
@@ -79,13 +79,13 @@ class LeaveController extends Controller
             $paginated = $action->execute($request->validated());
 
             return $this->paginatedResponse(
-                LeaveRequestResource::collection($paginated->items()),
+                LeaveRequestResource::collection($paginated->items())->resolve(),
                 $paginated->total(),
                 $paginated->currentPage(),
                 $paginated->perPage()
             );
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 404);
+            return $this->errorResponse($e->getMessage(), 404);
         }
     }
 }

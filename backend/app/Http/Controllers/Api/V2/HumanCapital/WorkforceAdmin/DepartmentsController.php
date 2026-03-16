@@ -23,28 +23,36 @@ class DepartmentsController extends Controller
     public function index(ListDepartmentsRequest $request, ListDepartmentsAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
-        return $this->successResponse(DepartmentResource::collection($result));
+        return $this->successResponse(DepartmentResource::collection($result)->resolve());
     }
 
     public function store(StoreDepartmentRequest $request, CreateDepartmentAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
-        $department = Department::find($result['id']);
-        return $this->successResponse(new DepartmentResource($department), 'Department created successfully', 201);
+        try {
+            $result = $action->execute($request->validated());
+            $department = Department::findOrFail($result['id'] ?? $result);
+            return $this->successResponse((new DepartmentResource($department))->resolve(), 'Department created successfully', 201);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function show($id, ShowDepartmentAction $action): JsonResponse
     {
         $result = $action->execute((int)$id);
-        $department = Department::find($result['id'] ?? $id);
-        return $this->successResponse(new DepartmentResource($department));
+        $department = Department::findOrFail($result['id'] ?? $id);
+        return $this->successResponse((new DepartmentResource($department))->resolve());
     }
 
     public function update(UpdateDepartmentRequest $request, $id, UpdateDepartmentAction $action): JsonResponse
     {
-        $result = $action->execute((int)$id, $request->validated());
-        $department = Department::find($result['id'] ?? $id);
-        return $this->successResponse(new DepartmentResource($department), 'Department updated successfully');
+        try {
+            $result = $action->execute((int)$id, $request->validated());
+            $department = Department::findOrFail($result['id'] ?? $id);
+            return $this->successResponse((new DepartmentResource($department))->resolve(), 'Department updated successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function destroy($id, DeleteDepartmentAction $action): JsonResponse

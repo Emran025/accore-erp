@@ -3,10 +3,10 @@
 namespace App\Domains\HumanCapital\TalentRecruitment\Actions;
 
 use App\Domains\HumanCapital\TalentRecruitment\Models\RecruitmentRequisition;
-
+use Illuminate\Pagination\LengthAwarePaginator;
 class ListRequisitionsAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): LengthAwarePaginator
     {
         $query = RecruitmentRequisition::with(['department', 'role']);
 
@@ -18,6 +18,6 @@ class ListRequisitionsAction
             $query->where('department_id', $filters['department_id']);
         }
 
-        return $query->orderBy('created_at', 'desc')->paginate(15)->toArray();
+        return $query->orderBy('created_at', 'desc')->paginate(15);
     }
 }

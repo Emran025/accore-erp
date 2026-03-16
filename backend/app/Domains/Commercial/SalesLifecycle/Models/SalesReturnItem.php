@@ -4,6 +4,7 @@ namespace App\Domains\Commercial\SalesLifecycle\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Domains\SupplyChain\Inventory\Models\Product;
 
 class SalesReturnItem extends Model
 {

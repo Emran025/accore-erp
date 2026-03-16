@@ -11,7 +11,7 @@ use Illuminate\Support\Arr;
 
 class UpdateEmployeeAction
 {
-    public function execute(int|string $id, array $data): array
+    public function execute(int|string $id, array $data): Employee
     {
         $employee = Employee::findOrFail($id);
 
@@ -54,7 +54,7 @@ class UpdateEmployeeAction
                 }
             }
 
-            return $employee->toArray();
+            return $employee;
         });
     }
 }

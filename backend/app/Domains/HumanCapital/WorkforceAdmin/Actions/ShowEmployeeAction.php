@@ -6,9 +6,9 @@ use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 
 class ShowEmployeeAction
 {
-    public function execute(int|string $id): array
+    public function execute(int|string $id): Employee
     {
-        $employee = Employee::with([
+        return Employee::with([
             'role', 
             'department', 
             'position.jobTitle', 
@@ -17,7 +17,5 @@ class ShowEmployeeAction
             'deductions', 
             'jobTitle'
         ])->findOrFail($id);
-        
-        return $employee->toArray();
     }
 }

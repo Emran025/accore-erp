@@ -28,10 +28,11 @@ class OnboardingController extends Controller
     {
         $filters = $request->only(['employee_id', 'workflow_type', 'status']);
         $workflows = $action->execute($filters);
+        $data = $workflows['data'] ?? $workflows;
 
         return $this->paginatedResponse(
-            OnboardingWorkflowResource::collection($workflows['data'] ?? $workflows),
-            $workflows['total'] ?? count($workflows['data'] ?? $workflows),
+            OnboardingWorkflowResource::collection($data)->resolve(),
+            $workflows['total'] ?? (is_countable($data) ? count($data) : 0),
             $workflows['current_page'] ?? 1,
             $workflows['per_page'] ?? 15
         );
@@ -39,32 +40,44 @@ class OnboardingController extends Controller
 
     public function store(StoreOnboardingWorkflowRequest $request, CreateOnboardingWorkflowAction $action)
     {
-        $validated = $request->validated();
-        $result = $action->execute($validated);
-        $workflow = OnboardingWorkflow::find($result['id'] ?? $result);
-        return $this->successResponse(new OnboardingWorkflowResource($workflow), 'Onboarding workflow created successfully', 201);
+        try {
+            $validated = $request->validated();
+            $result = $action->execute($validated);
+            $workflow = OnboardingWorkflow::findOrFail($result['id'] ?? $result);
+            return $this->successResponse((new OnboardingWorkflowResource($workflow))->resolve(), 'Onboarding workflow created successfully', 201);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function show($id, ShowOnboardingWorkflowAction $action)
     {
         $result = $action->execute($id);
-        $workflow = OnboardingWorkflow::find($result['id'] ?? $id);
-        return $this->successResponse(new OnboardingWorkflowResource($workflow));
+        $workflow = OnboardingWorkflow::findOrFail($result['id'] ?? $id);
+        return $this->successResponse((new OnboardingWorkflowResource($workflow))->resolve());
     }
 
     public function updateTask(UpdateOnboardingTaskRequest $request, $workflowId, $taskId, UpdateOnboardingTaskAction $action)
     {
-        $validated = $request->validated();
-        $result = $action->execute($workflowId, $taskId, $validated);
-        $task = OnboardingTask::find($result['id'] ?? $taskId);
-        return $this->successResponse(new OnboardingTaskResource($task), 'Task updated successfully');
+        try {
+            $validated = $request->validated();
+            $result = $action->execute($workflowId, $taskId, $validated);
+            $task = OnboardingTask::findOrFail($result['id'] ?? $taskId);
+            return $this->successResponse((new OnboardingTaskResource($task))->resolve(), 'Task updated successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function storeDocument(StoreOnboardingDocumentRequest $request, $workflowId, CreateOnboardingDocumentAction $action)
     {
-        $validated = $request->validated();
-        $result = $action->execute($workflowId, $validated);
-        $document = OnboardingDocument::find($result['id'] ?? $result);
-        return $this->successResponse(new OnboardingDocumentResource($document), 'Document uploaded successfully', 201);
+        try {
+            $validated = $request->validated();
+            $result = $action->execute($workflowId, $validated);
+            $document = OnboardingDocument::findOrFail($result['id'] ?? $result);
+            return $this->successResponse((new OnboardingDocumentResource($document))->resolve(), 'Document uploaded successfully', 201);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 }

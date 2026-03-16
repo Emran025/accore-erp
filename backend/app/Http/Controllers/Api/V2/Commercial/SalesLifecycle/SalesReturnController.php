@@ -17,6 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class SalesReturnController extends Controller
 {
@@ -27,13 +28,13 @@ class SalesReturnController extends Controller
      */
     public function index(ListSalesReturnsRequest $request, ListSalesReturnsAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
+        $paginated = $action->execute($request->validated());
 
         return $this->paginatedResponse(
-            SalesReturnResource::collection($result['data']),
-            $result['total'],
-            $result['current_page'],
-            $result['per_page']
+            SalesReturnResource::collection($paginated->items())->resolve(),
+            $paginated->total(),
+            $paginated->currentPage(),
+            $paginated->perPage()
         );
     }
 
@@ -53,8 +54,8 @@ class SalesReturnController extends Controller
             $result = $action->execute($validated, (int)$userId);
             TelescopeService::logOperation('CREATE', 'sales_returns', $result['id'], null, $validated);
 
-            $return = SalesReturn::find($result['id']);
-            return $this->successResponse(new SalesReturnResource($return), 'Sales return created successfully');
+            $return = SalesReturn::findOrFail($result['id']);
+            return $this->successResponse((new SalesReturnResource($return))->resolve(), 'Sales return created successfully');
         } catch (\Exception $e) {
             Log::error('Sales Return Error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
@@ -74,9 +75,14 @@ class SalesReturnController extends Controller
             return $this->errorResponse('ID is required', 400);
         }
 
-        $return = $action->execute((int)$id);
-
-        return $this->successResponse(new SalesReturnResource($return));
+        try {
+            $return = $action->execute((int)$id);
+            return $this->successResponse((new SalesReturnResource($return))->resolve());
+        } catch (ModelNotFoundException $e) {
+            return $this->errorResponse('Sales return not found', 404);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 400);
+        }
     }
 
     /**
@@ -84,8 +90,11 @@ class SalesReturnController extends Controller
      */
     public function ledger(LedgerSalesReturnsRequest $request, SalesReturnsLedgerAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
-
-        return $this->successResponse($result);
+        try {
+            $result = $action->execute($request->validated());
+            return $this->successResponse($result);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 400);
+        }
     }
 }

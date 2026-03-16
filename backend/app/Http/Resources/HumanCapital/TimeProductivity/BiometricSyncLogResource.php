@@ -6,6 +6,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class BiometricSyncLogResource extends JsonResource
 {
+    public static $wrap = null;
+
     public function toArray($request): array
     {
         return [

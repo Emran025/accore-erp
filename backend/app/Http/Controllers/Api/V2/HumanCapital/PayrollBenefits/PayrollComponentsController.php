@@ -25,33 +25,45 @@ class PayrollComponentsController extends Controller
         $components = $action->execute();
         $data = $components['data'] ?? $components;
 
-        return $this->successResponse(PayrollComponentResource::collection($data));
+        return $this->successResponse(PayrollComponentResource::collection($data)->resolve());
     }
 
     public function store(StorePayrollComponentRequest $request, CreatePayrollComponentAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
-        $component = PayrollComponent::find($result['id'] ?? $result);
-        return $this->successResponse(new PayrollComponentResource($component), 'Payroll component created', 201);
+        try {
+            $result = $action->execute($request->validated());
+            $component = PayrollComponent::findOrFail($result['id'] ?? $result);
+            return $this->successResponse((new PayrollComponentResource($component))->resolve(), 'Payroll component created', 201);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function update(UpdatePayrollComponentRequest $request, $id, UpdatePayrollComponentAction $action): JsonResponse
     {
-        $result = $action->execute((int)$id, $request->validated());
-        $component = PayrollComponent::find($result['id'] ?? $id);
-        return $this->successResponse(new PayrollComponentResource($component), 'Payroll component updated');
+        try {
+            $result = $action->execute((int)$id, $request->validated());
+            $component = PayrollComponent::findOrFail($result['id'] ?? $id);
+            return $this->successResponse((new PayrollComponentResource($component))->resolve(), 'Payroll component updated');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function destroy($id, DeletePayrollComponentAction $action): JsonResponse
     {
-        $action->execute((int)$id);
-        return $this->successResponse([], 'Payroll component deleted');
+        try {
+            $action->execute((int)$id);
+            return $this->successResponse([], 'Payroll component deleted');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function show($id, ShowPayrollComponentAction $action): JsonResponse
     {
         $result = $action->execute((int)$id);
-        $component = PayrollComponent::find($result['id'] ?? $id);
-        return $this->successResponse(new PayrollComponentResource($component));
+        $component = PayrollComponent::findOrFail($result['id'] ?? $id);
+        return $this->successResponse((new PayrollComponentResource($component))->resolve());
     }
 }

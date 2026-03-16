@@ -4,10 +4,10 @@ namespace App\Domains\HumanCapital\WorkforceAdmin\Actions;
 
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Position;
 use Illuminate\Database\Eloquent\Builder;
-
+use Illuminate\Database\Eloquent\Collection;
 class ListPositionsAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): Collection
     {
         $query = Position::with(['jobTitle', 'role', 'department', 'employees' => function ($q) {
             $q->where('is_active', true)->select('id', 'full_name', 'employee_code', 'position_id');
@@ -38,11 +38,9 @@ class ListPositionsAction
             $query->where('is_active', filter_var($filters['is_active'], FILTER_VALIDATE_BOOLEAN));
         }
 
-        $positions = $query->orderBy('position_code')->get()->map(function ($position) {
+        return $query->orderBy('position_code')->get()->map(function ($position) {
             $position->active_employee_count = $position->employees->count();
             return $position;
         });
-
-        return $positions->toArray();
     }
 }

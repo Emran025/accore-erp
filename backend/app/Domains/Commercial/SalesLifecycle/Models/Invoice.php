@@ -12,6 +12,10 @@ use App\Domains\Finance\TaxCompliance\Models\TaxLine;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Commercial\RevenueReceivables\Models\ArTransaction;
 use App\Domains\Finance\ForeignExchange\Models\Currency;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
+use App\Domains\Commercial\CRM\Models\ArCustomer;
+use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentative;
+use App\Domains\Finance\TaxCompliance\Models\ZatcaEinvoice;
 
 /**
  * SAP FI Pattern — Invoice as a DOCUMENT, not a store of amounts.
@@ -66,7 +70,7 @@ class Invoice extends Model
 
     public function customer(): BelongsTo
     {
-        return $this->belongsTo(ArCustomer::class, 'customer_id');
+        return $this->belongsTo(ArCustomer::class, 'customer_id')->withoutGlobalScopes();
     }
 
     public function items(): HasMany

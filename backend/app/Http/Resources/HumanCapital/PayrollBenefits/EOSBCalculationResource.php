@@ -6,6 +6,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class EOSBCalculationResource extends JsonResource
 {
+    public static $wrap = null;
+
     public function toArray($request): array
     {
         // This handles both the result array and any Eloquent models if we ever use them

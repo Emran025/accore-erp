@@ -33,7 +33,7 @@ class ArController extends Controller
         $result = $action->execute($request->validated());
 
         return $this->paginatedResponse(
-            ArCustomerResource::collection($result['data']),
+            ArCustomerResource::collection($result['data'])->resolve(),
             $result['total'],
             $result['current_page'],
             $result['per_page']
@@ -52,10 +52,10 @@ class ArController extends Controller
             $result = $action->execute($validated, (int)$userId);
             TelescopeService::logOperation('CREATE', 'ar_customers', $result['id'], null, $validated);
 
-            $customer = ArCustomer::find($result['id']);
-            return $this->successResponse(new ArCustomerResource($customer), 'Customer created successfully');
+            $customer = ArCustomer::findOrFail($result['id']);
+            return $this->successResponse((new ArCustomerResource($customer))->resolve(), 'Customer created successfully');
         } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 400);
+            return $this->errorResponse($e->getMessage(), 422);
         }
     }
 
@@ -70,10 +70,10 @@ class ArController extends Controller
             $result = $action->execute($validated);
             TelescopeService::logOperation('UPDATE', 'ar_customers', $result['id'], $result['old_values'], $validated);
 
-            $customer = ArCustomer::find($result['id']);
-            return $this->successResponse(new ArCustomerResource($customer), 'Customer updated successfully');
+            $customer = ArCustomer::findOrFail($result['id']);
+            return $this->successResponse((new ArCustomerResource($customer))->resolve(), 'Customer updated successfully');
         } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 400);
+            return $this->errorResponse($e->getMessage(), 422);
         }
     }
 
@@ -106,7 +106,7 @@ class ArController extends Controller
 
         return $this->successResponse([
             'customer' => $result['customer'],
-            'data' => ArTransactionResource::collection($result['data']),
+            'data' => ArTransactionResource::collection($result['data'])->resolve(),
             'stats' => $result['stats'],
             'pagination' => $result['pagination'],
         ]);

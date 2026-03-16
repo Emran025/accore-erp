@@ -8,7 +8,6 @@ use App\Domains\SupplyChain\Inventory\Models\Product;
 use App\Domains\Commercial\CRM\Models\ArCustomer;
 use App\Domains\Commercial\RevenueReceivables\Models\ArTransaction;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
-use App\Domains\Finance\TaxCompliance\Models\GovernmentFee;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Domains\Commercial\SalesLifecycle\Models\SalesReturn;
@@ -16,8 +15,12 @@ use App\Domains\Commercial\SalesLifecycle\Models\SalesReturnItem;
 use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentative;
 use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentativeTransaction;
 use App\Domains\Finance\TaxCompliance\Services\TaxCalculator;
-use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Setting;
+use App\Domains\Finance\GeneralLedger\Services\ChartOfAccountsMappingService;
+use App\Domains\Finance\GeneralLedger\Services\LedgerService;
+use App\Domains\SupplyChain\Inventory\Services\InventoryCostingService;
+use App\Domains\Finance\TaxCompliance\Models\TaxType;
 use App\Domains\Finance\TaxCompliance\Models\TaxLine;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Setting;
 
 /**
  * Service for handling sales operations, including invoice creation, returns, and inventory integration.
@@ -77,6 +80,23 @@ class SalesService
 
             if ($paymentType === 'credit' && !$customerId) {
                 throw new \Exception("Customer is required for credit sales");
+            }
+
+            // Ensure every invoice has a customer (Fixing "Cash sales don't contain a customer" flaw)
+            if (!$customerId) {
+                $cashCustomer = ArCustomer::withoutGlobalScopes()
+                    ->where('customer_code', ArCustomer::CASH_CUSTOMER_CODE)
+                    ->first();
+
+                if (!$cashCustomer) {
+                    $cashCustomer = ArCustomer::create([
+                        'customer_code' => ArCustomer::CASH_CUSTOMER_CODE,
+                        'name' => 'Cash Customer',
+                        'phone' => '000000000',
+                        'created_by' => $userId,
+                    ]);
+                }
+                $customerId = $cashCustomer->id;
             }
 
             // Calculate totals and validate stock

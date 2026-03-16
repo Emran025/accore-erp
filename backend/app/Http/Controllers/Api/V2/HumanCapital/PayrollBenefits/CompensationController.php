@@ -32,36 +32,42 @@ class CompensationController extends Controller
         $paginated = $action->execute($filters);
 
         return $this->paginatedResponse(
-            CompensationPlanResource::collection($paginated['data']),
-            $paginated['total'],
-            $paginated['current_page'],
-            $paginated['per_page']
+            CompensationPlanResource::collection($paginated['data'] ?? $paginated)->resolve(),
+            $paginated['total'] ?? (is_countable($paginated) ? count($paginated) : 0),
+            $paginated['current_page'] ?? 1,
+            $paginated['per_page'] ?? 15
         );
     }
 
     public function storePlan(StoreCompensationPlanRequest $request, CreateCompensationPlanAction $action): JsonResponse
     {
-        $validated = $request->validated();
-        $result = $action->execute($validated);
-        $plan = CompensationPlan::find($result['id'] ?? $result);
-
-        return $this->successResponse(new CompensationPlanResource($plan), 'Compensation plan created', 201);
+        try {
+            $validated = $request->validated();
+            $result = $action->execute($validated);
+            $plan = CompensationPlan::findOrFail($result['id'] ?? $result);
+            return $this->successResponse((new CompensationPlanResource($plan))->resolve(), 'Compensation plan created', 201);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function showPlan($id, ShowCompensationPlanAction $action): JsonResponse
     {
         $result = $action->execute($id);
-        $plan = CompensationPlan::find($id);
-        return $this->successResponse(new CompensationPlanResource($plan));
+        $plan = CompensationPlan::findOrFail($result['id'] ?? $id);
+        return $this->successResponse((new CompensationPlanResource($plan))->resolve());
     }
 
     public function updatePlan(UpdateCompensationPlanRequest $request, $id, UpdateCompensationPlanAction $action): JsonResponse
     {
-        $validated = $request->validated();
-        $result = $action->execute($id, $validated);
-        $plan = CompensationPlan::find($id);
-
-        return $this->successResponse(new CompensationPlanResource($plan), 'Compensation plan updated');
+        try {
+            $validated = $request->validated();
+            $result = $action->execute($id, $validated);
+            $plan = CompensationPlan::findOrFail($result['id'] ?? $id);
+            return $this->successResponse((new CompensationPlanResource($plan))->resolve(), 'Compensation plan updated');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function indexEntries(Request $request, ListCompensationEntriesAction $action): JsonResponse
@@ -70,28 +76,34 @@ class CompensationController extends Controller
         $paginated = $action->execute($filters);
 
         return $this->paginatedResponse(
-            CompensationEntryResource::collection($paginated['data']),
-            $paginated['total'],
-            $paginated['current_page'],
-            $paginated['per_page']
+            CompensationEntryResource::collection($paginated['data'] ?? $paginated)->resolve(),
+            $paginated['total'] ?? (is_countable($paginated) ? count($paginated) : 0),
+            $paginated['current_page'] ?? 1,
+            $paginated['per_page'] ?? 15
         );
     }
 
     public function storeEntry(StoreCompensationEntryRequest $request, CreateCompensationEntryAction $action): JsonResponse
     {
-        $validated = $request->validated();
-        $result = $action->execute($validated);
-        $entry = CompensationEntry::find($result['id'] ?? $result);
-
-        return $this->successResponse(new CompensationEntryResource($entry), 'Compensation entry recorded', 201);
+        try {
+            $validated = $request->validated();
+            $result = $action->execute($validated);
+            $entry = CompensationEntry::findOrFail($result['id'] ?? $result);
+            return $this->successResponse((new CompensationEntryResource($entry))->resolve(), 'Compensation entry recorded', 201);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function updateEntryStatus(UpdateCompensationEntryStatusRequest $request, $id, UpdateCompensationEntryStatusAction $action): JsonResponse
     {
-        $validated = $request->validated();
-        $result = $action->execute($id, $validated);
-        $entry = CompensationEntry::find($id);
-        
-        return $this->successResponse(new CompensationEntryResource($entry), 'Entry status updated');
+        try {
+            $validated = $request->validated();
+            $result = $action->execute($id, $validated);
+            $entry = CompensationEntry::findOrFail($result['id'] ?? $id);
+            return $this->successResponse((new CompensationEntryResource($entry))->resolve(), 'Entry status updated');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 }

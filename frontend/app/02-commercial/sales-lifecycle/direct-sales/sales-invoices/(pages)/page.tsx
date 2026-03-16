@@ -88,9 +88,6 @@ export default function SalesPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-    // Customer
-    const [selectedCustomer, setSelectedCustomer] = useState<{ id: number, name: string } | null>(null);
-
     // Sales Representative
     const [salesRepresentatives, setSalesRepresentatives] = useState<any[]>([]);
     const [selectedRepresentative, setSelectedRepresentative] = useState<{ id: number, name: string } | null>(null);
@@ -498,7 +495,6 @@ export default function SalesPage() {
                 discount_amount: calculatedDiscount(),
                 subtotal: baseItemsTotal,
                 payment_type: 'cash',
-                customer_id: selectedCustomer?.id,
                 sales_representative_id: selectedRepresentative?.id,
                 // Note: VAT rate is enforced server-side from config, not sent by client
             };
@@ -561,7 +557,6 @@ export default function SalesPage() {
                 setInvoiceItems([]);
                 setDiscountValue("0");
                 generateInvoiceNumber();
-                setSelectedCustomer(null);
                 await loadProducts();
                 await loadInvoices();
             } else {

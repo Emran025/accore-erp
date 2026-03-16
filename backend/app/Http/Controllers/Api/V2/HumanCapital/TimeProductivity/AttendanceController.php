@@ -33,7 +33,7 @@ class AttendanceController extends Controller
         
         $data = $records['data'] ?? $records;
 
-        return $this->successResponse(AttendanceRecordResource::collection($data));
+        return $this->successResponse(AttendanceRecordResource::collection($data)->resolve());
     }
 
     public function store(StoreAttendanceRequest $request, RecordAttendanceAction $action)
@@ -46,11 +46,11 @@ class AttendanceController extends Controller
                 $validated['attendance_date'],
                 $validated
             );
-            $attendance = AttendanceRecord::find($result['id'] ?? $result);
+            $attendance = AttendanceRecord::findOrFail($result['id'] ?? $result);
 
-            return $this->successResponse(new AttendanceRecordResource($attendance), 'Attendance record created', 201);
+            return $this->successResponse((new AttendanceRecordResource($attendance))->resolve(), 'Attendance record created', 201);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400);
         }
     }
 
@@ -62,7 +62,7 @@ class AttendanceController extends Controller
             $imported = $action->execute($validated['records']);
             return $this->successResponse(['imported_count' => count($imported)], 'Import successful', 201);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400);
         }
     }
 
@@ -88,9 +88,9 @@ class AttendanceController extends Controller
             $result = $action->execute($startDate, $endDate);
             $data = $result['data'] ?? $result;
 
-            return $this->successResponse(AttendanceRecordResource::collection($data));
+            return $this->successResponse(AttendanceRecordResource::collection($data)->resolve());
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400);
         }
     }
 }

@@ -33,46 +33,59 @@ class BiometricController extends Controller
         $filters = $request->only(['status']);
         $devices = $action->execute($filters);
 
-        return $this->successResponse(BiometricDeviceResource::collection($devices));
+        return $this->successResponse(BiometricDeviceResource::collection($devices)->resolve());
     }
 
     public function storeDevice(StoreBiometricDeviceRequest $request, CreateBiometricDeviceAction $action): JsonResponse
     {
-        $validated = $request->validated();
-        $device = $action->execute($validated);
-
-        $model = BiometricDevice::find($device['id'] ?? $device);
-        return $this->successResponse(new BiometricDeviceResource($model), 'Device registered');
+        try {
+            $validated = $request->validated();
+            $device = $action->execute($validated);
+            $model = BiometricDevice::findOrFail($device['id'] ?? $device);
+            return $this->successResponse((new BiometricDeviceResource($model))->resolve(), 'Device registered');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function updateDevice(UpdateBiometricDeviceRequest $request, $id, UpdateBiometricDeviceAction $action): JsonResponse
     {
-        $validated = $request->validated();
-        $device = $action->execute($id, $validated);
-
-        $model = BiometricDevice::find($device['id'] ?? $id);
-        return $this->successResponse(new BiometricDeviceResource($model), 'Device updated');
+        try {
+            $validated = $request->validated();
+            $device = $action->execute($id, $validated);
+            $model = BiometricDevice::findOrFail($device['id'] ?? $id);
+            return $this->successResponse((new BiometricDeviceResource($model))->resolve(), 'Device updated');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function destroyDevice($id, DeleteBiometricDeviceAction $action): JsonResponse
     {
-        $action->execute($id);
-        return $this->successResponse([], 'Device removed');
+        try {
+            $action->execute($id);
+            return $this->successResponse([], 'Device removed');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     // ── Sync Operations ──
 
     public function syncDevice(SyncBiometricDeviceRequest $request, $id, SyncBiometricDeviceAction $action): JsonResponse
     {
-        $validated = $request->validated();
-        $records = $validated['records'] ?? [];
+        try {
+            $validated = $request->validated();
+            $records = $validated['records'] ?? [];
+            $result = $action->execute($id, $records);
 
-        $result = $action->execute($id, $records);
-
-        return $this->successResponse(
-            $result['log'],
-            "Sync complete: {$result['imported']} imported, {$result['failed']} failed"
-        );
+            return $this->successResponse(
+                $result['log'],
+                "Sync complete: {$result['imported']} imported, {$result['failed']} failed"
+            );
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     // ── Sync Logs ──
@@ -83,7 +96,7 @@ class BiometricController extends Controller
         $logs = $action->execute($filters);
 
         return $this->paginatedResponse(
-            BiometricSyncLogResource::collection($logs['data']),
+            BiometricSyncLogResource::collection($logs['data'])->resolve(),
             $logs['total'],
             $logs['current_page'],
             $logs['per_page']
@@ -92,14 +105,17 @@ class BiometricController extends Controller
 
     public function importFromFile(ImportBiometricDeviceRequest $request, ImportBiometricAttendanceAction $action): JsonResponse
     {
-        $validated = $request->validated();
-        $file = $request->file('file');
+        try {
+            $validated = $request->validated();
+            $file = $request->file('file');
+            $result = $action->execute($validated['device_id'], $file);
 
-        $result = $action->execute($validated['device_id'], $file);
-
-        return $this->successResponse(
-            $result['log'],
-            "File import complete: {$result['imported']} imported, {$result['failed']} failed"
-        );
+            return $this->successResponse(
+                $result['log'],
+                "File import complete: {$result['imported']} imported, {$result['failed']} failed"
+            );
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 }

@@ -12,7 +12,6 @@ use App\Http\Resources\HumanCapital\WorkforceAdmin\EmployeeResource;
 use App\Http\Resources\HumanCapital\HRAdvanced\EmployeeDocumentResource;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use App\Domains\HumanCapital\HRAdvanced\Models\EmployeeDocument;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use Illuminate\Support\Facades\Storage;
 use Exception;
@@ -37,9 +36,11 @@ class EmployeesController extends Controller
     public function index(ListEmployeesRequest $request, ListEmployeesAction $action)
     {
         $employees = $action->execute($request->validated());
+        $data = $employees['data'] ?? $employees;
+        
         return $this->paginatedResponse(
-            EmployeeResource::collection($employees['data'] ?? $employees),
-            $employees['total'] ?? count($employees['data'] ?? $employees),
+            EmployeeResource::collection($data)->resolve(),
+            $employees['total'] ?? (is_countable($data) ? count($data) : 0),
             $employees['current_page'] ?? 1,
             $employees['per_page'] ?? 15
         );
@@ -49,8 +50,8 @@ class EmployeesController extends Controller
     {
         try {
             $employee = $action->execute($request->validated());
-            $model = Employee::find($employee['id'] ?? $employee);
-            return $this->successResponse(new EmployeeResource($model), 'Employee created successfully', 201);
+            $model = Employee::findOrFail($employee['id'] ?? $employee);
+            return $this->successResponse((new EmployeeResource($model))->resolve(), 'Employee created successfully', 201);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -59,18 +60,20 @@ class EmployeesController extends Controller
     public function show($id, ShowEmployeeAction $action)
     {
         $employee = $action->execute($id);
-        $model = Employee::find($employee['id'] ?? $id);
-        return $this->successResponse(new EmployeeResource($model));
+        $model = Employee::findOrFail($employee['id'] ?? $id);
+        return $this->successResponse((new EmployeeResource($model))->resolve());
     }
 
     public function update(UpdateEmployeeRequest $request, $id, UpdateEmployeeAction $action)
     {
-        $validated = $request->validated();
-        
-        $employee = $action->execute($id, $validated);
-
-        $model = Employee::find($employee['id'] ?? $id);
-        return $this->successResponse(new EmployeeResource($model), 'Employee updated successfully');
+        try {
+            $validated = $request->validated();
+            $employee = $action->execute($id, $validated);
+            $model = Employee::findOrFail($employee['id'] ?? $id);
+            return $this->successResponse((new EmployeeResource($model))->resolve(), 'Employee updated successfully');
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function destroy($id, DeleteEmployeeAction $action)
@@ -82,28 +85,29 @@ class EmployeesController extends Controller
     public function suspend($id, SuspendEmployeeAction $action)
     {
         $employee = $action->execute($id);
-        $model = Employee::find($employee['id'] ?? $id);
-        return $this->successResponse(new EmployeeResource($model), 'Employee suspended successfully');
+        $model = Employee::findOrFail($employee['id'] ?? $id);
+        return $this->successResponse((new EmployeeResource($model))->resolve(), 'Employee suspended successfully');
     }
 
     public function activate($id, ActivateEmployeeAction $action)
     {
         $employee = $action->execute($id);
-        $model = Employee::find($employee['id'] ?? $id);
-        return $this->successResponse(new EmployeeResource($model), 'Employee activated successfully');
+        $model = Employee::findOrFail($employee['id'] ?? $id);
+        return $this->successResponse((new EmployeeResource($model))->resolve(), 'Employee activated successfully');
     }
 
     public function uploadDocument(StoreEmployeeDocumentRequest $request, $id, UploadEmployeeDocumentAction $action)
     {
         $document = $action->execute($id, $request->validated(), $request->file('document'));
-        $model = EmployeeDocument::find($document['id'] ?? $document);
-        return $this->successResponse(new EmployeeDocumentResource($model), 'Document uploaded successfully', 201);
+        $model = EmployeeDocument::findOrFail($document['id'] ?? $document);
+        return $this->successResponse((new EmployeeDocumentResource($model))->resolve(), 'Document uploaded successfully', 201);
     }
 
     public function getDocuments($id, ListEmployeeDocumentsAction $action)
     {
         $documents = $action->execute($id);
-        return $this->successResponse(EmployeeDocumentResource::collection($documents['data'] ?? $documents));
+        $data = $documents['data'] ?? $documents;
+        return $this->successResponse(EmployeeDocumentResource::collection($data)->resolve());
     }
 
     public function downloadDocument($employeeId, $documentId, DownloadEmployeeDocumentAction $action)
@@ -119,8 +123,8 @@ class EmployeesController extends Controller
     public function updateDocument(UpdateEmployeeDocumentRequest $request, $employeeId, $documentId, UpdateEmployeeDocumentAction $action)
     {
         $document = $action->execute($employeeId, $documentId, $request->validated());
-        $model = EmployeeDocument::find($document['id'] ?? $documentId);
-        return $this->successResponse(new EmployeeDocumentResource($model), 'Document updated successfully');
+        $model = EmployeeDocument::findOrFail($document['id'] ?? $documentId);
+        return $this->successResponse((new EmployeeDocumentResource($model))->resolve(), 'Document updated successfully');
     }
 
     public function destroyDocument($employeeId, $documentId, DeleteEmployeeDocumentAction $action)

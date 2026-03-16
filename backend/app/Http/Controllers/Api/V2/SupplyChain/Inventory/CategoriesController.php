@@ -22,20 +22,29 @@ class CategoriesController extends Controller
     public function index(ListCategoriesAction $action): JsonResponse
     {
         $result = $action->execute();
-        return $this->successResponse(CategoryResource::collection($result));
+        return $this->successResponse(CategoryResource::collection($result)->resolve());
     }
 
     public function store(StoreCategoryRequest $request, CreateCategoryAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
-        $category = Category::find($result['id']);
-        return $this->successResponse(new CategoryResource($category), 'Category created successfully');
+        try {
+            $result = $action->execute($request->validated());
+            $category = Category::findOrFail($result['id']);
+            return $this->successResponse((new CategoryResource($category))->resolve(), 'Category created successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function update(UpdateCategoryRequest $request, UpdateCategoryAction $action): JsonResponse
     {
-        $action->execute($request->validated());
-        return $this->successResponse([], 'Category updated successfully');
+        try {
+            $result = $action->execute($request->validated());
+            $category = Category::findOrFail($result['id'] ?? $request->input('id'));
+            return $this->successResponse((new CategoryResource($category))->resolve(), 'Category updated successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function destroy(DeleteCategoryRequest $request, DeleteCategoryAction $action): JsonResponse

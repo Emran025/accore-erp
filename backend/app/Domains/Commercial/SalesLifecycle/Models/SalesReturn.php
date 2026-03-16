@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Domains\Finance\TaxCompliance\Models\TaxLine;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 /**
  * SalesReturn model — SAP FI pattern.

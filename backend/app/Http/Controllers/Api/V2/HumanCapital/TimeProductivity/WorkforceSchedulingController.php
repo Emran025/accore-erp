@@ -29,9 +29,11 @@ class WorkforceSchedulingController extends Controller
     {
         $filters = $request->only(['department_id', 'status', 'schedule_date']);
         $result = $action->execute($filters);
+        $data = $result['data'] ?? $result;
+
         return $this->paginatedResponse(
-            WorkforceScheduleResource::collection($result['data'] ?? $result),
-            $result['total'] ?? count($result['data'] ?? $result),
+            WorkforceScheduleResource::collection($data)->resolve(),
+            $result['total'] ?? (is_countable($data) ? count($data) : 0),
             $result['current_page'] ?? 1,
             $result['per_page'] ?? 15
         );
@@ -39,36 +41,52 @@ class WorkforceSchedulingController extends Controller
 
     public function store(StoreWorkforceScheduleRequest $request, CreateScheduleAction $action): JsonResponse
     {
-        $schedule = $action->execute($request->validated());
-        $model = WorkforceSchedule::find($schedule['id'] ?? $schedule);
-        return $this->successResponse(new WorkforceScheduleResource($model), 'Schedule created successfully', 201);
+        try {
+            $schedule = $action->execute($request->validated());
+            $model = WorkforceSchedule::findOrFail($schedule['id'] ?? $schedule);
+            return $this->successResponse((new WorkforceScheduleResource($model))->resolve(), 'Schedule created successfully', 201);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function show($id, ShowScheduleAction $action): JsonResponse
     {
         $schedule = $action->execute((int)$id);
-        $model = WorkforceSchedule::find($schedule['id'] ?? $id);
-        return $this->successResponse(new WorkforceScheduleResource($model));
+        $model = WorkforceSchedule::findOrFail($schedule['id'] ?? $id);
+        return $this->successResponse((new WorkforceScheduleResource($model))->resolve());
     }
 
     public function update(UpdateWorkforceScheduleRequest $request, $id, UpdateScheduleAction $action): JsonResponse
     {
-        $schedule = $action->execute((int)$id, $request->validated());
-        $model = WorkforceSchedule::find($schedule['id'] ?? $id);
-        return $this->successResponse(new WorkforceScheduleResource($model), 'Schedule updated successfully');
+        try {
+            $schedule = $action->execute((int)$id, $request->validated());
+            $model = WorkforceSchedule::findOrFail($schedule['id'] ?? $id);
+            return $this->successResponse((new WorkforceScheduleResource($model))->resolve(), 'Schedule updated successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function storeShift(StoreScheduleShiftRequest $request, $scheduleId, CreateShiftAction $action): JsonResponse
     {
-        $shift = $action->execute((int)$scheduleId, $request->validated());
-        $model = ScheduleShift::find($shift['id'] ?? $shift);
-        return $this->successResponse(new ScheduleShiftResource($model), 'Shift created successfully', 201);
+        try {
+            $shift = $action->execute((int)$scheduleId, $request->validated());
+            $model = ScheduleShift::findOrFail($shift['id'] ?? $shift);
+            return $this->successResponse((new ScheduleShiftResource($model))->resolve(), 'Shift created successfully', 201);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function updateShift(UpdateWorkforceShiftRequest $request, $scheduleId, $shiftId, UpdateShiftAction $action): JsonResponse
     {
-        $shift = $action->execute((int)$scheduleId, (int)$shiftId, $request->validated());
-        $model = ScheduleShift::find($shift['id'] ?? $shiftId);
-        return $this->successResponse(new ScheduleShiftResource($model), 'Shift updated successfully');
+        try {
+            $shift = $action->execute((int)$scheduleId, (int)$shiftId, $request->validated());
+            $model = ScheduleShift::findOrFail($shift['id'] ?? $shiftId);
+            return $this->successResponse((new ScheduleShiftResource($model))->resolve(), 'Shift updated successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 }

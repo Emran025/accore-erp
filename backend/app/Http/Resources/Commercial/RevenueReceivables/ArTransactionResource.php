@@ -7,6 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ArTransactionResource extends JsonResource
 {
+    public static $wrap = null;
+
     public function toArray($request): array
     {
         $amount = 0;

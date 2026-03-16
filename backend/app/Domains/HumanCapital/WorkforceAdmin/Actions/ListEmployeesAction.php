@@ -4,10 +4,11 @@ namespace App\Domains\HumanCapital\WorkforceAdmin\Actions;
 
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ListEmployeesAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): LengthAwarePaginator
     {
         $query = Employee::with(['role', 'department', 'position.jobTitle']);
 
@@ -24,6 +25,6 @@ class ListEmployeesAction
             $query->where('department_id', $filters['department_id']);
         }
 
-        return $query->paginate(15)->toArray();
+        return $query->paginate(15);
     }
 }

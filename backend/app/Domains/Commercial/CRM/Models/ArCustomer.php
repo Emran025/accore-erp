@@ -6,10 +6,26 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Scope;
+use App\Domains\Commercial\CRM\Models\ArCustomer;
 class ArCustomer extends Model
 {
     use HasFactory;
+    
+    const CASH_CUSTOMER_CODE = 'CASH-001';
+
+    protected static function booted()
+    {
+        static::addGlobalScope('hide_cash_customer', new class implements Scope {
+            public function apply(Builder $builder, Model $model)
+            {
+                $builder->where('customer_code', '!=', ArCustomer::CASH_CUSTOMER_CODE);
+            }
+        });
+    }
+
     protected $fillable = [
         'customer_code',
         'name',

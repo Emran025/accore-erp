@@ -25,7 +25,7 @@ class ProductsController extends Controller
         $result = $action->execute($request->validated());
         
         return $this->paginatedResponse(
-            ProductResource::collection($result['data']),
+            ProductResource::collection($result['data'])->resolve(),
             $result['total'],
             $result['page'],
             $result['per_page']
@@ -34,16 +34,24 @@ class ProductsController extends Controller
 
     public function store(StoreProductRequest $request, CreateProductAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
-        $product = Product::find($result['id']);
-        return $this->successResponse(new ProductResource($product), 'Product created successfully', 201);
+        try {
+            $result = $action->execute($request->validated());
+            $product = Product::findOrFail($result['id']);
+            return $this->successResponse((new ProductResource($product))->resolve(), 'Product created successfully', 201);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function update(UpdateProductRequest $request, UpdateProductAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
-        $product = Product::find($result['id']);
-        return $this->successResponse(new ProductResource($product), 'Product updated successfully');
+        try {
+            $result = $action->execute($request->validated());
+            $product = Product::findOrFail($result['id']);
+            return $this->successResponse((new ProductResource($product))->resolve(), 'Product updated successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function destroy(DeleteProductRequest $request, DeleteProductAction $action): JsonResponse

@@ -16,7 +16,7 @@ class CreateEmployeeAction
         private readonly NumberRangeService $nrService
     ) {}
 
-    public function execute(array $data): array
+    public function execute(array $data): Employee
     {
         return DB::transaction(function () use ($data) {
             $managerUserId = null;
@@ -31,7 +31,7 @@ class CreateEmployeeAction
             $data['department_id'] = $position->department_id;
 
             if (empty($data['employee_code']) && !empty($data['nr_object_id']) && !empty($data['nr_group_id'])) {
-                $data['employee_code'] = $this->nrService->getNextNumber($data['nr_object_id'], $data['nr_group_id']);
+                $data['employee_code'] = $this->nrService->getNextNumber((int)$data['nr_object_id'], (int)$data['nr_group_id']);
             }
 
             if (empty($data['employee_code'])) {
@@ -51,8 +51,7 @@ class CreateEmployeeAction
             $data['created_by'] = auth()->id();
             $data['user_id'] = $user->id;
 
-            $employee = Employee::create($data);
-            return $employee->toArray();
+            return Employee::create($data);
         });
     }
 }

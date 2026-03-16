@@ -3,12 +3,11 @@
 namespace App\Domains\Commercial\SalesLifecycle\Actions;
 
 use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
-
+use Illuminate\Pagination\LengthAwarePaginator;
 class ListInvoicesAction
 {
-    public function execute(array $filters): array
+    public function execute(array $filters): LengthAwarePaginator
     {
-        $page = max(1, (int) ($filters['page'] ?? 1));
         $perPage = min(100, max(1, (int) ($filters['per_page'] ?? 20)));
         $paymentType = $filters['payment_type'] ?? null;
         $customerId = $filters['customer_id'] ?? null;
@@ -23,17 +22,6 @@ class ListInvoicesAction
             $query->where('customer_id', $customerId);
         }
 
-        $total = $query->count();
-        $invoices = $query->orderBy('created_at', 'desc')
-            ->skip(($page - 1) * $perPage)
-            ->take($perPage)
-            ->get();
-
-        return [
-            'data' => $invoices,
-            'total' => $total,
-            'current_page' => $page,
-            'per_page' => $perPage,
-        ];
+        return $query->orderBy('created_at', 'desc')->paginate($perPage);
     }
 }

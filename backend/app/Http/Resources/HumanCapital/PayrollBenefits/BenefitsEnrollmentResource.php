@@ -7,6 +7,8 @@ use App\Http\Resources\HumanCapital\WorkforceAdmin\EmployeeResource;
 
 class BenefitsEnrollmentResource extends JsonResource
 {
+    public static $wrap = null;
+
     public function toArray($request): array
     {
         return [

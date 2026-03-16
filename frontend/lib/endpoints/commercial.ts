@@ -53,9 +53,9 @@ export interface CommercialEndpoints {
 
 export const COMMERCIAL: CommercialEndpoints = {
     SALES: {
-        INVOICES: "/v2/invoices",
-        INVOICE_BY_ID: (id: string | number) => `/v2/invoices/${id}`,
-        INVOICE_DETAILS: "/v2/invoice_details",
+        INVOICES: "/v2/sales/invoices",
+        INVOICE_BY_ID: (id: string | number) => `/v2/sales/invoices/${id}`,
+        INVOICE_DETAILS: "/v2/sales/invoice_details",
         RETURNS: {
             BASE: "/v2/sales/returns",
             SHOW: "/v2/sales/returns/show",
