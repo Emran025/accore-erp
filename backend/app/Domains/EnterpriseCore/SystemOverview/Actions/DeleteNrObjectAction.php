@@ -2,19 +2,13 @@
 
 namespace App\Domains\EnterpriseCore\SystemOverview\Actions;
 
-use App\Domains\Shared\Actions\Action;
 use App\Domains\EnterpriseCore\SystemOverview\Models\NrObject;
-use Illuminate\Http\JsonResponse;
 
-class DeleteNrObjectAction extends Action
+class DeleteNrObjectAction
 {
-    public function __construct(private readonly int $id) {}
-
-    public function __invoke(): JsonResponse
+    public function execute(int $id): bool
     {
-        $object = NrObject::findOrFail($this->id);
-        $object->delete();
-
-        return $this->successResponse(['message' => 'تم حذف كائن الترقيم']);
+        $object = NrObject::findOrFail($id);
+        return $object->delete();
     }
 }

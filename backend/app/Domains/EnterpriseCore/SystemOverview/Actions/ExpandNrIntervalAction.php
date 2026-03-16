@@ -2,45 +2,20 @@
 
 namespace App\Domains\EnterpriseCore\SystemOverview\Actions;
 
-use App\Domains\Shared\Actions\Action;
+use App\Domains\EnterpriseCore\SystemOverview\Models\NrInterval;
 use App\Domains\EnterpriseCore\SystemOverview\Services\NumberRangeService;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
-class ExpandNrIntervalAction extends Action
+class ExpandNrIntervalAction
 {
-    public function __construct(
-        private readonly Request $request,
-        private readonly int $intervalId,
-        private readonly NumberRangeService $service
-    ) {}
+    public function __construct(private readonly NumberRangeService $service) {}
 
-    public function __invoke(): JsonResponse
+    public function execute(int $intervalId, array $data, ?int $userId = null): NrInterval
     {
-        $this->request->validate([
-            'new_to' => 'required|integer|min:1',
-            'reason' => 'nullable|string|max:500',
-        ]);
-
-        try {
-            $interval = $this->service->expandInterval(
-                $this->intervalId,
-                $this->request->new_to,
-                $this->request->reason,
-                $this->request->user() ? $this->request->user()->id : null
-            );
-
-            $intervalData = $interval->toArray();
-            $intervalData['capacity'] = $interval->capacity;
-            $intervalData['remaining'] = $interval->remaining;
-            $intervalData['fullness_percent'] = $interval->fullness_percent;
-
-            return $this->successResponse([
-                'message' => 'تم توسيع النطاق بنجاح',
-                'interval' => $intervalData,
-            ]);
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage());
-        }
+        return $this->service->expandInterval(
+            $intervalId,
+            $data['new_to'],
+            $data['reason'] ?? null,
+            $userId
+        );
     }
 }

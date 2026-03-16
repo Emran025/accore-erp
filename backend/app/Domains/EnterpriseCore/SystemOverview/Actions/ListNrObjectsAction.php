@@ -2,18 +2,15 @@
 
 namespace App\Domains\EnterpriseCore\SystemOverview\Actions;
 
-use App\Domains\Shared\Actions\Action;
 use App\Domains\EnterpriseCore\SystemOverview\Models\NrObject;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Database\Eloquent\Collection;
 
-class ListNrObjectsAction extends Action
+class ListNrObjectsAction
 {
-    public function __invoke(): JsonResponse
+    public function execute(): Collection
     {
-        $objects = NrObject::withCount(['groups', 'intervals', 'assignments'])
+        return NrObject::withCount(['groups', 'intervals', 'assignments'])
             ->orderBy('name')
             ->get();
-
-        return $this->successResponse(['data' => $objects->toArray()]);
     }
 }

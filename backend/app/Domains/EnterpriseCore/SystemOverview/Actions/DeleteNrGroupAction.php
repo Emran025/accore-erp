@@ -2,17 +2,13 @@
 
 namespace App\Domains\EnterpriseCore\SystemOverview\Actions;
 
-use App\Domains\Shared\Actions\Action;
 use App\Domains\EnterpriseCore\SystemOverview\Models\NrGroup;
-use Illuminate\Http\JsonResponse;
 
-class DeleteNrGroupAction extends Action
+class DeleteNrGroupAction
 {
-    public function __construct(private readonly int $groupId) {}
-
-    public function __invoke(): JsonResponse
+    public function execute(int $groupId): bool
     {
-        NrGroup::findOrFail($this->groupId)->delete();
-        return $this->successResponse(['message' => 'تم حذف المجموعة']);
+        $group = NrGroup::findOrFail($groupId);
+        return $group->delete();
     }
 }

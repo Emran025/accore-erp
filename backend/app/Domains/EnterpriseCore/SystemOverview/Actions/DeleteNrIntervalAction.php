@@ -2,23 +2,18 @@
 
 namespace App\Domains\EnterpriseCore\SystemOverview\Actions;
 
-use App\Domains\Shared\Actions\Action;
 use App\Domains\EnterpriseCore\SystemOverview\Models\NrInterval;
-use Illuminate\Http\JsonResponse;
 
-class DeleteNrIntervalAction extends Action
+class DeleteNrIntervalAction
 {
-    public function __construct(private readonly int $intervalId) {}
-
-    public function __invoke(): JsonResponse
+    public function execute(int $intervalId): bool
     {
-        $interval = NrInterval::findOrFail($this->intervalId);
+        $interval = NrInterval::findOrFail($intervalId);
 
         if ($interval->current_number > 0) {
-            return $this->errorResponse('لا يمكن حذف نطاق تم استخدامه — يمكنك تعطيله بدلاً من ذلك');
+            throw new \Exception('لا يمكن حذف نطاق تم استخدامه — يمكنك تعطيله بدلاً من ذلك');
         }
 
-        $interval->delete();
-        return $this->successResponse(['message' => 'تم حذف نطاق الأرقام']);
+        return $interval->delete();
     }
 }

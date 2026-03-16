@@ -2,17 +2,14 @@
 
 namespace App\Domains\EnterpriseCore\SystemOverview\Actions;
 
-use App\Domains\Shared\Actions\Action;
 use App\Domains\EnterpriseCore\SystemOverview\Services\NumberRangeService;
-use Illuminate\Http\JsonResponse;
 
-class GetNrSystemSummaryAction extends Action
+class GetNrSystemSummaryAction
 {
     public function __construct(private readonly NumberRangeService $service) {}
 
-    public function __invoke(): JsonResponse
+    public function execute(): array
     {
-        $summary = $this->service->getSystemSummary();
-        return $this->successResponse(['data' => $summary]);
+        return $this->service->getSystemSummary();
     }
 }

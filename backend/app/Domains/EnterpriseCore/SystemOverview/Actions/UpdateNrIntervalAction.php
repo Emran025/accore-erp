@@ -2,31 +2,13 @@
 
 namespace App\Domains\EnterpriseCore\SystemOverview\Actions;
 
-use App\Domains\Shared\Actions\Action;
 use App\Domains\EnterpriseCore\SystemOverview\Models\NrInterval;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
-class UpdateNrIntervalAction extends Action
+class UpdateNrIntervalAction
 {
-    public function __construct(
-        private readonly Request $request,
-        private readonly int $intervalId
-    ) {}
-
-    public function __invoke(): JsonResponse
+    public function execute(int $intervalId, array $data): bool
     {
-        $interval = NrInterval::findOrFail($this->intervalId);
-
-        $this->request->validate([
-            'code'        => "sometimes|string|max:20|unique:nr_intervals,code,{$this->intervalId},id,nr_object_id,{$interval->nr_object_id}",
-            'description' => 'nullable|string|max:500',
-            'is_external' => 'sometimes|boolean',
-            'is_active'   => 'sometimes|boolean',
-        ]);
-
-        $interval->update($this->request->only(['code', 'description', 'is_external', 'is_active']));
-
-        return $this->successResponse(['message' => 'تم تحديث نطاق الأرقام']);
+        $interval = NrInterval::findOrFail($intervalId);
+        return $interval->update($data);
     }
 }

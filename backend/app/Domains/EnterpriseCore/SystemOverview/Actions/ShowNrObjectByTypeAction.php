@@ -2,23 +2,14 @@
 
 namespace App\Domains\EnterpriseCore\SystemOverview\Actions;
 
-use App\Domains\Shared\Actions\Action;
 use App\Domains\EnterpriseCore\SystemOverview\Services\NumberRangeService;
-use Illuminate\Http\JsonResponse;
 
-class ShowNrObjectByTypeAction extends Action
+class ShowNrObjectByTypeAction
 {
-    public function __construct(
-        private readonly string $objectType,
-        private readonly NumberRangeService $service
-    ) {}
+    public function __construct(private readonly NumberRangeService $service) {}
 
-    public function __invoke(): JsonResponse
+    public function execute(string $objectType): ?array
     {
-        $data = $this->service->getObjectFullByType($this->objectType);
-        if (!$data) {
-            return $this->errorResponse('نوع الكائن غير موجود', 404);
-        }
-        return $this->successResponse($data);
+        return $this->service->getObjectFullByType($objectType);
     }
 }

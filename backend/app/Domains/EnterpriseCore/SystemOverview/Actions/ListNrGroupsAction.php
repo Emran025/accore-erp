@@ -2,21 +2,16 @@
 
 namespace App\Domains\EnterpriseCore\SystemOverview\Actions;
 
-use App\Domains\Shared\Actions\Action;
 use App\Domains\EnterpriseCore\SystemOverview\Models\NrGroup;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Database\Eloquent\Collection;
 
-class ListNrGroupsAction extends Action
+class ListNrGroupsAction
 {
-    public function __construct(private readonly int $objectId) {}
-
-    public function __invoke(): JsonResponse
+    public function execute(int $objectId): Collection
     {
-        $groups = NrGroup::where('nr_object_id', $this->objectId)
-            ->with('intervals')
+        return NrGroup::where('nr_object_id', $objectId)
+            ->with(['intervals'])
             ->orderBy('code')
             ->get();
-
-        return $this->successResponse(['data' => $groups->toArray()]);
     }
 }

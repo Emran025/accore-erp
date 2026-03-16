@@ -2,21 +2,16 @@
 
 namespace App\Domains\EnterpriseCore\SystemOverview\Actions;
 
-use App\Domains\Shared\Actions\Action;
 use App\Domains\EnterpriseCore\SystemOverview\Models\NrExpansionLog;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Database\Eloquent\Collection;
 
-class ListNrExpansionLogsAction extends Action
+class ListNrExpansionLogsAction
 {
-    public function __construct(private readonly int $intervalId) {}
-
-    public function __invoke(): JsonResponse
+    public function execute(int $intervalId): Collection
     {
-        $logs = NrExpansionLog::where('nr_interval_id', $this->intervalId)
+        return NrExpansionLog::where('nr_interval_id', $intervalId)
             ->with('expandedBy')
             ->orderByDesc('created_at')
             ->get();
-
-        return $this->successResponse(['data' => $logs->toArray()]);
     }
 }

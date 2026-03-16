@@ -2,24 +2,14 @@
 
 namespace App\Domains\EnterpriseCore\SystemOverview\Actions;
 
-use App\Domains\Shared\Actions\Action;
 use App\Domains\EnterpriseCore\SystemOverview\Services\NumberRangeService;
-use Illuminate\Http\JsonResponse;
 
-class ShowNrObjectAction extends Action
+class ShowNrObjectAction
 {
-    public function __construct(
-        private readonly int $id,
-        private readonly NumberRangeService $service
-    ) {}
+    public function __construct(private readonly NumberRangeService $service) {}
 
-    public function __invoke(): JsonResponse
+    public function execute(int $id): array
     {
-        try {
-            $data = $this->service->getObjectFull($this->id);
-            return $this->successResponse($data);
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 404);
-        }
+        return $this->service->getObjectFull($id);
     }
 }

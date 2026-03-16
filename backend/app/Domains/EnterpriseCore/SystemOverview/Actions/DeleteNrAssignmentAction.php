@@ -2,17 +2,12 @@
 
 namespace App\Domains\EnterpriseCore\SystemOverview\Actions;
 
-use App\Domains\Shared\Actions\Action;
 use App\Domains\EnterpriseCore\SystemOverview\Models\NrGroupIntervalAssignment;
-use Illuminate\Http\JsonResponse;
 
-class DeleteNrAssignmentAction extends Action
+class DeleteNrAssignmentAction
 {
-    public function __construct(private readonly int $assignmentId) {}
-
-    public function __invoke(): JsonResponse
+    public function execute(int $assignmentId): bool
     {
-        NrGroupIntervalAssignment::findOrFail($this->assignmentId)->delete();
-        return $this->successResponse(['message' => 'تم حذف الربط']);
+        return NrGroupIntervalAssignment::findOrFail($assignmentId)->delete();
     }
 }

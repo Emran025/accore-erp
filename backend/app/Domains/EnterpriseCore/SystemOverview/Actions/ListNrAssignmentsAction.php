@@ -2,21 +2,16 @@
 
 namespace App\Domains\EnterpriseCore\SystemOverview\Actions;
 
-use App\Domains\Shared\Actions\Action;
 use App\Domains\EnterpriseCore\SystemOverview\Models\NrGroupIntervalAssignment;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Database\Eloquent\Collection;
 
-class ListNrAssignmentsAction extends Action
+class ListNrAssignmentsAction
 {
-    public function __construct(private readonly int $objectId) {}
-
-    public function __invoke(): JsonResponse
+    public function execute(int $objectId): Collection
     {
-        $assignments = NrGroupIntervalAssignment::where('nr_object_id', $this->objectId)
+        return NrGroupIntervalAssignment::where('nr_object_id', $objectId)
             ->with(['group', 'interval'])
             ->orderBy('nr_group_id')
             ->get();
-
-        return $this->successResponse(['data' => $assignments->toArray()]);
     }
 }
