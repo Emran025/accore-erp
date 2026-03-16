@@ -5,8 +5,8 @@ use App\Domains\Finance\ForeignExchange\Models\CurrencyPolicy;
 
 class GetActiveCurrencyPolicyAction
 {
-    public function execute(): array
+    public function execute(): ?CurrencyPolicy
     {
-        return CurrencyPolicy::where('is_active', true)->first()?->toArray() ?? [];
+        return CurrencyPolicy::where('is_active', true)->first();
     }
 }

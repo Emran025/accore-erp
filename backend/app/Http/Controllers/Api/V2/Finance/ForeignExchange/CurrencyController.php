@@ -27,8 +27,7 @@ class CurrencyController extends Controller
     public function index(ListCurrenciesAction $action): JsonResponse
     {
         $currencies = $action->execute();
-        $data = $currencies['data'] ?? $currencies;
-        return $this->successResponse(CurrencyResource::collection($data));
+        return $this->successResponse(CurrencyResource::collection($currencies));
     }
 
     /**
@@ -37,11 +36,10 @@ class CurrencyController extends Controller
     public function store(StoreCurrencyRequest $request, CreateCurrencyAction $action): JsonResponse
     {
         try {
-            $result = $action->execute($request->validated());
-            $currency = Currency::find($result['id'] ?? $result);
+            $currency = $action->execute($request->validated());
             return $this->successResponse(new CurrencyResource($currency), 'Currency created successfully', 201);
         } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
+            return $this->errorResponse($e->getMessage(), 422);
         }
     }
 
@@ -51,11 +49,10 @@ class CurrencyController extends Controller
     public function update(UpdateCurrencyRequest $request, int $id, UpdateCurrencyAction $action): JsonResponse
     {
         try {
-            $result = $action->execute($request->validated(), $id);
-            $currency = Currency::find($id);
+            $currency = $action->execute($request->validated(), $id);
             return $this->successResponse(new CurrencyResource($currency), 'Currency updated successfully');
         } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
+            return $this->errorResponse($e->getMessage(), 422);
         }
     }
 
@@ -78,11 +75,11 @@ class CurrencyController extends Controller
     public function toggleActive(int $id, ToggleCurrencyStatusAction $action): JsonResponse
     {
         try {
-            $result = $action->execute($id);
-            $currency = Currency::find($id);
+            $action->execute($id);
+            $currency = Currency::findOrFail($id);
             return $this->successResponse(new CurrencyResource($currency), 'Currency status toggled');
         } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
+            return $this->errorResponse($e->getMessage(), 422);
         }
     }
 

@@ -7,7 +7,7 @@ use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 class CreateCurrencyAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): Currency
     {
         PermissionService::requirePermission('currency', 'create');
 
@@ -26,7 +26,7 @@ class CreateCurrencyAction
                 }
             }
             
-            return $currency->load('denominations')->toArray();
+            return $currency->load('denominations');
         });
     }
 }

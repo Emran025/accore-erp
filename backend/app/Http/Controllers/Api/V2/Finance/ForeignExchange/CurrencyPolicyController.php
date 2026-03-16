@@ -39,8 +39,7 @@ class CurrencyPolicyController extends Controller
     public function index(ListCurrencyPoliciesAction $action): JsonResponse
     {
         $policies = $action->execute();
-        $data = $policies['data'] ?? $policies;
-        return $this->successResponse(CurrencyPolicyResource::collection($data));
+        return $this->successResponse(CurrencyPolicyResource::collection($policies));
     }
 
     /**
@@ -51,8 +50,7 @@ class CurrencyPolicyController extends Controller
         $policy = $action->execute();
         if (!$policy) return $this->successResponse(null);
         
-        $model = CurrencyPolicy::find($policy['id'] ?? $policy);
-        return $this->successResponse(new CurrencyPolicyResource($model));
+        return $this->successResponse(new CurrencyPolicyResource($policy));
     }
 
     /**
@@ -74,8 +72,10 @@ class CurrencyPolicyController extends Controller
      */
     public function show(int $id, ShowCurrencyPolicyAction $action): JsonResponse
     {
-        $result = $action->execute($id);
-        $policy = CurrencyPolicy::find($id);
+        $policy = $action->execute($id);
+        if (is_array($policy)) {
+            $policy = CurrencyPolicy::find($id);
+        }
         return $this->successResponse(new CurrencyPolicyResource($policy));
     }
 

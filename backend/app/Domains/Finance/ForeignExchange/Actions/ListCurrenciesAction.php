@@ -6,10 +6,10 @@ use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 class ListCurrenciesAction
 {
-    public function execute(): array
+    public function execute(): \Illuminate\Database\Eloquent\Collection
     {
         PermissionService::requirePermission('currency', 'view');
         
-        return Currency::with('denominations')->get()->toArray();
+        return Currency::with('denominations')->get();
     }
 }

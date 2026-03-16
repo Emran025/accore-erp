@@ -8,7 +8,7 @@ use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 class UpdateCurrencyAction
 {
-    public function execute(array $data, int $id): array
+    public function execute(array $data, int $id): Currency
     {
         PermissionService::requirePermission('currency', 'edit');
 
@@ -30,7 +30,7 @@ class UpdateCurrencyAction
                 }
             }
 
-            return $currency->load('denominations')->toArray();
+            return $currency->load('denominations');
         });
     }
 }
