@@ -6,33 +6,48 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use App\Domains\Finance\ForeignExchange\Models\Currency;
 use App\Domains\Commercial\SalesLifecycle\Models\InvoiceItem;
 use App\Domains\SupplyChain\Procurement\Models\Purchase;
 
 /**
- * Model representing an inventory product.
- * Supports composite unit structure (main unit + sub-unit) and WAC costing.
- * 
- * @property int $id
- * @property string $name Product display name
- * @property string|null $description Product description
- * @property int|null $category_id Category FK
- * @property float $unit_price Default selling price
- * @property float $minimum_profit_margin Floor pricing enforcement
- * @property int $stock_quantity Current inventory quantity (in sub-units)
- * @property string|null $unit_name Main unit name (e.g., 'carton')
- * @property int|null $items_per_unit Sub-units per main unit
- * @property string|null $sub_unit_name Sub-unit name (e.g., 'piece')
- * @property float $weighted_average_cost WAC for COGS calculation
- * @property int|null $created_by User who created the product
- * @property int|null $purchase_currency_id Default currency for purchases
+ * Model representing an item in the unified item catalogue.
+ * Supports three distinct item classes:
+ *   - product      → physical goods, inventory-controlled, taxable
+ *   - service      → intangible, no inventory tracking, may have special tax rules
+ *   - raw_material → inventory-controlled, used in manufacturing, not sellable
+ *
+ * Uses composite unit structure (main unit + sub-unit) and WAC costing.
+ *
+ * @property int    $id
+ * @property string $item_type         'product' | 'service' | 'raw_material'
+ * @property bool   $taxable           Whether VAT/tax applies to this item
+ * @property bool   $inventory_control Whether stock quantity is tracked
+ * @property bool   $sellable          Whether this item can appear on a sales invoice
+ * @property string $name
+ * @property string|null $description
+ * @property int|null $category_id
+ * @property float $unit_price
+ * @property float $minimum_profit_margin
+ * @property int   $stock_quantity
+ * @property string|null $unit_name
+ * @property int|null    $items_per_unit
+ * @property string|null $sub_unit_name
+ * @property float $weighted_average_cost
+ * @property int|null $created_by
+ * @property int|null $purchase_currency_id
  */
 class Product extends Model
 {
     use HasFactory;
+
     protected $fillable = [
+        'item_type',
+        'taxable',
+        'inventory_control',
+        'sellable',
         'name',
         'description',
         'category_id',
@@ -51,51 +66,68 @@ class Product extends Model
     protected function casts(): array
     {
         return [
-            'unit_price' => 'decimal:2',
+            'item_type'             => 'string',
+            'taxable'               => 'boolean',
+            'inventory_control'     => 'boolean',
+            'sellable'              => 'boolean',
+            'unit_price'            => 'decimal:2',
             'minimum_profit_margin' => 'decimal:2',
-            'stock_quantity' => 'integer',
-            'low_stock_threshold' => 'integer',
-            'items_per_unit' => 'integer',
+            'stock_quantity'        => 'integer',
+            'low_stock_threshold'   => 'integer',
+            'items_per_unit'        => 'integer',
             'weighted_average_cost' => 'decimal:2',
         ];
     }
 
-    /**
-     * Get the user who created this product.
-     * 
-     * @return BelongsTo
-     */
+    // ── Scopes ───────────────────────────────────────────────────────
+
+    /** Only physical products (inventory-tracked, sellable). */
+    public function scopeProducts(Builder $query): Builder
+    {
+        return $query->where('item_type', 'product');
+    }
+
+    /** Only services (no inventory tracking). */
+    public function scopeServices(Builder $query): Builder
+    {
+        return $query->where('item_type', 'service');
+    }
+
+    /** Only raw materials (not sellable). */
+    public function scopeRawMaterials(Builder $query): Builder
+    {
+        return $query->where('item_type', 'raw_material');
+    }
+
+    /** Items that can appear on a sales invoice. */
+    public function scopeSellable(Builder $query): Builder
+    {
+        return $query->where('sellable', true);
+    }
+
+    // ── Convenience helpers ───────────────────────────────────────────
+
+    public function isProduct(): bool     { return $this->item_type === 'product'; }
+    public function isService(): bool     { return $this->item_type === 'service'; }
+    public function isRawMaterial(): bool { return $this->item_type === 'raw_material'; }
+
+    // ── Relationships ─────────────────────────────────────────────────
+
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    /**
-     * Get the product category.
-     * 
-     * @return BelongsTo
-     */
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    /**
-     * Get all purchase records for this product.
-     * Used for inventory costing (FIFO/LIFO/WAC).
-     * 
-     * @return HasMany
-     */
     public function purchases(): HasMany
     {
         return $this->hasMany(Purchase::class);
     }
 
-    /**
-     * Get all invoice items containing this product.
-     * 
-     * @return HasMany
-     */
     public function invoiceItems(): HasMany
     {
         return $this->hasMany(InvoiceItem::class);
@@ -104,5 +136,10 @@ class Product extends Model
     public function purchaseCurrency(): BelongsTo
     {
         return $this->belongsTo(Currency::class, 'purchase_currency_id');
+    }
+
+    public function serviceAvailability(): HasMany
+    {
+        return $this->hasMany(ServiceAvailability::class, 'service_id');
     }
 }

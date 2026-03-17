@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\V2\SupplyChain\Procurement\PurchasesController;
 use App\Http\Controllers\Api\V2\SupplyChain\PayablesExpenses\ApTransactionsController;
 
 // Commercial Controllers (Descending File Tree)
-use App\Http\Controllers\Api\V2\Commercial\SalesLifecycle\{SalesController, SalesReturnController};
+use App\Http\Controllers\Api\V2\Commercial\SalesLifecycle\{SalesController, SalesReturnController, ServiceController, ServiceSaleController};
 use App\Http\Controllers\Api\V2\Commercial\RevenueReceivables\ArTransactionsController;
 use App\Http\Controllers\Api\V2\Commercial\MarketingDistribution\SalesRepresentativeController;
 use App\Http\Controllers\Api\V2\Commercial\CRM\ArController;
@@ -124,5 +124,16 @@ Route::group(['prefix' => 'crm', 'middleware' => 'can:ar_customers,view'], funct
         Route::get('/ledger', [ArController::class, 'ledger'])->name('v2.legacy.ar.ledger');
         Route::get('/transactions', [ArTransactionsController::class, 'index'])->name('v2.legacy.ar.transactions');
     });
+});
+
+// ── 08. Services Catalogue (Sales & Services Engine)
+Route::group(['prefix' => 'services', 'middleware' => 'can:sales,view'], function () {
+    Route::get('/', [ServiceController::class, 'index'])->name('v2.services.index');
+    Route::middleware(['can:sales,create', 'throttle:api-write'])->post('/', [ServiceController::class, 'store'])->name('v2.services.store');
+    Route::middleware(['can:sales,edit', 'throttle:api-write'])->put('/', [ServiceController::class, 'update'])->name('v2.services.update');
+    Route::middleware(['can:sales,delete', 'throttle:api-delete'])->delete('/', [ServiceController::class, 'destroy'])->name('v2.services.destroy');
+
+    // Service Sales (cash and credit both via payment_type in body)
+    Route::middleware(['can:sales,create', 'throttle:api-write'])->post('/sales', [ServiceSaleController::class, 'store'])->name('v2.services.sales.store');
 });
 

@@ -275,6 +275,52 @@ export const CommercialDomain: Domain = {
         },
 
         // ─────────────────────────────────────────────────────────────
+        // Capability: Services Engine
+        // ─────────────────────────────────────────────────────────────
+        {
+            id: "services-engine",
+            title: "مبيعات الخدمات",
+            icon: "briefcase",
+            description: "بيع الخدمات نقداً وآجلاً بدون تأثير على المخزون",
+            groups: [
+                {
+                    id: "services-core",
+                    title: "الخدمات والمبيعات",
+                    description: "إدارة كتالوج الخدمات ومعاملات البيع",
+                    screens: [
+                        {
+                            id: "services-management",
+                            title: "إدارة الخدمات",
+                            icon: "briefcase",
+                            description: "إضافة وتعديل وحذف الخدمات",
+                            href: "/02-commercial/services-engine/services-management",
+                            permissions: [],
+                            module: "sales",
+                        },
+                        {
+                            id: "cash-services",
+                            title: "مبيعات الخدمات النقدية",
+                            icon: "banknote",
+                            description: "تسجيل فواتير الخدمات النقدية",
+                            href: "/02-commercial/services-engine/cash-services",
+                            permissions: [],
+                            module: "sales",
+                        },
+                        {
+                            id: "credit-services",
+                            title: "مبيعات الخدمات الآجلة",
+                            icon: "receipt",
+                            description: "تسجيل فواتير الخدمات الآجلة على العملاء",
+                            href: "/02-commercial/services-engine/credit-services",
+                            permissions: [],
+                            module: "sales",
+                        },
+                    ],
+                },
+            ],
+        },
+
+        // ─────────────────────────────────────────────────────────────
         // Capability: Sales Governance
         // ─────────────────────────────────────────────────────────────
         {

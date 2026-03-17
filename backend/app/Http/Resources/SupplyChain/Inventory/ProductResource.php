@@ -12,6 +12,10 @@ class ProductResource extends JsonResource
     {
         return [
             'id'                      => $this->id,
+            'item_type'               => $this->item_type ?? 'product',
+            'taxable'                 => (bool)($this->taxable ?? true),
+            'inventory_control'       => (bool)($this->inventory_control ?? true),
+            'sellable'                => (bool)($this->sellable ?? true),
             'name'                    => $this->name,
             'description'             => $this->description,
             'category_id'             => $this->category_id,

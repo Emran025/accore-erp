@@ -45,6 +45,7 @@ class Invoice extends Model
         'invoice_number',
         'voucher_number',
         'payment_type',
+        'invoice_type',
         'customer_id',
         'sales_representative_id',
         'user_id',

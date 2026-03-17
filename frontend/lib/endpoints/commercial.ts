@@ -27,6 +27,10 @@ export interface CommercialEndpoints {
             APPROVED_KEYS: string;
         };
     };
+    SERVICES: {
+        BASE: string;
+        SALES: string;
+    };
     PROCUREMENT: {
         BASE: string;
         REQUESTS: string;
@@ -79,6 +83,10 @@ export const COMMERCIAL: CommercialEndpoints = {
             RENDER: (id: string | number) => `/v2/system-templates/${id}/render`,
             APPROVED_KEYS: "/v2/system-templates/approved-keys",
         },
+    },
+    SERVICES: {
+        BASE: "/v2/services",
+        SALES: "/v2/services/sales",
     },
     PROCUREMENT: {
         BASE: "/v2/purchases",
