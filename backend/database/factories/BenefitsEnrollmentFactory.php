@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Domains\HumanCapital\Payroll\Models\BenefitsEnrollment;
-use App\Domains\HumanCapital\Payroll\Models\BenefitsPlan;
+use App\Domains\HumanCapital\PayrollBenefits\Models\BenefitsEnrollment;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Domains\HumanCapital\PayrollBenefits\Models\BenefitsPlan;
 
 class BenefitsEnrollmentFactory extends Factory
 {

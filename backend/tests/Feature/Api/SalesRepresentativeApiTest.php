@@ -3,8 +3,8 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Domains\Commercial\Sales\Models\SalesRepresentative;
-use App\Domains\Commercial\Sales\Models\SalesRepresentativeTransaction;
+use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentative;
+use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentativeTransaction;
 use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
 use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;

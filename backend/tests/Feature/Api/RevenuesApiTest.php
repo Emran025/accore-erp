@@ -3,7 +3,7 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Domains\Finance\Revenues\Models\Revenue;
+use App\Domains\Finance\ManagementAccounting\Models\Revenue;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 use Illuminate\Foundation\Testing\RefreshDatabase;

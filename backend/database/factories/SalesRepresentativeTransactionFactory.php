@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Domains\Commercial\Sales\Models\SalesRepresentativeTransaction;
-use App\Domains\Commercial\Sales\Models\SalesRepresentative;
+use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentativeTransaction;
+use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentative;
 use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
 
 use Illuminate\Database\Eloquent\Factories\Factory;

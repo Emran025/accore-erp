@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use App\Domains\SupplyChain\Procurement\Models\Purchase;
 use App\Domains\SupplyChain\Inventory\Models\Product;
-use App\Domains\Commercial\AccountsPayable\Models\ApSupplier;
+use App\Domains\SupplyChain\SupplierSourcing\Models\ApSupplier;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
 use Illuminate\Database\Eloquent\Factories\Factory;

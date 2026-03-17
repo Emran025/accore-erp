@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Domains\HumanCapital\Payroll\Models\BenefitsPlan;
+use App\Domains\HumanCapital\PayrollBenefits\Models\BenefitsPlan;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

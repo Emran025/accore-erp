@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Domains\Commercial\Sales\Models\SalesRepresentative;
+use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentative;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class SalesRepresentativeFactory extends Factory

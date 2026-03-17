@@ -6,11 +6,12 @@ use Tests\TestCase;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use App\Domains\SupplyChain\Procurement\Models\Purchase;
 use App\Domains\SupplyChain\Inventory\Models\Product;
-use App\Domains\Commercial\AccountsPayable\Models\ApSupplier;
+use App\Domains\SupplyChain\SupplierSourcing\Models\ApSupplier;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Domains\SupplyChain\PayablesExpenses\Models\ApTransaction;
 
 class PurchasesApiTest extends TestCase
 {
@@ -117,7 +118,7 @@ class PurchasesApiTest extends TestCase
         $product = Product::factory()->create(['stock_quantity' => 20, 'items_per_unit' => 1]);
         $supplier = ApSupplier::factory()->create(['current_balance' => 1000]);
 
-        \App\Domains\Finance\GeneralLedger\Models\UniversalJournal::factory()->create(['voucher_number' => 'PUR-RTN-TEST', 'document_type' => 'purchases']);
+        UniversalJournal::factory()->create(['voucher_number' => 'PUR-RTN-TEST', 'document_type' => 'purchases']);
         $purchase = Purchase::factory()->create([
             'voucher_number' => 'PUR-RTN-TEST',
             'product_id' => $product->id,
@@ -164,7 +165,7 @@ class PurchasesApiTest extends TestCase
         ]);
 
         // Assert the GL has the correct amount for the return
-        $apTxn = \App\Domains\Commercial\AccountsPayable\Models\ApTransaction::where('reference_type', 'purchases')
+        $apTxn = ApTransaction::where('reference_type', 'purchases')
             ->where('reference_id', $purchase->id)
             ->where('type', 'return')
             ->first();

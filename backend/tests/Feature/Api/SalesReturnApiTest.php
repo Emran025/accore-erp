@@ -7,7 +7,7 @@ use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
 use App\Domains\Commercial\SalesLifecycle\Models\InvoiceItem;
 use App\Domains\SupplyChain\Inventory\Models\Product;
 use App\Domains\Commercial\CRM\Models\ArCustomer;
-use App\Domains\Commercial\Sales\Models\SalesReturn;
+use App\Domains\Commercial\SalesLifecycle\Models\SalesReturn;
 use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;

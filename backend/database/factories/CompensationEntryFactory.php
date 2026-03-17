@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Domains\HumanCapital\Payroll\Models\CompensationEntry;
-use App\Domains\HumanCapital\Payroll\Models\CompensationPlan;
+use App\Domains\HumanCapital\PayrollBenefits\Models\CompensationEntry;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Domains\HumanCapital\PayrollBenefits\Models\CompensationPlan;
 
 class CompensationEntryFactory extends Factory
 {
