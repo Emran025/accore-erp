@@ -91,6 +91,20 @@ export async function fetchAPI(
       .replace(/^api\//, "") // Remove api/ prefix
       .replace(/^\?/, ""); // Remove leading ? if any
 
+    const isAuthEndpoint = cleanAction.includes('v2/check') || cleanAction.includes('v2/login') || cleanAction.includes('v2/logout') || cleanAction.includes('auth/check') || cleanAction.includes('auth/login') || cleanAction.includes('auth/logout');
+
+    // --- Fast Fail block: Stop all network requests if session is already expired ---
+    if (typeof window !== 'undefined') {
+      try {
+        const { useAuthStore } = await import("@/stores/useAuthStore");
+        if (useAuthStore.getState().sessionExpired && !isAuthEndpoint) {
+          return { success: false, message: 'Unauthorized (Session Expired)' };
+        }
+      } catch (e) {
+        // ignore dynamic import errors
+      }
+    }
+
     // Laravel uses RESTful paths.
     // Ensure we don't have double slashes if action is empty
     const url = cleanAction ? `${API_BASE}/${cleanAction}` : API_BASE;
@@ -99,14 +113,17 @@ export async function fetchAPI(
 
     if (response.status === 401 || response.status === 403) {
       if (typeof window !== 'undefined') {
-        try {
-          const { useAuthStore } = await import("@/stores/useAuthStore");
-          const isStillAuth = await useAuthStore.getState().checkAuth(true); // Force sync
-          if (!isStillAuth) {
-            window.location.href = '/auth/login';
+        if (!isAuthEndpoint) {
+          try {
+            const { useAuthStore } = await import("@/stores/useAuthStore");
+            const isStillAuth = await useAuthStore.getState().checkAuth(true); // Force sync
+            if (!isStillAuth) {
+              useAuthStore.getState().setSessionExpired(true);
+            }
+          } catch (e) {
+             const { useAuthStore } = await import("@/stores/useAuthStore");
+             useAuthStore.getState().setSessionExpired(true);
           }
-        } catch (e) {
-          window.location.href = '/auth/login';
         }
       }
       return { success: false, message: response.status === 403 ? 'Access Denied: Permissions synchronized.' : 'Unauthorized' };

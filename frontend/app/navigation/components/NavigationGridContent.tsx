@@ -30,18 +30,11 @@ export function NavigationGridContent({ groupId }: NavigationGridContentProps) {
     if (!currentGroup) {
         return (
             <div className="empty-state animate-fade" style={{ minHeight: '60vh' }}>
-                <div className="empty-state-icon-wrapper" style={{
-                    background: 'var(--surface-white)',
-                    padding: '2rem',
-                    borderRadius: '50%',
-                    boxShadow: 'var(--shadow-md)',
-                    marginBottom: '2rem',
-                    border: '1px solid var(--border-color)'
-                }}>
-                    <Icon name="search" size={48} className="text-primary" />
-                </div>
-                <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>المجموعة غير موجودة</h3>
-                <p style={{ fontSize: '1.1rem', marginBottom: '2rem', maxWidth: '450px' }}>
+                <i className="text-primary">
+                    <Icon name="search" size={48} />
+                </i>
+                <h3>المجموعة غير موجودة</h3>
+                <p>
                     لم يتم العثور على مجموعة القوائم المسماة <code>{activeGroup}</code>. 
                     قد يكون الرابط خاطئاً أو تم نقل المحتوى.
                 </p>

@@ -8,19 +8,20 @@ export type AlertType = "success" | "error" | "warning" | "info";
 interface AlertProps {
   type: AlertType;
   message: string;
+  style?: React.CSSProperties;
   onClose?: () => void;
 }
 
-export function Alert({ type, message, onClose }: AlertProps) {
+export function Alert({ type, message, style, onClose }: AlertProps) {
   const iconName = type === "success" ? "check" : type === "error" ? "x" : "alert";
-  
+
   return (
-    <div className={`alert alert-${type}`}>
+    <div className={`alert alert-${type}`} style={style}>
       {getIcon(iconName)}
       <span>{message}</span>
       {onClose && (
-        <button 
-          onClick={onClose} 
+        <button
+          onClick={onClose}
           className="close-btn"
           style={{ position: "relative", left: "auto", marginRight: "auto" }}
         >
@@ -54,9 +55,8 @@ export function showAlert(containerId: string, message: string, type: AlertType 
   alertDiv.style.borderRadius = "var(--radius-md)";
   alertDiv.style.backgroundColor = type === "error" ? "#fee2e2" : type === "warning" ? "#fef3c7" : "#dcfce7";
   alertDiv.style.color = type === "error" ? "#991b1b" : type === "warning" ? "#92400e" : "#166534";
-  alertDiv.style.border = `1px solid ${
-    type === "error" ? "#fecaca" : type === "warning" ? "#fde68a" : "#bbf7d0"
-  }`;
+  alertDiv.style.border = `1px solid ${type === "error" ? "#fecaca" : type === "warning" ? "#fde68a" : "#bbf7d0"
+    }`;
   alertDiv.textContent = message;
 
   container.innerHTML = "";

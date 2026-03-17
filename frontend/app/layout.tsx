@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import React from "react";
+import { SessionExpiredModal } from "@/components/ui/SessionExpiredModal";
 
 export const metadata: Metadata = {
   title: "نظام أكسيستم",
@@ -22,7 +23,10 @@ export default function RootLayout({
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <SessionExpiredModal />
+      </body>
     </html>
   );
 }

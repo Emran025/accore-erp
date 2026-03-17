@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Domains\EnterpriseCore\NumberRanges\Models\DocumentSequence;
+use App\Domains\EnterpriseCore\SystemOverview\Models\DocumentSequence;
 
 class DocumentSequenceSeeder extends Seeder
 {

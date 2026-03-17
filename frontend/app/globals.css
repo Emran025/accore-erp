@@ -2973,13 +2973,14 @@ body.nav-sidebar-is-collapsed .sidebar-toggle-btn {
 
 /* Animation for slide up */
 .animate-slide-up {
-  animation: slideUp 0.4s ease-out forwards;
+  animation: animation-slide 0.4s ease-out forwards;
+  justify-self: center;
 }
 
-@keyframes slideUp {
+@keyframes animation-slide {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(30px);
   }
 
   to {

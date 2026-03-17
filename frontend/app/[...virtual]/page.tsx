@@ -36,19 +36,11 @@ export default function VirtualNavigationPage() {
                     <NavigationGridContent groupId={group.key} />
                 ) : (
                     <div className="empty-state animate-fade" style={{ minHeight: '70vh' }}>
-                         <div className="empty-state-icon-wrapper" style={{
-                            background: 'rgba(255, 255, 255, 0.8)',
-                            backdropFilter: 'blur(10px)',
-                            padding: '2.5rem',
-                            borderRadius: '50%',
-                            boxShadow: 'var(--shadow-lg)',
-                            marginBottom: '2rem',
-                            border: '1px solid rgba(255, 255, 255, 0.3)'
-                        }}>
-                            <Icon name="x-octagon" size={64} className="text-danger" />
-                        </div>
-                        <h3 style={{ fontSize: '1.75rem', marginBottom: '1rem', color: 'var(--primary-dark)' }}>الصفحة غير متوفرة</h3>
-                        <p style={{ fontSize: '1.2rem', marginBottom: '2.5rem', maxWidth: '500px', lineHeight: '1.6' }}>
+                        <i className="text-danger">
+                            <Icon name="x-octagon" size={64} />
+                        </i>
+                        <h3 className="text-danger">الصفحة غير متوفرة</h3>
+                        <p>
                             المسار <code>/{virtual?.join('/')}</code> لا يرتبط بأي شاشة أو مجموعة قوائم حالياً. 
                             يرجى التأكد من صحة العنوان أو العودة للقائمة الرئيسية.
                         </p>

@@ -34,7 +34,7 @@ export function MainLayout({
 }: MainLayoutProps) {
   const router = useRouter();
 
-  const { isLoading, checkAuth } = useAuthStore();
+  const { isLoading, checkAuth, sessionExpired } = useAuthStore();
   const { mobileOpen, setMobileOpen, sideNavCollapsed, sideNavWidth, setSideNavCollapsed } = useUIStore();
 
   useEffect(() => {
@@ -43,7 +43,9 @@ export function MainLayout({
       const isAuth = await checkAuth();
 
       if (!isAuth) {
-        router.push("/auth/login");
+        if (!useAuthStore.getState().sessionExpired) {
+          router.push("/auth/login");
+        }
         return;
       }
 
@@ -59,7 +61,7 @@ export function MainLayout({
     verifyAuth();
   }, [router, requiredModule, requiredAction, checkAuth]);
 
-  if (isLoading) {
+  if (isLoading || sessionExpired) {
     return (
       <div
         style={{

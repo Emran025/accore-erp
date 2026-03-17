@@ -47,3 +47,4 @@ export { StatsCard } from "./StatsCard";
 export { FullLogo } from "./Logo";
 export { BadgeLabel } from "./BadgeLabel";
 export { InvoiceDetailsDialog } from "./InvoiceDetailsDialog";
+export { SessionExpiredModal } from "./SessionExpiredModal";

@@ -29,6 +29,7 @@ interface AuthState {
     isLoading: boolean;
     sessionToken: string | null;
     lastSyncedAt: number | null;
+    sessionExpired: boolean;
 
     // Actions
     checkAuth: (forceSync?: boolean) => Promise<boolean>;
@@ -38,6 +39,7 @@ interface AuthState {
     setLoading: (loading: boolean) => void;
     setUser: (user: User | null) => void;
     setPermissions: (permissions: Permission[]) => void;
+    setSessionExpired: (expired: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -51,6 +53,7 @@ export const useAuthStore = create<AuthState>()(
                 isLoading: true,
                 sessionToken: null,
                 lastSyncedAt: null,
+                sessionExpired: false,
 
                 // Check authentication with backend
                 checkAuth: async (forceSync = false) => {
@@ -94,7 +97,7 @@ export const useAuthStore = create<AuthState>()(
                     } catch { /* fall through */ }
 
                     // If check fails, we clear everything
-                    set({ user: null, permissions: [], isAuthenticated: false, isLoading: false, sessionToken: null, lastSyncedAt: null });
+                    set({ user: null, permissions: [], isAuthenticated: false, isLoading: false, sessionToken: null, lastSyncedAt: null, sessionExpired: true });
 
                     // Legacy compatibility: Clear localStorage
                     if (typeof window !== 'undefined') {
@@ -123,7 +126,8 @@ export const useAuthStore = create<AuthState>()(
                                 permissions,
                                 isAuthenticated: true,
                                 sessionToken: response.token as string,
-                                lastSyncedAt: Date.now()
+                                lastSyncedAt: Date.now(),
+                                sessionExpired: false
                             });
 
                             // Legacy compatibility: Sync with localStorage
@@ -145,7 +149,7 @@ export const useAuthStore = create<AuthState>()(
                 // Logout
                 logout: async () => {
                     try { await fetchAPI(API_ENDPOINTS.AUTH.LOGOUT, { method: 'POST' }); } catch { }
-                    set({ user: null, permissions: [], isAuthenticated: false, sessionToken: null, lastSyncedAt: null });
+                    set({ user: null, permissions: [], isAuthenticated: false, sessionToken: null, lastSyncedAt: null, sessionExpired: false });
 
                     // Legacy compatibility
                     if (typeof window !== 'undefined') {
@@ -172,6 +176,7 @@ export const useAuthStore = create<AuthState>()(
                 setLoading: (loading) => set({ isLoading: loading }),
                 setUser: (user) => set({ user }),
                 setPermissions: (permissions) => set({ permissions }),
+                setSessionExpired: (sessionExpired) => set({ sessionExpired }),
             }),
             { name: 'auth-store' }
         ),
@@ -183,6 +188,7 @@ export const useAuthStore = create<AuthState>()(
                 isAuthenticated: state.isAuthenticated,
                 sessionToken: state.sessionToken,
                 lastSyncedAt: state.lastSyncedAt,
+                sessionExpired: state.sessionExpired,
             }),
         }
     )
