@@ -45,6 +45,10 @@ export interface CRUDConfig<T = unknown> {
      * Use this to map backend field names to frontend-friendly names.
      */
     transform?: (raw: unknown[]) => T[];
+    /**
+     * Optional static query parameter to append to every load request.
+     */
+    params?: Record<string, string>;
 }
 
 /**
@@ -81,9 +85,16 @@ export function createCRUDStore<T extends { id: number }>(config: CRUDConfig<T>)
                 load: async (page = 1, search = '') => {
                     set({ isLoading: true });
                     try {
-                        const res = await fetchAPI(
-                            `${endpoint}?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`
-                        );
+                        let url = `${endpoint}?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`;
+                        
+                        // Append extra params if provided
+                        if (config.params) {
+                            Object.entries(config.params).forEach(([key, value]) => {
+                                url += `&${key}=${encodeURIComponent(value)}`;
+                            });
+                        }
+
+                        const res = await fetchAPI(url);
                         if (res.success) {
                             const raw = res.data ?? [];
                             let itemsToTransform: unknown[] = [];

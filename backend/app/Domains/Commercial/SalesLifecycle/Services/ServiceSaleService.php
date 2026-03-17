@@ -184,7 +184,7 @@ class ServiceSaleService
 
             // Credit: Service Revenue
             $glEntries[] = [
-                'account_code' => $accounts['sales_revenue'],
+                'account_code' => $accounts['service_revenue'],
                 'entry_type'   => 'CREDIT',
                 'amount'       => $subtotal - $discountAmount,
                 'description'  => $invoiceRef,

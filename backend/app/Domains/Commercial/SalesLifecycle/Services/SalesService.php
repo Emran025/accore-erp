@@ -101,63 +101,64 @@ class SalesService
 
             // Calculate totals and validate stock
             $subtotal = 0;
-            $totalVat = 0;
+            $productRevenue = 0;
+            $serviceRevenue = 0;
             $totalCost = 0;
             $processedItems = [];
 
             foreach ($items as $item) {
                 $productId = (int)$item['product_id'];
-                $quantity = (float)$item['quantity']; // User Input Quantity
+                $quantity = (float)$item['quantity'];
                 $unitType = $item['unit_type'] ?? 'sub';
                 $unitPrice = (float)$item['unit_price'];
 
                 $product = Product::findOrFail($productId);
 
-                // CRITICAL FIX (BUG-001): Enforce Pricing Floor - Server Sovereignty
-                // The system must protect against revenue leakage via price manipulation
-                // Use weighted_average_cost (actual DB field) as the cost basis
+                // Enforce sellable flag (Raw materials integration)
+                if (!$product->sellable) {
+                    throw new \Exception("Item '{$product->name}' is not marked as sellable.");
+                }
+
+                // CRITICAL FIX (BUG-001): Enforce Pricing Floor
                 $costBasis = (float)($product->weighted_average_cost ?? 0);
                 $minProfitMargin = (float)($product->minimum_profit_margin ?? 0);
                 $minimumAllowedPrice = $costBasis + $minProfitMargin;
 
                 if ($costBasis > 0 && $unitPrice < $minimumAllowedPrice) {
-                    throw new \Exception(
-                        "Price violation for '{$product->name}': " .
-                        "Submitted price ({$unitPrice}) is below minimum allowable price ({$minimumAllowedPrice}). " .
-                        "[Cost: {$costBasis} + Margin: {$minProfitMargin}]"
-                    );
+                    throw new \Exception("Price violation for '{$product->name}': Submitted price below minimum.");
                 }
 
-                // Calculate Stock Impact
-                $conversionFactor = 1;
-                if ($unitType === 'main' || $unitType === 'package') {
-                     $conversionFactor = $product->items_per_unit ?? 1;
-                }
-                
-                $stockDeduction = $quantity * $conversionFactor;
+                // Calculate Stock Impact (only for inventory-controlled items)
+                $stockDeduction = 0;
+                if ($product->inventory_control) {
+                    $conversionFactor = ($unitType === 'main' || $unitType === 'package') ? ($product->items_per_unit ?? 1) : 1;
+                    $stockDeduction = $quantity * $conversionFactor;
 
-                // Check stock
-                if ($product->stock_quantity < $stockDeduction) {
-                    throw new \Exception("Insufficient stock for product: {$product->name}");
+                    if ($product->stock_quantity < $stockDeduction) {
+                        throw new \Exception("Insufficient stock for: {$product->name}");
+                    }
+                    $product->decrement('stock_quantity', $stockDeduction);
                 }
 
                 $lineTotal = $quantity * $unitPrice;
                 $subtotal += $lineTotal;
 
-                // We will calculate Cost (COGS) in the next loop using InventoryCostingService
-                // to ensure we have the Invoice ID for reference and atomic execution.
+                if ($product->item_type === 'service') {
+                    $serviceRevenue += $lineTotal;
+                } else {
+                    $productRevenue += $lineTotal;
+                }
 
                 $processedItems[] = [
-                    'product_id' => $productId,
-                    'quantity' => $quantity,
+                    'product_id'      => $productId,
+                    'item_type'       => $product->item_type,
+                    'inventory_control' => $product->inventory_control,
+                    'quantity'        => $quantity,
                     'stock_deduction' => $stockDeduction,
-                    'unit_price' => $unitPrice,
-                    'line_total' => $lineTotal,
-                    'unit_type' => $unitType,
+                    'unit_price'      => $unitPrice,
+                    'line_total'      => $lineTotal,
+                    'unit_type'       => $unitType,
                 ];
-
-                // Update stock (Reservation)
-                $product->decrement('stock_quantity', $stockDeduction);
             }
 
             // Fix BUG-002: Enforce Server Sovereignty for Tax Rates
@@ -226,6 +227,7 @@ class SalesService
             $invoice = Invoice::create([
                 'invoice_number' => $invoiceNumber,
                 'payment_type' => $paymentType,
+                'invoice_type' => $productRevenue > 0 ? 'product' : 'service',
                 'customer_id' => $customerId,
                 'sales_representative_id' => $salesRepresentativeId,
                 'user_id' => $userId,
@@ -242,13 +244,16 @@ class SalesService
 
             foreach ($processedItems as $item) {
                 // Critical Fix (BUG-003): Use Costing Service to deplete layers
-                // Use stock_deduction (Base Units) for costing
-                $lineCost = $this->costingService->recordSale(
-                    $item['product_id'],
-                    $invoice->id,
-                    $item['stock_deduction'], 
-                    config('accounting.inventory.costing_method', 'FIFO')
-                );
+                // Only for items that track inventory/COGS
+                $lineCost = 0;
+                if ($item['inventory_control']) {
+                    $lineCost = $this->costingService->recordSale(
+                        $item['product_id'],
+                        $invoice->id,
+                        $item['stock_deduction'], 
+                        config('accounting.inventory.costing_method', 'FIFO')
+                    );
+                }
                 $totalCost += $lineCost;
 
                 InvoiceItem::create([
@@ -305,12 +310,23 @@ class SalesService
                 $invoiceEntries = [];
 
                 // Credit Side (Revenue, VAT, Fees)
-                 $invoiceEntries[] = [
-                    'account_code' => $this->coaService->getStandardAccounts()['sales_revenue'],
-                    'entry_type' => 'CREDIT',
-                    'amount' => $subtotal,
-                    'description' => "Sales Revenue - Invoice #$invoiceNumber"
-                ];
+                if ($productRevenue > 0) {
+                    $invoiceEntries[] = [
+                        'account_code' => $this->coaService->getStandardAccounts()['sales_revenue'],
+                        'entry_type' => 'CREDIT',
+                        'amount' => $productRevenue,
+                        'description' => "Product Sales Revenue - Invoice #$invoiceNumber"
+                    ];
+                }
+
+                if ($serviceRevenue > 0) {
+                    $invoiceEntries[] = [
+                        'account_code' => $this->coaService->getStandardAccounts()['service_revenue'],
+                        'entry_type' => 'CREDIT',
+                        'amount' => $serviceRevenue,
+                        'description' => "Service Revenue - Invoice #$invoiceNumber"
+                    ];
+                }
 
                 if ($taxResult !== null) {
                     foreach ($taxResult->lines as $line) {
@@ -430,13 +446,24 @@ class SalesService
                 // Cash Sales (Standard single voucher behavior)
                 $glEntries = [];
 
-                // Revenue (Credit)
-                $glEntries[] = [
-                    'account_code' => $this->coaService->getStandardAccounts()['sales_revenue'],
-                    'entry_type' => 'CREDIT',
-                    'amount' => $subtotal,
-                    'description' => "Sales Revenue - Invoice #$invoiceNumber"
-                ];
+                // Revenue (Credit) - Split by type
+                if ($productRevenue > 0) {
+                    $glEntries[] = [
+                        'account_code' => $this->coaService->getStandardAccounts()['sales_revenue'],
+                        'entry_type' => 'CREDIT',
+                        'amount' => $productRevenue,
+                        'description' => "Product Sales Revenue - Invoice #$invoiceNumber"
+                    ];
+                }
+
+                if ($serviceRevenue > 0) {
+                    $glEntries[] = [
+                        'account_code' => $this->coaService->getStandardAccounts()['service_revenue'],
+                        'entry_type' => 'CREDIT',
+                        'amount' => $serviceRevenue,
+                        'description' => "Service Revenue - Invoice #$invoiceNumber"
+                    ];
+                }
 
                 // Engine mapping
                 if ($taxResult !== null) {

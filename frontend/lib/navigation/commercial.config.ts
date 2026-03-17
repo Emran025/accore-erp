@@ -273,27 +273,36 @@ export const CommercialDomain: Domain = {
                 },
             ],
         },
+        // ─────────────────────────────────────────────────────────────
+        // Capability: Managing and monitoring sales of in-stock 
+        // and non-in-stock products (Instant Services)
+        // ─────────────────────────────────────────────────────────────
+
+
+
+
 
         // ─────────────────────────────────────────────────────────────
         // Capability: Services Engine
         // ─────────────────────────────────────────────────────────────
         {
-            id: "services-engine",
-            title: "مبيعات الخدمات",
+            id: "instant-services",
+            title: "الخدمات الجاهزة",
             icon: "briefcase",
             description: "بيع الخدمات نقداً وآجلاً بدون تأثير على المخزون",
             groups: [
+
                 {
                     id: "services-core",
-                    title: "الخدمات والمبيعات",
+                    title: "مبيعات الخدمات",
                     description: "إدارة كتالوج الخدمات ومعاملات البيع",
                     screens: [
                         {
-                            id: "services-management",
+                            id: "",
                             title: "إدارة الخدمات",
                             icon: "briefcase",
-                            description: "إضافة وتعديل وحذف الخدمات",
-                            href: "/02-commercial/services-engine/services-management",
+                            description: "عرض وإضافة وتعديل وحذف الخدمات",
+                            href: "/02-commercial/instant-services/services-core/services-management",
                             permissions: [],
                             module: "sales",
                         },
@@ -302,7 +311,7 @@ export const CommercialDomain: Domain = {
                             title: "مبيعات الخدمات النقدية",
                             icon: "banknote",
                             description: "تسجيل فواتير الخدمات النقدية",
-                            href: "/02-commercial/services-engine/cash-services",
+                            href: "/02-commercial/instant-services/services-core/cash-services",
                             permissions: [],
                             module: "sales",
                         },
@@ -311,12 +320,38 @@ export const CommercialDomain: Domain = {
                             title: "مبيعات الخدمات الآجلة",
                             icon: "receipt",
                             description: "تسجيل فواتير الخدمات الآجلة على العملاء",
-                            href: "/02-commercial/services-engine/credit-services",
+                            href: "/02-commercial/instant-services/services-core/credit-services",
                             permissions: [],
                             module: "sales",
                         },
                     ],
                 },
+
+                {
+                    id: "instnt-srvcs-ctlg",
+                    title: "الكتالوج التجاري للخدمات",
+                    description: "تعريف كل ما يمكن بيعه من خدمات غير مخزنية",
+                    screens: [
+                        {
+                            id: "services-management",
+                            title: "إدارة الخدمات",
+                            icon: "briefcase",
+                            description: "عرض وإضافة وتعديل وحذف الخدمات",
+                            href: "/02-commercial/instant-services/instnt-srvcs-ctlg/services-management",
+                            permissions: [],
+                            module: "sales",
+                        },
+                        {
+                            id: "instnt-srvcs-categories",
+                            title: "التصنيفات",
+                            icon: "tags",
+                            description: "تصنيفات الخدمات",
+                            href: "/02-commercial/instant-services/instnt-srvcs-ctlg/instnt-srvcs-categories",
+                            permissions: [],
+                            module: "dashboard",
+                        },
+                    ]
+                }
             ],
         },
 

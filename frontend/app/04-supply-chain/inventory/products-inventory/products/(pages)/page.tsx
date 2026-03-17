@@ -62,6 +62,10 @@ export default function ProductsPage() {
         units_per_package: "1",
         description: "",
         profit_margin: "",
+        item_type: "product",
+        sellable: true,
+        inventory_control: true,
+        taxable: true,
     });
 
     const [newCategoryName, setNewCategoryName] = useState("");
@@ -97,6 +101,10 @@ export default function ProductsPage() {
             units_per_package: "1",
             description: "",
             profit_margin: "",
+            item_type: "product",
+            sellable: true,
+            inventory_control: true,
+            taxable: true,
         });
         setProductDialog(true);
     };
@@ -115,6 +123,10 @@ export default function ProductsPage() {
             units_per_package: String(product.items_per_unit || "1"),
             description: product.description || "",
             profit_margin: String(product.profit_margin || ""),
+            item_type: product.item_type || "product",
+            sellable: product.sellable ?? true,
+            inventory_control: product.inventory_control ?? true,
+            taxable: product.taxable ?? true,
         });
         setProductDialog(true);
     };
@@ -154,6 +166,10 @@ export default function ProductsPage() {
             sub_unit_name: formData.unit_type === 'ctn' ? 'حبة' : null,
             description: formData.description,
             purchase_price: parseFloat(formData.purchase_price),
+            item_type: formData.item_type,
+            sellable: formData.sellable,
+            inventory_control: formData.inventory_control,
+            taxable: formData.taxable,
         };
 
         const success = await saveProduct(payload, selectedProduct?.id);
@@ -196,6 +212,26 @@ export default function ProductsPage() {
         { key: "name", header: "اسم المنتج", dataLabel: "اسم المنتج" },
         { key: "barcode", header: "الباركود", dataLabel: "الباركود" },
         { key: "category_name", header: "الفئة", dataLabel: "الفئة" },
+        { 
+            key: "item_type", 
+            header: "النوع", 
+            dataLabel: "النوع",
+            render: (it) => (
+                <span className={`badge badge-${it.item_type === 'product' ? 'info' : it.item_type === 'raw_material' ? 'secondary' : 'warning'}`}>
+                    {it.item_type === 'product' ? 'منتج' : it.item_type === 'raw_material' ? 'مادة خام' : 'خدمة'}
+                </span>
+            )
+        },
+        {
+            key: "sellable",
+            header: "ليس مادة أولية",
+            dataLabel: "ليس مادة أولية",
+            render: (it) => (
+                <span className={`badge badge-${it.sellable ? 'success' : 'danger'}`}>
+                    {it.sellable ? 'نعم' : 'لا'}
+                </span>
+            )
+        },
         {
             key: "selling_price",
             header: "سعر البيع",
@@ -335,14 +371,55 @@ export default function ProductsPage() {
                         </div>
                     </div>
                     <Select
-                        label="نوع الوحدة"
-                        value={formData.unit_type}
-                        onChange={(e) => setFormData({ ...formData, unit_type: e.target.value })}
+                        label="نوع الصنف"
+                        value={formData.item_type}
+                        onChange={(e) => {
+                            const val = e.target.value as any;
+                            setFormData({ 
+                                ...formData, 
+                                item_type: val,
+                                sellable: val === 'product',
+                                inventory_control: val !== 'service'
+                            });
+                        }}
                         options={[
-                            { value: "piece", label: "حبة / قطعة" },
-                            { value: "ctn", label: "كرتون" }
+                            { value: "product", label: "منتج تام" },
+                            { value: "raw_material", label: "مادة خام (غير للبيع)" }
                         ]}
                     />
+                </div>
+
+                <div className="form-row flags-row">
+                    <div className="form-group checkbox-group">
+                        <label>
+                            <input 
+                                type="checkbox" 
+                                checked={formData.sellable} 
+                                onChange={(e) => setFormData({ ...formData, sellable: e.target.checked })}
+                            />
+                            قابل للبيع
+                        </label>
+                    </div>
+                    <div className="form-group checkbox-group">
+                        <label>
+                            <input 
+                                type="checkbox" 
+                                checked={formData.inventory_control} 
+                                onChange={(e) => setFormData({ ...formData, inventory_control: e.target.checked })}
+                            />
+                            متابعة المخزون
+                        </label>
+                    </div>
+                    <div className="form-group checkbox-group">
+                        <label>
+                            <input 
+                                type="checkbox" 
+                                checked={formData.taxable} 
+                                onChange={(e) => setFormData({ ...formData, taxable: e.target.checked })}
+                            />
+                            خاضع للضريبة
+                        </label>
+                    </div>
                 </div>
 
                 <div className="form-row">

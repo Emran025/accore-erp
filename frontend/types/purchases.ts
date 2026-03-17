@@ -46,6 +46,10 @@ export interface Product {
     unit_type?: string;
     profit_margin?: number;
     expiry_date?: string;
+    item_type: 'product' | 'service' | 'raw_material';
+    taxable: boolean;
+    inventory_control: boolean;
+    sellable: boolean;
 }
 
 

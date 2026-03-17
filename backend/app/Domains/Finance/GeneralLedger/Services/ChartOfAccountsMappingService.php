@@ -30,6 +30,7 @@ class ChartOfAccountsMappingService
             'capital' => $this->getAccountCode('Equity', 'رأس المال') ?? $this->getAccountCode('Equity', 'Capital') ?? '3100',
             'retained_earnings' => $this->getAccountCode('Equity', 'الأرباح المحتجزة') ?? $this->getAccountCode('Equity', 'Retained') ?? '3200',
             'sales_revenue' => $this->getAccountCode('Revenue', '4101') ?? $this->getAccountCode('Revenue', 'مبيعات') ?? '4100',
+            'service_revenue' => $this->getAccountCode('Revenue', '4102') ?? $this->getAccountCode('Revenue', 'خدمات') ?? '4102',
             'sales_discount' => $this->getAccountCode('Revenue', 'خصم المبيعات') ?? $this->getAccountCode('Revenue', 'Discount') ?? '4110',
             'other_revenue' => $this->getAccountCode('Revenue', 'إيرادات أخرى') ?? $this->getAccountCode('Revenue', 'Other') ?? '4200',
             'cost_of_goods_sold' => $this->getAccountCode('Expense', 'تكلفة البضاعة') ?? $this->getAccountCode('Expense', 'COGS') ?? '5100',

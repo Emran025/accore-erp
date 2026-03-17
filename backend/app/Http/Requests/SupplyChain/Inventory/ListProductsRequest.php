@@ -14,9 +14,11 @@ class ListProductsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'search' => 'nullable|string',
-            'page' => 'nullable|integer|min:1',
-            'per_page' => 'nullable|integer|min:1|max:100',
+            'search'    => 'nullable|string',
+            'page'      => 'nullable|integer|min:1',
+            'per_page'  => 'nullable|integer|min:1|max:100',
+            'item_type' => 'nullable|string|in:product,service,raw_material,all',
+            'include_purchase_price' => 'nullable|boolean',
         ];
     }
 }

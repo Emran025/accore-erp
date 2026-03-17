@@ -1,23 +1,12 @@
 import { createCRUDStore } from './factories/createCRUDStore';
 import { API_ENDPOINTS } from '@/lib/endpoints';
+import { Product as Service } from '@/types';
 
-export interface ServiceItem {
-    id: number;
-    name: string;
-    description?: string;
-    unit_price: number;
-    selling_price?: number;
-    category_id?: number;
-    category_name?: string;
-    item_type: 'service';
-    taxable: boolean;
-    inventory_control: boolean;
-    sellable: boolean;
-    unit_name?: string;
-    created_at?: string;
-}
-
-export const useServiceStore = createCRUDStore<ServiceItem>({
+/**
+ * Zustand store for Services.
+ * Services are a subset of items that don't track inventory.
+ */
+export const useServiceStore = createCRUDStore<Service>({
     endpoint: API_ENDPOINTS.COMMERCIAL.SERVICES.BASE,
     storeName: 'service-store',
     messages: {
@@ -28,13 +17,19 @@ export const useServiceStore = createCRUDStore<ServiceItem>({
         deleteSuccess: 'تم حذف الخدمة',
         deleteError: 'خطأ في حذف الخدمة',
     },
-    transform: (raw: unknown[]): ServiceItem[] =>
+    transform: (raw: unknown[]): Service[] =>
         (raw as Record<string, any>[]).map(s => ({
             ...s,
             selling_price: parseFloat(s.unit_price) || 0,
-            item_type: 'service' as const,
-            taxable: s.taxable ?? true,
+            purchase_price: 0, // Services typically don't have purchase price in this context
+            stock: 0,
+            min_stock: 0,
+            unit_type: 'service',
+            profit_margin: 0,
+            description: s.description || '',
+            item_type: 'service',
             inventory_control: false,
-            sellable: s.sellable ?? true,
-        } as ServiceItem)),
+            sellable: true,
+            taxable: s.taxable ?? true,
+        } as Service)),
 });
