@@ -9,12 +9,12 @@
 ## Active Phase
 
 ```
-phase-1
+phase-2
 ```
 
 ## Phase Name
 
-**Architectural Foundation**
+**Core Financial & Operational Domains**
 
 ## Activated On
 
@@ -22,7 +22,7 @@ phase-1
 
 ## Activated By
 
-[Chief Architect — awaiting initial sign-off]
+[Chief Architect — Phase 1 Signed Off]
 
 ---
 
@@ -31,3 +31,4 @@ phase-1
 | From | To | Date | Authorized By |
 |------|----|------|---------------|
 | — | phase-1 | 2026-03-17 | System (initial) |
+| phase-1 | phase-2 | 2026-03-18 | Chief Architect |

@@ -9,8 +9,7 @@
 ## Currently Active Domain(s)
 
 ```
-system
-architecture
+Finance
 ```
 
 ## Domain Activation Log
