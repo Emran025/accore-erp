@@ -9,5 +9,13 @@
 ## Completed Task IDs
 
 ```
-(none)
+SYS-001
+SYS-002
+SYS-003
+SYS-004
+SYS-005
+ARCH-001
+ARCH-002
+ARCH-003
+ARCH-004
 ```

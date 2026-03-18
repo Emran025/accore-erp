@@ -41,10 +41,11 @@ Before performing ANY documentation work, you MUST execute the following sequenc
 14. Write output to the path specified in the task file
 15. Update logs/execution-log.csv
 16. Add task ID to state/pending_review.list.md
+17. **CONTINUOUS EXECUTION:** If the next task belongs to the same **active phase**, proceed IMMEDIATELY.
 ```
 
-**If ANY step fails or produces ambiguity, HALT and report the issue.**
-Do NOT proceed with assumptions.
+**If ANY step fails, produces non-assumption ambiguity, or cross-phase dependency blocks, HALT.**
+Do NOT proceed with assumptions without `[ASSUMPTION]` tagging.
 
 ---
 

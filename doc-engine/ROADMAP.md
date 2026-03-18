@@ -12,7 +12,9 @@
 1. **Sequential Phase Execution** — Phases MUST be executed in order (1 → 2 → 3 → 4).
 2. **No Phase Skipping** — A phase cannot begin until the previous phase's exit criteria are met.
 3. **Domain-by-Domain** — Within each phase, documentation is generated one domain at a time.
-4. **Human Review Gates** — Every task output enters `pending_review.list.md`. Dependent tasks cannot proceed until predecessors are approved.
+4. **Human Review Gates** — Every task output enters `pending_review.list.md`.
+    - **Cross-Phase:** A phase cannot begin until ALL tasks in the previous phase are approved.
+    - **Intra-Phase:** Tasks within the same phase MAY proceed if the predecessor is in the `pending_review` state, even if it has `NEEDS_VERIFICATION` (assumptions).
 5. **Incremental Growth** — The entire roadmap is designed for execution over months, not days.
 6. **Idempotent Re-entry** — The engine can be stopped and resumed at any point by reading state files.
 
