@@ -7,4 +7,6 @@ SYS-005,2026-03-18,615,2ec9d5b330bf41af4ed0890b43bf60883b89ab29,/docs/System/Cro
 ARCH-001,2026-03-18,565,2ec9d5b330bf41af4ed0890b43bf60883b89ab29,/docs/Architecture/Frontend_Backend_Separation.md,APPROVED,AI
 ARCH-002,2026-03-18,595,2ec9d5b330bf41af4ed0890b43bf60883b89ab29,/docs/Architecture/Domain_Driven_Design_In_Laravel.md,APPROVED,AI
 ARCH-003,2026-03-18,610,2ec9d5b330bf41af4ed0890b43bf60883b89ab29,/docs/Architecture/Action_And_Service_Layer.md,APPROVED,AI
-ARCH-004,2026-03-18,575,2ec9d5b330bf41af4ed0890b43bf60883b89ab29,/docs/Architecture/Event_Bus_And_Domain_Events.md,approved,AI
+ARCH-004,2026-03-18,575,2ec9d5b330bf41af4ed0890b43bf60883b89ab29,/docs/Architecture/Event_Bus_And_Domain_Events.md,APPROVED,AI
+ARCH-005,2026-03-18,571,7db3334f9763d3274bdc77d1e5d6b1e0f38d172f,/docs/Architecture/Transaction_Management_And_Idempotency.md,APPROVED,AI
+ARCH-006,2026-03-18,548,7db3334f9763d3274bdc77d1e5d6b1e0f38d172f,/docs/Architecture/Multi_Tenancy_Architecture.md,APPROVED,AI
