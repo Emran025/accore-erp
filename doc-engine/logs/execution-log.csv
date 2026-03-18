@@ -10,3 +10,6 @@ ARCH-003,2026-03-18,610,2ec9d5b330bf41af4ed0890b43bf60883b89ab29,/docs/Architect
 ARCH-004,2026-03-18,575,2ec9d5b330bf41af4ed0890b43bf60883b89ab29,/docs/Architecture/Event_Bus_And_Domain_Events.md,APPROVED,AI
 ARCH-005,2026-03-18,571,7db3334f9763d3274bdc77d1e5d6b1e0f38d172f,/docs/Architecture/Transaction_Management_And_Idempotency.md,APPROVED,AI
 ARCH-006,2026-03-18,548,7db3334f9763d3274bdc77d1e5d6b1e0f38d172f,/docs/Architecture/Multi_Tenancy_Architecture.md,APPROVED,AI
+FIN-001,2026-03-18,637,1cdcf6d,/docs/Domains/Finance/Overview.md,APPROVED,AI
+FIN-002,2026-03-18,650,1cdcf6d,/docs/Domains/Finance/GeneralLedger/Double_Entry_Core_Model.md,APPROVED,AI
+FIN-003,2026-03-18,643,1cdcf6d,/docs/Domains/Finance/GeneralLedger/Chart_Of_Accounts_Governance.md,APPROVED,AI

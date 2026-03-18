@@ -9,6 +9,7 @@
 ## Tasks Awaiting Review
 
 ```
+(none)
 ```
 
 ---
@@ -17,5 +18,4 @@
 
 | Task ID | Submitted On | Reviewer Assigned | Status |
 |---------|-------------|-------------------|--------|
-| ARCH-005 | 2026-03-18 | — | PENDING |
-| ARCH-006 | 2026-03-18 | — | PENDING |
+| — | — | — | — |
