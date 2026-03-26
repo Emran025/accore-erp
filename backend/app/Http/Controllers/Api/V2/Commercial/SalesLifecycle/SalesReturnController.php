@@ -8,13 +8,13 @@ use App\Domains\Commercial\SalesLifecycle\Actions\ShowSalesReturnAction;
 use App\Domains\Commercial\SalesLifecycle\Actions\SalesReturnsLedgerAction;
 use App\Http\Requests\Commercial\SalesLifecycle\ListSalesReturnsRequest;
 use App\Http\Requests\Commercial\SalesLifecycle\StoreSalesReturnRequest;
+use App\Http\Requests\Commercial\SalesLifecycle\ShowSalesReturnRequest;
 use App\Http\Requests\Commercial\SalesLifecycle\LedgerSalesReturnsRequest;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 use App\Http\Resources\Commercial\SalesLifecycle\SalesReturnResource;
 use App\Domains\Commercial\SalesLifecycle\Models\SalesReturn;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -43,14 +43,14 @@ class SalesReturnController extends Controller
      */
     public function store(StoreSalesReturnRequest $request, CreateSalesReturnAction $action): JsonResponse
     {
-        $validated = $request->validated();
-        $userId = auth()->id() ?? session('user_id');
-
-        if (!$userId) {
-            return $this->errorResponse('User ID is required', 401);
-        }
-
         try {
+            $validated = $request->validated();
+            $userId = auth()->id() ?? session('user_id');
+
+            if (!$userId) {
+                return $this->errorResponse('User ID is required', 401);
+            }
+
             $result = $action->execute($validated, (int)$userId);
             TelescopeService::logOperation('CREATE', 'sales_returns', $result['id'], null, $validated);
 
@@ -68,15 +68,10 @@ class SalesReturnController extends Controller
     /**
      * Get a single return with details
      */
-    public function show(Request $request, ShowSalesReturnAction $action): JsonResponse
+    public function show(ShowSalesReturnRequest $request, ShowSalesReturnAction $action): JsonResponse
     {
-        $id = $request->input('id');
-        if (!$id) {
-            return $this->errorResponse('ID is required', 400);
-        }
-
         try {
-            $return = $action->execute((int)$id);
+            $return = $action->execute((int)$request->validated()['id']);
             return $this->successResponse((new SalesReturnResource($return))->resolve());
         } catch (ModelNotFoundException $e) {
             return $this->errorResponse('Sales return not found', 404);

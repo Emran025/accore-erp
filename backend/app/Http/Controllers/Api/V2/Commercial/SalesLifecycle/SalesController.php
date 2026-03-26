@@ -8,11 +8,13 @@ use App\Domains\Commercial\SalesLifecycle\Actions\ShowInvoiceAction;
 use App\Domains\Commercial\SalesLifecycle\Actions\DeleteInvoiceAction;
 use App\Http\Requests\Commercial\SalesLifecycle\StoreInvoiceRequest;
 use App\Http\Requests\Commercial\SalesLifecycle\ListInvoicesRequest;
+use App\Http\Requests\Commercial\SalesLifecycle\ShowInvoiceRequest;
+use App\Http\Requests\Commercial\SalesLifecycle\DeleteInvoiceRequest;
+use App\Http\Requests\Commercial\SalesLifecycle\SubmitZatcaRequest;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 use App\Exceptions\BusinessLogicException;
 use App\Http\Resources\Commercial\SalesLifecycle\InvoiceResource;
 use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
@@ -20,7 +22,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Domains\Finance\TaxCompliance\Actions\SubmitZatcaInvoiceAction;
 use App\Domains\Finance\TaxCompliance\Actions\GetZatcaStatusAction;
-use Illuminate\Validation\ValidationException;
 
 /**
  * Controller for managing sales invoices via API.
@@ -50,10 +51,10 @@ class SalesController extends Controller
      */
     public function store(StoreInvoiceRequest $request, CreateInvoiceAction $action): JsonResponse
     {
-        $validated = $request->validated();
-        $validated['user_id'] = auth()->id() ?? session('user_id');
-
         try {
+            $validated = $request->validated();
+            $validated['user_id'] = auth()->id() ?? session('user_id');
+
             $result = $action->execute($validated);
             TelescopeService::logOperation('CREATE', 'invoices', $result['id'], null, $validated);
 
@@ -82,17 +83,10 @@ class SalesController extends Controller
     /**
      * Get a single invoice by ID.
      */
-    public function show(Request $request, ShowInvoiceAction $action): JsonResponse
+    public function show(ShowInvoiceRequest $request, ShowInvoiceAction $action): JsonResponse
     {
-        $id = $request->input('id');
-        if (!$id) {
-            return $this->errorResponse('ID is required', 400);
-        }
-
         try {
-            $invoice = $action->execute((int)$id);
-            // $this->authorize('view', $invoice); // Temporarily disabling or ensuring it works
-
+            $invoice = $action->execute((int)$request->validated()['id']);
             return $this->successResponse(['data' => (new InvoiceResource($invoice))->resolve()]);
         } catch (ModelNotFoundException $e) {
             return $this->errorResponse('Invoice not found', 404);
@@ -104,15 +98,11 @@ class SalesController extends Controller
     /**
      * Delete (void) an invoice.
      */
-    public function destroy(Request $request, DeleteInvoiceAction $action): JsonResponse
+    public function destroy(DeleteInvoiceRequest $request, DeleteInvoiceAction $action): JsonResponse
     {
-        $id = $request->input('id');
-        if (!$id) {
-            return $this->errorResponse('ID is required', 400);
-        }
-
         try {
-            $oldValues = $action->execute((int)$id);
+            $id = (int)$request->validated()['id'];
+            $oldValues = $action->execute($id);
             TelescopeService::logOperation('DELETE', 'invoices', $id, $oldValues, null);
 
             return $this->successResponse([], 'Invoice deleted successfully');
@@ -124,10 +114,10 @@ class SalesController extends Controller
     /**
      * Submit invoice to ZATCA.
      */
-    public function submitZatca(Request $request, int $id, SubmitZatcaInvoiceAction $action): JsonResponse
+    public function submitZatca(SubmitZatcaRequest $request, int $id, SubmitZatcaInvoiceAction $action): JsonResponse
     {
         try {
-            $submissionType = $request->input('submission_type', 'reporting');
+            $submissionType = $request->validated()['submission_type'] ?? 'reporting';
             $result = $action->execute($id, $submissionType);
             
             return $this->successResponse($result, 'ZATCA submission processed');
