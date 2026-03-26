@@ -9,12 +9,12 @@
 ## Active Phase
 
 ```
-phase-3
+phase-4
 ```
 
 ## Phase Name
 
-**Extended Modules & API / Developer Documentation**
+**Operations, Governance & Localization**
 
 ## Activated On
 
@@ -33,3 +33,4 @@ Chief Architect
 | — | phase-1 | 2026-03-17 | System (initial) |
 | phase-1 | phase-2 | 2026-03-18 | Chief Architect |
 | phase-2 | phase-3 | 2026-03-26 | Chief Architect |
+| phase-3 | phase-4 | 2026-03-26 | Chief Architect |

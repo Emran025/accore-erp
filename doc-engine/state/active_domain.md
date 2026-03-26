@@ -9,7 +9,8 @@
 ## Currently Active Domain(s)
 
 ```
-(none — Phase 3 complete)
+Operations
+Localization
 ```
 
 ## Domain Activation Log
@@ -31,3 +32,5 @@
 | Shared | 2026-03-26 | 2026-03-26 | Phase 3: SHR complete |
 | API | 2026-03-26 | 2026-03-26 | Phase 3: API complete |
 | Developer | 2026-03-26 | 2026-03-26 | Phase 3: DEV complete |
+| Operations | 2026-03-26 | — | Phase 4 start |
+| Localization | 2026-03-26 | — | Phase 4 start |
