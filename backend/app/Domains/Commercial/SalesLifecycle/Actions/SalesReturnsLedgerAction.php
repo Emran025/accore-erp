@@ -18,6 +18,10 @@ class SalesReturnsLedgerAction
             ->leftJoin('ar_customers', 'invoices.customer_id', '=', 'ar_customers.id')
             ->select('sales_returns.*', 'invoices.invoice_number', 'invoices.payment_type', 'invoices.customer_id', 'ar_customers.name as customer_name');
 
+        if ($invoiceType = ($filters['invoice_type'] ?? null)) {
+            $query->where('invoices.invoice_type', $invoiceType);
+        }
+
         if ($search = ($filters['search'] ?? null)) {
             $query->where(function ($q) use ($search) {
                 $q->where('sales_returns.reason', 'like', "%{$search}%")
