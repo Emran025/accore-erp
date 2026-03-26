@@ -13,3 +13,8 @@ ARCH-006,2026-03-18,548,7db3334f9763d3274bdc77d1e5d6b1e0f38d172f,/docs/Architect
 FIN-001,2026-03-18,637,1cdcf6d,/docs/Domains/Finance/Overview.md,APPROVED,AI
 FIN-002,2026-03-18,650,1cdcf6d,/docs/Domains/Finance/GeneralLedger/Double_Entry_Core_Model.md,APPROVED,AI
 FIN-003,2026-03-18,643,1cdcf6d,/docs/Domains/Finance/GeneralLedger/Chart_Of_Accounts_Governance.md,APPROVED,AI
+FIN-004,2026-03-26,628,b2163570,/docs/Domains/Finance/GeneralLedger/GL_Account_Reconciliation_And_Controls.md,APPROVED,AI
+FIN-005,2026-03-26,635,b2163570,/docs/Domains/Finance/ForeignExchange/Currency_Revaluation_And_Rates.md,APPROVED,AI
+FIN-006,2026-03-26,640,b2163570,/docs/Domains/Finance/ManagementAccounting/Cost_Centers_And_Budgets.md,APPROVED,AI
+FIN-007,2026-03-26,630,b2163570,/docs/Domains/Finance/TaxCompliance/Tax_Jurisdictions_And_Calculations.md,APPROVED,AI
+FIN-008,2026-03-26,638,b2163570,/docs/Domains/Finance/Treasury/Cash_Management_And_Reconciliation.md,APPROVED,AI
