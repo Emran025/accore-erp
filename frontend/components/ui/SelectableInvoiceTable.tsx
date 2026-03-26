@@ -12,33 +12,22 @@ import { PageSubHeader } from "../layout";
 // Re-export types for consumers
 export type { ExpandableColumn as InvoiceTableColumn };
 
-// Types
-export interface InvoiceItem {
+import type { Invoice, InvoiceItem as GlobalInvoiceItem } from "@/types";
+
+export interface InvoiceItem extends GlobalInvoiceItem {
   id: number;
-  product_id: number;
   product?: { name: string; barcode?: string };
-  quantity: number;
-  original_quantity?: number;
-  returned_quantity?: number;
-  unit_price: number;
-  subtotal: number;
-  unit_type: string;
 }
 
-export interface Invoice {
+export interface SelectableInvoice extends Partial<Invoice> {
   id: number;
   invoice_number: string;
-  total_amount: number;
-  subtotal: number;
-  vat_amount: number;
-  discount_amount: number;
-  payment_type: string;
-  customer?: { id: number; name: string };
-  items?: InvoiceItem[];
-  items_count?: number;
-  created_at: string;
+  total_amount?: number;
+  amount?: number;
 }
 
+export type { SelectableInvoice as Invoice };
+export type { InvoiceItem as SelectableInvoiceItem };
 export interface SelectedItem {
   invoiceId: number;
   invoiceItemId: number;
@@ -55,7 +44,7 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-interface SelectableInvoiceTableProps<T extends Invoice> {
+interface SelectableInvoiceTableProps<T extends SelectableInvoice> {
   invoices: T[];
   columns: ExpandableColumn<T>[];
   keyExtractor: (item: T) => string | number;
@@ -74,7 +63,7 @@ interface SelectableInvoiceTableProps<T extends Invoice> {
   FilterTabNavigation?: React.ReactNode;
 }
 
-export function SelectableInvoiceTable<T extends Invoice>({
+export function SelectableInvoiceTable<T extends SelectableInvoice>({
   invoices,
   columns,
   keyExtractor,
@@ -135,7 +124,7 @@ export function SelectableInvoiceTable<T extends Invoice>({
   const searchOptions: SelectOption[] = invoices.map(inv => ({
     value: inv.id,
     label: inv.invoice_number,
-    subtitle: `الإجمالي: ${formatCurrency(inv.total_amount)}`
+    subtitle: `الإجمالي: ${formatCurrency(inv.total_amount ?? inv.amount ?? 0)}`
   }));
 
   // Fetch items when expanding
@@ -363,7 +352,6 @@ export function SelectableInvoiceTable<T extends Invoice>({
         confirmText="نعم، ابدأ جديد"
         cancelText="إلغاء"
       />
-
     </div>
   );
 }
