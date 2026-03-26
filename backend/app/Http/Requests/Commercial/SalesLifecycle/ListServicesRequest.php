@@ -4,7 +4,7 @@ namespace App\Http\Requests\Commercial\SalesLifecycle;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ListSalesReturnsRequest extends FormRequest
+class ListServicesRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,10 +14,9 @@ class ListSalesReturnsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'page' => 'nullable|integer|min:1',
+            'search'   => 'nullable|string',
+            'page'     => 'nullable|integer|min:1',
             'per_page' => 'nullable|integer|min:1|max:100',
-            'invoice_id' => 'nullable|integer|exists:invoices,id',
-            'invoice_type' => 'nullable|string|in:product,service',
         ];
     }
 }
