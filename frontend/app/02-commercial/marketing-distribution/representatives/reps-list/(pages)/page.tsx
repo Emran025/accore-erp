@@ -1,7 +1,7 @@
 "use client";
 
 import { MainLayout, PageSubHeader } from "@/components/layout";
-import { ActionButtons, Button, Column, ConfirmDialog, Dialog, Table, showToast } from "@/components/ui";
+import { ActionButtons, Button, Column, ConfirmDialog, Dialog, SearchableSelect, Table, showToast } from "@/components/ui";
 import { Permission, User, canAccess, checkAuth, getStoredPermissions, getStoredUser } from "@/lib/auth";
 import { Icon, getIcon } from "@/lib/icons";
 import { formatCurrency } from "@/lib/utils";
@@ -51,12 +51,6 @@ export default function SalesRepresentativesPage() {
         };
         init();
     }, [loadRepresentatives]);
-
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setSearchTerm(value);
-        loadRepresentatives(1, value);
-    };
 
     const openAddDialog = () => {
         setSelectedRepresentative(null);
@@ -167,17 +161,25 @@ export default function SalesRepresentativesPage() {
                 <PageSubHeader
                     title=""
                     searchInput={
-                        <input
-                            type="text"
+                        <SearchableSelect
+                            options={[]}
+                            value={null}
+                            onChange={() => { }}
+                            onSearch={(val) => {
+                                setSearchTerm(val);
+                                loadRepresentatives(1, val);
+                            }}
                             placeholder="بحث بالاسم أو الهاتف..."
-                            value={searchTerm}
-                            onChange={handleSearch}
-                            className="search-control"
+                            className="header-search-bar"
                         />
                     }
                     actions={
                         canAccess(permissions, "representatives", "create") && (
-                            <Button variant="primary" icon="plus" onClick={openAddDialog}>
+                            <Button
+                                variant="primary"
+                                icon="plus"
+                                onClick={openAddDialog}
+                            >
                                 إضافة مندوب
                             </Button>
                         )
@@ -204,7 +206,8 @@ export default function SalesRepresentativesPage() {
                 maxWidth="600px"
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setFormDialog(false)}>إلغاء</Button>
+                        <Button
+                            variant="secondary" onClick={() => setFormDialog(false)}>إلغاء</Button>
                         <Button variant="primary" onClick={handleSubmit}>{selectedRepresentative ? "تحديث" : "إضافة"}</Button>
                     </>
                 }
