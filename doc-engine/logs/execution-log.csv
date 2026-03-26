@@ -24,3 +24,9 @@ EC-003,2026-03-26,625,a06e173,/docs/Domains/EnterpriseCore/IdentityAccess/Role_B
 EC-004,2026-03-26,612,a06e173,/docs/Domains/EnterpriseCore/MonitoringCompliance/Audit_Logging.md,APPROVED,AI
 EC-006,2026-03-26,634,a06e173,/docs/Domains/EnterpriseCore/SystemOverview/Master_Variables_And_Tenancy.md,APPROVED,AI
 EC-005,2026-03-26,621,a06e173,/docs/Domains/EnterpriseCore/OrganizationGovernance/Company_Structure.md,APPROVED,AI
+COM-001,2026-03-26,588,a06e173,/docs/Domains/Commercial/Overview.md,APPROVED,AI
+COM-002,2026-03-26,610,a06e173,/docs/Domains/Commercial/CRM/Customer_Journey_And_Credit_Limits.md,APPROVED,AI
+COM-003,2026-03-26,545,a06e173,/docs/Domains/Commercial/MarketingDistribution/Pricing_Tiers_And_Campaigns.md,APPROVED,AI
+COM-004,2026-03-26,612,a06e173,/docs/Domains/Commercial/RevenueReceivables/Accounts_Receivable_And_Dunning.md,APPROVED,AI
+COM-006,2026-03-26,598,a06e173,/docs/Domains/Commercial/SalesLifecycle/Quote_To_Cash_Process.md,APPROVED,AI
+COM-005,2026-03-26,603,a06e173,/docs/Domains/Commercial/SalesLifecycle/Sales_Contracts_And_Payment_Policies.md,APPROVED,AI
