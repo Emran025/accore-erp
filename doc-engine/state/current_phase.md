@@ -9,20 +9,20 @@
 ## Active Phase
 
 ```
-phase-2
+phase-3
 ```
 
 ## Phase Name
 
-**Core Financial & Operational Domains**
+**Extended Modules & API / Developer Documentation**
 
 ## Activated On
 
-2026-03-17
+2026-03-26
 
 ## Activated By
 
-[Chief Architect — Phase 1 Signed Off]
+Chief Architect
 
 ---
 
@@ -32,3 +32,4 @@ phase-2
 |------|----|------|---------------|
 | — | phase-1 | 2026-03-17 | System (initial) |
 | phase-1 | phase-2 | 2026-03-18 | Chief Architect |
+| phase-2 | phase-3 | 2026-03-26 | Chief Architect |
