@@ -797,21 +797,27 @@ class SalesService
                     'unit_type' => $item['unit_type'],
                 ]);
 
-                // Restore stock (convert to base units if needed)
-                $stockRestore = $item['quantity'];
-                if ($item['unit_type'] === 'main' || $item['unit_type'] === 'package') {
-                    $stockRestore = $item['quantity'] * ($item['product']->items_per_unit ?? 1);
+                // Restore stock (only for inventory controlled items)
+                if ($item['product']->inventory_control) {
+                    $stockRestore = $item['quantity'];
+                    if ($item['unit_type'] === 'main' || $item['unit_type'] === 'package') {
+                        $stockRestore = $item['quantity'] * ($item['product']->items_per_unit ?? 1);
+                    }
+                    Product::where('id', $item['product_id'])->increment('stock_quantity', $stockRestore);
                 }
-                Product::where('id', $item['product_id'])->increment('stock_quantity', $stockRestore);
             }
 
             // Post GL reversal entries
             $glEntries = [];
             $invoiceNumber = $invoice->invoice_number;
 
-            // Reverse Revenue (Debit)
+            // Reverse Revenue (Debit) - Dynamically choose based on invoice type
+            $revenueAccount = ($invoice->invoice_type === 'service') 
+                ? $this->coaService->getStandardAccounts()['service_revenue']
+                : $this->coaService->getStandardAccounts()['sales_revenue'];
+
             $glEntries[] = [
-                'account_code' => $this->coaService->getStandardAccounts()['sales_revenue'],
+                'account_code' => $revenueAccount,
                 'entry_type' => 'DEBIT',
                 'amount' => $returnSubtotal,
                 'description' => "Sales Return - Invoice #$invoiceNumber (Return #$returnNumber)"
@@ -901,7 +907,9 @@ class SalesService
             // Calculate return cost based on weighted average
             $returnCost = 0;
             foreach ($returnItems as $item) {
-                $product = Product::find($item['product_id']);
+                $product = $item['product'];
+                if (!$product->inventory_control) continue;
+
                 $cost = (float)($product->weighted_average_cost ?? 0);
                 $stockRestore = $item['quantity'];
                 if ($item['unit_type'] === 'main' || $item['unit_type'] === 'package') {
