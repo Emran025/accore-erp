@@ -30,3 +30,8 @@ COM-003,2026-03-26,545,a06e173,/docs/Domains/Commercial/MarketingDistribution/Pr
 COM-004,2026-03-26,612,a06e173,/docs/Domains/Commercial/RevenueReceivables/Accounts_Receivable_And_Dunning.md,APPROVED,AI
 COM-006,2026-03-26,598,a06e173,/docs/Domains/Commercial/SalesLifecycle/Quote_To_Cash_Process.md,APPROVED,AI
 COM-005,2026-03-26,603,a06e173,/docs/Domains/Commercial/SalesLifecycle/Sales_Contracts_And_Payment_Policies.md,APPROVED,AI
+SC-001,2026-03-26,582,a06e173,/docs/Domains/SupplyChain/Overview.md,APPROVED,AI
+SC-002,2026-03-26,621,a06e173,/docs/Domains/SupplyChain/Inventory/Stock_Valuation_And_Movements.md,APPROVED,AI
+SC-003,2026-03-26,608,a06e173,/docs/Domains/SupplyChain/PayablesExpenses/Accounts_Payable_And_Clearing.md,APPROVED,AI
+SC-004,2026-03-26,607,a06e173,/docs/Domains/SupplyChain/Procurement/Purchase_To_Pay_Cycle.md,APPROVED,AI
+SC-005,2026-03-26,564,a06e173,/docs/Domains/SupplyChain/SupplierSourcing/Vendor_Management.md,APPROVED,AI
