@@ -7,6 +7,7 @@ use App\Domains\Commercial\RevenueReceivables\Actions\CreateArTransactionAction;
 use App\Domains\Commercial\RevenueReceivables\Actions\DeleteArTransactionAction;
 use App\Http\Requests\Commercial\RevenueReceivables\ListArTransactionsRequest;
 use App\Http\Requests\Commercial\RevenueReceivables\StoreArTransactionRequest;
+use App\Http\Requests\Commercial\RevenueReceivables\DeleteArTransactionRequest;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 use App\Http\Resources\Commercial\RevenueReceivables\ArTransactionResource;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
@@ -60,9 +61,10 @@ class ArTransactionsController extends Controller
     /**
      * Void/Delete an AR transaction.
      */
-    public function destroy(int $id, DeleteArTransactionAction $action): JsonResponse
+    public function destroy(DeleteArTransactionRequest $request, DeleteArTransactionAction $action): JsonResponse
     {
         try {
+            $id = (int)$request->validated()['id'];
             $action->execute($id);
             TelescopeService::logOperation('DELETE', 'ar_transactions', $id, null, ['action' => 'void']);
 

@@ -11,10 +11,10 @@ use App\Domains\Finance\ManagementAccounting\Actions\CreateExpenseAction;
 use App\Domains\Finance\ManagementAccounting\Actions\UpdateExpenseAction;
 use App\Domains\Finance\ManagementAccounting\Actions\DeleteExpenseAction;
 use App\Domains\Finance\ManagementAccounting\Models\Expense;
+use App\Http\Requests\Finance\ManagementAccounting\ListExpensesRequest;
 use App\Http\Resources\Finance\ManagementAccounting\ExpenseResource;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
-use Illuminate\Http\Request;
 
 class ExpensesController extends Controller
 {
@@ -23,9 +23,9 @@ class ExpensesController extends Controller
     /**
      * Get all expenses
      */
-    public function index(Request $request, ListExpensesAction $action): JsonResponse
+    public function index(ListExpensesRequest $request, ListExpensesAction $action): JsonResponse
     {
-        $result = $action->execute($request->all());
+        $result = $action->execute($request->validated());
         return $this->paginatedResponse(
             ExpenseResource::collection($result['data']),
             $result['total'],

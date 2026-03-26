@@ -30,8 +30,8 @@ function DocumentEditorContent() {
     const fetchTemplate = async (templateId: string) => {
         setIsLoading(true);
         try {
-            const res = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.DOCUMENT_TEMPLATES.withId(templateId));
-            const templateData = (res as any).data || res; // Handle both wrapped and unwrapped responses
+            const res = await fetchAPI<DocumentTemplate>(API_ENDPOINTS.HUMAN_CAPITAL.DOCUMENT_TEMPLATES.withId(templateId));
+            const templateData = res.data || res as unknown as DocumentTemplate; // Handle both wrapped and unwrapped responses
 
             if (templateData && templateData.template_key) {
                 setTemplate(templateData);
@@ -57,7 +57,7 @@ function DocumentEditorContent() {
                     method: "PUT",
                     body: JSON.stringify(data),
                 });
-                if ((res as any).success === false) throw new Error((res as any).message);
+                if (res.success === false) throw new Error(res.message as string);
                 showToast("تم تحديث القالب بنجاح", "success");
             } else {
                 // Create
@@ -66,13 +66,14 @@ function DocumentEditorContent() {
                     method: "POST",
                     body: JSON.stringify({ ...data, body_html: body }),
                 });
-                if ((res as any).success === false) throw new Error((res as any).message);
+                if (res.success === false) throw new Error(res.message as string);
                 showToast("تم إنشاء القالب بنجاح", "success");
             }
             router.push("/06-human-capital/hr-advanced/documents-reports/hr-documents");
-        } catch (error: any) {
-            showToast(error.message || "حدث خطأ أثناء حفظ القالب", "error");
-            throw error;
+        } catch (error) {
+            const err = error as Error;
+            showToast(err.message || "حدث خطأ أثناء حفظ القالب", "error");
+            throw err;
         }
     };
 
@@ -92,7 +93,7 @@ function DocumentEditorContent() {
         <div className="p-0 w-full h-screen overflow-hidden bg-[#0f1117]">
             <TemplateEditor
                 key={id ? `edit-${id}` : "create"}
-                template={template as any}
+                template={template}
                 moduleName="الموارد البشرية"
                 templateTypeLabels={templateTypeLabels}
                 approvedKeys={HR_APPROVED_KEYS}

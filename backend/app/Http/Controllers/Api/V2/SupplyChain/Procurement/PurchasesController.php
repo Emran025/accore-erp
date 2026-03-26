@@ -8,6 +8,9 @@ use App\Http\Requests\SupplyChain\Procurement\StorePurchaseReturnRequest;
 use App\Http\Requests\SupplyChain\Procurement\StorePurchaseRequestRequest;
 use App\Http\Requests\SupplyChain\Procurement\UpdatePurchaseRequestRequest;
 use App\Http\Requests\SupplyChain\Procurement\ReturnsLedgerRequest;
+use App\Http\Requests\SupplyChain\Procurement\ShowPurchaseRequest;
+use App\Http\Requests\SupplyChain\Procurement\ApprovePurchaseRequest;
+use App\Http\Requests\SupplyChain\Procurement\ReversePurchaseRequest;
 use App\Domains\SupplyChain\Procurement\Actions\ListPurchasesAction;
 use App\Domains\SupplyChain\Procurement\Actions\CreatePurchaseAction;
 use App\Domains\SupplyChain\Procurement\Actions\ShowPurchaseAction;
@@ -96,14 +99,10 @@ class PurchasesController extends Controller
     /**
      * Get a single purchase or return details.
      */
-    public function show(Request $request, ShowPurchaseAction $action): JsonResponse
+    public function show(ShowPurchaseRequest $request, ShowPurchaseAction $action): JsonResponse
     {
-        $id = $request->input('id');
-        if (!$id) {
-            return $this->errorResponse('ID is required', 400);
-        }
-
-        $purchase = $action->execute((int)$id);
+        $id = (int)$request->validated()['id'];
+        $purchase = $action->execute($id);
         $this->authorize('view', $purchase);
 
         return $this->successResponse(new PurchaseResource($purchase));
@@ -156,20 +155,16 @@ class PurchasesController extends Controller
     /**
      * Approve a pending purchase.
      */
-    public function approve(Request $request, ApprovePurchaseAction $action): JsonResponse
+    public function approve(ApprovePurchaseRequest $request, ApprovePurchaseAction $action): JsonResponse
     {
-        $id = $request->input('id');
-        if (!$id) {
-            return $this->errorResponse('ID is required', 400);
-        }
-
+        $id = (int)$request->validated()['id'];
         $purchase = Purchase::findOrFail($id);
         $this->authorize('approve', $purchase);
         
         $userId = auth()->id() ?? session('user_id');
 
         try {
-            $success = $action->execute((int)$id, (int)$userId);
+            $success = $action->execute($id, (int)$userId);
             
             if (!$success) {
                 return $this->errorResponse('Purchase already approved or not found', 400);
@@ -186,20 +181,16 @@ class PurchasesController extends Controller
     /**
      * Reverse (soft-delete) a purchase.
      */
-    public function destroy(Request $request, ReversePurchaseAction $action): JsonResponse
+    public function destroy(ReversePurchaseRequest $request, ReversePurchaseAction $action): JsonResponse
     {
-        $id = $request->input('id');
-        if (!$id) {
-            return $this->errorResponse('ID is required', 400);
-        }
-
+        $id = (int)$request->validated()['id'];
         $purchase = Purchase::findOrFail($id);
         $this->authorize('delete', $purchase);
         
         $userId = auth()->id() ?? session('user_id');
 
         try {
-            $action->execute((int)$id, (int)$userId);
+            $action->execute($id, (int)$userId);
             TelescopeService::logOperation('REVERSE', 'purchases', $id, null, ['action' => 'reverse']);
 
             return $this->successResponse(['message' => 'Purchase reversed successfully']);

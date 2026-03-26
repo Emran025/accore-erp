@@ -5,13 +5,21 @@ namespace App\Http\Controllers\Api\V2\HumanCapital\WorkforceAdmin;
 use App\Http\Controllers\Controller;
 use App\Domains\HumanCapital\PayrollBenefits\Models\BenefitsPlan;
 use App\Domains\HumanCapital\PayrollBenefits\Models\BenefitsEnrollment;
+use App\Http\Requests\HumanCapital\WorkforceAdmin\ListBenefitsPlanRequest;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\StoreBenefitsPlanRequest;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\UpdateBenefitsPlanRequest;
+use App\Http\Requests\HumanCapital\WorkforceAdmin\ListBenefitsEnrollmentRequest;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\StoreBenefitsEnrollmentRequest;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\UpdateBenefitsEnrollmentRequest;
 use App\Http\Resources\HumanCapital\PayrollBenefits\BenefitsPlanResource;
 use App\Http\Resources\HumanCapital\PayrollBenefits\BenefitsEnrollmentResource;
-use Illuminate\Http\Request;
+use App\Domains\HumanCapital\PayrollBenefits\Actions\ListBenefitsPlansAction;
+use App\Domains\HumanCapital\PayrollBenefits\Actions\CreateBenefitsPlanAction;
+use App\Domains\HumanCapital\PayrollBenefits\Actions\UpdateBenefitsPlanAction;
+use App\Domains\HumanCapital\PayrollBenefits\Actions\ListBenefitsEnrollmentsAction;
+use App\Domains\HumanCapital\PayrollBenefits\Actions\CreateBenefitsEnrollmentAction;
+use App\Domains\HumanCapital\PayrollBenefits\Actions\UpdateBenefitsEnrollmentAction;
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
 class BenefitsController extends Controller
@@ -19,19 +27,10 @@ class BenefitsController extends Controller
     use BaseApiController;
 
     // Plans
-    public function indexPlans(Request $request)
+    public function indexPlans(ListBenefitsPlanRequest $request, ListBenefitsPlansAction $action): JsonResponse
     {
-        $query = BenefitsPlan::with(['enrollments']);
+        $paginated = $action->execute($request->validated());
 
-        if ($request->filled('plan_type')) {
-            $query->where('plan_type', $request->plan_type);
-        }
-
-        if ($request->filled('is_active')) {
-            $query->where('is_active', $request->is_active === 'true');
-        }
-
-        $paginated = $query->orderBy('created_at', 'desc')->paginate(15);
         return $this->paginatedResponse(
             BenefitsPlanResource::collection($paginated->items()),
             $paginated->total(),
@@ -40,50 +39,31 @@ class BenefitsController extends Controller
         );
     }
 
-    public function storePlan(StoreBenefitsPlanRequest $request)
+    public function storePlan(StoreBenefitsPlanRequest $request, CreateBenefitsPlanAction $action): JsonResponse
     {
-        $validated = $request->validated();
-        $validated['is_active'] = true;
-        $validated['created_by'] = auth()->id();
+        $userId = auth()->id();
+        $plan = $action->execute($request->validated(), (int)$userId);
 
-        $plan = BenefitsPlan::create($validated);
         return $this->successResponse(new BenefitsPlanResource($plan), 'Benefits plan created successfully', 201);
     }
 
-    public function showPlan($id)
+    public function showPlan($id): JsonResponse
     {
         $plan = BenefitsPlan::with(['enrollments.employee'])->findOrFail($id);
         return $this->successResponse(new BenefitsPlanResource($plan));
     }
 
-    public function updatePlan(UpdateBenefitsPlanRequest $request, $id)
+    public function updatePlan(UpdateBenefitsPlanRequest $request, $id, UpdateBenefitsPlanAction $action): JsonResponse
     {
-        $plan = BenefitsPlan::findOrFail($id);
-
-        $validated = $request->validated();
-
-        $plan->update($validated);
+        $plan = $action->execute((int)$id, $request->validated());
         return $this->successResponse(new BenefitsPlanResource($plan->load('enrollments')), 'Benefits plan updated successfully');
     }
 
     // Enrollments
-    public function indexEnrollments(Request $request)
+    public function indexEnrollments(ListBenefitsEnrollmentRequest $request, ListBenefitsEnrollmentsAction $action): JsonResponse
     {
-        $query = BenefitsEnrollment::with(['plan', 'employee']);
+        $paginated = $action->execute($request->validated());
 
-        if ($request->filled('plan_id')) {
-            $query->where('plan_id', $request->plan_id);
-        }
-
-        if ($request->filled('employee_id')) {
-            $query->where('employee_id', $request->employee_id);
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        $paginated = $query->orderBy('enrollment_date', 'desc')->paginate(15);
         return $this->paginatedResponse(
             BenefitsEnrollmentResource::collection($paginated->items()),
             $paginated->total(),
@@ -92,24 +72,15 @@ class BenefitsController extends Controller
         );
     }
 
-    public function storeEnrollment(StoreBenefitsEnrollmentRequest $request)
+    public function storeEnrollment(StoreBenefitsEnrollmentRequest $request, CreateBenefitsEnrollmentAction $action): JsonResponse
     {
-        $validated = $request->validated();
-
-        $validated['enrollment_date'] = now();
-        $validated['status'] = 'enrolled';
-
-        $enrollment = BenefitsEnrollment::create($validated);
+        $enrollment = $action->execute($request->validated());
         return $this->successResponse(new BenefitsEnrollmentResource($enrollment->load('plan', 'employee')), 'Benefits enrollment created successfully', 201);
     }
 
-    public function updateEnrollment(UpdateBenefitsEnrollmentRequest $request, $id)
+    public function updateEnrollment(UpdateBenefitsEnrollmentRequest $request, $id, UpdateBenefitsEnrollmentAction $action): JsonResponse
     {
-        $enrollment = BenefitsEnrollment::findOrFail($id);
-
-        $validated = $request->validated();
-
-        $enrollment->update($validated);
+        $enrollment = $action->execute((int)$id, $request->validated());
         return $this->successResponse(new BenefitsEnrollmentResource($enrollment->load('plan', 'employee')), 'Benefits enrollment updated successfully');
     }
 }

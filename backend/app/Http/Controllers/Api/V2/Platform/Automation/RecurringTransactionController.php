@@ -12,8 +12,8 @@ use App\Domains\EnterpriseCore\Automation\Actions\ProcessRecurringTransactionAct
 use App\Domains\Finance\Treasury\Models\RecurringTransaction;
 use App\Http\Resources\Finance\Treasury\RecurringTransactionResource;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
+use App\Http\Requests\Platform\Automation\ListRecurringTransactionsRequest;
 use App\Http\Requests\Platform\Automation\StoreRecurringTransactionRequest;
 use App\Http\Requests\Platform\Automation\ProcessRecurringTransactionRequest;
 
@@ -21,9 +21,9 @@ class RecurringTransactionController extends Controller
 {
     use BaseApiController;
 
-    public function index(Request $request, ListRecurringTransactionsAction $action): JsonResponse
+    public function index(ListRecurringTransactionsRequest $request, ListRecurringTransactionsAction $action): JsonResponse
     {
-        $result = $action->execute($request->all());
+        $result = $action->execute($request->validated());
         return $this->paginatedResponse(
             RecurringTransactionResource::collection($result['data'] ?? $result),
             $result['total'] ?? count($result['data'] ?? $result),

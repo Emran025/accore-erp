@@ -9,6 +9,18 @@ import { getIcon } from "@/lib/icons";
 import { formatDate, parseNumber } from "@/lib/utils";
 import { useCallback, useEffect, useState } from "react";
 
+interface RecurringTemplateData {
+    account_code?: string;
+    amount?: number;
+    description?: string;
+    entries?: Array<{
+        account_code: string;
+        entry_type: "DEBIT" | "CREDIT";
+        amount: number;
+        description: string;
+    }>;
+}
+
 interface RecurringTemplate {
     id: number;
     name: string;
@@ -16,7 +28,7 @@ interface RecurringTemplate {
     frequency: "daily" | "weekly" | "monthly" | "quarterly" | "annually";
     next_due_date: string;
     last_generated_date?: string;
-    template_data?: any;
+    template_data?: RecurringTemplateData;
 }
 
 export default function RecurringTransactionsPage() {
@@ -57,9 +69,9 @@ export default function RecurringTransactionsPage() {
     const loadTemplates = useCallback(async (page: number = 1) => {
         try {
             setIsLoading(true);
-            const response = await fetchAPI(`${API_ENDPOINTS.FINANCE.RECURRING.BASE}?page=${page}&limit=${itemsPerPage}`);
+            const response = await fetchAPI<RecurringTemplate[]>(`${API_ENDPOINTS.FINANCE.RECURRING.BASE}?page=${page}&limit=${itemsPerPage}`);
             if (response.success && response.data) {
-                setTemplates(response.data as RecurringTemplate[]);
+                setTemplates(response.data);
                 const total = Number(response.total) || 0;
                 setTotalPages(Math.ceil(total / itemsPerPage));
                 setCurrentPage(page);
@@ -103,7 +115,7 @@ export default function RecurringTransactionsPage() {
 
     const viewTemplate = async (id: number) => {
         try {
-            const response = await fetchAPI(`${API_ENDPOINTS.FINANCE.RECURRING.BASE}?id=${id}`);
+            const response = await fetchAPI<RecurringTemplate | RecurringTemplate[]>(`${API_ENDPOINTS.FINANCE.RECURRING.BASE}?id=${id}`);
             if (response.success && response.data) {
                 const template = Array.isArray(response.data) ? response.data[0] : response.data;
                 if (template) {
@@ -119,7 +131,7 @@ export default function RecurringTransactionsPage() {
 
     const editTemplate = async (id: number) => {
         try {
-            const response = await fetchAPI(`${API_ENDPOINTS.FINANCE.RECURRING.BASE}?id=${id}`);
+            const response = await fetchAPI<RecurringTemplate | RecurringTemplate[]>(`${API_ENDPOINTS.FINANCE.RECURRING.BASE}?id=${id}`);
             if (response.success && response.data) {
                 const template = Array.isArray(response.data) ? response.data[0] : response.data;
                 if (!template) {
@@ -159,7 +171,7 @@ export default function RecurringTransactionsPage() {
             return;
         }
 
-        let templateData: any = {};
+        let templateData: RecurringTemplateData = {};
         if (templateType === "expense") {
             if (!expenseAccount || !expenseAmount) {
                 showAlert("alert-container", "يرجى ملء حساب المصروف والمبلغ", "error");
@@ -194,7 +206,16 @@ export default function RecurringTransactionsPage() {
         }
 
         try {
-            const body: any = {
+            interface RecurringTemplateFormBody {
+                name: string;
+                type: "expense" | "revenue" | "journal_voucher";
+                frequency: "daily" | "weekly" | "monthly" | "quarterly" | "annually";
+                next_due_date: string;
+                template_data: RecurringTemplateData;
+                id?: number;
+            }
+
+            const body: RecurringTemplateFormBody = {
                 name: templateName,
                 type: templateType,
                 frequency: templateFrequency,
@@ -263,10 +284,9 @@ export default function RecurringTransactionsPage() {
             });
 
             if (response.success && response.data) {
-
                 showAlert(
                     "alert-container",
-                    `تم تنفيذ المعاملة بنجاح. رقم السند: `,//${response.data.voucher_number as Number || ""}
+                    `تم تنفيذ المعاملة بنجاح.`,
                     "success"
                 );
                 setConfirmDialog(false);
@@ -390,8 +410,6 @@ export default function RecurringTransactionsPage() {
 
     return (
         <MainLayout requiredModule="recurring_transactions">
-
-
             <div id="alert-container"></div>
 
             <div className="sales-card animate-fade">
@@ -409,7 +427,7 @@ export default function RecurringTransactionsPage() {
                 <Table
                     columns={columns}
                     data={templates}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item) => item.id.toString()}
                     emptyMessage="لا توجد قوالب"
                     isLoading={isLoading}
                     pagination={{
@@ -460,7 +478,7 @@ export default function RecurringTransactionsPage() {
                                 id="template-type"
                                 value={templateType}
                                 onChange={(e) =>
-                                    setTemplateType(e.target.value as typeof templateType)
+                                    setTemplateType(e.target.value as RecurringTemplate['type'])
                                 }
                                 required
                             >
@@ -475,7 +493,7 @@ export default function RecurringTransactionsPage() {
                                 id="template-frequency"
                                 value={templateFrequency}
                                 onChange={(e) =>
-                                    setTemplateFrequency(e.target.value as typeof templateFrequency)
+                                    setTemplateFrequency(e.target.value as RecurringTemplate['frequency'])
                                 }
                                 required
                             >

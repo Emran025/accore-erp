@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Api\V2\Finance\Treasury;
 
 use App\Http\Controllers\Controller;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use App\Http\Requests\Finance\Treasury\StoreReconciliationRequest;
 use App\Http\Requests\Finance\Treasury\UpdateReconciliationRequest;
+use App\Http\Requests\Finance\Treasury\ListReconciliationsRequest;
 use App\Domains\Finance\Treasury\Models\Reconciliation;
 use App\Http\Resources\Finance\Treasury\ReconciliationResource;
 use App\Domains\Finance\Treasury\Actions\ListReconciliationsAction;
@@ -27,19 +27,20 @@ class BankReconciliationController extends Controller
     /**
      * Get all reconciliations or calculate ledger balance
      */
-    public function index(Request $request, ListReconciliationsAction $action): JsonResponse
+    public function index(ListReconciliationsRequest $request, ListReconciliationsAction $action): JsonResponse
     {
         PermissionService::requirePermission('reconciliations', 'view');
-        $subAction = $request->query('action');
+        $validated = $request->validated();
+        $subAction = $validated['action'] ?? null;
         
         if ($subAction === 'calculate') {
-            $date = $request->query('date', now()->format('Y-m-d'));
-            $accountCode = $request->query('account_code', '1110');
+            $date = $validated['date'] ?? now()->format('Y-m-d');
+            $accountCode = $validated['account_code'] ?? '1110';
             $balance = $this->ledgerService->getAccountBalance($accountCode, $date);
             return $this->successResponse(['ledger_balance' => $balance]);
         }
 
-        $result = $action->execute($request->all());
+        $result = $action->execute($validated);
 
         return $this->paginatedResponse(
             ReconciliationResource::collection($result['data']),

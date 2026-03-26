@@ -10,12 +10,12 @@ use App\Domains\Commercial\CRM\Actions\CustomerLedgerAction;
 use App\Http\Requests\Commercial\CRM\ListCustomersRequest;
 use App\Http\Requests\Commercial\CRM\StoreArCustomerRequest;
 use App\Http\Requests\Commercial\CRM\UpdateCustomerRequest;
+use App\Http\Requests\Commercial\CRM\DeleteCustomerRequest;
 use App\Http\Requests\Commercial\CRM\CustomerLedgerRequest;
 use App\Domains\Commercial\CRM\Models\ArCustomer;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 use App\Http\Resources\Commercial\CRM\ArCustomerResource;
 use App\Http\Resources\Commercial\RevenueReceivables\ArTransactionResource;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use Illuminate\Support\Facades\Log;
@@ -80,15 +80,11 @@ class ArController extends Controller
     /**
      * Delete customer
      */
-    public function destroyCustomer(Request $request, DeleteCustomerAction $action): JsonResponse
+    public function destroyCustomer(DeleteCustomerRequest $request, DeleteCustomerAction $action): JsonResponse
     {
-        $id = $request->input('id');
-        if (!$id) {
-            return $this->errorResponse('ID is required', 400);
-        }
-
         try {
-            $oldValues = $action->execute((int)$id);
+            $id = (int)$request->validated()['id'];
+            $oldValues = $action->execute($id);
             TelescopeService::logOperation('DELETE', 'ar_customers', $id, $oldValues, null);
 
             return $this->successResponse([], 'Customer deleted successfully');

@@ -141,7 +141,15 @@ export default function AssetsPage() {
 
         try {
             const method = currentAssetId ? "PUT" : "POST";
-            const body: any = {
+            const body: {
+                name: string;
+                purchase_value: number;
+                purchase_date: string;
+                depreciation_rate: number;
+                status: string;
+                description: string;
+                id?: number;
+            } = {
                 name: assetName,
                 purchase_value: parseNumber(assetValue),
                 purchase_date: assetDate,

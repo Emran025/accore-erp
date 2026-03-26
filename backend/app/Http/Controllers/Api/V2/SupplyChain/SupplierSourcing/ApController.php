@@ -11,10 +11,10 @@ use App\Http\Requests\SupplyChain\SupplierSourcing\ListSuppliersRequest;
 use App\Http\Requests\SupplyChain\SupplierSourcing\StoreSupplierRequest;
 use App\Http\Requests\SupplyChain\SupplierSourcing\UpdateSupplierRequest;
 use App\Http\Requests\SupplyChain\SupplierSourcing\SupplierLedgerRequest;
+use App\Http\Requests\SupplyChain\SupplierSourcing\DeleteSupplierRequest;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 use App\Http\Resources\SupplyChain\SupplierSourcing\ApSupplierResource;
 use App\Http\Resources\SupplyChain\PayablesExpenses\ApTransactionResource;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
@@ -92,15 +92,11 @@ class ApController extends Controller
     /**
      * Delete supplier
      */
-    public function destroySupplier(Request $request, DeleteSupplierAction $action): JsonResponse
+    public function destroySupplier(DeleteSupplierRequest $request, DeleteSupplierAction $action): JsonResponse
     {
-        $id = $request->input('id');
-        if (!$id) {
-            return $this->errorResponse('ID is required', 400);
-        }
-
         try {
-            $oldValues = $action->execute((int)$id);
+            $id = (int)$request->validated()['id'];
+            $oldValues = $action->execute($id);
             TelescopeService::logOperation('DELETE', 'ap_suppliers', $id, $oldValues, null);
 
             return $this->successResponse([], 'Supplier deleted successfully');

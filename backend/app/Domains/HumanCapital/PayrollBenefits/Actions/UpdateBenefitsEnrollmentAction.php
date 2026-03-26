@@ -2,24 +2,15 @@
 
 namespace App\Domains\HumanCapital\PayrollBenefits\Actions;
 
-use App\Domains\Shared\Actions\Action;
 use App\Domains\HumanCapital\PayrollBenefits\Models\BenefitsEnrollment;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
-class UpdateBenefitsEnrollmentAction extends Action
+class UpdateBenefitsEnrollmentAction
 {
-    public function __construct(private readonly Request $request, private readonly int $id) {}
-    public function __invoke(): JsonResponse
+    public function execute(int $id, array $data): BenefitsEnrollment
     {
-        $enrollment = BenefitsEnrollment::findOrFail($this->id);
-        $validated = $this->request->validate([
-            'status' => 'in:enrolled,active,terminated,cancelled',
-            'termination_date' => 'nullable|date',
-            'coverage_details' => 'nullable|array',
-            'notes' => 'nullable|string',
-        ]);
-        $enrollment->update($validated);
-        return $this->successResponse($enrollment->load('plan', 'employee')->toArray());
+        $enrollment = BenefitsEnrollment::findOrFail($id);
+        $enrollment->update($data);
+
+        return $enrollment;
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\V2\Finance\Treasury;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use App\Http\Requests\Finance\Treasury\StoreJournalVoucherRequest;
@@ -29,7 +28,7 @@ class JournalVouchersController extends Controller
     public function index(ListJournalVoucherRequest $request, ListJournalVouchersAction $action): JsonResponse
     {
         PermissionService::requirePermission('journal_vouchers', 'view');
-        $result = $action->execute($request->all());
+        $result = $action->execute($request->validated());
         $objects = array_map(fn($v) => (object)$v, $result['vouchers']);
         return $this->paginatedResponse(
             JournalVoucherResource::collection($objects),

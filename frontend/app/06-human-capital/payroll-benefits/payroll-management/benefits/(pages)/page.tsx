@@ -1,22 +1,20 @@
 "use client";
 
 import { MainLayout } from "@/components/layout";
-import { getStoredUser } from "@/lib/auth";
+import { getStoredUser, User } from "@/lib/auth";
 import { useEffect, useState } from "react";
 import { Benefits } from "./Benefits";
 
 export default function BenefitsPage() {
-  const [ setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     setUser(getStoredUser());
   }, []);
 
   return (
-    <MainLayout >
+    <MainLayout>
       <Benefits />
     </MainLayout>
   );
 }
-
-

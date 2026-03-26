@@ -26,7 +26,7 @@ if (!process.env.NEXT_PUBLIC_API_BASE || process.env.NEXT_PUBLIC_API_BASE === 'u
 /**
  * Standard API response structure for the application.
  */
-export interface APIResponse {
+export interface APIResponse<T = any> {
   /** Indicates if the operation was successful */
   success?: boolean;
   /** Human-readable message (often in Arabic) */
@@ -34,6 +34,7 @@ export interface APIResponse {
   /** Primary record ID if applicable */
   id?: number | string;
   /** Additional data fields returned by the server */
+  data?: T;
   [key: string]: unknown;
 }
 
@@ -57,10 +58,10 @@ interface FetchOptions {
  * @param options Configuration for the fetch request
  * @returns A promise resolving to the standard APIResponse structure
  */
-export async function fetchAPI(
+export async function fetchAPI<T = unknown>(
   action: string,
   options?: FetchOptions
-): Promise<APIResponse> {
+): Promise<APIResponse<T>> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
