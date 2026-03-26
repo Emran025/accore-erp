@@ -63,8 +63,25 @@ export interface Product {
   barcode?: string;
   expiry_date?: string;
   latest_purchase_price?: number;
+  weighted_average_cost?: number;
   creator_name?: string;
   created_at?: string;
+}
+
+export interface Service {
+  id: number;
+  name: string;
+  selling_price?: number;
+  unit_price?: number;
+  taxable?: boolean;
+}
+
+export interface GovernmentFee {
+  id: number;
+  name: string;
+  percentage: number;
+  fixed_amount: number;
+  is_active: boolean;
 }
 
 /**
@@ -78,7 +95,7 @@ export interface Invoice {
   item_count?: number;
   created_at: string;
   salesperson_name?: string;
-  payment_type: 'cash' | 'credit';
+  payment_type: 'cash' | 'credit' | string;
   customer_id?: number;
   customer_name?: string;
   customer_phone?: string;
@@ -102,8 +119,10 @@ export interface Invoice {
 
 
 export interface InvoiceItem {
-  product_id: number;
-  product_name: string;
+  product_id?: number;
+  product_name?: string;
+  service_id?: number;
+  service_name?: string;
   display_name?: string;
   quantity: number;
   unit_type?: string;
@@ -111,6 +130,8 @@ export interface InvoiceItem {
   total_sub_units?: number;
   unit_price: number;
   subtotal: number;
+  returned_quantity?: number;
+  original_quantity?: number;
 }
 
 export interface Purchase {

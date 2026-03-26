@@ -21,7 +21,7 @@ class ModuleSeeder extends Seeder
             ['module_key' => 'purchases', 'module_name_ar' => 'المشتريات', 'module_name_en' => 'Purchases', 'category' => 'purchases', 'icon' => 'download', 'sort_order' => 30],
             ['module_key' => 'expenses', 'module_name_ar' => 'المصروفات', 'module_name_en' => 'Expenses', 'category' => 'purchases', 'icon' => 'dollar', 'sort_order' => 31],
             ['module_key' => 'ar_transactions', 'module_name_ar' => 'تحويلات العملاء', 'module_name_en' => 'AR Transactions', 'category' => 'people', 'icon' => 'users', 'sort_order' => 40],
-            ['module_key' => 'ar_customers', 'module_name_ar' => 'العملاء والديون', 'module_name_en' => 'AR Customers', 'category' => 'people', 'icon' => 'users', 'sort_order' => 41],
+            ['module_key' => 'ar_customers', 'module_name_ar' => 'العملاء', 'module_name_en' => 'AR Customers', 'category' => 'people', 'icon' => 'users', 'sort_order' => 41],
             ['module_key' => 'ap_transactions', 'module_name_ar' => 'تحويلات الموردين', 'module_name_en' => 'AP Transactions', 'category' => 'people', 'icon' => 'users', 'sort_order' => 42],
             ['module_key' => 'ap_suppliers', 'module_name_ar' => 'الموردين', 'module_name_en' => 'AP Suppliers', 'category' => 'people', 'icon' => 'users', 'sort_order' => 43],
             ['module_key' => 'chart_of_accounts', 'module_name_ar' => 'دليل الحسابات', 'module_name_en' => 'Chart of Accounts', 'category' => 'finance', 'icon' => 'box', 'sort_order' => 50],

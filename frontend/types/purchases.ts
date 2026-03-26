@@ -41,6 +41,8 @@ export interface Product {
     // UI mapping
     selling_price?: number;
     purchase_price?: number;
+    latest_purchase_price?: number;
+    weighted_average_cost?: number;
     stock?: number;
     min_stock?: number;
     unit_type?: string;

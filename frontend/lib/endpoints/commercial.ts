@@ -30,6 +30,12 @@ export interface CommercialEndpoints {
     SERVICES: {
         BASE: string;
         SALES: string;
+        INVOICE_DETAILS: string;
+        RETURNS: {
+            BASE: string;
+            SHOW: string;
+            LEDGER: string;
+        };
     };
     PROCUREMENT: {
         BASE: string;
@@ -87,6 +93,12 @@ export const COMMERCIAL: CommercialEndpoints = {
     SERVICES: {
         BASE: "/v2/services",
         SALES: "/v2/services/sales",
+        INVOICE_DETAILS: "/v2/services/sales/details",
+        RETURNS: {
+            BASE: "/v2/services/returns",
+            SHOW: "/v2/services/returns/show",
+            LEDGER: "/v2/services/returns/ledger",
+        },
     },
     PROCUREMENT: {
         BASE: "/v2/purchases",

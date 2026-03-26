@@ -277,14 +277,6 @@ export const CommercialDomain: Domain = {
         // Capability: Managing and monitoring sales of in-stock 
         // and non-in-stock products (Instant Services)
         // ─────────────────────────────────────────────────────────────
-
-
-
-
-
-        // ─────────────────────────────────────────────────────────────
-        // Capability: Services Engine
-        // ─────────────────────────────────────────────────────────────
         {
             id: "instant-services",
             title: "الخدمات الجاهزة",
@@ -297,15 +289,6 @@ export const CommercialDomain: Domain = {
                     title: "مبيعات الخدمات",
                     description: "إدارة كتالوج الخدمات ومعاملات البيع",
                     screens: [
-                        {
-                            id: "",
-                            title: "إدارة الخدمات",
-                            icon: "briefcase",
-                            description: "عرض وإضافة وتعديل وحذف الخدمات",
-                            href: "/02-commercial/instant-services/services-core/services-management",
-                            permissions: [],
-                            module: "sales",
-                        },
                         {
                             id: "cash-services",
                             title: "مبيعات الخدمات النقدية",
@@ -323,6 +306,15 @@ export const CommercialDomain: Domain = {
                             href: "/02-commercial/instant-services/services-core/credit-services",
                             permissions: [],
                             module: "sales",
+                        },
+                        {
+                            id: "service-returns",
+                            title: "مرتجعات الخدمات",
+                            icon: "history",
+                            description: "إدارة مرتجعات مبيعات الخدمات",
+                            href: "/02-commercial/instant-services/services-core/service-returns",
+                            permissions: [],
+                            module: "returns",
                         },
                     ],
                 },

@@ -133,7 +133,16 @@ Route::group(['prefix' => 'services', 'middleware' => 'can:sales,view'], functio
     Route::middleware(['can:sales,edit', 'throttle:api-write'])->put('/', [ServiceController::class, 'update'])->name('v2.services.update');
     Route::middleware(['can:sales,delete', 'throttle:api-delete'])->delete('/', [ServiceController::class, 'destroy'])->name('v2.services.destroy');
 
-    // Service Sales (cash and credit both via payment_type in body)
+    // Service Sales (listing, details, and creation)
+    Route::get('/sales', [ServiceSaleController::class, 'index'])->name('v2.services.sales.index');
+    Route::get('/sales/details', [ServiceSaleController::class, 'show'])->name('v2.services.sales.show');
     Route::middleware(['can:sales,create', 'throttle:api-write'])->post('/sales', [ServiceSaleController::class, 'store'])->name('v2.services.sales.store');
+    Route::middleware(['can:sales,delete', 'throttle:api-delete'])->delete('/sales', [ServiceSaleController::class, 'destroy'])->name('v2.services.sales.destroy');
+
+    // Service Returns (reuses SalesReturnController — returns work at invoice level)
+    Route::get('/returns', [SalesReturnController::class, 'index'])->name('v2.services.returns.index');
+    Route::get('/returns/show', [SalesReturnController::class, 'show'])->name('v2.services.returns.show');
+    Route::get('/returns/ledger', [SalesReturnController::class, 'ledger'])->name('v2.services.returns.ledger');
+    Route::middleware(['can:sales,create', 'throttle:api-write'])->post('/returns', [SalesReturnController::class, 'store'])->name('v2.services.returns.store');
 });
 

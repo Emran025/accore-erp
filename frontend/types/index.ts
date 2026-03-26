@@ -227,3 +227,17 @@ import type {
     WellnessProgram,
     Workflow,
 } from "./hr";
+
+export type {
+    Invoice,
+    InvoiceItem,
+    Service,
+    GovernmentFee
+} from "./types";
+
+import type {
+    Invoice,
+    InvoiceItem,
+    Service,
+    GovernmentFee
+} from "./types";
