@@ -1,7 +1,7 @@
 "use client";
 
 import { MainLayout, PageSubHeader } from "@/components/layout";
-import { ActionButtons, Button, Column, ConfirmDialog, Dialog, NumberInput, Table, showToast } from "@/components/ui";
+import { ActionButtons, Button, Column, ConfirmDialog, Dialog, NumberInput, SearchableSelect, Table, showToast } from "@/components/ui";
 import { TextInput } from "@/components/ui/TextInput";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/select";
@@ -80,12 +80,6 @@ export default function ProductsPage() {
         };
         init();
     }, [loadProducts, loadCategories]);
-
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setSearchTerm(value);
-        loadProducts(1, value);
-    };
 
     const openAddDialog = () => {
         setSelectedProduct(null);
@@ -212,9 +206,9 @@ export default function ProductsPage() {
         { key: "name", header: "اسم المنتج", dataLabel: "اسم المنتج" },
         { key: "barcode", header: "الباركود", dataLabel: "الباركود" },
         { key: "category_name", header: "الفئة", dataLabel: "الفئة" },
-        { 
-            key: "item_type", 
-            header: "النوع", 
+        {
+            key: "item_type",
+            header: "النوع",
             dataLabel: "النوع",
             render: (it) => (
                 <span className={`badge badge-${it.item_type === 'product' ? 'info' : it.item_type === 'raw_material' ? 'secondary' : 'warning'}`}>
@@ -296,17 +290,25 @@ export default function ProductsPage() {
                 <PageSubHeader
                     title=""
                     searchInput={
-                        <input
-                            type="text"
+                        <SearchableSelect
+                            options={[]}
+                            value={null}
+                            onChange={() => { }}
+                            onSearch={(val) => {
+                                setSearchTerm(val);
+                                loadProducts(1, val);
+                            }}
                             placeholder="بحث بالاسم أو الباركود..."
-                            value={searchTerm}
-                            onChange={handleSearch}
-                            className="search-control"
+                            className="header-search-bar"
                         />
                     }
                     actions={
                         canAccess(permissions, "products", "create") && (
-                            <Button variant="primary" icon="plus" onClick={openAddDialog}>
+                            <Button
+                                variant="primary"
+                                icon="plus"
+                                onClick={openAddDialog}
+                            >
                                 إضافة منتج
                             </Button>
                         )
@@ -333,8 +335,16 @@ export default function ProductsPage() {
                 maxWidth="800px"
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setProductDialog(false)}>إلغاء</Button>
-                        <Button variant="primary" onClick={handleSubmit}>
+                        <Button
+                            variant="secondary"
+                            onClick={() => setProductDialog(false)}
+                        >
+                            إلغاء
+                        </Button>
+                        <Button
+                            variant="primary"
+                            onClick={handleSubmit}
+                        >
                             {selectedProduct ? "تحديث" : "إضافة"}
                         </Button>
                     </>
@@ -375,8 +385,8 @@ export default function ProductsPage() {
                         value={formData.item_type}
                         onChange={(e) => {
                             const val = e.target.value as any;
-                            setFormData({ 
-                                ...formData, 
+                            setFormData({
+                                ...formData,
                                 item_type: val,
                                 sellable: val === 'product',
                                 inventory_control: val !== 'service'
@@ -392,9 +402,9 @@ export default function ProductsPage() {
                 <div className="form-row flags-row">
                     <div className="form-group checkbox-group">
                         <label>
-                            <input 
-                                type="checkbox" 
-                                checked={formData.sellable} 
+                            <input
+                                type="checkbox"
+                                checked={formData.sellable}
                                 onChange={(e) => setFormData({ ...formData, sellable: e.target.checked })}
                             />
                             قابل للبيع
@@ -402,9 +412,9 @@ export default function ProductsPage() {
                     </div>
                     <div className="form-group checkbox-group">
                         <label>
-                            <input 
-                                type="checkbox" 
-                                checked={formData.inventory_control} 
+                            <input
+                                type="checkbox"
+                                checked={formData.inventory_control}
                                 onChange={(e) => setFormData({ ...formData, inventory_control: e.target.checked })}
                             />
                             متابعة المخزون
@@ -412,9 +422,9 @@ export default function ProductsPage() {
                     </div>
                     <div className="form-group checkbox-group">
                         <label>
-                            <input 
-                                type="checkbox" 
-                                checked={formData.taxable} 
+                            <input
+                                type="checkbox"
+                                checked={formData.taxable}
                                 onChange={(e) => setFormData({ ...formData, taxable: e.target.checked })}
                             />
                             خاضع للضريبة
@@ -477,8 +487,18 @@ export default function ProductsPage() {
                 maxWidth="400px"
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setCategoryDialog(false)}>إلغاء</Button>
-                        <Button variant="primary" onClick={addCategory}>إضافة</Button>
+                        <Button
+                            variant="secondary"
+                            onClick={() => setCategoryDialog(false)}
+                        >
+                            إلغاء
+                        </Button>
+                        <Button
+                            variant="primary"
+                            onClick={addCategory}
+                        >
+                            إضافة
+                        </Button>
                     </>
                 }
             >

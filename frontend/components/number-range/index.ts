@@ -1,3 +1,4 @@
+export { NumberRangeManager } from "./NumberRangeManager";
 export { useNumberRange } from "./useNumberRange";
 export { NrObjectHeader, NrSetupPrompt, NrLoading } from "./components/NrObjectHeader";
 export { DomainFullnessPanel } from "./components/DomainFullnessPanel";

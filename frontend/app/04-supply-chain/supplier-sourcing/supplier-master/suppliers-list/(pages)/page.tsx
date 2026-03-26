@@ -1,11 +1,10 @@
 "use client";
 
 import { MainLayout, PageSubHeader } from "@/components/layout";
-import { Button, Column, ConfirmDialog, Dialog, SearchableSelect, Table, showToast } from "@/components/ui";
+import { ActionButtons, Button, Column, ConfirmDialog, Dialog, SearchableSelect, Table, showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
 import { Permission, User, canAccess, checkAuth, getStoredPermissions, getStoredUser } from "@/lib/auth";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { Icon } from "@/lib/icons";
 import { formatCurrency } from "@/lib/utils";
 import { useSupplierStore } from "@/stores/useSupplierStore";
 import { useRouter } from "next/navigation";
@@ -98,12 +97,6 @@ export default function SuppliersPage() {
         fetchNextNumber();
     }, [selectedGroup, nrObjectId, formDialog, selectedSupplier]);
 
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setSearchTerm(value);
-        loadSuppliers(1, value);
-    };
-
     const openAddDialog = () => {
         setSelectedSupplier(null);
         setFormData({ supplier_code: "", name: "", phone: "", email: "", address: "", tax_number: "", credit_limit: "0", payment_terms: "30" });
@@ -176,32 +169,36 @@ export default function SuppliersPage() {
             header: "الإجراءات",
             dataLabel: "الإجراءات",
             render: (it) => (
-                <div className="action-buttons">
-                    <button
-                        className="icon-btn view"
-                        onClick={() => router.push(`/04-supply-chain/supplier-sourcing/supplier-master/supplier-ledger?supplier_id=${it.id}`)}
-                        title="كشف الحساب"
-                    >
-                        <Icon name="clipboard-list" />
-                    </button>
-                    <button
-                        className="icon-btn info"
-                        onClick={() => { setSelectedSupplier(it); setViewDialog(true); }}
-                        title="تفاصيل"
-                    >
-                        <Icon name="eye" />
-                    </button>
-                    {canAccess(permissions, "ap_suppliers", "edit") && (
-                        <button className="icon-btn edit" onClick={() => openEditDialog(it)} title="تعديل">
-                            <Icon name="edit" />
-                        </button>
-                    )}
-                    {canAccess(permissions, "ap_suppliers", "delete") && (
-                        <button className="icon-btn delete" onClick={() => { setDeleteId(it.id); setConfirmDialog(true); }} title="حذف">
-                            <Icon name="trash" />
-                        </button>
-                    )}
-                </div>
+                <ActionButtons
+                    actions={[
+                        {
+                            icon: "view",
+                            title: "كشف الحساب",
+                            variant: "view",
+                            onClick: () => { router.push(`/04-supply-chain/supplier-sourcing/supplier-master/supplier-ledger?supplier_id=${it.id}`) },
+                        },
+                        {
+                            icon: "view",
+                            title: "تفاصيل",
+                            variant: "view",
+                            onClick: () => { setSelectedSupplier(it); setViewDialog(true); },
+                        },
+                        {
+                            icon: "edit",
+                            title: "تعديل",
+                            variant: "edit",
+                            onClick: () => { openEditDialog(it) },
+                            hidden: !canAccess(permissions, "ap_suppliers", "edit")
+                        },
+                        {
+                            icon: "trash",
+                            title: "حذف",
+                            variant: "delete",
+                            onClick: () => { setDeleteId(it.id); setConfirmDialog(true); },
+                            hidden: !canAccess(permissions, "ap_suppliers", "delete")
+                        }
+                    ]}
+                />
             )
         }
     ];
@@ -214,17 +211,25 @@ export default function SuppliersPage() {
                 <PageSubHeader
                     user={user}
                     searchInput={
-                        <input
-                            type="text"
+                        <SearchableSelect
+                            options={[]}
+                            value={null}
+                            onChange={() => { }}
+                            onSearch={(val) => {
+                                setSearchTerm(val);
+                                loadSuppliers(1, val);
+                            }}
                             placeholder="بحث بالاسم أو الهاتف..."
-                            value={searchTerm}
-                            onChange={handleSearch}
-                            className="search-control"
+                            className="header-search-bar"
                         />
                     }
                     actions={
                         canAccess(permissions, "ap_suppliers", "create") && (
-                            <Button variant="primary" icon="plus" onClick={openAddDialog}>
+                            <Button
+                                variant="primary"
+                                icon="plus"
+                                onClick={openAddDialog}
+                            >
                                 إضافة مورد
                             </Button>
                         )
@@ -251,8 +256,18 @@ export default function SuppliersPage() {
                 maxWidth="600px"
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setFormDialog(false)}>إلغاء</Button>
-                        <Button variant="primary" onClick={handleSubmit}>{selectedSupplier ? "تحديث" : "إضافة"}</Button>
+                        <Button
+                            variant="secondary"
+                            onClick={() => setFormDialog(false)}
+                        >
+                            إلغاء
+                        </Button>
+                        <Button
+                            variant="primary"
+                            onClick={handleSubmit}
+                        >
+                            {selectedSupplier ? "تحديث" : "إضافة"}
+                        </Button>
                     </>
                 }
             >

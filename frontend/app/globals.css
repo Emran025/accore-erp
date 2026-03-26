@@ -1233,6 +1233,10 @@ tbody tr:hover {
   min-height: 100vh;
   background: var(--bg-gradient);
   padding: 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-content: center;
+  align-items: center;
 }
 
 .login-card {

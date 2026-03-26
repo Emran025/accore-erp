@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Label } from "./Label";
 
 interface RadioGroupProps {
     value?: string;
@@ -30,8 +31,6 @@ interface RadioGroupItemProps extends React.InputHTMLAttributes<HTMLInputElement
     value: string;
     label?: string;
 }
-
-import { Label } from "./Label";
 
 export function RadioGroupItem({ value, label, className = "", ...props }: RadioGroupItemProps) {
     const context = React.useContext(RadioGroupContext);

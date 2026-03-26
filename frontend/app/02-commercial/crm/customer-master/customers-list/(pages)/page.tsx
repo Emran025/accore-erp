@@ -98,12 +98,6 @@ export default function ARCustomersPage() {
         fetchNextNumber();
     }, [selectedGroup, nrObjectId, formDialog, selectedCustomer]);
 
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setSearchTerm(value);
-        loadCustomers(1, value);
-    };
-
     const openAddDialog = () => {
         setSelectedCustomer(null);
         setFormData({ customer_code: "", name: "", phone: "", email: "", address: "", tax_number: "" });
@@ -225,17 +219,25 @@ export default function ARCustomersPage() {
                 <PageSubHeader
                     user={user}
                     searchInput={
-                        <input
-                            type="text"
+                        <SearchableSelect
+                            options={[]}
+                            value={null}
+                            onChange={() => { }}
+                            onSearch={(val) => {
+                                setSearchTerm(val);
+                                loadCustomers(1, val);
+                            }}
                             placeholder="بحث بالاسم أو الهاتف..."
-                            value={searchTerm}
-                            onChange={handleSearch}
-                            className="search-control"
+                            className="header-search-bar"
                         />
                     }
                     actions={
                         canAccess(permissions, "ar_customers", "create") && (
-                            <Button variant="primary" icon="plus" onClick={openAddDialog}>
+                            <Button
+                                variant="primary"
+                                icon="plus"
+                                onClick={openAddDialog}
+                            >
                                 إضافة عميل
                             </Button>
                         )
@@ -262,8 +264,18 @@ export default function ARCustomersPage() {
                 maxWidth="600px"
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setFormDialog(false)}>إلغاء</Button>
-                        <Button variant="primary" onClick={handleSubmit}>{selectedCustomer ? "تحديث" : "إضافة"}</Button>
+                        <Button
+                            variant="secondary"
+                            onClick={() => setFormDialog(false)}
+                        >
+                            إلغاء
+                        </Button>
+                        <Button
+                            variant="primary"
+                            onClick={handleSubmit}
+                        >
+                            {selectedCustomer ? "تحديث" : "إضافة"}
+                        </Button>
                     </>
                 }
             >
