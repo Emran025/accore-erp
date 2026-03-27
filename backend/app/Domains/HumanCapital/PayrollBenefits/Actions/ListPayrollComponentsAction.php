@@ -3,12 +3,12 @@
 namespace App\Domains\HumanCapital\PayrollBenefits\Actions;
 
 use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollComponent;
+use Illuminate\Database\Eloquent\Collection;
 
 class ListPayrollComponentsAction
 {
-    public function execute(): array
+    public function execute(): Collection
     {
-        $components = PayrollComponent::orderBy('display_order')->orderBy('component_name')->get();
-        return $components->toArray();
+        return PayrollComponent::orderBy('display_order')->orderBy('component_name')->get();
     }
 }

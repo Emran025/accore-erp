@@ -4,14 +4,14 @@ namespace App\Domains\Commercial\SalesLifecycle\Actions;
 
 use App\Domains\Commercial\SalesLifecycle\Models\SalesReturn;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
+use Illuminate\Support\Collection;
 
 class SalesReturnsLedgerAction
 {
-    public function execute(array $filters): array
+
+    public function execute(array $filters): Collection
     {
-        $page = max(1, (int) ($filters['page'] ?? 1));
         $perPage = min(100, max(1, (int) ($filters['per_page'] ?? 20)));
-        $offset = ($page - 1) * $perPage;
 
         $query = SalesReturn::with(['invoice.customer', 'user', 'items.product'])
             ->join('invoices', 'sales_returns.invoice_id', '=', 'invoices.id')
@@ -52,13 +52,12 @@ class SalesReturnsLedgerAction
                 ->sum('amount');
         }
 
-        $transactionCount = $query->count();
-        $returns = $query->orderBy('sales_returns.created_at', 'desc')
-            ->skip($offset)
-            ->take($perPage)
-            ->get();
+        $paginator = $query->orderBy('sales_returns.created_at', 'desc')
+            ->paginate($perPage);
 
-        $data = $returns->map(fn($r) => [
+        $transactionCount = $paginator->total();
+
+        $data = $paginator->getCollection()->map(fn($r) => [
             'id' => $r->id,
             'type' => 'return',
             'amount' => (float) $r->total_amount,
@@ -80,7 +79,7 @@ class SalesReturnsLedgerAction
             'discount_amount' => 0,
         ]);
 
-        return [
+        return collect([
             'data' => $data,
             'stats' => [
                 'total_debit' => 0,
@@ -93,11 +92,11 @@ class SalesReturnsLedgerAction
                 'transaction_count' => $transactionCount
             ],
             'pagination' => [
-                'current_page' => $page,
-                'per_page' => $perPage,
+                'current_page' => $paginator->currentPage(),
+                'per_page' => $paginator->perPage(),
                 'total_records' => $transactionCount,
-                'total_pages' => $transactionCount > 0 ? ceil($transactionCount / $perPage) : 1
+                'total_pages' => $paginator->lastPage()
             ],
-        ];
+        ]);
     }
 }

@@ -6,7 +6,7 @@ use App\Domains\HumanCapital\PayrollBenefits\Models\CompensationEntry;
 
 class UpdateCompensationEntryStatusAction
 {
-    public function execute(int|string $id, array $data): array
+    public function execute(int|string $id, array $data): CompensationEntry
     {
         $entry = CompensationEntry::findOrFail($id);
 
@@ -15,6 +15,6 @@ class UpdateCompensationEntryStatusAction
         }
 
         $entry->update($data);
-        return $entry->load('plan', 'employee')->toArray();
+        return $entry->load('plan', 'employee');
     }
 }

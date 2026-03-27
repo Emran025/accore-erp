@@ -6,11 +6,11 @@ use App\Domains\Shared\Actions\Action;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Collection;
 
 class DeleteChartOfAccountAction
 {
-    public function execute(int $id): array
+    public function execute(int $id): Collection
     {
         $account = ChartOfAccount::findOrFail($id);
 
@@ -28,6 +28,6 @@ class DeleteChartOfAccountAction
 
         TelescopeService::logOperation('DELETE', 'chart_of_accounts', $id, $account->toArray(), null);
 
-        return ['message' => $message];
+        return collect(['message' => $message]);
     }
 }

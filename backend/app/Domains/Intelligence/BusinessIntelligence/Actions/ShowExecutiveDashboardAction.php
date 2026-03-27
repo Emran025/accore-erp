@@ -7,10 +7,11 @@ use App\Domains\SupplyChain\Inventory\Models\Product;
 use App\Domains\SupplyChain\Procurement\Models\Purchase;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
-
+use App\Domains\SupplyChain\Procurement\Models\PurchaseRequest;
+use Illuminate\Support\Collection;
 class ShowExecutiveDashboardAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): Collection
     {
         PermissionService::requirePermission('reports', 'view');
         $detail = $data['detail'] ?? null;
@@ -18,8 +19,7 @@ class ShowExecutiveDashboardAction
         if ($detail === 'low_stock') {
             return Product::where('stock_quantity', '<', 10)
                 ->orderBy('stock_quantity')
-                ->get(['id', 'name', 'stock_quantity as stock'])
-                ->toArray();
+                ->get(['id', 'name', 'stock_quantity as stock']);
         }
 
         if ($detail === 'expiring_soon') {
@@ -34,8 +34,7 @@ class ShowExecutiveDashboardAction
                         'expiry_date' => $purchase->expiry_date,
                         'stock' => $purchase->product?->stock_quantity,
                     ];
-                })
-                ->toArray();
+                });
         }
 
         $today = now()->format('Y-m-d');
@@ -62,7 +61,7 @@ class ShowExecutiveDashboardAction
                     'count' => (int) $item->total_count,
                 ]];
             })
-            ->toArray();
+            ->all();
 
         $todaysSales = GeneralLedger::whereHas('account', function ($q) {
                 $q->where('account_type', 'Revenue');
@@ -84,7 +83,7 @@ class ShowExecutiveDashboardAction
             ->mapWithKeys(function ($item) {
                 return [$item->payment_type ?? 'cash' => (float) $item->total];
             })
-            ->toArray();
+            ->all();
 
         $todayDate = $today;
 
@@ -155,13 +154,13 @@ class ShowExecutiveDashboardAction
                 ];
             });
 
-        $pendingRequests = \App\Domains\SupplyChain\Procurement\Models\PurchaseRequest::where('status', 'pending')
+        $pendingRequests = PurchaseRequest::where('status', 'pending')
             ->with(['product', 'user'])
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();
 
-        return [
+        return collect([
             'todays_sales' => (float) $todaysSales,
             'total_sales' => (float) $totalSales,
             'low_stock_count' => $lowStockCount,
@@ -177,7 +176,7 @@ class ShowExecutiveDashboardAction
             'total_revenues' => (float) $totalRevenues,
             'todays_revenues' => (float) $todaysRevenues,
             'total_assets' => (float) $totalAssets,
-        ];
+        ]);
     }
 }
 

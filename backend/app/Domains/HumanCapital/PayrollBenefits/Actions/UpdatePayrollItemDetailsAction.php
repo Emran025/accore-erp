@@ -3,6 +3,7 @@
 namespace App\Domains\HumanCapital\PayrollBenefits\Actions;
 
 use App\Domains\HumanCapital\PayrollBenefits\Services\PayrollService;
+use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollEntry;
 
 class UpdatePayrollItemDetailsAction
 {
@@ -13,9 +14,8 @@ class UpdatePayrollItemDetailsAction
         $this->payrollService = $payrollService;
     }
 
-    public function execute(int|string $itemId, array $data): array
+    public function execute(int|string $itemId, array $data): PayrollEntry
     {
-        $item = $this->payrollService->updatePayrollItem($itemId, $data);
-        return current($item->toArray()) ?: reset($item);
+        return $this->payrollService->updatePayrollItem($itemId, $data);
     }
 }

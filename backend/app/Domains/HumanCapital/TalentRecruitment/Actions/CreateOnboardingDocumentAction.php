@@ -6,12 +6,11 @@ use App\Domains\HumanCapital\HRAdvanced\Models\OnboardingDocument;
 
 class CreateOnboardingDocumentAction
 {
-    public function execute(int|string $workflowId, array $data): array
+    public function execute(int|string $workflowId, array $data): OnboardingDocument
     {
         $data['workflow_id'] = $workflowId;
         $data['status'] = 'pending';
 
-        $document = OnboardingDocument::create($data);
-        return $document->toArray();
+        return OnboardingDocument::create($data);
     }
 }

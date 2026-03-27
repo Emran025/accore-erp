@@ -14,7 +14,7 @@ class UpdateProfitCenterAction
         private readonly OrgIntegrationService $orgIntegration
     ) {}
 
-    public function execute(array $data, int $id): void
+    public function execute(array $data, int $id): ProfitCenter
     {
         PermissionService::requirePermission('chart_of_accounts', 'edit');
 
@@ -24,14 +24,15 @@ class UpdateProfitCenterAction
             throw new \Exception('Cannot set the center as its own parent', 422);
         }
 
-        DB::transaction(function () use ($center, $data) {
+        return DB::transaction(function () use ($center, $data) {
             $oldValues = $center->toArray();
             $center->update($data);
 
-            // Mirror update to org-chart
             $this->orgIntegration->syncProfitCenterToOrgChart($center->fresh());
 
             TelescopeService::logOperation('UPDATE', 'profit_centers', $center->id, $oldValues, $data);
+
+            return $center->fresh();
         });
     }
 }

@@ -6,18 +6,18 @@ use App\Domains\SupplyChain\Inventory\Models\Product;
 use App\Domains\SupplyChain\Procurement\Models\Purchase;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\SupplyChain\Procurement\Models\PurchaseRequest;
+use Illuminate\Support\Collection;
 
 class GetDashboardDataAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): Collection
     {
         $detail = $data['detail'] ?? null;
 
         if ($detail === 'low_stock') {
             return Product::where('stock_quantity', '<', 10)
                 ->orderBy('stock_quantity')
-                ->get(['id', 'name', 'stock_quantity as stock'])
-                ->toArray();
+                ->get(['id', 'name', 'stock_quantity as stock']);
         }
 
         if ($detail === 'expiring_soon') {
@@ -30,8 +30,7 @@ class GetDashboardDataAction
                     'name' => $p->product?->name,
                     'expiry_date' => $p->expiry_date,
                     'stock' => $p->product?->stock_quantity,
-                ])
-                ->toArray();
+                ]);
         }
 
         $today = now()->format('Y-m-d');
@@ -64,7 +63,7 @@ class GetDashboardDataAction
             ->groupBy('invoices.payment_type')
             ->get()
             ->mapWithKeys(fn($i) => [$i->payment_type ?? 'cash' => ['value' => (float)$i->value, 'count' => (int)$i->count]])
-            ->toArray();
+            ->all();
 
         // Operational KPIs
         $totalProducts = Product::count();
@@ -72,7 +71,7 @@ class GetDashboardDataAction
         $recentSales = Invoice::with(['user', 'customer'])->orderBy('created_at', 'desc')->limit(10)->get();
         $pendingRequests = PurchaseRequest::where('status', 'pending')->with(['product', 'user'])->orderBy('created_at', 'desc')->limit(10)->get();
 
-        return [
+        return collect([
             'todays_sales' => (float)$todaysSales,
             'total_sales' => (float)$totalSales,
             'total_expenses' => (float)$totalExpenses,
@@ -82,6 +81,6 @@ class GetDashboardDataAction
             'recent_sales' => $recentSales,
             'pending_requests' => $pendingRequests,
             'total_products' => $totalProducts,
-        ];
+        ]);
     }
 }

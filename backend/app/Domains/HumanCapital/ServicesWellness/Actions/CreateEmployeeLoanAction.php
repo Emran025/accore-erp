@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class CreateEmployeeLoanAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): EmployeeLoan
     {
         return DB::transaction(function () use ($data) {
             $principal = $data['loan_amount'];
@@ -31,7 +31,7 @@ class CreateEmployeeLoanAction
 
             $this->createRepaymentSchedule($loan);
 
-            return $loan->load('employee', 'repayments')->toArray();
+            return $loan->load('employee', 'repayments');
         });
     }
 

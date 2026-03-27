@@ -6,11 +6,9 @@ use App\Domains\HumanCapital\WorkforceAdmin\Models\JobTitle;
 
 class CreateJobTitleAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): JobTitle
     {
         $data['created_by'] = auth()->id();
-        $title = JobTitle::create($data);
-
-        return $title->load('department')->toArray();
+        return JobTitle::create($data)->load('department');
     }
 }

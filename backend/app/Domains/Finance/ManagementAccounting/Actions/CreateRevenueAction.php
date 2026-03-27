@@ -61,10 +61,7 @@ class CreateRevenueAction
 
             TelescopeService::logOperation('CREATE', 'revenues', $revenue->id, null, $data);
 
-            return [
-                'id' => $revenue->id,
-                'voucher_number' => $voucherNumber,
-            ];
+            return $revenue;
         });
     }
 }

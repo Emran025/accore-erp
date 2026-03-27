@@ -6,7 +6,7 @@ use App\Domains\HumanCapital\TalentRecruitment\Models\JobApplicant;
 
 class UpdateJobApplicantStatusAction
 {
-    public function execute(int|string $id, array $data): array
+    public function execute(int|string $id, array $data): JobApplicant
     {
         $applicant = JobApplicant::findOrFail($id);
 
@@ -21,6 +21,6 @@ class UpdateJobApplicantStatusAction
         }
 
         $applicant->update($data);
-        return $applicant->load('requisition')->toArray();
+        return $applicant->load('requisition');
     }
 }

@@ -173,9 +173,11 @@ function capabilityToGroup(domainKey: string, capability: Capability): Navigatio
         domainKey: domainKey,
         label: capability.title,
         icon: capability.icon,
+        description: capability.description,
         items: capability.groups.map((g) => ({
             key: g.id,
             domainKey: domainKey,
+            description:g.description,
             label: g.title,
             icon: g.icon || capability.icon,
             items: screensToLinks(g.screens),
@@ -191,6 +193,7 @@ function domainToNavigationGroup(domain: Domain): NavigationGroup {
     return {
         key: domain.id,
         domainKey: domain.id,
+        description: domain.description,
         label: domain.title,
         icon: domain.icon,
         items: domain.capabilities.map((d) => { return capabilityToGroup(domain.id, d) }),

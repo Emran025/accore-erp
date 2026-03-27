@@ -4,6 +4,7 @@ namespace App\Domains\EnterpriseCore\Automation\Actions;
 
 use App\Domains\HumanCapital\HRAdvanced\Services\TemplateService;
 use App\Domains\HumanCapital\HRAdvanced\Services\TemplateRegistry;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\DocumentTemplate;
 
 class CreateSystemTemplateAction
 {
@@ -20,7 +21,7 @@ class CreateSystemTemplateAction
         return $meta && isset($meta['module']) && $meta['module'] !== 'hr';
     }
 
-    public function execute(array $data): array
+    public function execute(array $data): DocumentTemplate
     {
         if (!$this->isSystemType($data['template_type'])) {
             throw new \Exception("Template type '{$data['template_type']}' is not an approved system type.");
@@ -31,7 +32,6 @@ class CreateSystemTemplateAction
             throw new \Exception('Template validation failed: ' . implode(', ', $validation['errors']));
         }
 
-        $template = $this->templateService->createTemplate($data);
-        return $template->toArray();
+        return $this->templateService->createTemplate($data);
     }
 }

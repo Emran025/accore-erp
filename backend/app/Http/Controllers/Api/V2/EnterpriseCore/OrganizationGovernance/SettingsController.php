@@ -22,66 +22,64 @@ class SettingsController extends Controller
 {
     use BaseApiController;
 
-    public function index(): JsonResponse
+    public function index(ListSettingsAction $action): JsonResponse
     {
-        $data = (new ListSettingsAction())->execute();
-        $settings = $data['data'] ?? $data;
+        $settings = $action->execute();
 
         return $this->successResponse(SettingResource::collection($settings));
     }
 
-    public function getStoreSettings(): JsonResponse
+    public function getStoreSettings(GetStoreSettingsAction $action): JsonResponse
     {
-        $settings = (new GetStoreSettingsAction())->execute();
+        $settings = $action->execute();
 
         return $this->successResponse($settings);
     }
 
-    public function updateStoreSettings(Request $request): JsonResponse
+    public function updateStoreSettings(Request $request, UpdateStoreSettingsAction $action): JsonResponse
     {
-        (new UpdateStoreSettingsAction())->execute($request->all());
+        $action->execute($request->all());
 
         return $this->successResponse([], 'Store settings updated');
     }
 
-    public function getInvoiceSettings(): JsonResponse
+    public function getInvoiceSettings(GetInvoiceSettingsAction $action): JsonResponse
     {
-        $settings = (new GetInvoiceSettingsAction())->execute();
+        $settings = $action->execute();
 
         return $this->successResponse($settings);
     }
 
-    public function updateInvoiceSettings(Request $request): JsonResponse
+    public function updateInvoiceSettings(Request $request, UpdateInvoiceSettingsAction $action): JsonResponse
     {
-        (new UpdateInvoiceSettingsAction())->execute($request->all());
+        $action->execute($request->all());
 
         return $this->successResponse([], 'Invoice settings updated');
     }
 
-    public function update(Request $request): JsonResponse
+    public function update(Request $request, UpdateSettingsAction $action): JsonResponse
     {
-        (new UpdateSettingsAction())->execute($request->all());
+        $action->execute($request->all());
 
         return $this->successResponse([], 'Settings updated successfully');
     }
 
-    public function getZatcaSettings(): JsonResponse
+    public function getZatcaSettings(GetZatcaSettingsAction $action): JsonResponse
     {
-        $settings = (new GetZatcaSettingsAction())->execute();
+        $settings = $action->execute();
 
         return $this->successResponse($settings);
     }
 
-    public function updateZatcaSettings(Request $request): JsonResponse
+    public function updateZatcaSettings(Request $request, UpdateZatcaSettingsAction $action): JsonResponse
     {
-        (new UpdateZatcaSettingsAction())->execute($request->all());
+        $action->execute($request->all());
 
         return $this->successResponse([], 'ZATCA settings updated');
     }
 
-    public function onboardZatca(OnboardZatcaRequest $request): JsonResponse
+    public function onboardZatca(OnboardZatcaRequest $request, OnboardZatcaAction $action): JsonResponse
     {
-        $action = app(OnboardZatcaAction::class);
         $result = $action->execute($request->validated()['otp'], $request->validated()['csr_data'] ?? []);
 
         return $this->successResponse($result, 'ZATCA onboarding completed successfully');

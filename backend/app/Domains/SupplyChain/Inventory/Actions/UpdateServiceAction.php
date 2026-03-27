@@ -13,12 +13,12 @@ use Illuminate\Support\Facades\DB;
  */
 class UpdateServiceAction
 {
-    public function execute(array $data): array
+    public function execute(array $data, int $id): Product
     {
         $userId = auth()->id() ?? session('user_id');
 
-        return DB::transaction(function () use ($data, $userId) {
-            $service = Product::services()->findOrFail($data['id']);
+        return DB::transaction(function () use ($data, $id, $userId) {
+            $service = Product::services()->findOrFail($id);
             $oldValues = $service->toArray();
 
             $posLocations = $data['pos_locations'] ?? null;
@@ -50,7 +50,7 @@ class UpdateServiceAction
 
             TelescopeService::logOperation('UPDATE', 'services', $service->id, $oldValues, $data);
 
-            return ['id' => $service->id];
+            return $service->fresh(['category', 'serviceAvailability']);
         });
     }
 }

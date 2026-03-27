@@ -4,10 +4,11 @@ namespace App\Domains\Intelligence\AdvancedAnalytics\Actions;
 
 use App\Domains\SupplyChain\PayablesExpenses\Models\ApTransaction;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class GenerateAgingPayablesReportAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): Collection
     {
 
         $asOfDate = $data['as_of_date'] ?? now()->format('Y-m-d');
@@ -40,11 +41,11 @@ class GenerateAgingPayablesReportAction
             'total' => $agingData->sum('total'),
         ];
 
-        return [
+        return collect([
             'as_of_date' => $asOfDate,
             'data' => $agingData,
             'totals' => $totals,
-        ];
+        ]);
     }
 }
 

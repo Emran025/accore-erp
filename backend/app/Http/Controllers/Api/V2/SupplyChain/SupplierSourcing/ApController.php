@@ -12,7 +12,6 @@ use App\Http\Requests\SupplyChain\SupplierSourcing\StoreSupplierRequest;
 use App\Http\Requests\SupplyChain\SupplierSourcing\UpdateSupplierRequest;
 use App\Http\Requests\SupplyChain\SupplierSourcing\SupplierLedgerRequest;
 use App\Http\Requests\SupplyChain\SupplierSourcing\DeleteSupplierRequest;
-use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 use App\Http\Resources\SupplyChain\SupplierSourcing\ApSupplierResource;
 use App\Http\Resources\SupplyChain\PayablesExpenses\ApTransactionResource;
 use Illuminate\Http\JsonResponse;
@@ -42,13 +41,13 @@ class ApController extends Controller
      */
     public function suppliers(ListSuppliersRequest $request, ListSuppliersAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
+        $paginator = $action->execute($request->validated());
 
         return $this->paginatedResponse(
-            ApSupplierResource::collection($result['data']),
-            $result['total'],
-            $result['current_page'],
-            $result['per_page']
+            ApSupplierResource::collection($paginator),
+            $paginator->total(),
+            $paginator->currentPage(),
+            $paginator->perPage()
         );
     }
 
@@ -57,32 +56,18 @@ class ApController extends Controller
      */
     public function storeSupplier(StoreSupplierRequest $request, CreateSupplierAction $action): JsonResponse
     {
-        $validated = $request->validated();
-        $userId = auth()->id() ?? session('user_id');
-
         try {
-            $result = $action->execute($validated, (int)$userId);
-            TelescopeService::logOperation('CREATE', 'ap_suppliers', $result['id'], null, $validated);
-
-            $supplier = ApSupplier::find($result['id']);
-            return $this->successResponse(new ApSupplierResource($supplier), 'Supplier created successfully');
+            $supplier = $action->execute($request->validated(), (int)auth()->id());
+            return $this->successResponse(new ApSupplierResource($supplier), 'Supplier created successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 400);
         }
     }
 
-    /**
-     * Update supplier
-     */
     public function updateSupplier(UpdateSupplierRequest $request, UpdateSupplierAction $action): JsonResponse
     {
-        $validated = $request->validated();
-
         try {
-            $result = $action->execute($validated);
-            TelescopeService::logOperation('UPDATE', 'ap_suppliers', $result['id'], $result['old_values'], $validated);
-
-            $supplier = ApSupplier::find($result['id']);
+            $supplier = $action->execute($request->validated());
             return $this->successResponse(new ApSupplierResource($supplier), 'Supplier updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
@@ -96,9 +81,7 @@ class ApController extends Controller
     {
         try {
             $id = (int)$request->validated()['id'];
-            $oldValues = $action->execute($id);
-            TelescopeService::logOperation('DELETE', 'ap_suppliers', $id, $oldValues, null);
-
+            $action->execute($id);
             return $this->successResponse([], 'Supplier deleted successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 400);

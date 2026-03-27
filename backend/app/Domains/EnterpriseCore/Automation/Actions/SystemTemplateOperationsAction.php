@@ -3,6 +3,7 @@
 namespace App\Domains\EnterpriseCore\Automation\Actions;
 
 use App\Domains\HumanCapital\HRAdvanced\Services\TemplateService;
+use Illuminate\Database\Eloquent\Collection;
 
 class SystemTemplateOperationsAction
 {
@@ -13,9 +14,9 @@ class SystemTemplateOperationsAction
         $this->templateService = $templateService;
     }
 
-    public function getHistory(int|string $id): array
+    public function getHistory(int|string $id): Collection
     {
-        return $this->templateService->getTemplateHistory($id)->toArray();
+        return $this->templateService->getTemplateHistory($id);
     }
 
     public function render(int|string $id, array $context, string $language = 'ar'): string

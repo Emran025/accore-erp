@@ -14,8 +14,8 @@ class GetChangeHistoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'entity_type' => 'required|string',
-            'entity_id'   => 'required|string',
+            'entity_type' => 'nullable|string',
+            'entity_id'   => 'nullable|string',
             'limit'       => 'nullable|integer|min:1|max:500',
         ];
     }

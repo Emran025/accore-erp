@@ -6,7 +6,7 @@ use App\Domains\HumanCapital\PerformanceDevelopment\Models\LearningEnrollment;
 
 class CreateLearningEnrollmentAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): LearningEnrollment
     {
         $data['enrollment_date'] = now();
         $data['status'] = 'enrolled';
@@ -17,6 +17,6 @@ class CreateLearningEnrollmentAction
         }
 
         $enrollment = LearningEnrollment::create($data);
-        return $enrollment->load('course', 'employee')->toArray();
+        return $enrollment->load('course', 'employee');
     }
 }

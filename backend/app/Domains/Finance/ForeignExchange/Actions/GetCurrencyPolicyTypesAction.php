@@ -1,9 +1,11 @@
 <?php
 namespace App\Domains\Finance\ForeignExchange\Actions;
 
+use Illuminate\Support\Collection;
+
 class GetCurrencyPolicyTypesAction
 {
-    public function execute(): array
+    public function execute(): Collection
     {
         $types = [
             [
@@ -33,9 +35,9 @@ class GetCurrencyPolicyTypesAction
             ['value' => 'NEVER', 'label' => 'Never', 'label_ar' => 'لا يتم التحويل'],
         ];
 
-        return [
+        return collect([
             'policy_types' => $types,
             'conversion_timings' => $timings,
-        ];
+        ]);
     }
 }

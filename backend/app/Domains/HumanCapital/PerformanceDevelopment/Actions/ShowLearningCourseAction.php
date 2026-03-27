@@ -6,9 +6,8 @@ use App\Domains\HumanCapital\PerformanceDevelopment\Models\LearningCourse;
 
 class ShowLearningCourseAction
 {
-    public function execute(int|string $id): array
+    public function execute(int|string $id): LearningCourse
     {
-        $course = LearningCourse::with(['enrollments.employee'])->findOrFail($id);
-        return $course->toArray();
+        return LearningCourse::with(['enrollments.employee'])->findOrFail($id);
     }
 }

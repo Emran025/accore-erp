@@ -3,10 +3,11 @@
 namespace App\Domains\SupplyChain\Procurement\Actions;
 
 use App\Domains\SupplyChain\Procurement\Models\Purchase;
+use Illuminate\Support\Collection;
 
 class ListPurchasesAction
 {
-    public function execute(array $filters): array
+    public function execute(array $filters): Collection
     {
         $page = max(1, (int) ($filters['page'] ?? 1));
         $perPage = min(100, max(1, (int) ($filters['per_page'] ?? 20)));
@@ -24,11 +25,11 @@ class ListPurchasesAction
             ->take($perPage)
             ->get();
 
-        return [
+        return collect([
             'data' => $purchases,
             'total' => $total,
             'current_page' => $page,
             'per_page' => $perPage,
-        ];
+        ]);
     }
 }

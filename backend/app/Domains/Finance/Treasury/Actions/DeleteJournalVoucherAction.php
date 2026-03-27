@@ -4,10 +4,11 @@ namespace App\Domains\Finance\Treasury\Actions;
 
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
+use Illuminate\Support\Collection;
 
 class DeleteJournalVoucherAction
 {
-    public function execute(int $id): array
+    public function execute(int $id): Collection
     {
         $voucher = GeneralLedger::findOrFail($id);
 
@@ -22,7 +23,7 @@ class DeleteJournalVoucherAction
 
         TelescopeService::logOperation('DELETE', 'journal_vouchers', $id, $oldValues, null);
 
-        return ['message' => 'Journal voucher deleted successfully'];
+        return collect(['message' => 'Journal voucher deleted successfully']);
     }
 }
 

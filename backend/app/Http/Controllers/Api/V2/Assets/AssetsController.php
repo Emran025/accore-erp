@@ -9,7 +9,6 @@ use App\Http\Requests\Assets\UpdateAssetRequest;
 use App\Http\Requests\Assets\DeleteAssetRequest;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
-use App\Domains\Assets\AssetLifecycle\Models\Asset;
 use App\Http\Resources\Assets\AssetLifecycle\AssetResource;
 use App\Domains\Assets\AssetLifecycle\Actions\ListAssetsAction;
 use App\Domains\Assets\AssetLifecycle\Actions\CreateAssetAction;
@@ -33,21 +32,31 @@ class AssetsController extends Controller
 
     public function store(StoreAssetRequest $request, CreateAssetAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
-        $asset = Asset::find($result['id'] ?? $result);
-        return $this->successResponse(new AssetResource($asset), 'Asset created successfully', 201);
+        try {
+            $asset = $action->execute($request->validated());
+            return $this->successResponse((new AssetResource($asset))->resolve(), 'Asset created successfully', 201);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function update(UpdateAssetRequest $request, UpdateAssetAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
-        $asset = Asset::find($result['id'] ?? $request->id);
-        return $this->successResponse(new AssetResource($asset), 'Asset updated successfully');
+        try {
+            $asset = $action->execute($request->validated());
+            return $this->successResponse((new AssetResource($asset))->resolve(), 'Asset updated successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     public function destroy(DeleteAssetRequest $request, DeleteAssetAction $action): JsonResponse
     {
-        $action->execute($request->validated()['id']);
-        return $this->successResponse();
+        try {
+            $action->execute($request->validated()['id']);
+            return $this->successResponse([], 'Asset deleted successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
-}
+}

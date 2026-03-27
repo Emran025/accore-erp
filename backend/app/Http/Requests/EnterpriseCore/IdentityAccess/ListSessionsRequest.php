@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Finance\GeneralLedger;
+namespace App\Http\Requests\EnterpriseCore\IdentityAccess;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FiscalPeriodIdRequest extends FormRequest
+class ListSessionsRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,7 +14,7 @@ class FiscalPeriodIdRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'required|exists:fiscal_periods,id',
+            'limit' => 'nullable|integer|min:1|max:100',
         ];
     }
 }

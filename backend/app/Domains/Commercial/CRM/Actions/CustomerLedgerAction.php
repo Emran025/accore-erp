@@ -8,11 +8,13 @@ use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Services\ChartOfAccountsMappingService;
 
+use Illuminate\Support\Collection;
+
 class CustomerLedgerAction
 {
     public function __construct(private readonly ChartOfAccountsMappingService $coaService) {}
 
-    public function execute(array $filters): array
+    public function execute(array $filters): Collection
     {
         $customerId = $filters['customer_id'];
         $customer = ArCustomer::findOrFail($customerId);
@@ -89,7 +91,7 @@ class CustomerLedgerAction
             ->take($perPage)
             ->get();
 
-        return [
+        return collect([
             'customer' => [
                 'id' => $customer->id,
                 'name' => $customer->name,
@@ -110,6 +112,6 @@ class CustomerLedgerAction
                 'total_records' => $total,
                 'total_pages' => ceil($total / $perPage),
             ],
-        ];
+        ]);
     }
 }

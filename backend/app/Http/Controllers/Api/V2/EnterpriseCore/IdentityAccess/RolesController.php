@@ -11,7 +11,7 @@ use App\Http\Requests\EnterpriseCore\IdentityAccess\UpdatePermissionsRequest;
 use App\Http\Resources\EnterpriseCore\IdentityAccess\RoleResource;
 use App\Http\Resources\EnterpriseCore\IdentityAccess\RolePermissionResource;
 use App\Http\Resources\EnterpriseCore\OrganizationGovernance\ModuleResource;
-use App\Domains\EnterpriseCore\IdentityAccess\Models\Role;
+use App\Http\Requests\EnterpriseCore\IdentityAccess\ListRolesRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
@@ -20,10 +20,10 @@ class RolesController extends Controller
 {
     use BaseApiController;
 
-    public function index(Request $request, ListRolesAction $action): JsonResponse
+    public function index(ListRolesRequest $request, ListRolesAction $action): JsonResponse
     {
-        $filters = $request->only(['action', 'role_id']);
-        $result = $action->execute($filters);
+        $validated = $request->validated();
+        $result = $action->execute($validated);
 
         if (isset($result['key']) && $result['key'] === 'error') {
             return $this->errorResponse($result['message'] ?? 'Error');
@@ -31,7 +31,7 @@ class RolesController extends Controller
 
         $key = $result['key'];
         $data = $result['data'];
-        $actionType = $filters['action'] ?? null;
+        $actionType = $validated['action'] ?? null;
 
         if ($actionType === 'modules') {
             $formattedData = [];
@@ -45,11 +45,7 @@ class RolesController extends Controller
             return $this->successResponse(['data' => RolePermissionResource::collection($data)]);
         }
 
-        if ($actionType === 'roles' || !$actionType) {
-            return $this->successResponse([$key => RoleResource::collection($data)]);
-        }
-
-        return $this->successResponse([$key => $data]);
+        return $this->successResponse([$key => RoleResource::collection($data)]);
     }
 
     public function store(Request $request, CreateRoleAction $action): JsonResponse
@@ -64,11 +60,9 @@ class RolesController extends Controller
 
         // Default: Create role
         $validated = $request->validate((new StoreRoleRequest())->rules());
-        $result = $action->execute('create', $validated);
+        $role = $action->execute('create', $validated);
 
-        $role = Role::find($result['id']);
-
-        return $this->successResponse(new RoleResource($role), $result['message'], 201);
+        return $this->successResponse(new RoleResource($role), 'Role created successfully', 201);
     }
 
     public function destroy($id, DeleteRoleAction $action): JsonResponse

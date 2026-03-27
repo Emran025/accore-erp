@@ -3,10 +3,11 @@
 namespace App\Domains\HumanCapital\HRCompliance\Actions;
 
 use App\Domains\HumanCapital\HRCompliance\Models\KnowledgeBase;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ListKnowledgeBaseEntriesAction
 {
-    public function execute(array $filters): array
+    public function execute(array $filters): LengthAwarePaginator
     {
         $query = KnowledgeBase::query();
 
@@ -26,6 +27,6 @@ class ListKnowledgeBaseEntriesAction
             });
         }
 
-        return $query->orderBy('created_at', 'desc')->paginate(15)->toArray();
+        return $query->orderBy('created_at', 'desc')->paginate(15);
     }
 }

@@ -7,7 +7,7 @@ use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 class GetTaxSetupAction
 {
-    public function execute(): array
+    public function execute(): \Illuminate\Support\Collection
     {
         PermissionService::requirePermission('settings', 'view');
 
@@ -15,6 +15,6 @@ class GetTaxSetupAction
             $q->where('is_default', true)->orWhere('effective_to', null);
         }])->get();
 
-        return ['authorities' => $authorities->toArray()];
+        return collect(['authorities' => $authorities]);
     }
 }

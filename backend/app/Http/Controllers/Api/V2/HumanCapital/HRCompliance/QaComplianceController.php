@@ -26,17 +26,20 @@ class QaComplianceController extends Controller
     public function index(Request $request, ListQaCompliancesAction $action): JsonResponse
     {
         $filters = $request->only(['compliance_type', 'status', 'employee_id']);
-        $compliances = $action->execute($filters);
+        $paginated = $action->execute($filters);
         
-        $data = $compliances['data'] ?? $compliances;
-        return $this->successResponse(QaComplianceResource::collection($data));
+        return $this->paginatedResponse(
+            QaComplianceResource::collection($paginated),
+            $paginated->total(),
+            $paginated->currentPage(),
+            $paginated->perPage()
+        );
     }
 
     public function store(StoreQaComplianceRequest $request, CreateQaComplianceAction $action): JsonResponse
     {
         $validated = $request->validated();
-        $complianceData = $action->execute($validated);
-        $compliance = QaCompliance::find($complianceData['id'] ?? $complianceData);
+        $compliance = $action->execute($validated);
 
         return $this->successResponse(new QaComplianceResource($compliance), 'Compliance record created', 201);
     }
@@ -60,8 +63,7 @@ class QaComplianceController extends Controller
     public function storeCapa(StoreCapaRequest $request, $complianceId, CreateCapaAction $action): JsonResponse
     {
         $validated = $request->validated();
-        $capaData = $action->execute($complianceId, $validated);
-        $capa = Capa::find($capaData['id'] ?? $capaData);
+        $capa = $action->execute($complianceId, $validated);
 
         return $this->successResponse(new CapaResource($capa), 'CAPA record created', 201);
     }

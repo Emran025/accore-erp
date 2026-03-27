@@ -4,6 +4,8 @@ namespace App\Domains\HumanCapital\HRAdvanced\Actions;
 
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\DocumentTemplate;
 
+use Illuminate\Support\Collection;
+
 class ListHrDocumentTemplatesAction
 {
     private const HR_TYPES = [
@@ -12,7 +14,7 @@ class ListHrDocumentTemplatesAction
         'employee_certificate', 'employee_contract',
     ];
 
-    public function execute(array $filters): array
+    public function execute(array $filters): Collection
     {
         $query = DocumentTemplate::whereIn('template_type', self::HR_TYPES);
 
@@ -29,11 +31,9 @@ class ListHrDocumentTemplatesAction
             });
         }
 
-        $templates = $query->where('is_active', true)
+        return $query->where('is_active', true)
             ->orderBy('template_type')
             ->orderBy('template_name_ar')
             ->get();
-
-        return $templates->toArray();
     }
 }

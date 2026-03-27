@@ -22,16 +22,16 @@ Route::group(['prefix' => 'inventory', 'middleware' => 'can:products,view'], fun
     Route::group(['prefix' => 'products'], function () {
         Route::get('/', [ProductsController::class, 'index'])->name('v2.inventory.products.index');
         Route::middleware(['can:products,create', 'throttle:api-write'])->post('/', [ProductsController::class, 'store'])->name('v2.inventory.products.store');
-        Route::middleware(['can:products,edit', 'throttle:api-write'])->put('/', [ProductsController::class, 'update'])->name('v2.inventory.products.update');
-        Route::middleware(['can:products,delete', 'throttle:api-delete'])->delete('/', [ProductsController::class, 'destroy'])->name('v2.inventory.products.destroy');
+        Route::middleware(['can:products,edit', 'throttle:api-write'])->put('/{id}', [ProductsController::class, 'update'])->name('v2.inventory.products.update');
+        Route::middleware(['can:products,delete', 'throttle:api-delete'])->delete('/{id}', [ProductsController::class, 'destroy'])->name('v2.inventory.products.destroy');
     });
 
     // Categories
     Route::group(['prefix' => 'categories'], function () {
         Route::get('/', [CategoriesController::class, 'index'])->name('v2.inventory.categories.index');
         Route::middleware(['can:products,create', 'throttle:api-write'])->post('/', [CategoriesController::class, 'store'])->name('v2.inventory.categories.store');
-        Route::middleware(['can:products,edit', 'throttle:api-write'])->put('/', [CategoriesController::class, 'update'])->name('v2.inventory.categories.update');
-        Route::middleware(['can:products,delete', 'throttle:api-delete'])->delete('/', [CategoriesController::class, 'destroy'])->name('v2.inventory.categories.destroy');
+        Route::middleware(['can:products,edit', 'throttle:api-write'])->put('/{id}', [CategoriesController::class, 'update'])->name('v2.inventory.categories.update');
+        Route::middleware(['can:products,delete', 'throttle:api-delete'])->delete('/{id}', [CategoriesController::class, 'destroy'])->name('v2.inventory.categories.destroy');
     });
 
     // Periodic Inventory
@@ -48,5 +48,7 @@ Route::group(['prefix' => 'inventory', 'middleware' => 'can:products,view'], fun
 Route::group(['prefix' => 'batch', 'middleware' => 'can:batch_processing,view'], function () {
     Route::get('/', [BatchController::class, 'index'])->name('v2.batch.index');
     Route::middleware(['can:batch_processing,create', 'throttle:api-critical'])->post('/', [BatchController::class, 'store'])->name('v2.batch.store');
-    Route::middleware(['can:batch_processing,delete', 'throttle:api-delete'])->delete('/', [BatchController::class, 'destroy'])->name('v2.batch.destroy');
+    Route::get('/{id}', [BatchController::class, 'show'])->name('v2.batch.show');
+    Route::middleware(['can:batch_processing,edit', 'throttle:api-critical'])->post('/{id}/execute', [BatchController::class, 'execute'])->name('v2.batch.execute');
+    Route::middleware(['can:batch_processing,delete', 'throttle:api-delete'])->delete('/{id}', [BatchController::class, 'destroy'])->name('v2.batch.destroy');
 });

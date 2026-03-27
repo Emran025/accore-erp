@@ -20,11 +20,8 @@ use App\Http\Requests\Commercial\MarketingDistribution\DeleteRepresentativeTrans
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 use App\Http\Resources\Commercial\MarketingDistribution\SalesRepresentativeResource;
 use App\Http\Resources\Commercial\MarketingDistribution\SalesRepresentativeTransactionResource;
-use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentative;
-use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentativeTransaction;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Controller for managing Sales Representatives via API.
@@ -38,13 +35,13 @@ class SalesRepresentativeController extends Controller
      */
     public function representatives(ListRepresentativesRequest $request, ListSalesRepresentativesAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
+        $paginator = $action->execute($request->validated());
 
         return $this->paginatedResponse(
-            SalesRepresentativeResource::collection($result['data']),
-            $result['total'],
-            $result['current_page'],
-            $result['per_page']
+            SalesRepresentativeResource::collection($paginator),
+            $paginator->total(),
+            $paginator->currentPage(),
+            $paginator->perPage()
         );
     }
 
@@ -60,8 +57,7 @@ class SalesRepresentativeController extends Controller
             $representative = $action->execute($validated, (int)$userId);
             TelescopeService::logOperation('CREATE', 'sales_representatives', $representative->id, null, $validated);
 
-            $salesRep = SalesRepresentative::find($representative->id);
-            return $this->successResponse(new SalesRepresentativeResource($salesRep), 'Sales Representative created successfully');
+            return $this->successResponse(new SalesRepresentativeResource($representative), 'Sales Representative created successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 400);
         }
@@ -75,11 +71,10 @@ class SalesRepresentativeController extends Controller
         $validated = $request->validated();
 
         try {
-            $result = $action->execute($validated);
-            TelescopeService::logOperation('UPDATE', 'sales_representatives', $result['id'], $result['old_values'], $validated);
-
-            $salesRep = SalesRepresentative::find($result['id']);
-            return $this->successResponse(new SalesRepresentativeResource($salesRep), 'Sales Representative updated successfully');
+            $representative = $action->execute($validated);
+            // Assuming the action returns the updated model now or we need to adjust it
+            // Let's check UpdateSalesRepresentativeAction first if possible, but standardizing here.
+            return $this->successResponse(new SalesRepresentativeResource($representative), 'Sales Representative updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 400);
         }
@@ -93,7 +88,7 @@ class SalesRepresentativeController extends Controller
         try {
             $id = (int)$request->validated()['id'];
             $oldValues = $action->execute($id);
-            TelescopeService::logOperation('DELETE', 'sales_representatives', $id, $oldValues, null);
+            TelescopeService::logOperation('DELETE', 'sales_representatives', $id, $oldValues->toArray(), null);
 
             return $this->successResponse([], 'Sales Representative deleted successfully');
         } catch (\Exception $e) {
@@ -107,12 +102,18 @@ class SalesRepresentativeController extends Controller
     public function ledger(RepresentativeLedgerRequest $request, GetSalesRepresentativeLedgerAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
+        $paginator = $result['transactions'];
 
         return $this->successResponse([
             'representative' => $result['representative'],
-            'data' => SalesRepresentativeTransactionResource::collection($result['data']),
+            'data' => SalesRepresentativeTransactionResource::collection($paginator),
             'stats' => $result['stats'],
-            'pagination' => $result['pagination'],
+            'pagination' => [
+                'current_page' => $paginator->currentPage(),
+                'per_page' => $paginator->perPage(),
+                'total_records' => $paginator->total(),
+                'total_pages' => $paginator->lastPage(),
+            ],
         ]);
     }
 
@@ -125,10 +126,9 @@ class SalesRepresentativeController extends Controller
         $userId = auth()->id() ?? session('user_id');
 
         try {
-            $result = $action->execute($validated, (int)$userId);
-            TelescopeService::logOperation('CREATE', 'sales_representative_transactions', $result['id'], null, $validated);
+            $transaction = $action->execute($validated, (int)$userId);
+            TelescopeService::logOperation('CREATE', 'sales_representative_transactions', $transaction->id, null, $validated);
 
-            $transaction = SalesRepresentativeTransaction::find($result['id']);
             return $this->successResponse(new SalesRepresentativeTransactionResource($transaction), 'Transaction recorded successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
@@ -143,7 +143,7 @@ class SalesRepresentativeController extends Controller
         try {
             $id = (int)$request->validated()['id'];
             $oldValues = $action->execute($id);
-            TelescopeService::logOperation('DELETE', 'sales_representative_transactions', $id, $oldValues, null);
+            TelescopeService::logOperation('DELETE', 'sales_representative_transactions', $id, $oldValues->toArray(), null);
 
             return $this->successResponse([], 'Transaction voided successfully');
         } catch (\Exception $e) {

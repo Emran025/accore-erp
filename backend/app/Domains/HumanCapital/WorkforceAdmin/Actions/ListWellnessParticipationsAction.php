@@ -1,17 +1,23 @@
 <?php
 namespace App\Domains\HumanCapital\WorkforceAdmin\Actions;
-use App\Domains\Shared\Actions\Action;
+
 use App\Domains\HumanCapital\WorkforceAdmin\Models\WellnessParticipation;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-class ListWellnessParticipationsAction extends Action
+use Illuminate\Pagination\LengthAwarePaginator;
+
+class ListWellnessParticipationsAction
 {
-    public function __construct(private readonly Request $request) {}
-    public function __invoke(): JsonResponse
+    public function execute(array $filters = []): LengthAwarePaginator
     {
         $query = WellnessParticipation::with(['program', 'employee']);
-        if ($this->request->filled('program_id')) $query->where('program_id', $this->request->program_id);
-        if ($this->request->filled('employee_id')) $query->where('employee_id', $this->request->employee_id);
-        return $this->successResponse($query->orderBy('enrollment_date', 'desc')->paginate(15)->toArray());
+
+        if (!empty($filters['program_id'])) {
+            $query->where('program_id', $filters['program_id']);
+        }
+
+        if (!empty($filters['employee_id'])) {
+            $query->where('employee_id', $filters['employee_id']);
+        }
+
+        return $query->orderBy('enrollment_date', 'desc')->paginate(15);
     }
 }

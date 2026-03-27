@@ -11,6 +11,13 @@ class UpdateCategoryRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->route('id')) {
+            $this->merge(['id' => $this->route('id')]);
+        }
+    }
+
     public function rules(): array
     {
         return [

@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Domains\EnterpriseCore\MonitoringCompliance\Actions;
+use Illuminate\Support\Collection;
 
 class ValidateComplianceStructureAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): Collection
     {
         $errors = [];
 
@@ -44,9 +45,9 @@ class ValidateComplianceStructureAction
                 break;
         }
 
-        return [
+        return collect([
             'valid'  => empty($errors),
             'errors' => $errors,
-        ];
+        ]);
     }
 }

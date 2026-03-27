@@ -6,7 +6,7 @@ use App\Domains\HumanCapital\WorkforceAdmin\Models\ComplianceProfile;
 
 class UpdateComplianceProfileAction
 {
-    public function execute(int $id, array $data): array
+    public function execute(int $id, array $data): ComplianceProfile
     {
         $profile = ComplianceProfile::findOrFail($id);
 
@@ -25,6 +25,6 @@ class UpdateComplianceProfileAction
             $profile->generateAccessToken();
         }
 
-        return ['profile' => $profile->fresh()->load('taxAuthority')];
+        return $profile->fresh()->load('taxAuthority');
     }
 }

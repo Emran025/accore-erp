@@ -2,14 +2,12 @@
 namespace App\Domains\SupplyChain\Inventory\Actions;
 
 use App\Domains\SupplyChain\Inventory\Models\InventoryCount;
-
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 class ListPeriodicInventoryAction
 {
-    public function execute(array $filters): array
+    public function execute(array $filters): LengthAwarePaginator
     {
-
-        $page = max(1, (int) ($filters['page'] ?? 1));
-        $perPage = min(100, max(1, (int) ($filters['per_page'] ?? 20)));
+        $perPage = min(100, max(1, (int) ($filters['per_page'] ?? $filters['limit'] ?? 20)));
         $periodId = $filters['period_id'] ?? null;
 
         $query = InventoryCount::with(['product', 'fiscalPeriod', 'countedBy']);
@@ -18,18 +16,8 @@ class ListPeriodicInventoryAction
             $query->where('fiscal_period_id', $periodId);
         }
 
-        $total = $query->count();
-        $counts = $query->orderBy('count_date', 'desc')
+        return $query->orderBy('count_date', 'desc')
             ->orderBy('id', 'desc')
-            ->skip(($page - 1) * $perPage)
-            ->take($perPage)
-            ->get();
-
-        return [
-            'data' => $counts,
-            'total' => $total,
-            'page' => $page,
-            'per_page' => $perPage
-        ];
+            ->paginate($perPage);
     }
 }

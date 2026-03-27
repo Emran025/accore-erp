@@ -24,7 +24,7 @@ export function ZatcaSettingsTab() {
         try {
             setIsLoading(true);
             const response: any = await fetchAPI(API_ENDPOINTS.FINANCE.TAX_ENGINE.SETUP);
-            if (response.data && response.data.authorities) {
+            if (response.data && Array.isArray(response.data.authorities)) {
                 // Find ZATCA (or fallback to primary)
                 const zatca = response.data.authorities.find((a: TaxAuthority) => a.code === 'ZATCA' || a.is_primary);
                 if (zatca) {

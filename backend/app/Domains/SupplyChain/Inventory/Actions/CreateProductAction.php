@@ -12,7 +12,7 @@ class CreateProductAction
         private readonly InventoryCostingService $costingService
     ) {}
 
-    public function execute(array $data): array
+    public function execute(array $data): Product
     {
         
         $data['created_by'] = auth()->id() ?? session('user_id');
@@ -37,7 +37,7 @@ class CreateProductAction
 
             TelescopeService::logOperation('CREATE', 'products', $product->id, null, $data);
 
-            return ['id' => $product->id];
+            return $product;
         });
     }
 }

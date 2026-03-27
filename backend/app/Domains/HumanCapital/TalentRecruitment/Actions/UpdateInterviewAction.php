@@ -6,7 +6,7 @@ use App\Domains\HumanCapital\TalentRecruitment\Models\Interview;
 
 class UpdateInterviewAction
 {
-    public function execute(int|string $id, array $data): array
+    public function execute(int|string $id, array $data): Interview
     {
         $interview = Interview::findOrFail($id);
 
@@ -15,6 +15,6 @@ class UpdateInterviewAction
         }
 
         $interview->update($data);
-        return current($interview->toArray()) ?: reset($interview);
+        return $interview;
     }
 }

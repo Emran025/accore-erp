@@ -6,7 +6,7 @@ use App\Domains\HumanCapital\TalentRecruitment\Models\RecruitmentRequisition;
 
 class UpdateRequisitionAction
 {
-    public function execute(int|string $id, array $data): array
+    public function execute(int|string $id, array $data): RecruitmentRequisition
     {
         $requisition = RecruitmentRequisition::findOrFail($id);
 
@@ -16,6 +16,6 @@ class UpdateRequisitionAction
         }
 
         $requisition->update($data);
-        return $requisition->load('department', 'role')->toArray();
+        return $requisition->load('department', 'role');
     }
 }

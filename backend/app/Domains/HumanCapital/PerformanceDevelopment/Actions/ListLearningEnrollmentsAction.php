@@ -3,10 +3,11 @@
 namespace App\Domains\HumanCapital\PerformanceDevelopment\Actions;
 
 use App\Domains\HumanCapital\PerformanceDevelopment\Models\LearningEnrollment;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ListLearningEnrollmentsAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): LengthAwarePaginator
     {
         $query = LearningEnrollment::with(['course', 'employee']);
 
@@ -22,6 +23,6 @@ class ListLearningEnrollmentsAction
             $query->where('status', $filters['status']);
         }
 
-        return $query->orderBy('enrollment_date', 'desc')->paginate(15)->toArray();
+        return $query->orderBy('enrollment_date', 'desc')->paginate(15);
     }
 }

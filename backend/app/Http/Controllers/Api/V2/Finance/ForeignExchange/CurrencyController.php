@@ -12,7 +12,6 @@ use App\Domains\Finance\ForeignExchange\Actions\UpdateCurrencyAction;
 use App\Domains\Finance\ForeignExchange\Actions\DeleteCurrencyAction;
 use App\Domains\Finance\ForeignExchange\Actions\ToggleCurrencyStatusAction;
 use App\Domains\Finance\ForeignExchange\Actions\SetPrimaryCurrencyAction;
-use App\Domains\Finance\ForeignExchange\Models\Currency;
 use App\Http\Resources\Finance\ForeignExchange\CurrencyResource;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
@@ -75,23 +74,18 @@ class CurrencyController extends Controller
     public function toggleActive(int $id, ToggleCurrencyStatusAction $action): JsonResponse
     {
         try {
-            $action->execute($id);
-            $currency = Currency::findOrFail($id);
+            $currency = $action->execute($id);
             return $this->successResponse(new CurrencyResource($currency), 'Currency status toggled');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
     }
 
-    /**
-     * Set a currency as primary
-     */
     public function setPrimary(int $id, SetPrimaryCurrencyAction $action): JsonResponse
     {
         try {
-            $result = $action->execute($id);
-            $currency = Currency::find($id);
-            return $this->successResponse(new CurrencyResource($currency), $result['message']);
+            $currency = $action->execute($id);
+            return $this->successResponse(new CurrencyResource($currency), 'Primary currency set successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }

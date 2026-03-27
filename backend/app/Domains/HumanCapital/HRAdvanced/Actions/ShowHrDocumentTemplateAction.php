@@ -6,9 +6,8 @@ use App\Domains\EnterpriseCore\OrganizationGovernance\Models\DocumentTemplate;
 
 class ShowHrDocumentTemplateAction
 {
-    public function execute(int $id): array
+    public function execute(int $id): DocumentTemplate
     {
-        $template = DocumentTemplate::findOrFail($id);
-        return $template->toArray();
+        return DocumentTemplate::findOrFail($id);
     }
 }

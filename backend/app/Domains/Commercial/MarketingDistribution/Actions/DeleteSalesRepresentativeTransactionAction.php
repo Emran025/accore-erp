@@ -5,10 +5,11 @@ namespace App\Domains\Commercial\MarketingDistribution\Actions;
 use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentative;
 use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentativeTransaction;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class DeleteSalesRepresentativeTransactionAction
 {
-    public function execute(int $id): array
+    public function execute(int $id): Collection
     {
         $transaction = SalesRepresentativeTransaction::findOrFail($id);
 
@@ -34,7 +35,7 @@ class DeleteSalesRepresentativeTransactionAction
                 'deleted_at' => now(),
             ]);
 
-            return $oldValues;
+            return collect($oldValues);
         });
     }
 }

@@ -8,7 +8,7 @@ use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 
 class ExecuteBatchAction
 {
-    public function execute(int $id): array
+    public function execute(int $id): Batch
     {
         $batch = Batch::findOrFail($id);
 
@@ -30,6 +30,6 @@ class ExecuteBatchAction
 
         TelescopeService::logOperation('EXECUTE', 'batch_processing', $id, ['status' => 'pending'], ['status' => 'completed']);
 
-        return $batch->fresh()->toArray();
+        return $batch->fresh();
     }
 }

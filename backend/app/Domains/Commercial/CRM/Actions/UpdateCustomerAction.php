@@ -3,10 +3,11 @@
 namespace App\Domains\Commercial\CRM\Actions;
 
 use App\Domains\Commercial\CRM\Models\ArCustomer;
+use Illuminate\Support\Collection;
 
 class UpdateCustomerAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): Collection
     {
         $customer = ArCustomer::findOrFail($data['id']);
 
@@ -23,12 +24,12 @@ class UpdateCustomerAction
             throw new \Exception('Another customer with this name or phone already exists', 409);
         }
 
-        $oldValues = $customer->toArray();
+        $oldValues = $customer->getOriginal();
         $customer->update($data);
 
-        return [
-            'id' => $customer->id,
+        return collect([
+            'model' => $customer,
             'old_values' => $oldValues
-        ];
+        ]);
     }
 }

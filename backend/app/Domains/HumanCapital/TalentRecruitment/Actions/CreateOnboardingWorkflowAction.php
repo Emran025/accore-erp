@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class CreateOnboardingWorkflowAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): OnboardingWorkflow
     {
         return DB::transaction(function () use ($data) {
             $data['status'] = 'not_started';
@@ -18,7 +18,7 @@ class CreateOnboardingWorkflowAction
 
             $this->createDefaultTasks($workflow);
 
-            return $workflow->load('employee', 'tasks')->toArray();
+            return $workflow->load('employee', 'tasks');
         });
     }
 

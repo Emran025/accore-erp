@@ -14,11 +14,11 @@ class CreateCostCenterAction
         private readonly OrgIntegrationService $orgIntegration
     ) {}
 
-    public function execute(array $data): array
+    public function execute(array $data): CostCenter
     {
         PermissionService::requirePermission('chart_of_accounts', 'create');
 
-        $result = DB::transaction(function () use ($data) {
+        return DB::transaction(function () use ($data) {
             $center = CostCenter::create([
                 ...$data,
                 'type'       => $data['type'] ?? 'operational',
@@ -27,17 +27,11 @@ class CreateCostCenterAction
             ]);
 
             // Sync to org-chart
-            $node = $this->orgIntegration->syncCostCenterToOrgChart($center);
+            $this->orgIntegration->syncCostCenterToOrgChart($center);
 
             TelescopeService::logOperation('CREATE', 'cost_centers', $center->id, null, $data);
 
-            return ['center' => $center->fresh(), 'node_uuid' => $node->node_uuid];
+            return $center->fresh();
         });
-
-        return [
-            'id'        => $result['center']->id,
-            'node_uuid' => $result['node_uuid'],
-            'center'    => $result['center']->toArray(),
-        ];
     }
 }

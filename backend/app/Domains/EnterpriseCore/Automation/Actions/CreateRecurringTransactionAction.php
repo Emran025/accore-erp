@@ -6,11 +6,9 @@ use App\Domains\Finance\Treasury\Models\RecurringTransaction;
 
 class CreateRecurringTransactionAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): RecurringTransaction
     {
-        $template = RecurringTransaction::create($data);
-
-        return ['id' => $template->id];
+        return RecurringTransaction::create($data);
     }
 }
 

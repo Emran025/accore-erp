@@ -1,10 +1,11 @@
 <?php
 namespace App\Domains\Finance\Treasury\Actions;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
+use Illuminate\Support\Collection;
 
 class ShowJournalVoucherAction
 {
-    public function execute(string $voucherNumber): array
+    public function execute(string $voucherNumber): Collection
     {
         $entries = GeneralLedger::where('voucher_number', $voucherNumber)
             ->where('entry_source', 'MANUAL')
@@ -17,7 +18,7 @@ class ShowJournalVoucherAction
         }
 
         $first = $entries->first();
-        return [
+        return collect([
             'id' => $voucherNumber,
             'voucher_number' => $voucherNumber,
             'voucher_date' => $first->voucher_date?->format('Y-m-d'),
@@ -36,7 +37,7 @@ class ShowJournalVoucherAction
                 'cost_center_name' => $e->costCenter?->name,
                 'profit_center_id' => $e->profit_center_id,
                 'profit_center_name' => $e->profitCenter?->name,
-            ])->toArray(),
-        ];
+            ]),
+        ]);
     }
 }

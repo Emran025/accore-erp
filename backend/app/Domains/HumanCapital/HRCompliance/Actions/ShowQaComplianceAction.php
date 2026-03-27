@@ -6,9 +6,8 @@ use App\Domains\Manufacturing\QualityControl\Models\QaCompliance;
 
 class ShowQaComplianceAction
 {
-    public function execute(int|string $id): array
+    public function execute(int|string $id): QaCompliance
     {
-        $compliance = QaCompliance::with(['employee', 'capas'])->findOrFail($id);
-        return $compliance->toArray();
+        return QaCompliance::with(['employee', 'capas'])->findOrFail($id);
     }
 }

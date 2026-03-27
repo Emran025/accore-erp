@@ -17,8 +17,6 @@ use App\Http\Requests\EnterpriseCore\IdentityAccess\UpdateUserRequest;
 use App\Http\Resources\EnterpriseCore\IdentityAccess\UserResource;
 use App\Http\Resources\EnterpriseCore\IdentityAccess\RoleResource;
 use App\Http\Resources\EnterpriseCore\IdentityAccess\SessionResource;
-use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -26,42 +24,33 @@ class UsersController extends Controller
 {
     use BaseApiController;
 
-    public function index(Request $request): JsonResponse
+    public function index(ListUsersAction $action): JsonResponse
     {
-        $data = (new ListUsersAction())->execute();
-        $users = User::with(['roleRelation', 'manager', 'createdBy'])->orderBy('id', 'desc')->get();
-
+        $users = $action->execute();
         return $this->successResponse(UserResource::collection($users));
     }
 
-    public function store(StoreUserRequest $request): JsonResponse
+    public function store(StoreUserRequest $request, CreateUserAction $action): JsonResponse
     {
-        $data = (new CreateUserAction())->execute($request->validated());
-        $user = User::find($data['id'] ?? $data);
-
+        $user = $action->execute($request->validated());
         return $this->successResponse(new UserResource($user), 'User created successfully', 201);
     }
 
-    public function update(UpdateUserRequest $request): JsonResponse
+    public function update(UpdateUserRequest $request, int|string $id, UpdateUserAction $action): JsonResponse
     {
-        (new UpdateUserAction())->execute($request->validated());
-        $user = User::find($request->input('id'));
-
+        $user = $action->execute($id, $request->validated());
         return $this->successResponse(new UserResource($user), 'User updated successfully');
     }
 
-    public function destroy(Request $request): JsonResponse
+    public function destroy(int|string $id, DeleteUserAction $action): JsonResponse
     {
-        $id = $request->input('id');
-
-        (new DeleteUserAction())->execute((int) $id);
-
-        return $this->successResponse();
+        $action->execute((int) $id);
+        return $this->successResponse(null, 'User deleted successfully');
     }
 
-    public function changePassword(ChangePasswordRequest $request): JsonResponse
+    public function changePassword(ChangePasswordRequest $request, ChangePasswordAction $action): JsonResponse
     {
-        $result = (new ChangePasswordAction())->execute($request->validated());
+        $result = $action->execute($request->validated());
 
         if (!$result['success']) {
             return $this->errorResponse($result['error'], 400);
@@ -70,26 +59,21 @@ class UsersController extends Controller
         return $this->successResponse([], 'Password changed successfully');
     }
 
-    public function managerList(): JsonResponse
+    public function managerList(ListManagersAction $action): JsonResponse
     {
-        $data = (new ListManagersAction())->execute();
-        // Since ListManagersAction returns an array of mapped data, and we want UserResource:
-        $managers = User::where('role', 'manager')->orWhereHas('roleRelation', function($q){ $q->where('role_key', 'manager'); })->get();
-
+        $managers = $action->execute();
         return $this->successResponse(UserResource::collection($managers));
     }
 
-    public function roles(): JsonResponse
+    public function roles(ListUserRolesAction $action): JsonResponse
     {
-        $rolesData = (new ListUserRolesAction())->execute();
-        // Assuming ListUserRolesAction returns the collection of Role models or arrays that map to RoleResource
-        return $this->successResponse(RoleResource::collection($rolesData));
+        $roles = $action->execute();
+        return $this->successResponse(RoleResource::collection($roles));
     }
 
-    public function mySessions(): JsonResponse
+    public function mySessions(ListMySessionsAction $action): JsonResponse
     {
-        $data = (new ListMySessionsAction())->execute();
-
-        return $this->successResponse(SessionResource::collection($data));
+        $sessions = $action->execute();
+        return $this->successResponse(SessionResource::collection($sessions));
     }
 }

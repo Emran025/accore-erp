@@ -1,7 +1,7 @@
 "use client";
 
-import ServiceSalesPage from "@/components/ui/ServiceSales";
+import { ServiceSales } from "@/components/ui/index";
 
 export default function CreditServicesPage() {
-    return <ServiceSalesPage mode="credit" />;
+    return <ServiceSales mode="credit" />;
 }

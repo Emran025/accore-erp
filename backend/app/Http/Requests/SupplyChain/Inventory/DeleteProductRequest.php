@@ -11,10 +11,17 @@ class DeleteProductRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->route('id')) {
+            $this->merge(['id' => $this->route('id')]);
+        }
+    }
+
     public function rules(): array
     {
         return [
-            'id' => 'required|exists:products,id',
+            'id' => 'required|integer|exists:products,id',
         ];
     }
 }

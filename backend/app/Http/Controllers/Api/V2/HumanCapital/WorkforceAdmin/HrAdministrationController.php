@@ -64,10 +64,8 @@ class HrAdministrationController extends Controller
     public function storeJobTitle(StoreJobTitleRequest $request, CreateJobTitleAction $action): JsonResponse
     {
         try {
-            $validated = $request->validated();
-            $result = $action->execute($validated);
-            $title = JobTitle::findOrFail($result['id'] ?? $result);
-            return $this->successResponse((new JobTitleResource($title))->resolve(), 'Job title created');
+            $title = $action->execute($request->validated());
+            return $this->successResponse(new JobTitleResource($title), 'Job title created');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -76,12 +74,10 @@ class HrAdministrationController extends Controller
     public function updateJobTitle(UpdateJobTitleRequest $request, $id, UpdateJobTitleAction $action): JsonResponse
     {
         try {
-            $validated = $request->validated();
-            $result = $action->execute($id, $validated);
-            $titleId = $result['title']['id'] ?? $result['id'] ?? $id;
-            $title = JobTitle::findOrFail($titleId);
+            $result = $action->execute($id, $request->validated());
+            
             return $this->successResponse(
-                (new JobTitleResource($title))->resolve(),
+                new JobTitleResource($result['title']),
                 "تم تحديث المسمى الوظيفي — " . ($result['positions_synced'] ?? 0) . " منصب و " . ($result['employees_synced'] ?? 0) . " موظف تم مزامنتهم"
             );
         } catch (\Exception $e) {
@@ -118,18 +114,15 @@ class HrAdministrationController extends Controller
 
     public function showPosition($id, ShowPositionAction $action): JsonResponse
     {
-        $result = $action->execute($id);
-        $position = Position::findOrFail($result['id'] ?? $id);
-        return $this->successResponse((new PositionResource($position))->resolve());
+        $position = $action->execute($id);
+        return $this->successResponse(new PositionResource($position));
     }
 
     public function storePosition(StorePositionRequest $request, CreatePositionAction $action): JsonResponse
     {
         try {
-            $validated = $request->validated();
-            $result = $action->execute($validated);
-            $position = Position::findOrFail($result['id'] ?? $result);
-            return $this->successResponse((new PositionResource($position))->resolve(), 'Position created successfully');
+            $position = $action->execute($request->validated());
+            return $this->successResponse(new PositionResource($position), 'Position created successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -138,10 +131,8 @@ class HrAdministrationController extends Controller
     public function updatePosition(UpdatePositionRequest $request, $id, UpdatePositionAction $action): JsonResponse
     {
         try {
-            $validated = $request->validated();
-            $result = $action->execute($id, $validated);
-            $position = Position::findOrFail($result['id'] ?? $id);
-            return $this->successResponse((new PositionResource($position))->resolve(), 'Position updated successfully');
+            $position = $action->execute($id, $request->validated());
+            return $this->successResponse(new PositionResource($position), 'Position updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -160,10 +151,8 @@ class HrAdministrationController extends Controller
     public function assignEmployeeToPosition(AssignEmployeeToPositionRequest $request, AssignEmployeePositionAction $action): JsonResponse
     {
         try {
-            $validated = $request->validated();
-            $result = $action->execute($validated);
-            $employee = Employee::findOrFail($result['id'] ?? $validated['employee_id']);
-            return $this->successResponse((new EmployeeResource($employee))->resolve(), 'Employee assigned to position successfully');
+            $employee = $action->execute($request->validated());
+            return $this->successResponse(new EmployeeResource($employee), 'Employee assigned to position successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -192,10 +181,8 @@ class HrAdministrationController extends Controller
     public function storeTemplate(StorePermissionTemplateRequest $request, CreatePermissionTemplateAction $action): JsonResponse
     {
         try {
-            $validated = $request->validated();
-            $result = $action->execute($validated);
-            $template = PermissionTemplate::findOrFail($result['id'] ?? $result);
-            return $this->successResponse((new PermissionTemplateResource($template))->resolve(), 'Permission template created');
+            $template = $action->execute($request->validated());
+            return $this->successResponse(new PermissionTemplateResource($template), 'Permission template created');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -204,10 +191,8 @@ class HrAdministrationController extends Controller
     public function updateTemplate(UpdatePermissionTemplateRequest $request, $id, UpdatePermissionTemplateAction $action): JsonResponse
     {
         try {
-            $validated = $request->validated();
-            $result = $action->execute($id, $validated);
-            $template = PermissionTemplate::findOrFail($result['id'] ?? $id);
-            return $this->successResponse((new PermissionTemplateResource($template))->resolve(), 'Permission template updated');
+            $template = $action->execute($id, $request->validated());
+            return $this->successResponse(new PermissionTemplateResource($template), 'Permission template updated');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }

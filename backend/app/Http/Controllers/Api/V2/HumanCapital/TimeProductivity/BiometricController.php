@@ -41,8 +41,7 @@ class BiometricController extends Controller
         try {
             $validated = $request->validated();
             $device = $action->execute($validated);
-            $model = BiometricDevice::findOrFail($device['id'] ?? $device);
-            return $this->successResponse((new BiometricDeviceResource($model))->resolve(), 'Device registered');
+            return $this->successResponse((new BiometricDeviceResource($device))->resolve(), 'Device registered');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -53,8 +52,7 @@ class BiometricController extends Controller
         try {
             $validated = $request->validated();
             $device = $action->execute($id, $validated);
-            $model = BiometricDevice::findOrFail($device['id'] ?? $id);
-            return $this->successResponse((new BiometricDeviceResource($model))->resolve(), 'Device updated');
+            return $this->successResponse((new BiometricDeviceResource($device))->resolve(), 'Device updated');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -93,13 +91,13 @@ class BiometricController extends Controller
     public function syncLogs(Request $request, GetBiometricSyncLogsAction $action): JsonResponse
     {
         $filters = $request->only(['device_id']);
-        $logs = $action->execute($filters);
+        $paginator = $action->execute($filters);
 
         return $this->paginatedResponse(
-            BiometricSyncLogResource::collection($logs['data'])->resolve(),
-            $logs['total'],
-            $logs['current_page'],
-            $logs['per_page']
+            BiometricSyncLogResource::collection($paginator),
+            $paginator->total(),
+            $paginator->currentPage(),
+            $paginator->perPage()
         );
     }
 

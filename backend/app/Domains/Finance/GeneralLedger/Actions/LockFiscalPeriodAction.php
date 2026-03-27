@@ -6,7 +6,7 @@ use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 class LockFiscalPeriodAction
 {
-    public function execute(int $id): array
+    public function execute(int $id): FiscalPeriod
     {
         PermissionService::requirePermission('fiscal_periods', 'edit');
 
@@ -22,6 +22,6 @@ class LockFiscalPeriodAction
             'locked_by' => auth()->id() ?? session('user_id'),
         ]);
 
-        return ['message' => 'Fiscal period locked successfully'];
+        return $period;
     }
 }

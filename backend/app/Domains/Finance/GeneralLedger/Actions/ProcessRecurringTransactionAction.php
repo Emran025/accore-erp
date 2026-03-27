@@ -12,30 +12,28 @@ class ProcessRecurringTransactionAction
         private readonly LedgerService $ledgerService
     ) {}
 
-    public function execute(array $data): array
+    public function execute(array $data): RecurringTransaction
     {
         PermissionService::requirePermission('general_ledger', 'create');
 
-        $templateId = $data['template_id'];
+        $templateId = $data['template_id'] ?? $data['id'] ?? null;
         $generationDate = $data['generation_date'] ?? now()->format('Y-m-d');
 
         $template = RecurringTransaction::findOrFail($templateId);
         $templateData = $template->template_data;
 
-        $voucherNumber = null;
-
         if ($template->type === 'expense') {
-            $voucherNumber = $this->ledgerService->postTransaction([
+            $this->ledgerService->postTransaction([
                 ['account_code' => $templateData['account_code'], 'entry_type' => 'DEBIT', 'amount' => $templateData['amount'], 'description' => $templateData['description']],
                 ['account_code' => '1110', 'entry_type' => 'CREDIT', 'amount' => $templateData['amount'], 'description' => $templateData['description']],
             ], 'recurring_transactions', $template->id, null, $generationDate);
         } elseif ($template->type === 'revenue') {
-            $voucherNumber = $this->ledgerService->postTransaction([
+            $this->ledgerService->postTransaction([
                 ['account_code' => '1110', 'entry_type' => 'DEBIT', 'amount' => $templateData['amount'], 'description' => $templateData['description']],
                 ['account_code' => $templateData['account_code'], 'entry_type' => 'CREDIT', 'amount' => $templateData['amount'], 'description' => $templateData['description']],
             ], 'recurring_transactions', $template->id, null, $generationDate);
         } elseif ($template->type === 'journal_voucher') {
-            $voucherNumber = $this->ledgerService->postTransaction(
+            $this->ledgerService->postTransaction(
                 $templateData['entries'],
                 'recurring_transactions',
                 $template->id,
@@ -59,6 +57,6 @@ class ProcessRecurringTransactionAction
             'next_due_date' => $nextDate->format('Y-m-d'),
         ]);
 
-        return ['voucher_number' => $voucherNumber];
+        return $template->fresh();
     }
 }

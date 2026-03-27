@@ -6,12 +6,11 @@ use App\Domains\HumanCapital\PerformanceDevelopment\Models\LearningCourse;
 
 class CreateLearningCourseAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): LearningCourse
     {
         $data['is_published'] = false;
         $data['created_by'] = auth()->id();
 
-        $course = LearningCourse::create($data);
-        return current($course->toArray()) ?: $course->toArray();
+        return LearningCourse::create($data);
     }
 }

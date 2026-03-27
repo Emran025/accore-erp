@@ -3,10 +3,11 @@ namespace App\Domains\Intelligence\AdvancedAnalytics\Actions;
 
 use App\Domains\Commercial\RevenueReceivables\Models\ArTransaction;
 use App\Domains\SupplyChain\PayablesExpenses\Models\ApTransaction;
+use Illuminate\Support\Collection;
 
 class GetAgingReportAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): Collection
     {
 
         $type = $data['type'] ?? 'receivables'; // receivables or payables
@@ -18,11 +19,11 @@ class GetAgingReportAction
             $reportData = $this->getPayablesAging($date);
         }
 
-        return [
+        return collect([
             'as_of_date' => $date,
             'type' => $type,
             'data' => $reportData,
-        ];
+        ]);
     }
 
     private function getReceivablesAging(string $date)

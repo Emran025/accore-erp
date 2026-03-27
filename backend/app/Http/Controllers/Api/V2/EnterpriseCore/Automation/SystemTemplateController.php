@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V2\EnterpriseCore\Automation;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EnterpriseCore\Automation\ListSystemTemplatesRequest;
 use App\Http\Requests\EnterpriseCore\Automation\StoreSystemTemplateRequest;
 use App\Http\Requests\EnterpriseCore\Automation\UpdateSystemTemplateRequest;
 use App\Http\Requests\EnterpriseCore\Automation\RenderSystemTemplateRequest;
@@ -13,11 +14,8 @@ use App\Domains\EnterpriseCore\Automation\Actions\ShowSystemTemplateAction;
 use App\Domains\EnterpriseCore\Automation\Actions\UpdateSystemTemplateAction;
 use App\Domains\EnterpriseCore\Automation\Actions\DeleteSystemTemplateAction;
 use App\Domains\EnterpriseCore\Automation\Actions\SystemTemplateOperationsAction;
-use App\Domains\HumanCapital\HRAdvanced\Services\TemplateRegistry;
-use App\Domains\EnterpriseCore\OrganizationGovernance\Models\DocumentTemplate;
 use App\Http\Resources\EnterpriseCore\OrganizationGovernance\DocumentTemplateResource;
 use App\Http\Resources\EnterpriseCore\OrganizationGovernance\DocumentTemplateHistoryResource;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -32,94 +30,34 @@ class SystemTemplateController extends Controller
 {
     use BaseApiController;
 
-    protected function isSystemType(string $type): bool
+    public function index(ListSystemTemplatesRequest $request, ListSystemTemplatesAction $action): JsonResponse
     {
-        $meta = TemplateRegistry::getTypeMetadata($type);
-        return $meta && isset($meta['module']) && $meta['module'] !== 'hr';
+        $templates = $action->execute($request->validated());
+        return $this->successResponse(DocumentTemplateResource::collection($templates));
     }
 
-    protected function getSystemTypes(): array
-    {
-        $types = [];
-        foreach (TemplateRegistry::getApprovedTypes() as $type => $meta) {
-            if (isset($meta['module']) && $meta['module'] !== 'hr') {
-                $types[] = $type;
-            }
-        }
-        return $types;
-    }
-
-    /**
-     * List all system templates.
-     * Only returns templates from approved system types.
-     */
-    public function index(Request $request, ListSystemTemplatesAction $action): JsonResponse
-    {
-        try {
-            $filters = $request->only(['type', 'search']);
-            $templates = $action->execute($filters);
-            return $this->successResponse(DocumentTemplateResource::collection($templates));
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 400);
-        }
-    }
-
-    /**
-     * Store a new system template.
-     * Validates template structure and keys before creation.
-     */
     public function store(StoreSystemTemplateRequest $request, CreateSystemTemplateAction $action): JsonResponse
     {
-        try {
-            $validated = $request->validated();
-            $result = $action->execute($validated);
-            $template = DocumentTemplate::find($result['id'] ?? $result);
-            return $this->successResponse(new DocumentTemplateResource($template), 'Template created successfully', 201);
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 400);
-        }
+        $template = $action->execute($request->validated());
+        return $this->successResponse(new DocumentTemplateResource($template), 'Template created successfully', 201);
     }
 
-    /**
-     * Show a specific system template by its unique key.
-     */
-    public function showByKey($key, ShowSystemTemplateAction $action): JsonResponse
+    public function showByKey(string $key, ShowSystemTemplateAction $action): JsonResponse
     {
-        try {
-            $result = $action->executeByKey($key);
-            $template = DocumentTemplate::where('template_key', $key)->first();
-            return $this->successResponse(new DocumentTemplateResource($template));
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 400);
-        }
+        $template = $action->executeByKey($key);
+        return $this->successResponse(new DocumentTemplateResource($template));
     }
 
-    /**
-     * Show the latest active template of a specific type.
-     */
-    public function showByType($type, ShowSystemTemplateAction $action): JsonResponse
+    public function showByType(string $type, ShowSystemTemplateAction $action): JsonResponse
     {
-        try {
-            $result = $action->executeByType($type);
-            $template = DocumentTemplate::where('template_type', $type)->where('is_active', true)->first();
-            return $this->successResponse(new DocumentTemplateResource($template));
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 400);
-        }
+        $template = $action->executeByType($type);
+        return $this->successResponse(new DocumentTemplateResource($template));
     }
 
-    /**
-     * Show a specific system template.
-     */
     public function show($id, ShowSystemTemplateAction $action): JsonResponse
     {
-        try {
-            $result = $action->executeById($id);
-            $template = DocumentTemplate::find($id);
-            return $this->successResponse(new DocumentTemplateResource($template));
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 400);
-        }
+        $template = $action->executeById($id);
+        return $this->successResponse(new DocumentTemplateResource($template));
     }
 
     /**
@@ -128,14 +66,8 @@ class SystemTemplateController extends Controller
      */
     public function update(UpdateSystemTemplateRequest $request, $id, UpdateSystemTemplateAction $action): JsonResponse
     {
-        try {
-            $validated = $request->validated();
-            $result = $action->execute($id, $validated);
-            $template = DocumentTemplate::find($id);
-            return $this->successResponse(new DocumentTemplateResource($template), 'Template updated and history recorded');
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 400);
-        }
+        $template = $action->execute($id, $request->validated());
+        return $this->successResponse(new DocumentTemplateResource($template), 'Template updated and history recorded');
     }
 
     /**
@@ -143,12 +75,8 @@ class SystemTemplateController extends Controller
      */
     public function destroy($id, DeleteSystemTemplateAction $action): JsonResponse
     {
-        try {
-            $action->execute($id);
-            return $this->successResponse([], 'Template deactivated successfully');
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 400);
-        }
+        $action->execute($id);
+        return $this->successResponse([], 'Template deactivated successfully');
     }
 
     /**
@@ -156,53 +84,21 @@ class SystemTemplateController extends Controller
      */
     public function history($id, SystemTemplateOperationsAction $action): JsonResponse
     {
-        try {
-            $histories = $action->getHistory($id);
-            $template = DocumentTemplate::with('history')->find($id);
-            return $this->successResponse(DocumentTemplateHistoryResource::collection($template->history), 'Template history fetched');
-        } catch (\Exception $e) {
-            return $this->errorResponse('Template not found', 404);
-        }
+        $histories = $action->getHistory($id);
+        return $this->successResponse(DocumentTemplateHistoryResource::collection($histories), 'Template history fetched');
     }
 
-    /**
-     * Render a template with provided context data.
-     * This endpoint allows modules to render templates with their data.
-     */
     public function render(RenderSystemTemplateRequest $request, $id, SystemTemplateOperationsAction $action): JsonResponse
     {
-        try {
-            $validated = $request->validated();
-            $renderedHtml = $action->render(
-                $id,
-                $validated['context'],
-                $validated['language'] ?? 'ar'
-            );
+        $validated = $request->validated();
+        $renderedHtml = $action->render($id, $validated['context'], $validated['language'] ?? 'ar');
 
-            return $this->successResponse([
-                'rendered_html' => $renderedHtml,
-            ], 'Template rendered successfully');
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 400);
-        }
+        return $this->successResponse(['rendered_html' => $renderedHtml], 'Template rendered successfully');
     }
 
-    /**
-     * Get approved keys for a template type.
-     * Useful for template editors to show available placeholders.
-     */
     public function getApprovedKeys(GetSystemTemplateKeysRequest $request, SystemTemplateOperationsAction $action): JsonResponse
     {
-        try {
-            $validated = $request->validated();
-            if (!$this->isSystemType($validated['type'])) {
-                return $this->errorResponse("Template type '{$validated['type']}' is not an approved system type", 400);
-            }
-
-            $keys = $action->getApprovedKeys($validated['type']);
-            return $this->successResponse($keys, 'Approved keys fetched');
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 400);
-        }
+        $keys = $action->getApprovedKeys($request->validated()['type']);
+        return $this->successResponse($keys, 'Approved keys fetched');
     }
 }

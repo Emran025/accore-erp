@@ -6,7 +6,7 @@ use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 class ToggleCurrencyStatusAction
 {
-    public function execute(int $id): array
+    public function execute(int $id): Currency
     {
         PermissionService::requirePermission('currency', 'edit');
 
@@ -17,6 +17,6 @@ class ToggleCurrencyStatusAction
         $currency->is_active = !$currency->is_active;
         $currency->save();
 
-        return $currency->fresh()->toArray();
+        return $currency->fresh();
     }
 }

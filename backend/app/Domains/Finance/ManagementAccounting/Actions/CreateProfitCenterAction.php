@@ -14,11 +14,11 @@ class CreateProfitCenterAction
         private readonly OrgIntegrationService $orgIntegration
     ) {}
 
-    public function execute(array $data): array
+    public function execute(array $data): ProfitCenter
     {
         PermissionService::requirePermission('chart_of_accounts', 'create');
 
-        $result = DB::transaction(function () use ($data) {
+        return DB::transaction(function () use ($data) {
             $center = ProfitCenter::create([
                 ...$data,
                 'type'       => $data['type'] ?? 'business_unit',
@@ -27,17 +27,11 @@ class CreateProfitCenterAction
             ]);
 
             // Sync to org-chart
-            $node = $this->orgIntegration->syncProfitCenterToOrgChart($center);
+            $this->orgIntegration->syncProfitCenterToOrgChart($center);
 
             TelescopeService::logOperation('CREATE', 'profit_centers', $center->id, null, $data);
 
-            return ['center' => $center->fresh(), 'node_uuid' => $node->node_uuid];
+            return $center->fresh();
         });
-
-        return [
-            'id'        => $result['center']->id,
-            'node_uuid' => $result['node_uuid'],
-            'center'    => $result['center']->toArray(),
-        ];
     }
 }

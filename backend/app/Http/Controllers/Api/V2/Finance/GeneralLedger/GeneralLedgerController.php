@@ -57,10 +57,8 @@ class GeneralLedgerController extends Controller
      */
     public function entries(ListGlEntriesRequest $request, ListGlEntriesAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
-        $data = $result['data'] ?? $result;
-
-        return $this->successResponse(GeneralLedgerResource::collection($data));
+        $paginator = $action->execute($request->validated());
+        return $this->successResponse(GeneralLedgerResource::collection($paginator));
     }
 
     /**

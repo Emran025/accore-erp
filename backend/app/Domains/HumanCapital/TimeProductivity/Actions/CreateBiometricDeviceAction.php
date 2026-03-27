@@ -6,12 +6,10 @@ use App\Domains\HumanCapital\TimeProductivity\Models\BiometricDevice;
 
 class CreateBiometricDeviceAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): BiometricDevice
     {
         $data['created_by'] = auth()->id();
         $data['status'] = 'offline';
-        $device = BiometricDevice::create($data);
-
-        return $device->toArray();
+        return BiometricDevice::create($data);
     }
 }

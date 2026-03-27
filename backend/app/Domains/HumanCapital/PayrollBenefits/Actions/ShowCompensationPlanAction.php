@@ -6,9 +6,8 @@ use App\Domains\HumanCapital\PayrollBenefits\Models\CompensationPlan;
 
 class ShowCompensationPlanAction
 {
-    public function execute(int|string $id): array
+    public function execute(int|string $id): CompensationPlan
     {
-        $plan = CompensationPlan::with(['entries.employee'])->findOrFail($id);
-        return $plan->toArray();
+        return CompensationPlan::with(['entries.employee'])->findOrFail($id);
     }
 }

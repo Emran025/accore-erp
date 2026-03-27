@@ -4,21 +4,21 @@ namespace App\Domains\Finance\ManagementAccounting\Actions;
 use App\Domains\Finance\ManagementAccounting\Models\CostCenter;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
-
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 class ListCostCentersAction
 {
-    public function execute(array $filters): array
+    public function execute(array $filters): LengthAwarePaginator
     {
         PermissionService::requirePermission('chart_of_accounts', 'view');
 
-        $page = max(1, (int)($filters['page'] ?? 1));
         $perPage = min(100, max(1, (int)($filters['per_page'] ?? $filters['limit'] ?? 20)));
 
         $query = CostCenter::with(['parent', 'account', 'manager', 'createdBy', 'children']);
 
         // Search
         if ($search = ($filters['search'] ?? null)) {
-            $query->where(function ($q) use ($search) {
+            $query->where(function (Builder $q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('name_en', 'like', "%{$search}%")
                   ->orWhere('code', 'like', "%{$search}%")
@@ -42,21 +42,10 @@ class ListCostCentersAction
             $query->where('parent_id', $parentId === 'null' ? null : $parentId);
         }
 
-        $total = $query->count();
-        $items = $query->orderBy('code', 'asc')
-            ->skip(($page - 1) * $perPage)
-            ->take($perPage)
-            ->get();
+        $paginator = $query->orderBy('code', 'asc')->paginate($perPage);
 
-        // Enrich with actual costs from GL
-        $items->each(function ($center) {
-            $center->recorder_name = $center->createdBy->name ?? null;
-            $center->parent_name   = $center->parent->name ?? null;
-            $center->account_name  = $center->account->account_name ?? null;
-            $center->manager_name  = $center->manager->name ?? null;
-            $center->children_count = $center->children->count();
-
-            // Sum actual costs from GL
+        // Enrichment logic preserved for data consistency within the paginator
+        $paginator->getCollection()->each(function ($center) {
             $center->actual_cost = GeneralLedger::where('cost_center_id', $center->id)
                 ->where('entry_type', 'DEBIT')
                 ->sum('amount');
@@ -65,11 +54,6 @@ class ListCostCentersAction
                 : 0;
         });
 
-        return [
-            'items' => $items->toArray(),
-            'total' => $total,
-            'page' => $page,
-            'per_page' => $perPage,
-        ];
+        return $paginator;
     }
 }

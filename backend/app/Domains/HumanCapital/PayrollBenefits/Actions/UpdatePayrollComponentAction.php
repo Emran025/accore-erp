@@ -6,10 +6,10 @@ use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollComponent;
 
 class UpdatePayrollComponentAction
 {
-    public function execute(int|string $id, array $data): array
+    public function execute(int|string $id, array $data): PayrollComponent
     {
         $component = PayrollComponent::findOrFail($id);
         $component->update($data);
-        return current($component->toArray()) ?: reset($component);
+        return $component->fresh();
     }
 }

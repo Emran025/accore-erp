@@ -1,19 +1,13 @@
 <?php
-
 namespace App\Domains\HumanCapital\WorkforceAdmin\Actions;
 
-use App\Domains\Shared\Actions\Action;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\ExpatManagement;
-use Illuminate\Http\JsonResponse;
 
-class DeleteExpatRecordAction extends Action
+class DeleteExpatRecordAction
 {
-    public function __construct(private readonly int $id) {}
-
-    public function __invoke(): JsonResponse
+    public function execute(int|string $id): void
     {
-        $expat = ExpatManagement::findOrFail($this->id);
+        $expat = ExpatManagement::findOrFail($id);
         $expat->delete();
-        return $this->successResponse(['message' => 'Expat record deleted successfully']);
     }
 }

@@ -6,9 +6,8 @@ use App\Domains\HumanCapital\WorkforceAdmin\Models\ContingentWorker;
 
 class ShowContingentWorkerAction
 {
-    public function execute(int|string $id): array
+    public function execute(int|string $id): ContingentWorker
     {
-        $worker = ContingentWorker::with(['contracts'])->findOrFail($id);
-        return $worker->toArray();
+        return ContingentWorker::with(['contracts'])->findOrFail($id);
     }
 }

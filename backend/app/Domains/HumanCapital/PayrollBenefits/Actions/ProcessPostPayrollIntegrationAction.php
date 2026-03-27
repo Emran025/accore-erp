@@ -6,7 +6,7 @@ use App\Domains\HumanCapital\PayrollBenefits\Models\PostPayrollIntegration;
 
 class ProcessPostPayrollIntegrationAction
 {
-    public function execute(int $id): array
+    public function execute(int $id): PostPayrollIntegration
     {
         $integration = PostPayrollIntegration::findOrFail($id);
         
@@ -27,7 +27,7 @@ class ProcessPostPayrollIntegrationAction
                 'processed_at' => now(),
             ]);
 
-            return $integration->load('payrollCycle')->toArray();
+            return $integration->load('payrollCycle');
         } catch (\Exception $e) {
             $integration->update([
                 'status' => 'failed',

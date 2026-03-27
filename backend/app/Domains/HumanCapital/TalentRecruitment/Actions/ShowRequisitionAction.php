@@ -6,9 +6,8 @@ use App\Domains\HumanCapital\TalentRecruitment\Models\RecruitmentRequisition;
 
 class ShowRequisitionAction
 {
-    public function execute(int|string $id): array
+    public function execute(int|string $id): RecruitmentRequisition
     {
-        $requisition = RecruitmentRequisition::with(['department', 'role', 'applicants'])->findOrFail($id);
-        return $requisition->toArray();
+        return RecruitmentRequisition::with(['department', 'role', 'applicants'])->findOrFail($id);
     }
 }

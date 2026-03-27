@@ -3,10 +3,10 @@
 namespace App\Domains\HumanCapital\PayrollBenefits\Actions;
 
 use App\Domains\HumanCapital\PayrollBenefits\Models\CompensationEntry;
-
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 class ListCompensationEntriesAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): LengthAwarePaginator
     {
         $query = CompensationEntry::with(['plan', 'employee']);
 
@@ -22,13 +22,6 @@ class ListCompensationEntriesAction
             $query->where('status', $filters['status']);
         }
 
-        $paginated = $query->orderBy('created_at', 'desc')->paginate(15);
-        
-        return [
-            'data' => $paginated->items(),
-            'total' => $paginated->total(),
-            'current_page' => $paginated->currentPage(),
-            'per_page' => $paginated->perPage()
-        ];
+        return $query->orderBy('created_at', 'desc')->paginate(15);
     }
 }

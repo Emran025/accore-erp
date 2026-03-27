@@ -6,11 +6,11 @@ use App\Domains\HumanCapital\HRCompliance\Models\KnowledgeBase;
 
 class MarkKnowledgeBaseHelpfulAction
 {
-    public function execute(int $id): array
+    public function execute(int $id): KnowledgeBase
     {
         $kb = KnowledgeBase::findOrFail($id);
         $kb->increment('helpful_count');
 
-        return $kb->toArray();
+        return $kb;
     }
 }

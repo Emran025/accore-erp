@@ -4,13 +4,15 @@ namespace App\Domains\Finance\GeneralLedger\Actions;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
+use Illuminate\Support\Collection;
+
 class GetAccountDetailsAction
 {
     public function __construct(
         private readonly LedgerService $ledgerService
     ) {}
 
-    public function execute(array $filters): array
+    public function execute(array $filters): Collection
     {
         $accountCode = $filters['account_code'] ?? null;
         $accountId = $filters['account_id'] ?? null;
@@ -69,7 +71,7 @@ class GetAccountDetailsAction
         // Calculate running balance
         $balance = $this->ledgerService->getAccountBalance($account->account_code, $endDate);
 
-        return [
+        return collect([
             'account' => [
                 'code' => $account->account_code,
                 'name' => $account->account_name,
@@ -83,6 +85,6 @@ class GetAccountDetailsAction
                 'total_records' => $total,
                 'total_pages' => ceil($total / $perPage),
             ],
-        ];
+        ]);
     }
 }

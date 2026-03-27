@@ -8,6 +8,8 @@ use App\Domains\Finance\GeneralLedger\Services\ChartOfAccountsMappingService;
 use App\Domains\SupplyChain\Inventory\Services\InventoryCostingService;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Collection;
+
 class ProcessPeriodicInventoryAction
 {
     public function __construct(
@@ -16,7 +18,7 @@ class ProcessPeriodicInventoryAction
         private readonly InventoryCostingService $costingService
     ) {}
 
-    public function execute(array $data): array
+    public function execute(array $data): Collection
     {
 
         $fiscalPeriodId = $data['fiscal_period_id'];
@@ -99,7 +101,7 @@ class ProcessPeriodicInventoryAction
 
             TelescopeService::logOperation('UPDATE', 'inventory_counts', null, null, ['fiscal_period_id' => $fiscalPeriodId]);
 
-            return ['message' => 'Inventory counts processed successfully'];
+            return $counts;
         });
     }
 }

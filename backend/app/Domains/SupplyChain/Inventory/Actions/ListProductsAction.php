@@ -3,19 +3,17 @@
 namespace App\Domains\SupplyChain\Inventory\Actions;
 
 use App\Domains\SupplyChain\Inventory\Models\Product;
-
+use Illuminate\Pagination\LengthAwarePaginator;
 class ListProductsAction
 {
-    public function execute(array $filters): array
+    public function execute(array $filters): LengthAwarePaginator
     {
         $search   = $filters['search'] ?? '';
-        $page     = max(1, (int)($filters['page'] ?? 1));
         $perPage  = min(100, max(1, (int)($filters['per_page'] ?? 20)));
-        $itemType = $filters['item_type'] ?? 'product'; // default: only physical products
+        $itemType = $filters['item_type'] ?? 'product';
 
         $query = Product::with(['createdBy', 'category']);
 
-        // Filter by item type. Passing 'all' returns everything.
         if ($itemType !== 'all') {
             $query->where('item_type', $itemType);
         }
@@ -31,17 +29,6 @@ class ListProductsAction
             });
         }
 
-        $total    = $query->count();
-        $products = $query->orderBy('id', 'desc')
-            ->skip(($page - 1) * $perPage)
-            ->take($perPage)
-            ->get();
-
-        return [
-            'data'     => $products,
-            'total'    => $total,
-            'page'     => $page,
-            'per_page' => $perPage,
-        ];
+        return $query->orderBy('id', 'desc')->paginate($perPage);
     }
 }

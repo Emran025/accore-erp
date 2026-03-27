@@ -3,10 +3,11 @@
 namespace App\Domains\HumanCapital\HRCompliance\Actions;
 
 use App\Domains\Manufacturing\QualityControl\Models\QaCompliance;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ListQaCompliancesAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): LengthAwarePaginator
     {
         $query = QaCompliance::with(['employee', 'capas']);
         
@@ -22,6 +23,6 @@ class ListQaCompliancesAction
             $query->where('employee_id', $filters['employee_id']);
         }
         
-        return $query->orderBy('created_at', 'desc')->paginate(15)->toArray();
+        return $query->orderBy('created_at', 'desc')->paginate(15);
     }
 }

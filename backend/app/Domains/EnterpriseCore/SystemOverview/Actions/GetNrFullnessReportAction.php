@@ -4,12 +4,14 @@ namespace App\Domains\EnterpriseCore\SystemOverview\Actions;
 
 use App\Domains\EnterpriseCore\SystemOverview\Services\NumberRangeService;
 
+use Illuminate\Support\Collection;
+
 class GetNrFullnessReportAction
 {
     public function __construct(private readonly NumberRangeService $service) {}
 
-    public function execute(int $objectId): array
+    public function execute(int $objectId): Collection
     {
-        return $this->service->getFullnessReport($objectId);
+        return collect($this->service->getFullnessReport($objectId));
     }
 }

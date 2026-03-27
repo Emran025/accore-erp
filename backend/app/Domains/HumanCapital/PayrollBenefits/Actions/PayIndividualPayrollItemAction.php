@@ -16,7 +16,7 @@ class PayIndividualPayrollItemAction
         $this->payrollService = $payrollService;
     }
 
-    public function execute(int|string $itemId, array $data): array
+    public function execute(int|string $itemId, array $data): PayrollTransaction
     {
         return DB::transaction(function () use ($itemId, $data) {
             $item = PayrollItem::with('payrollCycle')->findOrFail($itemId);
@@ -52,7 +52,7 @@ class PayIndividualPayrollItemAction
 
             $this->payrollService->checkAndSetPaidStatus($item->payroll_cycle_id);
 
-            return $transaction->toArray();
+            return $transaction;
         });
     }
 }

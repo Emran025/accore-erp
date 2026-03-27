@@ -47,49 +47,34 @@ class PurchasesController extends Controller
      */
     public function index(ListPurchasesRequest $request, ListPurchasesAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
+        $paginator = $action->execute($request->validated());
 
-        return $this->paginatedResponse(
-            PurchaseResource::collection($result['data']),
-            $result['total'],
-            $result['current_page'],
-            $result['per_page']
-        );
+        return $this->successResponse(PurchaseResource::collection($paginator));
     }
 
     /**
      * Store a new purchase or create a purchase return.
      */
-    public function store(Request $request, CreatePurchaseAction $purchaseAction, CreatePurchaseReturnAction $returnAction): JsonResponse
-    {
+    public function store(
+        Request $request,
+        CreatePurchaseAction $purchaseAction,
+        CreatePurchaseReturnAction $returnAction
+    ): JsonResponse {
         $type = $request->input('type', 'purchase');
         $userId = (int) (auth()->id() ?? session('user_id'));
 
-        if (!$userId) {
-            return $this->errorResponse('User ID is required', 401);
-        }
-
         try {
             if ($type === 'return') {
-                $storeRequest = app(StorePurchaseReturnRequest::class);
-                $validated = $storeRequest->validated();
-
-                $returnId = $returnAction->execute($validated, $userId);
-                TelescopeService::logOperation('CREATE', 'purchase_returns', $returnId, null, $validated);
-
-                $returnPurchase = Purchase::find($returnId);
-                return $this->successResponse(new PurchaseResource($returnPurchase), 'Purchase return created successfully');
+                $validated = app(StorePurchaseReturnRequest::class)->validated();
+                $purchase = $returnAction->execute($validated, $userId);
+                TelescopeService::logOperation('CREATE', 'purchase_returns', $purchase->id, null, $validated);
+                return $this->successResponse(new PurchaseResource($purchase), 'Purchase return created successfully');
             }
 
-            // Standard Purchase
-            $storeRequest = app(StorePurchaseRequest::class);
-            $validated = $storeRequest->validated();
-
+            $validated = app(StorePurchaseRequest::class)->validated();
             $purchase = $purchaseAction->execute($validated, $userId);
-            TelescopeService::logOperation('CREATE', 'purchases', $purchase['id'], null, $validated);
-
-            $newPurchase = Purchase::find($purchase['id']);
-            return $this->successResponse(new PurchaseResource($newPurchase), 'Purchase created successfully', 201);
+            TelescopeService::logOperation('CREATE', 'purchases', $purchase->id, null, $validated);
+            return $this->successResponse(new PurchaseResource($purchase), 'Purchase created successfully', 201);
         } catch (\Exception $e) {
             Log::error('Purchase Operation Error: ' . $e->getMessage());
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
@@ -123,10 +108,9 @@ class PurchasesController extends Controller
     public function storeRequest(StorePurchaseRequestRequest $request, CreatePurchaseRequestAction $action): JsonResponse
     {
         $userId = (int) (auth()->id() ?? session('user_id'));
-        $result = $action->execute($request->validated(), $userId);
+        $purchaseRequest = $action->execute($request->validated(), $userId);
 
-        $req = PurchaseRequest::find($result['id']);
-        return $this->successResponse(new PurchaseRequestResource($req), 'Purchase request created successfully');
+        return $this->successResponse(new PurchaseRequestResource($purchaseRequest), 'Purchase request created successfully');
     }
 
     /**
@@ -134,9 +118,9 @@ class PurchasesController extends Controller
      */
     public function updateRequest(UpdatePurchaseRequestRequest $request, UpdatePurchaseRequestAction $action): JsonResponse
     {
-        $action->execute($request->validated());
+        $purchaseRequest = $action->execute($request->validated());
 
-        return $this->successResponse([], 'Purchase request updated successfully');
+        return $this->successResponse(new PurchaseRequestResource($purchaseRequest), 'Purchase request updated successfully');
     }
 
     /**
@@ -158,21 +142,12 @@ class PurchasesController extends Controller
     public function approve(ApprovePurchaseRequest $request, ApprovePurchaseAction $action): JsonResponse
     {
         $id = (int)$request->validated()['id'];
-        $purchase = Purchase::findOrFail($id);
-        $this->authorize('approve', $purchase);
-        
-        $userId = auth()->id() ?? session('user_id');
+        $userId = (int) (auth()->id() ?? session('user_id'));
 
         try {
-            $success = $action->execute($id, (int)$userId);
-            
-            if (!$success) {
-                return $this->errorResponse('Purchase already approved or not found', 400);
-            }
-
+            $purchase = $action->execute($id, $userId);
             TelescopeService::logOperation('UPDATE', 'purchases', $id, null, ['action' => 'approve']);
-
-            return $this->successResponse(['message' => 'Purchase approved and processed successfully']);
+            return $this->successResponse(new PurchaseResource($purchase), 'Purchase approved and processed successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
@@ -184,16 +159,13 @@ class PurchasesController extends Controller
     public function destroy(ReversePurchaseRequest $request, ReversePurchaseAction $action): JsonResponse
     {
         $id = (int)$request->validated()['id'];
-        $purchase = Purchase::findOrFail($id);
-        $this->authorize('delete', $purchase);
-        
-        $userId = auth()->id() ?? session('user_id');
+        $userId = (int)(auth()->id() ?? session('user_id'));
 
         try {
-            $action->execute($id, (int)$userId);
+            $purchase = $action->execute($id, $userId);
             TelescopeService::logOperation('REVERSE', 'purchases', $id, null, ['action' => 'reverse']);
 
-            return $this->successResponse(['message' => 'Purchase reversed successfully']);
+            return $this->successResponse(new PurchaseResource($purchase), 'Purchase reversed successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }

@@ -3,10 +3,14 @@
 namespace App\Domains\Finance\Treasury\Actions;
 
 use App\Domains\Finance\Treasury\Models\Reconciliation;
+use App\Domains\Finance\GeneralLedger\Services\LedgerService;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ListReconciliationsAction
 {
-    public function execute(array $filters): array
+    public function __construct(protected LedgerService $ledgerService) {}
+
+    public function execute(array $filters): LengthAwarePaginator
     {
         $query = Reconciliation::with(['bankAccount']);
 
@@ -17,8 +21,6 @@ class ListReconciliationsAction
         $limit = $filters['limit'] ?? $filters['per_page'] ?? 15;
 
         return $query->orderBy('reconciliation_date', 'desc')
-            ->paginate($limit)
-            ->toArray();
+            ->paginate($limit);
     }
 }
-

@@ -1,13 +1,10 @@
 <?php
 namespace App\Domains\Finance\GeneralLedger\Actions;
-use App\Domains\Shared\Actions\Action;
 use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 class CreateFiscalPeriodAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): FiscalPeriod
     {
         PermissionService::requirePermission('fiscal_periods', 'create');
 
@@ -25,7 +22,7 @@ class CreateFiscalPeriodAction
             throw new \Exception('Period overlaps with an existing fiscal period', 409);
         }
 
-        $period = FiscalPeriod::create([
+        return FiscalPeriod::create([
             'period_name' => $data['period_name'],
             'start_date' => $data['start_date'],
             'end_date' => $data['end_date'],
@@ -33,7 +30,5 @@ class CreateFiscalPeriodAction
             'is_locked' => false,
             'created_by' => auth()->id() ?? session('user_id'),
         ]);
-
-        return ['id' => $period->id];
     }
 }

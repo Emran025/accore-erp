@@ -29,12 +29,12 @@ class JournalVouchersController extends Controller
     {
         PermissionService::requirePermission('journal_vouchers', 'view');
         $result = $action->execute($request->validated());
-        $objects = array_map(fn($v) => (object)$v, $result['vouchers']);
+
         return $this->paginatedResponse(
-            JournalVoucherResource::collection($objects),
-            $result['total'] ?? count($result['vouchers']),
-            1,
-            15
+            JournalVoucherResource::collection($result['vouchers']),
+            $result['total'],
+            $result['page'],
+            $result['per_page']
         );
     }
 
@@ -46,7 +46,7 @@ class JournalVouchersController extends Controller
         try {
             PermissionService::requirePermission('journal_vouchers', 'view');
             $voucher = $action->execute($id);
-            return $this->successResponse(new JournalVoucherResource((object)$voucher));
+            return $this->successResponse(new JournalVoucherResource((object)$voucher->all()));
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }
@@ -59,8 +59,8 @@ class JournalVouchersController extends Controller
     {
         try {
             PermissionService::requirePermission('journal_vouchers', 'create');
-            $result = $action->execute($request->validated());
-            return $this->successResponse(new JournalVoucherResource((object)$result));
+            $voucher = $action->execute($request->validated());
+            return $this->successResponse(new JournalVoucherResource((object)$voucher->all()), 'Journal Voucher created successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }
@@ -73,37 +73,30 @@ class JournalVouchersController extends Controller
     {
         try {
             PermissionService::requirePermission('journal_vouchers', 'delete');
-            $result = $action->execute($id);
-            return $this->successResponse($result);
+            $voucher = $action->execute($id);
+            return $this->successResponse(new JournalVoucherResource((object)$voucher->all()), 'Journal Voucher reversed successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }
     }
 
-
-    /**
-     * Post a journal voucher to General Ledger
-     */
     public function post(string $id, PostJournalVoucherAction $action, LedgerService $ledgerService): JsonResponse
     {
         try {
             PermissionService::requirePermission('journal_vouchers', 'post');
-            $result = $action->execute((int)$id, $ledgerService);
-            return $this->successResponse($result);
+            $voucher = $action->execute((int)$id, $ledgerService);
+            return $this->successResponse(new JournalVoucherResource((object)$voucher->all()), 'Journal Voucher posted successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }
     }
 
-    /**
-     * Delete an unposted journal voucher
-     */
     public function delete(string $id, DeleteJournalVoucherAction $action): JsonResponse
     {
         try {
             PermissionService::requirePermission('journal_vouchers', 'delete');
-            $result = $action->execute((int)$id);
-            return $this->successResponse($result);
+            $action->execute((int)$id);
+            return $this->successResponse([], 'Journal Voucher deleted successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }

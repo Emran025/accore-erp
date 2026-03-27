@@ -3,10 +3,11 @@
 namespace App\Domains\HumanCapital\ServicesWellness\Actions;
 
 use App\Domains\HumanCapital\ServicesWellness\Models\EhsIncident;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ListEhsIncidentsAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): LengthAwarePaginator
     {
         $query = EhsIncident::with(['employee']);
 
@@ -22,6 +23,6 @@ class ListEhsIncidentsAction
             $query->where('status', $filters['status']);
         }
 
-        return $query->orderBy('incident_date', 'desc')->paginate(15)->toArray();
+        return $query->orderBy('incident_date', 'desc')->paginate(15);
     }
 }

@@ -7,12 +7,12 @@ use App\Domains\Finance\Treasury\Models\RecurringTransaction;
 
 class UpdateRecurringTransactionAction
 {
-    public function execute(int $id, array $data): array
+    public function execute(int $id, array $data): RecurringTransaction
     {
         $template = RecurringTransaction::findOrFail($id);
         $template->update($data);
 
-        return $template->fresh()->toArray();
+        return $template->fresh();
     }
 }
 

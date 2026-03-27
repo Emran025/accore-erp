@@ -6,7 +6,7 @@ use App\Domains\HumanCapital\PerformanceDevelopment\Models\LearningEnrollment;
 
 class UpdateLearningEnrollmentAction
 {
-    public function execute(int|string $id, array $data): array
+    public function execute(int|string $id, array $data): LearningEnrollment
     {
         $enrollment = LearningEnrollment::findOrFail($id);
 
@@ -24,6 +24,6 @@ class UpdateLearningEnrollmentAction
         }
 
         $enrollment->update($data);
-        return $enrollment->load('course', 'employee')->toArray();
+        return $enrollment->load('course', 'employee');
     }
 }

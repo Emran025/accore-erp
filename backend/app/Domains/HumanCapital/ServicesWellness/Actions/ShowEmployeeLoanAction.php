@@ -6,9 +6,8 @@ use App\Domains\HumanCapital\ServicesWellness\Models\EmployeeLoan;
 
 class ShowEmployeeLoanAction
 {
-    public function execute(int|string $id): array
+    public function execute(int|string $id): EmployeeLoan
     {
-        $loan = EmployeeLoan::with(['employee', 'repayments'])->findOrFail($id);
-        return $loan->toArray();
+        return EmployeeLoan::with(['employee', 'repayments'])->findOrFail($id);
     }
 }

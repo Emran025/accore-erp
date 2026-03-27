@@ -21,8 +21,6 @@ use App\Domains\Finance\ForeignExchange\Actions\GetExchangeRateAction;
 use App\Domains\Finance\ForeignExchange\Actions\ConvertAmountAction;
 use App\Domains\Finance\ForeignExchange\Actions\ProcessRevaluationAction;
 use App\Domains\Finance\ForeignExchange\Actions\GetCurrencyPolicyTypesAction;
-use App\Domains\Finance\ForeignExchange\Models\CurrencyPolicy;
-use App\Domains\Finance\ForeignExchange\Models\CurrencyExchangeRateHistory;
 use App\Http\Resources\Finance\ForeignExchange\CurrencyPolicyResource;
 use App\Http\Resources\Finance\ForeignExchange\CurrencyExchangeRateHistoryResource;
 use Illuminate\Http\Request;
@@ -48,9 +46,7 @@ class CurrencyPolicyController extends Controller
     public function getActivePolicy(GetActiveCurrencyPolicyAction $action): JsonResponse
     {
         $policy = $action->execute();
-        if (!$policy) return $this->successResponse(null);
-        
-        return $this->successResponse(new CurrencyPolicyResource($policy));
+        return $this->successResponse($policy ? new CurrencyPolicyResource($policy) : null);
     }
 
     /**
@@ -59,8 +55,7 @@ class CurrencyPolicyController extends Controller
     public function store(StoreCurrencyPolicyRequest $request, CreateCurrencyPolicyAction $action): JsonResponse
     {
         try {
-            $result = $action->execute($request->validated());
-            $policy = CurrencyPolicy::find($result['id'] ?? $result);
+            $policy = $action->execute($request->validated());
             return $this->successResponse(new CurrencyPolicyResource($policy), 'Currency policy created successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
@@ -72,11 +67,12 @@ class CurrencyPolicyController extends Controller
      */
     public function show(int $id, ShowCurrencyPolicyAction $action): JsonResponse
     {
-        $policy = $action->execute($id);
-        if (is_array($policy)) {
-            $policy = CurrencyPolicy::find($id);
+        try {
+            $policy = $action->execute($id);
+            return $this->successResponse(new CurrencyPolicyResource($policy));
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 404);
         }
-        return $this->successResponse(new CurrencyPolicyResource($policy));
     }
 
     /**
@@ -85,8 +81,7 @@ class CurrencyPolicyController extends Controller
     public function update(UpdateCurrencyPolicyRequest $request, int $id, UpdateCurrencyPolicyAction $action): JsonResponse
     {
         try {
-            $result = $action->execute($request->validated(), $id);
-            $policy = CurrencyPolicy::find($id);
+            $policy = $action->execute($request->validated(), $id);
             return $this->successResponse(new CurrencyPolicyResource($policy), 'Currency policy updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
@@ -99,9 +94,8 @@ class CurrencyPolicyController extends Controller
     public function activate(int $id, ActivateCurrencyPolicyAction $action): JsonResponse
     {
         try {
-            $result = $action->execute($id);
-            $policy = CurrencyPolicy::find($id);
-            return $this->successResponse(new CurrencyPolicyResource($policy), $result['message']);
+            $policy = $action->execute($id);
+            return $this->successResponse(new CurrencyPolicyResource($policy), 'Currency policy activated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }
@@ -126,8 +120,7 @@ class CurrencyPolicyController extends Controller
     public function getExchangeRateHistory(Request $request, GetExchangeRateHistoryAction $action): JsonResponse
     {
         $history = $action->execute($request->all());
-        $data = $history['data'] ?? $history;
-        return $this->successResponse(CurrencyExchangeRateHistoryResource::collection($data));
+        return $this->successResponse(CurrencyExchangeRateHistoryResource::collection($history));
     }
 
     /**
@@ -136,8 +129,7 @@ class CurrencyPolicyController extends Controller
     public function recordExchangeRate(RecordExchangeRateRequest $request, RecordExchangeRateAction $action): JsonResponse
     {
         try {
-            $result = $action->execute($request->validated());
-            $rate = CurrencyExchangeRateHistory::find($result['id'] ?? $result);
+            $rate = $action->execute($request->validated());
             return $this->successResponse(new CurrencyExchangeRateHistoryResource($rate), 'Exchange rate recorded successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
@@ -149,14 +141,15 @@ class CurrencyPolicyController extends Controller
      */
     public function getExchangeRate(Request $request, GetExchangeRateAction $action): JsonResponse
     {
-        $rate = $action->execute($request->all());
-
-        if ($rate === null) {
-            return $this->errorResponse('No exchange rate available for this currency pair', 404);
+        try {
+            $rate = $action->execute($request->all());
+            if (!$rate) {
+                return $this->errorResponse('No exchange rate available for this currency pair', 404);
+            }
+            return $this->successResponse(new CurrencyExchangeRateHistoryResource($rate));
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 404);
         }
-
-        $model = CurrencyExchangeRateHistory::find($rate['id'] ?? $rate);
-        return $this->successResponse(new CurrencyExchangeRateHistoryResource($model));
     }
 
     /**

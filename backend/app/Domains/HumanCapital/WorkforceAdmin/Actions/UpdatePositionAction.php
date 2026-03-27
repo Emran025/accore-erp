@@ -6,11 +6,11 @@ use App\Domains\HumanCapital\WorkforceAdmin\Models\Position;
 
 class UpdatePositionAction
 {
-    public function execute(int|string $id, array $data): array
+    public function execute(int|string $id, array $data): Position
     {
         $position = Position::findOrFail($id);
         $position->update($data);
 
-        return $position->load(['jobTitle', 'role', 'department'])->toArray();
+        return $position->load(['jobTitle', 'role', 'department']);
     }
 }

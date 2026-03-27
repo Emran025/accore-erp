@@ -5,12 +5,13 @@ namespace App\Domains\HumanCapital\TimeProductivity\Actions;
 use App\Domains\HumanCapital\TimeProductivity\Models\BiometricDevice;
 use App\Domains\HumanCapital\TimeProductivity\Models\BiometricSyncLog;
 use App\Domains\HumanCapital\TimeProductivity\Models\AttendanceRecord;
-use Illuminate\Support\Facades\Log;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use Exception;
+use Illuminate\Support\Collection;
 
 class SyncBiometricDeviceAction
 {
-    public function execute(int|string $id, array $records = []): array
+    public function execute(int|string $id, array $records = []): Collection
     {
         $device = BiometricDevice::findOrFail($id);
 
@@ -28,7 +29,7 @@ class SyncBiometricDeviceAction
         if (!empty($records)) {
             foreach ($records as $record) {
                 try {
-                    $employee = \App\Domains\HumanCapital\WorkforceAdmin\Models\Employee::where('employee_code', $record['employee_code'])->first();
+                    $employee = Employee::where('employee_code', $record['employee_code'])->first();
                     if (!$employee) {
                         $failed++;
                         continue;
@@ -48,7 +49,7 @@ class SyncBiometricDeviceAction
                         ]
                     );
                     $imported++;
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $failed++;
                 }
             }
@@ -67,10 +68,10 @@ class SyncBiometricDeviceAction
             'status'               => 'online',
         ]);
 
-        return [
+        return collect([
             'log' => $syncLog->toArray(),
             'imported' => $imported,
             'failed' => $failed,
-        ];
+        ]);
     }
 }

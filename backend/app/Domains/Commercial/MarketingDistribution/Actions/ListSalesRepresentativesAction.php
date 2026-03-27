@@ -6,11 +6,12 @@ use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentative;
 use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentativeTransaction;
 use Illuminate\Database\Eloquent\Builder;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+
 class ListSalesRepresentativesAction
 {
-    public function execute(array $filters): array
+    public function execute(array $filters): LengthAwarePaginator
     {
-        $page = max(1, (int)($filters['page'] ?? 1));
         $perPage = min(100, max(1, (int)($filters['per_page'] ?? 20)));
         $search = $filters['search'] ?? '';
 
@@ -23,10 +24,7 @@ class ListSalesRepresentativesAction
             });
         }
 
-        $total = $query->count();
-        $representatives = $query->orderBy('name')
-            ->skip(($page - 1) * $perPage)
-            ->take($perPage)
+        $paginator = $query->orderBy('name')
             ->addSelect([
                 'total_sales' => SalesRepresentativeTransaction::selectRaw('COALESCE(SUM(
                     (SELECT SUM(amount) FROM general_ledger WHERE general_ledger.voucher_number = sales_representative_transactions.voucher_number AND general_ledger.entry_type = "DEBIT")
@@ -35,18 +33,14 @@ class ListSalesRepresentativesAction
                     ->where('type', 'commission')
                     ->where('is_deleted', false)
             ])
-            ->get()
-            ->map(function ($rep) {
-                $rep->total_sales = (float) ($rep->total_sales ?? 0);
-                $rep->total_paid = (float) max(0, $rep->total_sales - $rep->current_balance);
-                return $rep;
-            });
+            ->paginate($perPage);
 
-        return [
-            'data' => $representatives,
-            'total' => $total,
-            'current_page' => $page,
-            'per_page' => $perPage,
-        ];
+        $paginator->getCollection()->transform(function ($rep) {
+            $rep->total_sales = (float) ($rep->total_sales ?? 0);
+            $rep->total_paid = (float) max(0, $rep->total_sales - $rep->current_balance);
+            return $rep;
+        });
+
+        return $paginator;
     }
 }

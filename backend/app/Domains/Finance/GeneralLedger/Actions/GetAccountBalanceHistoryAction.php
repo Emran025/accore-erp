@@ -3,9 +3,11 @@ namespace App\Domains\Finance\GeneralLedger\Actions;
 
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
+use Illuminate\Support\Collection;
+
 class GetAccountBalanceHistoryAction
 {
-    public function execute(array $filters): array
+    public function execute(array $filters): Collection
     {
         $accountCode = $filters['account_code'] ?? null;
         $accountId = $filters['account_id'] ?? null;
@@ -70,7 +72,7 @@ class GetAccountBalanceHistoryAction
             ];
         }
 
-        return [
+        return collect([
             'account' => [
                 'code' => $account->account_code,
                 'name' => $account->account_name,
@@ -78,6 +80,6 @@ class GetAccountBalanceHistoryAction
             ],
             'interval' => $interval,
             'history' => $history,
-        ];
+        ]);
     }
 }

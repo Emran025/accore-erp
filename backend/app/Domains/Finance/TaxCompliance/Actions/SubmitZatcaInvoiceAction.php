@@ -6,6 +6,7 @@ use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
 use App\Domains\Finance\TaxCompliance\Models\ZatcaEinvoice;
 use App\Domains\Finance\TaxCompliance\Services\ZATCAService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 use Exception;
 
 class SubmitZatcaInvoiceAction
@@ -14,14 +15,14 @@ class SubmitZatcaInvoiceAction
         private readonly ZATCAService $zatcaService
     ) {}
 
-    public function execute(int $invoiceId, string $submissionType = 'reporting'): array
+    public function execute(int $invoiceId, string $submissionType = 'reporting'): Collection
     {
         // Check if ZATCA is enabled
         if (!$this->zatcaService->isEnabled()) {
-            return [
+            return collect([
                 'status' => 'skipped',
                 'message' => 'ZATCA integration is disabled or not applicable for this region.'
-            ];
+            ]);
         }
 
         $invoice = Invoice::findOrFail($invoiceId);
@@ -32,10 +33,10 @@ class SubmitZatcaInvoiceAction
             ->first();
 
         if ($existing) {
-            return [
+            return collect([
                 'status' => 'already_submitted',
-                'data' => $existing->toArray()
-            ];
+                'data' => $existing
+            ]);
         }
 
         return DB::transaction(function () use ($invoice, $submissionType) {
@@ -61,11 +62,11 @@ class SubmitZatcaInvoiceAction
                 throw new Exception('ZATCA Rejection: ' . ($result['error_message'] ?? 'Unknown error'));
             }
 
-            return [
+            return collect([
                 'success' => true,
                 'message' => 'Invoice submitted to ZATCA successfully',
-                'data' => $zatcaInvoice->toArray()
-            ];
+                'data' => $zatcaInvoice
+            ]);
         });
     }
 }

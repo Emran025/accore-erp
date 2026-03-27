@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 
 class CreateUserAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): User
     {
         $user = User::create([
             'username'   => $data['username'],
@@ -23,6 +23,6 @@ class CreateUserAction
 
         TelescopeService::logOperation('CREATE', 'users', $user->id, null, $data);
 
-        return ['id' => $user->id];
+        return $user;
     }
 }

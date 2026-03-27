@@ -6,7 +6,7 @@ use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 class UpdateExpenseAction
 {
-    public function execute(array $data): void
+    public function execute(array $data): Expense
     {
         PermissionService::requirePermission('expenses', 'edit');
 
@@ -15,5 +15,7 @@ class UpdateExpenseAction
         $expense->update($data);
 
         TelescopeService::logOperation('UPDATE', 'expenses', $expense->id, $oldValues, $data);
+
+        return $expense;
     }
 }

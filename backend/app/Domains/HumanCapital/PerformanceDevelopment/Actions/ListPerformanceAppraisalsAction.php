@@ -3,10 +3,11 @@
 namespace App\Domains\HumanCapital\PerformanceDevelopment\Actions;
 
 use App\Domains\HumanCapital\PerformanceDevelopment\Models\PerformanceAppraisal;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ListPerformanceAppraisalsAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): LengthAwarePaginator
     {
         $query = PerformanceAppraisal::with(['employee']);
 
@@ -22,6 +23,6 @@ class ListPerformanceAppraisalsAction
             $query->where('status', $filters['status']);
         }
 
-        return $query->orderBy('appraisal_date', 'desc')->paginate(15)->toArray();
+        return $query->orderBy('appraisal_date', 'desc')->paginate(15);
     }
 }

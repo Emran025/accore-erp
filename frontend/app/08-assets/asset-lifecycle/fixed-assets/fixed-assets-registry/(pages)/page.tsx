@@ -141,15 +141,7 @@ export default function AssetsPage() {
 
         try {
             const method = currentAssetId ? "PUT" : "POST";
-            const body: {
-                name: string;
-                purchase_value: number;
-                purchase_date: string;
-                depreciation_rate: number;
-                status: string;
-                description: string;
-                id?: number;
-            } = {
+            const body = {
                 name: assetName,
                 purchase_value: parseNumber(assetValue),
                 purchase_date: assetDate,
@@ -157,9 +149,11 @@ export default function AssetsPage() {
                 status: assetStatus,
                 description: assetDescription,
             };
-            if (currentAssetId) body.id = currentAssetId;
+            const url = currentAssetId 
+                ? `${API_ENDPOINTS.ASSETS.FIXED_ASSETS}/${currentAssetId}`
+                : API_ENDPOINTS.ASSETS.FIXED_ASSETS;
 
-            const response = await fetchAPI(API_ENDPOINTS.ASSETS.FIXED_ASSETS, {
+            const response = await fetchAPI(url, {
                 method,
                 body: JSON.stringify(body),
             });
@@ -185,7 +179,7 @@ export default function AssetsPage() {
         if (!deleteAssetId) return;
 
         try {
-            const response = await fetchAPI(`${API_ENDPOINTS.ASSETS.FIXED_ASSETS}?id=${deleteAssetId}`, { method: "DELETE" });
+            const response = await fetchAPI(`${API_ENDPOINTS.ASSETS.FIXED_ASSETS}/${deleteAssetId}`, { method: "DELETE" });
             if (response.success) {
                 showAlert("alert-container", "تم الحذف بنجاح", "success");
                 setConfirmDialog(false);

@@ -6,10 +6,10 @@ use App\Domains\HumanCapital\TimeProductivity\Models\BiometricDevice;
 use App\Domains\HumanCapital\TimeProductivity\Models\BiometricSyncLog;
 use App\Domains\HumanCapital\TimeProductivity\Models\AttendanceRecord;
 use Illuminate\Http\UploadedFile;
-
+use Illuminate\Support\Collection;
 class ImportBiometricAttendanceAction
 {
-    public function execute(int|string $deviceId, UploadedFile $file): array
+    public function execute(int|string $deviceId, UploadedFile $file): Collection
     {
         $device = BiometricDevice::findOrFail($deviceId);
 
@@ -66,10 +66,10 @@ class ImportBiometricAttendanceAction
             'total_records_synced' => $device->total_records_synced + $imported,
         ]);
 
-        return [
+        return collect([
             'log' => $syncLog->toArray(),
             'imported' => $imported,
             'failed' => $failed,
-        ];
+        ]);
     }
 }

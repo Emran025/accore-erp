@@ -6,13 +6,13 @@ use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 
 class UpdateEmployeeDocumentAction
 {
-    public function execute(int|string $employeeId, int|string $documentId, array $data): array
+    public function execute(int|string $employeeId, int|string $documentId, array $data): \App\Domains\HumanCapital\HRAdvanced\Models\EmployeeDocument
     {
         $employee = Employee::findOrFail($employeeId);
         $document = $employee->documents()->findOrFail($documentId);
 
         $document->update($data);
 
-        return $document->toArray();
+        return $document;
     }
 }

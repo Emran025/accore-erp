@@ -7,7 +7,7 @@ use App\Domains\HumanCapital\HRCompliance\Models\SurveyResponse;
 
 class CreateSurveyResponseAction
 {
-    public function execute(int|string $surveyId, array $data, $user): array
+    public function execute(int|string $surveyId, array $data, $user): SurveyResponse
     {
         $survey = PulseSurvey::findOrFail($surveyId);
 
@@ -15,7 +15,6 @@ class CreateSurveyResponseAction
         $data['employee_id'] = $survey->is_anonymous ? null : ($user ? $user->id : null);
         $data['submitted_at'] = now();
 
-        $response = SurveyResponse::create($data);
-        return $response->toArray();
+        return SurveyResponse::create($data);
     }
 }

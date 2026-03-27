@@ -202,8 +202,7 @@ export default function BatchProcessingPage() {
     if (!executeBatchId) return;
 
     try {
-      const action = executeBatchType === "journal_entry_import" ? "journal_entries" : "expenses";
-      const response = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.BATCH}?action=${action}`, {
+      const response = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.BATCH}?action=execute`, {
         method: "POST",
         body: JSON.stringify({ batch_id: executeBatchId }),
       });
@@ -230,7 +229,7 @@ export default function BatchProcessingPage() {
     if (!deleteBatchId) return;
 
     try {
-      const response = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.BATCH}?id=${deleteBatchId}`, { method: "DELETE" });
+      const response = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.BATCH}/${deleteBatchId}`, { method: "DELETE" });
 
       if (response.success) {
         showToast("تم حذف الدفعة بنجاح", "success");

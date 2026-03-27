@@ -3,18 +3,17 @@
 namespace App\Domains\SupplyChain\Inventory\Actions;
 
 use App\Domains\SupplyChain\Inventory\Models\Product;
-
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 /**
  * Lists service items from the unified product catalogue.
  * Services are items where item_type = 'service'.
  */
 class ListServicesAction
 {
-    public function execute(array $filters): array
+    public function execute(array $filters): LengthAwarePaginator
     {
         $search  = $filters['search'] ?? '';
-        $page    = max(1, (int)($filters['page'] ?? 1));
-        $perPage = min(100, max(1, (int)($filters['per_page'] ?? 20)));
+        $perPage = min(100, max(1, (int)($filters['per_page'] ?? $filters['limit'] ?? 20)));
 
         $query = Product::services()->with(['createdBy', 'category', 'serviceAvailability']);
 
@@ -26,17 +25,6 @@ class ListServicesAction
             });
         }
 
-        $total    = $query->count();
-        $services = $query->orderBy('id', 'desc')
-                          ->skip(($page - 1) * $perPage)
-                          ->take($perPage)
-                          ->get();
-
-        return [
-            'data'     => $services,
-            'total'    => $total,
-            'page'     => $page,
-            'per_page' => $perPage,
-        ];
+        return $query->orderBy('id', 'desc')->paginate($perPage);
     }
 }

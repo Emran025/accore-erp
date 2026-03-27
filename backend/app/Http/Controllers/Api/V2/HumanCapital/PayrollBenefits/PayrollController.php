@@ -16,14 +16,11 @@ use App\Domains\HumanCapital\PayrollBenefits\Actions\GetMyPayslipsAction;
 use App\Http\Requests\HumanCapital\PayrollBenefits\GeneratePayrollRequest;
 use App\Http\Requests\HumanCapital\PayrollBenefits\PayIndividualItemRequest;
 use App\Http\Requests\HumanCapital\PayrollBenefits\UpdatePayrollItemRequest;
-use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollCycle;
-use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollEntry;
-use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollTransaction;
 use App\Http\Resources\HumanCapital\PayrollBenefits\PayrollCycleResource;
 use App\Http\Resources\HumanCapital\PayrollBenefits\PayrollEntryResource;
 use App\Http\Resources\HumanCapital\PayrollBenefits\PayrollTransactionResource;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
+use Illuminate\Http\Request;
 
 /**
  * Controller for Payroll operations via API.
@@ -41,14 +38,8 @@ class PayrollController extends Controller
      */
     public function index(ListPayrollCyclesAction $action)
     {
-        $paginated = $action->execute();
-        
-        return $this->paginatedResponse(
-            PayrollCycleResource::collection($paginated['data'] ?? $paginated)->resolve(),
-            $paginated['total'] ?? (is_countable($paginated) ? count($paginated) : 0),
-            $paginated['current_page'] ?? 1,
-            $paginated['per_page'] ?? 15
-        );
+        $paginator = $action->execute();
+        return $this->successResponse(PayrollCycleResource::collection($paginator));
     }
 
     /**
@@ -61,12 +52,8 @@ class PayrollController extends Controller
     public function generatePayroll(GeneratePayrollRequest $request, GeneratePayrollCycleAction $action)
     {
         try {
-            $result = $action->execute(
-                $request->validated(),
-                auth()->user()
-            );
-            $cycle = PayrollCycle::findOrFail($result['id'] ?? $result);
-            return $this->successResponse((new PayrollCycleResource($cycle))->resolve(), 'Payroll generated successfully', 201);
+            $cycle = $action->execute($request->validated(), auth()->user());
+            return $this->successResponse(new PayrollCycleResource($cycle), 'Payroll generated successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
@@ -83,9 +70,8 @@ class PayrollController extends Controller
     public function approve(Request $request, $id, ApprovePayrollCycleAction $action)
     {
         try {
-            $result = $action->execute($id, auth()->user());
-            $cycle = PayrollCycle::findOrFail($result['id'] ?? $id);
-            return $this->successResponse((new PayrollCycleResource($cycle))->resolve(), 'Payroll approved successfully');
+            $cycle = $action->execute($id, auth()->user());
+            return $this->successResponse(new PayrollCycleResource($cycle), 'Payroll approved successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
@@ -102,9 +88,8 @@ class PayrollController extends Controller
     public function processPayment(Request $request, $id, ProcessPayrollPaymentAction $action)
     {
         try {
-            $result = $action->execute($id, $request->account_id);
-            $cycle = PayrollCycle::findOrFail($result['id'] ?? $id);
-            return $this->successResponse((new PayrollCycleResource($cycle))->resolve(), 'Payroll payment processed successfully');
+            $cycle = $action->execute($id, $request->account_id);
+            return $this->successResponse(new PayrollCycleResource($cycle), 'Payroll payment processed successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
@@ -113,9 +98,8 @@ class PayrollController extends Controller
     public function toggleItemStatus(Request $request, $itemId, TogglePayrollItemStatusAction $action)
     {
         try {
-            $result = $action->execute($itemId);
-            $item = PayrollEntry::findOrFail($result['id'] ?? $itemId);
-            return $this->successResponse((new PayrollEntryResource($item))->resolve(), 'Item status toggled successfully');
+            $item = $action->execute($itemId);
+            return $this->successResponse(new PayrollEntryResource($item), 'Item status toggled successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
@@ -124,9 +108,11 @@ class PayrollController extends Controller
     public function getCycleItems($cycleId, GetPayrollCycleItemsAction $action)
     {
         try {
-            $result = $action->execute($cycleId);
-            $data = $result['data'] ?? $result;
-            return $this->successResponse(PayrollEntryResource::collection($data)->resolve());
+            $cycle = $action->execute($cycleId);
+            return $this->successResponse([
+                'cycle' => new PayrollCycleResource($cycle),
+                'items' => PayrollEntryResource::collection($cycle->items)
+            ]);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
@@ -142,13 +128,9 @@ class PayrollController extends Controller
      */
     public function payIndividualItem(PayIndividualItemRequest $request, $itemId, PayIndividualPayrollItemAction $action)
     {
-        $validated = $request->validated();
-
         try {
-            $result = $action->execute($itemId, $validated);
-            $transaction = PayrollTransaction::findOrFail($result['id'] ?? $result);
-
-            return $this->successResponse((new PayrollTransactionResource($transaction))->resolve(), 'تم تسجيل الدفعة بنجاح');
+            $transaction = $action->execute($itemId, $request->validated());
+            return $this->successResponse(new PayrollTransactionResource($transaction), 'تم تسجيل الدفعة بنجاح', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
@@ -158,8 +140,7 @@ class PayrollController extends Controller
     {
         try {
             $transactions = $action->execute($itemId);
-            $data = $transactions['data'] ?? $transactions;
-            return $this->successResponse(PayrollTransactionResource::collection($data)->resolve());
+            return $this->successResponse(PayrollTransactionResource::collection($transactions));
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
@@ -168,9 +149,8 @@ class PayrollController extends Controller
     public function updateItem(UpdatePayrollItemRequest $request, $itemId, UpdatePayrollItemDetailsAction $action)
     {
         try {
-            $result = $action->execute($itemId, $request->validated());
-            $item = PayrollEntry::findOrFail($result['id'] ?? $itemId);
-            return $this->successResponse((new PayrollEntryResource($item))->resolve(), 'Payroll item updated successfully');
+            $item = $action->execute($itemId, $request->validated());
+            return $this->successResponse(new PayrollEntryResource($item), 'Payroll item updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
@@ -183,14 +163,8 @@ class PayrollController extends Controller
     {
         try {
             $filters = $request->only(['start_date', 'end_date']);
-            $paginated = $action->execute(auth()->user(), $filters);
-
-            return $this->paginatedResponse(
-                PayrollEntryResource::collection($paginated['data'] ?? $paginated)->resolve(),
-                $paginated['total'] ?? (is_countable($paginated) ? count($paginated) : 0),
-                $paginated['current_page'] ?? 1,
-                $paginated['per_page'] ?? 15
-            );
+            $paginator = $action->execute(auth()->user(), $filters);
+            return $this->successResponse(PayrollEntryResource::collection($paginator));
         } catch (\Exception $e) {
             if ($e->getMessage() === 'Employee record not found') {
                 return $this->errorResponse($e->getMessage(), 404);

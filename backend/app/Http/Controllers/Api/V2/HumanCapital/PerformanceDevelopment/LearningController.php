@@ -14,8 +14,6 @@ use App\Domains\HumanCapital\PerformanceDevelopment\Actions\UpdateLearningCourse
 use App\Domains\HumanCapital\PerformanceDevelopment\Actions\ListLearningEnrollmentsAction;
 use App\Domains\HumanCapital\PerformanceDevelopment\Actions\CreateLearningEnrollmentAction;
 use App\Domains\HumanCapital\PerformanceDevelopment\Actions\UpdateLearningEnrollmentAction;
-use App\Domains\HumanCapital\PerformanceDevelopment\Models\LearningCourse;
-use App\Domains\HumanCapital\PerformanceDevelopment\Models\LearningEnrollment;
 use App\Http\Resources\HumanCapital\PerformanceDevelopment\LearningCourseResource;
 use App\Http\Resources\HumanCapital\PerformanceDevelopment\LearningEnrollmentResource;
 use Illuminate\Http\Request;
@@ -32,33 +30,30 @@ class LearningController extends Controller
         $courses = $action->execute($filters);
 
         return $this->paginatedResponse(
-            LearningCourseResource::collection($courses['data'] ?? $courses),
-            $courses['total'] ?? count($courses['data'] ?? $courses),
-            $courses['current_page'] ?? 1,
-            $courses['per_page'] ?? 15
+            LearningCourseResource::collection($courses),
+            $courses->total(),
+            $courses->currentPage(),
+            $courses->perPage()
         );
     }
 
     public function storeCourse(StoreLearningCourseRequest $request, CreateLearningCourseAction $action)
     {
         $validated = $request->validated();
-        $result = $action->execute($validated);
-        $course = LearningCourse::find($result['id'] ?? $result);
+        $course = $action->execute($validated);
         return $this->successResponse(new LearningCourseResource($course), 'Course created successfully', 201);
     }
 
     public function showCourse($id, ShowLearningCourseAction $action)
     {
-        $result = $action->execute($id);
-        $course = LearningCourse::find($result['id'] ?? $id);
+        $course = $action->execute($id);
         return $this->successResponse(new LearningCourseResource($course));
     }
 
     public function updateCourse(UpdateLearningCourseRequest $request, $id, UpdateLearningCourseAction $action)
     {
         $validated = $request->validated();
-        $result = $action->execute($id, $validated);
-        $course = LearningCourse::find($result['id'] ?? $id);
+        $course = $action->execute($id, $validated);
 
         return $this->successResponse(new LearningCourseResource($course), 'Course updated successfully');
     }
@@ -70,26 +65,24 @@ class LearningController extends Controller
         $enrollments = $action->execute($filters);
 
         return $this->paginatedResponse(
-            LearningEnrollmentResource::collection($enrollments['data'] ?? $enrollments),
-            $enrollments['total'] ?? count($enrollments['data'] ?? $enrollments),
-            $enrollments['current_page'] ?? 1,
-            $enrollments['per_page'] ?? 15
+            LearningEnrollmentResource::collection($enrollments),
+            $enrollments->total(),
+            $enrollments->currentPage(),
+            $enrollments->perPage()
         );
     }
 
     public function storeEnrollment(StoreLearningEnrollmentRequest $request, CreateLearningEnrollmentAction $action)
     {
         $validated = $request->validated();
-        $result = $action->execute($validated);
-        $enrollment = LearningEnrollment::find($result['id'] ?? $result);
+        $enrollment = $action->execute($validated);
         return $this->successResponse(new LearningEnrollmentResource($enrollment), 'Enrollment recorded successfully', 201);
     }
 
     public function updateEnrollment(UpdateLearningEnrollmentRequest $request, $id, UpdateLearningEnrollmentAction $action)
     {
         $validated = $request->validated();
-        $result = $action->execute($id, $validated);
-        $enrollment = LearningEnrollment::find($result['id'] ?? $id);
+        $enrollment = $action->execute($id, $validated);
 
         return $this->successResponse(new LearningEnrollmentResource($enrollment), 'Enrollment updated successfully');
     }

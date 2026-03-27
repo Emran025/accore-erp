@@ -4,10 +4,11 @@ namespace App\Domains\SupplyChain\SupplierSourcing\Actions;
 
 use App\Domains\SupplyChain\SupplierSourcing\Models\ApSupplier;
 use Illuminate\Support\Facades\DB;
+use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 
 class CreateSupplierAction
 {
-    public function execute(array $data, int $userId): array
+    public function execute(array $data, int $userId): ApSupplier
     {
         return DB::transaction(function () use ($data, $userId) {
             $exists = ApSupplier::where('name', $data['name'])
@@ -33,7 +34,9 @@ class CreateSupplierAction
                 'created_by' => $userId,
             ]);
 
-            return ['id' => $supplier->id];
+            TelescopeService::logOperation('CREATE', 'ap_suppliers', $supplier->id, null, $data);
+
+            return $supplier;
         });
     }
 }

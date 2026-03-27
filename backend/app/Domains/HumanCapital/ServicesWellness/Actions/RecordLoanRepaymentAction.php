@@ -7,7 +7,7 @@ use App\Domains\HumanCapital\ServicesWellness\Models\LoanRepayment;
 
 class RecordLoanRepaymentAction
 {
-    public function execute(int|string $loanId, int|string $repaymentId, array $data): array
+    public function execute(int|string $loanId, int|string $repaymentId, array $data): LoanRepayment
     {
         $repayment = LoanRepayment::where('loan_id', $loanId)->findOrFail($repaymentId);
 
@@ -24,6 +24,6 @@ class RecordLoanRepaymentAction
         }
         $loan->save();
 
-        return $repayment->load('loan')->toArray();
+        return $repayment->load('loan');
     }
 }

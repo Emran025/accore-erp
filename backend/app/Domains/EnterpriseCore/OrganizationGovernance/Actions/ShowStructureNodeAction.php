@@ -7,10 +7,10 @@ use Illuminate\Http\JsonResponse;
 
 class ShowStructureNodeAction
 {
-    public function execute(string $uuid): array
+    public function execute(string $uuid): StructureNode
     {
         return StructureNode::with(['metaType', 'outgoingLinks.targetNode.metaType', 'incomingLinks.sourceNode.metaType'])
-            ->findOrFail($uuid)
-            ->toArray();
+            ->where('node_uuid', $uuid)
+            ->firstOrFail();
     }
 }

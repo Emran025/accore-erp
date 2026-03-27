@@ -85,7 +85,7 @@ use App\Http\Controllers\Api\V2\EnterpriseCore\Automation\SystemTemplateControll
         });
 
         // ── 03. Org Structure (OrganizationGovernance)
-        Route::group(['prefix' => 'org', 'middleware' => 'can:settings,view'], function () {
+        Route::group(['prefix' => 'org-structure', 'middleware' => 'can:settings,view'], function () {
             Route::get('/meta-types', [OrgStructureController::class, 'metaTypes'])->name('v2.org.meta_types');
             Route::get('/topology-rules', [OrgStructureController::class, 'topologyRules'])->name('v2.org.topology_rules');
             Route::get('/nodes', [OrgStructureController::class, 'nodes'])->name('v2.org.nodes');
@@ -159,8 +159,8 @@ use App\Http\Controllers\Api\V2\EnterpriseCore\Automation\SystemTemplateControll
                 Route::get('/managers', [UsersController::class, 'managerList'])->name('v2.users.managers');
             });
             Route::middleware(['can:users,create', 'throttle:api-write'])->post('/', [UsersController::class, 'store'])->name('v2.users.store');
-            Route::middleware(['can:users,edit', 'throttle:api-write'])->put('/', [UsersController::class, 'update'])->name('v2.users.update');
-            Route::middleware(['can:users,delete', 'throttle:api-delete'])->delete('/', [UsersController::class, 'destroy'])->name('v2.users.destroy');
+            Route::middleware(['can:users,edit', 'throttle:api-write'])->put('/{id}', [UsersController::class, 'update'])->name('v2.users.update');
+            Route::middleware(['can:users,delete', 'throttle:api-delete'])->delete('/{id}', [UsersController::class, 'destroy'])->name('v2.users.destroy');
         });
 
         Route::post('/change_password', [UsersController::class, 'changePassword'])->middleware('throttle:api-sensitive')->name('v2.change_password');

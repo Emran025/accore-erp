@@ -24,9 +24,6 @@ use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use App\Http\Resources\HumanCapital\TalentRecruitment\RecruitmentRequisitionResource;
 use App\Http\Resources\HumanCapital\TalentRecruitment\JobApplicantResource;
 use App\Http\Resources\HumanCapital\TalentRecruitment\InterviewResource;
-use App\Domains\HumanCapital\TalentRecruitment\Models\RecruitmentRequisition;
-use App\Domains\HumanCapital\TalentRecruitment\Models\JobApplicant;
-use App\Domains\HumanCapital\TalentRecruitment\Models\Interview;
 use Illuminate\Http\JsonResponse;
 
 class RecruitmentController extends Controller
@@ -36,23 +33,15 @@ class RecruitmentController extends Controller
     // Requisitions
     public function indexRequisitions(ListRequisitionsRequest $request, ListRequisitionsAction $action): JsonResponse
     {
-        $requisitions = $action->execute($request->validated());
-        $data = $requisitions['data'] ?? $requisitions;
-
-        return $this->paginatedResponse(
-            RecruitmentRequisitionResource::collection($data)->resolve(),
-            $requisitions['total'] ?? (is_countable($data) ? count($data) : 0),
-            $requisitions['current_page'] ?? 1,
-            $requisitions['per_page'] ?? 15
-        );
+        $paginator = $action->execute($request->validated());
+        return $this->successResponse(RecruitmentRequisitionResource::collection($paginator));
     }
 
     public function storeRequisition(StoreRequisitionRequest $request, CreateRequisitionAction $action): JsonResponse
     {
         try {
             $requisition = $action->execute($request->validated());
-            $model = RecruitmentRequisition::findOrFail($requisition['id'] ?? $requisition);
-            return $this->successResponse((new RecruitmentRequisitionResource($model))->resolve(), 'Requisition created');
+            return $this->successResponse(new RecruitmentRequisitionResource($requisition), 'Requisition created');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -61,16 +50,14 @@ class RecruitmentController extends Controller
     public function showRequisition($id, ShowRequisitionAction $action): JsonResponse
     {
         $requisition = $action->execute((int)$id);
-        $model = RecruitmentRequisition::findOrFail($requisition['id'] ?? $id);
-        return $this->successResponse((new RecruitmentRequisitionResource($model))->resolve());
+        return $this->successResponse(new RecruitmentRequisitionResource($requisition));
     }
 
     public function updateRequisition(UpdateRequisitionRequest $request, $id, UpdateRequisitionAction $action): JsonResponse
     {
         try {
             $requisition = $action->execute((int)$id, $request->validated());
-            $model = RecruitmentRequisition::findOrFail($requisition['id'] ?? $id);
-            return $this->successResponse((new RecruitmentRequisitionResource($model))->resolve(), 'Requisition updated');
+            return $this->successResponse(new RecruitmentRequisitionResource($requisition), 'Requisition updated');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -79,23 +66,15 @@ class RecruitmentController extends Controller
     // Applicants
     public function indexApplicants(ListApplicantsRequest $request, ListJobApplicantsAction $action): JsonResponse
     {
-        $applicants = $action->execute($request->validated());
-        $data = $applicants['data'] ?? $applicants;
-
-        return $this->paginatedResponse(
-            JobApplicantResource::collection($data)->resolve(),
-            $applicants['total'] ?? (is_countable($data) ? count($data) : 0),
-            $applicants['current_page'] ?? 1,
-            $applicants['per_page'] ?? 15
-        );
+        $paginator = $action->execute($request->validated());
+        return $this->successResponse(JobApplicantResource::collection($paginator));
     }
 
     public function storeApplicant(StoreJobApplicantRequest $request, CreateJobApplicantAction $action): JsonResponse
     {
         try {
             $applicant = $action->execute($request->validated());
-            $model = JobApplicant::findOrFail($applicant['id'] ?? $applicant);
-            return $this->successResponse((new JobApplicantResource($model))->resolve(), 'Applicant created');
+            return $this->successResponse(new JobApplicantResource($applicant), 'Applicant created');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -105,8 +84,7 @@ class RecruitmentController extends Controller
     {
         try {
             $applicant = $action->execute((int)$id, $request->validated());
-            $model = JobApplicant::findOrFail($applicant['id'] ?? $id);
-            return $this->successResponse((new JobApplicantResource($model))->resolve(), 'Applicant status updated');
+            return $this->successResponse(new JobApplicantResource($applicant), 'Applicant status updated');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -117,8 +95,7 @@ class RecruitmentController extends Controller
     {
         try {
             $interview = $action->execute($request->validated());
-            $model = Interview::findOrFail($interview['id'] ?? $interview);
-            return $this->successResponse((new InterviewResource($model))->resolve(), 'Interview scheduled');
+            return $this->successResponse(new InterviewResource($interview), 'Interview scheduled');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -128,8 +105,7 @@ class RecruitmentController extends Controller
     {
         try {
             $interview = $action->execute((int)$id, $request->validated());
-            $model = Interview::findOrFail($interview['id'] ?? $id);
-            return $this->successResponse((new InterviewResource($model))->resolve(), 'Interview updated');
+            return $this->successResponse(new InterviewResource($interview), 'Interview updated');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }

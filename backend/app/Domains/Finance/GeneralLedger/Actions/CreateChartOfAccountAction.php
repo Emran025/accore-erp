@@ -11,7 +11,7 @@ use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 class CreateChartOfAccountAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): ChartOfAccount
     {
         PermissionService::requirePermission('chart_of_accounts', 'create');
 
@@ -27,6 +27,6 @@ class CreateChartOfAccountAction
 
         TelescopeService::logOperation('CREATE', 'chart_of_accounts', $account->id, null, $data);
 
-        return ['id' => $account->id];
+        return $account;
     }
 }

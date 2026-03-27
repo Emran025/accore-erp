@@ -7,7 +7,7 @@ use App\Domains\HumanCapital\PayrollBenefits\Models\PostPayrollIntegration;
 
 class CreatePostPayrollIntegrationAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): PostPayrollIntegration
     {
         $payrollCycle = PayrollCycle::with('items')->findOrFail($data['payroll_cycle_id']);
         
@@ -26,7 +26,6 @@ class CreatePostPayrollIntegrationAction
         $data['total_amount'] = $totalAmount;
         $data['transaction_count'] = $transactionCount;
 
-        $integration = PostPayrollIntegration::create($data);
-        return $integration->load('payrollCycle')->toArray();
+        return PostPayrollIntegration::create($data)->load('payrollCycle');
     }
 }

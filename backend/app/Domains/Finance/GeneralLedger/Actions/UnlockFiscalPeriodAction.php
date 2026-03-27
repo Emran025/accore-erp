@@ -6,7 +6,7 @@ use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 class UnlockFiscalPeriodAction
 {
-    public function execute(int $id): array
+    public function execute(int $id): FiscalPeriod
     {
         PermissionService::requirePermission('fiscal_periods', 'edit');
 
@@ -26,6 +26,6 @@ class UnlockFiscalPeriodAction
             'locked_by' => null,
         ]);
 
-        return ['message' => 'Fiscal period unlocked successfully'];
+        return $period;
     }
 }

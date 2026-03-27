@@ -3,10 +3,10 @@
 namespace App\Domains\EnterpriseCore\MonitoringCompliance\Actions;
 
 use App\Domains\HumanCapital\WorkforceAdmin\Models\ComplianceProfile;
-
+use Illuminate\Database\Eloquent\Collection;
 class ListComplianceProfilesAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): Collection
     {
         $query = ComplianceProfile::with('taxAuthority');
 
@@ -22,8 +22,6 @@ class ListComplianceProfilesAction
             $query->active();
         }
 
-        $profiles = $query->orderBy('created_at', 'desc')->get();
-
-        return ['profiles' => $profiles];
+        return $query->orderBy('created_at', 'desc')->get();
     }
 }

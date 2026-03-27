@@ -7,12 +7,13 @@ use App\Domains\SupplyChain\PayablesExpenses\Models\ApTransaction;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Services\ChartOfAccountsMappingService;
+use Illuminate\Support\Collection;
 
 class SupplierLedgerAction
 {
     public function __construct(private readonly ChartOfAccountsMappingService $coaService) {}
 
-    public function execute(array $filters): array
+    public function execute(array $filters): Collection
     {
         $supplierId = $filters['supplier_id'];
         $supplier = ApSupplier::findOrFail($supplierId);
@@ -113,7 +114,7 @@ class SupplierLedgerAction
             else $aging['over_90'] += $txnAmount;
         }
 
-        return [
+        return collect([
             'supplier' => [
                 'id' => $supplier->id,
                 'name' => $supplier->name,
@@ -135,6 +136,6 @@ class SupplierLedgerAction
                 'total_records' => $total,
                 'total_pages' => ceil($total / $perPage),
             ],
-        ];
+        ]);
     }
 }

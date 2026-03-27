@@ -13,15 +13,10 @@ use App\Domains\Commercial\SalesLifecycle\Actions\{
 use App\Http\Requests\Commercial\SalesLifecycle\{
     ListServiceInvoicesRequest,
     StoreServiceSaleRequest,
-    ShowInvoiceRequest,
-    DeleteServiceInvoiceRequest
 };
-use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 use App\Exceptions\BusinessLogicException;
 use App\Http\Resources\Commercial\SalesLifecycle\InvoiceResource;
-use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -38,28 +33,21 @@ class ServiceSaleController extends Controller
      */
     public function index(ListServiceInvoicesRequest $request, ListServiceInvoicesAction $action): JsonResponse
     {
-        $paginated = $action->execute($request->validated());
+        $paginator = $action->execute($request->validated());
 
-        return $this->paginatedResponse(
-            InvoiceResource::collection($paginated->items())->resolve(),
-            $paginated->total(),
-            $paginated->currentPage(),
-            $paginated->perPage()
-        );
+        return $this->successResponse(InvoiceResource::collection($paginator));
     }
 
     /**
      * Show a single service invoice with full details.
      */
-    public function show(ShowInvoiceRequest $request, ShowServiceInvoiceAction $action): JsonResponse
+    public function show(int $id, ShowServiceInvoiceAction $action): JsonResponse
     {
         try {
-            $invoice = $action->execute((int) $request->validated()['id']);
-            return $this->successResponse(['data' => (new InvoiceResource($invoice))->resolve()]);
-        } catch (ModelNotFoundException $e) {
-            return $this->errorResponse('Service invoice not found', 404);
+            $invoice = $action->execute($id);
+            return $this->successResponse(new InvoiceResource($invoice));
         } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 400);
+            return $this->errorResponse($e->getMessage(), 404);
         }
     }
 
@@ -69,31 +57,12 @@ class ServiceSaleController extends Controller
     public function store(StoreServiceSaleRequest $request, CreateServiceSaleAction $action): JsonResponse
     {
         try {
-            $validated = $request->validated();
-            $validated['user_id'] = auth()->id() ?? session('user_id');
-
-            $result  = $action->execute($validated);
-            TelescopeService::logOperation('CREATE', 'service_invoices', $result['id'], null, $validated);
-
-            $invoice = Invoice::findOrFail($result['id']);
-            return $this->successResponse(
-                (new InvoiceResource($invoice))->resolve(),
-                'Service invoice created successfully'
-            );
+            $invoice = $action->execute($request->validated());
+            return $this->successResponse(new InvoiceResource($invoice), 'Service invoice created successfully', 201);
         } catch (BusinessLogicException $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 400);
-        } catch (ModelNotFoundException $e) {
-            return $this->errorResponse('Invoice not found after creation', 404);
         } catch (\Exception $e) {
             Log::error('Service Sale Error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
-
-            $businessKeywords = ['not available', 'required', 'customer'];
-            foreach ($businessKeywords as $kw) {
-                if (stripos($e->getMessage(), $kw) !== false) {
-                    return $this->errorResponse($e->getMessage(), 400);
-                }
-            }
-
             return $this->errorResponse('System error: ' . $e->getMessage(), 500);
         }
     }
@@ -101,18 +70,11 @@ class ServiceSaleController extends Controller
     /**
      * Delete a service sale invoice.
      */
-    public function destroy(DeleteServiceInvoiceRequest $request, DeleteInvoiceAction $action): JsonResponse
+    public function destroy(int $id, DeleteInvoiceAction $action): JsonResponse
     {
         try {
-            $id = (int) $request->validated()['id'];
-            $oldValues = $action->execute($id);
-            TelescopeService::logOperation('DELETE', 'service_invoices', $id, $oldValues, null);
-
-            return $this->successResponse(null, 'Service invoice deleted successfully');
-        } catch (ModelNotFoundException $e) {
-            return $this->errorResponse('Service invoice not found', 404);
-        } catch (BusinessLogicException $e) {
-            return $this->errorResponse($e->getMessage(), 400);
+            $action->execute($id);
+            return $this->successResponse([], 'Service invoice deleted successfully');
         } catch (\Exception $e) {
             Log::error('Service Delete Error: ' . $e->getMessage());
             return $this->errorResponse('System error while deleting: ' . $e->getMessage(), 500);

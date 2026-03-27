@@ -14,9 +14,6 @@ use App\Http\Requests\HumanCapital\ServicesWellness\StoreEhsIncidentRequest;
 use App\Http\Requests\HumanCapital\ServicesWellness\StoreHealthRecordRequest;
 use App\Http\Requests\HumanCapital\ServicesWellness\StorePpeRequest;
 use App\Http\Requests\HumanCapital\ServicesWellness\UpdateEhsIncidentRequest;
-use App\Domains\HumanCapital\ServicesWellness\Models\EhsIncident;
-use App\Domains\HumanCapital\ServicesWellness\Models\EmployeeHealthRecord;
-use App\Domains\HumanCapital\ServicesWellness\Models\PpeManagement;
 use App\Http\Resources\HumanCapital\ServicesWellness\EhsIncidentResource;
 use App\Http\Resources\HumanCapital\ServicesWellness\EmployeeHealthRecordResource;
 use App\Http\Resources\HumanCapital\ServicesWellness\PpeManagementResource;
@@ -29,72 +26,47 @@ class EhsController extends Controller
     use BaseApiController;
 
     // Incidents
-    public function indexIncidents(Request $request): JsonResponse
+    public function indexIncidents(Request $request, ListEhsIncidentsAction $action): JsonResponse
     {
-        $filters = $request->only(['incident_type', 'severity', 'status']);
-
-        $data = (new ListEhsIncidentsAction())->execute($filters);
-        return $this->paginatedResponse(
-            EhsIncidentResource::collection($data['data'] ?? $data),
-            $data['total'] ?? count($data['data'] ?? $data),
-            $data['current_page'] ?? 1,
-            $data['per_page'] ?? 15
-        );
+        $paginator = $action->execute($request->all());
+        return $this->successResponse(EhsIncidentResource::collection($paginator));
     }
 
-    public function storeIncident(StoreEhsIncidentRequest $request): JsonResponse
+    public function storeIncident(StoreEhsIncidentRequest $request, CreateEhsIncidentAction $action): JsonResponse
     {
-        $result = (new CreateEhsIncidentAction())->execute($request->validated());
-        $incident = EhsIncident::find($result['id'] ?? $result);
+        $incident = $action->execute($request->validated());
         return $this->successResponse(new EhsIncidentResource($incident), 'Incident recorded successfully', 201);
     }
 
-    public function updateIncident(UpdateEhsIncidentRequest $request, $id): JsonResponse
+    public function updateIncident(UpdateEhsIncidentRequest $request, $id, UpdateEhsIncidentAction $action): JsonResponse
     {
-        $result = (new UpdateEhsIncidentAction())->execute((int) $id, $request->validated());
-        $incident = EhsIncident::find($result['id'] ?? $id);
+        $incident = $action->execute((int) $id, $request->validated());
         return $this->successResponse(new EhsIncidentResource($incident), 'Incident updated successfully');
     }
 
     // Health Records
-    public function indexHealthRecords(Request $request): JsonResponse
+    public function indexHealthRecords(Request $request, ListHealthRecordsAction $action): JsonResponse
     {
-        $filters = $request->only(['employee_id', 'record_type']);
-
-        $data = (new ListHealthRecordsAction())->execute($filters);
-        return $this->paginatedResponse(
-            EmployeeHealthRecordResource::collection($data['data'] ?? $data),
-            $data['total'] ?? count($data['data'] ?? $data),
-            $data['current_page'] ?? 1,
-            $data['per_page'] ?? 15
-        );
+        $paginator = $action->execute($request->all());
+        return $this->successResponse(EmployeeHealthRecordResource::collection($paginator));
     }
 
-    public function storeHealthRecord(StoreHealthRecordRequest $request): JsonResponse
+    public function storeHealthRecord(StoreHealthRecordRequest $request, CreateHealthRecordAction $action): JsonResponse
     {
-        $result = (new CreateHealthRecordAction())->execute($request->validated());
-        $record = EmployeeHealthRecord::find($result['id'] ?? $result);
+        $record = $action->execute($request->validated());
         return $this->successResponse(new EmployeeHealthRecordResource($record), 'Health record created successfully', 201);
     }
 
     // PPE Management
-    public function indexPpe(Request $request): JsonResponse
+    public function indexPpe(Request $request, ListPpeAction $action): JsonResponse
     {
-        $filters = $request->only(['employee_id', 'status']);
-
-        $data = (new ListPpeAction())->execute($filters);
-        return $this->paginatedResponse(
-            PpeManagementResource::collection($data['data'] ?? $data),
-            $data['total'] ?? count($data['data'] ?? $data),
-            $data['current_page'] ?? 1,
-            $data['per_page'] ?? 15
-        );
+        $paginator = $action->execute($request->all());
+        return $this->successResponse(PpeManagementResource::collection($paginator));
     }
 
-    public function storePpe(StorePpeRequest $request): JsonResponse
+    public function storePpe(StorePpeRequest $request, CreatePpeAction $action): JsonResponse
     {
-        $result = (new CreatePpeAction())->execute($request->validated());
-        $ppe = PpeManagement::find($result['id'] ?? $result);
+        $ppe = $action->execute($request->validated());
         return $this->successResponse(new PpeManagementResource($ppe), 'PPE assignment created successfully', 201);
     }
 }

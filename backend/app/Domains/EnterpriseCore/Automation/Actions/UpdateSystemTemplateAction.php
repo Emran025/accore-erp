@@ -21,7 +21,7 @@ class UpdateSystemTemplateAction
         return $meta && isset($meta['module']) && $meta['module'] !== 'hr';
     }
 
-    public function execute(int|string $id, array $data): array
+    public function execute(int|string $id, array $data): DocumentTemplate
     {
         $template = DocumentTemplate::findOrFail($id);
         
@@ -41,7 +41,6 @@ class UpdateSystemTemplateAction
             }
         }
 
-        $template = $this->templateService->updateTemplate($id, $data);
-        return $template->toArray();
+        return $this->templateService->updateTemplate($id, $data);
     }
 }

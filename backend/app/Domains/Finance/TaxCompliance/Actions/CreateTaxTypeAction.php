@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class CreateTaxTypeAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): TaxType
     {
         PermissionService::requirePermission('settings', 'create');
 
@@ -30,7 +30,7 @@ class CreateTaxTypeAction
                 'is_default' => true,
             ]);
 
-            return $taxType->load('taxRates')->toArray();
+            return $taxType->load('taxRates');
         });
     }
 }

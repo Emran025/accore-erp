@@ -4,10 +4,11 @@ namespace App\Domains\SupplyChain\Procurement\Actions;
 
 use App\Domains\SupplyChain\PayablesExpenses\Models\ApTransaction;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
+use Illuminate\Support\Collection;
 
 class PurchaseReturnsLedgerAction
 {
-    public function execute(array $filters): array
+    public function execute(array $filters): Collection
     {
         $page = max(1, (int) ($filters['page'] ?? 1));
         $perPage = min(100, max(1, (int) ($filters['per_page'] ?? 20)));
@@ -88,7 +89,7 @@ class PurchaseReturnsLedgerAction
             ];
         });
 
-        return [
+        return collect([
             'data' => $data,
             'stats' => [
                 'total_returns' => (float) $totalReturns,
@@ -102,6 +103,6 @@ class PurchaseReturnsLedgerAction
                 'total_records' => $transactionCount,
                 'total_pages' => $transactionCount > 0 ? ceil($transactionCount / $perPage) : 1,
             ],
-        ];
+        ]);
     }
 }

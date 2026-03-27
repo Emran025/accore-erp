@@ -3,10 +3,11 @@
 namespace App\Domains\Commercial\MarketingDistribution\Actions;
 
 use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentative;
+use Illuminate\Support\Collection;
 
 class UpdateSalesRepresentativeAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): Collection
     {
         $representative = SalesRepresentative::findOrFail($data['id']);
 
@@ -26,6 +27,6 @@ class UpdateSalesRepresentativeAction
             'address' => $data['address'] ?? null,
         ]);
 
-        return ['id' => $representative->id, 'old_values' => $oldValues];
+        return collect(['id' => $representative->id, 'old_values' => $oldValues]);
     }
 }

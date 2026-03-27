@@ -6,7 +6,7 @@ use App\Domains\HumanCapital\ServicesWellness\Models\EhsIncident;
 
 class UpdateEhsIncidentAction
 {
-    public function execute(int $id, array $data): array
+    public function execute(int $id, array $data): EhsIncident
     {
         $incident = EhsIncident::findOrFail($id);
 
@@ -16,6 +16,6 @@ class UpdateEhsIncidentAction
 
         $incident->update($data);
 
-        return $incident->load('employee')->toArray();
+        return $incident->load('employee');
     }
 }

@@ -6,7 +6,7 @@ use App\Domains\HumanCapital\PayrollBenefits\Models\CompensationPlan;
 
 class UpdateCompensationPlanAction
 {
-    public function execute(int|string $id, array $data): array
+    public function execute(int|string $id, array $data): CompensationPlan
     {
         $plan = CompensationPlan::findOrFail($id);
 
@@ -20,6 +20,6 @@ class UpdateCompensationPlanAction
         $allocated = $plan->entries()->sum('increase_amount');
         $plan->update(['allocated_amount' => $allocated]);
 
-        return $plan->load('entries.employee')->toArray();
+        return $plan->load('entries.employee');
     }
 }

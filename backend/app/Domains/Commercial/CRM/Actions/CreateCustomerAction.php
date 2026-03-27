@@ -8,7 +8,7 @@ use App\Domains\EnterpriseCore\SystemOverview\Services\NumberRangeService;
 
 class CreateCustomerAction
 {
-    public function execute(array $data, int $userId): array
+    public function execute(array $data, int $userId): ArCustomer
     {
         return DB::transaction(function () use ($data, $userId) {
             $exists = ArCustomer::where(function ($query) use ($data) {
@@ -33,7 +33,7 @@ class CreateCustomerAction
                 'created_by' => $userId,
             ]);
 
-            return ['id' => $customer->id];
+            return $customer;
         });
     }
 }

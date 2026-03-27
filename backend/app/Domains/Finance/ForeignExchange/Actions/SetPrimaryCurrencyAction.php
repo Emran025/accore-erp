@@ -8,7 +8,7 @@ use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 class SetPrimaryCurrencyAction
 {
-    public function execute(int $id): array
+    public function execute(int $id): Currency
     {
         PermissionService::requirePermission('currency', 'edit');
 
@@ -20,10 +20,7 @@ class SetPrimaryCurrencyAction
             $currency->is_active = true;
             $currency->save();
             
-            return [
-                'message' => 'Primary currency set successfully',
-                'data' => $currency->fresh()->toArray(),
-            ];
+            return $currency->fresh();
         });
     }
 }

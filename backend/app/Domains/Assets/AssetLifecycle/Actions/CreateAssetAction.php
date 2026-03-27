@@ -1,14 +1,12 @@
 <?php
 namespace App\Domains\Assets\AssetLifecycle\Actions;
-use App\Domains\Shared\Actions\Action;
+
 use App\Domains\Assets\AssetLifecycle\Models\Asset;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 class CreateAssetAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): Asset
     {
         PermissionService::requirePermission('assets', 'create');
 
@@ -20,6 +18,6 @@ class CreateAssetAction
 
         TelescopeService::logOperation('CREATE', 'assets', $asset->id, null, $data);
 
-        return ['id' => $asset->id];
+        return $asset;
     }
 }

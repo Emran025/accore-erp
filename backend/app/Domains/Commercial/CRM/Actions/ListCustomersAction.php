@@ -3,12 +3,12 @@
 namespace App\Domains\Commercial\CRM\Actions;
 
 use App\Domains\Commercial\CRM\Models\ArCustomer;
+use Illuminate\Support\Collection;
 
 class ListCustomersAction
 {
-    public function execute(array $filters): array
+    public function execute(array $filters): Collection
     {
-        $page = max(1, (int) ($filters['page'] ?? 1));
         $perPage = min(100, max(1, (int) ($filters['per_page'] ?? 20)));
         $search = $filters['search'] ?? '';
 
@@ -22,26 +22,18 @@ class ListCustomersAction
             });
         }
 
-        $total = $query->count();
-        $customers = $query->orderBy('name')
-            ->skip(($page - 1) * $perPage)
-            ->take($perPage)
-            ->get()
-            ->map(function ($customer) {
-                $customer->total_debt = $customer->invoices()
-                    ->where('payment_type', 'credit')
-                    ->get()
-                    ->sum('total_amount');
-                
-                $customer->total_paid = max(0, $customer->total_debt - (float) $customer->current_balance);
-                return $customer;
-            });
+        $paginator = $query->orderBy('name')->paginate($perPage);
 
-        return [
-            'data' => $customers,
-            'total' => $total,
-            'current_page' => $page,
-            'per_page' => $perPage,
-        ];
+        $paginator->getCollection()->transform(function ($customer) {
+            $customer->total_debt = $customer->invoices()
+                ->where('payment_type', 'credit')
+                ->get()
+                ->sum('total_amount');
+            
+            $customer->total_paid = max(0, $customer->total_debt - (float) $customer->current_balance);
+            return $customer;
+        });
+
+        return collect(['paginator' => $paginator]);
     }
 }

@@ -6,7 +6,7 @@ use App\Domains\HumanCapital\HRCompliance\Models\Telescope;
 
 class ListAuditLogsAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = [])
     {
         $query = Telescope::with('user');
 
@@ -31,23 +31,6 @@ class ListAuditLogsAction
         }
 
         $limit = $filters['limit'] ?? 20;
-        $logs = $query->orderBy('created_at', 'desc')->paginate($limit);
-
-        $mappedData = collect($logs->items())->map(fn($log) => [
-            'id' => $log->id,
-            'user_name' => $log->user ? $log->user->name : 'Unknown',
-            'action' => strtolower($log->operation),
-            'module' => $log->table_name,
-            'description' => ucfirst(strtolower($log->operation)) . " operation on " . ucfirst($log->table_name) . " regarding record ID $log->record_id",
-            'ip_address' => $log->ip_address,
-            'created_at' => $log->created_at,
-        ]);
-
-        return [
-            'logs' => $mappedData,
-            'total' => $logs->total(),
-            'current_page' => $logs->currentPage(),
-            'last_page' => $logs->lastPage(),
-        ];
+        return $query->orderBy('created_at', 'desc')->paginate($limit);
     }
 }

@@ -9,20 +9,18 @@ class StructureNodeResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'               => $this->id,
+            'node_uuid'        => $this->node_uuid,
             'node_type_id'     => $this->node_type_id,
-            'node_code'        => $this->node_code,
-            'node_name'        => $this->node_name,
-            'node_name_en'     => $this->node_name_en ?? null,
-            'description'      => $this->description ?? null,
-            'is_active'        => (bool) ($this->is_active ?? true),
-            'effective_from'   => $this->effective_from?->toDateString() ?? $this->effective_from,
-            'effective_to'     => $this->effective_to?->toDateString() ?? $this->effective_to,
-            'sort_order'       => (int) ($this->sort_order ?? 0),
-            'metadata'         => $this->metadata ?? null,
+            'code'             => $this->code,
+            'attributes_json'  => $this->attributes_json ?? [],
+            'status'           => $this->status,
+            'valid_from'       => $this->valid_from?->toDateString() ?? $this->valid_from,
+            'valid_to'         => $this->valid_to?->toDateString() ?? $this->valid_to,
             'created_at'       => $this->created_at?->toDateTimeString(),
             'updated_at'       => $this->updated_at?->toDateTimeString(),
-            'node_type'        => new OrgMetaTypeResource($this->whenLoaded('nodeType')),
+            'meta_type'        => new OrgMetaTypeResource($this->whenLoaded('metaType')),
+            'outgoing_links'   => StructureLinkResource::collection($this->whenLoaded('outgoingLinks')),
+            'incoming_links'   => StructureLinkResource::collection($this->whenLoaded('incomingLinks')),
         ];
     }
 }

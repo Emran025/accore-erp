@@ -3,10 +3,11 @@
 namespace App\Domains\HumanCapital\HRCompliance\Actions;
 
 use App\Domains\HumanCapital\HRCompliance\Models\ExpertiseDirectory;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ListExpertiseEntriesAction
 {
-    public function execute(array $filters): array
+    public function execute(array $filters): LengthAwarePaginator
     {
         $query = ExpertiseDirectory::with(['employee']);
 
@@ -25,6 +26,6 @@ class ListExpertiseEntriesAction
             );
         }
 
-        return $query->orderBy('created_at', 'desc')->paginate(15)->toArray();
+        return $query->orderBy('created_at', 'desc')->paginate(15);
     }
 }

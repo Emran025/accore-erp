@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class CreateCategoryAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): Category
     {
         $data['created_by'] = auth()->id() ?? session('user_id');
 
@@ -18,6 +18,6 @@ class CreateCategoryAction
 
         TelescopeService::logOperation('CREATE', 'categories', $category->id, null, $data);
 
-        return ['id' => $category->id];
+        return $category;
     }
 }

@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Hash;
 
 class UpdateUserAction
 {
-    public function execute(array $data): void
+    public function execute(int|string $id, array $data): User
     {
-        $user = User::findOrFail($data['id']);
+        $user = User::findOrFail($id);
         $oldValues = $user->toArray();
 
         $updateData = [
@@ -29,5 +29,7 @@ class UpdateUserAction
         $user->update($updateData);
 
         TelescopeService::logOperation('UPDATE', 'users', $user->id, $oldValues, $updateData);
+
+        return $user;
     }
 }

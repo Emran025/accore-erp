@@ -25,65 +25,53 @@ class LeaveController extends Controller
 {
     use BaseApiController;
 
-    public function index(ListLeaveRequestsRequest $request, ListLeaveRequestsAction $action)
+    public function index(ListLeaveRequestsRequest $request, ListLeaveRequestsAction $action): \Illuminate\Http\JsonResponse
     {
-        $paginated = $action->execute($request->validated());
-        
-        return $this->paginatedResponse(
-            LeaveRequestResource::collection($paginated->items())->resolve(),
-            $paginated->total(),
-            $paginated->currentPage(),
-            $paginated->perPage()
-        );
+        $paginator = $action->execute($request->validated());
+        return $this->successResponse(LeaveRequestResource::collection($paginator));
     }
 
     public function store(StoreLeaveRequest $request, CreateLeaveRequestAction $action)
     {
         try {
             $leaveRequest = $action->execute($request->validated());
-            return $this->successResponse((new LeaveRequestResource($leaveRequest))->resolve(), 'Leave request created successfully', 201);
+            return $this->successResponse(new LeaveRequestResource($leaveRequest), 'Leave request created successfully', 201);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
     }
 
-    public function approve(ActionLeaveRequest $request, $id, ProcessLeaveRequestAction $action)
+    public function approve(ActionLeaveRequest $request, $id, ProcessLeaveRequestAction $action): \Illuminate\Http\JsonResponse
     {
         try {
             $leaveRequest = $action->execute($id, $request->validated());
-            return $this->successResponse((new LeaveRequestResource($leaveRequest))->resolve(), 'Leave request processed successfully');
+            return $this->successResponse(new LeaveRequestResource($leaveRequest), 'Leave request processed successfully');
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
     }
 
-    public function show($id, ShowLeaveRequestAction $action)
+    public function show($id, ShowLeaveRequestAction $action): \Illuminate\Http\JsonResponse
     {
         $leaveRequest = $action->execute($id);
-        return $this->successResponse((new LeaveRequestResource($leaveRequest))->resolve());
+        return $this->successResponse(new LeaveRequestResource($leaveRequest));
     }
 
-    public function cancel($id, CancelLeaveRequestAction $action)
+    public function cancel($id, CancelLeaveRequestAction $action): \Illuminate\Http\JsonResponse
     {
         try {
             $leaveRequest = $action->execute($id);
-            return $this->successResponse((new LeaveRequestResource($leaveRequest))->resolve(), 'Leave request cancelled successfully');
+            return $this->successResponse(new LeaveRequestResource($leaveRequest), 'Leave request cancelled successfully');
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
     }
 
-    public function myLeaveRequests(ListMyLeaveRequestsRequest $request, ListMyLeaveRequestsAction $action)
+    public function myLeaveRequests(ListMyLeaveRequestsRequest $request, ListMyLeaveRequestsAction $action): \Illuminate\Http\JsonResponse
     {
         try {
-            $paginated = $action->execute($request->validated());
-
-            return $this->paginatedResponse(
-                LeaveRequestResource::collection($paginated->items())->resolve(),
-                $paginated->total(),
-                $paginated->currentPage(),
-                $paginated->perPage()
-            );
+            $paginator = $action->execute($request->validated());
+            return $this->successResponse(LeaveRequestResource::collection($paginator));
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 404);
         }

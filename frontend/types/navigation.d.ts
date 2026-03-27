@@ -109,6 +109,7 @@ export interface NavigationGroup {
     key: string;
     domainKey: string;
     label: string;
+    description: string;
     icon: IconName;
     items: (NavigationLink | NavigationGroup)[];
 }

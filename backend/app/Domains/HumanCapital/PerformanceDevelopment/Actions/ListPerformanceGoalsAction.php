@@ -3,10 +3,11 @@
 namespace App\Domains\HumanCapital\PerformanceDevelopment\Actions;
 
 use App\Domains\HumanCapital\PerformanceDevelopment\Models\PerformanceGoal;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ListPerformanceGoalsAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): LengthAwarePaginator
     {
         $query = PerformanceGoal::with(['employee', 'parentGoal']);
 
@@ -22,6 +23,6 @@ class ListPerformanceGoalsAction
             $query->where('status', $filters['status']);
         }
 
-        return $query->orderBy('target_date', 'desc')->paginate(15)->toArray();
+        return $query->orderBy('target_date', 'desc')->paginate(15);
     }
 }

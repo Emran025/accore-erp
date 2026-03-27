@@ -6,7 +6,7 @@ use App\Domains\HumanCapital\PayrollBenefits\Models\PostPayrollIntegration;
 
 class ReconcilePostPayrollIntegrationAction
 {
-    public function execute(int $id, array $data): array
+    public function execute(int $id, array $data): PostPayrollIntegration
     {
         $integration = PostPayrollIntegration::findOrFail($id);
         
@@ -15,6 +15,6 @@ class ReconcilePostPayrollIntegrationAction
             'reconciled_at' => now(),
         ]);
 
-        return $integration->load('payrollCycle')->toArray();
+        return $integration->load('payrollCycle');
     }
 }

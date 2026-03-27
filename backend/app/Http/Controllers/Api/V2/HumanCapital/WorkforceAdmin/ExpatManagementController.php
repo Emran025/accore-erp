@@ -3,69 +3,53 @@
 namespace App\Http\Controllers\Api\V2\HumanCapital\WorkforceAdmin;
 
 use App\Http\Controllers\Controller;
-use App\Domains\HumanCapital\WorkforceAdmin\Models\ExpatManagement;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\StoreExpatRequest;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\UpdateExpatRequest;
 use App\Http\Resources\HumanCapital\WorkforceAdmin\ExpatManagementResource;
-use Illuminate\Http\Request;
+use App\Http\Requests\HumanCapital\WorkforceAdmin\ListExpatRecordsRequest;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
+use App\Domains\HumanCapital\WorkforceAdmin\Actions\ListExpatRecordsAction;
+use App\Domains\HumanCapital\WorkforceAdmin\Actions\CreateExpatRecordAction;
+use App\Domains\HumanCapital\WorkforceAdmin\Actions\ShowExpatRecordAction;
+use App\Domains\HumanCapital\WorkforceAdmin\Actions\UpdateExpatRecordAction;
+use App\Domains\HumanCapital\WorkforceAdmin\Actions\DeleteExpatRecordAction;
 
 class ExpatManagementController extends Controller
 {
     use BaseApiController;
 
-    public function index(Request $request)
+    public function index(ListExpatRecordsRequest $request, ListExpatRecordsAction $action)
     {
-        $query = ExpatManagement::with(['employee', 'documents']);
-
-        if ($request->filled('employee_id')) {
-            $query->where('employee_id', $request->employee_id);
-        }
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->whereHas('employee', function($q) use ($search) {
-                $q->where('full_name', 'like', "%{$search}%");
-            });
-        }
-
-        $paginated = $query->paginate(15);
+        $paginator = $action->execute($request->validated());
         return $this->paginatedResponse(
-            ExpatManagementResource::collection($paginated->items()),
-            $paginated->total(),
-            $paginated->currentPage(),
-            $paginated->perPage()
+            ExpatManagementResource::collection($paginator->items()),
+            $paginator->total(),
+            $paginator->currentPage(),
+            $paginator->perPage()
         );
     }
 
-    public function store(StoreExpatRequest $request)
+    public function store(StoreExpatRequest $request, CreateExpatRecordAction $action)
     {
-        $validated = $request->validated();
-        $validated['created_by'] = auth()->id();
-        $expat = ExpatManagement::create($validated);
-        return $this->successResponse(new ExpatManagementResource($expat->load('employee')), 'Expat record created successfully', 201);
+        $expat = $action->execute($request->validated());
+        return $this->successResponse(new ExpatManagementResource($expat), 'Expat record created successfully', 201);
     }
 
-    public function show($id)
+    public function show($id, ShowExpatRecordAction $action)
     {
-        $expat = ExpatManagement::with(['employee', 'documents'])->findOrFail($id);
+        $expat = $action->execute($id);
         return $this->successResponse(new ExpatManagementResource($expat));
     }
 
-    public function update(UpdateExpatRequest $request, $id)
+    public function update(UpdateExpatRequest $request, $id, UpdateExpatRecordAction $action)
     {
-        $expat = ExpatManagement::findOrFail($id);
-
-        $validated = $request->validated();
-
-        $expat->update($validated);
-        return $this->successResponse(new ExpatManagementResource($expat->load('employee', 'documents')), 'Expat record updated successfully');
+        $expat = $action->execute((int)$id, $request->validated());
+        return $this->successResponse(new ExpatManagementResource($expat), 'Expat record updated successfully');
     }
 
-    public function destroy($id)
+    public function destroy($id, DeleteExpatRecordAction $action)
     {
-        $expat = ExpatManagement::findOrFail($id);
-        $expat->delete();
-        return $this->successResponse(['message' => 'Expat record deleted successfully']);
+        $action->execute((int)$id);
+        return $this->successResponse([], 'Expat record deleted successfully');
     }
 }

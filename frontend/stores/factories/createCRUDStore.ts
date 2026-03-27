@@ -136,9 +136,10 @@ export function createCRUDStore<T extends { id: number }>(config: CRUDConfig<T>)
 
                 save: async (data, id?) => {
                     try {
-                        const res = await fetchAPI(endpoint, {
+                        const url = id ? `${endpoint}/${id}` : endpoint;
+                        const res = await fetchAPI(url, {
                             method: id ? 'PUT' : 'POST',
-                            body: JSON.stringify(id ? { ...data, id } : data),
+                            body: JSON.stringify(data),
                         });
                         if (res.success) {
                             showToast(
@@ -161,7 +162,7 @@ export function createCRUDStore<T extends { id: number }>(config: CRUDConfig<T>)
 
                 remove: async (id) => {
                     try {
-                        const res = await fetchAPI(`${endpoint}?id=${id}`, { method: 'DELETE' });
+                        const res = await fetchAPI(`${endpoint}/${id}`, { method: 'DELETE' });
                         if (res.success) {
                             showToast(messages.deleteSuccess || 'تم الحذف', 'success');
                             // Optimistic removal from local items

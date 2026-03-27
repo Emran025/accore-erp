@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Commercial\SalesLifecycle;
+namespace App\Http\Requests\EnterpriseCore\Automation;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ShowInvoiceRequest extends FormRequest
+class ListSystemTemplatesRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,7 +14,8 @@ class ShowInvoiceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'required|integer|exists:invoices,id',
+            'type'   => 'nullable|string',
+            'search' => 'nullable|string',
         ];
     }
 }

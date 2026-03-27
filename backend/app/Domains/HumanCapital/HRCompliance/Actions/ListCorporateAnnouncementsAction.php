@@ -3,10 +3,11 @@
 namespace App\Domains\HumanCapital\HRCompliance\Actions;
 
 use App\Domains\HumanCapital\HRCompliance\Models\CorporateAnnouncement;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ListCorporateAnnouncementsAction
 {
-    public function execute(array $filters = [], $user = null): array
+    public function execute(array $filters = [], $user = null): LengthAwarePaginator
     {
         $query = CorporateAnnouncement::query();
 
@@ -26,11 +27,6 @@ class ListCorporateAnnouncementsAction
 
         $paginated = $query->orderBy('publish_date', 'desc')->paginate(15);
         
-        return [
-            'data' => $paginated->items(),
-            'total' => $paginated->total(),
-            'current_page' => $paginated->currentPage(),
-            'per_page' => $paginated->perPage()
-        ];
+        return $paginated;
     }
 }

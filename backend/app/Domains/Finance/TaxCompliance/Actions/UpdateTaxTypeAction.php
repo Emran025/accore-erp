@@ -5,7 +5,7 @@ use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 class UpdateTaxTypeAction
 {
-    public function execute(array $data, int $id): array
+    public function execute(array $data, int $id): TaxType
     {
         PermissionService::requirePermission('settings', 'edit');
 
@@ -28,6 +28,6 @@ class UpdateTaxTypeAction
             }
         }
 
-        return $taxType->fresh('taxRates')->toArray();
+        return $taxType->fresh('taxRates');
     }
 }

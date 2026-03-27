@@ -35,17 +35,16 @@ class CorporateCommunicationsController extends Controller
         $paginated = $action->execute($request->validated(), auth()->user());
 
         return $this->paginatedResponse(
-            CorporateAnnouncementResource::collection($paginated['data']),
-            $paginated['total'],
-            $paginated['current_page'],
-            $paginated['per_page']
+            CorporateAnnouncementResource::collection($paginated),
+            $paginated->total(),
+            $paginated->currentPage(),
+            $paginated->perPage()
         );
     }
 
     public function storeAnnouncement(StoreCorporateAnnouncementRequest $request, CreateCorporateAnnouncementAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated(), auth()->id());
-        $announcement = CorporateAnnouncement::find($result['id'] ?? $result);
+        $announcement = $action->execute($request->validated(), auth()->id());
 
         return $this->successResponse(new CorporateAnnouncementResource($announcement), 'Announcement created', 201);
     }
@@ -64,10 +63,10 @@ class CorporateCommunicationsController extends Controller
         $paginated = $action->execute($request->validated());
 
         return $this->paginatedResponse(
-            PulseSurveyResource::collection($paginated['data']),
-            $paginated['total'],
-            $paginated['current_page'],
-            $paginated['per_page']
+            PulseSurveyResource::collection($paginated),
+            $paginated->total(),
+            $paginated->currentPage(),
+            $paginated->perPage()
         );
     }
 

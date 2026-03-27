@@ -3,10 +3,10 @@
 namespace App\Domains\HumanCapital\PayrollBenefits\Actions;
 
 use App\Domains\HumanCapital\PayrollBenefits\Models\CompensationPlan;
-
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 class ListCompensationPlansAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): LengthAwarePaginator
     {
         $query = CompensationPlan::with(['entries.employee']);
 
@@ -22,12 +22,6 @@ class ListCompensationPlansAction
             $query->where('fiscal_year', $filters['fiscal_year']);
         }
 
-        $paginated = $query->orderBy('effective_date', 'desc')->paginate(15);
-        return [
-            'data' => $paginated->items(),
-            'total' => $paginated->total(),
-            'current_page' => $paginated->currentPage(),
-            'per_page' => $paginated->perPage()
-        ];
+        return $query->orderBy('effective_date', 'desc')->paginate(15);
     }
 }

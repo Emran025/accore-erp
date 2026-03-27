@@ -5,14 +5,14 @@ namespace App\Domains\Finance\GeneralLedger\Actions;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
 use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
-
+use Illuminate\Database\Eloquent\Collection;
 class ListChartOfAccountsAction
 {
     public function __construct(
         private readonly LedgerService $ledgerService
     ) {}
 
-    public function execute(array $filters): array
+    public function execute(array $filters): Collection
     {
         PermissionService::requirePermission('chart_of_accounts', 'view');
         $search = $filters['search'] ?? null;
@@ -26,22 +26,6 @@ class ListChartOfAccountsAction
             });
         }
 
-        $accounts = $query->orderBy('account_code')->get();
-
-        $mappedAccounts = $accounts->map(function ($account) {
-            return [
-                'id' => $account->id,
-                'code' => $account->account_code,
-                'name' => $account->account_name,
-                'type' => strtolower($account->account_type),
-                'parent_id' => $account->parent_id,
-                'parent_name' => $account->parent?->account_name,
-                'balance' => $this->ledgerService->getAccountBalance($account->account_code),
-                'is_active' => $account->is_active,
-                'description' => $account->description,
-            ];
-        });
-
-        return ['accounts' => $mappedAccounts];
+        return $query->orderBy('account_code')->get();
     }
 }

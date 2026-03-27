@@ -4,7 +4,7 @@ namespace App\Domains\Intelligence\AdvancedAnalytics\Actions;
 
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
-
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class GenerateBalanceSheetReportAction
@@ -13,7 +13,7 @@ class GenerateBalanceSheetReportAction
         private readonly LedgerService $ledgerService
     ) {}
 
-    public function execute(array $data): array
+    public function execute(array $data): \Illuminate\Support\Collection
     {
 
         $asOfDate = $data['as_of_date'] ?? now()->format('Y-m-d');
@@ -43,7 +43,7 @@ class GenerateBalanceSheetReportAction
 
         $totalEquity = collect($equity)->sum('balance');
 
-        return [
+        return collect([
             'as_of_date' => $asOfDate,
             'data' => [
                 'assets' => [
@@ -61,7 +61,7 @@ class GenerateBalanceSheetReportAction
                 'total_liabilities_and_equity' => $totalLiabilities + $totalEquity,
                 'is_balanced' => abs($totalAssets - ($totalLiabilities + $totalEquity)) < 0.01,
             ],
-        ];
+        ]);
     }
 
     private function getAccountTypeDetails(string $accountType, string $asOfDate, ?string $startDate = null): array

@@ -3,10 +3,11 @@
 namespace App\Domains\HumanCapital\PerformanceDevelopment\Actions;
 
 use App\Domains\HumanCapital\PerformanceDevelopment\Models\ContinuousFeedback;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ListContinuousFeedbackAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): LengthAwarePaginator
     {
         $query = ContinuousFeedback::with(['employee', 'givenBy']);
 
@@ -18,6 +19,6 @@ class ListContinuousFeedbackAction
             $query->where('feedback_type', $filters['feedback_type']);
         }
 
-        return $query->orderBy('feedback_date', 'desc')->paginate(15)->toArray();
+        return $query->orderBy('feedback_date', 'desc')->paginate(15);
     }
 }

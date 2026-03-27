@@ -6,6 +6,7 @@ use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class CreateJournalVoucherAction
 {
@@ -13,7 +14,7 @@ class CreateJournalVoucherAction
         private readonly LedgerService $ledgerService,
     ) {}
 
-    public function execute(array $data): array
+    public function execute(array $data): Collection
     {
         return DB::transaction(function () use ($data) {
             $totalDebits = 0;
@@ -73,7 +74,7 @@ class CreateJournalVoucherAction
 
             TelescopeService::logOperation('CREATE', 'journal_vouchers', null, null, $data);
 
-            return ['voucher_number' => $voucherNumber];
+            return collect(['voucher_number' => $voucherNumber]);
         });
     }
 }

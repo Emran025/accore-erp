@@ -1,11 +1,8 @@
 <?php
 namespace App\Domains\Finance\ForeignExchange\Actions;
 
-use App\Domains\Shared\Actions\Action;
 use App\Domains\Finance\ForeignExchange\Models\CurrencyExchangeRateHistory;
 use App\Domains\Finance\ForeignExchange\Services\CurrencyPolicyService;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 class RecordExchangeRateAction
@@ -14,7 +11,7 @@ class RecordExchangeRateAction
         private readonly CurrencyPolicyService $policyService
     ) {}
 
-    public function execute(array $data): array
+    public function execute(array $data): CurrencyExchangeRateHistory
     {
         PermissionService::requirePermission('currency', 'edit');
 
@@ -27,6 +24,6 @@ class RecordExchangeRateAction
             $data['source_reference'] ?? null
         );
 
-        return $rate->load(['currency', 'targetCurrency'])->toArray();
+        return $rate->load(['currency', 'targetCurrency']);
     }
 }

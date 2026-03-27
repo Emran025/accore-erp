@@ -3,10 +3,11 @@
 namespace App\Domains\Finance\Treasury\Actions;
 
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
+use Illuminate\Support\Collection;
 
 class ListJournalVouchersAction
 {
-    public function execute(array $filters): array
+    public function execute(array $filters): Collection
     {
 
         $page = max(1, (int)($filters['page'] ?? 1));
@@ -60,11 +61,11 @@ class ListJournalVouchersAction
             ];
         });
 
-        return [
-            'vouchers' => $vouchers->toArray(),
+        return collect([
+            'vouchers' => $vouchers,
             'total' => $uniqueVoucherCount,
             'page' => $page,
             'per_page' => $perPage,
-        ];
+        ]);
     }
 }

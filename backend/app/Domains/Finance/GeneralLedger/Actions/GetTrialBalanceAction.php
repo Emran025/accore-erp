@@ -2,13 +2,8 @@
 
 namespace App\Domains\Finance\GeneralLedger\Actions;
 
-use App\Domains\Shared\Actions\Action;
-use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
-use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 /**
@@ -25,7 +20,7 @@ class GetTrialBalanceAction
         private readonly LedgerService $ledgerService
     ) {}
 
-    public function execute(array $filters): array
+    public function execute(array $filters): Collection
     {
         PermissionService::requirePermission('general_ledger', 'view');
         $asOfDate = $filters['as_of_date'] ?? null;
@@ -42,11 +37,11 @@ class GetTrialBalanceAction
             ];
         }, $data['accounts']);
 
-        return [
+        return collect([
             'items' => $items,
             'total_debit' => (float)$data['total_debits'],
             'total_credit' => (float)$data['total_credits'],
             'balance' => (float)($data['total_debits'] - $data['total_credits'])
-        ];
+        ]);
     }
 }

@@ -11,7 +11,7 @@ class CreateReconciliationAction
         protected LedgerService $ledgerService
     ) {}
 
-    public function execute(array $data): array
+    public function execute(array $data): Reconciliation
     {
         $accountCode = $data['account_code'] ?? '1110';
         
@@ -28,7 +28,7 @@ class CreateReconciliationAction
             'reconciled_by' => auth()->id()
         ]);
 
-        return array_merge(['success' => true], $reconciliation->toArray());
+        return $reconciliation;
     }
 }
 

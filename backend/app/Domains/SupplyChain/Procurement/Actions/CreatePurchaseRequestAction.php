@@ -6,7 +6,7 @@ use App\Domains\SupplyChain\Procurement\Models\PurchaseRequest;
 
 class CreatePurchaseRequestAction
 {
-    public function execute(array $data, int $userId): array
+    public function execute(array $data, int $userId): PurchaseRequest
     {
         $purchaseRequest = PurchaseRequest::create([
             'product_id' => $data['product_id'] ?? null,
@@ -17,6 +17,6 @@ class CreatePurchaseRequestAction
             'status' => 'pending',
         ]);
 
-        return ['id' => $purchaseRequest->id];
+        return $purchaseRequest;
     }
 }

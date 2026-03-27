@@ -6,12 +6,10 @@ use App\Domains\HumanCapital\ServicesWellness\Models\PpeManagement;
 
 class CreatePpeAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): PpeManagement
     {
         $data['status'] = 'issued';
 
-        $ppe = PpeManagement::create($data);
-
-        return $ppe->load('employee')->toArray();
+        return PpeManagement::create($data)->load('employee');
     }
 }

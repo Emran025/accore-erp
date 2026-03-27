@@ -4,6 +4,7 @@ namespace App\Domains\HumanCapital\PayrollBenefits\Actions;
 
 use App\Domains\HumanCapital\PayrollBenefits\Services\EOSBCalculatorService;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
+use Illuminate\Support\Collection;
 
 class CalculateEOSBAction
 {
@@ -14,7 +15,7 @@ class CalculateEOSBAction
         $this->eosbCalculator = $eosbCalculator;
     }
 
-    public function execute(int|string $employeeId, array $data): array
+    public function execute(int|string $employeeId, array $data): Collection
     {
         $employee = Employee::findOrFail($employeeId);
 
@@ -24,6 +25,6 @@ class CalculateEOSBAction
             $data['termination_reason']
         );
 
-        return $calculation;
+        return collect($calculation);
     }
 }

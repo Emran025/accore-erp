@@ -6,9 +6,8 @@ use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 
 class CreateBatchProcessAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): Batch
     {
-
         $batch = Batch::create([
             'batch_name' => $data['batch_name'],
             'batch_type' => $data['batch_type'],
@@ -19,7 +18,6 @@ class CreateBatchProcessAction
         ]);
 
         TelescopeService::logOperation('CREATE', 'batch_processing', $batch->id, null, $data);
-
-        return $batch->toArray();
+        return $batch;
     }
 }

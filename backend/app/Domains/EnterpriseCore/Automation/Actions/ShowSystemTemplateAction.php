@@ -21,7 +21,7 @@ class ShowSystemTemplateAction
         return $meta && isset($meta['module']) && $meta['module'] !== 'hr';
     }
 
-    public function executeByKey(string $key): array
+    public function executeByKey(string $key): DocumentTemplate
     {
         $template = DocumentTemplate::where('template_key', $key)
             ->where('is_active', true)
@@ -31,10 +31,10 @@ class ShowSystemTemplateAction
             throw new \Exception('Template is not a system template');
         }
         
-        return $template->toArray();
+        return $template;
     }
 
-    public function executeById(int|string $id): array
+    public function executeById(int|string $id): DocumentTemplate
     {
         $template = DocumentTemplate::findOrFail($id);
             
@@ -42,10 +42,10 @@ class ShowSystemTemplateAction
             throw new \Exception('Template is not a system template');
         }
         
-        return $template->toArray();
+        return $template;
     }
 
-    public function executeByType(string $type): array
+    public function executeByType(string $type): DocumentTemplate
     {
         $template = $this->templateService->getTemplate($type);
             
@@ -53,6 +53,6 @@ class ShowSystemTemplateAction
             throw new \Exception("No active template found for type '{$type}'");
         }
         
-        return $template->toArray();
+        return $template;
     }
 }

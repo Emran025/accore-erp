@@ -1,18 +1,12 @@
 <?php
-
 namespace App\Domains\HumanCapital\WorkforceAdmin\Actions;
 
-use App\Domains\Shared\Actions\Action;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\ExpatManagement;
-use Illuminate\Http\JsonResponse;
 
-class ShowExpatRecordAction extends Action
+class ShowExpatRecordAction
 {
-    public function __construct(private readonly int $id) {}
-
-    public function __invoke(): JsonResponse
+    public function execute(int|string $id): ExpatManagement
     {
-        $expat = ExpatManagement::with(['employee', 'documents'])->findOrFail($this->id);
-        return $this->successResponse($expat->toArray());
+        return ExpatManagement::with(['employee', 'documents'])->findOrFail($id);
     }
 }

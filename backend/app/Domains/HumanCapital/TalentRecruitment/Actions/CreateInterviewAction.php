@@ -6,11 +6,10 @@ use App\Domains\HumanCapital\TalentRecruitment\Models\Interview;
 
 class CreateInterviewAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): Interview
     {
         $data['status'] = 'scheduled';
 
-        $interview = Interview::create($data);
-        return $interview->load('applicant', 'interviewer')->toArray();
+        return Interview::create($data)->load('applicant', 'interviewer');
     }
 }

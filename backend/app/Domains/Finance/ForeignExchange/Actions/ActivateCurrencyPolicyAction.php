@@ -6,18 +6,14 @@ use Illuminate\Support\Facades\DB;
 
 class ActivateCurrencyPolicyAction
 {
-    public function execute(int $id): array
+    public function execute(int $id): CurrencyPolicy
     {
         $policy = CurrencyPolicy::findOrFail($id);
 
-        DB::transaction(function () use ($policy) {
+        return DB::transaction(function () use ($policy) {
             CurrencyPolicy::where('is_active', true)->update(['is_active' => false]);
             $policy->update(['is_active' => true]);
+            return $policy->fresh();
         });
-
-        return [
-            'message' => 'Currency policy activated successfully',
-            'data' => $policy->fresh(),
-        ];
     }
 }

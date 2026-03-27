@@ -27,13 +27,13 @@ class ArTransactionsController extends Controller
      */
     public function index(ListArTransactionsRequest $request, ListArTransactionsAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
+        $paginator = $action->execute($request->validated());
 
         return $this->paginatedResponse(
-            ArTransactionResource::collection($result['data']),
-            $result['total'],
-            $result['current_page'],
-            $result['per_page']
+            ArTransactionResource::collection($paginator),
+            $paginator->total(),
+            $paginator->currentPage(),
+            $paginator->perPage()
         );
     }
 

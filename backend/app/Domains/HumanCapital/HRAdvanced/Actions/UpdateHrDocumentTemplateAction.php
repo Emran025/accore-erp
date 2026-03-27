@@ -9,7 +9,7 @@ class UpdateHrDocumentTemplateAction
 {
     public function __construct(private readonly TemplateService $templateService) {}
 
-    public function execute(int $id, array $data): array
+    public function execute(int $id, array $data): DocumentTemplate
     {
         if (isset($data['body_html'])) {
             $type = $data['template_type'] ?? DocumentTemplate::findOrFail($id)->template_type;
@@ -19,6 +19,6 @@ class UpdateHrDocumentTemplateAction
             }
         }
         $template = $this->templateService->updateTemplate($id, $data);
-        return $template->toArray();
+        return $template;
     }
 }

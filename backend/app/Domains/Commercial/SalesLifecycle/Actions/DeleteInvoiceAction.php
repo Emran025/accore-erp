@@ -11,13 +11,10 @@ class DeleteInvoiceAction
         private readonly SalesService $salesService,
     ) {}
 
-    public function execute(int $id): array
+    public function execute(int $id): Invoice
     {
-        $invoice = Invoice::findOrFail($id);
-        $oldValues = $invoice->toArray();
-        
         $this->salesService->deleteInvoice($id);
         
-        return $oldValues;
+        return Invoice::withTrashed()->findOrFail($id);
     }
 }

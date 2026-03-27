@@ -6,15 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\HumanCapital\TimeProductivity\StoreAttendanceRequest;
 use App\Http\Requests\HumanCapital\TimeProductivity\GetAttendancePeriodRequest;
 use App\Http\Requests\HumanCapital\TimeProductivity\BulkImportAttendanceRequest;
+use App\Http\Requests\HumanCapital\TimeProductivity\MyAttendanceRequest;
 use App\Domains\HumanCapital\TimeProductivity\Actions\ListAttendanceRecordsAction;
 use App\Domains\HumanCapital\TimeProductivity\Actions\RecordAttendanceAction;
 use App\Domains\HumanCapital\TimeProductivity\Actions\BulkImportAttendanceAction;
 use App\Domains\HumanCapital\TimeProductivity\Actions\GetAttendanceSummaryAction;
 use App\Domains\HumanCapital\TimeProductivity\Actions\GetMyAttendanceAction;
-use App\Domains\HumanCapital\TimeProductivity\Models\AttendanceRecord;
 use App\Http\Resources\HumanCapital\TimeProductivity\AttendanceRecordResource;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
+use Illuminate\Http\JsonResponse;
 
 class AttendanceController extends Controller
 {
@@ -22,7 +22,7 @@ class AttendanceController extends Controller
 
     public function __construct(){}
 
-    public function index(GetAttendancePeriodRequest $request, ListAttendanceRecordsAction $action)
+    public function index(GetAttendancePeriodRequest $request, ListAttendanceRecordsAction $action): JsonResponse
     {
         $validated = $request->validated();
         $records = $action->execute(
@@ -31,47 +31,44 @@ class AttendanceController extends Controller
             $validated['end_date']
         );
         
-        $data = $records['data'] ?? $records;
-
-        return $this->successResponse(AttendanceRecordResource::collection($data)->resolve());
+        return $this->successResponse(AttendanceRecordResource::collection($records));
     }
 
-    public function store(StoreAttendanceRequest $request, RecordAttendanceAction $action)
+    public function store(StoreAttendanceRequest $request, RecordAttendanceAction $action): JsonResponse
     {
         $validated = $request->validated();
 
         try {
-            $result = $action->execute(
+            $attendance = $action->execute(
                 $validated['employee_id'],
                 $validated['attendance_date'],
                 $validated
             );
-            $attendance = AttendanceRecord::findOrFail($result['id'] ?? $result);
 
-            return $this->successResponse((new AttendanceRecordResource($attendance))->resolve(), 'Attendance record created', 201);
+            return $this->successResponse(new AttendanceRecordResource($attendance), 'Attendance record created', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
     }
 
-    public function bulkImport(BulkImportAttendanceRequest $request, BulkImportAttendanceAction $action)
+    public function bulkImport(BulkImportAttendanceRequest $request, BulkImportAttendanceAction $action): JsonResponse
     {
-        $validated = $request->validated();
-
         try {
-            $imported = $action->execute($validated['records']);
-            return $this->successResponse(['imported_count' => count($imported)], 'Import successful', 201);
+            $imported = $action->execute($request->validated()['records']);
+            return $this->successResponse([
+                'imported_count' => $imported->count()
+            ], 'Import successful', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
     }
 
-    public function getSummary(GetAttendancePeriodRequest $request, GetAttendanceSummaryAction $action)
+    public function getSummary(GetAttendancePeriodRequest $request, GetAttendanceSummaryAction $action): JsonResponse
     {
         $validated = $request->validated();
 
         $summary = $action->execute(
-            $validated['employee_id'],
+            (int) $validated['employee_id'],
             $validated['start_date'],
             $validated['end_date']
         );
@@ -79,18 +76,18 @@ class AttendanceController extends Controller
         return $this->successResponse($summary);
     }
 
-    public function myAttendance(Request $request, GetMyAttendanceAction $action)
+    public function myAttendance(MyAttendanceRequest $request, GetMyAttendanceAction $action): JsonResponse
     {
         try {
-            $startDate = $request->input('start_date', now()->startOfMonth()->toDateString());
-            $endDate = $request->input('end_date', now()->endOfMonth()->toDateString());
-
-            $result = $action->execute($startDate, $endDate);
-            $data = $result['data'] ?? $result;
-
-            return $this->successResponse(AttendanceRecordResource::collection($data)->resolve());
+            $validated = $request->validated();
+            $result = $action->execute($validated['start_date'], $validated['end_date']);
+            
+            return $this->successResponse([
+                'records' => AttendanceRecordResource::collection($result['records']),
+                'summary' => $result['summary']
+            ]);
         } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 400);
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 400);
         }
     }
 }

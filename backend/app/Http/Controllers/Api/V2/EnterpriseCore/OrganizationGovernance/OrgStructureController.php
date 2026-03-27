@@ -30,8 +30,6 @@ use App\Domains\EnterpriseCore\OrganizationGovernance\Actions\GetOrgStatisticsAc
 use App\Domains\EnterpriseCore\OrganizationGovernance\Actions\RunIntegrityCheckAction;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Actions\GetOrgChangeHistoryAction;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Actions\BulkUpdateNodeStatusAction;
-use App\Domains\EnterpriseCore\OrganizationGovernance\Models\StructureNode;
-use App\Domains\EnterpriseCore\OrganizationGovernance\Models\StructureLink;
 use App\Http\Resources\EnterpriseCore\OrganizationGovernance\StructureNodeResource;
 use App\Http\Resources\EnterpriseCore\OrganizationGovernance\StructureLinkResource;
 use App\Http\Resources\EnterpriseCore\OrganizationGovernance\OrgMetaTypeResource;
@@ -69,51 +67,32 @@ class OrgStructureController extends Controller
 
     public function nodes(ListNodesRequest $request, ListStructureNodesAction $action): JsonResponse
     {
-        try {
-            $nodes = $action->execute($request->validated());
-            return $this->successResponse(StructureNodeResource::collection($nodes));
-        } catch (\Exception $e) {
-            return $this->errorResponse("Internal Error: " . $e->getMessage(), 500);
-        }
+        $nodes = $action->execute($request->validated());
+        return $this->successResponse(StructureNodeResource::collection($nodes));
     }
 
     public function showNode(string $uuid, ShowStructureNodeAction $action): JsonResponse
     {
-        $nodeData = $action->execute($uuid);
-        $node = StructureNode::where('uuid', $uuid)->first();
+        $node = $action->execute($uuid);
         return $this->successResponse(new StructureNodeResource($node));
     }
 
     public function storeNode(StoreNodeRequest $request, CreateStructureNodeAction $action): JsonResponse
     {
-        try {
-            $result = $action->execute($request->validated());
-            $node = StructureNode::find($result['node']['id'] ?? $result['node']);
-            return $this->successResponse(new StructureNodeResource($node), 'Node created successfully', 201);
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
-        }
+        $node = $action->execute($request->validated());
+        return $this->successResponse(new StructureNodeResource($node), 'Node created successfully', 201);
     }
 
     public function updateNode(UpdateNodeRequest $request, string $uuid, UpdateStructureNodeAction $action): JsonResponse
     {
-        try {
-            $nodeData = $action->execute($uuid, $request->validated());
-            $node = StructureNode::where('uuid', $uuid)->first();
-            return $this->successResponse(new StructureNodeResource($node), 'Node updated successfully');
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
-        }
+        $node = $action->execute($uuid, $request->validated());
+        return $this->successResponse(new StructureNodeResource($node), 'Node updated successfully');
     }
 
     public function destroyNode(string $uuid, DeleteStructureNodeAction $action): JsonResponse
     {
-        try {
-            $action->execute($uuid);
-            return $this->successResponse([], 'Node deleted successfully');
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
-        }
+        $action->execute($uuid);
+        return $this->successResponse([], 'Node deleted successfully');
     }
 
     // ─── Links ──────────────────────────────────────────────────────────
@@ -126,29 +105,19 @@ class OrgStructureController extends Controller
 
     public function storeLink(StoreLinkRequest $request, CreateStructureLinkAction $action): JsonResponse
     {
-        try {
-            $validated = $request->validated();
-            $linkResult = $action->execute(
-                $validated['source_node_uuid'],
-                $validated['target_node_uuid'],
-                $validated
-            );
-            $link = StructureLink::find($linkResult['id'] ?? $linkResult);
-            return $this->successResponse(new StructureLinkResource($link), 'Link created successfully', 201);
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
-        }
+        $validated = $request->validated();
+        $link = $action->execute(
+            $validated['source_node_uuid'],
+            $validated['target_node_uuid'],
+            $validated
+        );
+        return $this->successResponse(new StructureLinkResource($link), 'Link created successfully', 201);
     }
 
     public function updateLink(UpdateLinkRequest $request, int $id, UpdateStructureLinkAction $action): JsonResponse
     {
-        try {
-            $linkResult = $action->execute($id, $request->validated());
-            $link = StructureLink::find($id);
-            return $this->successResponse(new StructureLinkResource($link), 'Link updated successfully');
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 422);
-        }
+        $link = $action->execute($id, $request->validated());
+        return $this->successResponse(new StructureLinkResource($link), 'Link updated successfully');
     }
 
     public function destroyLink(int $id, DeleteStructureLinkAction $action): JsonResponse
@@ -169,12 +138,8 @@ class OrgStructureController extends Controller
 
     public function statistics(GetOrgStatisticsAction $action): JsonResponse
     {
-        try {
-            $stats = $action->execute();
-            return $this->successResponse(['statistics' => $stats]);
-        } catch (\Exception $e) {
-            return $this->errorResponse("Statistics Error: " . $e->getMessage(), 500);
-        }
+        $stats = $action->execute();
+        return $this->successResponse(['statistics' => $stats]);
     }
 
     // ─── Integrity Check ────────────────────────────────────────────────
@@ -184,10 +149,12 @@ class OrgStructureController extends Controller
         $issues = $action->execute();
         return $this->successResponse([
             'issues'   => $issues,
-            'total'    => count($issues),
-            'errors'   => count(array_filter($issues, fn($i) => $i['type'] === 'ERROR')),
-            'warnings' => count(array_filter($issues, fn($i) => $i['type'] === 'WARNING')),
-            'info'     => count(array_filter($issues, fn($i) => $i['type'] === 'INFO')),
+            'summary'  => [
+                'total'    => count($issues),
+                'errors'   => count(array_filter($issues, fn($i) => $i['type'] === 'ERROR')),
+                'warnings' => count(array_filter($issues, fn($i) => $i['type'] === 'WARNING')),
+                'info'     => count(array_filter($issues, fn($i) => $i['type'] === 'INFO')),
+            ]
         ]);
     }
 

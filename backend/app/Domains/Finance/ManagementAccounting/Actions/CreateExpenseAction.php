@@ -93,10 +93,7 @@ class CreateExpenseAction
 
             TelescopeService::logOperation('CREATE', 'expenses', $expense->id, null, $data);
 
-            return [
-                'id' => $expense->id,
-                'voucher_number' => $voucherNumber,
-            ];
+            return $expense;
         });
     }
 }

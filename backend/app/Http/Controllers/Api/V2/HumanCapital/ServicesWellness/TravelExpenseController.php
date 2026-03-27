@@ -34,69 +34,39 @@ class TravelExpenseController extends Controller
 
     public function indexRequests(ListTravelRequestsRequest $request, ListTravelRequestsAction $action): JsonResponse
     {
-        $paginated = $action->execute($request->validated());
-
-        return $this->paginatedResponse(
-            TravelRequestResource::collection($paginated->items()),
-            $paginated->total(),
-            $paginated->currentPage(),
-            $paginated->perPage()
-        );
+        $paginator = $action->execute($request->validated());
+        return $this->successResponse(TravelRequestResource::collection($paginator));
     }
 
     public function storeRequest(StoreTravelRequest $request, CreateTravelRequestAction $action): JsonResponse
     {
         $travelRequest = $action->execute($request->validated());
-
-        return $this->successResponse(
-            new TravelRequestResource($travelRequest->load('employee')), 
-            'Travel request created successfully', 
-            201
-        );
+        return $this->successResponse(new TravelRequestResource($travelRequest->load('employee')), 'Travel request created successfully', 201);
     }
 
     public function updateRequestStatus($id, UpdateTravelRequestStatusRequest $request, UpdateTravelRequestStatusAction $action): JsonResponse
     {
         $travelRequest = TravelRequest::findOrFail($id);
         $updatedRequest = $action->execute($travelRequest, $request->validated());
-
-        return $this->successResponse(
-            new TravelRequestResource($updatedRequest->load('employee')),
-            'Travel request status updated successfully'
-        );
+        return $this->successResponse(new TravelRequestResource($updatedRequest->load('employee')), 'Travel request status updated successfully');
     }
 
     public function indexExpenses(ListTravelExpensesRequest $request, ListTravelExpensesAction $action): JsonResponse
     {
-        $paginated = $action->execute($request->validated());
-
-        return $this->paginatedResponse(
-            TravelExpenseResource::collection($paginated->items()),
-            $paginated->total(),
-            $paginated->currentPage(),
-            $paginated->perPage()
-        );
+        $paginator = $action->execute($request->validated());
+        return $this->successResponse(TravelExpenseResource::collection($paginator));
     }
 
     public function storeExpense(StoreTravelExpense $request, CreateTravelExpenseAction $action): JsonResponse
     {
         $expense = $action->execute($request->validated());
-
-        return $this->successResponse(
-            new TravelExpenseResource($expense->load('travelRequest', 'employee')), 
-            'Travel expense recorded successfully', 
-            201
-        );
+        return $this->successResponse(new TravelExpenseResource($expense->load('travelRequest', 'employee')), 'Travel expense recorded successfully', 201);
     }
 
     public function updateExpenseStatus($id, UpdateTravelExpenseStatusRequest $request, UpdateTravelExpenseStatusAction $action): JsonResponse
     {
         $expense = TravelExpense::findOrFail($id);
         $updatedExpense = $action->execute($expense, $request->validated());
-
-        return $this->successResponse(
-            new TravelExpenseResource($updatedExpense->load('travelRequest', 'employee')),
-            'Travel expense status updated successfully'
-        );
+        return $this->successResponse(new TravelExpenseResource($updatedExpense->load('travelRequest', 'employee')), 'Travel expense status updated successfully');
     }
 }

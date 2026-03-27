@@ -6,7 +6,7 @@ use App\Domains\HumanCapital\ServicesWellness\Models\EmployeeLoan;
 
 class UpdateEmployeeLoanStatusAction
 {
-    public function execute(int|string $id, array $data): array
+    public function execute(int|string $id, array $data): EmployeeLoan
     {
         $loan = EmployeeLoan::findOrFail($id);
 
@@ -16,6 +16,6 @@ class UpdateEmployeeLoanStatusAction
         }
 
         $loan->update($data);
-        return $loan->load('employee', 'repayments')->toArray();
+        return $loan->load('employee', 'repayments');
     }
 }

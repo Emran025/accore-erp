@@ -15,7 +15,6 @@ use App\Http\Controllers\Api\V2\Finance\Treasury\JournalVouchersController;
 use App\Http\Controllers\Api\V2\Finance\TaxCompliance\ZATCAInvoiceController;
 use App\Http\Controllers\Api\V2\Finance\GeneralLedger\RecurringTransactionsController;
 
-
 /*
 |--------------------------------------------------------------------------
 | Domain Routes: 03-Finance
@@ -65,9 +64,9 @@ Route::group(['prefix' => 'fiscal-periods', 'middleware' => 'can:fiscal_periods,
     Route::get('/', [FiscalPeriodsController::class, 'index'])->name('v2.fiscal_periods.index');
     Route::middleware(['can:fiscal_periods,create', 'throttle:api-sensitive'])->post('/', [FiscalPeriodsController::class, 'store'])->name('v2.fiscal_periods.store');
     Route::middleware(['can:fiscal_periods,edit', 'throttle:api-critical'])->group(function () {
-        Route::post('/close', [FiscalPeriodsController::class, 'close'])->name('v2.fiscal_periods.close');
-        Route::post('/lock', [FiscalPeriodsController::class, 'lock'])->name('v2.fiscal_periods.lock');
-        Route::post('/unlock', [FiscalPeriodsController::class, 'unlock'])->name('v2.fiscal_periods.unlock');
+        Route::post('/{id}/close', [FiscalPeriodsController::class, 'close'])->name('v2.fiscal_periods.close');
+        Route::post('/{id}/lock', [FiscalPeriodsController::class, 'lock'])->name('v2.fiscal_periods.lock');
+        Route::post('/{id}/unlock', [FiscalPeriodsController::class, 'unlock'])->name('v2.fiscal_periods.unlock');
     });
 });
 
@@ -78,22 +77,22 @@ Route::group(['prefix' => 'operations'], function () {
     Route::group(['prefix' => 'reconciliation', 'middleware' => 'can:reconciliation,view'], function () {
         Route::get('/', [BankReconciliationController::class, 'index'])->name('v2.reconciliation.index');
         Route::middleware(['can:reconciliation,create', 'throttle:api-sensitive'])->post('/', [BankReconciliationController::class, 'store'])->name('v2.reconciliation.store');
-        Route::middleware(['can:reconciliation,edit', 'throttle:api-sensitive'])->put('/', [BankReconciliationController::class, 'update'])->name('v2.reconciliation.update');
+        Route::middleware(['can:reconciliation,edit', 'throttle:api-sensitive'])->put('/{id}', [BankReconciliationController::class, 'update'])->name('v2.reconciliation.update');
     });
 
     // Expenses & Revenues
     Route::group(['middleware' => 'can:expenses,view'], function () {
         Route::get('/expenses', [ExpensesController::class, 'index'])->name('v2.expenses.index');
         Route::middleware(['can:expenses,create', 'throttle:api-write'])->post('/expenses', [ExpensesController::class, 'store'])->name('v2.expenses.store');
-        Route::middleware(['can:expenses,edit', 'throttle:api-write'])->put('/expenses', [ExpensesController::class, 'update'])->name('v2.expenses.update');
-        Route::middleware(['can:expenses,delete', 'throttle:api-delete'])->delete('/expenses', [ExpensesController::class, 'destroy'])->name('v2.expenses.destroy');
+        Route::middleware(['can:expenses,edit', 'throttle:api-write'])->put('/expenses/{id}', [ExpensesController::class, 'update'])->name('v2.expenses.update');
+        Route::middleware(['can:expenses,delete', 'throttle:api-delete'])->delete('/expenses/{id}', [ExpensesController::class, 'destroy'])->name('v2.expenses.destroy');
     });
 
     Route::group(['middleware' => 'can:revenues,view'], function () {
         Route::get('/revenues', [RevenuesController::class, 'index'])->name('v2.revenues.index');
         Route::middleware(['can:revenues,create', 'throttle:api-write'])->post('/revenues', [RevenuesController::class, 'store'])->name('v2.revenues.store');
-        Route::middleware(['can:revenues,edit', 'throttle:api-write'])->put('/revenues', [RevenuesController::class, 'update'])->name('v2.revenues.update');
-        Route::middleware(['can:revenues,delete', 'throttle:api-delete'])->delete('/revenues', [RevenuesController::class, 'destroy'])->name('v2.revenues.destroy');
+        Route::middleware(['can:revenues,edit', 'throttle:api-write'])->put('/revenues/{id}', [RevenuesController::class, 'update'])->name('v2.revenues.update');
+        Route::middleware(['can:revenues,delete', 'throttle:api-delete'])->delete('/revenues/{id}', [RevenuesController::class, 'destroy'])->name('v2.revenues.destroy');
     });
 });
 

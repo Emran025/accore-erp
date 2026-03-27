@@ -11,9 +11,9 @@ class UpdateReconciliationAction
         protected LedgerService $ledgerService
     ) {}
 
-    public function execute(array $data): array
+    public function execute(array $data, int $id): Reconciliation
     {
-        $reconciliation = Reconciliation::findOrFail($data['id']);
+        $reconciliation = Reconciliation::findOrFail($id);
 
         if (($data['action'] ?? null) === 'adjust') {
             // Post adjustment to GL
@@ -46,7 +46,7 @@ class UpdateReconciliationAction
             $reconciliation->update($data);
         }
 
-        return $reconciliation->toArray();
+        return $reconciliation;
     }
 }
 

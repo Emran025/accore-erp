@@ -4,6 +4,7 @@ namespace App\Domains\EnterpriseCore\Automation\Actions;
 
 use App\Domains\Finance\Treasury\Models\RecurringTransaction;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
+use Illuminate\Support\Collection;
 
 class ProcessRecurringTransactionAction
 {
@@ -11,7 +12,7 @@ class ProcessRecurringTransactionAction
         private readonly LedgerService $ledgerService
     ) {}
 
-    public function execute(array $data): array
+    public function execute(array $data): Collection
     {
         $templateId = $data['template_id'];
         $generationDate = $data['generation_date'] ?? now()->format('Y-m-d');
@@ -85,7 +86,7 @@ class ProcessRecurringTransactionAction
             'next_due_date' => $nextDate->format('Y-m-d'),
         ]);
 
-        return ['voucher_number' => $voucherNumber];
+        return collect(['voucher_number' => $voucherNumber]);
     }
 }
 

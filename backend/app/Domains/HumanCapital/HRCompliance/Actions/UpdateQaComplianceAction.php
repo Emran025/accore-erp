@@ -6,7 +6,7 @@ use App\Domains\Manufacturing\QualityControl\Models\QaCompliance;
 
 class UpdateQaComplianceAction
 {
-    public function execute(int|string $id, array $data): array
+    public function execute(int|string $id, array $data): QaCompliance
     {
         $compliance = QaCompliance::findOrFail($id);
         
@@ -16,6 +16,6 @@ class UpdateQaComplianceAction
         }
 
         $compliance->update($data);
-        return $compliance->load('employee', 'capas')->toArray();
+        return $compliance->load('employee', 'capas');
     }
 }

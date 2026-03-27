@@ -3,10 +3,11 @@
 namespace App\Domains\HumanCapital\WorkforceAdmin\Actions;
 
 use App\Domains\HumanCapital\WorkforceAdmin\Models\ContingentWorker;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ListContingentWorkersAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): LengthAwarePaginator
     {
         $query = ContingentWorker::with(['contracts']);
 
@@ -27,6 +28,6 @@ class ListContingentWorkersAction
             });
         }
 
-        return $query->orderBy('created_at', 'desc')->paginate(15)->toArray();
+        return $query->orderBy('created_at', 'desc')->paginate(15);
     }
 }

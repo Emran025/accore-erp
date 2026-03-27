@@ -2,10 +2,10 @@
 namespace App\Domains\EnterpriseCore\OrganizationGovernance\Actions;
 
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\StructureNode;
-
+use Illuminate\Database\Eloquent\Collection;
 class ListStructureNodesAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): Collection
     {
         $query = StructureNode::with(['metaType', 'outgoingLinks', 'incomingLinks']);
 
@@ -26,6 +26,6 @@ class ListStructureNodesAction
             });
         }
 
-        return $query->orderBy('node_type_id')->orderBy('code')->get()->toArray();
+        return $query->orderBy('node_type_id')->orderBy('code')->get();
     }
 }

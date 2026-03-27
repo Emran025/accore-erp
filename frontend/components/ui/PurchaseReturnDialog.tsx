@@ -88,8 +88,8 @@ export function PurchaseReturnDialog({
             totalSubtotal += itemSubtotal;
 
             // Proportional VAT
-            const proportion = invoice.subtotal > 0 ? itemSubtotal / invoice.subtotal : 0;
-            totalVat += invoice.vat_amount * proportion;
+            const proportion = (invoice.subtotal || 0) > 0 ? itemSubtotal / (invoice.subtotal || 0) : 0;
+            totalVat += (invoice.vat_amount || 0) * proportion;
         });
 
         if (missingInvoices) return null;

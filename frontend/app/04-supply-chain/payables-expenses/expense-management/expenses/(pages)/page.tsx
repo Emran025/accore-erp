@@ -147,9 +147,9 @@ export default function ExpensesPage() {
 
     try {
       if (selectedExpense) {
-        await fetchAPI(API_ENDPOINTS.FINANCE.EXPENSES, {
+        await fetchAPI(`${API_ENDPOINTS.FINANCE.EXPENSES}/${selectedExpense.id}`, {
           method: "PUT",
-          body: JSON.stringify({ ...payload, id: selectedExpense.id }),
+          body: JSON.stringify(payload),
         });
         showToast("تم تحديث المصروف بنجاح", "success");
       } else {
@@ -175,7 +175,7 @@ export default function ExpensesPage() {
     if (!deleteId) return;
 
     try {
-      await fetchAPI(`${API_ENDPOINTS.FINANCE.EXPENSES}?id=${deleteId}`, { method: "DELETE" });
+      const response = await fetchAPI(`${API_ENDPOINTS.FINANCE.EXPENSES}/${deleteId}`, { method: "DELETE" });
       showToast("تم حذف المصروف", "success");
       loadExpenses(currentPage, searchTerm);
     } catch {

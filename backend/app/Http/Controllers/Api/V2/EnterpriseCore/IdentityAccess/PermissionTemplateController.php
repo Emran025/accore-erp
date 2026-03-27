@@ -26,9 +26,7 @@ class PermissionTemplateController extends Controller
     public function index(ListPermissionTemplatesAction $action): JsonResponse
     {
         $templates = $action->execute();
-        $data = PermissionTemplate::whereIn('id', collect($templates)->pluck('id'))->get();
-
-        return $this->successResponse(PermissionTemplateResource::collection($data));
+        return $this->successResponse(PermissionTemplateResource::collection($templates));
     }
 
     /**
@@ -36,9 +34,7 @@ class PermissionTemplateController extends Controller
      */
     public function store(StorePermissionTemplateRequest $request, CreatePermissionTemplateAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
-        $template = PermissionTemplate::find($result['id'] ?? $result);
-
+        $template = $action->execute($request->validated());
         return $this->successResponse(new PermissionTemplateResource($template), 'Permission template created successfully', 201);
     }
 
@@ -47,9 +43,7 @@ class PermissionTemplateController extends Controller
      */
     public function update(UpdatePermissionTemplateRequest $request, int $id, UpdatePermissionTemplateAction $action): JsonResponse
     {
-        $result = $action->execute($id, $request->validated());
-        $template = PermissionTemplate::find($id);
-
+        $template = $action->execute($id, $request->validated());
         return $this->successResponse(new PermissionTemplateResource($template), 'Permission template updated successfully');
     }
 

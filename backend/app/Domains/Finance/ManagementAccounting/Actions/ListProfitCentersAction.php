@@ -4,14 +4,13 @@ namespace App\Domains\Finance\ManagementAccounting\Actions;
 use App\Domains\Finance\ManagementAccounting\Models\ProfitCenter;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
-
+use Illuminate\Pagination\LengthAwarePaginator;
 class ListProfitCentersAction
 {
-    public function execute(array $filters): array
+    public function execute(array $filters): LengthAwarePaginator
     {
         PermissionService::requirePermission('chart_of_accounts', 'view');
 
-        $page = max(1, (int)($filters['page'] ?? 1));
         $perPage = min(100, max(1, (int)($filters['per_page'] ?? $filters['limit'] ?? 20)));
 
         $query = ProfitCenter::with(['parent', 'revenueAccount', 'expenseAccount', 'manager', 'createdBy', 'children']);
@@ -38,21 +37,9 @@ class ListProfitCentersAction
             $query->where('parent_id', $parentId === 'null' ? null : $parentId);
         }
 
-        $total = $query->count();
-        $items = $query->orderBy('code', 'asc')
-            ->skip(($page - 1) * $perPage)
-            ->take($perPage)
-            ->get();
+        $paginator = $query->orderBy('code', 'asc')->paginate($perPage);
 
-        $items->each(function ($center) {
-            $center->recorder_name       = $center->createdBy->name ?? null;
-            $center->parent_name         = $center->parent->name ?? null;
-            $center->revenue_account_name = $center->revenueAccount->account_name ?? null;
-            $center->expense_account_name = $center->expenseAccount->account_name ?? null;
-            $center->manager_name        = $center->manager->name ?? null;
-            $center->children_count      = $center->children->count();
-
-            // Revenue & expense totals from GL
+        $paginator->getCollection()->each(function ($center) {
             $center->actual_revenue = GeneralLedger::where('profit_center_id', $center->id)
                 ->where('entry_type', 'CREDIT')
                 ->sum('amount');
@@ -65,11 +52,6 @@ class ListProfitCentersAction
                 : 0;
         });
 
-        return [
-            'items' => $items->toArray(),
-            'total' => $total,
-            'page' => $page,
-            'per_page' => $perPage,
-        ];
+        return $paginator;
     }
 }

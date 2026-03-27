@@ -3,10 +3,11 @@
 namespace App\Domains\Commercial\MarketingDistribution\Actions;
 
 use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentative;
+use Illuminate\Support\Collection;
 
 class DeleteSalesRepresentativeAction
 {
-    public function execute(int $id): array
+    public function execute(int $id): Collection
     {
         $representative = SalesRepresentative::findOrFail($id);
         
@@ -17,6 +18,6 @@ class DeleteSalesRepresentativeAction
         $oldValues = $representative->toArray();
         $representative->delete();
 
-        return $oldValues;
+        return collect($oldValues);
     }
 }

@@ -61,7 +61,7 @@ export function NavigationGridContent({ groupId }: NavigationGridContentProps) {
                             href={`/navigation?group=${item.key}`}
                             icon={item.icon}
                             label={item.label}
-                            description="مجلد قوائم"
+                            description={item.description}
                         />
                     );
                 } else if (isNavigationLink(item)) {

@@ -21,44 +21,28 @@ class ChartOfAccountsController extends Controller
 {
     use BaseApiController;
 
-    /**
-     * Get all chart of accounts
-     */
     public function index(ListChartOfAccountsRequest $request, ListChartOfAccountsAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
-        $data = $result['data'] ?? $result;
-        
-        return $this->successResponse(ChartOfAccountResource::collection($data));
+        $accounts = $action->execute($request->validated());
+        return $this->successResponse(ChartOfAccountResource::collection($accounts)->resolve());
     }
 
-    /**
-     * Create new account
-     */
     public function store(StoreChartOfAccountRequest $request, CreateChartOfAccountAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
-        $account = ChartOfAccount::find($result['id'] ?? $result);
+        $account = $action->execute($request->validated());
         return $this->successResponse(new ChartOfAccountResource($account), 'Account created successfully', 201);
     }
 
-    /**
-     * Update account
-     */
-    public function update(UpdateChartOfAccountRequest $request, $id, UpdateChartOfAccountAction $action): JsonResponse
+    public function update(UpdateChartOfAccountRequest $request, int $id, UpdateChartOfAccountAction $action): JsonResponse
     {
-        $result = $action->execute((int)$id, $request->validated());
-        $account = ChartOfAccount::find($result['id'] ?? $id);
+        $account = $action->execute($id, $request->validated());
         return $this->successResponse(new ChartOfAccountResource($account), 'Account updated successfully');
     }
 
-    /**
-     * Deactivate account (soft delete)
-     */
     public function destroy(int $id, DeleteChartOfAccountAction $action): JsonResponse
     {
         $result = $action->execute($id);
-        return $this->successResponse($result, $result['message']);
+        return $this->successResponse([], $result['message']);
     }
 
     /**

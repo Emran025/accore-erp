@@ -29,16 +29,14 @@ class NumberRangeService
     /**
      * Get a full NR Object with all nested data and statistics.
      */
-    public function getObjectFull(int $objectId): array
+    public function getObjectFull(int $objectId): NrObject
     {
-        $object = NrObject::with([
+        return NrObject::with([
             'groups.intervals',
             'intervals.expansionLogs',
             'assignments.group',
             'assignments.interval',
-        ])->findOrFail($objectId);
-
-        return $this->enrichObject($object);
+        ])->withCount(['groups', 'intervals', 'assignments'])->findOrFail($objectId);
     }
 
     /**
@@ -52,56 +50,16 @@ class NumberRangeService
     /**
      * Get full data for an NR Object identified by object_type.
      */
-    public function getObjectFullByType(string $objectType): ?array
+    public function getObjectFullByType(string $objectType): ?NrObject
     {
-        $object = NrObject::with([
+        return NrObject::with([
             'groups.intervals',
             'intervals.expansionLogs',
             'assignments.group',
             'assignments.interval',
-        ])->where('object_type', $objectType)->first();
-
-        if (!$object) {
-            return null;
-        }
-
-        return $this->enrichObject($object);
-    }
-
-    /**
-     * Enrich an NR Object with computed statistics for API output.
-     */
-    private function enrichObject(NrObject $object): array
-    {
-        $data = $object->toArray();
-
-        // Enrich intervals with domain fullness info
-        $data['intervals'] = $object->intervals->map(function ($interval) {
-            $arr = $interval->toArray();
-            $arr['capacity']         = $interval->capacity;
-            $arr['used']             = $interval->used;
-            $arr['remaining']        = $interval->remaining;
-            $arr['fullness_percent'] = $interval->fullness_percent;
-            $arr['status']           = $this->getDomainStatus($interval->fullness_percent);
-            return $arr;
-        })->toArray();
-
-        // Summary statistics
-        $totalCapacity  = $object->intervals->sum(fn ($i) => $i->capacity);
-        $totalUsed      = $object->intervals->sum(fn ($i) => $i->used);
-        $totalRemaining = $totalCapacity - $totalUsed;
-
-        $data['summary'] = [
-            'total_groups'     => $object->groups->count(),
-            'total_intervals'  => $object->intervals->count(),
-            'total_assignments'=> $object->assignments->count(),
-            'total_capacity'   => $totalCapacity,
-            'total_used'       => $totalUsed,
-            'total_remaining'  => $totalRemaining,
-            'overall_fullness' => $totalCapacity > 0 ? round(($totalUsed / $totalCapacity) * 100, 2) : 0,
-        ];
-
-        return $data;
+        ])->withCount(['groups', 'intervals', 'assignments'])
+            ->where('object_type', $objectType)
+            ->firstOrFail();
     }
 
     // ══════════════════════════════════════════════════════════════

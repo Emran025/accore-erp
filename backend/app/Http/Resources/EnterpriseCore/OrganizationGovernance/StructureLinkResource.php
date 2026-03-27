@@ -10,16 +10,17 @@ class StructureLinkResource extends JsonResource
     {
         return [
             'id'                => $this->id,
-            'parent_node_id'    => $this->parent_node_id,
-            'child_node_id'     => $this->child_node_id,
+            'source_node_uuid'  => $this->source_node_uuid,
+            'target_node_uuid'  => $this->target_node_uuid,
             'topology_rule_id'  => $this->topology_rule_id,
-            'link_metadata'     => $this->link_metadata ?? null,
-            'is_active'         => (bool) ($this->is_active ?? true),
-            'effective_from'    => $this->effective_from?->toDateString() ?? $this->effective_from,
-            'effective_to'      => $this->effective_to?->toDateString() ?? $this->effective_to,
+            'link_type'         => $this->link_type,
+            'priority'          => $this->priority,
+            'valid_from'        => $this->valid_from?->toDateString() ?? $this->valid_from,
+            'valid_to'          => $this->valid_to?->toDateString() ?? $this->valid_to,
             'created_at'        => $this->created_at?->toDateTimeString(),
-            'parent_node'       => new StructureNodeResource($this->whenLoaded('parentNode')),
-            'child_node'        => new StructureNodeResource($this->whenLoaded('childNode')),
+            'source_node'       => new StructureNodeResource($this->whenLoaded('sourceNode')),
+            'target_node'       => new StructureNodeResource($this->whenLoaded('targetNode')),
+            'topology_rule'     => $this->whenLoaded('topologyRule'),
         ];
     }
 }

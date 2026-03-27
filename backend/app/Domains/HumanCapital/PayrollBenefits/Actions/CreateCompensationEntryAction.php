@@ -7,7 +7,7 @@ use App\Domains\HumanCapital\PayrollBenefits\Models\CompensationPlan;
 
 class CreateCompensationEntryAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): CompensationEntry
     {
         $data['increase_amount'] = $data['proposed_salary'] - $data['current_salary'];
         $data['increase_percentage'] = $data['current_salary'] > 0
@@ -21,6 +21,6 @@ class CreateCompensationEntryAction
         $plan = CompensationPlan::findOrFail($data['compensation_plan_id']);
         $plan->update(['allocated_amount' => $plan->entries()->sum('increase_amount')]);
 
-        return $entry->load('plan', 'employee')->toArray();
+        return $entry->load('plan', 'employee');
     }
 }

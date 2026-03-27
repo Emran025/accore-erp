@@ -5,39 +5,34 @@ namespace App\Http\Controllers\Api\V2\EnterpriseCore\IdentityAccess;
 use App\Http\Controllers\Controller;
 use App\Domains\EnterpriseCore\IdentityAccess\Actions\ListSessionsAction;
 use App\Domains\EnterpriseCore\IdentityAccess\Actions\DestroySessionAction;
-use Illuminate\Http\Request;
+use App\Http\Requests\EnterpriseCore\IdentityAccess\ListSessionsRequest;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use App\Http\Resources\EnterpriseCore\IdentityAccess\SessionResource;
-use App\Domains\EnterpriseCore\IdentityAccess\Models\Session;
 
 class SessionsController extends Controller
 {
     use BaseApiController;
 
-    public function index(Request $request): JsonResponse
+    public function index(ListSessionsRequest $request, ListSessionsAction $action): JsonResponse
     {
-        $userId = auth()->id();
+        $userId = auth()->id() ?? session('user_id');
         if (!$userId) {
             return $this->errorResponse('Unauthorized', 401);
         }
 
-        $limit = (int) $request->query('limit', 10);
-        $currentToken = $request->header('X-Session-Token');
+        $limit = (int) ($request->validated()['limit'] ?? 10);
+        $sessions = $action->execute($userId, $limit);
 
-        $data = (new ListSessionsAction())->execute($userId, $currentToken, $limit);
-        $sessions = Session::where('user_id', $userId)->orderBy('created_at', 'desc')->paginate($limit);
-
-        // Map the is_current flag to the resource if needed, but for now we follow the standard UserResource style
         return $this->successResponse(SessionResource::collection($sessions));
     }
 
-    public function destroy($id): JsonResponse
+    public function destroy(int|string $id, DestroySessionAction $action): JsonResponse
     {
-        $userId = auth()->id();
+        $userId = auth()->id() ?? session('user_id');
         $currentToken = request()->header('X-Session-Token');
 
-        $result = (new DestroySessionAction())->execute((int) $id, $userId, $currentToken);
+        $result = $action->execute((int) $id, $userId, $currentToken);
 
         if (!$result['success']) {
             return $this->errorResponse($result['error'], 400);

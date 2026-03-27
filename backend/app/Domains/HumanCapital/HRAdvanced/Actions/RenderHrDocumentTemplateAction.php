@@ -6,12 +6,12 @@ use App\Domains\EnterpriseCore\OrganizationGovernance\Models\DocumentTemplate;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use App\Domains\HumanCapital\HRAdvanced\Services\TemplateService;
 use App\Domains\HumanCapital\HRAdvanced\Services\EmployeeContextBuilder;
-
+use Illuminate\Support\Collection;
 class RenderHrDocumentTemplateAction
 {
     public function __construct(private readonly TemplateService $templateService) {}
 
-    public function execute(int $id, array $data): array
+    public function execute(int $id, array $data): Collection
     {
         $template = DocumentTemplate::findOrFail($id);
         
@@ -24,10 +24,10 @@ class RenderHrDocumentTemplateAction
             $data['language'] ?? 'ar'
         );
         
-        return [
+        return collect([
             'rendered_html' => $renderedHtml,
             'template' => $template->toArray(),
             'employee' => $employee->toArray(),
-        ];
+        ]);
     }
 }

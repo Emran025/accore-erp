@@ -14,7 +14,6 @@ class CreateContingentContractAction
         $data['status'] = 'draft';
         $data['created_by'] = auth()->id();
 
-        $contract = ContingentContract::create($data);
-        return $contract->load('worker')->toArray();
+        return ContingentContract::create($data)->load('worker');
     }
 }

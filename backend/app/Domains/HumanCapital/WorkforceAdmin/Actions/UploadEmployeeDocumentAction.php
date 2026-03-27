@@ -4,10 +4,11 @@ namespace App\Domains\HumanCapital\WorkforceAdmin\Actions;
 
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use Illuminate\Http\UploadedFile;
+use App\Domains\HumanCapital\HRAdvanced\Models\EmployeeDocument;
 
 class UploadEmployeeDocumentAction
 {
-    public function execute(int|string $employeeId, array $data, UploadedFile $file): array
+    public function execute(int|string $employeeId, array $data, UploadedFile $file): EmployeeDocument
     {
         $employee = Employee::findOrFail($employeeId);
         $path = $file->store("employees/{$employeeId}/documents");
@@ -24,6 +25,6 @@ class UploadEmployeeDocumentAction
             'uploaded_by'     => auth()->id(),
         ]);
 
-        return $document->toArray();
+        return $document;
     }
 }

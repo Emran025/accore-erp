@@ -15,8 +15,6 @@ use App\Domains\HumanCapital\WorkforceAdmin\Actions\CreateShiftAction;
 use App\Domains\HumanCapital\WorkforceAdmin\Actions\UpdateShiftAction;
 use App\Http\Resources\HumanCapital\TimeProductivity\WorkforceScheduleResource;
 use App\Http\Resources\HumanCapital\TimeProductivity\ScheduleShiftResource;
-use App\Domains\HumanCapital\TimeProductivity\Models\WorkforceSchedule;
-use App\Domains\HumanCapital\TimeProductivity\Models\ScheduleShift;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
@@ -27,24 +25,15 @@ class WorkforceSchedulingController extends Controller
 
     public function index(Request $request, ListSchedulesAction $action): JsonResponse
     {
-        $filters = $request->only(['department_id', 'status', 'schedule_date']);
-        $result = $action->execute($filters);
-        $data = $result['data'] ?? $result;
-
-        return $this->paginatedResponse(
-            WorkforceScheduleResource::collection($data)->resolve(),
-            $result['total'] ?? (is_countable($data) ? count($data) : 0),
-            $result['current_page'] ?? 1,
-            $result['per_page'] ?? 15
-        );
+        $paginator = $action->execute($request->all());
+        return $this->successResponse(WorkforceScheduleResource::collection($paginator));
     }
 
     public function store(StoreWorkforceScheduleRequest $request, CreateScheduleAction $action): JsonResponse
     {
         try {
             $schedule = $action->execute($request->validated());
-            $model = WorkforceSchedule::findOrFail($schedule['id'] ?? $schedule);
-            return $this->successResponse((new WorkforceScheduleResource($model))->resolve(), 'Schedule created successfully', 201);
+            return $this->successResponse(new WorkforceScheduleResource($schedule), 'Schedule created successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -53,16 +42,14 @@ class WorkforceSchedulingController extends Controller
     public function show($id, ShowScheduleAction $action): JsonResponse
     {
         $schedule = $action->execute((int)$id);
-        $model = WorkforceSchedule::findOrFail($schedule['id'] ?? $id);
-        return $this->successResponse((new WorkforceScheduleResource($model))->resolve());
+        return $this->successResponse(new WorkforceScheduleResource($schedule));
     }
 
     public function update(UpdateWorkforceScheduleRequest $request, $id, UpdateScheduleAction $action): JsonResponse
     {
         try {
             $schedule = $action->execute((int)$id, $request->validated());
-            $model = WorkforceSchedule::findOrFail($schedule['id'] ?? $id);
-            return $this->successResponse((new WorkforceScheduleResource($model))->resolve(), 'Schedule updated successfully');
+            return $this->successResponse(new WorkforceScheduleResource($schedule), 'Schedule updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -72,8 +59,7 @@ class WorkforceSchedulingController extends Controller
     {
         try {
             $shift = $action->execute((int)$scheduleId, $request->validated());
-            $model = ScheduleShift::findOrFail($shift['id'] ?? $shift);
-            return $this->successResponse((new ScheduleShiftResource($model))->resolve(), 'Shift created successfully', 201);
+            return $this->successResponse(new ScheduleShiftResource($shift), 'Shift created successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -83,8 +69,7 @@ class WorkforceSchedulingController extends Controller
     {
         try {
             $shift = $action->execute((int)$scheduleId, (int)$shiftId, $request->validated());
-            $model = ScheduleShift::findOrFail($shift['id'] ?? $shiftId);
-            return $this->successResponse((new ScheduleShiftResource($model))->resolve(), 'Shift updated successfully');
+            return $this->successResponse(new ScheduleShiftResource($shift), 'Shift updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }

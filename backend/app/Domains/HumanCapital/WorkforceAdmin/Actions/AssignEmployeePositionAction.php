@@ -7,7 +7,7 @@ use App\Domains\HumanCapital\WorkforceAdmin\Models\Position;
 
 class AssignEmployeePositionAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): Employee
     {
         $employee = Employee::findOrFail($data['employee_id']);
         $position = Position::with(['jobTitle', 'role'])->findOrFail($data['position_id']);
@@ -28,6 +28,6 @@ class AssignEmployeePositionAction
 
         $employee->update($updateData);
 
-        return $employee->load(['position.jobTitle', 'position.role', 'department'])->toArray();
+        return $employee->load(['position.jobTitle', 'position.role', 'department']);
     }
 }

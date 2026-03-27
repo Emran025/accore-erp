@@ -5,10 +5,10 @@ namespace App\Domains\HumanCapital\PayrollBenefits\Actions;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollItem;
 use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollTransaction;
-
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 class GetMyPayslipsAction
 {
-    public function execute($user, array $filters = []): array
+    public function execute($user, array $filters = []): LengthAwarePaginator
     {
         $employee = Employee::where('user_id', $user->id)->first();
 
@@ -29,10 +29,10 @@ class GetMyPayslipsAction
             });
         }
 
-        $paginated = $query->orderBy('created_at', 'desc')->paginate(15);
+        $paginator = $query->orderBy('created_at', 'desc')->paginate(15);
 
         // Add payment status to each item
-        $paginated->getCollection()->transform(function($item) {
+        $paginator->getCollection()->transform(function($item) {
             $paidAmount = PayrollTransaction::where('payroll_item_id', $item->id)
                 ->where('transaction_type', 'payment')
                 ->sum('amount');
@@ -42,11 +42,6 @@ class GetMyPayslipsAction
             return $item;
         });
 
-        return [
-            'data' => $paginated->items(),
-            'total' => $paginated->total(),
-            'current_page' => $paginated->currentPage(),
-            'per_page' => $paginated->perPage()
-        ];
+        return $paginator;
     }
 }

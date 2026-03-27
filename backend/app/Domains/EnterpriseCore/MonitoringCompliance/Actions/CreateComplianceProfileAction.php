@@ -4,9 +4,11 @@ namespace App\Domains\EnterpriseCore\MonitoringCompliance\Actions;
 
 use App\Domains\HumanCapital\WorkforceAdmin\Models\ComplianceProfile;
 
+use Illuminate\Support\Collection;
+
 class CreateComplianceProfileAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): Collection
     {
         $profile = ComplianceProfile::create($data);
 
@@ -21,6 +23,6 @@ class CreateComplianceProfileAction
             $response['access_token'] = $rawToken;
         }
 
-        return $response;
+        return collect($response);
     }
 }

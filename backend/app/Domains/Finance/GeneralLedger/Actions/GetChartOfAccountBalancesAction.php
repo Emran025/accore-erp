@@ -5,6 +5,7 @@ namespace App\Domains\Finance\GeneralLedger\Actions;
 use App\Domains\Shared\Actions\Action;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
+use Illuminate\Support\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,7 @@ class GetChartOfAccountBalancesAction
         private readonly LedgerService $ledgerService
     ) {}
 
-    public function execute(array $filters): array
+    public function execute(array $filters): Collection
     {
         $asOfDate = $filters['as_of_date'] ?? null;
         $accountType = $filters['account_type'] ?? null;
@@ -51,10 +52,10 @@ class GetChartOfAccountBalancesAction
             $totals[$account['account_type']] += $account['balance'];
         }
 
-        return [
+        return collect([
             'as_of_date' => $asOfDate ?? now()->format('Y-m-d'),
             'accounts' => $balances,
             'totals' => $totals,
-        ];
+        ]);
     }
 }

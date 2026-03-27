@@ -6,9 +6,8 @@ use App\Domains\HumanCapital\TalentRecruitment\Models\OnboardingWorkflow;
 
 class ShowOnboardingWorkflowAction
 {
-    public function execute(int|string $id): array
+    public function execute(int|string $id): OnboardingWorkflow
     {
-        $workflow = OnboardingWorkflow::with(['employee', 'tasks', 'documents'])->findOrFail($id);
-        return $workflow->toArray();
+        return OnboardingWorkflow::with(['employee', 'tasks', 'documents'])->findOrFail($id);
     }
 }

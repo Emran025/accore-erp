@@ -4,10 +4,11 @@ namespace App\Domains\SupplyChain\Procurement\Actions;
 
 use App\Domains\SupplyChain\Procurement\Models\PurchaseRequest;
 use App\Domains\SupplyChain\Inventory\Models\Product;
+use Illuminate\Support\Collection;
 
 class AutoGenerateRequestsAction
 {
-    public function execute(int $userId): array
+    public function execute(int $userId): Collection
     {
         $products = Product::whereRaw('stock_quantity <= low_stock_threshold')->get();
         $generatedCount = 0;
@@ -32,9 +33,9 @@ class AutoGenerateRequestsAction
             }
         }
 
-        return [
+        return collect([
             'message' => "Successfully generated {$generatedCount} purchase requests for low stock items.",
             'generated_count' => $generatedCount
-        ];
+        ]);
     }
 }

@@ -84,7 +84,7 @@ export function InvoiceDetailsDialog({ isOpen, onClose, selectedInvoice }: Invoi
                                         style={{ color: "var(--danger-color)", fontWeight: 700 }}
                                     >
                                         {formatCurrency(
-                                            selectedInvoice.total_amount - (selectedInvoice.amount_paid || 0)
+                                            (selectedInvoice.total_amount || 0) - (selectedInvoice.amount_paid || 0)
                                         )}
                                     </span>
                                 </div>

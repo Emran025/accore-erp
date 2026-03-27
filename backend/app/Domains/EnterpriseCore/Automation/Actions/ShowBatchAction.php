@@ -6,10 +6,8 @@ use App\Domains\SupplyChain\Inventory\Models\Batch;
 
 class ShowBatchAction
 {
-    public function execute(int $id): array
+    public function execute(int $id): Batch
     {
-        $batch = Batch::with('items')->findOrFail($id);
-
-        return $batch->toArray();
+        return Batch::with('items')->findOrFail($id);
     }
 }

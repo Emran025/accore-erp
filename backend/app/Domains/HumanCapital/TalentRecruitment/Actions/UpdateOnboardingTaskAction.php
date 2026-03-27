@@ -7,7 +7,7 @@ use App\Domains\HumanCapital\TalentRecruitment\Models\OnboardingWorkflow;
 
 class UpdateOnboardingTaskAction
 {
-    public function execute(int|string $workflowId, int|string $taskId, array $data): array
+    public function execute(int|string $workflowId, int|string $taskId, array $data): OnboardingTask
     {
         $task = OnboardingTask::where('workflow_id', $workflowId)->findOrFail($taskId);
 
@@ -20,7 +20,7 @@ class UpdateOnboardingTaskAction
 
         $this->updateWorkflowProgress($workflowId);
 
-        return current($task->toArray()) ?: reset($task); // ensure to return an array
+        return $task;
     }
 
     private function updateWorkflowProgress(int|string $workflowId): void

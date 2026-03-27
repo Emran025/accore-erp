@@ -6,10 +6,8 @@ use App\Domains\HumanCapital\WorkforceAdmin\Models\ComplianceProfile;
 
 class ShowComplianceProfileAction
 {
-    public function execute(int $id): array
+    public function execute(int $id): ComplianceProfile
     {
-        $profile = ComplianceProfile::with('taxAuthority')->findOrFail($id);
-
-        return ['profile' => $profile];
+        return ComplianceProfile::with('taxAuthority')->findOrFail($id);
     }
 }

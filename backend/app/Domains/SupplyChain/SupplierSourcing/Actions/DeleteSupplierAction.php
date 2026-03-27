@@ -3,10 +3,12 @@
 namespace App\Domains\SupplyChain\SupplierSourcing\Actions;
 
 use App\Domains\SupplyChain\SupplierSourcing\Models\ApSupplier;
+use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
+use Illuminate\Support\Collection;
 
 class DeleteSupplierAction
 {
-    public function execute(int $id): array
+    public function execute(int $id): Collection
     {
         $supplier = ApSupplier::findOrFail($id);
 
@@ -17,6 +19,8 @@ class DeleteSupplierAction
         $oldValues = $supplier->toArray();
         $supplier->delete();
 
-        return $oldValues;
+        TelescopeService::logOperation('DELETE', 'ap_suppliers', $id, $oldValues, null);
+
+        return collect($oldValues);
     }
 }

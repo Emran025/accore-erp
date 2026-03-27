@@ -12,13 +12,11 @@ use App\Http\Requests\Commercial\CRM\StoreArCustomerRequest;
 use App\Http\Requests\Commercial\CRM\UpdateCustomerRequest;
 use App\Http\Requests\Commercial\CRM\DeleteCustomerRequest;
 use App\Http\Requests\Commercial\CRM\CustomerLedgerRequest;
-use App\Domains\Commercial\CRM\Models\ArCustomer;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 use App\Http\Resources\Commercial\CRM\ArCustomerResource;
 use App\Http\Resources\Commercial\RevenueReceivables\ArTransactionResource;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
 class ArController extends Controller
@@ -31,12 +29,13 @@ class ArController extends Controller
     public function customers(ListCustomersRequest $request, ListCustomersAction $action): JsonResponse
     {
         $result = $action->execute($request->validated());
+        $paginator = $result['paginator'];
 
         return $this->paginatedResponse(
-            ArCustomerResource::collection($result['data'])->resolve(),
-            $result['total'],
-            $result['current_page'],
-            $result['per_page']
+            ArCustomerResource::collection($paginator),
+            $paginator->total(),
+            $paginator->currentPage(),
+            $paginator->perPage()
         );
     }
 
@@ -49,10 +48,9 @@ class ArController extends Controller
         $userId = auth()->id() ?? session('user_id');
 
         try {
-            $result = $action->execute($validated, (int)$userId);
-            TelescopeService::logOperation('CREATE', 'ar_customers', $result['id'], null, $validated);
+            $customer = $action->execute($validated, (int)$userId);
+            TelescopeService::logOperation('CREATE', 'ar_customers', $customer->id, null, $validated);
 
-            $customer = ArCustomer::findOrFail($result['id']);
             return $this->successResponse((new ArCustomerResource($customer))->resolve(), 'Customer created successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
@@ -68,10 +66,9 @@ class ArController extends Controller
 
         try {
             $result = $action->execute($validated);
-            TelescopeService::logOperation('UPDATE', 'ar_customers', $result['id'], $result['old_values'], $validated);
+            TelescopeService::logOperation('UPDATE', 'ar_customers', $result['model']->id, $result['old_values'], $validated);
 
-            $customer = ArCustomer::findOrFail($result['id']);
-            return $this->successResponse((new ArCustomerResource($customer))->resolve(), 'Customer updated successfully');
+            return $this->successResponse(new ArCustomerResource($result['model']), 'Customer updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }

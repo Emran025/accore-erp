@@ -2,10 +2,11 @@
 namespace App\Domains\Intelligence\AdvancedAnalytics\Actions;
 
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
+use Illuminate\Support\Collection;
 
 class GetBalanceSheetAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): Collection
     {
 
         $asOfDate = $data['as_of_date'] ?? now()->format('Y-m-d');
@@ -26,13 +27,13 @@ class GetBalanceSheetAction
             ];
         }
 
-        return [
+        return collect([
             'as_of_date' => $asOfDate,
             'assets' => ['accounts' => $assets, 'total' => collect($assets)->sum('balance')],
             'liabilities' => ['accounts' => $liabilities, 'total' => collect($liabilities)->sum('balance')],
             'equity' => ['accounts' => $equity, 'total' => collect($equity)->sum('balance')],
             'is_balanced' => true,
-        ];
+        ]);
     }
 
     private function getAccountTypeDetails(string $type, string $date): array

@@ -3,10 +3,10 @@
 namespace App\Domains\HumanCapital\PayrollBenefits\Actions;
 
 use App\Domains\HumanCapital\PayrollBenefits\Models\PostPayrollIntegration;
-
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 class ListPostPayrollIntegrationsAction
 {
-    public function execute(array $filters): array
+    public function execute(array $filters): LengthAwarePaginator
     {
         $query = PostPayrollIntegration::with(['payrollCycle']);
         
@@ -22,6 +22,6 @@ class ListPostPayrollIntegrationsAction
             $query->where('status', $filters['status']);
         }
         
-        return $query->orderBy('created_at', 'desc')->paginate(15)->toArray();
+        return $query->orderBy('created_at', 'desc')->paginate(15);
     }
 }

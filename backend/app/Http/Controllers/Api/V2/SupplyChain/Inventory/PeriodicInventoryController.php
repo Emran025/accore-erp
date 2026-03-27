@@ -11,7 +11,6 @@ use App\Domains\SupplyChain\Inventory\Actions\CreatePeriodicInventoryAction;
 use App\Domains\SupplyChain\Inventory\Actions\ProcessPeriodicInventoryAction;
 use App\Domains\SupplyChain\Inventory\Actions\PeriodicInventoryValuationAction;
 use App\Http\Resources\SupplyChain\Inventory\InventoryCountResource;
-use App\Domains\SupplyChain\Inventory\Models\InventoryCount;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -21,28 +20,22 @@ class PeriodicInventoryController extends Controller
 
     public function index(ListPeriodicInventoryRequest $request, ListPeriodicInventoryAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
-        return $this->paginatedResponse(
-            InventoryCountResource::collection($result['data']),
-            $result['total'],
-            $result['page'],
-            $result['per_page']
-        );
+        $paginator = $action->execute($request->validated());
+
+        return $this->successResponse(InventoryCountResource::collection($paginator));
     }
 
     public function store(StorePeriodicInventoryRequest $request, CreatePeriodicInventoryAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
-        $inventoryCount = InventoryCount::find($result['id']);
-        return $this->successResponse(new InventoryCountResource($inventoryCount), 'Inventory count recorded successfully');
+        $inventoryCount = $action->execute($request->validated());
+        return $this->successResponse(new InventoryCountResource($inventoryCount), 'Inventory count recorded successfully', 201);
     }
 
     public function process(ProcessPeriodicInventoryRequest $request, ProcessPeriodicInventoryAction $action): JsonResponse
     {
         try {
-            $result = $action->execute($request->validated());
-            $inventoryCount = InventoryCount::find($result['id']);
-            return $this->successResponse(new InventoryCountResource($inventoryCount));
+            $counts = $action->execute($request->validated());
+            return $this->successResponse(InventoryCountResource::collection($counts), 'Inventory counts processed successfully');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }

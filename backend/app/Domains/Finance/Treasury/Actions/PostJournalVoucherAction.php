@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class PostJournalVoucherAction
 {
-    public function execute(int $id, LedgerService $ledgerService): array
+    public function execute(int $id, LedgerService $ledgerService): \Illuminate\Support\Collection
     {
         $voucher = GeneralLedger::with('lines.account')->findOrFail($id);
 
@@ -42,10 +42,10 @@ class PostJournalVoucherAction
 
             TelescopeService::logOperation('POST', 'journal_vouchers', $voucher->id, null, ['gl_voucher_number' => $voucherNumber]);
 
-            return [
+            return collect([
                 'gl_voucher_number' => $voucherNumber,
                 'message' => 'Journal voucher posted to GL successfully'
-            ];
+            ]);
         });
     }
 }

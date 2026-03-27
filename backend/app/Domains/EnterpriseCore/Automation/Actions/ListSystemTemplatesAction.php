@@ -4,6 +4,7 @@ namespace App\Domains\EnterpriseCore\Automation\Actions;
 
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\DocumentTemplate;
 use App\Domains\HumanCapital\HRAdvanced\Services\TemplateRegistry;
+use Illuminate\Database\Eloquent\Collection;
 
 class ListSystemTemplatesAction
 {
@@ -24,7 +25,7 @@ class ListSystemTemplatesAction
         return $types;
     }
 
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): Collection
     {
         $approvedTypes = $this->getSystemTypes();
         
@@ -46,11 +47,9 @@ class ListSystemTemplatesAction
             });
         }
 
-        $templates = $query->where('is_active', true)
+        return $query->where('is_active', true)
             ->orderBy('template_type')
             ->orderBy('template_name_ar')
             ->get();
-            
-        return $templates->toArray();
     }
 }

@@ -5,14 +5,14 @@ namespace App\Domains\Finance\Treasury\Actions;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
-
+use Illuminate\Support\Collection;
 class ReverseJournalVoucherAction
 {
     public function __construct(
         private readonly LedgerService $ledgerService,
     ) {}
 
-    public function execute(string $voucherNumber): array
+    public function execute(string $voucherNumber): Collection
     {
         $voucher = GeneralLedger::where('voucher_number', $voucherNumber)
             ->where('entry_source', 'MANUAL')
@@ -38,7 +38,7 @@ class ReverseJournalVoucherAction
         
         TelescopeService::logOperation('REVERSE', 'journal_vouchers', null, null, ['voucher_number' => $voucherNumber]);
 
-        return ['message' => 'Journal voucher reversed successfully'];
+        return collect(['message' => 'Journal voucher reversed successfully']);
     }
 }
 

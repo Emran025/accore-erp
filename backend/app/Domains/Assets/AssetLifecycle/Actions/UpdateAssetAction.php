@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 class UpdateAssetAction
 {
-    public function execute(array $data): void
+    public function execute(array $data): Asset
     {
         PermissionService::requirePermission('assets', 'edit');
 
@@ -17,5 +17,7 @@ class UpdateAssetAction
         $asset->update($data);
 
         TelescopeService::logOperation('UPDATE', 'assets', $asset->id, $oldValues, $data);
+
+        return $asset;
     }
 }

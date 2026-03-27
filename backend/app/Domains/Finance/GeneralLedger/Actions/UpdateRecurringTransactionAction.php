@@ -7,11 +7,13 @@ use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 class UpdateRecurringTransactionAction
 {
-    public function execute(array $data): void
+    public function execute(array $data, int $id): RecurringTransaction
     {
         PermissionService::requirePermission('general_ledger', 'update');
 
-        $template = RecurringTransaction::findOrFail($data['id']);
+        $template = RecurringTransaction::findOrFail($id);
         $template->update($data);
+
+        return $template->fresh();
     }
 }

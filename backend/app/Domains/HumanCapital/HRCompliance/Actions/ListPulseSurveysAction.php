@@ -3,10 +3,11 @@
 namespace App\Domains\HumanCapital\HRCompliance\Actions;
 
 use App\Domains\HumanCapital\HRCompliance\Models\PulseSurvey;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ListPulseSurveysAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): LengthAwarePaginator
     {
         $query = PulseSurvey::with(['responses']);
 
@@ -20,11 +21,6 @@ class ListPulseSurveysAction
 
         $paginated = $query->orderBy('created_at', 'desc')->paginate(15);
         
-        return [
-            'data' => $paginated->items(),
-            'total' => $paginated->total(),
-            'current_page' => $paginated->currentPage(),
-            'per_page' => $paginated->perPage()
-        ];
+        return $paginated;
     }
 }

@@ -6,9 +6,8 @@ use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollComponent;
 
 class CreatePayrollComponentAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): PayrollComponent
     {
-        $component = PayrollComponent::create($data);
-        return current($component->toArray()) ?: reset($component);
+        return PayrollComponent::create($data);
     }
 }

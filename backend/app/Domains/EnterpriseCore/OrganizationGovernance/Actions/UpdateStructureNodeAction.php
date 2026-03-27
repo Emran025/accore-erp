@@ -13,9 +13,9 @@ class UpdateStructureNodeAction
         private readonly OrgStructureService $orgService
     ) {}
 
-    public function execute(string $uuid, array $data): array
+    public function execute(string $uuid, array $data): StructureNode
     {
-        $node = StructureNode::findOrFail($uuid);
+        $node = StructureNode::where('node_uuid', $uuid)->firstOrFail();
 
         if (isset($data['code']) && $data['code'] !== $node->code) {
             if (StructureNode::where('node_type_id', $node->node_type_id)->where('code', $data['code'])->exists()) {
@@ -28,6 +28,6 @@ class UpdateStructureNodeAction
 
         $this->orgService->recordChange('node', $uuid, 'updated', $oldValues, $node->fresh()->toArray());
 
-        return $node->fresh('metaType')->toArray();
+        return $node->fresh('metaType');
     }
 }

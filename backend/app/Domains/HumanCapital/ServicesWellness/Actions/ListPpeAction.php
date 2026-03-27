@@ -3,10 +3,11 @@
 namespace App\Domains\HumanCapital\ServicesWellness\Actions;
 
 use App\Domains\HumanCapital\ServicesWellness\Models\PpeManagement;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ListPpeAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): LengthAwarePaginator
     {
         $query = PpeManagement::with(['employee']);
 
@@ -18,6 +19,6 @@ class ListPpeAction
             $query->where('status', $filters['status']);
         }
 
-        return $query->orderBy('issue_date', 'desc')->paginate(15)->toArray();
+        return $query->orderBy('issue_date', 'desc')->paginate(15);
     }
 }

@@ -6,9 +6,8 @@ use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollComponent;
 
 class ShowPayrollComponentAction
 {
-    public function execute(int|string $id): array
+    public function execute(int|string $id): PayrollComponent
     {
-        $component = PayrollComponent::findOrFail($id);
-        return $component->toArray();
+        return PayrollComponent::findOrFail($id);
     }
 }

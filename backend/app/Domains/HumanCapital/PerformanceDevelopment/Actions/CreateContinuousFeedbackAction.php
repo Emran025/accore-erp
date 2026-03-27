@@ -6,10 +6,10 @@ use App\Domains\HumanCapital\PerformanceDevelopment\Models\ContinuousFeedback;
 
 class CreateContinuousFeedbackAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): ContinuousFeedback
     {
         $data['given_by'] = auth()->id();
         $feedback = ContinuousFeedback::create($data);
-        return $feedback->load('employee', 'givenBy')->toArray();
+        return $feedback->load('employee', 'givenBy');
     }
 }

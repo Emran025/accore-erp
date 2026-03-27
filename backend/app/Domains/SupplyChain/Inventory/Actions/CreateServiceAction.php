@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
  */
 class CreateServiceAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): Product
     {
         $userId = auth()->id() ?? session('user_id');
 
@@ -52,7 +52,7 @@ class CreateServiceAction
 
             TelescopeService::logOperation('CREATE', 'services', $service->id, null, $data);
 
-            return ['id' => $service->id];
+            return $service->fresh(['category', 'serviceAvailability']);
         });
     }
 }

@@ -39,7 +39,7 @@ export function GovernmentFeesTab() {
     const loadSetup = useCallback(async () => {
         try {
             const response: any = await fetchAPI(API_ENDPOINTS.FINANCE.TAX_ENGINE.SETUP);
-            if (response.data && response.data.authorities) {
+            if (response.data && Array.isArray(response.data.authorities)) {
                 const loadedAuthorities = response.data.authorities;
                 setAuthorities(loadedAuthorities);
 
@@ -231,8 +231,19 @@ export function GovernmentFeesTab() {
             key: "tax_authority_id",
             header: "نطاق التطبيق",
             render: (fee) => {
-                let areas = [];
-                try { areas = typeof fee.applicable_areas === 'string' ? JSON.parse(fee.applicable_areas) : fee.applicable_areas; } catch { }
+                let areas: string[] = [];
+                try {
+                    areas = typeof fee.applicable_areas === 'string'
+                        ? JSON.parse(fee.applicable_areas)
+                        : (fee.applicable_areas || []);
+
+                    if (!Array.isArray(areas)) {
+                        areas = [];
+                    }
+                } catch {
+                    areas = [];
+                }
+
                 return areas.map((a: string) => (
                     <span key={a} className="badge badge-secondary me-1 ms-1">
                         {a === 'sales' ? 'المبيعات' : a === 'purchases' ? 'المشتريات' : a === 'payroll' ? 'الرواتب' : a}

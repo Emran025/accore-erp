@@ -22,34 +22,32 @@ class BatchController extends Controller
 
     public function index(ListBatchesRequest $request, ListBatchesAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
+        $paginator = $action->execute($request->validated());
         return $this->paginatedResponse(
-            BatchResource::collection($result['data']),
-            $result['meta']['total'],
-            $result['meta']['current_page'],
-            $result['meta']['per_page']
+            BatchResource::collection($paginator),
+            $paginator->total(),
+            $paginator->currentPage(),
+            $paginator->perPage()
         );
     }
 
     public function show(int $id, ShowBatchAction $action): JsonResponse
     {
-        $result = $action->execute($id);
-        $batch = Batch::find($result['id'] ?? $id);
+        $batch = $action->execute($id);
         return $this->successResponse(new BatchResource($batch));
     }
 
     public function store(CreateBatchRequest $request, CreateBatchAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
-        $batch = Batch::find($result['id'] ?? $result);
+        $batch = $action->execute($request->validated());
         return $this->successResponse(new BatchResource($batch), 'تم إنشاء الدفعة بنجاح', 201);
     }
 
     public function execute(int $id, ExecuteBatchAction $action): JsonResponse
     {
         try {
-            $result = $action->execute($id);
-            return $this->successResponse($result, 'تم تنفيذ الدفعة بنجاح');
+            $batch = $action->execute($id);
+            return $this->successResponse(new BatchResource($batch), 'تم تنفيذ الدفعة بنجاح');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 400);
         }

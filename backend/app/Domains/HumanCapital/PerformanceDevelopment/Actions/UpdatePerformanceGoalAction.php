@@ -6,7 +6,7 @@ use App\Domains\HumanCapital\PerformanceDevelopment\Models\PerformanceGoal;
 
 class UpdatePerformanceGoalAction
 {
-    public function execute(int|string $id, array $data): array
+    public function execute(int|string $id, array $data): PerformanceGoal
     {
         $goal = PerformanceGoal::findOrFail($id);
 
@@ -21,6 +21,6 @@ class UpdatePerformanceGoalAction
         }
 
         $goal->update($data);
-        return $goal->load('employee', 'parentGoal')->toArray();
+        return $goal->load('employee', 'parentGoal');
     }
 }

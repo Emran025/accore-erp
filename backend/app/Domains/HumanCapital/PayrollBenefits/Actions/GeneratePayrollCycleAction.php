@@ -3,7 +3,7 @@
 namespace App\Domains\HumanCapital\PayrollBenefits\Actions;
 
 use App\Domains\HumanCapital\PayrollBenefits\Services\PayrollService;
-
+use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollCycle;
 class GeneratePayrollCycleAction
 {
     protected PayrollService $payrollService;
@@ -13,9 +13,8 @@ class GeneratePayrollCycleAction
         $this->payrollService = $payrollService;
     }
 
-    public function execute(array $data, $user): array
+    public function execute(array $data, $user): PayrollCycle
     {
-        $cycle = $this->payrollService->generatePayroll($data, $user);
-        return $cycle->toArray();
+        return $this->payrollService->generatePayroll($data, $user);
     }
 }

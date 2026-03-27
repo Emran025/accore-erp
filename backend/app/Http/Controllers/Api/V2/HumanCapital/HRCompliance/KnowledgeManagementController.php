@@ -32,16 +32,19 @@ class KnowledgeManagementController extends Controller
     // Knowledge Base
     public function indexKnowledgeBase(ListKnowledgeBaseRequest $request, ListKnowledgeBaseEntriesAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
-        $data = $result['data'] ?? $result;
+        $paginated = $action->execute($request->validated());
 
-        return $this->successResponse(KnowledgeBaseResource::collection($data));
+        return $this->paginatedResponse(
+            KnowledgeBaseResource::collection($paginated),
+            $paginated->total(),
+            $paginated->currentPage(),
+            $paginated->perPage()
+        );
     }
 
     public function storeKnowledgeBase(StoreKnowledgeBaseRequest $request, CreateKnowledgeBaseEntryAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
-        $kb = KnowledgeBase::find($result['id'] ?? $result);
+        $kb = $action->execute($request->validated());
         
         return $this->successResponse(new KnowledgeBaseResource($kb), 'Knowledge base entry created', 201);
     }
@@ -72,16 +75,19 @@ class KnowledgeManagementController extends Controller
     // Expertise Directory
     public function indexExpertise(ListExpertiseRequest $request, ListExpertiseEntriesAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
-        $data = $result['data'] ?? $result;
+        $paginated = $action->execute($request->validated());
 
-        return $this->successResponse(ExpertiseDirectoryResource::collection($data));
+        return $this->paginatedResponse(
+            ExpertiseDirectoryResource::collection($paginated),
+            $paginated->total(),
+            $paginated->currentPage(),
+            $paginated->perPage()
+        );
     }
 
     public function storeExpertise(StoreExpertiseDirectoryRequest $request, CreateExpertiseEntryAction $action): JsonResponse
     {
-        $result = $action->execute($request->validated());
-        $expertise = ExpertiseDirectory::find($result['id'] ?? $result);
+        $expertise = $action->execute($request->validated());
         
         return $this->successResponse(new ExpertiseDirectoryResource($expertise), 'Expertise entry created', 201);
     }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\V2\HumanCapital\PayrollBenefits;
 
 use App\Http\Controllers\Controller;
-use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollComponent;
 use App\Http\Requests\HumanCapital\PayrollBenefits\StorePayrollComponentRequest;
 use App\Http\Requests\HumanCapital\PayrollBenefits\UpdatePayrollComponentRequest;
 use App\Http\Requests\HumanCapital\PayrollBenefits\ListPayrollComponentsRequest;
@@ -23,47 +22,30 @@ class PayrollComponentsController extends Controller
     public function index(ListPayrollComponentsRequest $request, ListPayrollComponentsAction $action): JsonResponse
     {
         $components = $action->execute();
-        $data = $components['data'] ?? $components;
-
-        return $this->successResponse(PayrollComponentResource::collection($data)->resolve());
+        return $this->successResponse(PayrollComponentResource::collection($components));
     }
 
     public function store(StorePayrollComponentRequest $request, CreatePayrollComponentAction $action): JsonResponse
     {
-        try {
-            $result = $action->execute($request->validated());
-            $component = PayrollComponent::findOrFail($result['id'] ?? $result);
-            return $this->successResponse((new PayrollComponentResource($component))->resolve(), 'Payroll component created', 201);
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 422);
-        }
+        $component = $action->execute($request->validated());
+        return $this->successResponse(new PayrollComponentResource($component), 'Payroll component created', 201);
     }
 
     public function update(UpdatePayrollComponentRequest $request, $id, UpdatePayrollComponentAction $action): JsonResponse
     {
-        try {
-            $result = $action->execute((int)$id, $request->validated());
-            $component = PayrollComponent::findOrFail($result['id'] ?? $id);
-            return $this->successResponse((new PayrollComponentResource($component))->resolve(), 'Payroll component updated');
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 422);
-        }
+        $component = $action->execute((int)$id, $request->validated());
+        return $this->successResponse(new PayrollComponentResource($component), 'Payroll component updated');
     }
 
     public function destroy($id, DeletePayrollComponentAction $action): JsonResponse
     {
-        try {
-            $action->execute((int)$id);
-            return $this->successResponse([], 'Payroll component deleted');
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 422);
-        }
+        $action->execute((int)$id);
+        return $this->successResponse([], 'Payroll component deleted');
     }
 
     public function show($id, ShowPayrollComponentAction $action): JsonResponse
     {
-        $result = $action->execute((int)$id);
-        $component = PayrollComponent::findOrFail($result['id'] ?? $id);
-        return $this->successResponse((new PayrollComponentResource($component))->resolve());
+        $component = $action->execute((int)$id);
+        return $this->successResponse(new PayrollComponentResource($component));
     }
 }

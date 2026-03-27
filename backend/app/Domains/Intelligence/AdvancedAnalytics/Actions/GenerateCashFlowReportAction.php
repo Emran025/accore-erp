@@ -7,6 +7,7 @@ use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
 use Illuminate\Support\Facades\DB;
 use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
+use Illuminate\Support\Collection;
 
 class GenerateCashFlowReportAction
 {
@@ -14,7 +15,7 @@ class GenerateCashFlowReportAction
         private readonly LedgerService $ledgerService
     ) {}
 
-    public function execute(array $data): array
+    public function execute(array $data): Collection
     {
         PermissionService::requirePermission('general_ledger', 'view');
 
@@ -45,7 +46,7 @@ class GenerateCashFlowReportAction
         $beginningCash = $this->ledgerService->getAccountBalance($cashAccount->account_code, $startDate);
         $endingCash = $this->ledgerService->getAccountBalance($cashAccount->account_code, $endDate);
 
-        return [
+        return collect([
             'period' => [
                 'start_date' => $startDate,
                 'end_date' => $endDate,
@@ -64,7 +65,7 @@ class GenerateCashFlowReportAction
                 'beginning_cash' => $beginningCash,
                 'ending_cash' => $endingCash,
             ],
-        ];
+        ]);
     }
 
     private function getNetIncome(string $startDate, string $endDate): float

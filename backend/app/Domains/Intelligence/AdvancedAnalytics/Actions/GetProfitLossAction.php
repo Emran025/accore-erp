@@ -6,10 +6,11 @@ use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
+use Illuminate\Support\Collection;
 
 class GetProfitLossAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): Collection
     {
         $start = $data['start_date'] ?? now()->startOfMonth()->format('Y-m-d');
         $end = $data['end_date'] ?? now()->format('Y-m-d');
@@ -20,12 +21,12 @@ class GetProfitLossAction
         $totalRev = collect($revenues)->sum('balance');
         $totalExp = collect($expenses)->sum('balance');
 
-        return [
+        return collect([
             'period' => ['start' => $start, 'end' => $end],
             'revenues' => ['accounts' => $revenues, 'total' => $totalRev],
             'expenses' => ['accounts' => $expenses, 'total' => $totalExp],
             'net_income' => $totalRev - $totalExp,
-        ];
+        ]);
     }
 
     private function getAccountTypeDetails(string $type, string $start, string $end): array

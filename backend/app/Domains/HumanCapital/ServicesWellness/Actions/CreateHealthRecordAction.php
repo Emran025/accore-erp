@@ -6,10 +6,8 @@ use App\Domains\HumanCapital\ServicesWellness\Models\EmployeeHealthRecord;
 
 class CreateHealthRecordAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): EmployeeHealthRecord
     {
-        $record = EmployeeHealthRecord::create($data);
-
-        return $record->load('employee')->toArray();
+        return EmployeeHealthRecord::create($data)->load('employee');
     }
 }

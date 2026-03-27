@@ -30,4 +30,16 @@ class PayrollItem extends Model
     public function transactions() {
         return $this->hasMany(PayrollTransaction::class);
     }
+
+    public function getPaidAmountAttribute()
+    {
+        return (float) $this->transactions()
+            ->where('transaction_type', 'payment')
+            ->sum('amount');
+    }
+
+    public function getRemainingBalanceAttribute()
+    {
+        return (float) ($this->net_salary - $this->paid_amount);
+    }
 }

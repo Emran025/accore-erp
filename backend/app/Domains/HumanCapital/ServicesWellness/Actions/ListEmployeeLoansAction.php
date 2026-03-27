@@ -3,10 +3,10 @@
 namespace App\Domains\HumanCapital\ServicesWellness\Actions;
 
 use App\Domains\HumanCapital\ServicesWellness\Models\EmployeeLoan;
-
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 class ListEmployeeLoansAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): LengthAwarePaginator
     {
         $query = EmployeeLoan::with(['employee', 'repayments']);
 
@@ -22,12 +22,6 @@ class ListEmployeeLoansAction
             $query->where('status', $filters['status']);
         }
 
-        $paginated = $query->orderBy('created_at', 'desc')->paginate(15);
-        return [
-            'data' => $paginated->items(),
-            'total' => $paginated->total(),
-            'current_page' => $paginated->currentPage(),
-            'per_page' => $paginated->perPage()
-        ];
+        return $query->orderBy('created_at', 'desc')->paginate(15);
     }
 }

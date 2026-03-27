@@ -29,8 +29,8 @@ Route::group(['prefix' => 'ap', 'middleware' => 'can:ap_suppliers,view'], functi
     Route::get('/ledger', [ApController::class, 'supplierLedger'])->name('v2.ap.ledger');
     
     Route::middleware(['can:ap_suppliers,create', 'throttle:api-write'])->post('/suppliers', [ApController::class, 'storeSupplier'])->name('v2.ap.suppliers.store');
-    Route::middleware(['can:ap_suppliers,edit', 'throttle:api-write'])->put('/suppliers', [ApController::class, 'updateSupplier'])->name('v2.ap.suppliers.update');
-    Route::middleware(['can:ap_suppliers,delete', 'throttle:api-delete'])->delete('/suppliers', [ApController::class, 'destroySupplier'])->name('v2.ap.suppliers.destroy');
+    Route::middleware(['can:ap_suppliers,edit', 'throttle:api-write'])->put('/suppliers/{id}', [ApController::class, 'updateSupplier'])->name('v2.ap.suppliers.update');
+    Route::middleware(['can:ap_suppliers,delete', 'throttle:api-delete'])->delete('/suppliers/{id}', [ApController::class, 'destroySupplier'])->name('v2.ap.suppliers.destroy');
 });
 
 // ── 02. Purchase Lifecycle (SupplyChain/Procurement)
@@ -40,14 +40,14 @@ Route::group(['prefix' => 'purchases', 'middleware' => 'can:purchases,view'], fu
     Route::get('/returns/ledger', [PurchasesController::class, 'returnsLedger'])->name('v2.purchases.returns.ledger');
     
     Route::middleware(['can:purchases,create', 'throttle:api-write'])->post('/', [PurchasesController::class, 'store'])->name('v2.purchases.store');
-    Route::middleware(['can:purchases,edit', 'throttle:api-sensitive'])->post('/approve', [PurchasesController::class, 'approve'])->name('v2.purchases.approve');
-    Route::middleware(['can:purchases,delete', 'throttle:api-delete'])->delete('/', [PurchasesController::class, 'destroy'])->name('v2.purchases.destroy');
+    Route::middleware(['can:purchases,edit', 'throttle:api-sensitive'])->post('/{id}/approve', [PurchasesController::class, 'approve'])->name('v2.purchases.approve');
+    Route::middleware(['can:purchases,delete', 'throttle:api-delete'])->delete('/{id}', [PurchasesController::class, 'destroy'])->name('v2.purchases.destroy');
 
     Route::group(['prefix' => 'requests'], function () {
         Route::get('/', [PurchasesController::class, 'requests'])->name('v2.requests.index');
         Route::post('/', [PurchasesController::class, 'storeRequest'])->name('v2.requests.store');
         Route::post('/auto-generate', [PurchasesController::class, 'autoGenerateRequests'])->name('v2.requests.auto_generate');
-        Route::put('/', [PurchasesController::class, 'updateRequest'])->name('v2.requests.update');
+        Route::put('/{id}', [PurchasesController::class, 'updateRequest'])->name('v2.requests.update');
     });
 });
 
@@ -55,7 +55,7 @@ Route::group(['prefix' => 'purchases', 'middleware' => 'can:purchases,view'], fu
 Route::group(['prefix' => 'ap', 'middleware' => 'can:ap_suppliers,view'], function () {
     Route::get('/transactions', [ApTransactionsController::class, 'index'])->name('v2.ap.transactions');
     Route::middleware(['can:ap_suppliers,create', 'throttle:api-write'])->post('/transactions', [ApTransactionsController::class, 'store'])->name('v2.ap.transactions.store');
-    Route::middleware(['can:ap_suppliers,edit', 'throttle:api-write'])->put('/transactions', [ApTransactionsController::class, 'update'])->name('v2.ap.transactions.update');
+    Route::middleware(['can:ap_suppliers,edit', 'throttle:api-write'])->put('/transactions/{id}', [ApTransactionsController::class, 'update'])->name('v2.ap.transactions.update');
     Route::middleware(['can:ap_suppliers,delete', 'throttle:api-delete'])->delete('/transactions/{id}', [ApTransactionsController::class, 'destroy'])->name('v2.ap.transactions.destroy');
     
     // Payment Record (Former top-level route)
@@ -66,14 +66,14 @@ Route::group(['prefix' => 'ap', 'middleware' => 'can:ap_suppliers,view'], functi
 Route::group(['prefix' => 'sales', 'middleware' => 'can:sales,view'], function () {
     // Invoices
     Route::get('/invoices', [SalesController::class, 'index'])->name('v2.invoices.index');
-    Route::get('/invoices/show', [SalesController::class, 'show'])->name('v2.invoices.show');
-    Route::get('/invoice_details', [SalesController::class, 'show'])->name('v2.invoices.details');
+    Route::get('/invoices/{id}', [SalesController::class, 'show'])->name('v2.invoices.show');
+    Route::get('/invoice_details/{id}', [SalesController::class, 'show'])->name('v2.invoices.details');
     Route::middleware(['can:sales,create', 'throttle:api-write'])->post('/invoices', [SalesController::class, 'store'])->name('v2.invoices.store');
-    Route::middleware(['can:sales,delete', 'throttle:api-delete'])->delete('/invoices', [SalesController::class, 'destroy'])->name('v2.invoices.destroy');
+    Route::middleware(['can:sales,delete', 'throttle:api-delete'])->delete('/invoices/{id}', [SalesController::class, 'destroy'])->name('v2.invoices.destroy');
 
     // Returns
     Route::get('/returns', [SalesReturnController::class, 'index'])->name('v2.sales_returns.index');
-    Route::get('/returns/show', [SalesReturnController::class, 'show'])->name('v2.sales_returns.show');
+    Route::get('/returns/{id}', [SalesReturnController::class, 'show'])->name('v2.sales_returns.show');
     Route::get('/returns/ledger', [SalesReturnController::class, 'ledger'])->name('v2.sales_returns.ledger');
     Route::middleware(['can:sales,create', 'throttle:api-write'])->post('/returns', [SalesReturnController::class, 'store'])->name('v2.sales_returns.store');
 
@@ -130,14 +130,14 @@ Route::group(['prefix' => 'crm', 'middleware' => 'can:ar_customers,view'], funct
 Route::group(['prefix' => 'services', 'middleware' => 'can:sales,view'], function () {
     Route::get('/', [ServiceController::class, 'index'])->name('v2.services.index');
     Route::middleware(['can:sales,create', 'throttle:api-write'])->post('/', [ServiceController::class, 'store'])->name('v2.services.store');
-    Route::middleware(['can:sales,edit', 'throttle:api-write'])->put('/', [ServiceController::class, 'update'])->name('v2.services.update');
-    Route::middleware(['can:sales,delete', 'throttle:api-delete'])->delete('/', [ServiceController::class, 'destroy'])->name('v2.services.destroy');
+    Route::middleware(['can:sales,edit', 'throttle:api-write'])->put('/{id}', [ServiceController::class, 'update'])->name('v2.services.update');
+    Route::middleware(['can:sales,delete', 'throttle:api-delete'])->delete('/{id}', [ServiceController::class, 'destroy'])->name('v2.services.destroy');
 
     // Service Sales (listing, details, and creation)
     Route::get('/sales', [ServiceSaleController::class, 'index'])->name('v2.services.sales.index');
-    Route::get('/sales/details', [ServiceSaleController::class, 'show'])->name('v2.services.sales.show');
+    Route::get('/sales/{id}', [ServiceSaleController::class, 'show'])->name('v2.services.sales.show');
     Route::middleware(['can:sales,create', 'throttle:api-write'])->post('/sales', [ServiceSaleController::class, 'store'])->name('v2.services.sales.store');
-    Route::middleware(['can:sales,delete', 'throttle:api-delete'])->delete('/sales', [ServiceSaleController::class, 'destroy'])->name('v2.services.sales.destroy');
+    Route::middleware(['can:sales,delete', 'throttle:api-delete'])->delete('/sales/{id}', [ServiceSaleController::class, 'destroy'])->name('v2.services.sales.destroy');
 
     // Service Returns (reuses SalesReturnController — returns work at invoice level)
     Route::get('/returns', [SalesReturnController::class, 'index'])->name('v2.services.returns.index');

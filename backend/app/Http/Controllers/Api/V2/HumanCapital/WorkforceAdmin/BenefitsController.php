@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Api\V2\HumanCapital\WorkforceAdmin;
 
 use App\Http\Controllers\Controller;
-use App\Domains\HumanCapital\PayrollBenefits\Models\BenefitsPlan;
-use App\Domains\HumanCapital\PayrollBenefits\Models\BenefitsEnrollment;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\ListBenefitsPlanRequest;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\StoreBenefitsPlanRequest;
 use App\Http\Requests\HumanCapital\WorkforceAdmin\UpdateBenefitsPlanRequest;
@@ -19,6 +17,7 @@ use App\Domains\HumanCapital\PayrollBenefits\Actions\UpdateBenefitsPlanAction;
 use App\Domains\HumanCapital\PayrollBenefits\Actions\ListBenefitsEnrollmentsAction;
 use App\Domains\HumanCapital\PayrollBenefits\Actions\CreateBenefitsEnrollmentAction;
 use App\Domains\HumanCapital\PayrollBenefits\Actions\UpdateBenefitsEnrollmentAction;
+use App\Domains\HumanCapital\PayrollBenefits\Actions\GetBenefitsPlanAction;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -29,14 +28,8 @@ class BenefitsController extends Controller
     // Plans
     public function indexPlans(ListBenefitsPlanRequest $request, ListBenefitsPlansAction $action): JsonResponse
     {
-        $paginated = $action->execute($request->validated());
-
-        return $this->paginatedResponse(
-            BenefitsPlanResource::collection($paginated->items()),
-            $paginated->total(),
-            $paginated->currentPage(),
-            $paginated->perPage()
-        );
+        $paginator = $action->execute($request->validated());
+        return $this->successResponse(BenefitsPlanResource::collection($paginator));
     }
 
     public function storePlan(StoreBenefitsPlanRequest $request, CreateBenefitsPlanAction $action): JsonResponse
@@ -47,9 +40,9 @@ class BenefitsController extends Controller
         return $this->successResponse(new BenefitsPlanResource($plan), 'Benefits plan created successfully', 201);
     }
 
-    public function showPlan($id): JsonResponse
+    public function showPlan($id, GetBenefitsPlanAction $action): JsonResponse
     {
-        $plan = BenefitsPlan::with(['enrollments.employee'])->findOrFail($id);
+        $plan = $action->execute((int)$id);
         return $this->successResponse(new BenefitsPlanResource($plan));
     }
 
@@ -62,14 +55,8 @@ class BenefitsController extends Controller
     // Enrollments
     public function indexEnrollments(ListBenefitsEnrollmentRequest $request, ListBenefitsEnrollmentsAction $action): JsonResponse
     {
-        $paginated = $action->execute($request->validated());
-
-        return $this->paginatedResponse(
-            BenefitsEnrollmentResource::collection($paginated->items()),
-            $paginated->total(),
-            $paginated->currentPage(),
-            $paginated->perPage()
-        );
+        $paginator = $action->execute($request->validated());
+        return $this->successResponse(BenefitsEnrollmentResource::collection($paginator));
     }
 
     public function storeEnrollment(StoreBenefitsEnrollmentRequest $request, CreateBenefitsEnrollmentAction $action): JsonResponse
@@ -78,9 +65,9 @@ class BenefitsController extends Controller
         return $this->successResponse(new BenefitsEnrollmentResource($enrollment->load('plan', 'employee')), 'Benefits enrollment created successfully', 201);
     }
 
-    public function updateEnrollment(UpdateBenefitsEnrollmentRequest $request, $id, UpdateBenefitsEnrollmentAction $action): JsonResponse
+    public function updateEnrollment(UpdateBenefitsEnrollmentRequest $request, UpdateBenefitsEnrollmentAction $action): JsonResponse
     {
-        $enrollment = $action->execute((int)$id, $request->validated());
+        $enrollment = $action->execute((int)$request->validated()['id'], $request->validated());
         return $this->successResponse(new BenefitsEnrollmentResource($enrollment->load('plan', 'employee')), 'Benefits enrollment updated successfully');
     }
 }

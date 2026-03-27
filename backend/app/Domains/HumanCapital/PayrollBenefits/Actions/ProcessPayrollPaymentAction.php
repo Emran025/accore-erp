@@ -3,6 +3,7 @@
 namespace App\Domains\HumanCapital\PayrollBenefits\Actions;
 
 use App\Domains\HumanCapital\PayrollBenefits\Services\PayrollService;
+use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollCycle;
 
 class ProcessPayrollPaymentAction
 {
@@ -13,9 +14,8 @@ class ProcessPayrollPaymentAction
         $this->payrollService = $payrollService;
     }
 
-    public function execute(int|string $id, $accountId): array
+    public function execute(int|string $id, $accountId): PayrollCycle
     {
-        $cycle = $this->payrollService->processPayment($id, $accountId);
-        return $cycle->toArray();
+        return $this->payrollService->processPayment($id, $accountId);
     }
 }

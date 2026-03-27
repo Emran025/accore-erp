@@ -5,12 +5,12 @@ use App\Domains\Finance\ForeignExchange\Models\CurrencyPolicy;
 
 class UpdateCurrencyPolicyAction
 {
-    public function execute(array $data, int $id): array
+    public function execute(array $data, int $id): CurrencyPolicy
     {
         $policy = CurrencyPolicy::findOrFail($id);
 
         $policy->update($data);
 
-        return $policy->fresh()->toArray();
+        return $policy->fresh();
     }
 }

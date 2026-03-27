@@ -44,11 +44,9 @@ class DocumentTemplateController extends Controller
             $this->validateHrType($request->type);
         }
 
-        $result = $action->execute($request->validated());
+        $templates = $action->execute($request->validated());
         
-        $data = $result['data'] ?? $result;
-
-        return $this->successResponse(DocumentTemplateResource::collection($data));
+        return $this->successResponse(DocumentTemplateResource::collection($templates));
     }
 
     public function store(StoreDocumentTemplateRequest $request, CreateHrDocumentTemplateAction $action): JsonResponse
@@ -56,45 +54,34 @@ class DocumentTemplateController extends Controller
         $validated = $request->validated();
         $this->validateHrType($validated['template_type']);
 
-        $result = $action->execute($validated);
-        $template = DocumentTemplate::find($result['id'] ?? $result);
+        $template = $action->execute($validated);
         return $this->successResponse(new DocumentTemplateResource($template), 'Template created successfully', 201);
     }
 
     public function show($id, ShowHrDocumentTemplateAction $action): JsonResponse
     {
-        $template = DocumentTemplate::findOrFail($id);
+        $template = $action->execute((int)$id);
         $this->validateHrType($template->template_type);
         
-        $result = $action->execute((int)$id);
-        $template = DocumentTemplate::find($result['id'] ?? $id);
         return $this->successResponse(new DocumentTemplateResource($template));
     }
 
     public function update(UpdateDocumentTemplateRequest $request, $id, UpdateHrDocumentTemplateAction $action): JsonResponse
     {
-        $template = DocumentTemplate::findOrFail($id);
+        $template = $action->execute((int)$id, $request->validated());
         $this->validateHrType($template->template_type);
 
-        $result = $action->execute((int)$id, $request->validated());
-        $template = DocumentTemplate::find($result['id'] ?? $id);
         return $this->successResponse(new DocumentTemplateResource($template), 'Template updated successfully');
     }
 
     public function destroy($id, DeleteHrDocumentTemplateAction $action): JsonResponse
     {
-        $template = DocumentTemplate::findOrFail($id);
-        $this->validateHrType($template->template_type);
-        
         $action->execute((int)$id);
         return $this->successResponse([], 'Template deactivated successfully');
     }
 
     public function render(RenderDocumentTemplateRequest $request, $id, RenderHrDocumentTemplateAction $action): JsonResponse
     {
-        $template = DocumentTemplate::findOrFail($id);
-        $this->validateHrType($template->template_type);
-
         $result = $action->execute((int)$id, $request->validated());
         return $this->successResponse($result, 'Template rendered successfully');
     }

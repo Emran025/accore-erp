@@ -6,9 +6,11 @@ use App\Domains\EnterpriseCore\IdentityAccess\Models\Role;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Module;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\RolePermission;
 
+use Illuminate\Support\Collection;
+
 class ListRolesAction
 {
-    public function execute(array $filters = []): array
+    public function execute(array $filters = []): Collection
     {
         $action = $filters['action'] ?? null;
 
@@ -16,18 +18,18 @@ class ListRolesAction
             $roles = Role::select('id', 'role_name_ar as name', 'role_key')
                 ->orderBy('role_name_ar')
                 ->get();
-            return ['key' => 'roles', 'data' => $roles];
+            return collect(['key' => 'roles', 'data' => $roles]);
         }
 
         if ($action === 'roles') {
             $roles = Role::orderBy('role_name_ar')->get();
-            return ['key' => 'data', 'data' => $roles];
+            return collect(['key' => 'data', 'data' => $roles]);
         }
 
         if ($action === 'modules') {
             $modules = Module::orderBy('category')->orderBy('sort_order')->get();
             $grouped = $modules->groupBy('category');
-            return ['key' => 'data', 'data' => $grouped];
+            return collect(['key' => 'data', 'data' => $grouped]);
         }
 
         if ($action === 'role_permissions') {
@@ -36,9 +38,9 @@ class ListRolesAction
                 ->join('modules', 'role_permissions.module_id', '=', 'modules.id')
                 ->select('role_permissions.*', 'modules.module_key', 'modules.module_name_ar', 'modules.module_name_en')
                 ->get();
-            return ['key' => 'data', 'data' => $permissions];
+            return collect(['key' => 'data', 'data' => $permissions]);
         }
 
-        return ['key' => 'error', 'data' => null, 'message' => 'Invalid action'];
+        return collect(['key' => 'error', 'data' => null, 'message' => 'Invalid action']);
     }
 }

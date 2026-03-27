@@ -7,12 +7,10 @@ use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 class CreateRecurringTransactionAction
 {
-    public function execute(array $data): array
+    public function execute(array $data): RecurringTransaction
     {
         PermissionService::requirePermission('general_ledger', 'create');
 
-        $template = RecurringTransaction::create($data);
-
-        return ['id' => $template->id];
+        return RecurringTransaction::create($data);
     }
 }

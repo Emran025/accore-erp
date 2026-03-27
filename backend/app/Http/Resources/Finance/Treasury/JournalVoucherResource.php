@@ -20,6 +20,7 @@ class JournalVoucherResource extends JsonResource
             'created_by'       => $this->created_by,
             'created_at'       => $this->created_at?->toDateTimeString(),
             'updated_at'       => $this->updated_at?->toDateTimeString(),
+            'lines'            => $this->lines ?? [],
         ];
     }
 }

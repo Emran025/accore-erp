@@ -18,13 +18,12 @@ use App\Http\Requests\EnterpriseCore\OrganizationGovernance\ListComplianceProfil
 use App\Http\Requests\EnterpriseCore\OrganizationGovernance\StoreComplianceProfileRequest;
 use App\Http\Requests\EnterpriseCore\OrganizationGovernance\UpdateComplianceProfileRequest;
 use App\Http\Requests\EnterpriseCore\OrganizationGovernance\ValidateComplianceStructureRequest;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 use App\Http\Resources\EnterpriseCore\MonitoringCompliance\ComplianceProfileResource;
 use App\Http\Resources\EnterpriseCore\MonitoringCompliance\ComplianceTokenResource;
 use App\Http\Resources\EnterpriseCore\MonitoringCompliance\ComplianceValidationResource;
-use App\Domains\HumanCapital\WorkforceAdmin\Models\ComplianceProfile;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ComplianceProfileController extends Controller
 {
@@ -35,9 +34,7 @@ class ComplianceProfileController extends Controller
      */
     public function index(ListComplianceProfilesRequest $request, ListComplianceProfilesAction $action): JsonResponse
     {
-        $data = $action->execute($request->validated());
-        $profiles = $data['profiles'] ?? $data;
-
+        $profiles = $action->execute($request->validated());
         return $this->successResponse(ComplianceProfileResource::collection($profiles));
     }
 
@@ -46,9 +43,7 @@ class ComplianceProfileController extends Controller
      */
     public function show(int $id, ShowComplianceProfileAction $action): JsonResponse
     {
-        $action->execute($id);
-        $profile = ComplianceProfile::findOrFail($id);
-
+        $profile = $action->execute($id);
         return $this->successResponse(new ComplianceProfileResource($profile));
     }
 
@@ -57,10 +52,18 @@ class ComplianceProfileController extends Controller
      */
     public function store(StoreComplianceProfileRequest $request, CreateComplianceProfileAction $action): JsonResponse
     {
-        $data = $action->execute($request->validated());
-        $profile = ComplianceProfile::findOrFail($data['profile']['id'] ?? $data['id'] ?? $data);
+        $result = $action->execute($request->validated());
+        $profile = $result['profile'] ?? $result;
+        
+        $response = $this->successResponse(new ComplianceProfileResource($profile), 'Compliance profile created successfully.', 201);
+        
+        if (isset($result['access_token'])) {
+            $data = $response->getData(true);
+            $data['access_token'] = $result['access_token'];
+            $response->setData($data);
+        }
 
-        return $this->successResponse(new ComplianceProfileResource($profile), 'Compliance profile created successfully.', 201);
+        return $response;
     }
 
     /**
@@ -69,9 +72,7 @@ class ComplianceProfileController extends Controller
      */
     public function update(UpdateComplianceProfileRequest $request, int $id, UpdateComplianceProfileAction $action): JsonResponse
     {
-        $action->execute($id, $request->validated());
-        $profile = ComplianceProfile::findOrFail($id);
-
+        $profile = $action->execute($id, $request->validated());
         return $this->successResponse(new ComplianceProfileResource($profile), 'Compliance profile updated successfully.');
     }
 

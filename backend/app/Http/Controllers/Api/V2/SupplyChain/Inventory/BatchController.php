@@ -12,7 +12,6 @@ use App\Domains\SupplyChain\Inventory\Actions\DeleteBatchProcessAction;
 use App\Domains\SupplyChain\Inventory\Actions\ShowBatchProcessAction;
 use App\Domains\SupplyChain\Inventory\Actions\ExecuteBatchProcessAction;
 use App\Http\Resources\SupplyChain\Inventory\BatchResource;
-use App\Domains\SupplyChain\Inventory\Models\Batch;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
 
@@ -20,49 +19,46 @@ class BatchController extends Controller
 {
     use BaseApiController;
 
-    public function index(ListBatchesRequest $request, ListBatchProcessesAction $listAction, ShowBatchProcessAction $showAction): JsonResponse
+    public function index(ListBatchesRequest $request, ListBatchProcessesAction $listAction): JsonResponse
     {
-        if ($request->query('action') === 'status') {
-            $batch = Batch::find((int)$request->query('batch_id'));
-            return $this->successResponse(new BatchResource($batch));
-        }
-
-        $result = $listAction->execute($request->validated());
-        
-        return $this->paginatedResponse(
-            BatchResource::collection($result['data']),
-            $result['total'],
-            $result['current_page'],
-            $result['per_page']
-        );
+        $paginator = $listAction->execute($request->validated());
+        return $this->successResponse(BatchResource::collection($paginator));
     }
 
-    public function store(StoreBatchRequest $request, CreateBatchProcessAction $createAction, ExecuteBatchProcessAction $executeAction): JsonResponse
+    public function store(StoreBatchRequest $request, CreateBatchProcessAction $createAction): JsonResponse
     {
-        if ($request->query('action')) {
-            try {
-                $executeAction->execute((int)$request->input('batch_id'));
-                return $this->successResponse([], 'تم تنفيذ الدفعة بنجاح');
-            } catch (\Exception $e) {
-                return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
-            }
+        try {
+            $batch = $createAction->execute($request->validated());
+            return $this->successResponse(new BatchResource($batch), 'Batch created successfully', 201);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
         }
+    }
 
-        $result = $createAction->execute($request->validated());
-        $batch = Batch::find($result['id']);
-        return $this->successResponse(new BatchResource($batch));
+    public function execute(int $id, ExecuteBatchProcessAction $executeAction): JsonResponse
+    {
+        try {
+            $executeAction->execute($id);
+            return $this->successResponse([], 'تم تنفيذ الدفعة بنجاح');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 500);
+        }
     }
 
     public function show(int $batchId, ShowBatchProcessAction $action): JsonResponse
     {
-        $batch = Batch::find($batchId);
-        return $this->successResponse(new BatchResource($batch));
+        try {
+            $batch = $action->execute($batchId);
+            return $this->successResponse(new BatchResource($batch));
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 404);
+        }
     }
 
-    public function destroy(DeleteBatchRequest $request, DeleteBatchProcessAction $action): JsonResponse
+    public function destroy(DeleteBatchRequest $request, int $id, DeleteBatchProcessAction $action): JsonResponse
     {
         try {
-            $action->execute((int)$request->input('id'));
+            $action->execute($id);
             return $this->successResponse([], 'تم حذف الدفعة بنجاح');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);

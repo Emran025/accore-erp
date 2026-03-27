@@ -8,7 +8,7 @@ use App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService;
 
 class UpdateRevenueAction
 {
-    public function execute(array $data): void
+    public function execute(array $data): Revenue
     {
         PermissionService::requirePermission('revenues', 'edit');
 
@@ -17,5 +17,7 @@ class UpdateRevenueAction
         $revenue->update($data);
 
         TelescopeService::logOperation('UPDATE', 'revenues', $revenue->id, $oldValues, $data);
+
+        return $revenue;
     }
 }
