@@ -19,9 +19,9 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:5000', 'http://127.0.0.1:5000'],
+    'allowed_origins' => ['http://localhost:5000', 'http://127.0.0.1:5000', 'http://0.0.0.0:5000'],
 
-    'allowed_origins_patterns' => ['#^https://.*\.replit\.dev$#'],
+    'allowed_origins_patterns' => ['#^https://.*\.replit\.dev$#', '#^https://.*\.replit\.app$#'],
 
     'allowed_headers' => ['*'],
 

@@ -194,3 +194,28 @@ The mapping is defined in each task file's `output_path` field.
 - The `execution-log.csv` records the Git commit hash at execution time
 - Template changes require a version bump in ENGINE.md
 - Breaking changes to ENGINE.md require Chief Architect approval
+
+---
+
+## 9. Database Documentation Generation Protocol
+
+When generating or updating documentation for the database tables, the Engine MUST follow these exact steps:
+
+1. **Introspect the Schema:** Access the `backend` directory and run the command:
+   ```bash
+   php artisan app:export-tables
+   ```
+
+   *This introspects the live database and generates the file `.engines/documentation-engine/tables-doc.json`.*
+
+2. **Verify Completeness:** Check the newly generated `tables-doc.json` to ensure all database tables are present and correctly retrieved.
+
+3. **Map the Domains:** Ensure that the complete list of tables is added and correctly categorized by domain inside the export script located at:
+   `backend/app/Console/Commands/ExportTablesDocumentation.php`
+
+4. **Generate the Files:** Finally, execute the documentation generation command:
+   ```bash
+   php artisan app:export-tables-documentation
+   ```
+   *This command will automatically construct the Bounded Context directory tree (if needed) and generate the modular Markdown documentation for each domain within `/docs/Domains/`.*
+

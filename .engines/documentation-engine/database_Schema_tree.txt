@@ -1,0 +1,99 @@
+﻿Folder TREE (Depth = 2)
+--------------------------------------------------
+Domains/
+├── Assets
+│   ├── AssetLifecycle
+│   │   └── database_Schema.md
+│   └── Investments
+│       └── database_Schema.md
+├── Commercial
+│   ├── CRM
+│   │   └── database_Schema.md
+│   ├── MarketingDistribution
+│   │   └── database_Schema.md
+│   ├── RevenueReceivables
+│   │   └── database_Schema.md
+│   ├── SalesGovernance
+│   │   └── database_Schema.md
+│   └── SalesLifecycle
+│       └── database_Schema.md
+├── EnterpriseCore
+│   ├── Automation
+│   │   └── database_Schema.md
+│   ├── IdentityAccess
+│   │   └── database_Schema.md
+│   ├── MonitoringCompliance
+│   │   └── database_Schema.md
+│   ├── OrganizationGovernance
+│   │   └── database_Schema.md
+│   └── SystemOverview
+│       └── database_Schema.md
+├── Finance
+│   ├── AuditCompliance
+│   │   └── database_Schema.md
+│   ├── ForeignExchange
+│   │   └── database_Schema.md
+│   ├── GeneralLedger
+│   │   └── database_Schema.md
+│   ├── ManagementAccounting
+│   │   └── database_Schema.md
+│   ├── TaxCompliance
+│   │   └── database_Schema.md
+│   └── Treasury
+│       └── database_Schema.md
+├── HumanCapital
+│   ├── HRAdvanced
+│   │   └── database_Schema.md
+│   ├── HRCompliance
+│   │   └── database_Schema.md
+│   ├── KnowledgePortal
+│   │   └── database_Schema.md
+│   ├── PayrollBenefits
+│   │   └── database_Schema.md
+│   ├── PerformanceDevelopment
+│   │   └── database_Schema.md
+│   ├── ServicesWellness
+│   │   └── database_Schema.md
+│   ├── TalentRecruitment
+│   │   └── database_Schema.md
+│   ├── TimeProductivity
+│   │   └── database_Schema.md
+│   └── WorkforceAdmin
+│       └── database_Schema.md
+├── Intelligence
+│   ├── AdvancedAnalytics
+│   │   └── database_Schema.md
+│   └── BusinessIntelligence
+│       └── database_Schema.md
+├── Manufacturing
+│   ├── Engineering
+│   │   └── database_Schema.md
+│   ├── ProductionControl
+│   │   └── database_Schema.md
+│   └── QualityControl
+│       └── database_Schema.md
+├── Platform
+│   ├── Automation
+│   │   └── database_Schema.md
+│   ├── Communication
+│   │   └── database_Schema.md
+│   ├── Customization
+│   │   └── database_Schema.md
+│   └── IntegrationHub
+│       └── database_Schema.md
+├── Projects
+│   ├── ExecutionTracking
+│   │   └── database_Schema.md
+│   ├── ProjectFinance
+│   │   └── database_Schema.md
+│   └── ProjectPlanning
+│       └── database_Schema.md
+└── SupplyChain
+    ├── Inventory
+    │   └── database_Schema.md
+    ├── PayablesExpenses
+    │   └── database_Schema.md
+    ├── Procurement
+    │   └── database_Schema.md
+    └── SupplierSourcing
+        └── database_Schema.md
