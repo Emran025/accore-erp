@@ -19,8 +19,11 @@ body:
       multiple: true
       options:
         - "README.md (root)"
-        - "docs/API_REFERENCE.md"
-        - "docs/DATABASE_SCHEMA.md"
+        - "docs/API/ (API Documentation Hub)"
+        - "docs/Architecture/ (Architecture Patterns)"
+        - "docs/Domains/ (Specific Bounded Contexts or Database Schemas)"
+        - "docs/Operations/ (Deployment & Production)"
+        - "docs/Developer/ (Onboarding & Developer Guides)"
         - "docs/TECHNICAL_DOCUMENTATION.md"
         - "docs/USER_GUIDE.md"
         - "docs/DOCUMENTATION_INDEX.md"
@@ -62,11 +65,11 @@ body:
       description: "Describe the documentation issue in detail. If reporting an inaccuracy, state what the documentation says and what the correct information is."
       placeholder: |
         Example:
-        The API_REFERENCE.md states that POST /api/invoices accepts a `tax_rate` field
+        The docs/API/ states that POST /api/invoices accepts a `tax_rate` field
         as a percentage (e.g., 15), but the actual implementation expects a decimal
         (e.g., 0.15). This has caused confusion during integration testing.
 
-        File: docs/API_REFERENCE.md
+        Location: docs/API/
         Section: Sales Endpoints > Create Invoice
         Line: approximately 245
     validations:

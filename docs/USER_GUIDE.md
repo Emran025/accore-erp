@@ -2,8 +2,8 @@
 
 # ACCSYSTEM ERP System - Comprehensive User Guide
 
-> **الإصدار:** 2.2 | **آخر تحديث:** 5 فبراير 2026  
-> **Version:** 2.2 | **Last Updated:** February 5, 2026
+> **الإصدار:** 3.0 | **آخر تحديث:** 28 مارس 2026  
+> **Version:** 3.0 | **Last Updated:** March 28, 2026
 
 ---
 
@@ -703,9 +703,9 @@ This system is the engine responsible for generating serial numbers all modules 
 
 ## 📞 للدعم الفني
 
-- **مستندات المطورين:** `docs/TECHNICAL_DOCUMENTATION.md`
-- **مرجع API:** `docs/API_REFERENCE.md`  
-- **مخطط قاعدة البيانات:** `docs/DATABASE_SCHEMA.md`
+- **مستندات المطورين:** `docs/TECHNICAL_DOCUMENTATION.md` و `docs/Developer/`
+- **مرجع API:** `docs/API/`  
+- **مخطط قاعدة البيانات:** `docs/Domains/` (مخططات لكل نطاق)
 
 ---
 

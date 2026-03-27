@@ -1,836 +1,147 @@
 # Contributing to ACCSYSTEM ERP System
 
-Thank you for considering contributing to our Enterprise Resource Planning (ERP) system! This document provides guidelines and instructions for contributing to the project.
+Thank you for considering contributing to our Enterprise Resource Planning (ERP) system!
+
+> **📋 Full Contributing Guide:** For the comprehensive, detailed contributing standards — including coding standards, PR process, testing requirements, security considerations, and performance guidelines — please see [`.github/CONTRIBUTING.md`](./.github/CONTRIBUTING.md).
+
+This document provides a quick-start summary. The `.github/CONTRIBUTING.md` is the authoritative reference.
 
 ---
 
-## Table of Contents
-
-1. [Code of Conduct](#code-of-conduct)
-2. [Getting Started](#getting-started)
-3. [How to Contribute](#how-to-contribute)
-4. [Development Workflow](#development-workflow)
-5. [Coding Standards](#coding-standards)
-6. [Testing Guidelines](#testing-guidelines)
-7. [Documentation Requirements](#documentation-requirements)
-8. [Pull Request Process](#pull-request-process)
-9. [Issue Reporting](#issue-reporting)
-10. [Community](#community)
-
----
-
-## Code of Conduct
-
-### Our Pledge
-
-We are committed to providing a welcoming and inspiring community for all. Please be respectful and constructive in your interactions.
-
-### Our Standards
-
-**Positive behavior includes:**
-
-- Using welcoming and inclusive language
-- Being respectful of differing viewpoints
-- Gracefully accepting constructive criticism
-- Focusing on what is best for the community
-- Showing empathy towards other community members
-
-**Unacceptable behavior includes:**
-
-- Harassment, trolling, or derogatory comments
-- Publishing others' private information
-- Unprofessional conduct
-
-### Enforcement
-
-Instances of unacceptable behavior may be reported to the project maintainers. All complaints will be reviewed and investigated.
-
----
-
-## Getting Started
+## Quick Start
 
 ### Prerequisites
 
-Before contributing, ensure you have:
+- **PHP 8.2+** with extensions: `pdo_mysql`, `mbstring`, `xml`, `bcmath`, `json`, `curl`, `zip`, `intl`
+- **Node.js 20+** and npm 10+
+- **MySQL 8.0+**
+- **Composer** (latest)
+- **Git 2.40+**
 
-- **PHP 8.2+** installed
-- **Node.js 20+** and npm
-- **Composer** (latest version)
-- **Git** for version control
-- A code editor (VS Code recommended)
-- Basic understanding of Laravel and Next.js
-- Understanding of ERP concepts (accounting, inventory, HR)
-
-### Initial Setup
-
-1. **Fork the repository**
-
-   ```bash
-   # Click "Fork" on GitHub
-   ```
-
-2. **Clone your fork**
-
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/ACCSYSTEM-erp.git
-   cd ACCSYSTEM-erp
-   ```
-
-3. **Add upstream remote**
-
-   ```bash
-   git remote add upstream https://github.com/ACCSYSTEM/ACCSYSTEM-erp.git
-   ```
-
-4. **Set up the development environment**
-
-   ```bash
-   # Backend
-   cd backend
-   composer install
-   cp .env.example .env
-   php artisan key:generate
-   php artisan migrate
-   
-   # Frontend
-   cd ../frontend
-   npm install
-   ```
-
-5. **Verify setup**
-
-   ```bash
-   # Terminal 1 - Backend
-   cd backend && php artisan serve
-   
-   # Terminal 2 - Frontend
-   cd frontend && npm run dev
-   ```
-
----
-
-## How to Contribute
-
-### Types of Contributions
-
-We welcome various types of contributions:
-
-1. **Bug Fixes** 🐛
-   - Report bugs via GitHub Issues
-   - Submit fixes with test cases
-
-2. **New Features** ✨
-   - Discuss the feature in an issue first
-   - Follow the feature development process
-
-3. **Documentation** 📚
-   - Improve existing documentation
-   - Add examples and tutorials
-   - Fix typos and unclear explanations
-
-4. **Code Refactoring** 🔨
-   - Improve code quality
-   - Optimize performance
-   - Enhance maintainability
-
-5. **Testing** ✅
-   - Add test coverage
-   - Improve existing tests
-
-### Contribution Areas by ERP Module
-
-| Module | Skills Needed | Difficulty |
-| ------ | ------------- | ---------- |
-| **Sales & POS** | PHP, TypeScript, Accounting | Intermediate |
-| **Purchases** | Laravel, Approval Workflows | Intermediate |
-| **Inventory** | FIFO/Average Costing, PHP | Intermediate-Advanced |
-| **General Ledger** | Double-Entry Accounting, Laravel | Advanced |
-| **Financial Reports** | SQL, Accounting Principles | Advanced |
-| **HR & Payroll** | Laravel, Payroll Processing | Intermediate-Advanced |
-| **ZATCA Integration** | API Integration, Saudi Regulations | Advanced |
-| **Multi-Currency** | Exchange Rates, Financial Logic | Intermediate |
-| **UI/UX** | React, TypeScript, Tailwind | Beginner-Intermediate |
-| **Testing** | PHPUnit, Jest | Intermediate |
-| **Documentation** | Technical Writing | Beginner |
-
----
-
-## Development Workflow
-
-### Branch Strategy
-
-We use **Git Flow** branching model:
-
-```txt
-main (production-ready)
-  └── develop (integration branch)
-       ├── feature/feature-name
-       ├── bugfix/bug-description
-       ├── hotfix/critical-fix
-       ├── docs/documentation-update
-       └── module/module-name-enhancement
-```
-
-### Creating a Branch
-
-1. **Update your local repository**
-
-   ```bash
-   git checkout develop
-   git pull upstream develop
-   ```
-
-2. **Create a feature branch**
-
-   ```bash
-   # For new features
-   git checkout -b feature/add-inventory-alerts
-   
-   # For bug fixes
-   git checkout -b bugfix/fix-invoice-calculation
-   
-   # For documentation
-   git checkout -b docs/update-api-reference
-   
-   # For module enhancements
-   git checkout -b module/hr-leave-management
-   ```
-
-### Making Changes
-
-1. **Make your changes**
-   - Follow coding standards (see below)
-   - Write clean, readable code
-   - Add comments for complex logic
-   - Consider both Arabic and English users
-
-2. **Test your changes**
-
-   ```bash
-   # Backend tests
-   cd backend
-   php artisan test
-   
-   # Frontend (if tests are set up)
-   cd frontend
-   npm run test
-   ```
-
-3. **Commit your changes**
-
-   ```bash
-   git add .
-   git commit -m "feat(sales): add inventory low stock alerts"
-   ```
-
-### Commit Message Convention
-
-We follow **Conventional Commits** specification:
-
-```txt
-<type>(<scope>): <subject>
-
-<body>
-
-<footer>
-```
-
-**Types:**
-
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation changes
-- `style`: Code style changes (formatting, no logic change)
-- `refactor`: Code refactoring
-- `perf`: Performance improvements
-- `test`: Adding or updating tests
-- `chore`: Maintenance tasks
-
-**Scopes (ERP Modules):**
-
-- `sales`, `purchases`, `inventory`, `ar`, `ap`
-- `gl`, `reports`, `hr`, `payroll`, `assets`
-- `auth`, `settings`, `api`, `ui`
-
-**Examples:**
+### Setup
 
 ```bash
-feat(sales): add multi-currency support to invoices
-fix(payroll): correct net salary calculation for deductions
-docs(api): update authentication endpoints documentation
-refactor(gl): optimize trial balance query performance
-test(purchases): add tests for approval workflow
+# Fork & clone
+git clone https://github.com/<YOUR_USERNAME>/ACCSYSTEM.git
+cd ACCSYSTEM
+
+# Backend
+cd backend
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+
+# Frontend
+cd ../frontend
+npm install
+
+# Run (two terminals)
+cd backend && php artisan serve    # Port 8000
+cd frontend && npm run dev         # Port 3000
 ```
+
+Login at `http://localhost:3000` with `admin / admin`.
 
 ---
 
-## Coding Standards
+## Types of Contributions
 
-### PHP (Backend)
-
-Follow **PSR-12** coding standard:
-
-```php
-<?php
-
-namespace App\Services;
-
-use App\Models\Invoice;
-use Illuminate\Support\Facades\DB;
-
-class InvoiceService
-{
-    /**
-     * Create a new invoice with automatic ledger posting
-     *
-     * @param array $data Invoice data with items
-     * @return int Invoice ID
-     * @throws \Exception When posting fails
-     */
-    public function createInvoice(array $data): int
-    {
-        return DB::transaction(function () use ($data) {
-            $invoice = Invoice::create($data);
-            $this->postToLedger($invoice);
-            
-            return $invoice->id;
-        });
-    }
-}
-```
-
-**Rules:**
-
-- Use type hints for parameters and return values
-- Add PHPDoc comments for frontend methods
-- Keep methods focused (Single Responsibility)
-- Use dependency injection
-- Use Services for business logic (not in Controllers)
-- Name classes, methods, and variables clearly
-- Max line length: 120 characters
-- Use Eloquent relationships properly
-
-### TypeScript (Frontend)
-
-Follow **Airbnb React/TypeScript** style guide:
-
-```typescript
-import { useState, useEffect } from 'react';
-import { fetchAPI } from '@/lib/api';
-import type { Invoice } from '@/lib/types';
-
-interface InvoiceListProps {
-  customerId?: number;
-  pageSize?: number;
-}
-
-export default function InvoiceList({ 
-  customerId, 
-  pageSize = 20 
-}: InvoiceListProps) {
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadInvoices();
-  }, [customerId]);
-
-  async function loadInvoices() {
-    try {
-      setLoading(true);
-      const response = await fetchAPI('invoices', {
-        method: 'GET'
-      });
-      
-      if (response.success) {
-        setInvoices(response.data);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div className="invoice-list">
-      {/* Component JSX */}
-    </div>
-  );
-}
-```
-
-**Rules:**
-
-- Use TypeScript interfaces for all data structures
-- Prefer `const` over `let`
-- Use async/await over `.then()`
-- Name components in PascalCase
-- Name functions in camelCase
-- Use arrow functions for callbacks
-- Max line length: 100 characters
-- Support RTL (Arabic) layout where applicable
-
-### Database Migrations
-
-```php
-<?php
-
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
-        Schema::create('table_name', function (Blueprint $table) {
-            $table->id();
-            $table->string('column_name');
-            $table->foreignId('user_id')
-                ->constrained()
-                ->onDelete('cascade');
-            $table->timestamps();
-            
-            $table->index('column_name');
-        });
-    }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('table_name');
-    }
-};
-```
-
-**Rules:**
-
-- Always include `up()` and `down()` methods
-- Use descriptive file names with timestamps
-- Add indexes for foreign keys and frequently queried columns
-- Document complex migrations
-- Consider data preservation in `down()` methods
+| Type | Description |
+| ---- | ----------- |
+| 🐛 **Bug Fixes** | Report via [Issue Templates](./.github/ISSUE_TEMPLATE/) and submit fixes with tests |
+| ✨ **New Features** | Discuss in an issue first, then follow the feature development process |
+| 📚 **Documentation** | Improve docs in `/docs/` hierarchy or code comments |
+| 🔨 **Refactoring** | Improve code quality and maintainability |
+| ✅ **Testing** | Add test coverage using PHPUnit/Pest (backend) or Vitest (frontend) |
 
 ---
 
-## Testing Guidelines
+## Contribution Areas by Domain
 
-### Backend Testing (PHPUnit)
+The system is organized into **11 bounded contexts** following Domain-Driven Design. See [docs/Domains/](./docs/Domains/) for full domain documentation.
 
-**Test Structure:**
-
-```php
-<?php
-
-namespace Tests\Feature;
-
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Invoice;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-class InvoiceTest extends TestCase
-{
-    use RefreshDatabase;
-
-    /** @test */
-    public function it_creates_an_invoice_successfully()
-    {
-        // Arrange
-        $user = User::factory()->create();
-        $this->actingAs($user);
-        
-        $invoiceData = [
-            'items' => [
-                ['product_id' => 1, 'quantity' => 2, 'unit_price' => 50]
-            ],
-            'payment_type' => 'cash'
-        ];
-
-        // Act
-        $response = $this->postJson('/api/invoices', $invoiceData);
-
-        // Assert
-        $response->assertStatus(200);
-        $response->assertJsonStructure(['success', 'id']);
-        $this->assertDatabaseHas('invoices', [
-            'payment_type' => 'cash'
-        ]);
-    }
-    
-    /** @test */
-    public function it_posts_correct_gl_entries_for_cash_sale()
-    {
-        // Test that ledger entries are correct
-    }
-}
-```
-
-**Testing Requirements:**
-
-- Write tests for all new features
-- Cover edge cases and error scenarios
-- Aim for 80%+ code coverage
-- Use factories for test data
-- Clean up after tests (use `RefreshDatabase`)
-- Test GL postings for financial transactions
-
-### Frontend Testing (Jest - when implemented)
-
-```typescript
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import InvoiceList from './InvoiceList';
-
-describe('InvoiceList', () => {
-  it('displays invoices when loaded', async () => {
-    render(<InvoiceList />);
-    
-    await waitFor(() => {
-      expect(screen.getByText('INV-00001')).toBeInTheDocument();
-    });
-  });
-});
-```
+| Domain | Backend Path | Skills Needed | Difficulty |
+| ------ | ------------ | ------------- | ---------- |
+| **EnterpriseCore** | `Domains/EnterpriseCore/` | Auth, RBAC, Laravel | Intermediate |
+| **Commercial** | `Domains/Commercial/` | Sales, CRM, Invoicing | Intermediate |
+| **Finance** | `Domains/Finance/` | Double-Entry Accounting, Tax | Advanced |
+| **SupplyChain** | `Domains/SupplyChain/` | Inventory Costing, Procurement | Intermediate-Advanced |
+| **HumanCapital** | `Domains/HumanCapital/` | Payroll, HR Workflows | Intermediate-Advanced |
+| **Manufacturing** | `Domains/Manufacturing/` | Production, QC | Intermediate |
+| **Projects** | `Domains/Projects/` | Project Management | Intermediate |
+| **Assets** | `Domains/Assets/` | Depreciation, Asset Tracking | Intermediate |
+| **Intelligence** | `Domains/Intelligence/` | Reporting, Analytics, SQL | Advanced |
+| **Platform** | `Domains/Platform/` | Integrations, Customization | Intermediate |
+| **UI/UX** | `frontend/` | React, TypeScript, Tailwind | Beginner-Intermediate |
 
 ---
 
-## Documentation Requirements
+## Branch Strategy
 
-### Code Documentation
+We use a trunk-based workflow with short-lived feature branches:
 
-**PHP:**
+| Prefix | Use Case | Example |
+| ------ | -------- | ------- |
+| `feat/` | New functionality | `feat/payroll-overtime-calculation` |
+| `fix/` | Bug correction | `fix/ledger-rounding-error` |
+| `refactor/` | Internal restructuring | `refactor/purchase-service-decomposition` |
+| `docs/` | Documentation only | `docs/api-reference-update` |
+| `chore/` | Build, CI, dependencies | `chore/upgrade-laravel-12.4` |
+| `test/` | Test additions | `test/ar-aging-report-edge-cases` |
 
-```php
-/**
- * Calculate the total amount for an invoice including VAT
- *
- * This method calculates the subtotal from items, applies any discount,
- * then adds VAT based on the configured rate. Also posts to General Ledger.
- *
- * @param array $items Array of invoice items with quantity and unit_price
- * @param float $discount Discount amount to subtract
- * @param float $vatRate VAT rate as percentage (e.g., 15 for 15%)
- * @return float Total amount including VAT
- */
-public function calculateTotal(array $items, float $discount, float $vatRate): float
-{
-    // Implementation
-}
-```
-
-**TypeScript:**
-
-```typescript
-/**
- * Fetch invoices from the API with pagination
- * 
- * @param page - Page number (1-indexed)
- * @param perPage - Number of items per page
- * @returns Promise resolving to API response with invoices
- */
-async function fetchInvoices(page: number, perPage: number): Promise<APIResponse> {
-  // Implementation
-}
-```
-
-### Documentation Updates
-
-When adding features, update:
-
-1. **`docs/TECHNICAL_DOCUMENTATION.md`** - Technical details
-2. **`docs/API_REFERENCE.md`** - API endpoint documentation
-3. **`docs/DATABASE_SCHEMA.md`** - Database schema changes
-4. **`docs/USER_GUIDE.md`** - User-facing features (Arabic & English)
-5. **`README.md`** - High-level changes
-6. **Code comments** - Complex business logic
+**Full branching policy and commit message convention:** See [`.github/CONTRIBUTING.md`](./.github/CONTRIBUTING.md#4-branching-strategy) and [`.github/COMMIT_GUIDELINES.md`](./.github/COMMIT_GUIDELINES.md).
 
 ---
 
 ## Pull Request Process
 
-### Before Submitting
+1. Rebase onto latest `develop`
+2. Run backend tests: `cd backend && php artisan test`
+3. Run frontend tests: `cd frontend && npm run test`
+4. Format code:
+   - Backend: `./vendor/bin/pint`
+   - Frontend: `npm run format && npm run lint`
+5. Push and open PR using the [PR template](./.github/PULL_REQUEST_TEMPLATE.md)
 
-- [ ] Code follows project coding standards
-- [ ] All tests pass (`php artisan test`)
-- [ ] Documentation is updated
-- [ ] Commit messages follow convention
-- [ ] No merge conflicts with `develop` branch
-- [ ] Self-review completed
-- [ ] GL postings verified (for financial features)
-- [ ] Arabic/English translations added (if UI changes)
-
-### Creating a Pull Request
-
-1. **Push your branch**
-
-   ```bash
-      git push origin feature/your-feature-name
-   ```
-
-2. **Create PR on GitHub**
-   - Go to your fork on GitHub
-   - Click "New Pull Request"
-   - Set base: `develop` ← compare: `your-feature-branch`
-   - Fill in the PR template
-
-3. **PR Template**
-
-   ```markdown
-   ## Description
-   Brief description of changes
-   
-   ## ERP Module Affected
-   - [ ] Sales & POS
-   - [ ] Purchases
-   - [ ] Inventory
-   - [ ] AR/AP
-   - [ ] General Ledger
-   - [ ] Reports
-   - [ ] HR & Payroll
-   - [ ] System Settings
-   - [ ] Other: ___
-   
-   ## Type of Change
-   - [ ] Bug fix
-   - [ ] New feature
-   - [ ] Breaking change
-   - [ ] Documentation update
-   
-   ## Testing
-   - [ ] Unit tests added/updated
-   - [ ] Manual testing completed
-   - [ ] All tests pass
-   - [ ] GL postings verified
-   
-   ## Checklist
-   - [ ] Code follows style guidelines
-   - [ ] Self-review completed
-   - [ ] Documentation updated
-   - [ ] No breaking changes (or documented)
-   - [ ] Arabic/English translations added
-   
-   ## Related Issues
-   Fixes #123
-   ```
-
-### PR Review Process
-
-1. **Automated Checks**
-   - CI/CD pipeline runs tests
-   - Code style checks
-   - Build verification
-
-2. **Code Review**
-   - At least one maintainer reviews
-   - Feedback is provided
-   - Requested changes made
-
-3. **Approval & Merge**
-   - PR approved by maintainer
-   - Merged into `develop` branch
-   - Branch deleted
-
-### Review Criteria
-
-Reviewers will check:
-
-- **Functionality:** Does it work as intended?
-- **Code Quality:** Clean, readable, maintainable?
-- **Performance:** No performance regressions?
-- **Security:** No security vulnerabilities?
-- **Testing:** Adequate test coverage?
-- **Documentation:** Changes documented?
-- **Accounting Accuracy:** GL postings correct?
+**Full PR checklist and review criteria:** See [`.github/CONTRIBUTING.md`](./.github/CONTRIBUTING.md#6-pull-request-process).
 
 ---
 
-## Issue Reporting
+## Documentation Updates
 
-### Bug Reports
+When adding features, update the relevant documentation:
 
-Use the bug report template:
+| What Changed | Where to Update |
+| ------------ | --------------- |
+| New API endpoint | `docs/API/` |
+| Database schema change | `docs/Domains/<Domain>/database_Schema.md` (auto-generated) |
+| Business logic / workflow | `docs/Domains/<Domain>/` |
+| Architecture pattern | `docs/Architecture/` |
+| User-facing feature | `docs/USER_GUIDE.md` (Arabic & English) |
+| Deployment / ops change | `docs/Operations/` |
+| High-level project info | `README.md` |
+| Code comments | PHPDoc (backend) / TSDoc (frontend) |
 
-```markdown
-**ERP Module**
-[e.g., Sales, Purchases, GL, HR, Payroll]
-
-**Describe the bug**
-A clear description of what the bug is.
-
-**To Reproduce**
-Steps to reproduce:
-1. Go to '...'
-2. Click on '...'
-3. See error
-
-**Expected behavior**
-What you expected to happen.
-
-**Screenshots**
-If applicable, add screenshots.
-
-**Environment:**
-- OS: [e.g., Windows 11]
-- Browser: [e.g., Chrome 120]
-- PHP Version: [e.g., 8.2.10]
-- Node Version: [e.g., 20.10.0]
-
-**Additional context**
-Any other context about the problem.
-
-**Logs**
-```txt
-Paste relevant logs from storage/logs/laravel.log
-```
-```
-
-### Feature Requests
-
-Use the feature request template:
-
-```markdown
-   **ERP Module**
-   [e.g., Sales, Purchases, GL, HR, Payroll]
-
-   **Is your feature related to a problem?**
-   A clear description of the problem.
-
-   **Describe the solution**
-   What you want to happen.
-
-   **Describe alternatives**
-   Other solutions you've considered.
-
-   **Additional context**
-   Any other context or screenshots.
-```
+**Full documentation standards:** See [`.github/CONTRIBUTING.md`](./.github/CONTRIBUTING.md#11-documentation-expectations).
 
 ---
 
-## Community
+## Key Resources
 
-### Communication Channels
-
-- **GitHub Issues:** Bug reports, feature requests
-- **GitHub Discussions:** General questions, ideas
-- **Pull Requests:** Code contributions, reviews
-
-### Getting Help
-
-1. Check existing documentation in `/docs`
-2. Search closed issues
-3. Ask in GitHub Discussions
-4. Create a new issue with details
-
-### Recognition
-
-Contributors will be:
-
-- Listed in `CONTRIBUTORS.md`
-- Mentioned in release notes
-- Credited in documentation
-
----
-
-## Development Tips
-
-### ERP-Specific Guidelines
-
-**Financial Transactions:**
-
-- Always post to General Ledger via `LedgerService`
-- Ensure debit = credit in all postings
-- Test fiscal period restrictions
-- Verify voucher numbering
-
-**Multi-Currency:**
-
-- Use `CurrencyHelper` for conversions
-- Store amounts in base currency + original
-- Handle exchange rate differences
-
-**Approval Workflows:**
-
-- Use status fields ('pending', 'approved', 'rejected')
-- Track approver and approval timestamp
-- Respect multi-level approval settings
-
-### Performance Guidelines
-
-**Backend:**
-
-- Use eager loading to avoid N+1 queries
-- Cache frequently accessed data
-- Use database indexes appropriately
-- Profile slow queries
-
-**Frontend:**
-
-- Minimize re-renders with React.memo
-- Use pagination for large datasets
-- Lazy load components when possible
-- Optimize images and assets
-
-### Security Best Practices
-
-- Never commit sensitive data (`.env`, credentials)
-- Validate all user input
-- Use parameterized queries (Eloquent does this)
-- Sanitize output to prevent XSS
-- Follow OWASP guidelines
-- Respect role-based permissions
-
-### Debugging
-
-**Backend:**
-
-```bash
-# Enable debug mode
-APP_DEBUG=true
-
-# View logs
-tail -f storage/logs/laravel.log
-
-# Use Telescope for debugging
-php artisan telescope:install
-```
-
-**Frontend:**
-
-```bash
-# Enable verbose logging
-NEXT_PUBLIC_DEBUG=true
-
-# Use React DevTools browser extension
-```
-
----
-
-## Release Process
-
-### Version Numbering
-
-We follow **Semantic Versioning** (SemVer):
-
-- **MAJOR.MINOR.PATCH** (e.g., 2.1.0)
-- **MAJOR:** Breaking changes
-- **MINOR:** New features (backward compatible)
-- **PATCH:** Bug fixes
-
-### Release Workflow
-
-1. All features merged to `develop`
-2. Create release branch: `release/v2.1.0`
-3. Final testing and bug fixes
-4. Update version numbers
-5. Merge to `main` and tag
-6. Deploy to production
-7. Merge back to `develop`
+| Resource | Location |
+| -------- | -------- |
+| **Full Contributing Guide** | [`.github/CONTRIBUTING.md`](./.github/CONTRIBUTING.md) |
+| **Commit Guidelines** | [`.github/COMMIT_GUIDELINES.md`](./.github/COMMIT_GUIDELINES.md) |
+| **Code of Conduct** | [`.github/CODE_OF_CONDUCT.md`](./.github/CODE_OF_CONDUCT.md) |
+| **Security Policy** | [`.github/SECURITY.md`](./.github/SECURITY.md) |
+| **PR Template** | [`.github/PULL_REQUEST_TEMPLATE.md`](./.github/PULL_REQUEST_TEMPLATE.md) |
+| **Issue Templates** | [`.github/ISSUE_TEMPLATE/`](./.github/ISSUE_TEMPLATE/) |
+| **CI Workflows** | [`.github/workflows/`](./.github/workflows/) |
+| **Technical Documentation** | [`docs/TECHNICAL_DOCUMENTATION.md`](./docs/TECHNICAL_DOCUMENTATION.md) |
+| **Developer Guides** | [`docs/Developer/`](./docs/Developer/) |
+| **Domain Documentation** | [`docs/Domains/`](./docs/Domains/) |
+| **Documentation Index** | [`docs/DOCUMENTATION_INDEX.md`](./docs/DOCUMENTATION_INDEX.md) |
 
 ---
 
@@ -842,17 +153,11 @@ By contributing, you agree that your contributions will be licensed under the sa
 
 ## Questions?
 
-If you have questions about contributing:
-
-1. Check the [Technical Documentation](./docs/TECHNICAL_DOCUMENTATION.md)
-2. Review [closed pull requests](https://github.com/ACCSYSTEM/ACCSYSTEM-erp/pulls?q=is%3Apr+is%3Aclosed)
+1. Check the [Documentation Index](./docs/DOCUMENTATION_INDEX.md)
+2. Search [closed pull requests](https://github.com/ACCSYSTEM/ACCSYSTEM-erp/pulls?q=is%3Apr+is%3Aclosed)
 3. Ask in [GitHub Discussions](https://github.com/ACCSYSTEM/ACCSYSTEM-erp/discussions)
-4. Contact maintainers
+4. For security issues, follow the process in [`.github/SECURITY.md`](./.github/SECURITY.md)
 
 ---
 
-## Thank You! 🎉
-
-Every contribution, no matter how small, makes a difference. We appreciate your time and effort in improving the ACCSYSTEM ERP System!
-
-**Happy Coding!** 💻
+**Every contribution, no matter how small, makes a difference. Thank you! 🎉**

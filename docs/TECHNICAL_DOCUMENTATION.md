@@ -1,8 +1,8 @@
 # ACCSYSTEM ERP System - Technical Documentation
 
-> **Last Updated:** February 5, 2026  
-> **Version:** 2.2  
-> **Architecture:** Monorepo (Laravel Backend + Next.js Frontend)  
+> **Last Updated:** March 28, 2026  
+> **Version:** 3.0  
+> **Architecture:** Monorepo (Laravel Backend + Next.js Frontend) — Domain-Driven Design  
 > **System Type:** Enterprise Resource Planning (ERP)
 
 ---
@@ -38,7 +38,7 @@ This is a **full-featured ERP system** built as a **monorepo** containing:
 ┌────────────────────────────────────────────────────────────┐
 │                     USER INTERFACE                         │
 │          (Next.js 16 - React 19 - TypeScript)              │
-│                      Port: 3000                            │
+│                      Port: 5000                            │
 └──────────────────────────┬─────────────────────────────────┘
                            │ HTTP/JSON API
                            │ (RESTful)
@@ -47,34 +47,34 @@ This is a **full-featured ERP system** built as a **monorepo** containing:
 │           (Laravel 12 - PHP 8.2+)                          │
 │                  Port: 8000                                │
 ├────────────────────────────────────────────────────────────┤
-│  Controllers → Services → Models → Database                │
+│      Controllers → Requests → Actions → Services           │
+│      → Models → Database → Resources                       │
 └──────────────────────────┬─────────────────────────────────┘
                            │
 ┌──────────────────────────▼─────────────────────────────────┐
-│              MySQL DATABASE                               │
+│              MySQL DATABASE                                │
 │        (Production: MySQL/PostgreSQL)                      │
 └────────────────────────────────────────────────────────────┘
 ```
 
 ### 1.3 Core ERP Modules
 
-The system implements a comprehensive ERP solution with the following modules:
+The system implements a comprehensive ERP solution organized into **10 enterprise domains**:
 
-| Module | Description | Key Features |
-| -------- | ------------- | -------------- |
-| **Sales & Invoicing** | POS and invoice management | Cash/Credit sales, ZATCA e-invoicing, barcode/QR generation |
-| **Purchases & Inventory** | Procurement and stock management | Multi-level approval, inventory costing (FIFO/Average), expiry tracking |
-| **Accounts Receivable (AR)** | Customer credit management | Aging reports, payment tracking, customer ledger |
-| **Accounts Payable (AP)** | Supplier payment management | Supplier ledger, payment scheduling, aging reports |
-| **General Ledger (GL)** | Double-entry bookkeeping | Chart of accounts, journal vouchers, trial balance |
-| **Financial Reports** | Comprehensive reporting | Balance Sheet, P&L, Cash Flow, Comparative Reports |
-| **Accrual Accounting** | Advanced accounting features | Prepayments, unearned revenue, payroll accruals |
-| **HR & Payroll** | Employee and payroll management | Multi-level approval, salary processing, allowances/deductions |
-| **Fixed Assets** | Asset lifecycle management | Depreciation (SL/DB), disposal tracking |
-| **Multi-Currency** | International transactions | Exchange rate management, multi-currency invoicing |
-| **Tax Engine** | Multi-jurisdiction tax logic | Regulatory compliance (ZATCA), tax line audit trails, mixed rates |
-| **Fiscal Periods** | Period management | Opening/closing periods, period locking |
-| **Batch Processing** | Bulk operations | Background job processing, progress tracking |
+| # | Domain | Description | Key Features |
+| - | ------ | ----------- | ------------ |
+| 1 | **Enterprise Core** | Base governance & security | RBAC, System settings, Number ranges |
+| 2 | **Commercial** | Sales operations | POS, Invoicing, CRM, ZATCA e-invoicing |
+| 3 | **Finance** | Core accounting | General Ledger, Chart of accounts, Tax compliance |
+| 4 | **Supply Chain** | Goods movement | Inventory (FIFO/Average), Procurement, Payables |
+| 5 | **Manufacturing** | Production management | Production control, Bill of Materials, QC |
+| 6 | **Human Capital** | Workforce management | 20+ modules: Employees, Payroll, Approvals |
+| 7 | **Projects** | Project tracking | Project finance, Execution tracking |
+| 8 | **Assets** | Fixed assets | Depreciation schedules (SL/DB), Lifecycles |
+| 9 | **Intelligence** | Analytics & Reporting | Balance Sheet, P&L, BI dashboards |
+| 10 | **Platform** | Integrations | Communication, Extensibility hub |
+
+> **Note:** For deep architectural documentation on each domain, see `docs/Domains/`.
 
 ### 1.4 Integration Points
 
@@ -104,9 +104,12 @@ The system implements a comprehensive ERP solution with the following modules:
 
 **Design Patterns:**
 
-- **MVC Architecture** (Model-View-Controller)
-- **Service Layer Pattern** (Business logic encapsulation and transaction management)
-- **API Resource Pattern** (Decoupling database schema from API response contracts)
+- **Domain-Driven Design** (11 Bounded Contexts under `app/Domains/`)
+- **Actions Pattern** (Single-responsibility action classes for business operations)
+- **Service Layer Pattern** (Business logic encapsulation within domains)
+- **Contracts** (Domain interfaces under `app/Contracts/`)
+- **Policies** (Authorization policies under `app/Policies/`)
+- **Enums** (Type-safe enumerations under `app/Enums/`)
 - **Form Request Validation** (Strict input validation and sanitization)
 - **Middleware Pipeline** (Authentication, CORS, Permission enforcement)
 
@@ -135,47 +138,63 @@ The system implements a comprehensive ERP solution with the following modules:
 
 ```txt
 accsystem/
-├── backend/                          # Laravel 12 Enterprise API
+├── backend/                              # Laravel 12 Enterprise API
 │   ├── app/
+│   │   ├── Domains/                      # 11 Bounded Contexts (DDD)
+│   │   │   ├── Assets/                   # Asset Lifecycle & Investments
+│   │   │   ├── Commercial/               # CRM, Sales, Revenue, Marketing
+│   │   │   ├── EnterpriseCore/           # Identity, Automation, Governance
+│   │   │   ├── Finance/                  # GL, Tax, Treasury, FX, Audit
+│   │   │   ├── HumanCapital/             # Workforce, Payroll, Talent, Wellness
+│   │   │   ├── Intelligence/             # BI & Advanced Analytics
+│   │   │   ├── Manufacturing/            # Production, Engineering, QC
+│   │   │   ├── Platform/                 # Integration Hub, Customization
+│   │   │   ├── Projects/                 # Planning, Execution, Finance
+│   │   │   ├── Shared/                   # Cross-domain utilities
+│   │   │   └── SupplyChain/              # Inventory, Procurement, AP
+│   │   ├── Contracts/                    # Domain Interfaces
+│   │   ├── Enums/                        # System Enumerations
 │   │   ├── Http/
-│   │   │   ├── Controllers/Api/      # 35 API Controllers
-│   │   │   ├── Middleware/           # Security & Auth (ApiAuth)
-│   │   │   └── Requests/             # Strict Validation Logic
-│   │   ├── Models/                   # 128 Eloquent Entities
-│   │   ├── Services/                 # 32 Domain Logic Services
-│   │   └── Helpers/                  # Core System Helpers
+│   │   │   ├── Controllers/Api/V2/       # 77 Domain-Organized Controllers
+│   │   │   ├── Middleware/               # Security & Auth (ApiAuth)
+│   │   │   └── Requests/                 # Strict Validation Logic
+│   │   ├── Policies/                     # Authorization Policies
+│   │   ├── Jobs/                         # Background Jobs
+│   │   └── Helpers/                      # Core System Helpers
 │   ├── database/
-│   │   ├── migrations/               # 139 Schema Definitions
-│   │   ├── seeders/                  # 16 Data Seeders
-│   │   └── factories/                # 45 Model Factories
+│   │   ├── migrations/                   # 81+ Schema Definitions
+│   │   ├── seeders/                      # Data Seeders
+│   │   └── factories/                    # Model Factories
 │   ├── routes/
-│   │   ├── api.php                  # Primary API Registry
-│   │   └── console.php               # System Commands
-│   ├── config/                       # Application Configuration
-│   └── storage/                      # Persistent Assets & Logs
+│   │   ├── api.php                       # Primary API Registry
+│   │   └── console.php                   # System Commands
+│   ├── config/                           # Application Configuration
+│   └── storage/                          # Persistent Assets & Logs
 │
-└── frontend/                         # Next.js 16 Precision Frontend
-    ├── app/                          # Domain-Driven Modular Routing
-    │   ├── 01-enterprise-core/       # Identity & Governance
-    │   ├── 02-commercial/            # Sales & Revenue
-    │   ├── 03-finance/               # Ledger & Treasury
-    │   ├── 04-supply-chain/          # Inventory & AP
-    │   ├── 05-manufacturing/         # Production Control
-    │   ├── 06-human-capital/         # Payroll & Workforce
-    │   ├── 07-projects/              # Project Execution
-    │   ├── 08-assets/                # Asset Lifecycle
-    │   ├── 09-intelligence/          # Analytics & BI
-    │   ├── 10-platform/              # Extension Hub
-    │   ├── auth/                     # Authentication Guard
-    │   └── navigation/               # Shell Matrix
-    ├── components/                   # Atomic Design Components
-    │   ├── ui/                       # 41 Base Components
-    │   ├── navigation/               # Shell Pillar Components
-    │   ├── template-editor/          # Advanced Report Architect
-    │   └── [layout, tax, numbering]
-    ├── stores/                       # Global State (Zustand)
-    ├── lib/                          # Utils, types, and api.ts
-    └── public/                       # Static Assets & Media
+└── frontend/                             # Next.js 16 Precision Frontend
+    ├── app/                              # Domain-Driven Modular Routing
+    │   ├── 01-enterprise-core/           # Identity & Governance
+    │   ├── 02-commercial/                # Sales & Revenue
+    │   ├── 03-finance/                   # Ledger & Treasury
+    │   ├── 04-supply-chain/              # Inventory & AP
+    │   ├── 05-manufacturing/             # Production Control
+    │   ├── 06-human-capital/             # Payroll & Workforce
+    │   ├── 07-projects/                  # Project Execution
+    │   ├── 08-assets/                    # Asset Lifecycle
+    │   ├── 09-intelligence/              # Analytics & BI
+    │   ├── 10-platform/                  # Extension Hub
+    │   ├── auth/                         # Authentication Guard
+    │   └── navigation/                   # Shell Matrix
+    ├── components/                       # Component Library
+    │   ├── ui/                           # Base UI Components
+    │   ├── navigation/                   # Shell Pillar Components
+    │   ├── template-editor/              # Advanced Report Architect
+    │   ├── number-range/                 # Numbering Engine UI
+    │   ├── tax/                          # Tax Engine Components
+    │   └── layout/                       # Layout Components
+    ├── stores/                           # Global State (Zustand - 13 stores)
+    ├── lib/                              # API, Auth, Utils, Endpoints
+    └── public/                           # Static Assets & Media
 ```
 
 ---
@@ -204,11 +223,11 @@ The codebase and UI are strictly divided into 10 enterprise domains:
 
 ### 3.4 Detailed UX Documentation
 For complete details on iconography, color layering, and technical configuration, refer to the dedicated UX documentation:
-- [UX Philosophy & Vision](./user-experience/01_Philosophy_and_Vision.md)
-- [Shell Architecture](./user-experience/02_Shell_Architecture.md)
-- [Enterprise Domain Map](./user-experience/03_Enterprise_Domain_Map.md)
-- [Visual Design System](./user-experience/04_Visual_Design_System.md)
-- [Technical Implementation](./user-experience/05_Technical_Implementation.md)
+- [UX Philosophy & Vision](./Architecture/UserExperience/01_Philosophy_and_Vision.md)
+- [Shell Architecture](./Architecture/UserExperience/02_Shell_Architecture.md)
+- [Enterprise Domain Map](./Architecture/UserExperience/03_Enterprise_Domain_Map.md)
+- [Visual Design System](./Architecture/UserExperience/04_Visual_Design_System.md)
+- [Technical Implementation](./Architecture/UserExperience/05_Technical_Implementation.md)
 
 ---
 
@@ -301,44 +320,57 @@ php artisan queue:listen
 
 ### 4.5 Key Controllers
 
-Located in `backend/app/Http/Controllers/Api/`:
+Located in `backend/app/Http/Controllers/Api/V2/` — organized by domain:
 
-| Controller | Purpose | Key Methods |
-| ------------ | --------- | ------------- |
-| `AuthController` | Authentication | `login()`, `logout()`, `check()` |
-| `SalesController` | Invoice management | `index()`, `store()`, `show()`, `destroy()` |
-| `SalesReturnController` | Sales returns | `index()`, `store()`, `show()` |
-| `PurchasesController` | Purchase operations | `index()`, `store()`, `approve()`, `update()`, `destroy()` |
-| `ProductsController` | Inventory management | CRUD operations |
-| `ArController` | Accounts Receivable | Customer & transaction management |
-| `ApController` | Accounts Payable | Supplier & payment management |
-| `GeneralLedgerController` | GL operations | Trial balance, account details, entries |
-| `ReportsController` | Financial reports | Balance sheet, P&L, cash flow, aging |
-| `PayrollController` | Payroll processing | Generate, approve, process payments |
-| `EmployeesController` | HR management | CRUD, suspend, activate, documents |
-| `CurrencyController` | Multi-currency | CRUD, toggle active |
-| `FiscalPeriodsController` | Period management | Close, lock, unlock periods |
-| `GovernmentFeesController` | Fee configuration | CRUD (apiResource) |
+| Domain | Controllers | Purpose |
+| ------ | ----------- | ------- |
+| **EnterpriseCore/IdentityAccess** | `AuthController`, `UsersController`, `RolesController`, `SessionsController`, `PermissionTemplateController` | Authentication, users, roles, sessions |
+| **EnterpriseCore/OrganizationGovernance** | `SettingsController`, `AuditLogController`, `AuditTrailController`, `ComplianceProfileController`, `OrgStructureController` | Settings, audit, compliance, org structure |
+| **EnterpriseCore/SystemOverview** | `NumberRangeController` | Enterprise numbering engine |
+| **EnterpriseCore/Automation** | `SystemTemplateController` | Automation templates |
+| **Commercial/SalesLifecycle** | `SalesController`, `SalesReturnController`, `ServiceController`, `ServiceSaleController` | Sales, returns, service invoicing |
+| **Commercial/CRM** | `ArController` | Customer management & AR |
+| **Commercial/MarketingDistribution** | `SalesRepresentativeController` | Sales representative management |
+| **Commercial/RevenueReceivables** | `ArTransactionsController` | AR transaction management |
+| **Finance/GeneralLedger** | `GeneralLedgerController`, `ChartOfAccountsController`, `FiscalPeriodsController`, `RecurringTransactionsController` | GL operations, CoA, fiscal periods |
+| **Finance/TaxCompliance** | `TaxEngineController`, `ZATCAInvoiceController` | Tax calculation, ZATCA e-invoicing |
+| **Finance/Treasury** | `JournalVouchersController`, `BankReconciliationController` | Journal vouchers, bank reconciliation |
+| **Finance/ForeignExchange** | `CurrencyController`, `CurrencyPolicyController` | Multi-currency management |
+| **Finance/ManagementAccounting** | `ExpensesController`, `RevenuesController`, `CostProfitCenterController` | Expenses, revenues, cost centers |
+| **SupplyChain/Inventory** | `ProductsController`, `InventoryCountController`, `ConsumptionsController` | Product & stock management |
+| **SupplyChain/Procurement** | `PurchasesController`, `PurchaseRequestController` | Purchasing & requisitions |
+| **SupplyChain/PayablesExpenses** | `ApController`, `ApTransactionsController` | Supplier management & AP |
+| **HumanCapital/WorkforceAdmin** | `EmployeesController`, `DepartmentsController` | HR & departments |
+| **HumanCapital/PayrollBenefits** | `PayrollController`, `PayrollComponentsController`, `CompensationController`, `EOSBController`, `PostPayrollController` | Payroll processing & benefits |
+| **HumanCapital/PerformanceDevelopment** | `PerformanceController`, `LearningController`, `SuccessionController` | Performance reviews & learning |
+| **HumanCapital/ServicesWellness** | `EhsController`, `EmployeeLoansController`, `TravelExpenseController` | Employee services & wellness |
+| **Assets** | `AssetsController`, `EmployeeAssetsController` | Fixed asset lifecycle |
+| **Intelligence** | `ReportsController`, `AnalyticsController` | Financial reports & analytics |
 
-### 4.6 Service Layer
+### 4.6 Service & Action Layer
 
-Located in `backend/app/Services/`:
+Services and Actions are distributed within each bounded context under `backend/app/Domains/`:
 
-| Service | Responsibility |
-| --------- | --------------- |
-| `AuthService.php` | Session management, user authentication |
-| `LedgerService.php` | GL posting, voucher numbering, trial balance |
-| `SalesService.php` | Invoice creation, VAT calculation, GL posting, sales returns |
-| `PurchaseService.php` | Purchase transactions, approval workflow, GL posting |
-| `PayrollService.php` | Payroll generation, approval workflow, GL entries |
-| `InventoryCostingService.php` | FIFO/Average cost calculation |
-| `DepreciationService.php` | Asset depreciation (SL/DB methods) |
-| `ChartOfAccountsMappingService.php` | Dynamic account code lookup |
-| `EmployeeAccountService.php` | Employee GL account creation |
-| `PermissionService.php` | Role-based access control |
-| `TaxCalculator.php` | All tax logic, rate lookup, and `TaxLine` persistence |
-| `ZATCATaxAuthority.php` | Saudi specific compliance (UBL, QR, ZATCA Submission) |
-| `TelescopeService.php` | Audit logging |
+| Domain Path | Key Services & Actions |
+| ----------- | ---------------------- |
+| `Domains/Commercial/SalesLifecycle/` | `SalesService`, `ServiceSaleService`, `CreateInvoiceAction`, `DeleteInvoiceAction`, `CreateSalesReturnAction` |
+| `Domains/Commercial/CRM/` | `CreateCustomerAction`, `CustomerLedgerAction`, `DeleteCustomerAction` |
+| `Domains/Finance/GeneralLedger/` | `LedgerService` (GL posting, voucher numbering, trial balance) |
+| `Domains/Finance/TaxCompliance/` | `TaxCalculator`, `ZATCATaxAuthority` |
+| `Domains/SupplyChain/Inventory/` | `InventoryCostingService`, product actions |
+| `Domains/Assets/AssetLifecycle/` | `DepreciationService`, asset CRUD actions |
+| `Domains/HumanCapital/WorkforceAdmin/` | Employee management actions |
+| `Domains/HumanCapital/PayrollBenefits/` | Payroll generation, approval, payment actions |
+| `Domains/EnterpriseCore/IdentityAccess/` | Auth service, permission management |
+| `Domains/EnterpriseCore/Automation/` | Batch processing actions |
+
+Each domain subdirectory follows the pattern:
+```
+Domains/{Context}/{Subdomain}/
+├── Actions/       # Single-responsibility operations
+├── Models/        # Eloquent entities for this subdomain
+└── Services/      # Complex business logic orchestration
+```
 
 ### 4.7 Custom Artisan Commands
 
@@ -429,27 +461,48 @@ Next.js **App Router** (file-based routing):
 
 ### 5.6 Key Frontend Files
 
-| File | Purpose |
-| ------ | --------- |
+| File / Directory | Purpose |
+| ---------------- | ------- |
 | `lib/api.ts` | Fetch wrapper with authentication |
-| `lib/types.ts` | TypeScript interfaces (mirrors backend models) |
 | `lib/auth.ts` | Authentication utilities |
 | `lib/utils.ts` | General utilities |
 | `lib/icons.tsx` | Icon components |
 | `lib/translations.ts` | Arabic/English translations |
 | `lib/invoice-utils.ts` | Invoice generation, printing, ZATCA compliance |
-| `app/globals.css` | Global styles (43KB - comprehensive design system) |
+| `lib/endpoints/` | Domain-organized API endpoint definitions |
+| `lib/endpoints.ts` | Endpoint barrel export |
+| `lib/settings.ts` | Application settings utilities |
+| `app/globals.css` | Global design system (~128KB - comprehensive CSS) |
 | `app/layout.tsx` | Root layout |
-| `components/` | Reusable UI components |
+| `stores/` | Zustand state stores (13 stores) |
+| `components/` | Reusable UI components (6 categories) |
 
 ### 5.7 State Management
 
-The frontend uses **React Hooks** for state management:
+The frontend uses **Zustand** for global state management and React Hooks for component state:
 
+**Zustand Stores** (in `stores/`):
+
+| Store | Purpose |
+| ----- | ------- |
+| `useAuthStore` | Authentication state, session management |
+| `useUIStore` | UI state, theme, sidebar, modals |
+| `useFinanceStore` | Financial data, GL, fiscal periods |
+| `usePayrollStore` | Payroll cycles, items, approvals |
+| `useEmployeeStore` | Employee records, HR data |
+| `useProductStore` | Product catalog, inventory state |
+| `useCustomerStore` | Customer/AR data |
+| `useSupplierStore` | Supplier/AP data |
+| `usePurchaseStore` | Purchase transactions |
+| `useSalesRepresentativeStore` | Sales rep management |
+| `useServiceStore` | Service invoicing |
+| `useSettingsStore` | System settings |
+| `useErrorStore` | Global error handling |
+
+**React Hooks:**
 - `useState`: Component-level state
 - `useEffect`: Side effects (API calls, subscriptions)
 - `useRouter`: Next.js navigation
-- **No Redux/Zustand**: Kept simple with built-in React capabilities
 
 ### 5.8 API Integration
 
@@ -480,1319 +533,54 @@ For complex document generation, the system utilizes a dedicated Template Editor
 - **Security Validation** to prevent malicious script injection.
 
 Refer to the comprehensive sub-documentation:
-- [Report Template Editor Index](./report-template-editor/index.md)
-- [Technical Architecture](./report-template-editor/architecture.md)
-- [AI & Automation Roadmap](./report-template-editor/ai-automation.md)
+- [Report Template Editor Index](./Developer/ReportTemplateEditor/index.md)
+- [Technical Architecture](./Developer/ReportTemplateEditor/architecture.md)
+- [AI & Automation Roadmap](./Developer/ReportTemplateEditor/ai-automation.md)
 
 ---
 
 ## 6. Database Schema & Models
 
-### 6.1 Core Tables
+The database schema has outgrown a single monolithic document. With over **81+ tables** distributed across 11 Bounded Contexts, the schema is now documented on a per-domain basis.
 
-- Users & Authentication
+For complete data dictionaries, Entity-Relationship (Mermaid) diagrams, and table structures, please refer to the specific domain documentation:
 
-**`users`** - System users
+- **[Enterprise Core Schema](./Domains/EnterpriseCore/database_Schema.md)** (Users, Roles, Modules, Settings)
+- **[Commercial Schema](./Domains/Commercial/database_Schema.md)** (Customers, Invoices, Sales)
+- **[Finance Schema](./Domains/Finance/database_Schema.md)** (Chart of Accounts, General Ledger, Taxes)
+- **[Supply Chain Schema](./Domains/SupplyChain/database_Schema.md)** (Inventory, Products, Suppliers, Purchases)
+- **[Human Capital Schema](./Domains/HumanCapital/database_Schema.md)** (Employees, Payroll Cycles, Deductions)
+- **[Assets Schema](./Domains/Assets/database_Schema.md)** (Fixed Assets, Depreciation)
 
-```sql
-- id (PK)
-- username (unique)
-- password (hashed)
-- full_name
-- role (legacy field)
-- role_id (FK → roles)
-- is_active
-- manager_id (FK → users, self-referential)
-- created_by (FK → users)
-- timestamps
-```
-
-**`sessions`** - Active sessions
-
-```sql
-- id (PK)
-- user_id (FK → users)
-- token (unique, indexed)
-- device, user_agent, ip_address
-- last_activity
-- timestamps
-```
-
-**`roles`** - User roles
-
-```sql
-- id (PK)
-- role_key (unique)
-- role_name_ar, role_name_en
-- is_system (system-defined roles)
-- timestamps
-```
-
-**`modules`** - System modules
-
-```sql
-- id (PK)
-- module_key (unique)
-- module_name_ar, module_name_en
-- category
-- timestamps
-```
-
-**`role_permissions`** - Role-based permissions
-
-```sql
-- id (PK)
-- role_id (FK → roles)
-- module_id (FK → modules)
-- can_view, can_create, can_edit, can_delete
-- timestamps
-```
-
-- Inventory Management
-
-**`categories`** - Product categories
-
-```sql
-- id (PK)
-- name
-- timestamps
-```
-
-**`products`** - Inventory items
-
-```sql
-- id (PK)
-- name
-- category_id (FK → categories)
-- description
-- unit_price, purchase_price, selling_price
-- minimum_profit_margin
-- stock_quantity, min_stock
-- unit_name, sub_unit_name
-- unit_type ('main' | 'sub')
-- items_per_unit, units_per_package
-- package_price
-- barcode (unique)
-- is_active
-- created_by (FK → users)
-- timestamps
-```
-
-**`inventory_costing`** - Cost tracking
-
-```sql
-- id (PK)
-- product_id (FK → products)
-- transaction_type ('purchase' | 'sale')
-- quantity
-- unit_cost
-- total_cost
-- reference_type, reference_id
-- transaction_date
-- timestamps
-```
-
-**`inventory_counts`** - Physical inventory
-
-```sql
-- id (PK)
-- count_date
-- status ('draft' | 'completed')
-- notes
-- created_by (FK → users)
-- completed_by (FK → users)
-- completed_at
-- timestamps
-```
-
-- Sales & Invoicing
-
-**`invoices`** - Sales invoices
-
-```sql
-- id (PK)
-- invoice_number (unique)
-- voucher_number (indexed, nullable)
-- total_amount, subtotal
-- vat_rate, vat_amount
-- discount_amount
-- payment_type ('cash' | 'credit')
-- customer_id (FK → ar_customers, nullable)
-- amount_paid
-- user_id (FK → users)
-- is_reversed
-- reversed_at, reversed_by (FK → users)
-- timestamps
-```
-
-**`invoice_items`** - Invoice line items
-
-```sql
-- id (PK)
-- invoice_id (FK → invoices, cascade)
-- product_id (FK → products)
-- quantity
-- unit_type ('main' | 'sub')
-- unit_price
-- subtotal
-- timestamps
-```
-
-**`zatca_einvoices`** - ZATCA e-invoicing compliance
-
-```sql
-- id (PK)
-- invoice_id (FK → invoices)
-- uuid (unique)
-- invoice_hash
-- qr_code (text)
-- submission_status
-- zatca_response (JSON)
-- submitted_at
-- timestamps
-```
-
-- Purchases
-
-**`purchases`** - Purchase transactions
-
-```sql
-- id (PK)
-- product_id (FK → products)
-- quantity
-- invoice_price
-- unit_type ('main' | 'sub')
-- production_date, expiry_date
-- user_id (FK → users)
-- supplier_id (FK → ap_suppliers)
-- voucher_number (indexed)
-- notes
-- vat_rate, vat_amount
-- approval_status ('pending' | 'approved' | 'rejected')
-- approved_by (FK → users)
-- approved_at
-- is_reversed, reversed_at, reversed_by
-- purchase_date
-- created_at (no updated_at)
-```
-
-**`purchase_requests`** - Purchase requisitions
-
-```sql
-- id (PK)
-- product_id (FK → products)
-- quantity
-- notes
-- requested_by (FK → users)
-- status ('pending' | 'approved' | 'completed')
-- timestamps
-```
-
-- Accounts Receivable
-
-**`ar_customers`** - Customers
-
-```sql
-- id (PK)
-- name
-- phone, address
-- tax_number
-- account_code (unique)
-- is_active
-- timestamps
-```
-
-**`ar_transactions`** - Customer transactions
-
-```sql
-- id (PK)
-- customer_id (FK → ar_customers)
-- transaction_type ('sale' | 'payment' | 'adjustment')
-- amount
-- reference_type, reference_id
-- payment_method
-- voucher_number
-- description
-- transaction_date
-- created_by (FK → users)
-- timestamps
-```
-
-- Accounts Payable
-
-**`ap_suppliers`** - Suppliers
-
-```sql
-- id (PK)
-- name
-- phone, address
-- tax_number
-- account_code (unique)
-- is_active
-- timestamps
-```
-
-**`ap_transactions`** - Supplier transactions
-
-```sql
-- id (PK)
-- supplier_id (FK → ap_suppliers)
-- transaction_type ('purchase' | 'payment' | 'adjustment')
-- amount
-- reference_type, reference_id
-- payment_method
-- voucher_number
-- description
-- transaction_date
-- created_by (FK → users)
-- timestamps
-```
-
-- General Ledger
-
-**`chart_of_accounts`** - Chart of accounts
-
-```sql
-- id (PK)
-- account_code (unique)
-- account_name
-- account_type ('Asset' | 'Liability' | 'Equity' | 'Revenue' | 'Expense')
-- parent_id (FK → chart_of_accounts, self-referential)
-- is_active
-- description
-- timestamps
-```
-
-**`general_ledger`** - Journal entries
-
-```sql
-- id (PK)
-- voucher_number (indexed)
-- voucher_date
-- account_id (FK → chart_of_accounts)
-- entry_type ('DEBIT' | 'CREDIT')
-- amount
-- description
-- reference_type, reference_id
-- fiscal_period_id (FK → fiscal_periods)
-- created_by (FK → users)
-- is_reversed
-- timestamps
-```
-
-**`journal_vouchers`** - Manual journal entries
-
-```sql
-- id (PK)
-- voucher_number (unique)
-- voucher_date
-- description
-- status ('draft' | 'posted' | 'reversed')
-- created_by (FK → users)
-- posted_by (FK → users)
-- posted_at
-- timestamps
-```
-
-**`fiscal_periods`** - Accounting periods
-
-```sql
-- id (PK)
-- period_name
-- start_date, end_date
-- status ('open' | 'closed' | 'locked')
-- is_current
-- closed_by (FK → users)
-- closed_at
-- timestamps
-```
-
-- HR & Payroll
-
-**`departments`** - Organizational departments
-
-```sql
-- id (PK)
-- name
-- description
-- timestamps
-```
-
-**`employees`** - Employee master data
-
-```sql
-- id (PK)
-- employee_code (unique)
-- full_name, email (unique), password
-- phone, national_id
-- date_of_birth, gender
-- address
-- department_id (FK → departments)
-- hire_date, termination_date
-- employment_status ('active' | 'suspended' | 'terminated')
-- base_salary
-- gosi_number, iban, bank_name
-- vacation_days_balance
-- contract_type ('full_time' | 'part_time' | 'contract' | 'freelance')
-- account_id (FK → chart_of_accounts) - employee GL account
-- is_active
-- role_id (FK → roles)
-- user_id (FK → users)
-- manager_id (FK → employees, self-referential)
-- created_by (FK → users)
-- timestamps, soft_deletes
-```
-
-**`employee_documents`** - Document attachments
-
-```sql
-- id (PK)
-- employee_id (FK → employees)
-- document_type
-- document_url
-- timestamps
-```
-
-**`employee_allowances`** - Recurring allowances
-
-```sql
-- id (PK)
-- employee_id (FK → employees)
-- allowance_type
-- amount
-- timestamps
-```
-
-**`employee_deductions`** - Recurring deductions
-
-```sql
-- id (PK)
-- employee_id (FK → employees)
-- deduction_type
-- amount
-- timestamps
-```
-
-**`payroll_cycles`** - Payroll runs
-
-```sql
-- id (PK)
-- cycle_name
-- cycle_type ('salary' | 'bonus' | 'incentive')
-- period_start, period_end
-- status ('draft' | 'pending_approval' | 'approved' | 'paid')
-- total_amount
-- approval_level (1, 2, or 3)
-- created_by (FK → users)
-- approved_by_level_1/2/3 (FK → users)
-- approved_at_level_1/2/3
-- voucher_number
-- timestamps
-```
-
-**`payroll_items`** - Individual payroll entries
-
-```sql
-- id (PK)
-- payroll_cycle_id (FK → payroll_cycles)
-- employee_id (FK → employees)
-- base_amount
-- allowances, deductions
-- net_amount
-- status ('pending' | 'approved' | 'paid' | 'on_hold')
-- is_included (for cycle-level toggles)
-- timestamps
-```
-
-**`payroll_transactions`** - Payment records
-
-```sql
-- id (PK)
-- payroll_item_id (FK → payroll_items)
-- amount
-- payment_method
-- transaction_date
-- voucher_number
-- timestamps
-```
-
-**`payroll_entries`** - Legacy/audit table
-
-```sql
-- id (PK)
-- employee_id (FK → employees)
-- amount
-- entry_type
-- description
-- entry_date
-- created_by (FK → users)
-- timestamps
-```
-
-- Other Modules
-
-**`expenses`** - Direct expenses
-
-```sql
-- id (PK)
-- category
-- amount
-- expense_date
-- description
-- voucher_number
-- user_id (FK → users)
-- timestamps
-```
-
-**`revenues`** - Other revenues
-
-```sql
-- id (PK)
-- category
-- amount
-- revenue_date
-- description, notes
-- voucher_number
-- user_id (FK → users)
-- timestamps
-```
-
-**`assets`** - Fixed assets
-
-```sql
-- id (PK)
-- name, category
-- purchase_date, purchase_price
-- current_value
-- depreciation_rate, depreciation_method ('straight_line' | 'declining_balance')
-- useful_life_years
-- acquisition_voucher, disposal_voucher
-- disposal_date, disposal_amount
-- status ('active' | 'disposed')
-- created_by (FK → users)
-- timestamps
-```
-
-**`asset_depreciation`** - Depreciation schedule
-
-```sql
-- id (PK)
-- asset_id (FK → assets)
-- depreciation_date
-- depreciation_amount
-- accumulated_depreciation
-- book_value
-- voucher_number
-- created_by (FK → users)
-- timestamps
-```
-
-**`prepayments`** - Prepaid expenses
-
-```sql
-- id (PK)
-- account_code
-- description
-- total_amount, amortized_amount, remaining_amount
-- start_date, end_date
-- status ('active' | 'completed')
-- amortization_frequency ('monthly' | 'quarterly')
-- last_amortization_date
-- created_by (FK → users)
-- timestamps
-```
-
-**`unearned_revenue`** - Deferred revenue
-
-```sql
-- id (PK)
-- account_code
-- description
-- total_amount, recognized_amount, remaining_amount
-- start_date, end_date
-- status ('active' | 'completed')
-- recognition_frequency ('monthly' | 'quarterly')
-- last_recognition_date
-- created_by (FK → users)
-- timestamps
-```
-
-**`reconciliations`** - Bank reconciliations
-
-```sql
-- id (PK)
-- account_id (FK → chart_of_accounts)
-- reconciliation_date
-- statement_balance, book_balance
-- difference
-- status ('pending' | 'completed')
-- reconciled_by (FK → users)
-- reconciled_at
-- timestamps
-```
-
-**`recurring_transactions`** - Auto-posting templates
-
-```sql
-- id (PK)
-- name
-- frequency ('daily' | 'weekly' | 'monthly' | 'yearly')
-- next_run_date
-- last_run_date
-- is_active
-- template (JSON - journal entry structure)
-- timestamps
-```
-
-**`batch_processing`** - Batch jobs
-
-```sql
-- id (PK)
-- job_type
-- status ('pending' | 'running' | 'completed' | 'failed')
-- total_items, processed_items
-- progress
-- parameters (JSON)
-- error_message
-- started_at, completed_at
-- timestamps
-```
-
-**`batch_items`** - Batch job items
-
-```sql
-- id (PK)
-- batch_id (FK → batch_processing)
-- item_data (JSON)
-- status ('pending' | 'completed' | 'failed')
-- error_message
-- processed_at
-- timestamps
-```
-
-**`currencies`** - Multi-currency support
-
-```sql
-- id (PK)
-- code (unique, e.g., 'SAR', 'USD')
-- name, symbol
-- exchange_rate (to base currency)
-- is_primary
-- is_active
-- timestamps
-```
-
-**`currency_denominations`** - Cash drawer setup
-
-```sql
-- id (PK)
-- currency_id (FK → currencies)
-- value
-- type ('coin' | 'note')
-- timestamps
-```
-
-**`document_sequences`** - Auto-numbering
-
-```sql
-- id (PK)
-- document_type (unique)
-- prefix
-- current_number
-- padding
-- timestamps
-```
-
-**`settings`** - System settings (key-value)
-
-```sql
-- id (PK)
-- key (unique)
-- value (text)
-- timestamps
-```
-
-**`telescope`** - Audit trail
-
-```sql
-- id (PK)
-- user_id (FK → users)
-- action ('CREATE' | 'UPDATE' | 'DELETE' | 'VIEW')
-- module
-- record_id
-- old_values (JSON)
-- new_values (JSON)
-- ip_address
-- timestamps
-```
-
-**`login_attempts`** - Security logging
-
-```sql
-- id (PK)
-- username
-- ip_address
-- success (boolean)
-- timestamps
-```
-
-### 6.2 Key Relationships
-
-```txt
-users
-  ├─1:N→ invoices (cashier)
-  ├─1:N→ purchases (buyer)
-  ├─1:N→ payroll_cycles (created_by)
-  └─1:N→ employees (as system user)
-
-products
-  ├─1:N→ invoice_items
-  ├─1:N→ purchases
-  └─1:N→ inventory_costing
-
-invoices
-  ├─1:N→ invoice_items
-  ├─1:1→ zatca_einvoices
-  └─N:1→ ar_customers
-
-chart_of_accounts (self-referential hierarchy)
-  └─1:N→ general_ledger
-
-employees
-  ├─1:N→ payroll_items
-  ├─1:N→ employee_documents
-  ├─1:N→ employee_allowances
-  └─1:N→ employee_deductions
-
-payroll_cycles
-  └─1:N→ payroll_items
-      └─1:N→ payroll_transactions
-```
-
-### 6.3 Multi-Currency Extension
-
-Tables modified with currency support:
-
-- `invoices`: Added `currency_id`, `exchange_rate`
-- `purchases`: Added `currency_id`, `exchange_rate`
-- `ar_transactions`: Added `currency_id`, `exchange_rate`
-- `ap_transactions`: Added `currency_id`, `exchange_rate`
-
-### 6.4 Tax Engine Tables
-
-**`tax_authorities`**
-```sql
-- id (PK)
-- code (e.g. 'ZATCA')
-- name, country_code
-- is_active
-```
-
-**`tax_types`**
-```sql
-- id (PK)
-- tax_authority_id (FK)
-- code (e.g. 'VAT')
-- name, calculation_type, gl_account_code
-- applicable_areas (JSON)
-```
-
-**`tax_rates`**
-```sql
-- id (PK)
-- tax_type_id (FK)
-- rate, fixed_amount
-- effective_from, effective_to
-- is_default
-```
-
-**`tax_lines`**
-```sql
-- id (PK)
-- taxable_type, taxable_id (Polymorphic)
-- tax_authority_id, tax_type_id, tax_rate_id
-- rate, taxable_amount, tax_amount
-- metadata (JSON)
-```
+> **Auto-Generation:** Database schemas can be regenerated natively from the `backend/` by running `php artisan docs:generate-schema`.
 
 ---
 
 ## 7. API Surface & Contracts
 
-### 7.1 Base URL
+The application exposes a robust REST API under `http://localhost:8000/api`. With **77 domain-organized controllers**, the API contract documentation has been moved to a dedicated hierarchical location.
 
-```txt
-http://localhost:8000/api
-```
+Please refer to the **[API Documentation Hub](./API/)** for:
 
-### 7.2 Authentication Endpoints
+1. **[Authentication & Authorization](./API/Authentication_And_Authorization_Contracts.md)**
+2. **[Rate Limiting & Security](./API/Rate_Limiting_And_Security.md)**
+3. **[API Philosophy & Versioning](./API/API_Philosophy_And_Versioning.md)**
 
-- POST `/login`
-
-**Request:**
-
-```json
-{
-  "username": "string",
-  "password": "string"
-}
-```
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "session_token": "abc123...",
-  "user": {
-    "id": 1,
-    "username": "admin",
-    "full_name": "Administrator",
-    "role": "admin",
-    "permissions": { ... }
-  }
-}
-```
-
-- POST `/logout`
-
-**Headers:** `X-Session-Token: {token}`
-**Response:**
-
-```json
-{
-  "success": true,
-  "message": "Logged out successfully"
-}
-```
-
-- GET `/check`
-
-**Headers:** `X-Session-Token: {token}`
-**Response:**
-
-```json
-{
-  "authenticated": true,
-  "user": { ... }
-}
-```
-
-### 7.3 Sales Endpoints
-
-- GET `/invoices`
-
-**Query Params:** `page`, `per_page`, `payment_type`, `customer_id`
-**Response:**
-
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": 1,
-      "invoice_number": "INV-00001",
-      "total_amount": 115.00,
-      "payment_type": "cash",
-      "customer_name": "John Doe",
-      "created_at": "2026-01-09T10:00:00"
-    }
-  ],
-  "pagination": {
-    "current_page": 1,
-    "per_page": 20,
-    "total_records": 50,
-    "total_pages": 3
-  }
-}
-```
-
-- POST `/invoices`
-
-**Request:**
-
-```json
-{
-  "items": [
-    {
-      "product_id": 1,
-      "quantity": 2,
-      "unit_type": "sub",
-      "unit_price": 50.00
-    }
-  ],
-  "payment_type": "cash",
-  "customer_id": null,
-  "discount_amount": 0,
-  "amount_paid": 100.00,
-  "currency_id": 1,
-  "exchange_rate": 1.00
-}
-```
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "id": 123,
-  "invoice_id": 123
-}
-```
-
-- GET `/invoice_details?id={id}`
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "data": {
-    "id": 1,
-    "invoice_number": "INV-00001",
-    "items": [
-      {
-        "product_id": 1,
-        "product_name": "Product A",
-        "quantity": 2,
-        "unit_price": 50.00,
-        "subtotal": 100.00
-      }
-    ],
-    "zatcaEinvoice": {
-      "qr_code": "base64..."
-    }
-  }
-}
-```
-
-### 7.4 Purchase Endpoints
-
-- GET `/purchases`
-
-**Query Params:** `page`, `per_page`, `approval_status`
-**Response:** Similar pagination structure
-
-- POST `/purchases`
-
-**Request:**
-
-```json
-{
-  "product_id": 1,
-  "quantity": 100,
-  "invoice_price": 1500.00,
-  "unit_type": "main",
-  "supplier": "ABC Suppliers",
-  "voucher_number": "PO-001",
-  "production_date": "2026-01-01",
-  "expiry_date": "2027-01-01",
-  "vat_rate": 15,
-  "notes": "Bulk order"
-}
-```
-
-- POST `/purchases/approve`
-
-**Request:**
-
-```json
-{
-  "id": 123
-}
-```
-
-### 7.5 General Ledger Endpoints
-
-- GET `/trial_balance?as_of_date=2026-01-09`
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "account_code": "1010",
-      "account_name": "Cash",
-      "debit": 50000.00,
-      "credit": 0.00
-    }
-  ],
-  "totals": {
-    "total_debits": 100000.00,
-    "total_credits": 100000.00
-  }
-}
-```
-
-- GET `/account_details?code={account_code}`
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "account": {
-    "code": "1010",
-    "name": "Cash",
-    "type": "Asset",
-    "balance": 50000.00
-  },
-  "transactions": [...]
-}
-```
-
-### 7.6 HR & Payroll Endpoints
-
-- POST `/payroll/generate`
-
-**Request:**
-
-```json
-{
-  "cycle_name": "January 2026 Salary",
-  "cycle_type": "salary",
-  "period_start": "2026-01-01",
-  "period_end": "2026-01-31",
-  "employee_ids": [1, 2, 3]
-}
-```
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "cycle_id": 5,
-  "items_created": 3,
-  "total_amount": 45000.00
-}
-```
-
-- POST `/payroll/{id}/approve`
-
-**Request:** Empty body
-**Response:**
-
-```json
-{
-  "success": true,
-  "message": "Payroll approved at level 2",
-  "next_approver": "Manager Name"
-}
-```
-
-- POST `/payroll/{id}/process-payment`
-
-**Request:**
-
-```json
-{
-  "payment_account_id": 10
-}
-```
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "voucher_number": "JV-00123"
-}
-```
-
-### 7.7 Reports Endpoints
-
-- GET `/reports/balance_sheet?as_of_date=2026-01-09`
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "data": {
-    "assets": {
-      "current_assets": { "cash": 50000, "receivables": 20000 },
-      "total_assets": 70000
-    },
-    "liabilities": {
-      "current_liabilities": { "payables": 15000 },
-      "total_liabilities": 15000
-    },
-    "equity": {
-      "capital": 50000,
-      "retained_earnings": 5000,
-      "total_equity": 55000
-    },
-    "balance_check": true
-  }
-}
-```
-
-- GET `/reports/profit_loss?start_date=2026-01-01&end_date=2026-01-31`
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "data": {
-    "revenues": { "sales": 100000, "other": 5000 },
-    "expenses": { "cogs": 60000, "operating": 20000 },
-    "net_income": 25000
-  }
-}
-```
-
-### 7.8 Currency Endpoints
-
-- GET `/currencies`
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": 1,
-      "code": "SAR",
-      "name": "Saudi Riyal",
-      "symbol": "ر.س",
-      "exchange_rate": 1.00,
-      "is_primary": true,
-      "is_active": true
-    }
-  ]
-}
-```
-
-### 7.9 Standard Response Structure
-
-**Success:**
-
-```json
-{
-  "success": true,
-  "data": { ... },
-  "message": "Optional message",
-  "pagination": { ... } // If applicable
-}
-```
-
-**Error:**
-
-```json
-{
-  "success": false,
-  "message": "Error description",
-  "errors": { ... } // Validation errors
-}
-```
-
-**HTTP Status Codes:**
-
-- `200`: Success
-- `400`: Bad request / validation error
-- `401`: Unauthorized
-- `403`: Forbidden (permission denied)
-- `404`: Not found
-- `500`: Server error
+For domain-specific endpoint documentation (request bodies, response payloads), view the specific Bounded Context in `docs/Domains/`.
 
 ---
 
 ## 8. Business Logic & Services
 
-### 8.1 LedgerService
+In the Domain-Driven Design (DDD) architecture, core business logic is encapsulated within `Actions/` and `Services/` directories inside each bounded context (`app/Domains/{Context}/{Subdomain}/`).
 
-**Purpose:** Centralized GL posting engine
+Detailed algorithmic documentation for complex domain engines is available in the respective domain documentation:
 
-**Key Methods:**
-
-```php
-getNextVoucherNumber(string $documentType): string
-```
-
-- Generates sequential voucher numbers (e.g., JV-00001)
-- Uses `document_sequences` table
-
-```php
-postTransaction(
-    array $entries,
-    ?string $referenceType = null,
-    ?int $referenceId = null,
-    ?string $voucherNumber = null,
-    ?string $voucherDate = null
-): string
-```
-
-- Posts double-entry transactions to `general_ledger`
-- Validates debit/credit balance
-- Assigns to current fiscal period
-- Returns voucher number
-
-```php
-getAccountBalance(string $accountCode, ?string $asOfDate = null): float
-```
-
-- Calculates account balance (debits - credits for assets/expenses)
-- Supports historical balance queries
-
-```php
-reverseTransaction(string $voucherNumber, ?string $description = null): string
-```
-
-- Creates reversing entries
-- Used for invoice/purchase deletions
-
-### 8.2 SalesService
-
-**Purpose:** Invoice processing with stock and GL integration
-
-**Key Methods:**
-
-```php
-createInvoice(array $data): int
-```
-
-1. Creates `invoices` record
-2. Creates `invoice_items` records
-3. Reduces product `stock_quantity`
-4. Creates `inventory_costing` records
-5. Posts to AR (if credit sale)
-6. Posts GL entries:
-   - DR: Cash/AR
-   - CR: Sales Revenue
-   - DR: COGS
-   - CR: Inventory
-
-```php
-deleteInvoice(int $id): void
-```
-
-1. Marks invoice as `is_reversed`
-2. Restores stock
-3. Reverses AR transaction
-4. Reverses GL entries
-
-### 8.3 PayrollService
-
-**Purpose:** Multi-level payroll workflow
-
-**Key Methods:**
-
-```php
-generatePayroll(array $data, User $user): int
-```
-
-1. Creates `payroll_cycles` record with status='draft'
-2. For each employee:
-   - Calculates base_amount + allowances - deductions
-   - Creates `payroll_items`
-3. Sets approval_level based on total amount thresholds
-
-```php
-approvePayroll(int $id, User $user): void
-```
-
-1. Validates user is the next approver
-2. Updates approval_level_X and approved_by_level_X
-3. If all approvals complete:
-   - Status → 'approved'
-   - Calls `createAccrualEntries()`
-
-```php
-createAccrualEntries(PayrollCycle $cycle, User $user): void
-```
-
-- Posts accrual GL entries:
-  - DR: Salary Expense (per employee)
-  - CR: Salary Payable (per employee)
-
-```php
-processPayment(int $id, ?int $paymentAccountId = null): void
-```
-
-1. Creates `payroll_transactions` for each item
-2. Posts payment GL entries:
-   - DR: Salary Payable
-   - CR: Cash/Bank
-3. Updates cycle status → 'paid'
-
-### 9.4 Tax Engine
-
-**Purpose:** Multi-jurisdiction tax calculation and regulatory compliance (ZATCA).
-
-**Key Methods (`TaxCalculator`):**
-
-```php
-calculate(
-    float $taxableAmount,
-    string $countryCode = 'SA',
-    ?DateTimeInterface $asOf = null,
-    string $taxableType = '',
-    ?int $taxableId = null,
-    string $applicableArea = 'sales'
-): TaxCalculationResult
-```
-
-1. Looks up the primary `TaxAuthority` for the country.
-2. Identifies active `TaxType` records for the authority.
-3. Retrieves the effective `TaxRate` based on the `asOf` date.
-4. Performs calculation (Percentage or Fixed).
-5. (Optional) Persists result as `TaxLine` for audit trails.
-6. Returns `TaxCalculationResult` DTO.
-
-**Regulatory Adapters (`TaxAuthorityInterface`):**
-
-- **ZATCA (Saudi Arabia)**: Generates UBL 2.1 XML and TLV-encoded QR codes.
-- **Legacy Fallback**: Uses `config('accounting.vat_rate')` if no database authority matches.
-
-**Detailed Documentation:** [Tax Engine Docs](./tax-engine/01_Overview.md)
-
-### 9.5 InventoryCostingService
-
-**Purpose:** FIFO/Average cost calculation
-
-**Methods:**
-
-- `calculateCost(int $productId, int $quantity, string $method = 'FIFO'): float`
-- Reads from `inventory_costing` table
-- Used by SalesService for COGS calculation
-
-### 9.6 DepreciationService
-
-**Purpose:** Fixed asset depreciation
-
-**Methods:**
-
-- `calculateDepreciation(Asset $asset, Carbon $asOfDate): array`
-  - Straight-line: `(cost - salvage) / useful_life`
-  - Declining balance: `book_value * rate`
-- `postDepreciation(Asset $asset, float $amount): void`
-  - DR: Depreciation Expense
-  - CR: Accumulated Depreciation
-
-### 9.7 PermissionService
-
-**Purpose:** Role-based access control (RBAC)
-
-**Static Methods:**
-
-```php
-requirePermission(string $module, string $action): void
-```
-
-- Throws 403 if user lacks permission
-- Used in all controller methods
-
-```php
-hasPermission(User $user, string $module, string $action): bool
-```
-
-- Checks `role_permissions` table
-- Actions: 'view', 'create', 'edit', 'delete'
+- **General Ledger Engine (`LedgerService`)**: See [Finance Domain](./Domains/Finance/GeneralLedger/)
+- **Tax Engine (`TaxCalculator`)**: See [Tax Compliance Domain](./Domains/Finance/TaxCompliance/)
+- **Payroll Workflow (`PayrollService`)**: See [Human Capital Domain](./Domains/HumanCapital/PayrollBenefits/)
+- **Inventory Costing (FIFO/Average)**: See [Supply Chain Domain](./Domains/SupplyChain/Inventory/)
+- **Depreciation Calculation**: See [Assets Domain](./Domains/Assets/AssetLifecycle/)
 
 ---
 
@@ -2158,114 +946,12 @@ php artisan route:clear
 
 ## 12. Deployment Guide
 
-### 12.1 Production Checklist
+Deployment strategies, CI/CD pipelines, database backup policies, and production server configurations have been moved to the `Operations` documentation hub.
 
-**Backend:**
-
-- [ ] Set `APP_ENV=production`
-- [ ] Set `APP_DEBUG=false`
-- [ ] Use MySQL/PostgreSQL (not MySQL)
-- [ ] Configure proper `APP_URL`
-- [ ] Set strong `APP_KEY`
-- [ ] Configure email driver
-- [ ] Set up queue worker as service
-- [ ] Configure log rotation
-- [ ] Set proper file permissions (storage, bootstrap/cache)
-- [ ] Run `composer install --optimize-autoloader --no-dev`
-- [ ] Run `php artisan config:cache`
-- [ ] Run `php artisan route:cache`
-- [ ] Run `php artisan view:cache`
-
-**Frontend:**
-
-- [ ] Update `NEXT_PUBLIC_API_BASE` to production URL
-- [ ] Run `npm run build`
-- [ ] Use `npm start` or deploy to Vercel/Netlify
-- [ ] Configure environment variables on hosting platform
-
-### 12.2 Server Requirements
-
-**Backend:**
-
-- PHP 8.2+
-- Composer
-- MySQL 8.0+ or PostgreSQL 13+
-- Web server (Apache/Nginx)
-- Supervisor (for queue workers)
-
-**Frontend:**
-
-- Node.js 20+
-- npm/yarn
-- (Or deploy to Vercel/Netlify)
-
-### 12.3 Database Migration
-
-```bash
-# Backup production database first!
-mysqldump -u user -p dbname > backup.sql
-
-# Run migrations
-php artisan migrate --force
-```
-
-### 12.4 Queue Worker Setup (Supervisor)
-
-**`/etc/supervisor/conf.d/accounting-queue.conf`:**
-
-```ini
-[program:accounting-queue]
-process_name=%(program_name)s_%(process_num)02d
-command=php /path/to/src/artisan queue:work --sleep=3 --tries=3
-autostart=true
-autorestart=true
-user=www-data
-numprocs=2
-redirect_stderr=true
-stdout_logfile=/path/to/src/storage/logs/queue.log
-```
-
-```bash
-sudo supervisorctl reread
-sudo supervisorctl update
-sudo supervisorctl start accounting-queue:*
-```
-
-### 12.5 Nginx Configuration Example
-
-```nginx
-server {
-    listen 80;
-    server_name api.yourdomain.com;
-    root /path/to/src/public;
-
-    add_header X-Frame-Options "SAMEORIGIN";
-    add_header X-Content-Type-Options "nosniff";
-
-    index index.php;
-
-    charset utf-8;
-
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
-
-    location = /favicon.ico { access_log off; log_not_found off; }
-    location = /robots.txt  { access_log off; log_not_found off; }
-
-    error_page 404 /index.php;
-
-    location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-        include fastcgi_params;
-    }
-
-    location ~ /\.(?!well-known).* {
-        deny all;
-    }
-}
-```
+Please refer to:
+- **[Deployment Strategy](./Operations/Deployment_Strategy.md)**
+- **[Production Environment Governance](./Operations/Production_Environment_Governance.md)**
+- **[Database Backup & Recovery Policies](./Operations/Database_Backup_And_Recovery_Policies.md)**
 
 ---
 
@@ -2275,18 +961,20 @@ server {
 
 ```txt
 backend/
-├── app/Http/Controllers/Api/
-│   ├── SalesController.php          # Invoice operations
-│   ├── PurchasesController.php      # Purchase management
-│   ├── PayrollController.php        # HR payroll
-│   ├── GeneralLedgerController.php  # GL operations
-│   └── ReportsController.php        # Financial reports
-├── app/Services/
-│   ├── LedgerService.php            # Core GL engine
-│   ├── SalesService.php             # Sales business logic
-│   └── PayrollService.php           # Payroll workflow
-├── routes/api.php                    # API route definitions
-└── database/migrations/              # Database schema
+├── app/Domains/                              # DDD Bounded Contexts
+│   ├── Commercial/SalesLifecycle/
+│   │   ├── Actions/CreateInvoiceAction.php   # Invoice creation
+│   │   └── Services/SalesService.php         # Sales business logic
+│   ├── Finance/GeneralLedger/
+│   │   └── Services/LedgerService.php        # Core GL engine
+│   └── HumanCapital/PayrollBenefits/
+│       └── Services/PayrollService.php       # Payroll workflow
+├── app/Http/Controllers/Api/V2/              # Domain-organized controllers
+│   ├── Commercial/SalesLifecycle/SalesController.php
+│   ├── Finance/GeneralLedger/GeneralLedgerController.php
+│   └── HumanCapital/PayrollBenefits/PayrollController.php
+├── routes/api.php                            # API route definitions
+└── database/migrations/                      # 81+ schema definitions
 ```
 
 ### Frontend Key Files
@@ -2300,13 +988,16 @@ frontend/
 │   └── 06-human-capital/workforce-admin/employees/page.tsx    # HR & Payroll
 ├── lib/
 │   ├── api.ts                                                 # Secure Fetch Wrapper
-│   ├── types.ts                                               # Shared Schema Definitions
-│   └── auth.ts                                                # Session Guard Logic
+│   ├── auth.ts                                                # Session Guard Logic
+│   └── endpoints/                                             # Domain API Endpoints
 ├── components/
-│   ├── ui/                                                    # Atomic UI Library
+│   ├── ui/                                                    # Base UI Components
 │   ├── navigation/                                            # Shell Matrix Pillars
-│   └── template-editor/                                       # Document Architect
-└── stores/                                                    # Zustand State Matrix
+│   ├── template-editor/                                       # Document Architect
+│   ├── number-range/                                          # Numbering Engine UI
+│   ├── tax/                                                   # Tax Engine Components
+│   └── layout/                                                # Layout Components
+└── stores/                                                    # Zustand State Stores (13)
 ```
 
 ---
@@ -2315,25 +1006,27 @@ frontend/
 
 | Term | Definition |
 | ------ | ------------ |
-| **AR** | Accounts Receivable - money owed by customers |
-| **AP** | Accounts Payable - money owed to suppliers |
-| **GL** | General Ledger - core accounting journal |
-| **COGS** | Cost of Goods Sold |
-| **FIFO** | First In, First Out - inventory costing method |
-| **ZATCA** | Saudi e-invoicing authority |
-| **TLV** | Tag-Length-Value encoding for QR codes |
-| **Voucher Number** | Unique identifier for GL transactions |
-| **Fiscal Period** | Accounting period (month/quarter/year) |
-| **Chart of Accounts** | Hierarchical list of GL accounts |
-| **Trial Balance** | Report showing all account balances |
-| **Accrual** | Recording revenue/expense when incurred (not paid) |
+| **Bounded Context** | A logical boundary within the system where a specific domain model applies (e.g., Finance, Human Capital). |
+| **Action Pattern** | Single-responsibility classes handling specific business operations (e.g., `CreateInvoiceAction`). |
+| **Service Layer** | Orchestration layer within a Bounded Context handling complex business rules. |
+| **DTO** | Data Transfer Object - used to pass typed data structures between controllers and actions. |
+| **AR / AP** | Accounts Receivable (money owed by customers) / Accounts Payable (money owed to suppliers). |
+| **GL** | General Ledger - the core double-entry accounting journal. |
+| **COGS** | Cost of Goods Sold - direct costs attributable to the production of the goods sold. |
+| **FIFO** | First In, First Out - the primary inventory costing method used. |
+| **ZATCA** | Saudi e-invoicing authority (Zakat, Tax and Customs Authority). |
+| **TLV** | Tag-Length-Value encoding used specifically for Phase 2 ZATCA QR codes. |
+| **Voucher Number** | Unique string identifier generated by the `number-range` engine for transactions. |
+| **Fiscal Period** | Accounting period (month/quarter/year) dictating GL posting boundaries. |
+| **Chart of Accounts** | Hierarchical tree of GL accounts classifying all financial transactions. |
+| **Accrual** | Recording financial transactions when they are incurred, not necessarily when cash changes hands. |
 
 ---
 
 ## Appendix C: Contact & Support
 
-**Documentation Version:** 1.0  
-**Last Reviewed:** January 9, 2026
+**Documentation Version:** 3.0  
+**Last Reviewed:** March 28, 2026
 
 For issues or questions:
 

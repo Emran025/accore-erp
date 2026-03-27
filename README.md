@@ -32,7 +32,7 @@
 
 ### Prerequisites
 
-- **PHP 8.2+** with extensions: `MySQL3`, `mbstring`, `xml`, `bcmath`, `json`, `curl`
+- **PHP 8.2+** with extensions: `mysql`, `mbstring`, `xml`, `bcmath`, `json`, `curl`
 - **Composer** (latest)
 - **Node.js 20+** and npm
 - **Git**
@@ -68,54 +68,56 @@ cd frontend && npm run dev
 
 # 5. Access the ERP
 # Open http://localhost:3000
-# Default login: admin / admin
+# Default login: username: admin / password: admin123
 ```
 
 ---
 
 ## 📚 Documentation
 
-For **complete documentation**, see the `/docs` folder:
+The project documentation lives in `/docs/` and is organized into a **domain-driven hierarchy**:
 
-| Document | Description |
-| -------- | ----------- |
-| **[USER_GUIDE.md](./docs/USER_GUIDE.md)** | 📖 Bilingual user manual (Arabic/English) for non-technical users |
-| **[TECHNICAL_DOCUMENTATION.md](./docs/TECHNICAL_DOCUMENTATION.md)** | 🔧 Complete technical architecture and developer guide |
-| **[API_REFERENCE.md](./docs/API_REFERENCE.md)** | 🔌 REST API documentation with examples |
-| **[DATABASE_SCHEMA.md](./docs/DATABASE_SCHEMA.md)** | 🗃️ Full database schema with ERD diagrams |
-| **[DOCUMENTATION_INDEX.md](./docs/DOCUMENTATION_INDEX.md)** | 🗺️ Documentation navigation guide |
+| Category | Path | Description |
+| -------- | ---- | ----------- |
+| **[Architecture](./docs/Architecture/)** | `docs/Architecture/` | DDD patterns, frontend/backend separation, event bus, UX system |
+| **[API](./docs/API/)** | `docs/API/` | API philosophy, versioning, auth contracts, rate limiting |
+| **[Domains](./docs/Domains/)** | `docs/Domains/` | Per-domain business logic, schemas & workflows (11 bounded contexts) |
+| **[Developer](./docs/Developer/)** | `docs/Developer/` | Onboarding, testing, creating modules, report template editor |
+| **[Operations](./docs/Operations/)** | `docs/Operations/` | Deployment, backups, audit trails, production governance |
+| **[System](./docs/System/)** | `docs/System/` | ERP philosophy, bounded context map, financial immutability |
+| **[User Guide](./docs/USER_GUIDE.md)** | `docs/USER_GUIDE.md` | 📖 Bilingual user manual (Arabic/English) for non-technical users |
+| **[Documentation Index](./docs/DOCUMENTATION_INDEX.md)** | `docs/DOCUMENTATION_INDEX.md` | 🗺️ Full documentation navigation guide |
 
 ---
 
 ## 📦 ERP Modules
 
-### Core Business Modules
+The system is organized into **10 enterprise domains** following Domain-Driven Design. Each domain has dedicated documentation in [`docs/Domains/`](./docs/Domains/).
 
-| Module | Description | Key Features |
-| ------ | ----------- | ------------ |
-| **Sales & POS** | Point of Sale and invoicing | Cash/credit sales, ZATCA e-invoicing, barcode/QR |
-| **Purchases** | Procurement management | Multi-level approval, supplier management |
-| **Inventory** | Stock management | FIFO/Average costing, expiry tracking, reorder alerts |
-| **AR (Receivables)** | Customer credit management | Aging reports, payment tracking, customer ledger |
-| **AP (Payables)** | Supplier payment management | Payment scheduling, supplier ledger |
-| **General Ledger** | Double-entry bookkeeping | Chart of accounts, journal vouchers, trial balance |
-| **Financial Reports** | Comprehensive reporting | Balance Sheet, P&L, Cash Flow, Comparative Analysis |
-| **HR & Payroll** | Complete HR & Workforce Management | **20+ modules:** Employees, Recruitment, Onboarding, Performance, Learning, Compensation, Benefits, EHS, Wellness, Knowledge Management, and more |
-| **Fixed Assets** | Asset lifecycle | Depreciation (SL/DB), disposal tracking |
-| **Multi-Currency** | International transactions | Exchange rates, multi-currency invoicing |
-| **Fiscal Periods** | Period management | Opening/closing periods, period locking |
-| **Accrual Accounting** | Advanced accounting | Prepayments, unearned revenue, payroll accruals |
+| # | Domain | Key Capabilities | Docs |
+| - | ------ | ---------------- | ---- |
+| 1 | **Enterprise Core** | Identity & Access (RBAC), Organization Governance, Automation, Number Ranges | [Docs](./docs/Domains/EnterpriseCore/) |
+| 2 | **Commercial** | Sales & POS, CRM, Revenue & Receivables, Marketing | [Docs](./docs/Domains/Commercial/) |
+| 3 | **Finance** | General Ledger, Tax Engine (ZATCA), Treasury, Multi-Currency, Audit | [Docs](./docs/Domains/Finance/) |
+| 4 | **Supply Chain** | Inventory (FIFO/Average), Procurement, Accounts Payable | [Docs](./docs/Domains/SupplyChain/) |
+| 5 | **Manufacturing** | Production Control, Engineering, Quality Control | [Docs](./docs/Domains/Manufacturing/) |
+| 6 | **Human Capital** | 20+ modules: Employees, Payroll, Recruitment, Performance, Benefits, EHS, Wellness | [Docs](./docs/Domains/HumanCapital/) |
+| 7 | **Projects** | Planning, Execution Tracking, Project Finance | [Docs](./docs/Domains/Projects/) |
+| 8 | **Assets** | Fixed Asset Lifecycle, Depreciation (SL/DB), Investments | [Docs](./docs/Domains/Assets/) |
+| 9 | **Intelligence** | Financial Reports (BS, P&L, CF), Business Intelligence, Analytics | [Docs](./docs/Domains/Intelligence/) |
+| 10 | **Platform** | Integration Hub, Customization, Communication | [Docs](./docs/Domains/Platform/) |
 
-### System Features
+### Cross-Cutting Features
 
 | Feature | Description |
 | ------- | ----------- |
 | **Dashboard** | Real-time KPIs, sales trends, inventory alerts |
 | **Role Management** | Customizable roles with granular permissions |
 | **Audit Trail** | Complete transaction logging |
-| **Document Sequences** | Automatic numbering for invoices, vouchers |
+| **Number Ranges** | SAP-style numbering engine for enterprise-wide unique identification |
 | **Batch Processing** | Background job processing |
-| **Government Fees** | Configurable fees (Kharaj, taxes) |
+| **Accrual Accounting** | Prepayments, unearned revenue, payroll accruals |
+| **Fiscal Periods** | Opening/closing periods, period locking |
 
 ---
 
@@ -129,19 +131,19 @@ For **complete documentation**, see the `/docs` folder:
                   │ REST API (JSON)
 ┌─────────────────▼───────────────────┐
 │    LARAVEL BACKEND (Port 8000)      │
-│    PHP 8.2 + MVC + Service Layer    │
+│    PHP 8.2 + DDD + Actions Layer    │
 └─────────────────┬───────────────────┘
                   │
 ┌─────────────────▼───────────────────┐
-│    DATABASE (MySQL/MySQL)          │
-│    52 Tables, Full ACID Compliance  │
+│    DATABASE (MySQL)                  │
+│    81+ Migrations, Full ACID         │
 └─────────────────────────────────────┘
 ```
 
 **Design Patterns:**
 
-- **Backend:** Service Layer, Repository (Eloquent), Form Requests, Middleware
-- **Frontend:** Component-based, Custom Hooks, Utility-first CSS
+- **Backend:** Domain-Driven Design, Actions Pattern, Service Layer, Contracts, Policies, Form Requests, Middleware
+- **Frontend:** Component-based, Zustand State Management, Custom Hooks, Utility-first CSS
 
 ---
 
@@ -150,35 +152,68 @@ For **complete documentation**, see the `/docs` folder:
 ```txt
 ACCSYSTEM-erp/
 │
-├── backend/                      # Laravel Backend (API)
+├── backend/                            # Laravel 12 Enterprise API
 │   ├── app/
-│   │   ├── Http/Controllers/Api/  # 35 Controllers
-│   │   ├── Models/                # 50 Eloquent Models
-│   │   ├── Services/              # 11 Business Services
-│   │   └── Helpers/               # Utility Functions
-│   ├── database/migrations/       # 52 Migration Files
-│   ├── routes/api.php             # API Routes
-│   └── ...
+│   │   ├── Domains/                    # 11 Bounded Contexts (DDD)
+│   │   │   ├── Assets/                 # Asset Lifecycle & Investments
+│   │   │   ├── Commercial/             # CRM, Sales, Revenue & Receivables
+│   │   │   ├── EnterpriseCore/         # Identity, Automation, Governance
+│   │   │   ├── Finance/               # GL, Tax, Treasury, FX
+│   │   │   ├── HumanCapital/          # Workforce, Payroll, Talent, Wellness
+│   │   │   ├── Intelligence/          # BI & Advanced Analytics
+│   │   │   ├── Manufacturing/         # Production, Engineering, QC
+│   │   │   ├── Platform/             # Integration Hub, Customization
+│   │   │   ├── Projects/             # Planning, Execution, Finance
+│   │   │   ├── Shared/               # Cross-domain utilities
+│   │   │   └── SupplyChain/          # Inventory, Procurement, AP
+│   │   ├── Contracts/                  # Domain Interfaces
+│   │   ├── Enums/                      # System Enumerations
+│   │   ├── Http/Controllers/Api/V2/   # 77 Domain-Organized Controllers
+│   │   ├── Policies/                   # Authorization Policies
+│   │   ├── Jobs/                       # Background Jobs
+│   │   └── Helpers/                    # Core System Helpers
+│   ├── database/migrations/            # 81+ Schema Definitions
+│   ├── routes/api.php                  # Primary API Registry
+│   └── config/                         # Application Configuration
 │
-├── frontend/                   # Next.js Frontend
-│   ├── app/                  # App Router Pages
-│   │   ├── auth/             # Authentication
-│   │   ├── system/           # Dashboard, Settings, Reports
-│   │   ├── sales/            # Sales & Invoicing
-│   │   ├── purchases/        # Purchases & Expenses
-│   │   ├── finance/          # GL, Accounts, Periods
-│   │   ├── hr/               # HR & Payroll
-│   │   └── navigation/       # Navigation Landing Page
-│   ├── components/           # Reusable Components
-│   ├── lib/                  # API, Types, Utilities
-│   └── ...
+├── frontend/                           # Next.js 16 Precision Frontend
+│   ├── app/                            # Domain-Driven Modular Routing
+│   │   ├── 01-enterprise-core/         # Identity & Governance
+│   │   ├── 02-commercial/              # Sales & Revenue
+│   │   ├── 03-finance/                 # Ledger & Treasury
+│   │   ├── 04-supply-chain/            # Inventory & AP
+│   │   ├── 05-manufacturing/           # Production Control
+│   │   ├── 06-human-capital/           # Payroll & Workforce
+│   │   ├── 07-projects/                # Project Execution
+│   │   ├── 08-assets/                  # Asset Lifecycle
+│   │   ├── 09-intelligence/            # Analytics & BI
+│   │   ├── 10-platform/                # Extension Hub
+│   │   ├── auth/                       # Authentication Guard
+│   │   └── navigation/                 # Shell Matrix
+│   ├── components/                     # Component Library
+│   │   ├── ui/                         # Base UI Components
+│   │   ├── navigation/                 # Shell Pillar Components
+│   │   ├── template-editor/            # Report Template Architect
+│   │   ├── number-range/               # Numbering Engine UI
+│   │   ├── tax/                        # Tax Engine Components
+│   │   └── layout/                     # Layout Components
+│   ├── stores/                         # Zustand State Stores (13)
+│   ├── lib/                            # Utils, API, Auth, Endpoints
+│   └── public/                         # Static Assets & Media
 │
-└── docs/                     # Documentation
-    ├── USER_GUIDE.md
-    ├── TECHNICAL_DOCUMENTATION.md
-    ├── API_REFERENCE.md
-    ├── DATABASE_SCHEMA.md
-    └── DOCUMENTATION_INDEX.md
+├── docs/                               # Domain-Driven Documentation
+│   ├── API/                            # API Contracts & Philosophy
+│   ├── Architecture/                   # System Architecture & UX
+│   ├── Developer/                      # Onboarding & Guides
+│   ├── Domains/                        # 11 Bounded Context Docs
+│   ├── Operations/                     # Deployment & Governance
+│   └── System/                         # ERP Philosophy & Patterns
+│
+├── .engines/                           # Documentation Engines
+│   ├── documentation-engine/           # Doc generation framework
+│   └── api-doc-engine/                 # API documentation tooling
+│
+└── reports/                            # Report Templates & Policies
 ```
 
 ---
@@ -213,7 +248,7 @@ composer dev
 
 ### Making Changes
 
-**Backend (Laravel):**
+**Backend (Laravel DDD):**
 
 ```bash
 # Create migration
@@ -221,9 +256,6 @@ php artisan make:migration create_table_name
 
 # Run migrations
 php artisan migrate
-
-# Create controller
-php artisan make:controller Api/MyController
 
 # Clear cache
 php artisan config:clear
@@ -233,7 +265,7 @@ php artisan config:clear
 
 - Edit files in `frontend/app/`
 - Auto-reloads on save
-- Add types to `lib/types.ts`
+- Add types to relevant domain files
 - Build: `npm run build`
 
 ---
@@ -253,27 +285,10 @@ php artisan test
 
 ---
 
-## Database Schema Highlights
-
-**52 Tables Covering:**
-
-| Category | Tables |
-| ---------- | -------- |
-| **Auth & Users** | users, sessions, roles, modules, role_permissions, login_attempts |
-| **Inventory** | products, categories, purchases, purchase_requests, inventory_costing, inventory_counts |
-| **Sales** | invoices, invoice_items, zatca_einvoices, sales_returns, sales_return_items |
-| **AR/AP** | ar_customers, ar_transactions, ap_suppliers, ap_transactions |
-| **Finance** | chart_of_accounts, general_ledger, fiscal_periods, journal_vouchers |
-| **HR & Payroll** | employees, departments, payroll_cycles, payroll_items, payroll_transactions, employee_documents, employee_allowances, employee_deductions, expat_management, employee_assets, recruitment_requisitions, job_applicants, interviews, onboarding_workflows, contingent_workers, qa_compliance, workforce_schedules, employee_relations_cases, travel_requests, employee_loans, corporate_announcements, pulse_surveys, performance_goals, performance_appraisals, learning_courses, succession_plans, compensation_plans, benefits_plans, ehs_incidents, wellness_programs, knowledge_base, expertise_directory, and 20+ more tables |
-| **Advanced** | assets, asset_depreciation, prepayments, unearned_revenue, reconciliations, currencies, currency_denominations |
-| **System** | settings, document_sequences, batch_processing, batch_items, recurring_transactions, telescope, government_fees, invoice_fees |
-
----
-
 ## Security
 
 - **Authentication:** Session-based with secure tokens
-- **Authorization:** Role-based permissions (RBAC)
+- **Authorization:** Role-based permissions (RBAC) with Policies
 - **Validation:** Laravel Form Requests
 - **SQL Injection:** Protected via Eloquent ORM
 - **XSS:** React auto-escaping + custom utilities
@@ -304,7 +319,7 @@ php artisan view:cache
 # Run migrations
 php artisan migrate --force
 
-# for clear database and magigration it again and seed
+# for clear database and migration it again and seed
 php artisan migrate:refresh --seed
 
 # Set up queue worker with Supervisor
@@ -322,34 +337,18 @@ npm start
 # Or deploy to Vercel/Netlify
 ```
 
-See [TECHNICAL_DOCUMENTATION.md](./docs/TECHNICAL_DOCUMENTATION.md#11-deployment-guide) for detailed deployment instructions.
+See [Operations/Deployment_Strategy.md](./docs/Operations/Deployment_Strategy.md) for detailed deployment instructions.
 
 ---
 
-## API Documentation
+## API Overview
 
-**Base URL:** `http://localhost:8000/api`
+**Base URL:** `http://localhost:8000/api`  
+**Auth Header:** `X-Session-Token: {your_token}` (obtained via `POST /api/login`)
 
-**Authentication:**
+The API exposes **77 controllers** across all 10 enterprise domains, covering sales, purchases, inventory, GL, payroll, HR, assets, analytics, and more.
 
-- Header: `X-Session-Token: {your_token}`
-- Obtain via: `POST /api/login`
-
-**Key Endpoints:**
-
-| Endpoint | Method | Description |
-| ---------- | -------- | ------------- |
-| `/login` | POST | User authentication |
-| `/invoices` | GET, POST | Invoice management |
-| `/purchases` | GET, POST | Purchase management |
-| `/products` | GET, POST | Product management |
-| `/trial_balance` | GET | Trial balance report |
-| `/reports/balance_sheet` | GET | Balance sheet |
-| `/reports/profit_loss` | GET | P&L statement |
-| `/payroll/generate` | POST | Generate payroll cycle |
-| `/employees` | GET, POST | Employee management |
-
-See [API_REFERENCE.md](./docs/API_REFERENCE.md) for complete API documentation.
+For complete API contracts, versioning philosophy, auth flows, and rate limiting, see the [API Documentation](./docs/API/).
 
 ---
 
@@ -361,7 +360,8 @@ See [API_REFERENCE.md](./docs/API_REFERENCE.md) for complete API documentation.
 | --------- | ---------- |
 | **Framework** | Laravel 12 |
 | **Language** | PHP 8.2+ |
-| **Database** | MySQL (dev), MySQL/PostgreSQL (prod) |
+| **Architecture** | Domain-Driven Design (11 Bounded Contexts) |
+| **Database** | MySQL |
 | **ORM** | Eloquent |
 | **Queue** | Database driver |
 | **Cache** | Database driver |
@@ -374,6 +374,7 @@ See [API_REFERENCE.md](./docs/API_REFERENCE.md) for complete API documentation.
 | **Language** | TypeScript 5 |
 | **UI Library** | React 19 |
 | **Styling** | Tailwind CSS 4 |
+| **State Management** | Zustand |
 | **HTTP Client** | Fetch API |
 
 ---
@@ -391,7 +392,7 @@ See [API_REFERENCE.md](./docs/API_REFERENCE.md) for complete API documentation.
 | 401 Unauthorized | Clear localStorage, re-login |
 | Changes not reflecting | Clear cache: `php artisan config:clear` |
 
-See [TECHNICAL_DOCUMENTATION.md](./docs/TECHNICAL_DOCUMENTATION.md#10-troubleshooting--common-issues) for detailed troubleshooting.
+See [Operations/Deployment_Strategy.md](./docs/Operations/Deployment_Strategy.md) for detailed troubleshooting.
 
 ---
 
@@ -403,23 +404,19 @@ MIT License - See [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed contribution guidelines.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for a quick-start summary, or [`.github/CONTRIBUTING.md`](./.github/CONTRIBUTING.md) for the comprehensive guide covering coding standards, PR process, testing, and security.
 
 ---
 
 ## Support
 
-- **Documentation:** See `/docs` folder
-- **Issues:** Submit via GitHub Issues with detailed logs
+- **Documentation:** See [docs/DOCUMENTATION_INDEX.md](./docs/DOCUMENTATION_INDEX.md)
+- **Developer Guides:** See [docs/Developer/](./docs/Developer/)
+- **Issues:** Submit via [GitHub Issues](./.github/ISSUE_TEMPLATE/) with detailed logs
+- **Security:** Follow the process in [`.github/SECURITY.md`](./.github/SECURITY.md)
 - **Logs:** Check `backend/storage/logs/laravel.log`
 
 ---
 
 > Built with: using Laravel & Next.js  
-> **Developed ,Planning, design, and direction \Software Engineer Emran Nasser. Implementation \ AI Agent.**
+> **Developed, Planning, design, and direction \ Software Engineer Emran Nasser. Implementation \ AI Agent.**

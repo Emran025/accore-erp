@@ -119,52 +119,73 @@ PHP must be compiled with or have the following extensions enabled: `pdo_mysql`,
 ACCSYSTEM/
   backend/
     app/
+      Contracts/          Domain interfaces
+      Domains/            11 Bounded Contexts (DDD)
+        Assets/           Asset lifecycle & investments
+        Commercial/       CRM, sales, revenue, marketing
+        EnterpriseCore/   Identity, automation, governance
+        Finance/          GL, tax, treasury, FX, audit
+        HumanCapital/     Workforce, payroll, talent, wellness
+        Intelligence/     BI & advanced analytics
+        Manufacturing/    Production, engineering, QC
+        Platform/         Integration hub, customization
+        Projects/         Planning, execution, finance
+        Shared/           Cross-domain utilities
+        SupplyChain/      Inventory, procurement, AP
       Enums/              Typed enumerations (status values, transaction types)
       Exceptions/         Custom exception classes
       Helpers/            Global helper functions (currency, dates, numbers-to-words)
       Http/
-        Controllers/      68 API controllers organised by domain
-        Middleware/        Session authentication, CORS
-        Requests/         Form Request validation classes
-        Resources/        API Resource transformers
-      Models/             117 Eloquent models
+        Controllers/Api/V2/  77 controllers organised by domain
+        Middleware/           Session authentication, CORS
+        Requests/            Form Request validation classes
+        Resources/           API Resource transformers
+      Jobs/               Background job classes
       Policies/           Authorization policy classes
       Providers/          Service providers
-      Services/           27 domain services (core business logic)
     database/
-      factories/          26 model factories
-      migrations/         122 migration files (MySQL)
-      seeders/            16 database seeders
+      factories/          Model factories
+      migrations/         81+ migration files (MySQL)
+      seeders/            Database seeders
     routes/
       api.php             Route registration entry point
       api/                Modular route files per domain
     tests/                PHPUnit / Pest test suite
   frontend/
-    app/                  Next.js App Router pages and layouts
+    app/                  Domain-driven modular routing (01-enterprise-core/ through 10-platform/)
     components/
       layout/             Application shell components
       navigation/         Sidebar, top bar, search bar, status bar
       template-editor/    Document template editing system
+      number-range/       Numbering engine UI
+      tax/                Tax engine components
       ui/                 Reusable UI primitives
-    lib/                  API client, type definitions, utilities
-    stores/               Zustand state management stores
+    lib/                  API client, type definitions, utilities, endpoints
+    stores/               Zustand state management stores (13 stores)
     tests/                Vitest test suite
     types/                Shared TypeScript type declarations
-  docs/                   Extended documentation (user guide, API ref, schema, etc.)
+  docs/                   Domain-driven documentation hierarchy
+    API/                  API contracts and philosophy
+    Architecture/         System architecture and UX design
+    Developer/            Onboarding and engineering guides
+    Domains/              Per-domain business logic and schemas (11 contexts)
+    Operations/           Deployment, backups, governance
+    System/               ERP philosophy and cross-domain patterns
+  .engines/               Documentation generation engines
   .github/                CI/CD workflows, issue templates, contribution policies
 ```
 
-### Module Ownership
+### Module Ownership (DDD)
 
-Each ERP functional module (Sales, Purchases, HR, Finance, Inventory, etc.) has its own:
+The backend follows **Domain-Driven Design**. Each bounded context under `backend/app/Domains/` contains its own:
 
-- Controller(s) in `backend/app/Http/Controllers/`
-- Service(s) in `backend/app/Services/`
-- Model(s) in `backend/app/Models/`
-- Migration(s) in `backend/database/migrations/`
-- Frontend pages in `frontend/app/<module>/`
+- **Actions/** — Single-responsibility operation classes
+- **Models/** — Eloquent entities for the subdomain
+- **Services/** — Complex business logic orchestration
 
-Contributors must respect these boundaries. A change to the payroll calculation engine, for example, must not introduce side effects into the sales invoicing pipeline. Cross-module interactions should be mediated through well-defined service interfaces.
+Controllers are in `backend/app/Http/Controllers/Api/V2/` and are organised to mirror the domain structure. Frontend pages are in `frontend/app/<domain>/` (e.g., `03-finance/`, `06-human-capital/`).
+
+Contributors must respect bounded context boundaries. A change to the payroll calculation engine, for example, must not introduce side effects into the sales invoicing pipeline. Cross-domain interactions should be mediated through well-defined service interfaces or contracts (`app/Contracts/`).
 
 ---
 
@@ -317,10 +338,12 @@ For the full commit guidelines document, see [COMMIT_GUIDELINES.md](COMMIT_GUIDE
 
 | Layer | Location | Responsibility |
 | ----- | -------- | -------------- |
-| Controller | `Http/Controllers/` | Accept HTTP input, delegate to a service, return a response |
+| Controller | `Http/Controllers/Api/V2/` | Accept HTTP input, delegate to an action or service, return a response |
 | Form Request | `Http/Requests/` | Validate and authorise incoming data |
-| Service | `Services/` | Implement business rules; interact with models and other services |
-| Model | `Models/` | Define database relationships, accessors, mutators, scopes |
+| Action | `Domains/{Context}/{Subdomain}/Actions/` | Single-responsibility business operations |
+| Service | `Domains/{Context}/{Subdomain}/Services/` | Complex business logic orchestration |
+| Model | `Domains/{Context}/{Subdomain}/Models/` | Define database relationships, accessors, mutators, scopes |
+| Contract | `Contracts/` | Domain interfaces for cross-context communication |
 | Resource | `Http/Resources/` | Transform model data into API response payloads |
 | Policy | `Policies/` | Authorise user actions against specific resources |
 | Middleware | `Http/Middleware/` | Cross-cutting concerns (authentication, CORS) |
@@ -451,10 +474,12 @@ For the full commit guidelines document, see [COMMIT_GUIDELINES.md](COMMIT_GUIDE
 
 ## 11. Documentation Expectations
 
-- If your change introduces a new API endpoint, update `docs/API_REFERENCE.md` with the endpoint URI, HTTP method, request parameters, request body schema, response schema, and at least one example.
-- If your change adds or modifies a database table, update `docs/DATABASE_SCHEMA.md` with the table definition and relationships.
+- If your change introduces a new API endpoint, update the relevant file in `docs/API/` with the endpoint URI, HTTP method, request parameters, request body schema, response schema, and at least one example.
+- If your change adds or modifies a database table, the domain-specific schema documentation in `docs/Domains/<Domain>/database_Schema.md` can be regenerated using the `php artisan docs:generate-schema` command.
+- If your change introduces a new domain or subdomain, add corresponding documentation under `docs/Domains/<Domain>/`.
 - If your change affects user-facing behaviour, update `docs/USER_GUIDE.md` in both English and Arabic sections where applicable.
-- Internal service methods should include PHPDoc blocks describing parameters, return types, and thrown exceptions.
+- If your change affects system architecture patterns, update the relevant file in `docs/Architecture/`.
+- Internal service methods and actions should include PHPDoc blocks describing parameters, return types, and thrown exceptions.
 - Frontend components should include a brief JSDoc comment explaining the component's purpose and its props interface.
 
 ---
@@ -512,7 +537,8 @@ For questions that are not bug reports or feature requests, use [GitHub Discussi
 
 ## 16. Getting Help
 
-- **Documentation:** Start with the `docs/` directory, which contains the User Guide, Technical Documentation, API Reference, and Database Schema.
+- **Documentation:** Start with `docs/DOCUMENTATION_INDEX.md`, which maps the full documentation hierarchy across Architecture, API, Domains, Developer Guides, Operations, and System philosophy.
+- **Developer Guides:** See `docs/Developer/` for onboarding, module creation, testing strategies, and migration best practices.
 - **Issue Tracker:** Search existing issues before opening a new one.
 - **Discussions:** Use GitHub Discussions for general questions and architectural proposals.
 - **Direct Contact:** For matters that cannot be discussed publicly (security issues, private enquiries), email `amrannaser3@gmail.com`.

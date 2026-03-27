@@ -1,6 +1,7 @@
 # Documentation Index - ACCSYSTEM ERP System
 
 > **Complete Documentation Suite for Enterprise Resource Planning System**
+> **Version:** 3.0 | **Last Updated:** March 28, 2026
 
 Welcome to the comprehensive documentation for the ACCSYSTEM ERP System. This index provides quick access to all documentation resources for our enterprise-grade ERP solution.
 
@@ -8,49 +9,87 @@ Welcome to the comprehensive documentation for the ACCSYSTEM ERP System. This in
 
 ## 📚 Documentation Structure
 
-### Core Documentation
+The documentation is organized into a **domain-driven hierarchy** with six top-level categories:
 
-1. **[README.md](./../README.md)**
-   - Quick start guide
-   - ERP overview
-   - Installation instructions
-   - Module summary
+### 1. Architecture (`docs/Architecture/`)
 
-2. **[USER_EXPERIENCE.md](./user-experience/01_Philosophy_and_Vision.md)** ⭐ **UI/UX Strategy**
-   - Design Philosophy & Vision
-   - Global Shell Architecture
-   - 10-Domain Enterprise Map
-   - Visual Design System
-   - Technical Implementation
+Core system design patterns and technical philosophy:
 
-3. **[USER_GUIDE.md](./USER_GUIDE.md)** ⭐ **للمستخدمين | For End Users**
-   - دليل مبسط بالعربية والإنجليزية
-   - شرح جميع وحدات النظام
-   - الدورات المستندية
-   - الأدوار والصلاحيات
-   - لا يحتاج خبرة تقنية
+- **[Domain Driven Design in Laravel](./Architecture/Domain_Driven_Design_In_Laravel.md)** — Bounded Context design and DDD patterns
+- **[Action and Service Layer](./Architecture/Action_And_Service_Layer.md)** — Actions pattern and service encapsulation
+- **[Frontend Backend Separation](./Architecture/Frontend_Backend_Separation.md)** — API contract and decoupling strategy
+- **[Event Bus and Domain Events](./Architecture/Event_Bus_And_Domain_Events.md)** — Event-driven architecture
+- **[Transaction Management and Idempotency](./Architecture/Transaction_Management_And_Idempotency.md)** — Financial transaction safety
+- **[Multi-Tenancy Architecture](./Architecture/Multi_Tenancy_Architecture.md)** — Tenant isolation design
+- **User Experience** — [Philosophy](./Architecture/UserExperience/01_Philosophy_and_Vision.md) | [Shell](./Architecture/UserExperience/02_Shell_Architecture.md) | [Domains](./Architecture/UserExperience/03_Enterprise_Domain_Map.md) | [Visual](./Architecture/UserExperience/04_Visual_Design_System.md) | [Technical](./Architecture/UserExperience/05_Technical_Implementation.md)
 
-3. **[TECHNICAL_DOCUMENTATION.md](./TECHNICAL_DOCUMENTATION.md)** - **For Developers**
-   - Complete system architecture
-   - Backend & frontend detailed documentation
-   - Business logic & services
-   - Developer onboarding
-   - Deployment guide
-   - **~200 pages of comprehensive documentation**
+### 2. API (`docs/API/`)
 
-4. **[DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)**
-   - Entity Relationship Diagrams (ERD)
-   - All 52 tables documented
-   - Relationships and constraints
-   - Normalization strategy
-   - Data integrity rules
+API contracts, security, and integration:
 
-5. **[API_REFERENCE.md](./API_REFERENCE.md)**
-   - Complete REST API documentation
-   - All endpoints with examples
-   - Request/response formats
-   - Authentication guide
-   - Error handling
+- **[API Philosophy and Versioning](./API/API_Philosophy_And_Versioning.md)** — Versioning strategy and design principles
+- **[Authentication and Authorization Contracts](./API/Authentication_And_Authorization_Contracts.md)** — Auth flow and token management
+- **[Rate Limiting and Security](./API/Rate_Limiting_And_Security.md)** — Throttling and protection
+- **[External System Integrations](./API/External_System_Integrations.md)** — Third-party integration patterns
+- **[Webhook Dispatching](./API/Webhook_Dispatching.md)** — Event notification system
+
+### 3. Domains (`docs/Domains/`)
+
+Business logic documentation organized by bounded context (11 domains):
+
+| Domain | Overview | Key Topics |
+| ------ | -------- | ---------- |
+| **EnterpriseCore** | [Overview](./Domains/EnterpriseCore/Overview.md) | Auth & Permissions, Identity Access, Automation, Organization Governance, Monitoring |
+| **Commercial** | [Overview](./Domains/Commercial/Overview.md) | CRM, Sales Lifecycle, Revenue & Receivables, Marketing & Distribution |
+| **Finance** | [Overview](./Domains/Finance/Overview.md) | General Ledger, Tax Compliance, Treasury, Foreign Exchange, Audit |
+| **SupplyChain** | [Overview](./Domains/SupplyChain/Overview.md) | Inventory, Procurement, Payables & Expenses, Supplier Sourcing |
+| **HumanCapital** | [Overview](./Domains/HumanCapital/Overview.md) | Workforce Admin, Payroll & Benefits, Talent, Performance, Wellness |
+| **Manufacturing** | [Overview](./Domains/Manufacturing/Overview.md) | Production Control, Engineering, Quality Control |
+| **Projects** | [Overview](./Domains/Projects/Overview.md) | Planning, Execution Tracking, Project Finance |
+| **Assets** | [Overview](./Domains/Assets/Overview.md) | Asset Lifecycle, Investments |
+| **Intelligence** | [Overview](./Domains/Intelligence/Overview.md) | Business Intelligence, Advanced Analytics |
+| **Platform** | [Overview](./Domains/Platform/Overview.md) | Integration Hub, Customization, Communication |
+| **Shared** | — | Cross-domain utilities and shared services |
+
+Each domain subdirectory contains:
+- **business logic** documents (workflows, processes, policies)
+- **database_Schema.md** files (Mermaid ER diagrams + data dictionaries)
+
+### 4. Developer (`docs/Developer/`)
+
+Guides for engineers contributing to the project:
+
+- **[Onboarding Guide](./Developer/Onboarding_Guide.md)** — Getting started for new developers
+- **[Creating a New Module](./Developer/Creating_A_New_Module.md)** — Step-by-step module creation
+- **[Testing Strategy and Factories](./Developer/Testing_Strategy_And_Factories.md)** — PHPUnit patterns and factories
+- **[Writing Financial Migrations](./Developer/Writing_Financial_Migrations.md)** — Migration best practices
+- **[Handling Master Data](./Developer/Handling_Master_Data.md)** — Seeding and reference data
+- **Report Template Editor** — [Overview](./Developer/ReportTemplateEditor/index.md) | [Architecture](./Developer/ReportTemplateEditor/architecture.md) | [Integration](./Developer/ReportTemplateEditor/integration.md) | [AI & Automation](./Developer/ReportTemplateEditor/ai-automation.md)
+
+### 5. Operations (`docs/Operations/`)
+
+Production deployment and governance:
+
+- **[Deployment Strategy](./Operations/Deployment_Strategy.md)** — Production deployment procedures
+- **[Database Backup and Recovery](./Operations/Database_Backup_And_Recovery_Policies.md)** — Backup policies
+- **[Audit Trails and Security Logging](./Operations/Audit_Trails_And_Security_Logging.md)** — Compliance logging
+- **[Production Environment Governance](./Operations/Production_Environment_Governance.md)** — Environment management
+- **[Post Closure Financial Discrepancies](./Operations/Post_Closure_Financial_Discrepancies.md)** — Period closure handling
+
+### 6. System (`docs/System/`)
+
+Core business rules and strategic documentation:
+
+- **[ERP Philosophy and Vision](./System/ERP_Philosophy_And_Vision.md)** — System design principles
+- **[Bounded Context Map](./System/Bounded_Context_Map.md)** — Domain relationship map
+- **[Core Business Assumptions](./System/Core_Business_Assumptions.md)** — Foundational business rules
+- **[Cross Domain Integration Patterns](./System/Cross_Domain_Integration_Patterns.md)** — Inter-domain communication
+- **[Financial Data Immutability](./System/Financial_Data_Immutability.md)** — Ledger integrity rules
+
+### Legacy Documents
+
+- **[TECHNICAL_DOCUMENTATION.md](./TECHNICAL_DOCUMENTATION.md)** — Comprehensive technical reference (maintained for backward compatibility)
+- **[USER_GUIDE.md](./USER_GUIDE.md)** ⭐ — Bilingual user manual (Arabic/English) for non-technical users
 
 ---
 
@@ -58,51 +97,35 @@ Welcome to the comprehensive documentation for the ACCSYSTEM ERP System. This in
 
 ### For New Developers
 
-Start here to get up and running:
-
-1. Read [README.md](./../README.md) - 5 minutes
+1. Read [README.md](./../README.md) — 5 minutes
 2. Follow installation steps
-3. Review [TECHNICAL_DOCUMENTATION.md - Section 10](./TECHNICAL_DOCUMENTATION.md#10-developer-onboarding)
-4. Explore [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md) to understand data model
+3. Review [Developer/Onboarding_Guide.md](./Developer/Onboarding_Guide.md)
+4. Explore [Domains/](./Domains/) to understand data models
 
 ### For Backend Developers
 
-Deep dive into the Laravel backend:
-
-1. [TECHNICAL_DOCUMENTATION.md - Section 4](./TECHNICAL_DOCUMENTATION.md#4-backend-documentation-backend)
-2. [TECHNICAL_DOCUMENTATION.md - Section 8](./TECHNICAL_DOCUMENTATION.md#8-business-logic--services)
-3. [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)
-4. [API_REFERENCE.md](./API_REFERENCE.md)
+1. [Architecture/Domain_Driven_Design_In_Laravel.md](./Architecture/Domain_Driven_Design_In_Laravel.md)
+2. [Architecture/Action_And_Service_Layer.md](./Architecture/Action_And_Service_Layer.md)
+3. Domain-specific docs in [Domains/](./Domains/)
+4. [API/](./API/) for API contracts
 
 ### For Frontend Developers
 
-Master the Next.js frontend:
-
-1. [TECHNICAL_DOCUMENTATION.md - Section 5](./TECHNICAL_DOCUMENTATION.md#5-frontend-documentation-frontend)
-2. [API_REFERENCE.md](./API_REFERENCE.md) for API integration
-3. TypeScript interfaces in `frontend/lib/types.ts`
+1. [Architecture/Frontend_Backend_Separation.md](./Architecture/Frontend_Backend_Separation.md)
+2. [Architecture/UserExperience/](./Architecture/UserExperience/) for UX system
+3. [API/](./API/) for API integration
 
 ### For System Architects
 
-Understand the big picture:
-
-1. [TECHNICAL_DOCUMENTATION.md - Section 1](./TECHNICAL_DOCUMENTATION.md#1-system-overview)
-2. [TECHNICAL_DOCUMENTATION.md - Section 2](./TECHNICAL_DOCUMENTATION.md#2-architecture--technology-stack)
-3. [DATABASE_SCHEMA.md - Overview](./DATABASE_SCHEMA.md#overview)
+1. [System/ERP_Philosophy_And_Vision.md](./System/ERP_Philosophy_And_Vision.md)
+2. [System/Bounded_Context_Map.md](./System/Bounded_Context_Map.md)
+3. [Architecture/](./Architecture/) for all design patterns
 
 ### For DevOps / Deployment
 
-Deploy to production:
-
-1. [TECHNICAL_DOCUMENTATION.md - Section 12](./TECHNICAL_DOCUMENTATION.md#12-deployment-guide)
-2. [README.md - Deployment](./../README.md#-deployment)
-
-### For API Consumers
-
-Integrate with the ERP system:
-
-1. [API_REFERENCE.md](./API_REFERENCE.md) - Complete API docs
-2. [TECHNICAL_DOCUMENTATION.md - Section 7](./TECHNICAL_DOCUMENTATION.md#7-api-surface--contracts)
+1. [Operations/Deployment_Strategy.md](./Operations/Deployment_Strategy.md)
+2. [Operations/Production_Environment_Governance.md](./Operations/Production_Environment_Governance.md)
+3. [Operations/Database_Backup_And_Recovery_Policies.md](./Operations/Database_Backup_And_Recovery_Policies.md)
 
 ---
 
@@ -110,133 +133,22 @@ Integrate with the ERP system:
 
 ### Business Modules
 
-| Module | User Guide | Technical Docs | API Reference |
-| ------ | ---------- | -------------- | ------------- |
-| **Sales & POS** | [User Guide](./USER_GUIDE.md#1--وحدة-المبيعات-والفواتير--sales--invoicing-module) | [Tech Docs](./TECHNICAL_DOCUMENTATION.md#sales--invoicing) | [API](./API_REFERENCE.md#sales--invoicing) |
-| **Purchases** | [User Guide](./USER_GUIDE.md#2--وحدة-المشتريات-والمصروفات--purchases--expenses-module) | [Tech Docs](./TECHNICAL_DOCUMENTATION.md#purchases) | [API](./API_REFERENCE.md#purchases--expenses) |
-| **Inventory** | [User Guide](./USER_GUIDE.md#3--وحدة-المخزون-والمنتجات--inventory--products-module) | [Tech Docs](./TECHNICAL_DOCUMENTATION.md#inventory) | [API](./API_REFERENCE.md#inventory--products) |
-| **AR (Customers)** | [User Guide](./USER_GUIDE.md#4--وحدة-العملاء-والذمم-المدينة--customers--ar-module) | [Tech Docs](./TECHNICAL_DOCUMENTATION.md#accounts-receivable) | [API](./API_REFERENCE.md#accounts-receivable-ar) |
-| **AP (Suppliers)** | [User Guide](./USER_GUIDE.md#5--وحدة-الموردين-والذمم-الدائنة--suppliers--ap-module) | [Tech Docs](./TECHNICAL_DOCUMENTATION.md#accounts-payable) | [API](./API_REFERENCE.md#accounts-payable-ap) |
-| **General Ledger** | [User Guide](./USER_GUIDE.md#6--وحدة-الدفتر-العام--general-ledger-module) | [Tech Docs](./TECHNICAL_DOCUMENTATION.md#general-ledger) | [API](./API_REFERENCE.md#general-ledger) |
-| **Financial Reports** | [User Guide](./USER_GUIDE.md#7--وحدة-التقارير-المالية--financial-reports-module) | [Tech Docs](./TECHNICAL_DOCUMENTATION.md#reports) | [API](./API_REFERENCE.md#financial-reports) |
-| **HR & Payroll** | [User Guide](./USER_GUIDE.md#8--وحدة-الموارد-البشرية-والرواتب--hr--payroll-module) | [Tech Docs](./TECHNICAL_DOCUMENTATION.md#hr--payroll) | [API](./API_REFERENCE.md#hr--payroll) |
-| **Fixed Assets** | [User Guide](./USER_GUIDE.md#9-️-وحدة-الأصول-الثابتة--fixed-assets-module) | [Tech Docs](./TECHNICAL_DOCUMENTATION.md#fixed-assets) | [API](./API_REFERENCE.md#fixed-assets) |
-| **Multi-Currency** | [User Guide](./USER_GUIDE.md#10--وحدة-العملات-المتعددة--multi-currency-module) | [Tech Docs](./TECHNICAL_DOCUMENTATION.md#multi-currency) | [API](./API_REFERENCE.md#multi-currency) |
-| **Tax Engine** | [User Guide](./USER_GUIDE.md#11--نظام-الضرائب--tax-engine) | [Tech Docs](./tax-engine/01_Overview.md) | [API](./API_REFERENCE.md#tax-engine) |
-| **Number Ranges** | [User Guide](./USER_GUIDE.md#12--نظام-الترقيم--number-ranges) | [Tech Docs](./numeration/01_Overview.md) | [API](./API_REFERENCE.md#number-ranges) |
-| **Auth & Permissions** | [User Guide](./USER_GUIDE.md#الأدوار-والصلاحيات) | [Tech Docs](./auth-permissions/01_Overview.md) | [API](./API_REFERENCE.md#authentication) |
-| **Report Editor** | [User Guide](./USER_GUIDE.md#نظام-قوالب-التقارير) | [Tech Docs](./report-template-editor/index.md) | [API](./API_REFERENCE.md#system-administration) |
-
----
-
-## 🔢 Numeration & Number Ranges
-Comprehensive numbering engine for enterprise-wide unique identification (SAP SNRO logic):
-
-1. **[01. Overview](./numeration/01_Overview.md)** - Logic, SAP similarity, and core entities.
-2. **[02. Database Schema](./numeration/02_Database_Schema.md)** - Table structures and relational mapping.
-3. **[03. Backend Architecture](./numeration/03_Backend_Architecture.md)** - Pessimistic locking, formatting, and service logic.
-4. **[04. Frontend Implementation](./numeration/04_Frontend_Implementation.md)** - Components, UI framework, and usage patterns.
-5. **[05. Setup Guide](./numeration/05_Setup_Guide.md)** - Practical guide for administrators and developers.
-
----
-
-## 🔐 Authentication & Permissions
-Detailed documentation for the system's security and RBAC implementation:
-
-1. **[01. Overview](./auth-permissions/01_Overview.md)** - System security strategy and core concepts.
-2. **[02. Frontend Implementation](./auth-permissions/02_Frontend_Implementation.md)** - Permission storage, UI filtering, and hooks.
-3. **[03. Backend Security](./auth-permissions/03_Backend_Security.md)** - Middlewares, Services, and the "Second Firewall".
-4. **[04. Sync Strategy](./auth-permissions/04_Synchronization_Strategy.md)** - Handling session expiration and dynamic permission updates.
-
----
-
-## 📄 Report Template Editor
-Professional code editor and automation engine for dynamic system reports:
-
-1. **[Overview](./report-template-editor/index.md)** - Features, purpose, and visual design.
-2. **[Architecture](./report-template-editor/architecture.md)** - Logic, syntax highlighting, and preview engine.
-3. **[Integration Guide](./report-template-editor/integration.md)** - Implementation steps for new modules.
-4. **[AI & Automation](./report-template-editor/ai-automation.md)** - Future roadmap for AI-driven report generation.
-
----
-
-## 📖 Documentation Content Map
-
-### TECHNICAL_DOCUMENTATION.md Sections
-
-| Section | Content | Best For |
-| ------- | ------- | -------- |
-| 1. System Overview | Architecture, ERP modules | Everyone |
-| 2. Architecture & Tech Stack | Technologies, design patterns | Architects, Developers |
-| 3. User Experience | UX Framework, Design System | Architects |
-| 4. Backend Documentation | Laravel setup, controllers, services | Backend Devs |
-| 5. Frontend Documentation | Next.js setup, routing, components | Frontend Devs |
-| 6. Database Schema & Models | Table structures, relationships | Backend Devs, DBAs |
-| 7. API Surface & Contracts | Endpoint examples, contracts | Integration Devs |
-| 8. Business Logic & Services | Core services, ERP workflows | Backend Devs |
-| 9. Security & Authentication | Auth flow, permissions, security | Security, Backend Devs |
-| 10. Developer Onboarding | Setup, workflow, guidelines | New Developers |
-| 11. Troubleshooting | Common issues, solutions | All Developers |
-| 12. Deployment Guide | Production setup, server config | DevOps |
-
-### DATABASE_SCHEMA.md Sections
-
-| Section | Content |
-| ------- | ------- |
-| Overview | Table groups, categories |
-| Detailed ERD | Visual relationships (text format) |
-| Key Relationships | Foreign keys, cascades |
-| Indexes & Constraints | Performance, data integrity |
-| Normalization | Design principles |
-
-### API_REFERENCE.md Sections
-
-| Section | Endpoints |
-| ------- | --------- |
-| Authentication | Login, logout, session check |
-| Sales & Invoicing | Invoice CRUD, ZATCA |
-| Purchases | Purchase CRUD, approvals |
-| Inventory & Products | Product management, categories |
-| AR/AP | Customer/supplier management, ledgers |
-| General Ledger | Trial balance, chart of accounts |
-| Financial Reports | Balance sheet, P&L, cash flow |
-| HR & Payroll | Employee management, payroll processing |
-| System Administration | Settings, users, roles, audit |
-| Multi-Currency | Currency management |
-
----
-
-## 🔍 Search Guide
-
-### By Topic
-
-**Authentication & Security:**
-
-- [TECHNICAL_DOCUMENTATION.md - Section 9](./TECHNICAL_DOCUMENTATION.md#9-security--authentication)
-- [API_REFERENCE.md - Authentication](./API_REFERENCE.md#authentication)
-
-**Database Design:**
-
-- [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)
-- [TECHNICAL_DOCUMENTATION.md - Section 6](./TECHNICAL_DOCUMENTATION.md#6-database-schema--models)
-
-**API Endpoints:**
-
-- [API_REFERENCE.md](./API_REFERENCE.md)
-- [TECHNICAL_DOCUMENTATION.md - Section 7](./TECHNICAL_DOCUMENTATION.md#7-api-surface--contracts)
-
-**Business Logic & ERP Workflows:**
-
-- [TECHNICAL_DOCUMENTATION.md - Section 8](./TECHNICAL_DOCUMENTATION.md#8-business-logic--services)
-- Backend service files in `backend/app/Services/`
-
-**Deployment:**
-
-- [TECHNICAL_DOCUMENTATION.md - Section 12](./TECHNICAL_DOCUMENTATION.md#12-deployment-guide)
-
-**Troubleshooting:**
-
-- [TECHNICAL_DOCUMENTATION.md - Section 11](./TECHNICAL_DOCUMENTATION.md#11-troubleshooting--common-issues)
+| Module | User Guide | Domain Docs |
+| ------ | ---------- | ----------- |
+| **Sales & POS** | [User Guide](./USER_GUIDE.md#1--وحدة-المبيعات-والفواتير--sales--invoicing-module) | [Commercial/SalesLifecycle](./Domains/Commercial/SalesLifecycle/) |
+| **Purchases** | [User Guide](./USER_GUIDE.md#2--وحدة-المشتريات-والمصروفات--purchases--expenses-module) | [SupplyChain/Procurement](./Domains/SupplyChain/Procurement/) |
+| **Inventory** | [User Guide](./USER_GUIDE.md#3--وحدة-المخزون-والمنتجات--inventory--products-module) | [SupplyChain/Inventory](./Domains/SupplyChain/Inventory/) |
+| **AR (Customers)** | [User Guide](./USER_GUIDE.md#4--وحدة-العملاء-والذمم-المدينة--customers--ar-module) | [Commercial/CRM](./Domains/Commercial/CRM/) |
+| **AP (Suppliers)** | [User Guide](./USER_GUIDE.md#5--وحدة-الموردين-والذمم-الدائنة--suppliers--ap-module) | [SupplyChain/PayablesExpenses](./Domains/SupplyChain/PayablesExpenses/) |
+| **General Ledger** | [User Guide](./USER_GUIDE.md#6--وحدة-الدفتر-العام--general-ledger-module) | [Finance/GeneralLedger](./Domains/Finance/GeneralLedger/) |
+| **Financial Reports** | [User Guide](./USER_GUIDE.md#7--وحدة-التقارير-المالية--financial-reports-module) | [Intelligence/BusinessIntelligence](./Domains/Intelligence/) |
+| **HR & Payroll** | [User Guide](./USER_GUIDE.md#8--وحدة-الموارد-البشرية-والرواتب--hr--payroll-module) | [HumanCapital/](./Domains/HumanCapital/) |
+| **Fixed Assets** | [User Guide](./USER_GUIDE.md#9-️-وحدة-الأصول-الثابتة--fixed-assets-module) | [Assets/AssetLifecycle](./Domains/Assets/AssetLifecycle/) |
+| **Multi-Currency** | [User Guide](./USER_GUIDE.md#10--وحدة-العملات-المتعددة--multi-currency-module) | [Finance/ForeignExchange](./Domains/Finance/ForeignExchange/) |
+| **Tax Engine** | [User Guide](./USER_GUIDE.md#11--نظام-الضرائب--tax-engine) | [Finance/TaxCompliance](./Domains/Finance/TaxCompliance/) |
+| **Number Ranges** | [User Guide](./USER_GUIDE.md#12--نظام-الترقيم--number-ranges) | [EnterpriseCore/SystemOverview](./Domains/EnterpriseCore/SystemOverview/) |
+| **Auth & Permissions** | [User Guide](./USER_GUIDE.md#الأدوار-والصلاحيات) | [EnterpriseCore/AuthPermissions](./Domains/EnterpriseCore/AuthPermissions/) |
+| **Report Editor** | [User Guide](./USER_GUIDE.md#نظام-قوالب-التقارير) | [Developer/ReportTemplateEditor](./Developer/ReportTemplateEditor/) |
 
 ---
 
@@ -244,91 +156,29 @@ Professional code editor and automation engine for dynamic system reports:
 
 ### Documentation Coverage
 
-- **Total Pages:** ~250+ (combined)
-- **Tables Documented:** 52/52 (100%)
-- **API Endpoints Documented:** 110+ endpoints
-- **Controllers Documented:** 35/35
-- **Services Documented:** 11/11
+- **Total Documentation Files:** 80+ markdown files across 6 categories
+- **Bounded Contexts Documented:** 11/11 (100%)
+- **Database Schemas:** Auto-generated per domain with Mermaid ER diagrams
 - **Code Examples:** 100+ snippets
 
 ### Codebase Metrics
 
 **Backend:**
 
-- Laravel 12
-- PHP 8.2+
-- 52 migrations
-- 50 models
-- 35 controllers
-- 11 services
-- 3 helpers
+- Laravel 12, PHP 8.2+
+- 11 Bounded Contexts (DDD)
+- 81+ database migrations
+- 77 domain-organized controllers
+- 42 Model directories (distributed across domains)
+- Actions Pattern for business logic
 
 **Frontend:**
 
-- Next.js 16
-- React 19
-- TypeScript 5
-- 30+ pages
-- 34 UI components
-- 4 navigation components
-- 7 utility files
-
-**Database:**
-
-- 52 tables
-- 220+ columns
-- 55+ foreign keys
-- 25+ indexes
-
----
-
-## 🎯 Use Cases
-
-### Scenario: "I need to add a new ERP module"
-
-1. **Understand existing architecture:**
-   - Read [TECHNICAL_DOCUMENTATION.md - Section 2](./TECHNICAL_DOCUMENTATION.md#2-architecture--technology-stack)
-
-2. **Plan database changes:**
-   - Review [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)
-   - Create migration
-
-3. **Build backend:**
-   - Create model, controller, service
-   - Implement GL posting if financial
-   - Follow patterns in [TECHNICAL_DOCUMENTATION.md - Section 4](./TECHNICAL_DOCUMENTATION.md#4-backend-documentation-backend)
-
-4. **Build frontend:**
-   - Create page component
-   - Add API integration
-   - Add to navigation
-   - Follow [TECHNICAL_DOCUMENTATION.md - Section 5](./TECHNICAL_DOCUMENTATION.md#5-frontend-documentation-frontend)
-
-5. **Document API:**
-   - Add to [API_REFERENCE.md](./API_REFERENCE.md)
-
-6. **Update User Guide:**
-   - Add to [USER_GUIDE.md](./USER_GUIDE.md) (Arabic & English)
-
-### Scenario: "I'm getting an error"
-
-1. Check [TECHNICAL_DOCUMENTATION.md - Section 10](./TECHNICAL_DOCUMENTATION.md#10-troubleshooting--common-issues)
-2. Review logs: `backend/storage/logs/laravel.log`
-3. Consult relevant section based on error type
-
-### Scenario: "I need to deploy to production"
-
-1. Follow [TECHNICAL_DOCUMENTATION.md - Section 12](./TECHNICAL_DOCUMENTATION.md#12-deployment-guide)
-2. Complete all checklist items
-3. Configure environment variables
-4. Run migrations
-5. Set up queue workers
-
-### Scenario: "I need to understand a financial workflow"
-
-1. Check [USER_GUIDE.md](./USER_GUIDE.md) for business process
-2. Review [TECHNICAL_DOCUMENTATION.md - Section 8](./TECHNICAL_DOCUMENTATION.md#8-business-logic--services) for implementation
-3. Trace through relevant Service class
+- Next.js 16, React 19, TypeScript 5
+- 10 domain routing directories + auth + navigation
+- 6 component categories (ui, navigation, template-editor, number-range, tax, layout)
+- 13 Zustand state stores
+- ~128KB design system (globals.css)
 
 ---
 
@@ -336,8 +186,8 @@ Professional code editor and automation engine for dynamic system reports:
 
 All documentation follows these principles:
 
-- **Comprehensive:** Every feature documented
-- **Accurate:** Reflects actual codebase
+- **Domain-Driven:** Organized by bounded context
+- **Accurate:** Auto-generated schemas from live database
 - **Practical:** Includes examples and use cases
 - **Searchable:** Clear headers and structure
 - **Bilingual:** User Guide in Arabic & English
@@ -345,10 +195,100 @@ All documentation follows these principles:
 
 ---
 
+## 🗺️ Visual Documentation Map
+
+```txt
+accsystem/
+│
+├── 📄 README.md
+│   ├─► Quick Start
+│   ├─► ERP Module Overview
+│   └─► Installation
+│
+├── 🤝 CONTRIBUTING.md
+│   └─► Contribution Guidelines
+│
+└── docs/
+    │
+    ├── 🏛️ Architecture/
+    │   ├─► Domain Driven Design in Laravel
+    │   ├─► Action and Service Layer
+    │   ├─► Frontend Backend Separation
+    │   ├─► Event Bus and Domain Events
+    │   ├─► Transaction Management
+    │   ├─► Multi-Tenancy Architecture
+    │   └─► UserExperience/ (5 docs)
+    │
+    ├── 🔌 API/
+    │   ├─► API Philosophy and Versioning
+    │   ├─► Auth and Authorization Contracts
+    │   ├─► Rate Limiting and Security
+    │   ├─► External System Integrations
+    │   └─► Webhook Dispatching
+    │
+    ├── 📦 Domains/ (11 Bounded Contexts)
+    │   ├─► EnterpriseCore/ (Auth, Identity, Automation, Governance)
+    │   ├─► Commercial/ (CRM, Sales, Revenue, Marketing)
+    │   ├─► Finance/ (GL, Tax, Treasury, FX, Audit)
+    │   ├─► SupplyChain/ (Inventory, Procurement, AP)
+    │   ├─► HumanCapital/ (9 subdomain areas)
+    │   ├─► Manufacturing/ (Production, Engineering, QC)
+    │   ├─► Projects/ (Planning, Execution, Finance)
+    │   ├─► Assets/ (Lifecycle, Investments)
+    │   ├─► Intelligence/ (BI, Analytics)
+    │   ├─► Platform/ (Integration, Customization)
+    │   └─► Shared/ (Cross-domain utilities)
+    │
+    ├── 👨‍💻 Developer/
+    │   ├─► Onboarding Guide
+    │   ├─► Creating a New Module
+    │   ├─► Testing Strategy
+    │   ├─► Writing Financial Migrations
+    │   ├─► Handling Master Data
+    │   └─► ReportTemplateEditor/ (4 docs)
+    │
+    ├── ⚙️ Operations/
+    │   ├─► Deployment Strategy
+    │   ├─► Database Backup and Recovery
+    │   ├─► Audit Trails and Security
+    │   ├─► Production Governance
+    │   └─► Post-Closure Discrepancies
+    │
+    ├── 🧠 System/
+    │   ├─► ERP Philosophy and Vision
+    │   ├─► Bounded Context Map
+    │   ├─► Core Business Assumptions
+    │   ├─► Cross-Domain Integration
+    │   └─► Financial Data Immutability
+    │
+    ├── 📖 USER_GUIDE.md (العربية/English)
+    ├── 📘 TECHNICAL_DOCUMENTATION.md
+    └── 📑 DOCUMENTATION_INDEX.md (this file)
+```
+
+---
+
+## 📋 Checklist for New Team Members
+
+- [ ] Read README.md (5 minutes)
+- [ ] Complete local setup (10 minutes)
+- [ ] Review [Developer/Onboarding_Guide.md](./Developer/Onboarding_Guide.md) (15 minutes)
+- [ ] Understand ERP modules in [USER_GUIDE.md](./USER_GUIDE.md) (30 minutes)
+- [ ] Browse domain overviews in [Domains/](./Domains/) (20 minutes)
+- [ ] Run the application locally
+- [ ] Make a test API call
+- [ ] Review codebase structure
+- [ ] Read your role-specific documentation section
+- [ ] Set up development environment
+
+**Estimated Time:** 2-3 hours total
+
+---
+
 ## 🔄 Documentation Updates
 
-**Last Updated:** February 5, 2026  
-**Version:** 2.2  
+**Last Updated:** March 28, 2026
+**Version:** 3.0
 **Codebase Version:** Laravel 12 + Next.js 16
 
 ### Update Policy
@@ -361,137 +301,6 @@ Documentation should be updated when:
 - Database schema changes
 - ERP workflows change
 - Deployment procedures change
-
----
-
-## 📞 Support Resources
-
-**Documentation Issues:**
-
-- Submit documentation bugs via GitHub Issues
-- Tag with `documentation` label
-
-**Code Questions:**
-
-- Review relevant documentation section first
-- Check code comments in source files
-- Consult [TECHNICAL_DOCUMENTATION.md](./TECHNICAL_DOCUMENTATION.md)
-
-**Quick Reference:**
-
-- Backend: `backend/app/Http/Controllers/Api/`
-- Frontend: `frontend/app/`
-- Database: `backend/database/migrations/`
-- API: [API_REFERENCE.md](./API_REFERENCE.md)
-
----
-
-## 🏆 Best Practices
-
-When using this documentation:
-
-1. **Start with README.md** for quick orientation
-2. **Use USER_GUIDE.md** to understand business processes
-3. **Use TECHNICAL_DOCUMENTATION.md** as main developer reference
-4. **Consult DATABASE_SCHEMA.md** for data modeling
-5. **Reference API_REFERENCE.md** for API integration
-6. **Keep documentation open** while coding
-7. **Update documentation** when you change code
-
----
-
-## 📋 Checklist for New Team Members
-
-- [ ] Read README.md (5 minutes)
-- [ ] Complete local setup (10 minutes)
-- [ ] Review ERP System Overview (15 minutes)
-- [ ] Understand ERP modules in USER_GUIDE.md (30 minutes)
-- [ ] Explore database schema (20 minutes)
-- [ ] Run the application locally
-- [ ] Make a test API call
-- [ ] Review codebase structure
-- [ ] Read your role-specific documentation section
-- [ ] Set up development environment
-
-**Estimated Time:** 2-3 hours total
-
----
-
-## 🗺️ Visual Documentation Map
-
-```txt
-ACCSYSTEM-erp/
-│
-├── 📄 README.md
-│   ├─► Quick Start
-│   ├─► ERP Module Overview
-│   └─► Installation
-│
-├── 🤝 CONTRIBUTING.md
-│   └─► Contribution Guidelines
-│
-└── docs/
-    │
-    ├── 📘 TECHNICAL_DOCUMENTATION.md ⭐ MAIN
-    │   ├─► Section 1: System Overview
-    │   ├─► Section 2: Architecture
-    │   ├─► Section 3: Backend (Laravel)
-    │   ├─► Section 4: Frontend (Next.js)
-    │   ├─► Section 5: Database Schema
-    │   ├─► Section 6: API Contracts
-    │   ├─► Section 7: Business Logic
-    │   ├─► Section 8: Security
-    │   ├─► Section 9: Developer Onboarding
-    │   ├─► Section 10: Troubleshooting
-    │   └─► Section 11: Deployment
-    │
-    ├── 📖 USER_GUIDE.md (العربية/English)
-    │   ├─► مقدمة عن النظام
-    │   ├─► الوحدات الأساسية (12 modules)
-    │   ├─► الدورات المستندية
-    │   ├─► الأدوار والصلاحيات
-    │   └─► أسئلة شائعة
-    │
-    ├── 📊 DATABASE_SCHEMA.md
-    │   ├─► 52 Tables
-    │   ├─► ERD Diagrams
-    │   ├─► Relationships
-    │   └─► Constraints
-    │
-    ├── 🔌 API_REFERENCE.md
-    │   ├─► Authentication
-    │   ├─► Sales
-    │   ├─► Purchases
-    │   ├─► Inventory
-    │   ├─► GL
-    │   ├─► Reports
-    │   ├─► HR & Payroll
-    │   └─► Admin
-    │
-    ├── 🏛️ tax-engine/
-    │   ├─► 01_Overview.md
-    │   ├─► 02_Domain_Model.md
-    │   ├─► 03_Tax_Engine_Logic.md
-    │   ├─► 04_ZATCA_Adapter.md
-    │   ├─► 05_Frontend_Implementation.md
-    │   └─► 06_Migration_and_Implementation.md
-    │
-    ├── 🎨 user-experience/
-    │   ├─► 01_Philosophy_and_Vision.md
-    │   ├─► 02_Shell_Architecture.md
-    │   ├─► 03_Enterprise_Domain_Map.md
-    │   ├─► 04_Visual_Design_System.md
-    │   └─► 05_Technical_Implementation.md
-    │
-    ├── 📑 report-template-editor/
-    │   ├─► index.md
-    │   ├─► architecture.md
-    │   ├─► integration.md
-    │   └─► ai-automation.md
-    │
-    └── 📑 DOCUMENTATION_INDEX.md (this file)
-        └─► Navigation Guide
-```
 
 ---
 

@@ -162,8 +162,8 @@
 
 ### Documentation
 
-- [ ] I have updated `docs/API_REFERENCE.md` if the change adds or modifies API endpoints.
-- [ ] I have updated `docs/DATABASE_SCHEMA.md` if the change adds or modifies tables.
+- [ ] I have updated the relevant file in `docs/API/` if the change adds or modifies API endpoints.
+- [ ] I have generated the updated schema in `docs/Domains/<Domain>/database_Schema.md` via `artisan docs:generate-schema` if the change adds or modifies tables.
 - [ ] I have updated `docs/USER_GUIDE.md` if the change affects user-facing behaviour.
 - [ ] I have updated inline documentation (PHPDoc / JSDoc) for new or modified methods and components.
 

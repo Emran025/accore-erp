@@ -12,7 +12,7 @@ body:
         **Before submitting**, please confirm that:
         - You are running a [supported version](../../SECURITY.md) of ACCSYSTEM ERP.
         - You have searched the [existing issues](https://github.com/Emran025/ACCSYSTEM/issues?q=label%3A%22type%3A+bug%22) for duplicates.
-        - You have consulted the [Troubleshooting section](../../docs/TECHNICAL_DOCUMENTATION.md) in the documentation.
+        - You have consulted the Troubleshooting section in [Operations/Deployment_Strategy.md](../../docs/Operations/Deployment_Strategy.md).
 
   - type: dropdown
     id: module
