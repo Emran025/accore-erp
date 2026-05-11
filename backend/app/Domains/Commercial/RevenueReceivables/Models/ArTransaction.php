@@ -2,10 +2,13 @@
 
 namespace App\Domains\Commercial\RevenueReceivables\Models;
 
+use App\Domains\Commercial\CRM\Models\ArCustomer;
+use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User;
 
 /**
  * Accounts Receivable sub-ledger transaction.

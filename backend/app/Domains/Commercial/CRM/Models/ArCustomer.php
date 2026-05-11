@@ -2,6 +2,8 @@
 
 namespace App\Domains\Commercial\CRM\Models;
 
+use App\Domains\Commercial\RevenueReceivables\Models\ArTransaction;
+use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Scope;
-use App\Domains\Commercial\CRM\Models\ArCustomer;
+
 class ArCustomer extends Model
 {
     use HasFactory;
