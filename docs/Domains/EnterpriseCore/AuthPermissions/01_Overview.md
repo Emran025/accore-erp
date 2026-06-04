@@ -1,7 +1,7 @@
 # Authentication & Permissions System: Overview
 
 ## 🔐 Mission Statement
-The ACCSYSTEM ERP utilizes a multi-layered security architecture designed to provide a seamless user experience while maintaining rigorous server-side enforcement. The system ensures that users only see and interact with modules they are authorized to access, while protecting every API endpoint with a background "firewall" layer.
+The accore ERP utilizes a multi-layered security architecture designed to provide a seamless user experience while maintaining rigorous server-side enforcement. The system ensures that users only see and interact with modules they are authorized to access, while protecting every API endpoint with a background "firewall" layer.
 
 ## 🏗️ Core Strategy
 The system operates on an "Authoritative Backend, Intelligent Frontend" model:

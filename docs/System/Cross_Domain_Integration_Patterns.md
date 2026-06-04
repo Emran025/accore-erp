@@ -17,7 +17,7 @@ word_count: 615
 ## Business Context
 In an enterprise ERP, no domain operates in isolation. A sale in the Commercial domain has immediate and irreversible financial implications in the Finance domain. Similarly, the movement of inventory in SupplyChain affects both balance sheet assets and Cost of Goods Sold (COGS). 
 
-To maintain the integrity of the Bounded Context Map, ACCSYSTEM enforces strict patterns for how these domains communicate. These patterns prevent "Big Ball of Mud" architectures where every module depends on the internal details of another, ensuring that the system remains maintainable even as it scales to thousands of entities and millions of transactions.
+To maintain the integrity of the Bounded Context Map, accore enforces strict patterns for how these domains communicate. These patterns prevent "Big Ball of Mud" architectures where every module depends on the internal details of another, ensuring that the system remains maintainable even as it scales to thousands of entities and millions of transactions.
 
 ## Integration Architectures
 
@@ -28,7 +28,7 @@ For operations requiring immediate consistency—specifically General Ledger pos
 For non-critical downstream impacts—such as updating an audit log, triggering a marketing notification, or refreshing a dashboard—domains emit **Integration Events**. These events allow the publishing domain to remain unaware of its subscribers, facilitating a plug-and-play architecture for extended ERP capabilities.
 
 ## Event Contract Pattern
-While individual event payloads vary, all Integration Events in ACCSYSTEM must follow a standardized conceptual contract:
+While individual event payloads vary, all Integration Events in accore must follow a standardized conceptual contract:
 
 | Field | Type | Business Meaning |
 |-------|------|-----------------|

@@ -50,7 +50,7 @@ Describe what currently happens.
 - **Node.js Version:**
 - **MySQL Version:**
 - **Browser (if frontend issue):**
-- **ACCSYSTEM Version / Commit:**
+- **accore Version / Commit:**
 
 ## Error Logs
 
@@ -73,5 +73,5 @@ Any other information that may help diagnose the issue.
 ## Checklist
 
 - [ ] I have searched existing issues and confirmed this is not a duplicate.
-- [ ] I am using a supported version of ACCSYSTEM ERP.
+- [ ] I am using a supported version of accore ERP.
 - [ ] I have provided all the information requested above.

@@ -16,7 +16,7 @@ word_count: 567
 
 ## Business Purpose
 
-EnterpriseCore is the foundational domain of ACCSYSTEM that provides enterprise-grade governance, identity management, and system configuration capabilities. It serves as the central nervous system for organizational control, user access, and system-wide automation orchestration. Business stakeholders across Finance, Commercial, SupplyChain, and HumanCapital depend on EnterpriseCore to establish organizational boundaries, enforce role-based access control, manage user sessions, audit system activity, and automate recurring business processes. Without EnterpriseCore, the ERP lacks the governance infrastructure necessary to maintain regulatory compliance, data security, and operational control.
+EnterpriseCore is the foundational domain of accore that provides enterprise-grade governance, identity management, and system configuration capabilities. It serves as the central nervous system for organizational control, user access, and system-wide automation orchestration. Business stakeholders across Finance, Commercial, SupplyChain, and HumanCapital depend on EnterpriseCore to establish organizational boundaries, enforce role-based access control, manage user sessions, audit system activity, and automate recurring business processes. Without EnterpriseCore, the ERP lacks the governance infrastructure necessary to maintain regulatory compliance, data security, and operational control.
 
 ## Bounded Context Boundaries
 

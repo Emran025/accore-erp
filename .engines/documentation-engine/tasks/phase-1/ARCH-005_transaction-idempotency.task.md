@@ -19,7 +19,7 @@
 
 ## Objective
 
-Document how ACCSYSTEM manages database transactions and ensures idempotency for financial operations. Explain the transaction wrapping patterns, retry strategies, and how the system prevents duplicate postings.
+Document how accore manages database transactions and ensures idempotency for financial operations. Explain the transaction wrapping patterns, retry strategies, and how the system prevents duplicate postings.
 
 ---
 

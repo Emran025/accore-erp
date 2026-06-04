@@ -1,6 +1,6 @@
 # Visual Design System
 
-The visual language of ACCSYSTEM is designed for **long-session durability**. It prioritizes readability, instant recognition, and operational efficiency over purely decorative elements.
+The visual language of accore designed for **long-session durability**. It prioritizes readability, instant recognition, and operational efficiency over purely decorative elements.
 
 ## 1. Visual Discipline
 

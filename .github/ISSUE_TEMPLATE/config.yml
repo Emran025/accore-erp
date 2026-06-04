@@ -2,7 +2,7 @@ blank_issues_enabled: false
 contact_links:
   - name: "Ask a Question"
     url: https://github.com/Emran025/accounting-system/discussions/categories/q-a
-    about: "For general questions about using, configuring, or developing ACCSYSTEM ERP, please use the Q&A discussion category. This keeps questions searchable for others."
+    about: "For general questions about using, configuring, or developing accore ERP, please use the Q&A discussion category. This keeps questions searchable for others."
 
   - name: "Propose an Architectural Change"
     url: https://github.com/Emran025/accounting-system/discussions/categories/ideas

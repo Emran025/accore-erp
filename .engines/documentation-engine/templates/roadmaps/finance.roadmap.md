@@ -9,7 +9,7 @@
 
 ## 1. Domain Summary
 
-The Finance domain is the absolute core of the ACCSYSTEM ERP. It governs the General Ledger, Chart of Accounts, fiscal periods, tax compliance, treasury management, foreign exchange, management accounting, and financial auditing. No financial record may be deleted — all corrections are performed via offset entries. This domain defines the immutability contract that all other domains must respect.
+The Finance domain is the absolute core of the accore ERP. It governs the General Ledger, Chart of Accounts, fiscal periods, tax compliance, treasury management, foreign exchange, management accounting, and financial auditing. No financial record may be deleted — all corrections are performed via offset entries. This domain defines the immutability contract that all other domains must respect.
 
 ---
 

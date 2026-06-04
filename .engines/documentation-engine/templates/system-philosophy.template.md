@@ -36,7 +36,7 @@ word_count: NNN
 - Written for a Chief Architect, Business Analyst, or Auditor audience.
 
 ### 3. `## Business Rationale`
-- Why does the ACCSYSTEM ERP adopt this philosophy or principle?
+- Why does the accore ERP adopt this philosophy or principle?
 - What enterprise problem does it solve?
 - What risks does it mitigate?
 

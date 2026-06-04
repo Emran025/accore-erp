@@ -18,11 +18,11 @@ word_count: 571
 
 Financial ERP systems must guarantee that a monetary posting either completes fully or leaves the database in its prior state. Partial writes — where some ledger entries are persisted and others are not — corrupt the accounting record and violate double-entry integrity. An equally critical risk is duplicate posting: a network retry or a repeated user action that submits the same operation twice, resulting in phantom transactions that inflate account balances.
 
-ACCSYSTEM processes financial operations across multiple domains — General Ledger, Accounts Receivable, Accounts Payable, Foreign Exchange, and Payroll — each of which may generate multiple database writes per business event. Without deliberate transaction boundary enforcement, these writes are vulnerable to partial failure and uncontrolled duplication.
+accore processes financial operations across multiple domains — General Ledger, Accounts Receivable, Accounts Payable, Foreign Exchange, and Payroll — each of which may generate multiple database writes per business event. Without deliberate transaction boundary enforcement, these writes are vulnerable to partial failure and uncontrolled duplication.
 
 ## Decision
 
-All mutating financial operations in ACCSYSTEM are wrapped in a database transaction boundary enforced by the `DB::transaction()` closure at the Action or Service layer. For ledger postings, idempotency is enforced through the `UniversalJournal` model using an `updateOrCreate` pattern keyed on the `voucher_number` field, which serves as the system-wide idempotency token.
+All mutating financial operations in accore are wrapped in a database transaction boundary enforced by the `DB::transaction()` closure at the Action or Service layer. For ledger postings, idempotency is enforced through the `UniversalJournal` model using an `updateOrCreate` pattern keyed on the `voucher_number` field, which serves as the system-wide idempotency token.
 
 Voucher numbers are generated within an isolated transaction: a temporary UUID-keyed record is created first to satisfy the unique constraint, then immediately updated to the zero-padded sequential number (`TYPE-000001`) derived from the auto-increment primary key. This guarantees uniqueness without an advisory lock or sequence table.
 
@@ -30,7 +30,7 @@ The `DocumentSequence` model acts as a format registry — storing the prefix, f
 
 ## Rationale
 
-The `DB::transaction()` pattern was chosen over application-layer saga orchestration because ACCSYSTEM operates on a single relational database. Atomic database transactions provide strong ACID guarantees at negligible overhead for the write volumes expected. Sagas introduce distributed state management complexity and are warranted only in multi-database, multi-service architectures.
+The `DB::transaction()` pattern was chosen over application-layer saga orchestration because accore operates on a single relational database. Atomic database transactions provide strong ACID guarantees at negligible overhead for the write volumes expected. Sagas introduce distributed state management complexity and are warranted only in multi-database, multi-service architectures.
 
 The `voucher_number` was selected as the idempotency token because it is already mandatory for audit and regulatory compliance, it is unique per business operation, and it is generated inside the same transaction that posts the ledger entries. Re-submitting an existing voucher number triggers the `updateOrCreate` path, updating the journal header without inserting duplicate ledger lines.
 

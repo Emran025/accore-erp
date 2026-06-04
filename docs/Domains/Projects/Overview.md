@@ -16,7 +16,7 @@ word_count: 429
 
 ## Business Purpose
 
-The Projects domain is designed to govern project-based work within ACCSYSTEM, covering work breakdown structure (WBS) and cost tracking, resource allocation and planning, and milestone and progress management. Project managers, resource coordinators, and finance controllers are the intended stakeholders. The domain is designed to bridge operational project management with financial performance tracking, enabling organizations to track project profitability, resource utilization, and delivery progress within the same ERP system.
+The Projects domain is designed to govern project-based work within accore, covering work breakdown structure (WBS) and cost tracking, resource allocation and planning, and milestone and progress management. Project managers, resource coordinators, and finance controllers are the intended stakeholders. The domain is designed to bridge operational project management with financial performance tracking, enabling organizations to track project profitability, resource utilization, and delivery progress within the same ERP system.
 
 ## Implementation Status
 

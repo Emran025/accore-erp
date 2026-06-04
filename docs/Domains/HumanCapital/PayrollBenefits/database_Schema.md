@@ -1,7 +1,7 @@
 # HumanCapital - PayrollBenefits
 
 > **Bounded Context Schema & ERD**
-> 13 Tables | Generated dynamically by ACCSYSTEM engine
+> 13 Tables | Generated dynamically by accore engine
 
 ---
 

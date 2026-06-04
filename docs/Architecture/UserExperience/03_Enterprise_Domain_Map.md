@@ -1,6 +1,6 @@
 # Enterprise Domain Map
 
-The ACCSYSTEM is structured into **10 distinct vertical domains**. This ensures High Cohesion (related tasks grouped together) and Low Coupling (domains can operate independently).
+The accoreructured into **10 distinct vertical domains**. This ensures High Cohesion (related tasks grouped together) and Low Coupling (domains can operate independently).
 
 ## 1. The 10-Domain Overview
 

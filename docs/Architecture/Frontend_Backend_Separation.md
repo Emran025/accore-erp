@@ -15,10 +15,10 @@ word_count: 565
 # ADR-001: Frontend-Backend Separation
 
 ## Context
-Traditional enterprise ERP systems often utilized monolithic architectures where the user interface (UI) and business logic were tightly coupled within a single application server. This approach frequently led to "View Pollution," where presentation logic and database queries were mixed, making the system difficult to test, scale, and modernize. As ACCSYSTEM ERP aims for a modular, Domain-Driven Design (DDD) compliant architecture capable of supporting diverse client types (web, desktop, mobile), the coupling of UI to the PHP backend was identified as a primary technical risk.
+Traditional enterprise ERP systems often utilized monolithic architectures where the user interface (UI) and business logic were tightly coupled within a single application server. This approach frequently led to "View Pollution," where presentation logic and database queries were mixed, making the system difficult to test, scale, and modernize. As accore ERP aims for a modular, Domain-Driven Design (DDD) compliant architecture capable of supporting diverse client types (web, desktop, mobile), the coupling of UI to the PHP backend was identified as a primary technical risk.
 
 ## Decision
-We have decided to architect ACCSYSTEM ERP as two distinct, decoupled applications:
+We have decided to architect accore ERP as two distinct, decoupled applications:
 1.  **Backend**: A stateless Laravel-based API responsible for business logic, financial integrity, and data persistence.
 2.  **Frontend**: A Next.js-based contemporary web application responsible for user experience, data visualization, and client-side state management.
 

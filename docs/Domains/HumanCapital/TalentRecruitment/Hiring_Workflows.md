@@ -16,7 +16,7 @@ word_count: 604
 
 ## Overview
 
-The hiring workflow encompasses the end-to-end talent acquisition process within ACCSYSTEM, spanning from the creation of an authorized headcount request through applicant evaluation and into structured onboarding. The TalentRecruitment subdomain manages this pipeline as two interlinked lifecycles: the Recruitment Requisition lifecycle governing headcount authorization, and the Job Applicant lifecycle governing individual candidate progression. Both terminate in the creation of an Employee Record and the initiation of an Onboarding Workflow.
+The hiring workflow encompasses the end-to-end talent acquisition process within accorepanning from the creation of an authorized headcount request through applicant evaluation and into structured onboarding. The TalentRecruitment subdomain manages this pipeline as two interlinked lifecycles: the Recruitment Requisition lifecycle governing headcount authorization, and the Job Applicant lifecycle governing individual candidate progression. Both terminate in the creation of an Employee Record and the initiation of an Onboarding Workflow.
 
 ## State Diagram
 

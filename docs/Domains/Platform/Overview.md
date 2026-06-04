@@ -16,7 +16,7 @@ word_count: 401
 
 ## Business Purpose
 
-The Platform domain is designed to provide the digital infrastructure services that enable ACCSYSTEM's integration, communication, and extensibility capabilities. This includes outbound and inbound email and SMS notification channels, an API gateway and webhook dispatching infrastructure for third-party integrations, and dynamic field and form customization tools for adapting the ERP's data model to organization-specific requirements. Platform and integration engineers, and system administrators are the intended users.
+The Platform domain is designed to provide the digital infrastructure services that enable accore's integration, communication, and extensibility capabilities. This includes outbound and inbound email and SMS notification channels, an API gateway and webhook dispatching infrastructure for third-party integrations, and dynamic field and form customization tools for adapting the ERP's data model to organization-specific requirements. Platform and integration engineers, and system administrators are the intended users.
 
 ## Implementation Status
 

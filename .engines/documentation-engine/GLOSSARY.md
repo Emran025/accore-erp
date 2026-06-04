@@ -1,4 +1,4 @@
-# ACCSYSTEM Documentation Engine — Canonical Glossary
+# accore Documentation Engine — Canonical Glossary
 
 > **Purpose:** Every domain term used in AI-generated documentation MUST match the definitions below.
 > **Rule:** If a term is not in this glossary, the AI MUST NOT use it without flagging `[ASSUMPTION]`.
@@ -20,7 +20,7 @@
 
 - **Batch** — A grouping of transactions processed together as a single unit (e.g., payroll batch, payment batch).
 - **Bill of Materials (BOM)** — A structured list of raw materials, components, and quantities required to manufacture a product.
-- **Bounded Context** — A DDD pattern defining the boundary within which a particular domain model applies. In ACCSYSTEM, each Domain folder is a Bounded Context.
+- **Bounded Context** — A DDD pattern defining the boundary within which a particular domain model applies. In accore, each Domain folder is a Bounded Context.
 - **Budget** — A financial plan allocating expected revenue and expenses to Cost Centers or projects over a defined Fiscal Period.
 
 ## C
@@ -33,7 +33,7 @@
 ## D
 
 - **Depreciation** — The systematic allocation of an asset's cost over its useful life, recorded as periodic journal entries.
-- **Domain** — A Bounded Context in ACCSYSTEM mapping to a folder under `backend/app/Domains/`.
+- **Domain** — A Bounded Context in accore mapping to a folder under `backend/app/Domains/`.
 - **Domain Event** — An event emitted when a significant business state change occurs within a Bounded Context.
 - **Double-Entry Bookkeeping** — The foundational accounting principle: every transaction affects at least two accounts (debit and credit) that must balance.
 - **DTO (Data Transfer Object)** — A structure for passing data between layers without business logic.

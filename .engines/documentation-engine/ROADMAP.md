@@ -1,4 +1,4 @@
-# ACCSYSTEM Documentation Engine — Master Execution Roadmap
+# accore Documentation Engine — Master Execution Roadmap
 
 > **Version:** 1.0.0
 > **Authority:** Chief Architect

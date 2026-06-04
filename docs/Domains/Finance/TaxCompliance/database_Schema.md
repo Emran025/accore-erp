@@ -1,7 +1,7 @@
 # Finance - TaxCompliance
 
 > **Bounded Context Schema & ERD**
-> 4 Tables | Generated dynamically by ACCSYSTEM engine
+> 4 Tables | Generated dynamically by accoregine
 
 ---
 

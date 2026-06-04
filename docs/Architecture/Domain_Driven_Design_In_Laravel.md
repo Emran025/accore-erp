@@ -18,7 +18,7 @@ word_count: 595
 Standard Laravel applications often follow a flat `Models-Controllers-Services` structure, which works well for smaller projects but creates significant maintenance challenges for complex systems such as an enterprise ERP. In a monolithic standard structure, the "Finance," "SupplyChain," and "HumanCapital" models all exist in a single directory, leading to hidden dependencies and making it difficult to enforce the Bounded Context Map established in `SYS-002`.
 
 ## Decision
-We have decided to organize the ACCSYSTEM backend using **Domain-Driven Design (DDD)** principles, specifically using the **Bounded Context** as the primary organizational unit. The codebase is partitioned into distinct Domains within the `app/Domains/` directory, moving away from Laravel's default directory-per-component-type structure.
+We have decided to organize the accore backend using **Domain-Driven Design (DDD)** principles, specifically using the **Bounded Context** as the primary organizational unit. The codebase is partitioned into distinct Domains within the `app/Domains/` directory, moving away from Laravel's default directory-per-component-type structure.
 
 Each Domain is further divided into Subdomains, providing a nested, modular architecture where every piece of business logic has a single, unambiguous home.
 
@@ -50,7 +50,7 @@ This architecture was selected to achieve several critical ERP outcomes:
 *   **Inter-Domain Communication**: Requires disciplined use of Integration Events (documented in `SYS-005`) to prevent circular dependencies.
 
 ## Internal Directory Pattern
-The following diagram illustrates the canonical structure for an ACCSYSTEM Domain:
+The following diagram illustrates the canonical structure for an accore Domain:
 
 ```mermaid
 graph TD

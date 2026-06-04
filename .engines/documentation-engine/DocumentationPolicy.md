@@ -1,4 +1,4 @@
-# ACCSYSTEM Documentation Strategy & Governance Policy
+# accore Documentation Strategy & Governance Policy
 
 > **Version:** 2.0.0
 > **Last Updated:** 2026-03-17
@@ -10,7 +10,7 @@
 
 ## 1. Relationship to the Documentation Engine
 
-This document governs the **human and organizational** aspects of ACCSYSTEM's documentation ecosystem.
+This document governs the **human and organizational** aspects of accore's documentation ecosystem.
 The **AI execution engine** located at `/doc-engine/` is the sole authority for:
 
 | Responsibility | Delegated To |
@@ -66,7 +66,7 @@ For the API Tier, **OpenAPI 3.0 (Swagger)** or **Scribe** auto-generates low-lev
 Documentation exists in the exact same Git repository as the application code. Checking out a tagged release (e.g., `v1.2.0`) presents the documentation accurate for that release.
 
 ### 4.2. Bilingual Architecture (Arabic & English)
-ACCSYSTEM targets the MENA region while adhering to global ERP standards:
+accore targets the MENA region while adhering to global ERP standards:
 
 | Scope | Language |
 |-------|----------|
@@ -144,6 +144,6 @@ Contributors use the templates in `/doc-engine/templates/` to ensure their docum
 
 ## 9. Executive Mandate
 
-Maintaining this policy and adhering to these governance principles is a non-negotiable aspect of the ACCSYSTEM ERP's lifecycle. It is the singular mechanism that guarantees the platform remains comprehensible to thousands of OSS contributors, while simultaneously facilitating major enterprise adoptions without vendor lock-in or "black box" logic.
+Maintaining this policy and adhering to these governance principles is a non-negotiable aspect of the accore ERP's lifecycle. It is the singular mechanism that guarantees the platform remains comprehensible to thousands of OSS contributors, while simultaneously facilitating major enterprise adoptions without vendor lock-in or "black box" logic.
 
 > *"Code tells you how the application executes; our documentation tells you why the enterprise exists."*

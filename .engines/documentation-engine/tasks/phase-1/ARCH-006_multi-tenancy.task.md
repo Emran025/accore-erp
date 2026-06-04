@@ -19,7 +19,7 @@
 
 ## Objective
 
-Document the multi-tenancy architecture of ACCSYSTEM. Explain the tenancy model (database-per-tenant, schema-per-tenant, or shared-database), how tenant isolation is enforced, and the implications for data security.
+Document the multi-tenancy architecture of accore. Explain the tenancy model (database-per-tenant, schema-per-tenant, or shared-database), how tenant isolation is enforced, and the implications for data security.
 
 ---
 

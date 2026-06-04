@@ -1,7 +1,7 @@
 # UX Philosophy & Vision
 
 ## 1. Vision Statement
-The ACCSYSTEM ERP transcends the complexity of traditional enterprise software (like SAP) by providing a **Domain-Driven, Capability-Oriented** experience. Our objective is to minimize cognitive load while maintaining the rigid structural integrity required for enterprise-grade operations.
+The accore ERP transcends the complexity of traditional enterprise software (like SAP) by providing a **Domain-Driven, Capability-Oriented** experience. Our objective is to minimize cognitive load while maintaining the rigid structural integrity required for enterprise-grade operations.
 
 ## 2. The Core Philosophy: "The 4-Layer Hierarchy"
 To ensure consistency and predictability across thousands of screens, every element in the platform follows a strict 4-layer taxonomy:

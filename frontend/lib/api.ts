@@ -61,7 +61,8 @@ interface FetchOptions {
 export async function fetchAPI<T = unknown>(
   action: string,
   options?: FetchOptions
-): Promise<APIResponse<T>> {
+): Promise<APIResponse<T>> 
+{
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',

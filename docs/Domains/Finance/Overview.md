@@ -16,7 +16,7 @@ word_count: 637
 
 ## Business Purpose
 
-The Finance domain is the authoritative system of record for all monetary activity within the ACCSYSTEM ERP. It governs general ledger accounting, fiscal period management, tax compliance, treasury operations, foreign exchange, and internal cost allocation. Every financial transaction originating in any bounded context must ultimately produce a General Ledger entry within this domain.
+The Finance domain is the authoritative system of record for all monetary activity within the accore ERP. It governs general ledger accounting, fiscal period management, tax compliance, treasury operations, foreign exchange, and internal cost allocation. Every financial transaction originating in any bounded context must ultimately produce a General Ledger entry within this domain.
 
 Primary stakeholders include Chief Financial Officers, Controllers, Tax Officers, Treasury Managers, and external auditors. The domain ensures that the organization maintains accurate, compliant, and immutable financial records across all fiscal periods and reporting jurisdictions.
 

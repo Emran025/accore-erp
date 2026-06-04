@@ -1,5 +1,5 @@
 name: "Feature Request"
-description: "Propose a new feature or enhancement for the ACCSYSTEM ERP platform. Clearly articulate the problem being solved and the desired outcome."
+description: "Propose a new feature or enhancement for the accore ERP platform. Clearly articulate the problem being solved and the desired outcome."
 title: "[Feature]: "
 labels: ["type: enhancement", "status: needs-triage"]
 assignees: []
@@ -11,7 +11,7 @@ body:
 
         **Before submitting**, please confirm that:
         - You have searched the [existing feature requests](https://github.com/Emran025/accounting-system/issues?q=label%3A%22type%3A+enhancement%22) for duplicates.
-        - Your request aligns with the scope of the ACCSYSTEM ERP project (enterprise resource planning for small-to-medium businesses).
+        - Your request aligns with the scope of the accore ERP project (enterprise resource planning for small-to-medium businesses).
 
   - type: dropdown
     id: module

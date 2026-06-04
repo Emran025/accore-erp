@@ -23,7 +23,7 @@ In an ERP system operating across multiple currencies and units of measurement, 
 
 ## Currency Representation
 
-All monetary amounts in ACCSYSTEM are stored as `decimal(15,2)` database columns with two decimal places of precision. In Eloquent models, monetary fields are cast to `'decimal:2'` to ensure consistent serialization and to prevent floating-point precision errors in calculations.
+All monetary amounts in accore are stored as `decimal(15,2)` database columns with two decimal places of precision. In Eloquent models, monetary fields are cast to `'decimal:2'` to ensure consistent serialization and to prevent floating-point precision errors in calculations.
 
 The Finance domain's CurrencyPolicy model governs multi-currency support. When a monetary amount is expressed in a non-base currency, the CurrencyPolicy provides the exchange_rate that must be applied before the amount is stored in the base currency of the General Ledger. Cross-currency posting without applying the CurrencyPolicy exchange rate is prohibited.
 

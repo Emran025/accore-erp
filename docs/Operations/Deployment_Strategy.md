@@ -16,11 +16,11 @@ word_count: 548
 
 ## Purpose
 
-This runbook defines the deployment strategy for ACCSYSTEM ERP, covering the continuous integration pipeline, branch promotion model, and release controls. It is addressed to DevOps engineers, release managers, and senior engineers responsible for promoting code changes through the development and production lifecycle. The document establishes the authoritative pipeline topology and the behavioral expectations of each automated gate.
+This runbook defines the deployment strategy for accore ERP, covering the continuous integration pipeline, branch promotion model, and release controls. It is addressed to DevOps engineers, release managers, and senior engineers responsible for promoting code changes through the development and production lifecycle. The document establishes the authoritative pipeline topology and the behavioral expectations of each automated gate.
 
 ## Scope & Applicability
 
-This document applies to all ACCSYSTEM ERP components: the Laravel PHP backend (`backend/`) and the Next.js frontend (`frontend/`). It governs deployments across all environments where code is promoted from a feature branch through to the production release. All personnel with repository write access are bound by the branch promotion model defined here.
+This document applies to all accore ERP components: the Laravel PHP backend (`backend/`) and the Next.js frontend (`frontend/`). It governs deployments across all environments where code is promoted from a feature branch through to the production release. All personnel with repository write access are bound by the branch promotion model defined here.
 
 ## Procedure
 

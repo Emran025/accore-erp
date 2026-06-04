@@ -1,5 +1,5 @@
 name: "UI/UX Improvement"
-description: "Propose a user interface or user experience improvement for the ACCSYSTEM ERP frontend."
+description: "Propose a user interface or user experience improvement for the accore ERP frontend."
 title: "[UI/UX]: "
 labels: ["type: ui/ux", "status: needs-triage"]
 assignees: []
@@ -9,7 +9,7 @@ body:
       value: |
         ## UI/UX Improvement
 
-        Use this template to propose visual, interaction, or accessibility improvements to the ACCSYSTEM ERP frontend application.
+        Use this template to propose visual, interaction, or accessibility improvements to the accore ERP frontend application.
 
   - type: dropdown
     id: area

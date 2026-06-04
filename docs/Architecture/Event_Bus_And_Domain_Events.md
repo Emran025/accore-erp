@@ -15,7 +15,7 @@ word_count: 575
 # ADR-004: Event Bus & Domain Events
 
 ## Context
-ACCSYSTEM ERP's Bounded Context Map (documented in `SYS-002`) requires a mechanism for domains to notify others of significant state changes without creating direct, tightly-coupled dependencies. For instance, when the `Commercial` domain finalizes a sales invoice, the `Finance` domain may need to update the General Ledger, while the `Intelligence` domain may need to refresh its real-time analytics dashboards. Standard Laravel applications often rely on synchronous "Service Observers," but this approach can lead to performance bottlenecks and makes it difficult to manage complex, multi-domain side effects.
+accore ERP's Bounded Context Map (documented in `SYS-002`) requires a mechanism for domains to notify others of significant state changes without creating direct, tightly-coupled dependencies. For instance, when the `Commercial` domain finalizes a sales invoice, the `Finance` domain may need to update the General Ledger, while the `Intelligence` domain may need to refresh its real-time analytics dashboards. Standard Laravel applications often rely on synchronous "Service Observers," but this approach can lead to performance bottlenecks and makes it difficult to manage complex, multi-domain side effects.
 
 ## Decision
 We have decided to implement a robust, event-driven architecture based on an **Asynchronous Event Bus**. This architecture distinguishes between two types of events:
@@ -48,7 +48,7 @@ The Event Bus will be the primary mechanism for all non-financial, non-transacti
 *   **Error Handling Complexity**: Requires standardized retry policies and dead-letter queues for failed subscribers.
 
 ## Implementation Standard
-All events in ACCSYSTEM must extend a base `EnterpriseEvent` class to ensure consistent metadata (tenant identification, audit context, and correlation IDs). Integration Events MUST be dispatched using a dedicated `EventBus` interface to allow for future swaps between different messaging backends (e.g., Redis, RabbitMQ, or NATS). <!-- [ASSUMPTION] -->
+All events in accore must extend a base `EnterpriseEvent` class to ensure consistent metadata (tenant identification, audit context, and correlation IDs). Integration Events MUST be dispatched using a dedicated `EventBus` interface to allow for future swaps between different messaging backends (e.g., Redis, RabbitMQ, or NATS). <!-- [ASSUMPTION] -->
 
 ## Status
 `accepted`

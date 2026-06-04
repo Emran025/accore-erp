@@ -19,7 +19,7 @@
 
 ## Objective
 
-Document the event-driven architecture used in ACCSYSTEM. Explain how Domain Events are defined, dispatched, and consumed, and the technical infrastructure supporting the event bus.
+Document the event-driven architecture used in accore. Explain how Domain Events are defined, dispatched, and consumed, and the technical infrastructure supporting the event bus.
 
 ---
 

@@ -24,12 +24,12 @@ export function FullLogo({
   children,
   opacity = 0.05
 }: FullLogoProps) {
-  let logo = "/ACCSYSTEM_LOGO.svg";
+  let logo = "/accore_LOGO.svg";
 
   if (type === "LogoVertical") {
-    logo = "/ACCSYSTEM_LOGO_3.svg";
+    logo = "/accore_LOGO_3.svg";
   } else if (type === "LogoHorizontal") {
-    logo = "/ACCSYSTEM_LOGO_2.svg";
+    logo = "/accore_LOGO_2.svg";
   }
 
   if (isWatermark && children) {

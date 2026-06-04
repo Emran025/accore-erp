@@ -16,7 +16,7 @@ word_count: 468
 
 ## Business Purpose
 
-The Manufacturing domain encompasses the organization's engineering and production control capabilities within ACCSYSTEM. Its business purpose is to govern the design of products through bills of materials and formulas, orchestrate production work orders and routing, and enforce quality assurance standards through inspection, compliance tracking, and corrective action processes. Production managers, quality officers, process engineers, and supply chain coordinators are the primary stakeholders.
+The Manufacturing domain encompasses the organization's engineering and production control capabilities within accore. Its business purpose is to govern the design of products through bills of materials and formulas, orchestrate production work orders and routing, and enforce quality assurance standards through inspection, compliance tracking, and corrective action processes. Production managers, quality officers, process engineers, and supply chain coordinators are the primary stakeholders.
 
 ## Implementation Status
 

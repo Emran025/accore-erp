@@ -9,7 +9,7 @@
 | **Output Path** | `/docs/Developer/Onboarding_Guide.md` |
 | **Dependencies** | ARCH-002, ARCH-003, API-001 |
 ## Objective
-Create a comprehensive onboarding guide for new developers joining the ACCSYSTEM project.
+Create a comprehensive onboarding guide for new developers joining the accore project.
 ## Input Files / Folders
 | Type | Path |
 |------|------|

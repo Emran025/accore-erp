@@ -16,7 +16,7 @@ word_count: 451
 
 ## Overview
 
-External system integrations allow ACCSYSTEM to exchange data with third-party platforms such as government regulatory portals, payment gateways, and enterprise partners. At the time of writing, the system's implemented external integration is the ZATCA e-invoicing compliance interface for Saudi Arabia. Future integrations are anticipated through the Platform domain's planned IntegrationHub subdomain, which is not yet implemented.
+External system integrations allow accore to exchange data with third-party platforms such as government regulatory portals, payment gateways, and enterprise partners. At the time of writing, the system's implemented external integration is the ZATCA e-invoicing compliance interface for Saudi Arabia. Future integrations are anticipated through the Platform domain's planned IntegrationHub subdomain, which is not yet implemented.
 
 ## ZATCA E-Invoicing Integration
 
@@ -37,7 +37,7 @@ Each e-invoice includes a ZATCA-compliant QR code encoded using the Tag-Length-V
 ## Compliance Pull Endpoints
 
 <!-- [ASSUMPTION] -->
-The Platform domain README references "External Pull Endpoints" under its Compliance capability. These are inferred to be ZATCA or equivalent regulatory pull endpoints that allow the authority to query invoice data from ACCSYSTEM directly. No implementation of these endpoints was found in the codebase; this capability appears to be planned rather than implemented.
+The Platform domain README references "External Pull Endpoints" under its Compliance capability. These are inferred to be ZATCA or equivalent regulatory pull endpoints that allow the authority to query invoice data from accore directly. No implementation of these endpoints was found in the codebase; this capability appears to be planned rather than implemented.
 
 ## Future Integrations (Planned)
 

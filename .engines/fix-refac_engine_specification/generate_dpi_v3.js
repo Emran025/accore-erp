@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const ROOT_DIR = 'C:/xampp/htdocs/accsystem';
+const ROOT_DIR = 'C:/xampp/htdocs/accore';
 const EPOCHS_DIR = path.join(ROOT_DIR, 'doc_engine_specification', 'dpi_epochs');
 const MANIFEST_FILE = path.join(ROOT_DIR, 'doc_engine_specification', 'DPI_MANIFEST.md');
 

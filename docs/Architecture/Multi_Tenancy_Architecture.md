@@ -18,11 +18,11 @@ word_count: 548
 
 Enterprise ERP deployments must declare an explicit tenancy model: whether a single instance serves multiple customer organizations (multi-tenant), or one instance serves a single organization (single-tenant). This decision governs database schema design, access control boundaries, data isolation guarantees, and deployment topology. Deferring or obscuring this choice produces security vulnerabilities — principally, unintended cross-organization data exposure.
 
-ACCSYSTEM manages financial, payroll, commercial, and compliance data. The sensitivity of this data demands that the tenancy boundary be formally documented and enforced at the architectural level, not left to convention.
+accore manages financial, payroll, commercial, and compliance data. The sensitivity of this data demands that the tenancy boundary be formally documented and enforced at the architectural level, not left to convention.
 
 ## Decision
 
-ACCSYSTEM is architected as a **single-tenant** system. Each deployed instance serves exactly one organization. There is no tenant identifier column in any domain model, no tenant resolution middleware in the HTTP stack, and no tenancy-scoped query scope applied at the data access layer.
+accore is architected as a **single-tenant** system. Each deployed instance serves exactly one organization. There is no tenant identifier column in any domain model, no tenant resolution middleware in the HTTP stack, and no tenancy-scoped query scope applied at the data access layer.
 
 Organizational complexity within that single tenant is managed through the **Organization Governance** subdomain, which implements a SAP-inspired polymorphic hierarchy. All organizational units — Company Codes, Business Units, Plants, Cost Centers, Profit Centers — are represented as typed nodes in a single `structure_nodes` table, linked by a `structure_links` adjacency table. This provides arbitrary depth and breadth of internal organizational structure without introducing multi-tenancy.
 
@@ -32,7 +32,7 @@ The single-tenant model was selected on the following grounds:
 
 **Security isolation:** A shared-database, shared-schema multi-tenant design requires every query to include a `tenant_id` predicate. Missing predicates expose cross-tenant data. The single-tenant model eliminates this entire attack surface — database-level isolation is absolute by default.
 
-**Regulatory compliance:** ACCSYSTEM targets jurisdictions with strict data residency requirements (including ZATCA compliance for Saudi e-invoicing). A dedicated instance per organization simplifies audit, data residency controls, and regulatory reporting scopes.
+**Regulatory compliance:** accore targets jurisdictions with strict data residency requirements (including ZATCA compliance for Saudi e-invoicing). A dedicated instance per organization simplifies audit, data residency controls, and regulatory reporting scopes.
 
 **Organizational depth without tenancy:** The `StructureNode` model provides the organizational segmentation typically conflated with multi-tenancy. A single organization can model multiple legal entities, geographic regions, and reporting hierarchies without a shared instance.
 

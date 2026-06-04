@@ -20,7 +20,7 @@ This runbook defines the operational procedures for identifying, classifying, an
 
 ## Scope & Applicability
 
-This document applies to all ACCSYSTEM ERP environments where financial Posting has occurred and Fiscal Periods have been advanced to a closed or locked state. It encompasses all financial Domains whose transactions ultimately post to the General Ledger, including Commercial (Sales Invoices), SupplyChain (Purchases), HumanCapital (Payroll), and Assets (Depreciation). It is directly dependent on the reconciliation controls defined in FIN-004 and the cash management procedures in FIN-008.
+This document applies to all accore ERP environments where financial Posting has occurred and Fiscal Periods have been advanced to a closed or locked state. It encompasses all financial Domains whose transactions ultimately post to the General Ledger, including Commercial (Sales Invoices), SupplyChain (Purchases), HumanCapital (Payroll), and Assets (Depreciation). It is directly dependent on the reconciliation controls defined in FIN-004 and the cash management procedures in FIN-008.
 
 ## Procedure
 
@@ -69,7 +69,7 @@ flowchart TD
 ## Compliance & Audit
 
 - The Offset Entry pattern ensures that the correction history is fully visible in the Audit Trail: auditors see the original error and the correction as separate, immutable records.
-- Closed Fiscal Periods are treated as permanent historical records. No mechanism within ACCSYSTEM ERP permits modification or deletion of entries in a closed period; this constraint supports IFRS and GAAP requirements for reproducible financial statements.
+- Closed Fiscal Periods are treated as permanent historical records. No mechanism within accore ERP permits modification or deletion of entries in a closed period; this constraint supports IFRS and GAAP requirements for reproducible financial statements.
 - All period unlock events are logged with the authorizing administrator identity and the business justification, providing evidence of controlled exception management for external auditors.
 
 ## Change History

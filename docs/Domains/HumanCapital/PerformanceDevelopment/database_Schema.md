@@ -1,7 +1,7 @@
 # HumanCapital - PerformanceDevelopment
 
 > **Bounded Context Schema & ERD**
-> 3 Tables | Generated dynamically by ACCSYSTEM engine
+> 3 Tables | Generated dynamically by accoregine
 
 ---
 

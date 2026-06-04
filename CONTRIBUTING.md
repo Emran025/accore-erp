@@ -1,4 +1,4 @@
-# Contributing to ACCSYSTEM ERP System
+# Contributing to accore ERP System
 
 Thank you for considering contributing to our Enterprise Resource Planning (ERP) system!
 
@@ -22,8 +22,8 @@ This document provides a quick-start summary. The `.github/CONTRIBUTING.md` is t
 
 ```bash
 # Fork & clone
-git clone https://github.com/<YOUR_USERNAME>/ACCSYSTEM.git
-cd ACCSYSTEM
+git clone https://github.com/<YOUR_USERNAME>/accore.git
+cd accore
 
 # Backend
 cd backend
@@ -154,8 +154,8 @@ By contributing, you agree that your contributions will be licensed under the sa
 ## Questions?
 
 1. Check the [Documentation Index](./docs/DOCUMENTATION_INDEX.md)
-2. Search [closed pull requests](https://github.com/ACCSYSTEM/ACCSYSTEM-erp/pulls?q=is%3Apr+is%3Aclosed)
-3. Ask in [GitHub Discussions](https://github.com/ACCSYSTEM/ACCSYSTEM-erp/discussions)
+2. Search [closed pull requests](https://github.com/accore/accore-erp/pulls?q=is%3Apr+is%3Aclosed)
+3. Ask in [GitHub Discussions](https://github.com/accore/accore-erp/discussions)
 4. For security issues, follow the process in [`.github/SECURITY.md`](./.github/SECURITY.md)
 
 ---

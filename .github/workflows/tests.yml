@@ -14,7 +14,7 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_DATABASE: accsystem_test
+          MYSQL_DATABASE: accore_test
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
         ports:
           - 3306:3306
@@ -53,6 +53,6 @@ jobs:
           DB_CONNECTION: mysql
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
-          DB_DATABASE: accsystem_test
+          DB_DATABASE: accore_test
           DB_USERNAME: root
           DB_PASSWORD: ""

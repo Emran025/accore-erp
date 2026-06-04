@@ -181,7 +181,7 @@ export const useAuthStore = create<AuthState>()(
             { name: 'auth-store' }
         ),
         {
-            name: 'accsystem-auth',
+            name: 'accore-auth',
             partialize: (state) => ({
                 user: state.user,
                 permissions: state.permissions,

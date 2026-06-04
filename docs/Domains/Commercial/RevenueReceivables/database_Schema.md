@@ -1,7 +1,7 @@
 # Commercial - RevenueReceivables
 
 > **Bounded Context Schema & ERD**
-> 8 Tables | Generated dynamically by ACCSYSTEM engine
+> 8 Tables | Generated dynamically by accoregine
 
 ---
 

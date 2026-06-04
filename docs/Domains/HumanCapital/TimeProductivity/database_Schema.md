@@ -1,7 +1,7 @@
 # HumanCapital - TimeProductivity
 
 > **Bounded Context Schema & ERD**
-> 5 Tables | Generated dynamically by ACCSYSTEM engine
+> 5 Tables | Generated dynamically by accore engine
 
 ---
 

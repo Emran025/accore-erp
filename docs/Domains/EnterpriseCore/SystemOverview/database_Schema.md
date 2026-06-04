@@ -1,7 +1,7 @@
 # EnterpriseCore - SystemOverview
 
 > **Bounded Context Schema & ERD**
-> 11 Tables | Generated dynamically by ACCSYSTEM engine
+> 11 Tables | Generated dynamically by accore engine
 
 ---
 

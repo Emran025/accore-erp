@@ -16,7 +16,7 @@ word_count: 558
 
 ## Testing Philosophy
 
-ACCSYSTEM uses PHPUnit 11 as its test runner within the Laravel testing framework. The strategy is pragmatic: Feature tests verify the full request-response cycle including authentication, authorization, database writes, and response shape. Unit tests cover isolated service and calculation logic. The test suite prioritizes correctness of business rules over exhaustive code coverage metrics.
+accore uses PHPUnit 11 as its test runner within the Laravel testing framework. The strategy is pragmatic: Feature tests verify the full request-response cycle including authentication, authorization, database writes, and response shape. Unit tests cover isolated service and calculation logic. The test suite prioritizes correctness of business rules over exhaustive code coverage metrics.
 
 ## Test Layers
 

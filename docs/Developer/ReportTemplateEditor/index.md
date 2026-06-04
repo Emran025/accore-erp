@@ -1,6 +1,6 @@
 # Report Template Editor Overview
 
-The **Report Template Editor** is a sophisticated, feature-rich code editor designed specifically for the ACCSYSTEM ERP. It enables administrators and developers to create, edit, and manage dynamic HTML templates for various system modules such as Payroll, Sales, Commercial Contracts, and more.
+The **Report Template Editor** is a sophisticated, feature-rich code editor designed specifically for the accore ERP. It enables administrators and developers to create, edit, and manage dynamic HTML templates for various system modules such as Payroll, Sales, Commercial Contracts, and more.
 
 ## Purpose
 

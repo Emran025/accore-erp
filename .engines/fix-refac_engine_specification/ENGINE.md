@@ -2,7 +2,7 @@
 
 ## 0. ENGINE IDENTITY AND PURPOSE
 **Identity**: Dynamic Project-Aware Architecture Engine.
-**Purpose**: To enforce absolute architectural integrity, state synchronization, and strict standard alignment across the entire ACCSYSTEM project. The engine operates on project-wide deterministic loops and is forbidden from performing isolated, partial, or page-based execution without full contextual awareness. 
+**Purpose**: To enforce absolute architectural integrity, state synchronization, and strict standard alignment across the entire accore project. The engine operates on project-wide deterministic loops and is forbidden from performing isolated, partial, or page-based execution without full contextual awareness. 
 
 The Engine's primary mission is to inventory all project assets, iterate through them systematically, and verify that every data exchange is free from structural defects (404, 422, 500 errors).
 

@@ -1,7 +1,7 @@
 # SupplyChain - Procurement
 
 > **Bounded Context Schema & ERD**
-> 2 Tables | Generated dynamically by ACCSYSTEM engine
+> 2 Tables | Generated dynamically by accore engine
 
 ---
 

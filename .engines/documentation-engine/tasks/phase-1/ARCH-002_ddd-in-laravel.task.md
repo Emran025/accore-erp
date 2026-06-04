@@ -35,5 +35,5 @@ Document how Domain-Driven Design principles are applied within the Laravel fram
 
 ## Forbidden Assumptions
 
-1. Do NOT assume patterns from standard Laravel — verify ACCSYSTEM's specific DDD implementation.
+1. Do NOT assume patterns from standard Laravel — verify accore's specific DDD implementation.
 2. Flag any DDD concept applied differently than textbook with `[ASSUMPTION]`.

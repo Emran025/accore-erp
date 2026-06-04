@@ -16,7 +16,7 @@ word_count: 556
 
 ## Authentication Mechanism
 
-ACCSYSTEM uses session-based authentication rather than token-based authentication (such as JWT or OAuth). Upon successful login, the server establishes a server-side session and returns a `session_token` string that the client must include in all subsequent API requests.
+accore uses session-based authentication rather than token-based authentication (such as JWT or OAuth). Upon successful login, the server establishes a server-side session and returns a `session_token` string that the client must include in all subsequent API requests.
 
 ### Login
 

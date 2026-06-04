@@ -1,7 +1,7 @@
 # Numeration & Number Range System
 
 ## Overview
-The Numeration System in ACCSYSTEM is a core infrastructure component designed to emulate the professional-grade flexibility and robustness found in world-class ERP systems like **SAP (Transaction SNRO)**. It provides a unified mechanism for generating unique, sequential identification numbers for various system entities—such as employees, customers, suppliers, and invoices—ensuring data integrity, preventing overlaps, and maintaining a comprehensive audit trail.
+The Numeration System in accore is a core infrastructure component designed to emulate the professional-grade flexibility and robustness found in world-class ERP systems like **SAP (Transaction SNRO)**. It provides a unified mechanism for generating unique, sequential identification numbers for various system entities—such as employees, customers, suppliers, and invoices—ensuring data integrity, preventing overlaps, and maintaining a comprehensive audit trail.
 
 ## Design Philosophy
 The system is built as a self-contained "Engine." Its responsibility extends beyond simple increments; it manages complex numbering policies including:

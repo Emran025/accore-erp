@@ -19,7 +19,7 @@
 
 ## Objective
 
-Document the complete Bounded Context Map of the ACCSYSTEM ERP. Define each domain, its boundaries, its subdomain structure, and how domains interact with each other. This document serves as the canonical reference that all subsequent domain documentation builds upon.
+Document the complete Bounded Context Map of the accore ERP. Define each domain, its boundaries, its subdomain structure, and how domains interact with each other. This document serves as the canonical reference that all subsequent domain documentation builds upon.
 
 ---
 

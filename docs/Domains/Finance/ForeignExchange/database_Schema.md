@@ -1,7 +1,7 @@
 # Finance - ForeignExchange
 
 > **Bounded Context Schema & ERD**
-> 7 Tables | Generated dynamically by ACCSYSTEM engine
+> 7 Tables | Generated dynamically by accoregine
 
 ---
 

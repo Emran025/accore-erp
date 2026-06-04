@@ -19,14 +19,14 @@
 
 ## Objective
 
-Document the foundational philosophy, vision, and strategic positioning of the ACCSYSTEM ERP platform. Explain WHY this system exists, what enterprise gap it fills, and how its design philosophy differentiates it from proprietary ERP systems.
+Document the foundational philosophy, vision, and strategic positioning of the accore ERP platform. Explain WHY this system exists, what enterprise gap it fills, and how its design philosophy differentiates it from proprietary ERP systems.
 
 ---
 
 ## Strict Scope
 
 ### IN SCOPE
-- The business vision behind ACCSYSTEM as an open-source enterprise ERP
+- The business vision behind accore as an open-source enterprise ERP
 - The strategic goal of paralleling SAP-class functionality
 - The philosophy of treating documentation as a first-class architectural layer
 - The commitment to financial immutability and audit safety

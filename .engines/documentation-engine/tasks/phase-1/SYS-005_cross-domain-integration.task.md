@@ -19,7 +19,7 @@
 
 ## Objective
 
-Document the patterns used for cross-domain communication in ACCSYSTEM. Define how Bounded Contexts interact without violating their boundaries, what Integration Events look like, and the general contract for inter-domain messaging.
+Document the patterns used for cross-domain communication in accore. Define how Bounded Contexts interact without violating their boundaries, what Integration Events look like, and the general contract for inter-domain messaging.
 
 ---
 

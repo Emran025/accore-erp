@@ -1,4 +1,4 @@
-# Git Workflow and Commit Message Guidelines -- ACCSYSTEM ERP
+# Git Workflow and Commit Message Guidelines -- accore ERP
 
 This document is the authoritative reference for the project's Git workflow, branching strategy, and commit message conventions. All contributors must follow these rules without exception. A clean, meaningful Git history is essential for debugging, code review, changelog generation, and long-term project maintainability.
 
@@ -6,18 +6,36 @@ This document is the authoritative reference for the project's Git workflow, bra
 
 ## Table of Contents
 
-1. [Branching Strategy](#1-branching-strategy)
-2. [Commit Message Specification](#2-commit-message-specification)
-3. [Type Reference](#3-type-reference)
-4. [Scope Reference](#4-scope-reference)
-5. [Writing the Description](#5-writing-the-description)
-6. [Writing the Body](#6-writing-the-body)
-7. [Writing the Footer](#7-writing-the-footer)
-8. [Complete Examples](#8-complete-examples)
-9. [Multi-Module Commits](#9-multi-module-commits)
-10. [Migration-Specific Commits](#10-migration-specific-commits)
-11. [Common Mistakes to Avoid](#11-common-mistakes-to-avoid)
-12. [Pre-Commit Checklist](#12-pre-commit-checklist)
+- [Git Workflow and Commit Message Guidelines -- accore ERP](#git-workflow-and-commit-message-guidelines----accore-erp)
+  - [Table of Contents](#table-of-contents)
+  - [1. Branching Strategy](#1-branching-strategy)
+    - [Protected Branches](#protected-branches)
+    - [Creating a Branch](#creating-a-branch)
+    - [Branch Name Format](#branch-name-format)
+    - [Branch Lifecycle](#branch-lifecycle)
+  - [2. Commit Message Specification](#2-commit-message-specification)
+    - [Structure](#structure)
+  - [3. Type Reference](#3-type-reference)
+  - [4. Scope Reference](#4-scope-reference)
+    - [Recognised Scopes](#recognised-scopes)
+  - [5. Writing the Description](#5-writing-the-description)
+  - [6. Writing the Body](#6-writing-the-body)
+  - [7. Writing the Footer](#7-writing-the-footer)
+    - [Issue References](#issue-references)
+    - [Breaking Changes](#breaking-changes)
+  - [8. Complete Examples](#8-complete-examples)
+    - [Simple Feature](#simple-feature)
+    - [Bug Fix with Scope and Body](#bug-fix-with-scope-and-body)
+    - [Documentation Update](#documentation-update)
+    - [Refactoring with No Behaviour Change](#refactoring-with-no-behaviour-change)
+    - [Performance Improvement](#performance-improvement)
+    - [Migration Commit](#migration-commit)
+    - [Breaking Change](#breaking-change)
+    - [Revert](#revert)
+  - [9. Multi-Module Commits](#9-multi-module-commits)
+  - [10. Migration-Specific Commits](#10-migration-specific-commits)
+  - [11. Common Mistakes to Avoid](#11-common-mistakes-to-avoid)
+  - [12. Pre-Commit Checklist](#12-pre-commit-checklist)
 
 ---
 

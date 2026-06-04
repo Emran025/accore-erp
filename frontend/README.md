@@ -1,8 +1,8 @@
-# ACCSYSTEM ERP System - Frontend
+# accore ERP System - Frontend
 
-> **Next.js 16 Frontend for ACCSYSTEM ERP System**
+> **Next.js 16 Frontend for accore ERP System**
 
-This is the frontend application for the ACCSYSTEM ERP System, built with Next.js 16, React 19, and TypeScript.
+This is the frontend application for the accore ERP System, built with Next.js 16, React 19, and TypeScript.
 
 ## 🚀 Quick Start
 
@@ -100,4 +100,4 @@ NEXT_PUBLIC_API_BASE=http://127.0.0.1:8000/api
 
 ---
 
-> Part of the **ACCSYSTEM ERP System**
+> Part of the **accore ERP System**

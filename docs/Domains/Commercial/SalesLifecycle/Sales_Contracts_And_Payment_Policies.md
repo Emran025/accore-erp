@@ -104,4 +104,4 @@ stateDiagram-v2
 **Credit Term Policies**: Invoice does not contain payment_due_date or credit_term_days. Clarification needed: Where are credit terms (Net 30, 2/10 Net 30, etc.) stored? Are they per-customer or per-product-category?
 
 <!-- [ASSUMPTION] -->
-**Multi-Tenant Policy Enforcement**: Policies appear to be global (no tenant_id in policy tables). Clarification needed: For multi-tenant ACCSYSTEM, how are per-tenant sales policies enforced?
+**Multi-Tenant Policy Enforcement**: Policies appear to be global (no tenant_id in policy tables). Clarification needed: For multi-tenant accore, how are per-tenant sales policies enforced?

@@ -550,7 +550,7 @@ export default function CostCentersPage() {
                             />
                             {canAccess(permissions, "chart_of_accounts", "create") && (
                                 <Button variant="primary" onClick={openAddDialog} icon="plus">
-                                    مركز تكلفة جديد
+                                    مركز تكلفة جديدة
                                 </Button>
                             )}
                         </div>

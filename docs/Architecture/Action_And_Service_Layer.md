@@ -15,7 +15,7 @@ word_count: 610
 # ADR-003: Action & Service Layer
 
 ## Context
-In a standard Laravel architecture, business logic often drifts into Controllers (leading to "Fat Controllers") or is scattered across Eloquent Models. This entanglement makes business processes difficult to reuse, test, and audit—critical requirements for an enterprise ERP. ACCSYSTEM requires a strict separation between HTTP request handling and business execution to ensure that financial and operational rules are consistently applied regardless of the entry point (API, CLI, or internal event).
+In a standard Laravel architecture, business logic often drifts into Controllers (leading to "Fat Controllers") or is scattered across Eloquent Models. This entanglement makes business processes difficult to reuse, test, and audit—critical requirements for an enterprise ERP. accore requires a strict separation between HTTP request handling and business execution to ensure that financial and operational rules are consistently applied regardless of the entry point (API, CLI, or internal event).
 
 ## Decision
 We have implemented a dual-layer logic architecture comprising **Actions** and **Services**:
@@ -23,7 +23,7 @@ We have implemented a dual-layer logic architecture comprising **Actions** and *
 1.  **Actions (Single-Action Classes)**: The primary entry points for business workflows. Each Action encapsulates exactly one user-intent or business use-case (e.g., `PostInvoiceAction`, `CloseFiscalPeriodAction`).
 2.  **Services (Domain Services)**: Reusable classes that provide domain-specific capabilities across multiple Actions (e.g., `LedgerService`, `InventoryCostingService`).
 
-Controllers in ACCSYSTEM are prohibited from containing business logic; they only handle request validation, authorization checks, and delegation to the appropriate Action.
+Controllers in accore are prohibited from containing business logic; they only handle request validation, authorization checks, and delegation to the appropriate Action.
 
 ## Rationale
 *   **Predictability**: By using Single-Action classes, developers can find and understand a business process by its filename alone.
@@ -63,7 +63,7 @@ Controllers in ACCSYSTEM are prohibited from containing business logic; they onl
 *   **Indirection**: New developers may initially find the jump from Controller to Action to Service more complex than a standard MVC flow.
 
 ## Implementation Pattern
-The following diagram illustrates the flow of a typical business request in ACCSYSTEM:
+The following diagram illustrates the flow of a typical business request in accore:
 
 ```mermaid
 sequenceDiagram

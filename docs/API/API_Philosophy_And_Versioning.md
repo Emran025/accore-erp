@@ -16,7 +16,7 @@ word_count: 574
 
 ## Design Philosophy
 
-ACCSYSTEM's API is a domain-segregated RESTful JSON API. Every endpoint reflects a distinct business action owned by a specific domain. The API is designed around the Single Action Class pattern: each controller method maps to a dedicated Action class with a single responsibility, ensuring that the API surface is granular, testable, and independently documented.
+accore's API is a domain-segregated RESTful JSON API. Every endpoint reflects a distinct business action owned by a specific domain. The API is designed around the Single Action Class pattern: each controller method maps to a dedicated Action class with a single responsibility, ensuring that the API surface is granular, testable, and independently documented.
 
 The API rejects GraphQL and RPC-style patterns. All operations are resource-oriented, and HTTP verbs convey intent: `GET` for reads, `POST` for creates, `PUT` for updates, and `DELETE` for deletions. The API does not use partial update methods (`PATCH`).
 

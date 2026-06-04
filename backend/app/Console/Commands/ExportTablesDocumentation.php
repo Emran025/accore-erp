@@ -171,7 +171,7 @@ class ExportTablesDocumentation extends Command
 
         $markdown = "# {$domain} - {$module}\n\n";
         $markdown .= "> **Bounded Context Schema & ERD**\n";
-        $markdown .= "> " . count($tables) . " Tables | Generated dynamically by ACCSYSTEM engine\n\n";
+        $markdown .= "> " . count($tables) . " Tables | Generated dynamically by accore engine\n\n";
         $markdown .= "---\n\n";
 
         // Table List

@@ -16,7 +16,7 @@ word_count: 634
 
 ## Business Context & Objective
 
-The SystemOverview subdomain manages critical system-wide configuration and document numbering infrastructure that governs the entire enterprise. Master Variables define the system's operational parameters (number formats, sequence rules, entity configurations), while the Tenancy model ensures multi-entity support—allowing a single ACCSYSTEM installation to serve multiple independent companies or business units with separate accounting, compliance, and reporting requirements. System administrators, finance controllers, and operations teams depend on this subdomain to configure sequential numbering for all business documents (invoices, journals, purchase orders, employee IDs) and establish the foundational multi-entity structure. Without proper sequencing, regulatory compliance becomes impossible; without multi-tenancy, consolidating operations across subsidiary companies becomes operationally infeasible.
+The SystemOverview subdomain manages critical system-wide configuration and document numbering infrastructure that governs the entire enterprise. Master Variables define the system's operational parameters (number formats, sequence rules, entity configurations), while the Tenancy model ensures multi-entity support—allowing a single accorestallation to serve multiple independent companies or business units with separate accounting, compliance, and reporting requirements. System administrators, finance controllers, and operations teams depend on this subdomain to configure sequential numbering for all business documents (invoices, journals, purchase orders, employee IDs) and establish the foundational multi-entity structure. Without proper sequencing, regulatory compliance becomes impossible; without multi-tenancy, consolidating operations across subsidiary companies becomes operationally infeasible.
 
 ## Domain Entities
 
@@ -91,7 +91,7 @@ stateDiagram-v2
 ## Assumptions & Open Questions
 
 <!-- [ASSUMPTION] -->
-**Multi-Tenancy Implementation**: The task objective mentions "Tenancy configuration," but the SystemOverview entities (NrObject, NrInterval) show no explicit tenant_id column. It is unclear whether multi-tenancy is implemented at the application layer (soft-tenant using context), the database layer (schema-per-tenant), or delegated to the Platform domain. Clarification needed: How does ACCSYSTEM isolate document sequences between independent tenants?
+**Multi-Tenancy Implementation**: The task objective mentions "Tenancy configuration," but the SystemOverview entities (NrObject, NrInterval) show no explicit tenant_id column. It is unclear whether multi-tenancy is implemented at the application layer (soft-tenant using context), the database layer (schema-per-tenant), or delegated to the Platform domain. Clarification needed: How does accoreolate document sequences between independent tenants?
 
 <!-- [ASSUMPTION] -->
 **Master Variables Storage**: "Master Variables" is mentioned in the task title but is not implemented within SystemOverview models. It is likely that master configuration variables (general ledger close dates, fiscal periods, thresholds) are stored in OrganizationGovernance.Setting. Clarification needed: What constitutes "master variables" and where are they stored?

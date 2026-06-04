@@ -1,4 +1,4 @@
-# ACCSYSTEM Documentation Engine — Style Guide
+# accore Documentation Engine — Style Guide
 
 > **Purpose:** Governs the tone, formatting, and visual standards for all AI-generated documentation.
 > **Authority:** This file is immutable without Chief Architect approval.

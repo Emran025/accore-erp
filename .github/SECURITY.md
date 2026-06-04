@@ -1,8 +1,8 @@
-# Security Policy -- ACCSYSTEM ERP
+# Security Policy -- accore ERP
 
 ## 1. Overview
 
-The ACCSYSTEM ERP platform handles sensitive business data including financial transactions, employee records, payroll information, customer and supplier accounts, and tax compliance documents (ZATCA e-invoicing). The security of this data is a non-negotiable priority.
+The accore ERP platform handles sensitive business data including financial transactions, employee records, payroll information, customer and supplier accounts, and tax compliance documents (ZATCA e-invoicing). The security of this data is a non-negotiable priority.
 
 This document defines the project's security support policy, the process for reporting vulnerabilities, and the expected response timeline.
 
@@ -41,7 +41,7 @@ Send a detailed report to the project maintainer:
 
 **Emran Nasser**
 **Email: amrannaser3@gmail.com**
-**Subject Line: [SECURITY] Vulnerability Report -- ACCSYSTEM ERP**
+**Subject Line: [SECURITY] Vulnerability Report -- accore ERP**
 
 ### 3.3 Information to Include
 
@@ -102,7 +102,7 @@ If the vulnerability affects a third-party dependency (e.g., Laravel, Next.js, a
 
 ## 5. Security Architecture (Summary)
 
-The following is a high-level overview of the security controls implemented in ACCSYSTEM ERP. This information is provided to assist security researchers in understanding the attack surface.
+The following is a high-level overview of the security controls implemented in accore ERP. This information is provided to assist security researchers in understanding the attack surface.
 
 ### 5.1 Authentication
 

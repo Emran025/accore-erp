@@ -1,6 +1,6 @@
-# Contributing to ACCSYSTEM ERP
+# Contributing to accore ERP
 
-This document describes the conventions, standards, and processes that govern contributions to the ACCSYSTEM ERP platform. All contributors, whether internal team members or external collaborators, are expected to read this guide in its entirety before submitting any code, documentation, or configuration change.
+This document describes the conventions, standards, and processes that govern contributions to the accore ERP platform. All contributors, whether internal team members or external collaborators, are expected to read this guide in its entirety before submitting any code, documentation, or configuration change.
 
 By participating in this project you agree to abide by the [Code of Conduct](CODE_OF_CONDUCT.md).
 
@@ -8,28 +8,63 @@ By participating in this project you agree to abide by the [Code of Conduct](COD
 
 ## Table of Contents
 
-1. [Project Overview for Contributors](#1-project-overview-for-contributors)
-2. [Prerequisites and Local Environment Setup](#2-prerequisites-and-local-environment-setup)
-3. [Repository Layout and Module Boundaries](#3-repository-layout-and-module-boundaries)
-4. [Branching Strategy](#4-branching-strategy)
-5. [Commit Message Convention](#5-commit-message-convention)
-6. [Pull Request Process](#6-pull-request-process)
-7. [Backend Development Standards (Laravel 12)](#7-backend-development-standards-laravel-12)
-8. [Frontend Development Standards (Next.js 16)](#8-frontend-development-standards-nextjs-16)
-9. [Database and Migration Discipline](#9-database-and-migration-discipline)
-10. [Testing Requirements](#10-testing-requirements)
-11. [Documentation Expectations](#11-documentation-expectations)
-12. [Security Considerations](#12-security-considerations)
-13. [Performance Guidelines](#13-performance-guidelines)
-14. [Internationalization and Right-to-Left Support](#14-internationalization-and-right-to-left-support)
-15. [Issue Reporting](#15-issue-reporting)
-16. [Getting Help](#16-getting-help)
+- [Contributing to accore ERP](#contributing-to-accore-erp)
+  - [Table of Contents](#table-of-contents)
+  - [1. Project Overview for Contributors](#1-project-overview-for-contributors)
+  - [2. Prerequisites and Local Environment Setup](#2-prerequisites-and-local-environment-setup)
+    - [Required Software](#required-software)
+    - [Step-by-Step Local Setup](#step-by-step-local-setup)
+  - [3. Repository Layout and Module Boundaries](#3-repository-layout-and-module-boundaries)
+    - [Module Ownership (DDD)](#module-ownership-ddd)
+  - [4. Branching Strategy](#4-branching-strategy)
+    - [Protected Branches](#protected-branches)
+    - [Branch Naming Convention](#branch-naming-convention)
+    - [Workflow](#workflow)
+  - [5. Commit Message Convention](#5-commit-message-convention)
+    - [Format](#format)
+    - [Type Reference](#type-reference)
+    - [Scope](#scope)
+    - [Rules](#rules)
+    - [Examples](#examples)
+  - [6. Pull Request Process](#6-pull-request-process)
+    - [Before Opening a Pull Request](#before-opening-a-pull-request)
+    - [Pull Request Content](#pull-request-content)
+    - [Review and Merge](#review-and-merge)
+  - [7. Backend Development Standards (Laravel 12)](#7-backend-development-standards-laravel-12)
+    - [Architectural Layers](#architectural-layers)
+    - [Controller Guidelines](#controller-guidelines)
+    - [Service Guidelines](#service-guidelines)
+    - [Model Guidelines](#model-guidelines)
+    - [Coding Standards](#coding-standards)
+  - [8. Frontend Development Standards (Next.js 16)](#8-frontend-development-standards-nextjs-16)
+    - [Technology Constraints](#technology-constraints)
+    - [Component Architecture](#component-architecture)
+    - [State Management](#state-management)
+    - [API Communication](#api-communication)
+    - [Styling Rules](#styling-rules)
+  - [9. Database and Migration Discipline](#9-database-and-migration-discipline)
+    - [General Rules](#general-rules)
+    - [Foreign Key Conventions](#foreign-key-conventions)
+    - [Seeder Guidelines](#seeder-guidelines)
+  - [10. Testing Requirements](#10-testing-requirements)
+    - [Backend Testing](#backend-testing)
+    - [Frontend Testing](#frontend-testing)
+    - [Continuous Integration](#continuous-integration)
+  - [11. Documentation Expectations](#11-documentation-expectations)
+  - [12. Security Considerations](#12-security-considerations)
+  - [13. Performance Guidelines](#13-performance-guidelines)
+  - [14. Internationalization and Right-to-Left Support](#14-internationalization-and-right-to-left-support)
+  - [15. Issue Reporting](#15-issue-reporting)
+    - [Bug Reports](#bug-reports)
+    - [Feature Requests](#feature-requests)
+    - [Questions and Discussions](#questions-and-discussions)
+  - [16. Getting Help](#16-getting-help)
 
 ---
 
 ## 1. Project Overview for Contributors
 
-ACCSYSTEM ERP is a full-stack Enterprise Resource Planning system built for small-to-medium businesses. It comprises:
+accore ERP is a full-stack Enterprise Resource Planning system built for small-to-medium businesses. It comprises:
 
 - **Backend** -- A Laravel 12 (PHP 8.2+) REST API that exposes business logic through a service-oriented architecture. The backend manages authentication, role-based access control, double-entry accounting, payroll processing, inventory costing, ZATCA electronic invoicing, and over one hundred database tables.
 - **Frontend** -- A Next.js 16 (React 19, TypeScript 5) single-page application that communicates with the backend exclusively through REST endpoints. The UI uses Tailwind CSS 4, Zustand for state management, and renders a desktop-class ERP interface with multi-language (Arabic RTL / English LTR) support.
@@ -59,13 +94,13 @@ PHP must be compiled with or have the following extensions enabled: `pdo_mysql`,
 1. **Fork and clone the repository.**
 
    ```bash
-   git clone https://github.com/<YOUR_USERNAME>/ACCSYSTEM.git
-   cd ACCSYSTEM
+   git clone https://github.com/<YOUR_USERNAME>/accore.git
+   cd accore
    ```
 
 2. **Provision the database.**
 
-   Create a MySQL database (for example, `accsystem`) and a test database (`accsystem_test`). Record the credentials.
+   Create a MySQL database (for example, `accore`) and a test database (`accore_test`). Record the credentials.
 
 3. **Configure and start the backend.**
 
@@ -116,7 +151,7 @@ PHP must be compiled with or have the following extensions enabled: `pdo_mysql`,
 ## 3. Repository Layout and Module Boundaries
 
 ```
-ACCSYSTEM/
+accore/
   backend/
     app/
       Contracts/          Domain interfaces
@@ -518,7 +553,7 @@ For the full commit guidelines document, see [COMMIT_GUIDELINES.md](COMMIT_GUIDE
 
 ### Bug Reports
 
-Use the [Bug Report](https://github.com/Emran025/ACCSYSTEM/issues/new?template=1-bug-report.yml) template. Include:
+Use the [Bug Report](https://github.com/Emran025/accore/issues/new?template=1-bug-report.yml) template. Include:
 
 - A precise description of the incorrect behaviour and the expected behaviour.
 - Exact steps to reproduce the bug, starting from a clean state.
@@ -527,11 +562,11 @@ Use the [Bug Report](https://github.com/Emran025/ACCSYSTEM/issues/new?template=1
 
 ### Feature Requests
 
-Use the [Feature Request](https://github.com/Emran025/ACCSYSTEM/issues/new?template=2-feature-request.yml) template. Describe the problem the feature solves, the proposed solution, and any alternatives considered.
+Use the [Feature Request](https://github.com/Emran025/accore/issues/new?template=2-feature-request.yml) template. Describe the problem the feature solves, the proposed solution, and any alternatives considered.
 
 ### Questions and Discussions
 
-For questions that are not bug reports or feature requests, use [GitHub Discussions](https://github.com/Emran025/ACCSYSTEM/discussions).
+For questions that are not bug reports or feature requests, use [GitHub Discussions](https://github.com/Emran025/accore/discussions).
 
 ---
 

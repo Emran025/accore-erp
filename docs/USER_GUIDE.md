@@ -1,6 +1,6 @@
-# دليل المستخدم الشامل لنظام ACCSYSTEM لتخطيط موارد المؤسسة
+# دليل المستخدم الشامل لنظام accore لتخطيط موارد المؤسسة
 
-# ACCSYSTEM ERP System - Comprehensive User Guide
+# accore ERP System - Comprehensive User Guide
 
 > **الإصدار:** 3.0 | **آخر تحديث:** 28 مارس 2026  
 > **Version:** 3.0 | **Last Updated:** March 28, 2026
@@ -22,15 +22,15 @@
 
 ## 🏢 الفصل الأول: مقدمة عن النظام | Chapter 1: System Introduction
 
-### ما هو نظام ACCSYSTEM لتخطيط موارد المؤسسة (ERP)؟
+### ما هو نظام accore لتخطيط موارد المؤسسة (ERP)؟
 
-نظام ACCSYSTEM ERP هو منظومة برمجية متكاملة تربط جميع أقسام الشركة في قاعدة بيانات موحدة. بدلاً من استخدام برامج منفصلة للمحاسبة والمخزون والمبيعات والموارد البشرية، يوفر نظام ERP حلاً واحداً متكاملاً.
+نظام accore ERP هو منظومة برمجية متكاملة تربط جميع أقسام الشركة في قاعدة بيانات موحدة. بدلاً من استخدام برامج منفصلة للمحاسبة والمخزون والمبيعات والموارد البشرية، يوفر نظام ERP حلاً واحداً متكاملاً.
 
-### What is ACCSYSTEM ERP?
+### What is accore ERP?
 
-ACCSYSTEM ERP is an integrated software system that connects all company departments in a unified database. Instead of using separate programs for accounting, inventory, sales, and HR, this ERP system provides a single integrated solution.
+accore ERP is an integrated software system that connects all company departments in a unified database. Instead of using separate programs for accounting, inventory, sales, and HR, this ERP system provides a single integrated solution.
 
-### لماذا نظام ACCSYSTEM مختلف؟ | Why is ACCSYSTEM ERP Different?
+### لماذا نظام accore مختلف؟ | Why is accore ERP Different?
 
 | الميزة | الفائدة للمستخدم |
 | ------ | ---------------- |
@@ -45,7 +45,7 @@ ACCSYSTEM ERP is an integrated software system that connects all company departm
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    نظام ACCSYSTEM ERP المتكامل                   │
+│                    نظام accore ERP المتكامل                   │
 ├─────────────────────────────────────────────────────────────────────────┤
 │  ┌──────────────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────────┐ │
 │  │ المبيعات │ │المشتريات│ │ المخزون  │  │ الموارد البشرية  │ │

@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "Accsystem",
+  "productName": "accore",
   "version": "0.1.0",
-  "identifier": "com.mycompany.accsystem",
+  "identifier": "com.mycompany.accore",
   "build": {
     "frontendDist": "../.next",
     "devUrl": "http://localhost:3000",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Accsystem",
+        "title": "accore",
         "width": 800,
         "height": 600,
         "resizable": true,

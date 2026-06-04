@@ -1,7 +1,7 @@
 # Platform - Communication
 
 > **Bounded Context Schema & ERD**
-> 1 Tables | Generated dynamically by ACCSYSTEM engine
+> 1 Tables | Generated dynamically by accore engine
 
 ---
 

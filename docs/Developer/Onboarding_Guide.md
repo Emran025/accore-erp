@@ -14,9 +14,9 @@ word_count: 617
 
 # Onboarding Guide
 
-## What Is ACCSYSTEM?
+## What Is accore?
 
-ACCSYSTEM is a full-stack Enterprise Resource Planning (ERP) application serving the Arabic-speaking Middle East market, built for Saudi and Yemeni business compliance requirements. The system manages Finance, Assets, Commercial (Sales/AR), Supply Chain, Human Capital, Manufacturing, Projects, and Intelligence domains. It is built as a domain-driven Laravel 12 backend serving a Next.js frontend.
+accore is a full-stack Enterprise Resource Planning (ERP) application serving the Arabic-speaking Middle East market, built for Saudi and Yemeni business compliance requirements. The system manages Finance, Assets, Commercial (Sales/AR), Supply Chain, Human Capital, Manufacturing, Projects, and Intelligence domains. It is built as a domain-driven Laravel 12 backend serving a Next.js frontend.
 
 ## Technology Stack
 

@@ -1,4 +1,4 @@
-# ACCSYSTEM ERP System - Enterprise Resource Planning
+# accore ERP System - Enterprise Resource Planning
 
 > **Enterprise-Grade ERP Solution** | Laravel 12 + Next.js 16 | Full-Stack TypeScript/PHP
 
@@ -10,11 +10,11 @@
 
 ---
 
-## About ACCSYSTEM ERP
+## About accore ERP
 
-**ACCSYSTEM ERP** is a comprehensive, enterprise-grade **Enterprise Resource Planning (ERP)** system designed for small to medium-sized businesses. Built with modern technologies, it integrates all core business functions into a unified platform.
+**accore ERP** is a comprehensive, enterprise-grade **Enterprise Resource Planning (ERP)** system designed for small to medium-sized businesses. Built with modern technologies, it integrates all core business functions into a unified platform.
 
-### Why Choose ACCSYSTEM ERP?
+### Why Choose accore ERP?
 
 | Feature | Benefit |
 | ------- | ------- |
@@ -41,8 +41,8 @@
 
 ```bash
 # 1. Clone the repository
-git clone <your-repo-url> ACCSYSTEM-erp
-cd ACCSYSTEM-erp
+git clone <your-repo-url> accore-erp
+cd accore-erp
 
 # 2. Backend Setup
 cd backend
@@ -150,7 +150,7 @@ The system is organized into **10 enterprise domains** following Domain-Driven D
 ## Project Structure
 
 ```txt
-ACCSYSTEM-erp/
+accore-erp/
 │
 ├── backend/                            # Laravel 12 Enterprise API
 │   ├── app/

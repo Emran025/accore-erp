@@ -16,7 +16,7 @@ word_count: 556
 
 ## Purpose
 
-This runbook defines the operational procedures for maintaining, validating, and reviewing the Audit Trail and security logging mechanisms within ACCSYSTEM ERP. It is addressed to security engineers, compliance officers, and auditors responsible for confirming that system activity is traceable and that access credentials for regulated data consumers are properly governed. The ACCSYSTEM Audit Trail is defined as an immutable, chronological record of all system events for regulatory compliance.
+This runbook defines the operational procedures for maintaining, validating, and reviewing the Audit Trail and security logging mechanisms within accore ERP. It is addressed to security engineers, compliance officers, and auditors responsible for confirming that system activity is traceable and that access credentials for regulated data consumers are properly governed. The accore Audit Trail is defined as an immutable, chronological record of all system events for regulatory compliance.
 
 ## Scope & Applicability
 

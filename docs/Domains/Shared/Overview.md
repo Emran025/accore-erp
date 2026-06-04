@@ -16,7 +16,7 @@ word_count: 453
 
 ## Business Purpose
 
-The Shared domain provides the cross-cutting base classes and utility services that are used by every other domain in ACCSYSTEM. It does not implement any business logic or own any transactional data; its purpose is to establish and enforce architectural contracts that govern how all actions respond, how data is transferred between layers, and how common utility operations such as QR code generation are performed. Domain authors, backend engineers, and technical architects are the primary users. Every new domain and subdomain in the system builds on the Shared foundation.
+The Shared domain provides the cross-cutting base classes and utility services that are used by every other domain in accore. It does not implement any business logic or own any transactional data; its purpose is to establish and enforce architectural contracts that govern how all actions respond, how data is transferred between layers, and how common utility operations such as QR code generation are performed. Domain authors, backend engineers, and technical architects are the primary users. Every new domain and subdomain in the system builds on the Shared foundation.
 
 ## Bounded Context Boundaries
 

@@ -16,7 +16,7 @@ word_count: 545
 
 ## Business Context & Objective
 
-Consistent API response shapes and typed data transfer objects are fundamental to the reliability and discoverability of the ACCSYSTEM API. Consumer teams (frontend developers, integration partners, and automated test harnesses) depend on a predictable response envelope so that error handling, pagination, and success parsing are uniform across every endpoint. The Shared domain's DataTransferObject base class and the Action base class's response helpers together define the full response contract for the system. This document serves as the authoritative reference for any developer building a new action or writing a client integration.
+Consistent API response shapes and typed data transfer objects are fundamental to the reliability and discoverability of the accore API. Consumer teams (frontend developers, integration partners, and automated test harnesses) depend on a predictable response envelope so that error handling, pagination, and success parsing are uniform across every endpoint. The Shared domain's DataTransferObject base class and the Action base class's response helpers together define the full response contract for the system. This document serves as the authoritative reference for any developer building a new action or writing a client integration.
 
 ## Response Envelope Structure
 
@@ -67,7 +67,7 @@ Paginated responses wrap the result array in `"data"` and always include the fou
 
 ## DataTransferObject Contract
 
-Every DTO in ACCSYSTEM extends the abstract `DataTransferObject` base class and implements three mandatory factory methods:
+Every DTO in accore extends the abstract `DataTransferObject` base class and implements three mandatory factory methods:
 
 | Method | Signature | Purpose |
 |--------|-----------|---------|

@@ -19,7 +19,7 @@
 
 ## Objective
 
-Document the core business assumptions that the ACCSYSTEM ERP is built upon. These are the foundational truths that the system assumes to be constant and that all modules must respect.
+Document the core business assumptions that the accore ERP is built upon. These are the foundational truths that the system assumes to be constant and that all modules must respect.
 
 ---
 

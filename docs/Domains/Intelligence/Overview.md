@@ -16,7 +16,7 @@ word_count: 491
 
 ## Business Purpose
 
-The Intelligence domain provides the analytical and reporting layer for ACCSYSTEM. Its mission is to transform transactional data generated across all operational domains into structured reports, KPI dashboards, and financial statements that support executive decision-making, investor communication, financial close processes, and operational oversight. CFOs, finance controllers, executive management, and business analysts are the primary consumers. The domain acts as a read-only aggregation layer — it owns no master data but derives all its outputs from the General Ledger, Accounts Receivable, Accounts Payable, and operational domain records.
+The Intelligence domain provides the analytical and reporting layer for accore. Its mission is to transform transactional data generated across all operational domains into structured reports, KPI dashboards, and financial statements that support executive decision-making, investor communication, financial close processes, and operational oversight. CFOs, finance controllers, executive management, and business analysts are the primary consumers. The domain acts as a read-only aggregation layer — it owns no master data but derives all its outputs from the General Ledger, Accounts Receivable, Accounts Payable, and operational domain records.
 
 ## Bounded Context Boundaries
 

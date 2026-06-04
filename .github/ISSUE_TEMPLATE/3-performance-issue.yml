@@ -1,5 +1,5 @@
 name: "Performance Issue"
-description: "Report a performance degradation, slow response, or excessive resource consumption in the ACCSYSTEM ERP platform."
+description: "Report a performance degradation, slow response, or excessive resource consumption in the accore ERP platform."
 title: "[Performance]: "
 labels: ["type: performance", "status: needs-triage"]
 assignees: []
@@ -132,7 +132,7 @@ body:
         - **Node.js Version:**
         - **Available RAM:**
         - **Database Record Count (approximate):**
-        - **ACCSYSTEM Version / Commit Hash:**
+        - **accore Version / Commit Hash:**
     validations:
       required: true
 

@@ -16,11 +16,11 @@ word_count: 543
 
 ## Purpose
 
-This runbook establishes the governance framework for the ACCSYSTEM ERP production environment. It defines the access control model, change authorization requirements, secret management discipline, and environment parity standards. It is addressed to release managers, DevOps engineers, and security officers who are accountable for maintaining the integrity, availability, and auditability of the production system. This document complements the Deployment Strategy (OPS-001) by specifying the controls applied to the production environment specifically.
+This runbook establishes the governance framework for the accore ERP production environment. It defines the access control model, change authorization requirements, secret management discipline, and environment parity standards. It is addressed to release managers, DevOps engineers, and security officers who are accountable for maintaining the integrity, availability, and auditability of the production system. This document complements the Deployment Strategy (OPS-001) by specifying the controls applied to the production environment specifically.
 
 ## Scope & Applicability
 
-This document applies to the production runtime environment of ACCSYSTEM ERP, encompassing the Laravel PHP backend, the Next.js frontend, the PostgreSQL database, and all environment secrets and configuration values. All personnel with production access are bound by this framework.
+This document applies to the production runtime environment of accore ERP, encompassing the Laravel PHP backend, the Next.js frontend, the PostgreSQL database, and all environment secrets and configuration values. All personnel with production access are bound by this framework.
 
 ## Procedure
 

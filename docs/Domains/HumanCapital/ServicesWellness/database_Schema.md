@@ -1,7 +1,7 @@
 # HumanCapital - ServicesWellness
 
 > **Bounded Context Schema & ERD**
-> 6 Tables | Generated dynamically by ACCSYSTEM engine
+> 6 Tables | Generated dynamically by accoregine
 
 ---
 

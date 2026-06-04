@@ -15,10 +15,10 @@ word_count: 633
 # Core Business Assumptions
 
 ## Executive Summary
-The Core Business Assumptions define the non-negotiable truths that ACCSYSTEM ERP expects every Domain to respect. They describe how financial correctness, access control, tenancy, and data ownership are treated across the platform and form a stable baseline for future decisions.
+The Core Business Assumptions define the non-negotiable truths that accoreP expects every Domain to respect. They describe how financial correctness, access control, tenancy, and data ownership are treated across the platform and form a stable baseline for future decisions.
 
 ## Business Rationale
-Enterprise ERP systems operate in regulated environments where errors in financial postings, access control, or tenant isolation have material consequences. ACCSYSTEM ERP therefore adopts explicit business-level assumptions that reduce ambiguity for architects, developers, and auditors. By standardizing concepts such as Double-Entry Bookkeeping, Financial Immutability, Multi-Tenancy, and RBAC, the platform ensures that new capabilities reinforce, rather than weaken, the control framework.
+Enterprise ERP systems operate in regulated environments where errors in financial postings, access control, or tenant isolation have material consequences. accoreP therefore adopts explicit business-level assumptions that reduce ambiguity for architects, developers, and auditors. By standardizing concepts such as Double-Entry Bookkeeping, Financial Immutability, Multi-Tenancy, and RBAC, the platform ensures that new capabilities reinforce, rather than weaken, the control framework.
 
 ## Core Principles
 1. **Double-Entry Bookkeeping is universal** — All financially relevant activity ultimately posts as balanced Journal Entries to the General Ledger.

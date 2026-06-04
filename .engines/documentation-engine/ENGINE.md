@@ -1,4 +1,4 @@
-# ACCSYSTEM Documentation Engine — Identity & Rules
+# accore Documentation Engine — Identity & Rules
 
 > **Version:** 1.0.0
 > **Status:** ACTIVE
@@ -102,7 +102,7 @@ A **Document** is a Markdown file in the `/docs/` directory.
   ```
 
 ### 4.3 Domain
-A **Domain** is a Bounded Context in the ACCSYSTEM ERP architecture.
+A **Domain** is a Bounded Context in the accore ERP architecture.
 It maps 1:1 to a folder under `backend/app/Domains/`.
 
 The canonical domain list:
@@ -190,7 +190,7 @@ The mapping is defined in each task file's `output_path` field.
 
 ## 8. Versioning
 
-- The doc-engine is versioned alongside the ACCSYSTEM codebase (same Git repository)
+- The doc-engine is versioned alongside the accore codebase (same Git repository)
 - The `execution-log.csv` records the Git commit hash at execution time
 - Template changes require a version bump in ENGINE.md
 - Breaking changes to ENGINE.md require Chief Architect approval

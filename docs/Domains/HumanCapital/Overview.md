@@ -16,7 +16,7 @@ word_count: 601
 
 ## Business Purpose
 
-The HumanCapital domain governs the full scope of human resource management within ACCSYSTEM. It exists to provide enterprises with a unified, compliant, and data-driven platform for managing the complete employee relationship — from initial hiring through to end-of-service settlement. The domain automates workforce administration, payroll disbursement, attendance tracking, talent acquisition, and employee development, eliminating manual HR processes and reducing the risk of regulatory non-compliance.
+The HumanCapital domain governs the full scope of human resource management within accore. It exists to provide enterprises with a unified, compliant, and data-driven platform for managing the complete employee relationship — from initial hiring through to end-of-service settlement. The domain automates workforce administration, payroll disbursement, attendance tracking, talent acquisition, and employee development, eliminating manual HR processes and reducing the risk of regulatory non-compliance.
 
 Primary stakeholders include HR managers, payroll officers, department heads, compliance teams, and employees themselves through a self-service interface. The domain is architecturally positioned as a cost center of record, interfacing with the Finance domain for payroll journal entries and the EnterpriseCore domain for role-based access governance.
 

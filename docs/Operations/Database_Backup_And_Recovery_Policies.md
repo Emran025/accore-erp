@@ -16,11 +16,11 @@ word_count: 561
 
 ## Purpose
 
-This runbook defines the policies and procedures for database backup, point-in-time recovery, and schema version control for ACCSYSTEM ERP. It is addressed to database administrators (DBAs) and DevOps engineers responsible for data continuity. Given that ACCSYSTEM ERP enforces Financial Immutability across its General Ledger, the integrity of the persistent store is an enterprise-critical concern. Loss or corruption of database records constitutes an irreversible audit failure.
+This runbook defines the policies and procedures for database backup, point-in-time recovery, and schema version control for accore ERP. It is addressed to database administrators (DBAs) and DevOps engineers responsible for data continuity. Given that accore ERP enforces Financial Immutability across its General Ledger, the integrity of the persistent store is an enterprise-critical concern. Loss or corruption of database records constitutes an irreversible audit failure.
 
 ## Scope & Applicability
 
-This policy applies to the primary ACCSYSTEM ERP PostgreSQL database instance, including all schemas created by the 142 managed migration files under `backend/database/migrations/`. It encompasses all environments: production, staging, and development. Migration-managed schema changes are subject to the same backup discipline as operational data.
+This policy applies to the primary accore ERP PostgreSQL database instance, including all schemas created by the 142 managed migration files under `backend/database/migrations/`. It encompasses all environments: production, staging, and development. Migration-managed schema changes are subject to the same backup discipline as operational data.
 
 ## Procedure
 

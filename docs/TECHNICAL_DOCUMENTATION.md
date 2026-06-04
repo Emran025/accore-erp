@@ -1,4 +1,4 @@
-# ACCSYSTEM ERP System - Technical Documentation
+# accore ERP System - Technical Documentation
 
 > **Last Updated:** March 28, 2026  
 > **Version:** 3.0  
@@ -26,9 +26,9 @@
 
 ## 1. System Overview
 
-### 1.1 What is ACCSYSTEM ERP?
+### 1.1 What is accore ERP?
 
-**ACCSYSTEM ERP** is an enterprise-grade **Enterprise Resource Planning (ERP)** system designed for small to medium-sized businesses. It integrates all core business functions—Sales, Purchases, Inventory, Finance, HR, and Payroll—into a unified platform with real-time data synchronization and automatic ledger postings.
+**accore ERP** is an enterprise-grade **Enterprise Resource Planning (ERP)** system designed for small to medium-sized businesses. It integrates all core business functions—Sales, Purchases, Inventory, Finance, HR, and Payroll—into a unified platform with real-time data synchronization and automatic ledger postings.
 
 ### 1.2 High-Level Architecture
 
@@ -137,7 +137,7 @@ The system implements a comprehensive ERP solution organized into **10 enterpris
 ### 2.3 Directory Structure
 
 ```txt
-accsystem/
+accore/
 ├── backend/                              # Laravel 12 Enterprise API
 │   ├── app/
 │   │   ├── Domains/                      # 11 Bounded Contexts (DDD)
@@ -201,7 +201,7 @@ accsystem/
 
 ## 3. User Experience & UI Architecture
 
-ACCSYSTEM ERP utilizes a proprietary UX framework designed for high-density enterprise operations. The system is built on a **Domain-Driven, Capability-Oriented** model.
+accore ERP utilizes a proprietary UX framework designed for high-density enterprise operations. The system is built on a **Domain-Driven, Capability-Oriented** model.
 
 ### 3.1 Design Philosophy
 The platform follows a "Wide but Shallow" hierarchy to ensure all functional screens are accessible within **3 clicks**. This is inspired by modern IDEs like VS Code, prioritizing a "state of flow" for power users.
@@ -693,7 +693,7 @@ class StoreInvoiceRequest extends FormRequest
 
 ```bash
 git clone <repository-url>
-cd accsystem
+cd accore
 ```
 
 - **Step 2: Backend Setup**

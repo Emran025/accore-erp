@@ -16,7 +16,7 @@ word_count: 598
 
 ## Overview
 
-The Employee Lifecycle documents the complete sequence of states and transitions that govern an Employee Record within ACCSYSTEM. Given that the Employee entity is the root aggregate of the HumanCapital domain — linking payroll, attendance, performance, and access — its lifecycle carries significant cross-domain impact. Each transition triggers downstream effects on system access, payroll eligibility, and compliance records.
+The Employee Lifecycle documents the complete sequence of states and transitions that govern an Employee Record within accore. Given that the Employee entity is the root aggregate of the HumanCapital domain — linking payroll, attendance, performance, and access — its lifecycle carries significant cross-domain impact. Each transition triggers downstream effects on system access, payroll eligibility, and compliance records.
 
 ## State Diagram
 

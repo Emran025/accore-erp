@@ -16,7 +16,7 @@ word_count: 612
 
 ## Overview
 
-In ACCSYSTEM, a "module" is a subdomain within a domain, implemented as a directory under `backend/app/Domains/{Domain}/{Subdomain}/`. This guide walks through the full end-to-end process of adding a new subdomain and wiring it into the application.
+In accore, a "module" is a subdomain within a domain, implemented as a directory under `backend/app/Domains/{Domain}/{Subdomain}/`. This guide walks through the full end-to-end process of adding a new subdomain and wiring it into the application.
 
 ## Step 1: Create the Directory Structure
 

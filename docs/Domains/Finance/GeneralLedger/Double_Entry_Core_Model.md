@@ -18,7 +18,7 @@ word_count: 650
 
 Double-entry bookkeeping requires that every financial event be recorded as at least two offsetting entries — one debit and one credit of equal value. This preserves the accounting equation (Assets = Liabilities + Equity) at all times and ensures no monetary value enters or exits the system without a traceable counterpart.
 
-The General Ledger is the system of record for all such entries in ACCSYSTEM. It serves Controllers, Finance Directors, and external auditors who depend on its completeness and immutability to produce trial balances, financial statements, and compliance reports. Every domain that originates a financial event — Commercial, SupplyChain, HumanCapital, Assets — posts its financial effect here.
+The General Ledger is the system of record for all such entries in accore. It serves Controllers, Finance Directors, and external auditors who depend on its completeness and immutability to produce trial balances, financial statements, and compliance reports. Every domain that originates a financial event — Commercial, SupplyChain, HumanCapital, Assets — posts its financial effect here.
 
 ## Domain Entities
 

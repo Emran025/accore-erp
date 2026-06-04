@@ -1,9 +1,9 @@
-# Documentation Index - ACCSYSTEM ERP System
+# Documentation Index - accore ERP System
 
 > **Complete Documentation Suite for Enterprise Resource Planning System**
 > **Version:** 3.0 | **Last Updated:** March 28, 2026
 
-Welcome to the comprehensive documentation for the ACCSYSTEM ERP System. This index provides quick access to all documentation resources for our enterprise-grade ERP solution.
+Welcome to the comprehensive documentation for the accore ERP System. This index provides quick access to all documentation resources for our enterprise-grade ERP solution.
 
 ---
 
@@ -198,7 +198,7 @@ All documentation follows these principles:
 ## 🗺️ Visual Documentation Map
 
 ```txt
-accsystem/
+accore/
 │
 ├── 📄 README.md
 │   ├─► Quick Start

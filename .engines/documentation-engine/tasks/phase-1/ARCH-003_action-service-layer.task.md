@@ -19,7 +19,7 @@
 
 ## Objective
 
-Document the Action and Service Layer pattern used across ACCSYSTEM. Explain the distinction between Actions (single-responsibility entry points) and Services (reusable business logic), their responsibilities, and the rules governing their usage.
+Document the Action and Service Layer pattern used across accore. Explain the distinction between Actions (single-responsibility entry points) and Services (reusable business logic), their responsibilities, and the rules governing their usage.
 
 ---
 

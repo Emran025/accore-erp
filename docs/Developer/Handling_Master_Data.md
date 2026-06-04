@@ -16,7 +16,7 @@ word_count: 548
 
 ## What Is Master Data?
 
-Master data in ACCSYSTEM consists of the reference records that all transactional data depends on. Unlike transactional records (which are created continuously as business activity occurs), master data is set up once during system initialization and changes infrequently. Corrupting or duplicating master data breaks GL calculations, fiscal period controls, and permission resolution across the entire system.
+Master data in accore consists of the reference records that all transactional data depends on. Unlike transactional records (which are created continuously as business activity occurs), master data is set up once during system initialization and changes infrequently. Corrupting or duplicating master data breaks GL calculations, fiscal period controls, and permission resolution across the entire system.
 
 ## Core Master Data Types
 

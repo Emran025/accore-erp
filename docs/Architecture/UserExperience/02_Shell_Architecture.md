@@ -1,6 +1,6 @@
 # Global Shell Architecture
 
-The ACCSYSTEM shell (The Outer Framework) is designed as a "permanent roof" for the platform. It provides stability while allowing the workspace to remain flexible and content-focused.
+The accore shell (The Outer Framework) is designed as a "permanent roof" for the platform. It provides stability while allowing the workspace to remain flexible and content-focused.
 
 ## 1. The 4 Functional Bars
 For architectural clarity, the shell is divided into four strictly named components:

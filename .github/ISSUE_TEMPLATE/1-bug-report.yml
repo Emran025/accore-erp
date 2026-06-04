@@ -1,5 +1,5 @@
 name: "Bug Report"
-description: "Report a defect in the ACCSYSTEM ERP platform. Provide sufficient detail for the issue to be reproduced and diagnosed."
+description: "Report a defect in the accore ERP platform. Provide sufficient detail for the issue to be reproduced and diagnosed."
 title: "[Bug]: "
 labels: ["type: bug", "status: needs-triage"]
 assignees: []
@@ -10,8 +10,8 @@ body:
         ## Thank you for taking the time to report a bug!
 
         **Before submitting**, please confirm that:
-        - You are running a [supported version](../../SECURITY.md) of ACCSYSTEM ERP.
-        - You have searched the [existing issues](https://github.com/Emran025/ACCSYSTEM/issues?q=label%3A%22type%3A+bug%22) for duplicates.
+        - You are running a [supported version](../../SECURITY.md) of accore ERP.
+        - You have searched the [existing issues](https://github.com/Emran025/accore/issues?q=label%3A%22type%3A+bug%22) for duplicates.
         - You have consulted the Troubleshooting section in [Operations/Deployment_Strategy.md](../../docs/Operations/Deployment_Strategy.md).
 
   - type: dropdown
@@ -187,7 +187,7 @@ body:
         - **Node.js Version:**
         - **MySQL Version:**
         - **Browser (if frontend issue):**
-        - **ACCSYSTEM Version / Commit Hash:**
+        - **accore Version / Commit Hash:**
     validations:
       required: true
 
@@ -224,7 +224,7 @@ body:
       options:
         - label: "I have searched existing issues and confirmed this is not a duplicate."
           required: true
-        - label: "I am using a supported version of ACCSYSTEM ERP."
+        - label: "I am using a supported version of accore ERP."
           required: true
         - label: "I have provided all the information requested above."
           required: true

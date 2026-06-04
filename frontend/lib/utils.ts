@@ -1,5 +1,5 @@
 /**
- * @fileoverview Utility functions for the ACCSYSTEM ERP frontend.
+ * @fileoverview Utility functions for the accore ERP frontend.
  * Provides formatting, validation, and helper utilities used across all modules.
  */
 

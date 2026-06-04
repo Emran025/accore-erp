@@ -145,7 +145,7 @@ export const useUIStore = create<UIState>()(
             { name: 'ui-store' }
         ),
         {
-            name: 'accsystem-ui',
+            name: 'accore-ui',
             partialize: (state) => ({
                 sidebarCollapsed: state.sidebarCollapsed,
                 moduleSidebarCollapsed: state.moduleSidebarCollapsed,

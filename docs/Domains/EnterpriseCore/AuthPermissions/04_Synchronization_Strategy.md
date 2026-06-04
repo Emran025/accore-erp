@@ -1,6 +1,6 @@
 # Synchronization Strategy: Keeping State in Sync
 
-To maintain security without sacrificing performance, the ACCSYSTEM implements a proactive synchronization strategy that ensures the frontend's local permission cache always reflects the backend's current state.
+To maintain security without sacrificing performance, the accore implements a proactive synchronization strategy that ensures the frontend's local permission cache always reflects the backend's current state.
 
 ## 🕒 Periodic Revalidation (The Hourly Sync)
 The system prevents "stale" permissions (where a user's access is revoked but they still have a local cache) by enforcing a 1-hour expiration.

@@ -1,8 +1,8 @@
-# Code of Conduct -- ACCSYSTEM ERP
+# Code of Conduct -- accore ERP
 
 ## 1. Purpose
 
-This Code of Conduct establishes the behavioural standards expected of every person who participates in the ACCSYSTEM ERP project, whether as a contributor, maintainer, reviewer, or community member. It exists to ensure that participation in this project is a productive and respectful experience for everyone, regardless of background, identity, or level of experience.
+This Code of Conduct establishes the behavioural standards expected of every person who participates in the accore ERP project, whether as a contributor, maintainer, reviewer, or community member. It exists to ensure that participation in this project is a productive and respectful experience for everyone, regardless of background, identity, or level of experience.
 
 ---
 
@@ -122,7 +122,7 @@ Appeals will be reviewed within 14 calendar days. The decision on appeal is fina
 
 This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org/), version 2.1, available at [https://www.contributor-covenant.org/version/2/1/code_of_conduct.html](https://www.contributor-covenant.org/version/2/1/code_of_conduct.html).
 
-The enforcement framework draws on the Contributor Covenant's recommended enforcement guidelines and has been adapted to the governance structure of the ACCSYSTEM ERP project.
+The enforcement framework draws on the Contributor Covenant's recommended enforcement guidelines and has been adapted to the governance structure of the accore ERP project.
 
 ---
 

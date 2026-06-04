@@ -16,7 +16,7 @@ word_count: 502
 
 ## Rate Limiting Architecture
 
-ACCSYSTEM applies differentiated rate limiting across API operations using Laravel's named throttle middleware. Three rate limiter profiles are applied based on the sensitivity and cost of the operation:
+accore applies differentiated rate limiting across API operations using Laravel's named throttle middleware. Three rate limiter profiles are applied based on the sensitivity and cost of the operation:
 
 | Throttle Name | Applied To | Typical Limit |
 |--------------|-----------|---------------|

@@ -1,7 +1,7 @@
 # Tax Engine: Architecture & Overview
 
 ## 1. Introduction
-The Tax Engine is a core infrastructure module in the ACCSYSTEM, designed to handle multi-jurisdiction tax requirements, regulatory compliance (like ZATCA), and complex tax scenarios (mixed rates, excise taxes) through a flexible, service-oriented architecture.
+The Tax Engine is a core infrastructure module in the accoreesigned to handle multi-jurisdiction tax requirements, regulatory compliance (like ZATCA), and complex tax scenarios (mixed rates, excise taxes) through a flexible, service-oriented architecture.
 
 Earlier versions of the system used static VAT fields (`vat_rate`, `vat_amount`) directly on transaction records. This "Legacy Mode" is now being phased out in favor of a dynamic Engine that treats tax as a first-class domain entity.
 

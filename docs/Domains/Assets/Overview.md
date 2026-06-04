@@ -16,7 +16,7 @@ word_count: 541
 
 ## Business Purpose
 
-The Assets domain governs the management of fixed assets and employee equipment within ACCSYSTEM. Its primary business purpose is to track the full economic life of capital assets — from acquisition through periodic depreciation to disposal — and to maintain accountability for equipment issued to individual employees. Finance controllers, asset managers, and HR administrators are the primary stakeholders. The domain ensures that asset carrying values are accurate and current in the General Ledger, that depreciation charges are applied consistently across fiscal periods, and that company-owned equipment is traceable to the responsible employee at all times.
+The Assets domain governs the management of fixed assets and employee equipment within accore. Its primary business purpose is to track the full economic life of capital assets — from acquisition through periodic depreciation to disposal — and to maintain accountability for equipment issued to individual employees. Finance controllers, asset managers, and HR administrators are the primary stakeholders. The domain ensures that asset carrying values are accurate and current in the General Ledger, that depreciation charges are applied consistently across fiscal periods, and that company-owned equipment is traceable to the responsible employee at all times.
 
 ## Bounded Context Boundaries
 
