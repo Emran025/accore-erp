@@ -818,7 +818,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                     )}
 
                     {/* Right: Invoice details */}
-                    <div className={isCash ? "sales-card animate-slide" : "side-panel"} style={isCash ? { animationDelay: "0.1s" } : { display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                    <div className={ "side-panel"} style={isCash ? { animationDelay: "0.1s" } : { display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                         {!isCash && CustomerPanelForm}
 
                         <div className="sales-card animate-slide" style={!isCash ? { animationDelay: "0.1s" } : {}}>

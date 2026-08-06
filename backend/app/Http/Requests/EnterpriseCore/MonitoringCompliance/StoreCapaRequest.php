@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\HumanCapital\HRCompliance;
+namespace App\Http\Requests\EnterpriseCore\MonitoringCompliance;
 
 use Illuminate\Foundation\Http\FormRequest;
 
