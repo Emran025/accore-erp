@@ -24,7 +24,7 @@ import {
 import { fetchAPI } from "@/lib/api";
 import { Permission, User, checkAuth, getStoredPermissions, getStoredUser } from "@/lib/auth";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { GovernmentFee, Service, InvoiceItem, Customer, Invoice } from "@/types";
+import { GovernmentFee, Service, InvoiceItem, Customer, Invoice, TaxAuthority, TaxType, TaxRate } from "@/types";
 import { formatCurrency, formatDateTime, parseNumber } from "@/lib/utils";
 import { useServiceStore } from "@/stores/useServiceStore";
 import { useCallback, useEffect, useState } from "react";
@@ -145,19 +145,23 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
 
     const loadFees = useCallback(async () => {
         try {
-            const response: any = await fetchAPI(API_ENDPOINTS.FINANCE.TAX_ENGINE.SETUP);
-            if (response.data?.authorities) {
+            const response = await fetchAPI<{ authorities?: TaxAuthority[] }>(API_ENDPOINTS.FINANCE.TAX_ENGINE.SETUP);
+            const authorities = response?.data?.authorities;
+            if (authorities) {
                 const activeFees: GovernmentFee[] = [];
-                response.data.authorities.forEach((auth: any) => {
-                    auth.tax_types?.forEach((type: any) => {
+                authorities.forEach((auth: TaxAuthority) => {
+                    auth.tax_types?.forEach((type: TaxType) => {
                         let areas: string[] = [];
                         try {
-                            areas = typeof type.applicable_areas === "string"
+                            const parsed = typeof type.applicable_areas === "string"
                                 ? JSON.parse(type.applicable_areas)
                                 : type.applicable_areas;
+                            if (Array.isArray(parsed)) {
+                                areas = parsed;
+                            }
                         } catch { }
                         if (type.is_active && type.code !== "VAT" && (areas.includes("sales") || areas.length === 0)) {
-                            const defaultRate = type.tax_rates?.find((r: any) => r.is_default) || type.tax_rates?.[0];
+                            const defaultRate: TaxRate | undefined = type.tax_rates?.find((r: TaxRate) => r.is_default) || type.tax_rates?.[0];
                             activeFees.push({
                                 id: type.id,
                                 name: type.name,

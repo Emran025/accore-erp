@@ -16,7 +16,7 @@ import {
     CalendarDays, UserCheck, Plane, Megaphone, GraduationCap, Heart, EyeOff,
     Send, Filter, Handshake, CheckCheck, Play, Star, Pause, ThumbsUp, Upload,
     Delete, PanelRight, LucideGalleryHorizontalEnd, ArrowUp, Menu, Unlink,
-    XOctagon, Maximize2, Shapes, Group, View, Shield, Hash, Award,
+    XOctagon, Maximize2, Shapes, Group, View, Shield, Hash, Award
 } from 'lucide-react';
 
 interface IconProps {

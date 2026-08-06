@@ -4,8 +4,8 @@ import React from "react";
 import { SessionExpiredModal } from "@/components/ui/SessionExpiredModal";
 
 export const metadata: Metadata = {
-  title: "نظام أكسيستم",
-  description: "نظام إدارة أكسيستم والمحاسبة",
+  title: "نظام أكور",
+  description: "نظام إدارة أكور والمحاسبة",
 };
 
 export default function RootLayout({

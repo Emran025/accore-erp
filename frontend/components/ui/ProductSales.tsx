@@ -27,7 +27,7 @@ import { Permission, User, checkAuth, getStoredPermissions, getStoredUser } from
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { Icon } from "@/lib/icons";
 import { printInvoice } from "@/lib/invoice-utils";
-import { Currency, GovernmentFee, Product, InvoiceItem, Customer, Invoice } from "@/types";
+import { Currency, GovernmentFee, Product, InvoiceItem, Customer, Invoice, TaxAuthority, TaxType, TaxRate } from "@/types";
 import { PaginatedResponse } from "@/types/types";
 import { formatCurrency, formatDateTime, parseNumber } from "@/lib/utils";
 import { useCallback, useEffect, useState } from "react";
@@ -151,15 +151,23 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
 
     const loadFees = useCallback(async () => {
         try {
-            const response: any = await fetchAPI(API_ENDPOINTS.FINANCE.TAX_ENGINE.SETUP);
-            if (response.data?.authorities) {
-                const activeFees: any[] = [];
-                response.data.authorities.forEach((auth: any) => {
-                    auth.tax_types?.forEach((type: any) => {
-                        let areas = [];
-                        try { areas = typeof type.applicable_areas === "string" ? JSON.parse(type.applicable_areas) : type.applicable_areas; } catch { }
+            const response = await fetchAPI<{ authorities?: TaxAuthority[] }>(API_ENDPOINTS.FINANCE.TAX_ENGINE.SETUP);
+            const authorities = response?.data?.authorities;
+            if (authorities) {
+                const activeFees: GovernmentFee[] = [];
+                authorities.forEach((auth: TaxAuthority) => {
+                    auth.tax_types?.forEach((type: TaxType) => {
+                        let areas: string[] = [];
+                        try {
+                            const parsed = typeof type.applicable_areas === "string"
+                                ? JSON.parse(type.applicable_areas)
+                                : type.applicable_areas;
+                            if (Array.isArray(parsed)) {
+                                areas = parsed;
+                            }
+                        } catch { }
                         if (type.is_active && type.code !== "VAT" && (areas.includes("sales") || areas.length === 0)) {
-                            const defaultRate = type.tax_rates?.find((r: any) => r.is_default) || type.tax_rates?.[0];
+                            const defaultRate: TaxRate | undefined = type.tax_rates?.find((r: TaxRate) => r.is_default) || type.tax_rates?.[0];
                             activeFees.push({
                                 id: type.id,
                                 name: type.name,

@@ -11,6 +11,7 @@ import { API_ENDPOINTS } from "@/lib/endpoints";
 import { formatCurrency } from "@/lib/utils";
 import { useProductStore } from "@/stores/useProductStore";
 import { useCallback, useEffect, useState } from "react";
+import { Icon } from "@/lib/icons";
 import { Category, Product } from "./types";
 
 export default function ProductsPage() {
@@ -284,8 +285,6 @@ export default function ProductsPage() {
 
     return (
         <MainLayout >
-
-
             <div className="sales-card animate-fade">
                 <PageSubHeader
                     title=""
@@ -350,134 +349,162 @@ export default function ProductsPage() {
                     </>
                 }
             >
-                <div className="form-row">
-                    <TextInput
-                        label="اسم المنتج *"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    />
-                    <TextInput
-                        label="الباركود"
-                        value={formData.barcode}
-                        onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
-                    />
-                </div>
-
-                <div className="form-row">
-                    <div className="form-group">
-                        <label>الفئة</label>
-                        <div className="input-with-action">
-                            <Select
-                                value={formData.category_id}
-                                onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-                                options={categories.map(c => ({ value: String(c.id), label: c.name }))}
-                            />
-                            <Button
-                                variant="secondary"
-                                icon="plus"
-                                onClick={() => setCategoryDialog(true)}
-                                className="btn-sm"
-                            />
-                        </div>
+                {/* القسم الأول: المعلومات الأساسية */}
+                <div className="permission-group">
+                    <div className="group-title">
+                        <Icon name="box" size={18} />
+                        <span>المعلومات الأساسية للمنتج</span>
                     </div>
-                    <Select
-                        label="نوع الصنف"
-                        value={formData.item_type}
-                        onChange={(e) => {
-                            const val = e.target.value as any;
-                            setFormData({
-                                ...formData,
-                                item_type: val,
-                                sellable: val === 'product',
-                                inventory_control: val !== 'service'
-                            });
-                        }}
-                        options={[
-                            { value: "product", label: "منتج تام" },
-                            { value: "raw_material", label: "مادة خام (غير للبيع)" }
-                        ]}
-                    />
+
+                    <div className="form-row">
+                        <TextInput
+                            label="اسم المنتج *"
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        />
+                        <TextInput
+                            label="الباركود"
+                            value={formData.barcode}
+                            onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
+                        />
+                    </div>
+
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label>الفئة</label>
+                            <div className="input-with-action">
+                                <Select
+                                    value={formData.category_id}
+                                    onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+                                    options={categories.map(c => ({ value: String(c.id), label: c.name }))}
+                                />
+                                <Button
+                                    variant="secondary"
+                                    icon="plus"
+                                    onClick={() => setCategoryDialog(true)}
+                                    className="btn-sm"
+                                />
+                            </div>
+                        </div>
+                        <Select
+                            label="نوع الصنف"
+                            value={formData.item_type}
+                            onChange={(e) => {
+                                const val = e.target.value as any;
+                                setFormData({
+                                    ...formData,
+                                    item_type: val,
+                                    sellable: val === 'product',
+                                    inventory_control: val !== 'service'
+                                });
+                            }}
+                            options={[
+                                { value: "product", label: "منتج تام" },
+                                { value: "raw_material", label: "مادة خام (غير للبيع)" }
+                            ]}
+                        />
+                    </div>
                 </div>
 
-                <div className="form-row flags-row">
-                    <div className="form-group checkbox-group">
-                        <label>
+                {/* القسم الثاني: خصائص وإعدادات المنتج */}
+                <div className="permission-group">
+                    <div className="group-title">
+                        <Icon name="check-square" size={18} />
+                        <span>خصائص المنتج والحالة</span>
+                    </div>
+
+                    <div className="actions-grid">
+                        <label className="action-checkbox">
                             <input
                                 type="checkbox"
                                 checked={formData.sellable}
                                 onChange={(e) => setFormData({ ...formData, sellable: e.target.checked })}
                             />
-                            قابل للبيع
+                            <span>قابل للبيع</span>
                         </label>
-                    </div>
-                    <div className="form-group checkbox-group">
-                        <label>
+                        <label className="action-checkbox">
                             <input
                                 type="checkbox"
                                 checked={formData.inventory_control}
                                 onChange={(e) => setFormData({ ...formData, inventory_control: e.target.checked })}
                             />
-                            متابعة المخزون
+                            <span>متابعة المخزون</span>
                         </label>
-                    </div>
-                    <div className="form-group checkbox-group">
-                        <label>
+                        <label className="action-checkbox">
                             <input
                                 type="checkbox"
                                 checked={formData.taxable}
                                 onChange={(e) => setFormData({ ...formData, taxable: e.target.checked })}
                             />
-                            خاضع للضريبة
+                            <span>خاضع للضريبة</span>
                         </label>
                     </div>
                 </div>
 
-                <div className="form-row">
-                    <NumberInput
-                        label="سعر الشراء *"
-                        value={formData.purchase_price}
-                        onChange={(val) => calculatePrices("purchase_price", String(val))}
-                        step={0.01}
-                    />
-                    <NumberInput
-                        label="هامش الربح (%)"
-                        value={formData.profit_margin}
-                        onChange={(val) => calculatePrices("profit_margin", String(val))}
-                        step={0.1}
-                    />
-                    <NumberInput
-                        label="سعر البيع *"
-                        value={formData.selling_price}
-                        onChange={(val) => calculatePrices("selling_price", String(val))}
-                        step={0.01}
-                    />
+                {/* القسم الثالث: التسعير ورأس المال */}
+                <div className="permission-group">
+                    <div className="group-title">
+                        <Icon name="coins" size={18} />
+                        <span>التسعير وهامش الربح</span>
+                    </div>
+
+                    <div className="form-row">
+                        <NumberInput
+                            label="سعر الشراء *"
+                            value={formData.purchase_price}
+                            onChange={(val) => calculatePrices("purchase_price", String(val))}
+                            step={0.01}
+                        />
+                        <NumberInput
+                            label="هامش الربح (%)"
+                            value={formData.profit_margin}
+                            onChange={(val) => calculatePrices("profit_margin", String(val))}
+                            step={0.1}
+                        />
+                    </div>
+                    <div className="form-row">
+                        <NumberInput
+                            label="سعر البيع *"
+                            value={formData.selling_price}
+                            onChange={(val) => calculatePrices("selling_price", String(val))}
+                            step={0.01}
+                        />
+                        <NumberInput
+                            label="وحدات/صندوق"
+                            value={formData.units_per_package}
+                            onChange={(val) => calculatePrices("units_per_package", String(val))}
+                            min={1}
+                        />
+                    </div>
                 </div>
 
-                <div className="form-row">
-                    <NumberInput
-                        label="وحدات/صندوق"
-                        value={formData.units_per_package}
-                        onChange={(val) => calculatePrices("units_per_package", String(val))}
-                        min={1}
-                    />
-                    <NumberInput
-                        label="المخزون الحالي"
-                        value={formData.stock}
-                        onChange={(val) => setFormData({ ...formData, stock: String(val) })}
-                    />
-                    <NumberInput
-                        label="حد الطلب الأدنى"
-                        value={formData.min_stock}
-                        onChange={(val) => setFormData({ ...formData, min_stock: String(val) })}
+                {/* القسم الرابع: المخزون والبيانات الإضافية */}
+                <div className="permission-group">
+                    <div className="group-title">
+                        <Icon name="layers" size={18} />
+                        <span>المخزون والبيانات الإضافية</span>
+                    </div>
+
+                    <div className="form-row">
+                        <NumberInput
+                            label="المخزون الحالي"
+                            value={formData.stock}
+                            onChange={(val) => setFormData({ ...formData, stock: String(val) })}
+                        />
+                        <NumberInput
+                            label="حد الطلب الأدنى"
+                            value={formData.min_stock}
+                            onChange={(val) => setFormData({ ...formData, min_stock: String(val) })}
+                        />
+                    </div>
+
+                    <Textarea
+                        label="الوصف"
+                        value={formData.description}
+                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        rows={2}
                     />
                 </div>
-
-                <Textarea
-                    label="الوصف"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={2}
-                />
             </Dialog>
 
             <Dialog

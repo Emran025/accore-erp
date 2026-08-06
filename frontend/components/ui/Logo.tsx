@@ -34,16 +34,18 @@ export function FullLogo({
 
   if (isWatermark && children) {
     return (
-      <div className="watermark-wrapper">
+      <div className="watermark-wrapper" style={{ overflow: "hidden" }}>
         <div
           className="watermark-bg"
           style={{
-            position: "fixed",
+            position: "absolute",
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
             width: size.width,
             height: size.height,
+            maxWidth: "100%",
+            maxHeight: "100%",
             backgroundImage: `url(${logo})`,
             backgroundSize: "contain",
             backgroundPosition: "center",

@@ -12,7 +12,6 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     isLoading?: boolean;
     href?: string;
     className?: string;
-    key?: string;
     border_radius?: string;
 }
 
@@ -27,7 +26,6 @@ export function Button({
     className = "",
     disabled,
     border_radius,
-    key,
     ...props
 }: ButtonProps) {
     const baseClasses = "btn whitespace-nowrap";
@@ -69,7 +67,6 @@ export function Button({
 
     return (
         <button
-            key={key}
             className={combinedClasses}
             disabled={disabled || isLoading}
             {...props}
