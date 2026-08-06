@@ -71,6 +71,7 @@ export const AssetsDomain: Domain = {
                             href: "/08-assets/investments/investment-portfolio/investment-assets",
                             permissions: [],
                             module: "investments",
+                            status: "pending",
                         },
                     ],
                 },

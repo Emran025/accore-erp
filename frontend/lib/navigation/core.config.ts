@@ -143,6 +143,7 @@ export const CoreDomain: Domain = {
                             href: "/01-enterprise-core/identity-access/user-management/users",
                             permissions: [],
                             module: "users",
+                            status: "pending",
                         },
                         {
                             id: "system-settings",
@@ -152,6 +153,7 @@ export const CoreDomain: Domain = {
                             href: "/01-enterprise-core/identity-access/user-management/system-settings",
                             permissions: [],
                             module: "settings",
+                            status: "operational",
                         },
                     ],
                 },
@@ -180,6 +182,7 @@ export const CoreDomain: Domain = {
                             href: "/01-enterprise-core/monitoring-compliance/audit-notifications/notifications",
                             permissions: [],
                             module: "notifications",
+                            status: "pending",
                         },
                         {
                             id: "system-logs",
@@ -189,6 +192,7 @@ export const CoreDomain: Domain = {
                             href: "/01-enterprise-core/monitoring-compliance/audit-notifications/system-logs",
                             permissions: [],
                             module: "system_logs",
+                            status: "pending",
                         },
                     ],
                 },

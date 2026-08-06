@@ -71,6 +71,7 @@ export const ManufacturingDomain: Domain = {
                             href: "/05-manufacturing/production-control/work-orders/work-orders-list",
                             permissions: [],
                             module: "manufacturing",
+                            status: "pending",
                         },
                         {
                             id: "production-planning",
@@ -80,6 +81,7 @@ export const ManufacturingDomain: Domain = {
                             href: "/05-manufacturing/production-control/work-orders/production-planning",
                             permissions: [],
                             module: "manufacturing",
+                            status: "pending",
                         },
                     ],
                 },
@@ -108,6 +110,7 @@ export const ManufacturingDomain: Domain = {
                             href: "/05-manufacturing/quality-control/qc-inspection/quality-check",
                             permissions: [],
                             module: "manufacturing",
+                            status: "pending",
                         },
                     ],
                 },

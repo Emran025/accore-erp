@@ -158,6 +158,7 @@ export const SupplyChainDomain: Domain = {
                             href: "/04-supply-chain/procurement/purchase-orders/purchase-orders-list",
                             permissions: [],
                             module: "dashboard",
+                            status: "pending",
                         },
                         {
                             id: "payment-schedule",
@@ -167,6 +168,7 @@ export const SupplyChainDomain: Domain = {
                             href: "/04-supply-chain/procurement/purchase-orders/payment-schedule",
                             permissions: [],
                             module: "dashboard",
+                            status: "pending",
                         },
                     ],
                 },
@@ -250,6 +252,7 @@ export const SupplyChainDomain: Domain = {
                             href: "/04-supply-chain/inventory/products-inventory/stock-levels",
                             permissions: [],
                             module: "dashboard",
+                            status: "pending",
                         },
                         {
                             id: "warehouses",
@@ -259,6 +262,7 @@ export const SupplyChainDomain: Domain = {
                             href: "/04-supply-chain/inventory/products-inventory/warehouses",
                             permissions: [],
                             module: "dashboard",
+                            status: "pending",
                         },
                         {
                             id: "stock-transfers",
@@ -268,6 +272,7 @@ export const SupplyChainDomain: Domain = {
                             href: "/04-supply-chain/inventory/products-inventory/stock-transfers",
                             permissions: [],
                             module: "dashboard",
+                            status: "pending",
                         },
                         {
                             id: "stock-reconciliation",
@@ -277,6 +282,7 @@ export const SupplyChainDomain: Domain = {
                             href: "/04-supply-chain/inventory/products-inventory/stock-reconciliation",
                             permissions: [],
                             module: "dashboard",
+                            status: "pending",
                         },
                         {
                             id: "product-categories",
@@ -286,6 +292,7 @@ export const SupplyChainDomain: Domain = {
                             href: "/04-supply-chain/inventory/products-inventory/product-categories",
                             permissions: [],
                             module: "dashboard",
+                            status: "pending",
                         },
                         {
                             id: "units-of-measure",
@@ -295,6 +302,7 @@ export const SupplyChainDomain: Domain = {
                             href: "/04-supply-chain/inventory/products-inventory/units-of-measure",
                             permissions: [],
                             module: "dashboard",
+                            status: "pending",
                         },
                         {
                             id: "inventory-reports",
@@ -304,6 +312,7 @@ export const SupplyChainDomain: Domain = {
                             href: "/04-supply-chain/inventory/products-inventory/inventory-reports",
                             permissions: [],
                             module: "dashboard",
+                            status: "pending",
                         },
                     ],
                 },

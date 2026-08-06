@@ -117,6 +117,7 @@ export const FinanceDomain: Domain = {
                             href: "/03-finance/management-accounting/cost-profit-centers/budgeting",
                             permissions: [],
                             module: "general_ledger",
+                            status: "pending",
                         },
                     ],
                 },
@@ -154,6 +155,7 @@ export const FinanceDomain: Domain = {
                             href: "/03-finance/treasury/cash-management/cash-flow",
                             permissions: [],
                             module: "general_ledger",
+                            status: "pending",
                         },
                         {
                             id: "bank-reconciliation",
@@ -200,6 +202,7 @@ export const FinanceDomain: Domain = {
                             href: "/03-finance/foreign-exchange/currency-management/monetary-policy",
                             permissions: [],
                             module: "monetary_policy",
+                            status: "pending",
                         },
                         {
                             id: "exchange-rates",
@@ -209,6 +212,7 @@ export const FinanceDomain: Domain = {
                             href: "/03-finance/foreign-exchange/currency-management/exchange-rates",
                             permissions: [],
                             module: "exchange_rate",
+                            status: "pending",
                         },
                         {
                             id: "fx-operations",
@@ -227,6 +231,7 @@ export const FinanceDomain: Domain = {
                             href: "/03-finance/foreign-exchange/currency-management/fx-logs",
                             permissions: [],
                             module: "currency_history",
+                            status: "pending",
                         },
                         {
                             id: "currency-positions",
@@ -236,6 +241,7 @@ export const FinanceDomain: Domain = {
                             href: "/03-finance/foreign-exchange/currency-management/currency-positions",
                             permissions: [],
                             module: "currency_balances",
+                            status: "pending",
                         },
                     ],
                 },

@@ -176,6 +176,7 @@ export const CommercialDomain: Domain = {
                             href: "/02-commercial/sales-lifecycle/sales-orders/quotations",
                             permissions: [],
                             module: "sales",
+                            status: "pending",
                         },
                         {
                             id: "sales-orders-list",
@@ -185,6 +186,7 @@ export const CommercialDomain: Domain = {
                             href: "/02-commercial/sales-lifecycle/sales-orders/sales-orders-list",
                             permissions: [],
                             module: "sales",
+                            status: "pending",
                         },
                     ],
                 },
@@ -268,6 +270,7 @@ export const CommercialDomain: Domain = {
                             href: "/02-commercial/marketing-distribution/representatives/commissions",
                             permissions: [],
                             module: "representatives",
+                            status: "pending",
                         },
                     ],
                 },

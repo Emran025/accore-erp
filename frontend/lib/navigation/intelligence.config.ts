@@ -43,6 +43,7 @@ export const IntelligenceDomain: Domain = {
                             href: "/09-intelligence/business-intelligence/executive-dashboards/bi-dashboard",
                             permissions: [],
                             module: "intelligence",
+                            status: "pending",
                         },
                         {
                             id: "drill-down-reports",
@@ -52,6 +53,7 @@ export const IntelligenceDomain: Domain = {
                             href: "/09-intelligence/business-intelligence/executive-dashboards/drill-down-reports",
                             permissions: [],
                             module: "intelligence",
+                            status: "pending",
                         },
                     ],
                 },

@@ -1,151 +1,418 @@
-"use client";
+﻿"use client";
 
+import { useMemo, useState } from "react";
 import { PageSubHeader } from "@/components/layout";
-import { Column, Select, StatsCard, Table } from "@/components/ui";
+import { Select, Table, KPICardRow } from "@/components/ui";
+import type { Column } from "@/components/ui";
 import { getIcon } from "@/lib/icons";
-import { useState } from "react";
+import { allDomains } from "@/lib/navigation";
+import type { Domain, NavScreen } from "@/types/navigation";
 
-interface ModuleStatus {
-  domain: string;
-  module: string;
-  backend: "complete" | "partial" | "missing";
-  frontend: "complete" | "partial" | "missing";
-  routes: "complete" | "missing";
-  models: "complete" | "missing";
-  status: "operational" | "in_progress" | "pending";
+// ─────────────────────────────────────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────────────────────────────────────
+
+type ScreenStatus = "operational" | "in_progress" | "pending";
+
+interface DerivedScreenEntry {
+  domainId: string;
+  domainTitle: string;
+  domainIcon: string;
+  capabilityId: string;
+  capabilityTitle: string;
+  capabilityIcon: string;
+  featureGroupTitle: string;
+  screenId: string;
+  screenTitle: string;
+  screenIcon: string;
+  href: string;
+  status: ScreenStatus;
 }
 
-const modules: ModuleStatus[] = [
-  // Core HR Management
-  { domain: "Core HR Management", module: "Employee Master Data & Lifecycle", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-  { domain: "Core HR Management", module: "Global Mobility & Expat Management", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-  { domain: "Core HR Management", module: "Employee Assets & Equipment", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
+interface DomainSummary {
+  id: string;
+  title: string;
+  icon: string;
+  total: number;
+  operational: number;
+  inProgress: number;
+  pending: number;
+  percentage: number;
+}
 
-  // Talent Acquisition
-  { domain: "Talent Acquisition", module: "Recruitment & Applicant Tracking (ATS)", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-  { domain: "Talent Acquisition", module: "Digital Onboarding & Offboarding", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
+// ─────────────────────────────────────────────────────────────────────────────
+// Status Derivation Logic
+// ─────────────────────────────────────────────────────────────────────────────
 
-  // Workforce Strategy
-  { domain: "Workforce Strategy", module: "Expanded Workforce (Contingent)", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-
-  // Legal & Compliance
-  { domain: "Legal & Compliance", module: "Contracts & Agreements Management", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-  { domain: "Legal & Compliance", module: "Quality Assurance & Internal Audit", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-
-  // Time, Attendance & Scheduling
-  { domain: "Time, Attendance & Scheduling", module: "Time Tracking & Capture", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-  { domain: "Time, Attendance & Scheduling", module: "Workforce Scheduling & Optimization", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-  { domain: "Time, Attendance & Scheduling", module: "Leave & Absence Management", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-
-  // Employee Relations & Services
-  { domain: "Employee Relations & Services", module: "Employee Relations & Disciplinary", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-  { domain: "Employee Relations & Services", module: "Travel & Expense Management", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-  { domain: "Employee Relations & Services", module: "Financial Services (Loans)", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-  { domain: "Employee Relations & Services", module: "Corporate Communications", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-
-  // Performance & Talent Development
-  { domain: "Performance & Talent Development", module: "Performance & Goals", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-  { domain: "Performance & Talent Development", module: "Learning Management (LMS)", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-  { domain: "Performance & Talent Development", module: "Succession & Career Pathing", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-
-  // Compensation & Benefits
-  { domain: "Compensation & Benefits", module: "Compensation Management", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-  { domain: "Compensation & Benefits", module: "Benefits Administration", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-
-  // Payroll
-  { domain: "Payroll", module: "Global Payroll Processing", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-  { domain: "Payroll", module: "Post-Payroll Integrations", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-
-  // Health, Safety & Well-being
-  { domain: "Health, Safety & Well-being", module: "EHS (Environment, Health, Safety)", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-  { domain: "Health, Safety & Well-being", module: "Employee Well-being", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-
-  // Knowledge Management
-  { domain: "Knowledge Management", module: "Expertise Directory & Knowledge Base", backend: "complete", frontend: "complete", routes: "complete", models: "complete", status: "operational" },
-];
-
-const getStatusBadge = (status: string) => {
-  switch (status) {
-    case "operational":
-      return <span className="badge badge-success">✓ جاهز</span>;
-    case "in_progress":
-      return <span className="badge badge-warning">⏳ قيد العمل</span>;
-    case "pending":
-      return <span className="badge badge-secondary">○ معلق</span>;
-    default:
-      return <span className="badge badge-secondary">{status}</span>;
+function deriveStatus(screen: NavScreen): ScreenStatus {
+  if (screen.status) return screen.status;
+  const desc = screen.description;
+  if (desc.includes("قريباً") || desc.includes("قريبا") || desc.includes("coming soon")) {
+    return "pending";
   }
+  return "operational";
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Data Derivation from Navigation Tree
+// ─────────────────────────────────────────────────────────────────────────────
+
+function deriveModuleData(domains: Domain[]): DerivedScreenEntry[] {
+  const entries: DerivedScreenEntry[] = [];
+  for (const domain of domains) {
+    for (const cap of domain.capabilities) {
+      for (const group of cap.groups) {
+        for (const screen of group.screens) {
+          entries.push({
+            domainId: domain.id,
+            domainTitle: domain.title,
+            domainIcon: domain.icon,
+            capabilityId: cap.id,
+            capabilityTitle: cap.title,
+            capabilityIcon: cap.icon,
+            featureGroupTitle: group.title,
+            screenId: screen.id,
+            screenTitle: screen.title,
+            screenIcon: screen.icon,
+            href: screen.href,
+            status: deriveStatus(screen),
+          });
+        }
+      }
+    }
+  }
+  return entries;
+}
+
+function buildDomainSummaries(entries: DerivedScreenEntry[]): DomainSummary[] {
+  const map = new Map<string, DomainSummary>();
+  for (const e of entries) {
+    if (!map.has(e.domainId)) {
+      map.set(e.domainId, {
+        id: e.domainId,
+        title: e.domainTitle,
+        icon: e.domainIcon,
+        total: 0,
+        operational: 0,
+        inProgress: 0,
+        pending: 0,
+        percentage: 0,
+      });
+    }
+    const s = map.get(e.domainId)!;
+    s.total++;
+    if (e.status === "operational") s.operational++;
+    else if (e.status === "in_progress") s.inProgress++;
+    else s.pending++;
+  }
+  for (const s of map.values()) {
+    s.percentage = s.total === 0 ? 0 : Math.round((s.operational / s.total) * 100);
+  }
+  return Array.from(map.values());
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Constants
+// ─────────────────────────────────────────────────────────────────────────────
+
+const STATUS_CONFIG: Record<ScreenStatus, { label: string; bg: string; color: string }> = {
+  operational: { label: "تشغيلي",      bg: "rgba(16,185,129,0.12)",  color: "#10b981" },
+  in_progress: { label: "قيد التطوير", bg: "rgba(245,158,11,0.12)",  color: "#f59e0b" },
+  pending:     { label: "قريباً",      bg: "rgba(148,163,184,0.12)", color: "#94a3b8" },
 };
 
-const getComponentStatus = (status: string) => {
-  switch (status) {
-    case "complete":
-      return <span className="badge badge-success">✓</span>;
-    case "partial":
-      return <span className="badge badge-warning">~</span>;
-    case "missing":
-      return <span className="badge badge-danger">✗</span>;
-    default:
-      return <span className="badge badge-secondary">-</span>;
-  }
+const DOMAIN_PALETTE: Record<number, { accent: string; glow: string }> = {
+  0: { accent: "#6366f1", glow: "#6366f120" },
+  1: { accent: "#10b981", glow: "#10b98120" },
+  2: { accent: "#3b82f6", glow: "#3b82f620" },
+  3: { accent: "#f59e0b", glow: "#f59e0b20" },
+  4: { accent: "#ec4899", glow: "#ec489920" },
+  5: { accent: "#06b6d4", glow: "#06b6d420" },
+  6: { accent: "#8b5cf6", glow: "#8b5cf620" },
+  7: { accent: "#14b8a6", glow: "#14b8a620" },
+  8: { accent: "#f97316", glow: "#f9731620" },
+  9: { accent: "#a855f7", glow: "#a855f720" },
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// StatusBadge — small local presentational component (no HTML table logic)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function StatusBadge({ status }: { status: ScreenStatus }) {
+  const cfg = STATUS_CONFIG[status];
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 5,
+        padding: "3px 10px",
+        borderRadius: 20,
+        fontSize: "0.72rem",
+        fontWeight: 600,
+        background: cfg.bg,
+        color: cfg.color,
+        border: `1px solid ${cfg.color}30`,
+        whiteSpace: "nowrap",
+      }}
+    >
+      <span
+        style={{
+          width: 6,
+          height: 6,
+          borderRadius: "50%",
+          background: cfg.color,
+          display: "inline-block",
+          flexShrink: 0,
+          ...(status === "operational" ? { boxShadow: `0 0 5px ${cfg.color}` } : {}),
+        }}
+      />
+      {cfg.label}
+    </span>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DomainSummaryCard — local presentational component
+// ─────────────────────────────────────────────────────────────────────────────
+
+function DomainSummaryCard({
+  summary,
+  index,
+  isActive,
+  onClick,
+}: {
+  summary: DomainSummary;
+  index: number;
+  isActive: boolean;
+  onClick: () => void;
+}) {
+  const palette = DOMAIN_PALETTE[index % 10];
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        background: isActive
+          ? `linear-gradient(135deg, var(--bg-secondary) 0%, ${palette.glow} 100%)`
+          : "var(--bg-secondary)",
+        border: isActive ? `1.5px solid ${palette.accent}50` : "1.5px solid var(--border-color)",
+        borderRadius: 14,
+        padding: "1rem 1.1rem",
+        cursor: "pointer",
+        transition: "all 0.2s ease",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Active accent bar */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 3,
+          background: isActive ? palette.accent : "transparent",
+          borderRadius: "14px 14px 0 0",
+          transition: "background 0.2s",
+        }}
+      />
+
+      {/* Icon + title */}
+      <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.75rem" }}>
+        <div
+          style={{
+            width: 36, height: 36, borderRadius: 10,
+            background: isActive ? palette.accent : `${palette.accent}20`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            color: isActive ? "#fff" : palette.accent,
+            transition: "all 0.2s", flexShrink: 0,
+          }}
+        >
+          {getIcon(summary.icon, undefined, 16)}
+        </div>
+        <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.3 }}>
+          {summary.title}
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div style={{ height: 5, background: "var(--border-color)", borderRadius: 99, marginBottom: "0.55rem", overflow: "hidden" }}>
+        <div
+          style={{
+            height: "100%",
+            width: `${summary.percentage}%`,
+            background: summary.percentage === 100 ? "#10b981" : summary.percentage > 60 ? palette.accent : "#f59e0b",
+            borderRadius: 99,
+            transition: "width 0.6s ease",
+          }}
+        />
+      </div>
+
+      {/* Counts + percentage */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <span style={{ fontSize: "0.65rem", color: "#10b981", fontWeight: 600 }}>{"✓ "}{summary.operational}</span>
+          {summary.inProgress > 0 && (
+            <span style={{ fontSize: "0.65rem", color: "#f59e0b", fontWeight: 600 }}>{"⏱ "}{summary.inProgress}</span>
+          )}
+          {summary.pending > 0 && (
+            <span style={{ fontSize: "0.65rem", color: "#94a3b8", fontWeight: 600 }}>{"○ "}{summary.pending}</span>
+          )}
+        </div>
+        <span style={{ fontSize: "0.7rem", fontWeight: 700, color: summary.percentage === 100 ? "#10b981" : palette.accent }}>
+          {summary.percentage}%
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Main Component
+// ─────────────────────────────────────────────────────────────────────────────
 
 export function ModulesStatus() {
-  const [filterDomain, setFilterDomain] = useState("");
+  const [filterDomain, setFilterDomain] = useState<string>("");
+  const [filterStatus, setFilterStatus] = useState<string>("");
 
-  const uniqueDomains = Array.from(new Set(modules.map(m => m.domain)));
-  const filteredModules = filterDomain
-    ? modules.filter(m => m.domain === filterDomain)
-    : modules;
+  // Derive all data from the navigation tree — no static arrays
+  const allEntries = useMemo(() => deriveModuleData(allDomains), []);
+  const domainSummaries = useMemo(() => buildDomainSummaries(allEntries), [allEntries]);
 
-  const columns: Column<ModuleStatus>[] = [
+  const filteredEntries = useMemo(() => {
+    return allEntries.filter((e) => {
+      if (filterDomain && e.domainId !== filterDomain) return false;
+      if (filterStatus && e.status !== filterStatus) return false;
+      return true;
+    });
+  }, [allEntries, filterDomain, filterStatus]);
+
+  const stats = useMemo(() => {
+    const total = allEntries.length;
+    const operational = allEntries.filter((e) => e.status === "operational").length;
+    const inProgress = allEntries.filter((e) => e.status === "in_progress").length;
+    const pending = allEntries.filter((e) => e.status === "pending").length;
+    const percentage = total === 0 ? 0 : Math.round((operational / total) * 100);
+    return { total, operational, inProgress, pending, percentage, totalDomains: allDomains.length };
+  }, [allEntries]);
+
+  // ── KPICardRow data ────────────────────────────────────────────────────────
+  const kpiCards = [
+    { icon: "sitemap"      as const, label: "إجمالي الشاشات", value: stats.total,       subtitle: `${stats.totalDomains} مجال` },
+    { icon: "check-circle" as const, label: "تشغيلي",          value: stats.operational,  subtitle: "جاهز للاستخدام", color: "#10b981" },
+    { icon: "clock"        as const, label: "قيد التطوير",     value: stats.inProgress,   subtitle: "قيد الإنجاز",    color: "#f59e0b" },
+    { icon: "hourglass"    as const, label: "قريباً",           value: stats.pending,      subtitle: "مخطط له",         color: "#94a3b8" },
+    { icon: "trending-up"  as const, label: "نسبة الإنجاز",    value: stats.percentage,   subtitle: "من إجمالي الشاشات", color: stats.percentage === 100 ? "#10b981" : "#6366f1" },
+  ];
+
+  // ── Table column definitions ───────────────────────────────────────────────
+  const columns: Column<DerivedScreenEntry>[] = [
     {
-      key: "domain",
+      key: "domainTitle",
       header: "المجال",
       dataLabel: "المجال",
+      render: (entry) => {
+        const domainIdx = domainSummaries.findIndex((d) => d.id === entry.domainId);
+        const palette = DOMAIN_PALETTE[domainIdx % 10];
+        return (
+          <div style={{ display: "flex", alignItems: "center", gap: 6, whiteSpace: "nowrap" }}>
+            <span style={{ color: palette.accent }}>{getIcon(entry.domainIcon, undefined, 13)}</span>
+            <span style={{ fontWeight: 600, color: "var(--text-primary)", fontSize: "0.77rem" }}>
+              {entry.domainTitle}
+            </span>
+          </div>
+        );
+      },
     },
     {
-      key: "module",
-      header: "الوحدة",
-      dataLabel: "الوحدة",
+      key: "capabilityTitle",
+      header: "الإمكانية",
+      dataLabel: "الإمكانية",
+      render: (entry) => (
+        <div style={{ display: "flex", alignItems: "center", gap: 5, whiteSpace: "nowrap", color: "var(--text-secondary)", fontSize: "0.77rem" }}>
+          <span style={{ color: "var(--text-muted)" }}>{getIcon(entry.capabilityIcon, undefined, 12)}</span>
+          {entry.capabilityTitle}
+        </div>
+      ),
     },
     {
-      key: "backend",
-      header: "الخلفية",
-      dataLabel: "الخلفية",
-      render: (item) => getComponentStatus(item.backend),
+      key: "featureGroupTitle",
+      header: "المجموعة",
+      dataLabel: "المجموعة",
+      render: (entry) => (
+        <span style={{ color: "var(--text-muted)", fontSize: "0.74rem", whiteSpace: "nowrap" }}>
+          {entry.featureGroupTitle}
+        </span>
+      ),
     },
     {
-      key: "frontend",
-      header: "الواجهة",
-      dataLabel: "الواجهة",
-      render: (item) => getComponentStatus(item.frontend),
-    },
-    {
-      key: "routes",
-      header: "المسارات",
-      dataLabel: "المسارات",
-      render: (item) => getComponentStatus(item.routes),
-    },
-    {
-      key: "models",
-      header: "النماذج",
-      dataLabel: "النماذج",
-      render: (item) => getComponentStatus(item.models),
+      key: "screenTitle",
+      header: "الشاشة",
+      dataLabel: "الشاشة",
+      render: (entry) => {
+        const cfg = STATUS_CONFIG[entry.status];
+        return (
+          <div style={{ display: "flex", alignItems: "center", gap: 6, whiteSpace: "nowrap" }}>
+            <span
+              style={{
+                width: 26, height: 26, borderRadius: 7,
+                background: `${cfg.color}15`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                color: cfg.color, flexShrink: 0,
+              }}
+            >
+              {getIcon(entry.screenIcon, undefined, 12)}
+            </span>
+            <span
+              style={{
+                fontWeight: 600,
+                fontSize: "0.78rem",
+                color: entry.status === "pending" ? "var(--text-muted)" : "var(--text-primary)",
+              }}
+            >
+              {entry.screenTitle}
+            </span>
+          </div>
+        );
+      },
     },
     {
       key: "status",
       header: "الحالة",
       dataLabel: "الحالة",
-      render: (item) => getStatusBadge(item.status),
+      render: (entry) => <StatusBadge status={entry.status} />,
     },
+    // {
+    //   key: "href",
+    //   header: "المسار",
+    //   dataLabel: "المسار",
+    //   render: (entry) => (
+    //     <span
+    //       style={{
+    //         fontSize: "0.68rem",
+    //         fontFamily: "monospace",
+    //         color: entry.status === "pending" ? "var(--text-muted)" : "#6366f1",
+    //         opacity: entry.status === "pending" ? 0.5 : 1,
+    //         whiteSpace: "nowrap",
+    //         overflow: "hidden",
+    //         textOverflow: "ellipsis",
+    //         display: "block",
+    //         maxWidth: 220,
+    //       }}
+    //     >
+    //       {entry.href}
+    //     </span>
+    //   ),
+    // },
   ];
 
-  const stats = {
-    total: modules.length,
-    operational: modules.filter(m => m.status === "operational").length,
-    complete: modules.filter(m => m.backend === "complete" && m.frontend === "complete").length,
-  };
+  const domainOptions = domainSummaries.map((d) => ({ value: d.id, label: d.title }));
+  const statusOptions = [
+    { value: "operational", label: "تشغيلي" },
+    { value: "in_progress", label: "قيد التطوير" },
+    { value: "pending",     label: "قريباً" },
+  ];
 
   return (
     <div className="sales-card animate-fade">
@@ -153,52 +420,79 @@ export function ModulesStatus() {
         title="حالة الوحدات"
         titleIcon="check-circle"
         actions={
-          <Select
-            value={filterDomain}
-            onChange={(e) => setFilterDomain(e.target.value)}
-            options={uniqueDomains.map(domain => ({ value: domain, label: domain }))}
-            placeholder="جميع المجالات"
-            style={{ minWidth: '200px' }}
-          />
+          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+            <Select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              options={statusOptions}
+              placeholder="جميع الحالات"
+              style={{ minWidth: "160px" }}
+            />
+            <Select
+              value={filterDomain}
+              onChange={(e) => setFilterDomain(e.target.value)}
+              options={domainOptions}
+              placeholder="جميع المجالات"
+              style={{ minWidth: "200px" }}
+            />
+          </div>
         }
       />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-        <StatsCard
-          title="إجمالي الوحدات"
-          value={stats.total}
-          icon={getIcon("sitemap")}
-          colorClass="total"
-        />
-        <StatsCard
-          title="جاهز للعمل"
-          value={stats.operational}
-          icon={getIcon("check-circle")}
-          colorClass="sales"
-        />
-        <StatsCard
-          title="مكتمل بالكامل"
-          value={stats.complete}
-          icon={getIcon("box")}
-          colorClass="products"
-        />
-        <StatsCard
-          title="نسبة الإنجاز"
-          value="100%"
-          icon={getIcon("trending-up")}
-          colorClass="default"
-        />
+      {/* ── KPI Row (pre-built KPICardRow) ──────────────────────────────── */}
+      <KPICardRow KPICards={kpiCards} />
+
+      {/* ── Domain Cards Grid ────────────────────────────────────────────── */}
+      {!filterDomain && !filterStatus && (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+            gap: "0.75rem",
+            marginBottom: "1.5rem",
+          }}
+        >
+          {domainSummaries.map((summary, idx) => (
+            <DomainSummaryCard
+              key={summary.id}
+              summary={summary}
+              index={idx}
+              isActive={filterDomain === summary.id}
+              onClick={() => setFilterDomain((prev) => (prev === summary.id ? "" : summary.id))}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* ── Filter info bar ──────────────────────────────────────────────── */}
+      <div style={{ marginBottom: "0.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", fontWeight: 600 }}>
+          عرض {filteredEntries.length} من {allEntries.length} شاشة
+        </span>
+        {(filterDomain || filterStatus) && (
+          <button
+            onClick={() => { setFilterDomain(""); setFilterStatus(""); }}
+            style={{
+              fontSize: "0.72rem", color: "#6366f1",
+              background: "none", border: "none",
+              cursor: "pointer", fontWeight: 600,
+              display: "flex", alignItems: "center", gap: 4,
+            }}
+          >
+            {getIcon("x", undefined, 12)}
+            مسح الفلاتر
+          </button>
+        )}
       </div>
 
-      <Table
+      {/* ── Table (pre-built Table component) ───────────────────────────── */}
+      <Table<DerivedScreenEntry>
         columns={columns}
-        data={filteredModules}
-        keyExtractor={(item, index) => `${item.domain}-${item.module}-${index}`}
-        emptyMessage="لا توجد وحدات"
+        data={filteredEntries}
+        keyExtractor={(entry) => `${entry.domainId}-${entry.capabilityId}-${entry.screenId}`}
+        emptyMessage="لا توجد نتائج مطابقة للفلتر المحدد"
         isLoading={false}
       />
     </div>
   );
 }
-
-

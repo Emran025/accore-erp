@@ -34,6 +34,14 @@ export interface NavScreen {
     permissions: string[];
     /** Original module key for backward compatibility */
     module?: string;
+    /**
+     * Explicit readiness status for this screen.
+     * - "operational": Fully implemented and accessible.
+     * - "in_progress": Under active development; partially available.
+     * - "pending": Planned but not yet started.
+     * If omitted, status is auto-derived from the description (e.g. "قريباً" → pending).
+     */
+    status?: "operational" | "in_progress" | "pending";
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
