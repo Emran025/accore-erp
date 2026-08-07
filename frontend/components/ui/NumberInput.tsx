@@ -16,6 +16,8 @@ interface NumberInputProps {
     className?: string;
     placeholder?: string;
     suffix?: string;
+    /** Optional external ref for programmatic focus (e.g. after barcode auto-select) */
+    inputRef?: React.RefObject<HTMLInputElement | null>;
 }
 
 export function NumberInput({
@@ -30,9 +32,11 @@ export function NumberInput({
     readOnly,
     className = "",
     placeholder,
-    suffix
+    suffix,
+    inputRef: externalRef,
 }: NumberInputProps) {
-    const inputRef = useRef<HTMLInputElement>(null);
+    const internalRef = useRef<HTMLInputElement>(null);
+    const inputRef = externalRef ?? internalRef;
 
     const handleIncrement = (e: React.MouseEvent) => {
         e.preventDefault(); // Prevent focus loss if possible

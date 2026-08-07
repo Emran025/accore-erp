@@ -49,4 +49,5 @@ export { BadgeLabel } from "./BadgeLabel";
 export { InvoiceDetailsDialog } from "./InvoiceDetailsDialog";
 export { SessionExpiredModal } from "./SessionExpiredModal";
 export { ProductSales } from "./ProductSales";
+export { ProductPurchases } from "./ProductPurchases";
 export { ServiceSales } from "./ServiceSales";

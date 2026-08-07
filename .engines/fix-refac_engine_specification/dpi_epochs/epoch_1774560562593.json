@@ -522,8 +522,8 @@
         "hash": "c4611374a893014f",
         "size": 7767
       },
-      "frontend/app/04-supply-chain/procurement/purchase-invoices/purchase-invoices-list/(pages)/page.tsx": {
-        "path": "frontend/app/04-supply-chain/procurement/purchase-invoices/purchase-invoices-list/(pages)/page.tsx",
+      "frontend/app/04-supply-chain/procurement/purchase-invoices/purchase-invoices/(pages)/page.tsx": {
+        "path": "frontend/app/04-supply-chain/procurement/purchase-invoices/purchase-invoices/(pages)/page.tsx",
         "hash": "0fcfd50db755c380",
         "size": 23059
       },

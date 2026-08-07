@@ -30,7 +30,7 @@ import { printInvoice } from "@/lib/invoice-utils";
 import { Currency, GovernmentFee, Product, InvoiceItem, Customer, Invoice, TaxAuthority, TaxType, TaxRate } from "@/types";
 import { PaginatedResponse } from "@/types/types";
 import { formatCurrency, formatDateTime, parseNumber } from "@/lib/utils";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export interface ProductSalesPageProps {
     mode: "cash" | "credit";
@@ -38,6 +38,9 @@ export interface ProductSalesPageProps {
 
 export function ProductSales({ mode }: ProductSalesPageProps) {
     const isCash = mode === "cash";
+
+    // Ref for advancing focus to quantity field after barcode auto-select
+    const quantityInputRef = useRef<HTMLInputElement | null>(null);
 
     const [user, setUser] = useState<User | null>(null);
     const [permissions, setPermissions] = useState<Permission[]>([]);
@@ -743,8 +746,10 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                         options={productOptions}
                         value={selectedProduct?.id || null}
                         onChange={handleProductSelect}
-                        placeholder="ابحث عن منتج..."
+                        placeholder="ابحث عن منتج أو باركود..."
                         required
+                        autoFocus
+                        onAutoSelect={() => quantityInputRef.current?.focus()}
                         filterOption={(opt, term) => opt.label.toLowerCase().includes(term.toLowerCase()) || (opt.original?.barcode && opt.original.barcode.includes(term))}
                     />
                 </div>
@@ -752,8 +757,8 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                     <div className="form-group">
                         <label htmlFor="item-unit-type">نوع الوحدة</label>
                         <select id="item-unit-type" value={unitType} onChange={(e) => { setUnitType(e.target.value as "sub" | "main"); calculateSubtotal(); }} className="glass">
-                            <option value="sub">{selectedProduct?.sub_unit_name || "حبة"}</option>
-                            <option value="main">{selectedProduct?.unit_name || "كرتون"} ({selectedProduct?.items_per_unit || 1} {selectedProduct?.sub_unit_name || "حبة"})</option>
+                            <option className="option-name" value="sub">{selectedProduct?.sub_unit_name || "حبة"}</option>
+                            <option className="option-name"value="main">{selectedProduct?.unit_name || "كرتون"} ({selectedProduct?.items_per_unit || 1} {selectedProduct?.sub_unit_name || "حبة"})</option>
                         </select>
                     </div>
                     <div className="form-group">
@@ -763,7 +768,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                 </div>
                 <div className="form-row">
                     <div className="form-group">
-                        <NumberInput id="item-quantity" label="الكمية *" min={1} value={quantity} onChange={(val) => setQuantity(val)} required />
+                        <NumberInput id="item-quantity" label="الكمية *" min={1} value={quantity} onChange={(val) => setQuantity(val)} required inputRef={quantityInputRef} />
                     </div>
                     <div className="form-group">
                         <NumberInput id="item-unit-price" label="سعر بيع الوحدة *" min={0} step={0.01} value={unitPrice} onChange={(val) => setUnitPrice(val)} required />

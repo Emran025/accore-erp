@@ -320,7 +320,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
 
         // Calculate safe coordinates to prevent off-screen rendering
         const menuWidth = 220;
-        const menuHeight = 110;
+        const menuHeight = 150;
 
         let x = e.clientX;
         let y = e.clientY;
@@ -575,8 +575,10 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                         type={contextMenu.type}
                         path={contextMenu.path}
                         isFavorite={favoriteScreens.includes(contextMenu.path)}
+                        isRecent={recentScreens.includes(contextMenu.path)}
                         onAddFavorite={() => addFavorite(contextMenu.path)}
                         onRemoveFavorite={() => removeFavorite(contextMenu.path)}
+                        onRemoveRecent={() => removeRecentScreen(contextMenu.path)}
                         onOpen={() => {
                             if (contextMenu.type === "screen") {
                                 router.push(contextMenu.path);

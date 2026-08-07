@@ -6,8 +6,10 @@ export interface ContextMenuPortalProps {
     type: "screen" | "folder";
     path: string;
     isFavorite: boolean;
+    isRecent?: boolean;
     onAddFavorite: () => void;
     onRemoveFavorite: () => void;
+    onRemoveRecent?: () => void;
     onOpen: () => void;
     onClose: () => void;
 }
@@ -18,8 +20,10 @@ export function ContextMenuPortal({
     type,
     path,
     isFavorite,
+    isRecent,
     onAddFavorite,
     onRemoveFavorite,
+    onRemoveRecent,
     onOpen,
     onClose,
 }: ContextMenuPortalProps) {
@@ -56,6 +60,15 @@ export function ContextMenuPortal({
                         <span>Remove from Favorites</span>
                     </button>
                 )
+            )}
+            {type === "screen" && isRecent && onRemoveRecent && (
+                <button
+                    className="sidenav-context-item danger"
+                    onClick={() => { onRemoveRecent(); onClose(); }}
+                >
+                    {getIcon("x")}
+                    <span>Remove from Recent</span>
+                </button>
             )}
         </div>
     );

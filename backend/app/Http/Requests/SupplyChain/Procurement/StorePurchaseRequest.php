@@ -24,6 +24,9 @@ class StorePurchaseRequest extends FormRequest
             'vat_rate' => 'nullable|numeric|min:0|max:100',
             'vat_amount' => 'nullable|numeric|min:0',
             'payment_type' => 'nullable|in:cash,credit',
+            'amount_paid' => 'nullable|numeric|min:0',
+            'discount_value' => 'nullable|numeric|min:0',
+            'discount_type' => 'nullable|in:fixed,percent',
             'notes' => 'nullable|string',
         ];
     }

@@ -26,6 +26,10 @@ interface SearchableSelectProps {
     noResultsText?: string;
     renderOption?: (option: SelectOption) => React.ReactNode;
     filterOption?: (option: SelectOption, searchTerm: string) => boolean;
+    /** Automatically focus this input on mount */
+    autoFocus?: boolean;
+    /** Called after a barcode exact-match auto-select so the parent can advance focus */
+    onAutoSelect?: () => void;
 }
 
 export function SearchableSelect({
@@ -43,6 +47,8 @@ export function SearchableSelect({
     renderOption,
     paddingVertical,
     filterOption,
+    autoFocus = false,
+    onAutoSelect,
 }: SearchableSelectProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
@@ -50,6 +56,15 @@ export function SearchableSelect({
     const [isArabic, setIsArabic] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+
+    // Auto-focus when requested (after initial mount / data load)
+    useEffect(() => {
+        if (autoFocus) {
+            // Small delay so the DOM settles and parent data is ready
+            const t = setTimeout(() => inputRef.current?.focus(), 80);
+            return () => clearTimeout(t);
+        }
+    }, [autoFocus]);
 
     // Get selected option label
     const selectedOption = Array.isArray(options)
@@ -96,6 +111,33 @@ export function SearchableSelect({
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    // ── Barcode exact-match auto-select ──────────────────────────────────
+    // When the search term exactly matches a product's barcode field,
+    // auto-select that product and notify the parent to advance focus.
+    useEffect(() => {
+        if (!searchTerm || searchTerm.length < 3) return;
+        if (value) return; // already selected
+
+        const exactMatch = Array.isArray(options)
+            ? options.find((opt) =>
+                opt.original?.barcode &&
+                opt.original.barcode.toString().trim() === searchTerm.trim()
+            )
+            : null;
+
+        if (exactMatch) {
+            onChange(exactMatch.value, exactMatch);
+            setInputValue(exactMatch.label);
+            setSearchTerm("");
+            setIsOpen(false);
+            // Notify parent to advance focus to the next field
+            if (onAutoSelect) {
+                setTimeout(() => onAutoSelect(), 50);
+            }
+        }
+    }, [searchTerm, options, value, onChange, onAutoSelect]);
+    // ─────────────────────────────────────────────────────────────────────
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
