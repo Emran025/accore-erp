@@ -5,6 +5,7 @@ import {
     ActionButtons,
     Column,
     ConfirmDialog,
+    DatePicker,
     Dialog,
     InvoiceTableColumn,
     NumberInput,
@@ -138,8 +139,10 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
 
     const [isLoading, setIsLoading] = useState(true);
 
-    // Ref for advancing focus to quantity after barcode auto-select
+    // Ref for advancing focus to quantity field after barcode auto-select
     const quantityInputRef = useRef<HTMLInputElement | null>(null);
+    // Ref for returning focus to product select input after adding item
+    const productSelectRef = useRef<HTMLInputElement | null>(null);
 
     // ── Computed ──────────────────────────────────────────────────────────
 
@@ -259,10 +262,39 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
 
     const handleProductSelect = (value: string | number | null, option: SelectOption | null) => {
         if (!option) { setSelectedProduct(null); return; }
+
+        // Sequential barcode scanning:
+        // If a product was already selected in the form, commit it to the invoice list first!
+        if (selectedProduct && selectedProduct.id !== option.value) {
+            const qty = parseNumber(quantity);
+            const price = parseNumber(unitPrice);
+            if (qty > 0 && price > 0) {
+                const itemsPerUnit = selectedProduct.items_per_unit || 1;
+                const totalSubUnits = unitType === "main" ? qty * itemsPerUnit : qty;
+                const calcSubtotal = unitType === "main" ? qty * price * itemsPerUnit : qty * price;
+                const unitName = unitType === "main" ? selectedProduct.unit_name : selectedProduct.sub_unit_name;
+                const prevItem: PurchaseItem = {
+                    product_id: selectedProduct.id,
+                    product_name: selectedProduct.name,
+                    display_name: `${selectedProduct.name} (${qty} ${unitName || ""})`,
+                    quantity: qty,
+                    unit_type: unitType,
+                    unit_name: unitName || undefined,
+                    total_sub_units: totalSubUnits,
+                    unit_price: price,
+                    subtotal: calcSubtotal,
+                    expiry_date: itemExpiryDate || undefined,
+                };
+                setPurchaseItems((prev) => [...prev, prevItem]);
+            }
+        }
+
         const product = option.original as Product;
         setSelectedProduct(product);
         const price = Number(product.purchase_price) || Number(product.unit_price) || 0;
         setUnitPrice(price.toFixed(2));
+        setQuantity("1");
+        setItemExpiryDate("");
     };
 
     const handleSupplierSelect = (value: string | number | null, option: SelectOption | null) => {
@@ -308,6 +340,7 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
         setUnitPrice("");
         setItemExpiryDate("");
         setSubtotal(0);
+        setTimeout(() => productSelectRef.current?.focus(), 60);
     };
 
     const removeItem = (index: number) => {
@@ -608,6 +641,7 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                     <label htmlFor="purchase-product-select">اختر المنتج *</label>
                     <SearchableSelect
                         id="purchase-product-select"
+                        inputRef={productSelectRef}
                         options={productOptions}
                         value={selectedProduct?.id || null}
                         onChange={handleProductSelect}
@@ -641,12 +675,11 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                     </div>
                     <div className="form-group">
                         <label htmlFor="purchase-expiry">تاريخ الانتهاء</label>
-                        <input
+                        <DatePicker
                             id="purchase-expiry"
-                            type="date"
                             value={itemExpiryDate}
-                            onChange={(e) => setItemExpiryDate(e.target.value)}
-                            className="glass"
+                            onChange={(val) => setItemExpiryDate(val)}
+                            placeholder="اختر تاريخ الانتهاء..."
                         />
                     </div>
                 </div>
@@ -668,7 +701,7 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                             id="purchase-unit-price"
                             label="سعر الشراء للوحدة *"
                             min={0}
-                            step={0.01}
+                            step={1}
                             value={unitPrice}
                             onChange={(val) => setUnitPrice(val)}
                             required
@@ -713,7 +746,7 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                             id="amount-paid-input"
                             label="المبلغ المدفوع (نقدًا)"
                             min={0}
-                            step={0.01}
+                            step={1}
                             value={amountPaid}
                             onChange={(val) => setAmountPaid(val)}
                         />

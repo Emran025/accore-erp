@@ -27,9 +27,12 @@ interface SearchableSelectProps {
     renderOption?: (option: SelectOption) => React.ReactNode;
     filterOption?: (option: SelectOption, searchTerm: string) => boolean;
     /** Automatically focus this input on mount */
+    /** Automatically focus this input on mount */
     autoFocus?: boolean;
-    /** Called after a barcode exact-match auto-select so the parent can advance focus */
+    /** Called after a barcode exact-match or Enter-key auto-select so the parent can advance focus */
     onAutoSelect?: () => void;
+    /** External ref for programmatic focus */
+    inputRef?: React.RefObject<HTMLInputElement | null>;
 }
 
 export function SearchableSelect({
@@ -49,22 +52,23 @@ export function SearchableSelect({
     filterOption,
     autoFocus = false,
     onAutoSelect,
+    inputRef: externalRef,
 }: SearchableSelectProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [inputValue, setInputValue] = useState("");
     const [isArabic, setIsArabic] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
-    const inputRef = useRef<HTMLInputElement>(null);
+    const internalRef = useRef<HTMLInputElement>(null);
+    const inputRef = externalRef ?? internalRef;
 
     // Auto-focus when requested (after initial mount / data load)
     useEffect(() => {
         if (autoFocus) {
-            // Small delay so the DOM settles and parent data is ready
             const t = setTimeout(() => inputRef.current?.focus(), 80);
             return () => clearTimeout(t);
         }
-    }, [autoFocus]);
+    }, [autoFocus, inputRef]);
 
     // Get selected option label
     const selectedOption = Array.isArray(options)
@@ -83,7 +87,6 @@ export function SearchableSelect({
             setInputValue(selectedOption.label);
             setSearchTerm("");
         } else if (!value && !onSearch) {
-            // Only clear if not in search mode
             setInputValue("");
             setSearchTerm("");
         }
@@ -113,8 +116,6 @@ export function SearchableSelect({
     }, []);
 
     // ── Barcode exact-match auto-select ──────────────────────────────────
-    // When the search term exactly matches a product's barcode field,
-    // auto-select that product and notify the parent to advance focus.
     useEffect(() => {
         if (!searchTerm || searchTerm.length < 3) return;
         if (value) return; // already selected
@@ -131,7 +132,6 @@ export function SearchableSelect({
             setInputValue(exactMatch.label);
             setSearchTerm("");
             setIsOpen(false);
-            // Notify parent to advance focus to the next field
             if (onAutoSelect) {
                 setTimeout(() => onAutoSelect(), 50);
             }
@@ -146,18 +146,13 @@ export function SearchableSelect({
         if (onSearch) {
             onSearch(val);
         }
-        if (!isOpen) setIsOpen(true);
+        setIsOpen(val.trim().length > 0);
     };
 
     const handleInputFocus = () => {
-        setIsOpen(true);
-        if (!selectedOption) {
-            setSearchTerm(inputValue);
-            // Only trigger search on focus if there's actually something to search for
-            // to avoid redundant parent re-renders that look like page refreshes
-            if (onSearch && inputValue.trim() !== "") {
-                onSearch(inputValue);
-            }
+        // Only open dropdown if there is an active search term typed
+        if (searchTerm.trim().length > 0) {
+            setIsOpen(true);
         }
     };
 
@@ -171,6 +166,21 @@ export function SearchableSelect({
         [onChange]
     );
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            // If an option is already selected or filtered options exist
+            if (!value && filteredOptions.length > 0 && searchTerm.trim().length > 0) {
+                const topOption = filteredOptions[0];
+                handleOptionClick(topOption);
+            }
+            setIsOpen(false);
+            if (onAutoSelect) {
+                setTimeout(() => onAutoSelect(), 50);
+            }
+        }
+    };
+
     const handleClear = (e: React.MouseEvent) => {
         e.stopPropagation();
         onChange(null, null);
@@ -179,6 +189,9 @@ export function SearchableSelect({
         if (onSearch) onSearch("");
         inputRef.current?.focus();
     };
+
+    // Should only display dropdown when search term is not empty and dropdown is open
+    const isDropdownVisible = isOpen && searchTerm.trim().length > 0;
 
     return (
         <div className={`searchable-select ${className}`} ref={containerRef}>
@@ -190,12 +203,12 @@ export function SearchableSelect({
                 value={isOpen ? searchTerm : inputValue}
                 onChange={handleInputChange}
                 onFocus={handleInputFocus}
+                onKeyDown={handleKeyDown}
                 placeholder={placeholder}
                 disabled={disabled}
                 autoComplete="off"
                 required={required && !value}
                 style={{
-
                     paddingTop: paddingVertical ? (paddingVertical + "rem") : undefined,
                     paddingBottom: paddingVertical ? (paddingVertical + "rem") : undefined,
                     direction: isArabic ? "rtl" : "ltr",
@@ -217,7 +230,7 @@ export function SearchableSelect({
                     <Icon name="x" size={16} />
                 </button>
             )}
-            <div className={`options-list ${isOpen ? "active" : ""}`}>
+            <div className={`options-list ${isDropdownVisible ? "active" : ""}`}>
                 {filteredOptions.length === 0 ? (
                     <div className="no-results">{noResultsText}</div>
                 ) : (

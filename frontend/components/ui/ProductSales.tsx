@@ -41,6 +41,8 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
 
     // Ref for advancing focus to quantity field after barcode auto-select
     const quantityInputRef = useRef<HTMLInputElement | null>(null);
+    // Ref for returning focus to product select input after adding item
+    const productSelectRef = useRef<HTMLInputElement | null>(null);
 
     const [user, setUser] = useState<User | null>(null);
     const [permissions, setPermissions] = useState<Permission[]>([]);
@@ -433,6 +435,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
         setQuantity("1");
         setUnitPrice("");
         setItemStock("");
+        setTimeout(() => productSelectRef.current?.focus(), 60);
     };
 
     const confirmAddItem = () => {
@@ -444,6 +447,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
             setQuantity("1");
             setUnitPrice("");
             setItemStock("");
+            setTimeout(() => productSelectRef.current?.focus(), 60);
         }
     };
 
@@ -743,6 +747,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                     <label htmlFor="product-select">اختر المنتج *</label>
                     <SearchableSelect
                         id="product-select"
+                        inputRef={productSelectRef}
                         options={productOptions}
                         value={selectedProduct?.id || null}
                         onChange={handleProductSelect}

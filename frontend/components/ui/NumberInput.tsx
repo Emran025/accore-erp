@@ -78,6 +78,7 @@ export function NumberInput({
                     id={id}
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
+                    onFocus={(e) => e.target.select()}
                     onBlur={handleBlur}
                     min={min}
                     max={max}

@@ -51,3 +51,4 @@ export { SessionExpiredModal } from "./SessionExpiredModal";
 export { ProductSales } from "./ProductSales";
 export { ProductPurchases } from "./ProductPurchases";
 export { ServiceSales } from "./ServiceSales";
+export { DatePicker } from "./DatePicker";
