@@ -430,9 +430,8 @@ body:not(:has(.sidebar)) .content {
 
   margin-bottom: 1.25rem;
   position: relative;
-  align-items: right;
+  align-items: flex-start;
   text-align: right;
-  align-content: right;
 }
 
 .form-group label {

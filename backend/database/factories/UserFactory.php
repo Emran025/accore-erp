@@ -12,6 +12,8 @@ use App\Domains\EnterpriseCore\IdentityAccess\Models\Role;
  */
 class UserFactory extends Factory
 {
+    protected $model = \App\Domains\EnterpriseCore\IdentityAccess\Models\User::class;
+
     protected static ?string $password;
     /**
      * Define the model's default state.

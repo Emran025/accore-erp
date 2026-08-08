@@ -14,9 +14,10 @@ class ListSuppliersRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'page' => 'nullable|integer|min:1',
-            'per_page' => 'nullable|integer|min:1|max:100',
-            'search' => 'nullable|string',
+            'page'     => 'nullable|integer|min:1',
+            'per_page' => 'nullable|integer|min:1|max:2000',
+            'limit'    => 'nullable|integer|min:1|max:2000',
+            'search'   => 'nullable|string',
         ];
     }
 }

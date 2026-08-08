@@ -14,10 +14,11 @@ class ListInvoicesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'page' => 'nullable|integer|min:1',
-            'per_page' => 'nullable|integer|min:1|max:100',
+            'page'         => 'nullable|integer|min:1',
+            'per_page'     => 'nullable|integer|min:1|max:2000',
+            'limit'        => 'nullable|integer|min:1|max:2000',
             'payment_type' => 'nullable|string|in:cash,credit,bank_transfer',
-            'customer_id' => 'nullable|integer|exists:ar_customers,id',
+            'customer_id'  => 'nullable|integer|exists:ar_customers,id',
         ];
     }
 }
