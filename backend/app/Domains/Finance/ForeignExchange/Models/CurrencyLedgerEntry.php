@@ -2,6 +2,7 @@
 
 namespace App\Domains\Finance\ForeignExchange\Models;
 
+use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

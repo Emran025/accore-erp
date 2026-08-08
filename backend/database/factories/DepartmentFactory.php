@@ -6,7 +6,7 @@ use App\Domains\HumanCapital\WorkforceAdmin\Models\Department;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\HumanCapital\WorkforceAdmin\Models\Department>
+ * @extends Factory<Department>
  */
 class DepartmentFactory extends Factory
 {

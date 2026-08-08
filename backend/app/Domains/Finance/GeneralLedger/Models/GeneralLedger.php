@@ -2,9 +2,13 @@
 
 namespace App\Domains\Finance\GeneralLedger\Models;
 
+use App\Domains\Finance\ForeignExchange\Models\Currency;
+use App\Domains\Finance\ManagementAccounting\Models\CostCenter;
+use App\Domains\Finance\ManagementAccounting\Models\ProfitCenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 /**
  * Model representing a General Ledger entry (journal entry line).

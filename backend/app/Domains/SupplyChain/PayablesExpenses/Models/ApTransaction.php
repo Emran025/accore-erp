@@ -2,10 +2,13 @@
 
 namespace App\Domains\SupplyChain\PayablesExpenses\Models;
 
+use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
+use App\Domains\SupplyChain\SupplierSourcing\Models\ApSupplier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 /**
  * Accounts Payable sub-ledger transaction.

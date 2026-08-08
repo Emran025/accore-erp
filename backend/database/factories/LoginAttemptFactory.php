@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Domains\EnterpriseCore\IAM\Models\LoginAttempt;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\LoginAttempt;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\EnterpriseCore\IAM\Models\LoginAttempt>
+ * @extends Factory<LoginAttempt>
  */
 class LoginAttemptFactory extends Factory
 {

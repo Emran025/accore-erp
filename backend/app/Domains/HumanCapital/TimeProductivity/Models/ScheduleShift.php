@@ -2,6 +2,7 @@
 
 namespace App\Domains\HumanCapital\TimeProductivity\Models;
 
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use Illuminate\Database\Eloquent\Model;
 
 class ScheduleShift extends Model

@@ -3,9 +3,8 @@
 namespace App\Domains\Assets\AssetLifecycle\Services;
 
 use App\Domains\Assets\AssetLifecycle\Models\Asset;
+use App\Domains\Finance\GeneralLedger\Services\ChartOfAccountsMappingService;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
-use App\Domains\Finance\ChartOfAccounts\Services\ChartOfAccountsMappingService;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Service for managing Fixed Asset depreciation.

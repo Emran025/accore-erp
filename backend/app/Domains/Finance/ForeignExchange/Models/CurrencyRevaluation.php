@@ -2,9 +2,12 @@
 
 namespace App\Domains\Finance\ForeignExchange\Models;
 
+use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
+use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 /**
  * Currency Revaluation Model
@@ -142,7 +145,7 @@ class CurrencyRevaluation extends Model
         if ($this->previous_rate == 0) {
             return 0;
         }
-        
+
         return (($this->new_rate - $this->previous_rate) / $this->previous_rate) * 100;
     }
 

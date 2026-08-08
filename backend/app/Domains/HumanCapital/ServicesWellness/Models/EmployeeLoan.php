@@ -2,8 +2,10 @@
 
 namespace App\Domains\HumanCapital\ServicesWellness\Models;
 
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class EmployeeLoan extends Model
 {

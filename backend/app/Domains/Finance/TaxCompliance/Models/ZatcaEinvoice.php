@@ -2,6 +2,7 @@
 
 namespace App\Domains\Finance\TaxCompliance\Models;
 
+use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

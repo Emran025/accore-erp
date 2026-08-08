@@ -14,7 +14,7 @@ use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\Role;
 use App\Policies\InvoicePolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Domains\Finance\ChartOfAccounts\Services\ChartOfAccountsMappingService;
+use App\Domains\Finance\GeneralLedger\Services\ChartOfAccountsMappingService;
 
 /**
  * Test InvoicePolicy authorization rules
@@ -43,18 +43,18 @@ class InvoicePolicyTest extends TestCase
                 'is_active' => true
             ]
         );
-        
+
         $adminRole = Role::where('role_key', 'admin')->firstOrFail();
 
         // Create users
         $this->owner = User::factory()->create([
             'role_id' => $salesRole->id
         ]);
-        
+
         $this->otherUser = User::factory()->create([
             'role_id' => $salesRole->id
         ]);
-        
+
         $this->adminUser = User::factory()->create([
             'role_id' => $adminRole->id
         ]);
@@ -98,14 +98,14 @@ class InvoicePolicyTest extends TestCase
                 'module_name_en' => 'Sales'
             ]
         );
-        
+
         // Ensure role exists and attach permission
         $role = $this->adminUser->roleRelation;
         $role->permissions()->updateOrCreate(
             ['module_id' => $permission->id],
             ['can_view' => true]
         );
-        
+
         $this->assertTrue($this->policy->view($this->adminUser, $this->invoice));
     }
 
@@ -117,7 +117,7 @@ class InvoicePolicyTest extends TestCase
         $invoiceWithPayment = Invoice::factory()->create([
             'user_id' => $this->owner->id,
         ]);
-        
+
         // Mock a payment by creating an AR transaction/GL entry
         $voucher = UniversalJournal::factory()->create();
         ArTransaction::factory()->create([
@@ -126,10 +126,10 @@ class InvoicePolicyTest extends TestCase
             'type' => 'receipt',
             'voucher_number' => $voucher->voucher_number,
         ]);
-        
+
         $coaService = app(ChartOfAccountsMappingService::class);
         $cashAccountId = ChartOfAccount::where('account_code', $coaService->getStandardAccounts()['cash'])->value('id');
-        
+
         GeneralLedger::factory()->create([
             'voucher_number' => $voucher->voucher_number,
             'account_id' => $cashAccountId,
@@ -190,18 +190,17 @@ class InvoicePolicyTest extends TestCase
             ['module_id' => $module->id],
             ['can_delete' => true]
         );
-        
+
         // Reload permissions into session for policy check (simulated)
         // Since policy checks $user->can(), we might need to refresh user or its permissions
         // But $user->can() uses Gate which uses PermissionService which loads from DB usually or session.
         // Let's assume standard Laravel Gate usage which queries DB or cache.
         // However, PermissionService::can relies on session('permissions').
         // We need to re-authenticate or re-load permissions.
-        
+
         $this->authenticateUser($this->owner);
 
         // Owner should be able to delete their own invoice if no payments and period not closed
         $this->assertTrue($this->policy->delete($this->owner, $invoice));
     }
 }
-

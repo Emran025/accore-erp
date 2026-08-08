@@ -3,6 +3,7 @@
 namespace App\Domains\HumanCapital\HRAdvanced\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class EmployeeDocument extends Model
 {

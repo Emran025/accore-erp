@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Carbon\Carbon;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Finance\GeneralLedger\Models\FiscalPeriod>
+ * @extends Factory<FiscalPeriod>
  */
 class FiscalPeriodFactory extends Factory
 {

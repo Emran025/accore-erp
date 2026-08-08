@@ -3,7 +3,7 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use Symfony\Component\HttpFoundation\Session\Session;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\Session;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 

@@ -4,10 +4,12 @@ namespace App\Domains\HumanCapital\WorkforceAdmin\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class ExpatManagement extends Model
 {
     use SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
     protected $fillable = [
         'employee_id', 'passport_number', 'passport_expiry', 'visa_number', 'visa_expiry',

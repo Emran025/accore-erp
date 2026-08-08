@@ -4,10 +4,12 @@ namespace App\Domains\HumanCapital\WorkforceAdmin\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class ContingentWorker extends Model
 {
     use SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
     protected $fillable = [
         'worker_code', 'full_name', 'email', 'phone', 'worker_type', 'company_name',

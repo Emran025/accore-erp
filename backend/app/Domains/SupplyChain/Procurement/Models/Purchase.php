@@ -2,6 +2,8 @@
 
 namespace App\Domains\SupplyChain\Procurement\Models;
 
+use App\Domains\SupplyChain\Inventory\Models\Product;
+use App\Domains\SupplyChain\SupplierSourcing\Models\ApSupplier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,6 +13,7 @@ use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\ForeignExchange\Models\Currency;
 use App\Domains\Finance\GeneralLedger\Services\ChartOfAccountsMappingService;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 /**
  * Purchase model — SAP FI pattern.

@@ -8,7 +8,7 @@ use App\Enums\CurrencyPolicyType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Finance\ForeignExchange\Models\CurrencyPolicy>
+ * @extends Factory<CurrencyPolicy>
  */
 class CurrencyPolicyFactory extends Factory
 {

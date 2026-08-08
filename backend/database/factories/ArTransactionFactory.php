@@ -9,7 +9,7 @@ use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Commercial\RevenueReceivables\Models\ArTransaction>
+ * @extends Factory<ArTransaction>
  */
 class ArTransactionFactory extends Factory
 {

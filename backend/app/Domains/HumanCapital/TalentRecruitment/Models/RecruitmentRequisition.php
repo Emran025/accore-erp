@@ -2,8 +2,11 @@
 
 namespace App\Domains\HumanCapital\TalentRecruitment\Models;
 
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Department;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\Role;
 
 class RecruitmentRequisition extends Model
 {

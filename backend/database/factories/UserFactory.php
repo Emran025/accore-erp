@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\Role;
 
 /**
@@ -12,7 +12,7 @@ use App\Domains\EnterpriseCore\IdentityAccess\Models\Role;
  */
 class UserFactory extends Factory
 {
-    protected $model = \App\Domains\EnterpriseCore\IdentityAccess\Models\User::class;
+    protected $model = User::class;
 
     protected static ?string $password;
     /**

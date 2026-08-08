@@ -8,7 +8,7 @@ use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\SupplyChain\Inventory\Models\Product>
+ * @extends Factory<Product>
  */
 class ProductFactory extends Factory
 {

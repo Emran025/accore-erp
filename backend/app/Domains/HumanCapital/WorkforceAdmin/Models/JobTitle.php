@@ -4,6 +4,7 @@ namespace App\Domains\HumanCapital\WorkforceAdmin\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class JobTitle extends Model
 {

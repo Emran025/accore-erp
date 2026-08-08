@@ -5,13 +5,19 @@ namespace App\Http\Resources\Intelligence\BusinessIntelligence;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\Commercial\SalesLifecycle\InvoiceResource;
 use App\Http\Resources\SupplyChain\Procurement\PurchaseRequestResource;
+use Illuminate\Support\Collection;
 
 class DashboardResource extends JsonResource
 {
     public function toArray($request): array
     {
-        // If the action returned a collection of items (detail mode)
-        if (isset($this->resource[0]) || is_array($this->resource) && empty($this->resource)) {
+        // If the action returned a list collection of items (detail mode)
+        if ($this->resource instanceof Collection) {
+            if ($this->resource->isEmpty() || is_int($this->resource->keys()->first())) {
+                return $this->resource->toArray();
+            }
+        }
+        if (is_array($this->resource) && (isset($this->resource[0]) || empty($this->resource))) {
             return $this->resource;
         }
 

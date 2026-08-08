@@ -3,7 +3,6 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollCycle;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
@@ -24,7 +23,7 @@ class PayrollApiTest extends TestCase
         parent::setUp();
         
         // Setup required mapping accounts
-        $this->expenseAccount = \App\Domains\Finance\GeneralLedger\Models\ChartOfAccount::create([
+        $this->expenseAccount = ChartOfAccount::create([
             'account_name' => 'Salaries Expense',
             'account_code' => '5220',
             'account_type' => 'Expense',

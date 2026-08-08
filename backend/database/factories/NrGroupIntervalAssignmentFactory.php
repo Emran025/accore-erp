@@ -9,7 +9,7 @@ use App\Domains\EnterpriseCore\SystemOverview\Models\NrInterval;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\EnterpriseCore\SystemOverview\Models\NrGroupIntervalAssignment>
+ * @extends Factory<NrGroupIntervalAssignment>
  */
 class NrGroupIntervalAssignmentFactory extends Factory
 {

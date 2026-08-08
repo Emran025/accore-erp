@@ -2,6 +2,7 @@
 
 namespace App\Domains\Finance\TaxCompliance\Models;
 
+use App\Domains\HumanCapital\WorkforceAdmin\Models\ComplianceProfile;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 

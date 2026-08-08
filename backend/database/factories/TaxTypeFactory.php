@@ -3,9 +3,9 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Domains\Finance\TaxCompliance\Models\TaxAuthority;
+use App\Domains\Finance\TaxCompliance\Models\TaxType;
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Finance\TaxCompliance\Models\TaxType>
+ * @extends Factory<TaxType>
  */
 class TaxTypeFactory extends Factory
 {
@@ -17,7 +17,7 @@ class TaxTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            'tax_authority_id' => TaxAuthority::factory(),
+            'tax_authority_id' => TaxType::factory(),
             'code' => $this->faker->unique()->lexify('TAX-???'),
             'name' => $this->faker->word,
             'calculation_type' => 'percentage',

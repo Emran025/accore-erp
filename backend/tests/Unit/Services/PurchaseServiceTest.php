@@ -2,15 +2,15 @@
 
 namespace Tests\Unit\Services;
 
+use App\Domains\SupplyChain\Procurement\Services\PurchaseService;
 use Tests\TestCase;
 use App\Domains\SupplyChain\Procurement\Models\Purchase;
 use App\Domains\SupplyChain\Inventory\Models\Product;
-use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
-use App\Domains\Commercial\IdentityAccess\Models\ApTransaction;
-use App\Domains\Commercial\Purchases\Services\PurchaseService;
-use App\Domains\Finance\GeneralLedger\Services\LedgerService;
-use App\Domains\Finance\ChartOfAccounts\Services\ChartOfAccountsMappingService;
-use App\Domains\SupplyChain\Inventory\Services\InventoryCostingService;
+// use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
+// use App\Domains\Commercial\IdentityAccess\Models\ApTransaction;
+// use App\Domains\Finance\GeneralLedger\Services\LedgerService;
+// use App\Domains\Finance\ChartOfAccounts\Services\ChartOfAccountsMappingService;
+// use App\Domains\SupplyChain\Inventory\Services\InventoryCostingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
@@ -26,10 +26,10 @@ class PurchaseServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Ensure standard accounts exist
         $this->seedChartOfAccounts();
-        
+
         // Resolve service with real dependencies
         $this->purchaseService = app(PurchaseService::class);
     }
@@ -110,10 +110,10 @@ class PurchaseServiceTest extends TestCase
         $purchase = $this->purchaseService->createPurchase($data, $user->id);
 
         $this->assertEquals('approved', $purchase->approval_status);
-        
+
         // Assert Stock Updated
         $this->assertEquals(1, $product->fresh()->stock_quantity);
-        
+
         // Assert GL Entries
         // Assert GL Entries
         $this->assertDatabaseHas('general_ledger', [
@@ -133,7 +133,7 @@ class PurchaseServiceTest extends TestCase
         $user = User::factory()->create();
         $supplier = ApSupplier::factory()->create();
         $product = Product::factory()->create(['stock_quantity' => 0, 'items_per_unit' => 1]);
-        
+
         $data = [
             'product_id' => $product->id,
             'quantity' => 10,
@@ -146,14 +146,14 @@ class PurchaseServiceTest extends TestCase
 
         // Create pending purchase via service
         $purchase = $this->purchaseService->createPurchase($data, $user->id);
-        
+
         // Approve it
         $result = $this->purchaseService->approvePurchase($purchase->id, $user->id);
 
         $this->assertTrue($result);
         $this->assertEquals('approved', $purchase->fresh()->approval_status);
         $this->assertEquals(10, $product->fresh()->stock_quantity);
-        
+
         // AP Transaction created on approval
         $this->assertDatabaseHas('ap_transactions', [
             'reference_id' => $purchase->id,
@@ -166,7 +166,7 @@ class PurchaseServiceTest extends TestCase
         $user = User::factory()->create();
         $supplier = ApSupplier::factory()->create();
         $product = Product::factory()->create(['stock_quantity' => 0, 'items_per_unit' => 1]); // Start with 0
- 
+
         $data = [
             'product_id' => $product->id,
             'quantity' => 10, // Buy 10
@@ -176,11 +176,11 @@ class PurchaseServiceTest extends TestCase
             'payment_type' => 'credit',
             'vat_rate' => 0.15,
         ];
-        
+
         // Create steps to ensure GL entries exist
         $purchase = $this->purchaseService->createPurchase($data, $user->id);
         $this->purchaseService->approvePurchase($purchase->id, $user->id);
-        
+
         // Now reverse
         $this->purchaseService->reversePurchase($purchase->id, $user->id);
 
@@ -219,6 +219,6 @@ class PurchaseServiceTest extends TestCase
         // Check partial reversal logic if implemented in notes
         // Note: The original test checked for "Partially Reversed" in notes.
         // If implementation supports it.
-         $this->assertStringContainsString('Partially Reversed', $purchase->fresh()->notes);
+        $this->assertStringContainsString('Partially Reversed', $purchase->fresh()->notes);
     }
 }

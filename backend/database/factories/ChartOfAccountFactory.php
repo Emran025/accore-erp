@@ -6,7 +6,7 @@ use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Finance\GeneralLedger\Models\ChartOfAccount>
+ * @extends Factory<ChartOfAccount>
  */
 class ChartOfAccountFactory extends Factory
 {

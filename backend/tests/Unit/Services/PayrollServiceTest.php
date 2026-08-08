@@ -8,7 +8,7 @@ use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollCycle;
 use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollItem;
 use App\Domains\HumanCapital\Payroll\Models\PayrollTransaction;
-use App\Domains\HumanCapital\Payroll\Services\PayrollService;
+use App\Domains\HumanCapital\PayrollBenefits\Services\PayrollService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;

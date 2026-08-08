@@ -2,6 +2,7 @@
 
 namespace App\Domains\EnterpriseCore\IdentityAccess\Models;
 
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Module;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

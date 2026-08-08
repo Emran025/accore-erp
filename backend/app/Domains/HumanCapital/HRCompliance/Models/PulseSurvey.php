@@ -3,6 +3,7 @@
 namespace App\Domains\HumanCapital\HRCompliance\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class PulseSurvey extends Model
 {

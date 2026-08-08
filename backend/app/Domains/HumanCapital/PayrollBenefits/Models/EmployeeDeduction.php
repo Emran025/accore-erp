@@ -2,6 +2,7 @@
 
 namespace App\Domains\HumanCapital\PayrollBenefits\Models;
 
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use Illuminate\Database\Eloquent\Model;
 
 class EmployeeDeduction extends Model

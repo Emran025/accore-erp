@@ -4,6 +4,7 @@ namespace App\Domains\HumanCapital\PayrollBenefits\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class PayrollEntry extends Model
 {

@@ -2,17 +2,26 @@
 
 namespace App\Domains\HumanCapital\PayrollBenefits\Models;
 
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class CompensationEntry extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'compensation_plan_id', 'employee_id', 'current_salary', 'proposed_salary',
-        'increase_amount', 'increase_percentage', 'comp_ratio', 'status',
-        'justification', 'approved_by'
+        'compensation_plan_id',
+        'employee_id',
+        'current_salary',
+        'proposed_salary',
+        'increase_amount',
+        'increase_percentage',
+        'comp_ratio',
+        'status',
+        'justification',
+        'approved_by'
     ];
 
     protected $casts = [
@@ -38,4 +47,3 @@ class CompensationEntry extends Model
         return $this->belongsTo(User::class, 'approved_by');
     }
 }
-

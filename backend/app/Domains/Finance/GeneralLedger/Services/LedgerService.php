@@ -108,7 +108,7 @@ class LedgerService
 
         // Get fiscal period for the voucher date
         $period = $this->getFiscalPeriodForDate($voucherDate);
-        
+
         if (!$period) {
             throw new \Exception("Voucher date ({$voucherDate}) is outside fiscal period");
         }
@@ -180,7 +180,6 @@ class LedgerService
         return FiscalPeriod::select(['id', 'is_closed', 'is_locked', 'period_name', 'start_date', 'end_date'])
             ->where('start_date', '<=', $date)
             ->where('end_date', '>=', $date)
-            ->where('is_closed', false)
             ->first();
     }
 
@@ -250,11 +249,11 @@ class LedgerService
         }
 
         $reversalEntries = [];
-        
+
         foreach ($entries as $entry) {
             // Reverse entry type (DEBIT becomes CREDIT and vice versa)
             $reversedType = $entry->entry_type === 'DEBIT' ? 'CREDIT' : 'DEBIT';
-            
+
             $reversalEntries[] = [
                 'account_code' => $entry->account->account_code,
                 'entry_type' => $reversedType,
@@ -327,7 +326,7 @@ class LedgerService
                     'account_name'  => $row->account_name,
                     'account_type'  => $row->account_type,
                     'debit_balance' => $debitBalance,
-                    'credit_balance'=> $creditBalance,
+                    'credit_balance' => $creditBalance,
                 ];
 
                 $totalDebits  += $debitBalance;
@@ -377,7 +376,7 @@ class LedgerService
                     'account_name'  => $row->account_name,
                     'account_type'  => $row->account_type,
                     'debit_balance' => $debitBalance,
-                    'credit_balance'=> $creditBalance,
+                    'credit_balance' => $creditBalance,
                 ];
 
                 $totalDebits  += $debitBalance;
@@ -393,4 +392,3 @@ class LedgerService
         ];
     }
 }
-

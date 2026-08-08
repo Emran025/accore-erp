@@ -4,10 +4,12 @@ namespace App\Domains\HumanCapital\HRCompliance\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class CorporateAnnouncement extends Model
 {
     use SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
     protected $fillable = [
         'title', 'content', 'priority', 'target_audience', 'target_departments',

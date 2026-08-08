@@ -4,10 +4,12 @@ namespace App\Domains\HumanCapital\HRCompliance\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class KnowledgeBase extends Model
 {
     use SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
     protected $table = 'knowledge_base';
 

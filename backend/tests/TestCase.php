@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\Role;
-use Symfony\Component\HttpFoundation\Session\Session;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\Session;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 

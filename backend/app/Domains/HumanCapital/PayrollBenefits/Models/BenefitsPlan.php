@@ -4,15 +4,25 @@ namespace App\Domains\HumanCapital\PayrollBenefits\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class BenefitsPlan extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'plan_code', 'plan_name', 'plan_type', 'description', 'eligibility_rule',
-        'eligibility_criteria', 'employee_contribution', 'employer_contribution',
-        'effective_date', 'expiry_date', 'is_active', 'created_by'
+        'plan_code',
+        'plan_name',
+        'plan_type',
+        'description',
+        'eligibility_rule',
+        'eligibility_criteria',
+        'employee_contribution',
+        'employer_contribution',
+        'effective_date',
+        'expiry_date',
+        'is_active',
+        'created_by'
     ];
 
     protected $casts = [
@@ -34,4 +44,3 @@ class BenefitsPlan extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 }
-

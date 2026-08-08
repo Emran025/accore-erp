@@ -6,7 +6,7 @@ use App\Domains\Commercial\CRM\Models\ArCustomer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Commercial\CRM\Models\ArCustomer>
+ * @extends Factory<ArCustomer>
  */
 class ArCustomerFactory extends Factory
 {

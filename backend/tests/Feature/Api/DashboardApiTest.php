@@ -4,7 +4,6 @@ namespace Tests\Feature\Api;
 
 use Tests\TestCase;
 use App\Domains\SupplyChain\Inventory\Models\Product;
-use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -38,10 +37,10 @@ class DashboardApiTest extends TestCase
 
         $this->assertSuccessResponse($response);
         $data = $response->json('data');
-        
-        $this->assertEquals(6, $data['total_products']);
-        $this->assertEquals(1000, $data['total_sales']); // From GL
-        $this->assertGreaterThanOrEqual(1, $data['low_stock_count']);
+
+        $this->assertEquals(6, $data['kpis']['total_products']);
+        $this->assertEquals(1000, $data['kpis']['total_sales']); // From GL
+        $this->assertGreaterThanOrEqual(1, $data['kpis']['low_stock_count']);
     }
 
     public function test_dashboard_details_low_stock()

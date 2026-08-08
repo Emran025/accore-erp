@@ -6,7 +6,6 @@ use App\Domains\EnterpriseCore\SystemOverview\Models\NrGroup;
 use App\Domains\EnterpriseCore\SystemOverview\Models\NrInterval;
 use App\Domains\EnterpriseCore\SystemOverview\Models\NrObject;
 use App\Domains\EnterpriseCore\SystemOverview\Models\NrGroupIntervalAssignment;
-use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;

@@ -14,7 +14,7 @@ class CreateExpenseAction
         private readonly ChartOfAccountsMappingService $coaService
     ) {}
 
-    public function execute(array $data): array
+    public function execute(array $data): Expense
     {
         PermissionService::requirePermission('expenses', 'create');
 

@@ -6,7 +6,7 @@ use Tests\TestCase;
 use App\Domains\HumanCapital\WorkforceAdmin\Services\EmployeeAccountService;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
-use App\Domains\HumanCapital\Payroll\Models\PayrollTransaction;
+use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollTransaction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 
@@ -52,14 +52,14 @@ class EmployeeAccountServiceTest extends TestCase
         // Factory creates generic account. Type is random.
         // Let's force account type to ensure test determinism.
         $account->update(['account_type' => 'Asset']); // Debit normal
-        
+
         $this->assertEquals(800, $this->service->getBalance($employee));
     }
 
     public function test_record_transaction_creates_payroll_transaction()
     {
         $employee = Employee::factory()->create();
-        
+
         $transaction = $this->service->recordTransaction(
             $employee,
             5000,

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Domains\SupplyChain\SupplierSourcing\Models\ApSupplier;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\SupplyChain\PayablesExpenses\Models\ApTransaction>
+ * @extends Factory<ApTransaction>
  */
 class ApTransactionFactory extends Factory
 {

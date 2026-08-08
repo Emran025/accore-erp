@@ -2,6 +2,7 @@
 
 namespace App\Domains\HumanCapital\WorkforceAdmin\Models;
 
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

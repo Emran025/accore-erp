@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  * SAP FI: Invoice factory creates a document with NO amounts.
  * Amounts are derived from GL entries, tax_lines, and invoice_items.
  *
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Commercial\SalesLifecycle\Models\Invoice>
+ * @extends Factory<Invoice>
  */
 class InvoiceFactory extends Factory
 {

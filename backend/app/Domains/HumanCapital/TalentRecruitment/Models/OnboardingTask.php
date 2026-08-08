@@ -3,6 +3,7 @@
 namespace App\Domains\HumanCapital\TalentRecruitment\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class OnboardingTask extends Model
 {

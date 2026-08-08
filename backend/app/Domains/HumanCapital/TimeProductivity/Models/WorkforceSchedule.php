@@ -2,7 +2,9 @@
 
 namespace App\Domains\HumanCapital\TimeProductivity\Models;
 
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Department;
 use Illuminate\Database\Eloquent\Model;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class WorkforceSchedule extends Model
 {

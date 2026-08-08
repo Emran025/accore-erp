@@ -4,10 +4,12 @@ namespace App\Domains\HumanCapital\WorkforceAdmin\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class EmployeeRelationsCase extends Model
 {
     use SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
     protected $fillable = [
         'case_number', 'employee_id', 'case_type', 'confidentiality_level', 'description',

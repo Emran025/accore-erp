@@ -138,7 +138,7 @@ class BankReconciliationApiTest extends TestCase
 
         // Route: PUT /api/reconciliation?action=adjust
         // Wait, route parameters or query? Controller says $request->query('action')
-        $response = $this->authPut(route('api.reconciliation.update', ['action' => 'adjust']), $data);
+        $response = $this->authPut(route('api.reconciliation.update', ['id' => $reconciliation->id, 'action' => 'adjust']), $data);
 
         $this->assertSuccessResponse($response);
         

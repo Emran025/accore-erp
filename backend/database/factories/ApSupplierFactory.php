@@ -6,7 +6,7 @@ use App\Domains\SupplyChain\SupplierSourcing\Models\ApSupplier;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Commercial\AccountsPayable\Models\ApSupplier>
+ * @extends Factory<ApSupplier>
  */
 class ApSupplierFactory extends Factory
 {

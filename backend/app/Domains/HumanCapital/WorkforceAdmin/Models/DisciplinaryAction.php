@@ -3,6 +3,7 @@
 namespace App\Domains\HumanCapital\WorkforceAdmin\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class DisciplinaryAction extends Model
 {

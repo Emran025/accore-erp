@@ -4,6 +4,7 @@ namespace App\Domains\HumanCapital\TalentRecruitment\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class JobApplicant extends Model
 {

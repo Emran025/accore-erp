@@ -13,7 +13,7 @@ use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Setting;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
-use App\Domains\Commercial\Sales\Services\SalesService;
+use App\Domains\Commercial\SalesLifecycle\Services\SalesService;
 use App\Domains\Finance\Taxation\Services\TaxCalculator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
@@ -25,9 +25,9 @@ class TaxEngineIntegrationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->authenticateUser();
-        
+
         // Turn ON the Tax Engine
         Config::set('tax.use_tax_engine', true);
 
@@ -102,7 +102,7 @@ class TaxEngineIntegrationTest extends TestCase
         $invoiceId = $salesService->createInvoice($invoiceData);
 
         // 3. Verify Output Logic & True Tables
-        
+
         // Assert Document Creation
         $invoice = Invoice::with(['taxLines', 'glEntries', 'items'])->find($invoiceId);
         $this->assertNotNull($invoice);
@@ -124,7 +124,7 @@ class TaxEngineIntegrationTest extends TestCase
         // Inventory = 500 (CR)
 
         $glEntries = GeneralLedger::where('voucher_number', $invoice->voucher_number)->get();
-        
+
         // 1. Check AR Entry (Debit)
         $arLedgerEntry = $glEntries->where('account_id', ChartOfAccount::where('account_code', '1120')->first()->id)->first();
         $this->assertNotNull($arLedgerEntry, 'AR entry missing');
@@ -145,7 +145,7 @@ class TaxEngineIntegrationTest extends TestCase
 
         // 4. Check Customer Balance Update
         $this->assertEquals(1150.00, (float)$customer->fresh()->current_balance);
-        
+
         // Final Document Status
         $this->assertNotEmpty($invoice->voucher_number);
     }

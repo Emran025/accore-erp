@@ -12,7 +12,6 @@ use App\Domains\Finance\GeneralLedger\Actions\CreateChartOfAccountAction;
 use App\Domains\Finance\GeneralLedger\Actions\UpdateChartOfAccountAction;
 use App\Domains\Finance\GeneralLedger\Actions\DeleteChartOfAccountAction;
 use App\Domains\Finance\GeneralLedger\Actions\GetChartOfAccountBalancesAction;
-use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Http\Resources\Finance\GeneralLedger\ChartOfAccountResource;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
@@ -30,7 +29,7 @@ class ChartOfAccountsController extends Controller
     public function store(StoreChartOfAccountRequest $request, CreateChartOfAccountAction $action): JsonResponse
     {
         $account = $action->execute($request->validated());
-        return $this->successResponse(new ChartOfAccountResource($account), 'Account created successfully', 201);
+        return $this->successResponse(new ChartOfAccountResource($account), 'Account created successfully');
     }
 
     public function update(UpdateChartOfAccountRequest $request, int $id, UpdateChartOfAccountAction $action): JsonResponse

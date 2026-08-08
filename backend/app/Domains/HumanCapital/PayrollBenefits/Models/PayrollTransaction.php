@@ -2,7 +2,9 @@
 
 namespace App\Domains\HumanCapital\PayrollBenefits\Models;
 
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use Illuminate\Database\Eloquent\Model;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class PayrollTransaction extends Model
 {

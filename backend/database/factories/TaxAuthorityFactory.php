@@ -5,7 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Finance\TaxCompliance\Models\TaxAuthority>
+ * @extends Factory<TaxAuthority>
  */
 class TaxAuthorityFactory extends Factory
 {

@@ -2,8 +2,10 @@
 
 namespace App\Domains\SupplyChain\Inventory\Models;
 
+use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class InventoryCount extends Model
 {

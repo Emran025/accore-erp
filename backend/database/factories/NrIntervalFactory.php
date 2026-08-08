@@ -7,7 +7,7 @@ use App\Domains\EnterpriseCore\SystemOverview\Models\NrObject;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\EnterpriseCore\SystemOverview\Models\NrInterval>
+ * @extends Factory<NrInterval>
  */
 class NrIntervalFactory extends Factory
 {

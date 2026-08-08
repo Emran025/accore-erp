@@ -2,6 +2,7 @@
 
 namespace App\Domains\HumanCapital\ServicesWellness\Models;
 
+use App\Domains\HumanCapital\PayrollBenefits\Models\PayrollCycle;
 use Illuminate\Database\Eloquent\Model;
 
 class LoanRepayment extends Model

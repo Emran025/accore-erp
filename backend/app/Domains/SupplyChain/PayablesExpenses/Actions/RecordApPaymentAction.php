@@ -42,7 +42,7 @@ class RecordApPaymentAction
                 'type' => 'payment',
                 'transaction_date' => $data['date'],
                 'voucher_number' => $voucherNumber,
-                'description' => "Payment via " . $data['payment_method'] . ($data['reference'] ? " (Ref: {$data['reference']})" : ""),
+                'description' => "Payment via " . ($data['payment_method'] ?? 'cash') . (!empty($data['reference']) ? " (Ref: {$data['reference']})" : ""),
                 'created_by' => $userId,
             ]);
 

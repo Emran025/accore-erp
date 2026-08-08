@@ -4,10 +4,12 @@ namespace App\Domains\Assets\AssetLifecycle\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class EmployeeAsset extends Model
 {
     use SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
     protected $fillable = [
         'employee_id', 'inventory_asset_id', 'asset_code', 'asset_name', 'asset_type', 'serial_number', 'qr_code',

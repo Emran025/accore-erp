@@ -4,10 +4,12 @@ namespace App\Domains\HumanCapital\PerformanceDevelopment\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class LearningCourse extends Model
 {
     use SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
     protected $fillable = [
         'course_code', 'course_name', 'description', 'delivery_method', 'course_type',

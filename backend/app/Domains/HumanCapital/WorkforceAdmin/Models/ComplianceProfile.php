@@ -2,6 +2,7 @@
 
 namespace App\Domains\HumanCapital\WorkforceAdmin\Models;
 
+use App\Domains\Finance\TaxCompliance\Models\TaxAuthority;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;

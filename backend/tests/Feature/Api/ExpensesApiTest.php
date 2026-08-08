@@ -57,9 +57,9 @@ class ExpensesApiTest extends TestCase
         $response = $this->authPost(route('api.expenses.store'), $data);
 
         $this->assertSuccessResponse($response);
-        $response->assertJsonStructure(['success', 'id', 'voucher_number']);
+        $response->assertJsonStructure(['success', 'data' => ['id', 'voucher_number']]);
 
-        $voucherNumber = $response->json('voucher_number');
+        $voucherNumber = $response->json('data.voucher_number');
 
         // Verify double-entry GL postings
         $this->assertDatabaseHas('general_ledger', [
@@ -95,7 +95,7 @@ class ExpensesApiTest extends TestCase
             'description' => 'Updated description',
         ];
 
-        $response = $this->authPut(route('api.expenses.update'), $data);
+        $response = $this->authPut(route('api.expenses.update', ['id' => $expense->id]), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('expenses', [
@@ -118,10 +118,10 @@ class ExpensesApiTest extends TestCase
         $response = $this->authPost(route('api.expenses.store'), $data);
         $this->assertSuccessResponse($response);
         
-        $expenseId = $response->json('id');
-        $voucherNumber = $response->json('voucher_number');
+        $expenseId = $response->json('data.id');
+        $voucherNumber = $response->json('data.voucher_number');
 
-        $response = $this->authDelete(route('api.expenses.destroy'), ['id' => $expenseId]);
+        $response = $this->authDelete(route('api.expenses.destroy', ['id' => $expenseId]));
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseMissing('expenses', ['id' => $expenseId]);
@@ -139,14 +139,16 @@ class ExpensesApiTest extends TestCase
         $response = $this->authPost(route('api.expenses.store'), $data);
 
         $this->assertSuccessResponse($response);
-        $voucherNumber = $response->json('voucher_number');
+        $voucherNumber = $response->json('data.voucher_number');
 
-        // Credit side should go to accounts payable (2110)
+        // Credit side should go to accounts payable
         $creditEntry = GeneralLedger::where('voucher_number', $voucherNumber)
             ->where('entry_type', 'CREDIT')
             ->first();
 
-        $apAccount = ChartOfAccount::where('account_code', '2110')->first();
+        $accounts = (new \App\Domains\Finance\GeneralLedger\Services\ChartOfAccountsMappingService())->getStandardAccounts();
+        $apAccount = ChartOfAccount::where('account_code', $accounts['accounts_payable'])->first();
+        $this->assertNotNull($creditEntry);
         $this->assertEquals($apAccount->id, $creditEntry->account_id);
     }
 }

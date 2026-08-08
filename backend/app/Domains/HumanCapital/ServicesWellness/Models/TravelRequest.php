@@ -3,6 +3,7 @@
 namespace App\Domains\HumanCapital\ServicesWellness\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class TravelRequest extends Model
 {

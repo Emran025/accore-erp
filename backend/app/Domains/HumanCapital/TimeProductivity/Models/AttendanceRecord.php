@@ -2,8 +2,11 @@
 
 namespace App\Domains\HumanCapital\TimeProductivity\Models;
 
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Carbon\Carbon;
 
 /**
@@ -12,9 +15,9 @@ use Carbon\Carbon;
  * 
  * @property int $id
  * @property int $employee_id
- * @property \Carbon\Carbon $attendance_date
- * @property \Carbon\Carbon|null $check_in
- * @property \Carbon\Carbon|null $check_out
+ * @property Carbon $attendance_date
+ * @property Carbon|null $check_in
+ * @property Carbon|null $check_out
  * @property string $status (present, absent, leave, holiday)
  * @property float $hours_worked
  * @property float $overtime_hours
@@ -56,7 +59,7 @@ class AttendanceRecord extends Model
     /**
      * Get the employee who owns this attendance record.
      * 
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function employee()
     {
@@ -66,7 +69,7 @@ class AttendanceRecord extends Model
     /**
      * Get the user who created this record.
      * 
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function creator()
     {

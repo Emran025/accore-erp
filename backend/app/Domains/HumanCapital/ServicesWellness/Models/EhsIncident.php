@@ -4,10 +4,12 @@ namespace App\Domains\HumanCapital\ServicesWellness\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class EhsIncident extends Model
 {
     use SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
     protected $fillable = [
         'incident_number', 'employee_id', 'incident_type', 'incident_date', 'incident_time',

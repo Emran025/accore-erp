@@ -4,10 +4,12 @@ namespace App\Domains\Manufacturing\QualityControl\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class Capa extends Model
 {
     use SoftDeletes;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
     protected $fillable = [
         'capa_number', 'compliance_id', 'employee_id', 'type', 'issue_description',

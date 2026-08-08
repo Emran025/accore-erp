@@ -2,6 +2,8 @@
 
 namespace App\Domains\HumanCapital\WorkforceAdmin\Models;
 
+use App\Domains\Finance\ManagementAccounting\Models\CostCenter;
+use App\Domains\Finance\ManagementAccounting\Models\ProfitCenter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 

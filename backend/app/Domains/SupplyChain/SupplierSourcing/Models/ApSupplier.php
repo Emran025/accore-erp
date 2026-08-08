@@ -2,10 +2,13 @@
 
 namespace App\Domains\SupplyChain\SupplierSourcing\Models;
 
+use App\Domains\SupplyChain\PayablesExpenses\Models\ApTransaction;
+use App\Domains\SupplyChain\Procurement\Models\Purchase;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class ApSupplier extends Model
 {

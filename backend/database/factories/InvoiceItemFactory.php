@@ -8,7 +8,7 @@ use App\Domains\SupplyChain\Inventory\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\Commercial\SalesLifecycle\Models\InvoiceItem>
+ * @extends Factory<InvoiceItem>
  */
 class InvoiceItemFactory extends Factory
 {

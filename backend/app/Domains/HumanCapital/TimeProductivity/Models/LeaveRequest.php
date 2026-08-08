@@ -2,9 +2,11 @@
 
 namespace App\Domains\HumanCapital\TimeProductivity\Models;
 
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class LeaveRequest extends Model
 {

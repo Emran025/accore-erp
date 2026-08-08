@@ -6,7 +6,7 @@ use App\Domains\EnterpriseCore\IdentityAccess\Models\Role;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domains\EnterpriseCore\IdentityAccess\Models\Role>
+ * @extends Factory<Role>
  */
 class RoleFactory extends Factory
 {

@@ -5,6 +5,7 @@ namespace App\Domains\EnterpriseCore\SystemOverview\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 /**
  * Expansion Log — immutable audit entry for range boundary changes.

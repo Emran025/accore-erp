@@ -36,6 +36,16 @@ class AppServiceProvider extends ServiceProvider
             return 'Database\\Factories\\' . class_basename($modelName) . 'Factory';
         });
 
+        \Illuminate\Support\Facades\URL::resolveMissingNamedRoutesUsing(function (string $name, array $parameters, bool $absolute) {
+            if (str_starts_with($name, 'api.')) {
+                $v2Name = 'v2.' . substr($name, 4);
+                if (\Illuminate\Support\Facades\Route::has($v2Name)) {
+                    return route($v2Name, $parameters, $absolute);
+                }
+            }
+            return null;
+        });
+
         $this->configureRateLimiting();
 
         // Register policies for resource-level authorization

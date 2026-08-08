@@ -2,7 +2,10 @@
 
 namespace App\Domains\HumanCapital\TalentRecruitment\Models;
 
+use App\Domains\HumanCapital\HRAdvanced\Models\OnboardingDocument;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use Illuminate\Database\Eloquent\Model;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 
 class OnboardingWorkflow extends Model
 {
