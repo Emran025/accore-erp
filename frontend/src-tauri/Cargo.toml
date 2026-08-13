@@ -1,10 +1,10 @@
 [package]
-name = "app"
+name = "accore-desktop"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+description = "Accore ERP desktop application"
+authors = ["Accore ERP Contributors"]
+license = "MIT"
+repository = "https://github.com/Emran025/accore-erp"
 edition = "2021"
 rust-version = "1.77.2"
 

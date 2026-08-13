@@ -6,16 +6,17 @@ import { fetchAPI } from "@/lib/api";
 import { getStoredUser, User } from "@/lib/auth";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
-import { use, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 import { Department, Employee, Role } from "@/types";
 
-const DocumentsTab = dynamic(() => import("../../../components/DocumentsTab"), {
+const DocumentsTab = dynamic(() => import("../../components/DocumentsTab"), {
     loading: () => <div className="p-10 text-center text-muted">جاري تحميل المستندات...</div>
 });
 
-export default function EditEmployeePage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = use(params);
+function EditEmployeePageContent() {
+    const searchParams = useSearchParams();
+    const id = searchParams.get("id") || "";
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
     const [activeTab, setActiveTab] = useState("info");
@@ -339,5 +340,14 @@ export default function EditEmployeePage({ params }: { params: Promise<{ id: str
                 </div>
             </div>
         </MainLayout>
+    );
+}
+
+
+export default function EditEmployeePage() {
+    return (
+        <Suspense fallback={<div className="p-8 text-center">جاري التحميل...</div>}>
+            <EditEmployeePageContent />
+        </Suspense>
     );
 }

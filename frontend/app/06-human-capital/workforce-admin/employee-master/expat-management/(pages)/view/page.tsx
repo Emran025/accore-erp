@@ -7,10 +7,12 @@ import { fetchAPI } from "@/lib/api";
 import { getStoredUser } from "@/lib/auth";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 
-export default function ViewExpatPage({ params }: { params: { id: string } }) {
+function ViewExpatPageContent() {
+    const searchParams = useSearchParams();
+    const id = searchParams.get("id") || "";
     const [user, setUser] = useState<any>(null);
     const [record, setRecord] = useState<ExpatRecord | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -19,12 +21,12 @@ export default function ViewExpatPage({ params }: { params: { id: string } }) {
     useEffect(() => {
         setUser(getStoredUser());
         loadRecord();
-    }, [params.id]);
+    }, [id]);
 
     const loadRecord = async () => {
         setIsLoading(true);
         try {
-            const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EXPAT_MANAGEMENT.BASE}/${params.id}`);
+            const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EXPAT_MANAGEMENT.BASE}/${id}`);
             setRecord(res.data || res);
         } catch (error) {
             showToast("فشل تحميل السجل", "error");
@@ -195,5 +197,14 @@ export default function ViewExpatPage({ params }: { params: { id: string } }) {
                 <div className="text-center text-red-500 p-8">عذراً، لم يتم العثور على السجل المطلوب.</div>
             )}
         </MainLayout>
+    );
+}
+
+
+export default function ViewExpatPage() {
+    return (
+        <Suspense fallback={<div className="p-8 text-center">جاري التحميل...</div>}>
+            <ViewExpatPageContent />
+        </Suspense>
     );
 }

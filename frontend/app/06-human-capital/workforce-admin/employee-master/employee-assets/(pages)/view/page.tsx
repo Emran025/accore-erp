@@ -7,10 +7,12 @@ import { fetchAPI } from "@/lib/api";
 import { getStoredUser } from "@/lib/auth";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { formatDate } from "@/lib/utils";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 
-export default function ViewAssetPage({ params }: { params: { id: string } }) {
+function ViewAssetPageContent() {
+    const searchParams = useSearchParams();
+    const id = searchParams.get("id") || "";
     const [user, setUser] = useState<any>(null);
     const [asset, setAsset] = useState<EmployeeAsset | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -19,12 +21,12 @@ export default function ViewAssetPage({ params }: { params: { id: string } }) {
     useEffect(() => {
         setUser(getStoredUser());
         loadAsset();
-    }, [params.id]);
+    }, [id]);
 
     const loadAsset = async () => {
         setIsLoading(true);
         try {
-            const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_ASSETS.BASE}/${params.id}`);
+            const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_ASSETS.BASE}/${id}`);
             setAsset(res.data || res);
         } catch (error) {
             showToast("فشل تحميل بيانات الأصل", "error");
@@ -157,5 +159,14 @@ export default function ViewAssetPage({ params }: { params: { id: string } }) {
                 <div className="text-center text-red-500 p-8">عذراً، لم يتم العثور على الأصل المطلوب.</div>
             )}
         </MainLayout>
+    );
+}
+
+
+export default function ViewAssetPage() {
+    return (
+        <Suspense fallback={<div className="p-8 text-center">جاري التحميل...</div>}>
+            <ViewAssetPageContent />
+        </Suspense>
     );
 }

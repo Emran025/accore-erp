@@ -7,10 +7,12 @@ import { fetchAPI } from "@/lib/api";
 import { getStoredUser } from "@/lib/auth";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 
-export default function ViewContractPage({ params }: { params: { id: string } }) {
+function ViewContractPageContent() {
+    const searchParams = useSearchParams();
+    const id = searchParams.get("id") || "";
     const [user, setUser] = useState<any>(null);
     const [contract, setContract] = useState<EmployeeContract | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -19,12 +21,12 @@ export default function ViewContractPage({ params }: { params: { id: string } })
     useEffect(() => {
         setUser(getStoredUser());
         loadContract();
-    }, [params.id]);
+    }, [id]);
 
     const loadContract = async () => {
         setIsLoading(true);
         try {
-            const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.CONTRACTS.BASE}/${params.id}`);
+            const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.CONTRACTS.BASE}/${id}`);
             setContract(res.data || res);
         } catch (error) {
             showToast("فشل تحميل بيانات العقد", "error");
@@ -137,5 +139,14 @@ export default function ViewContractPage({ params }: { params: { id: string } })
                 <div className="text-center text-red-500 p-8">عذراً، لم يتم العثور على العقد المطلوب.</div>
             )}
         </MainLayout>
+    );
+}
+
+
+export default function ViewContractPage() {
+    return (
+        <Suspense fallback={<div className="p-8 text-center">جاري التحميل...</div>}>
+            <ViewContractPageContent />
+        </Suspense>
     );
 }

@@ -6,23 +6,24 @@ import { fetchAPI } from "@/lib/api";
 import { getStoredUser, User } from "@/lib/auth";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
-import { use, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 import { Employee } from "@/types";
 
 // Lazy load tab components
 const BasicInfoTab = dynamic(() => import("./components/BasicInfoTab"), {
     loading: () => <div className="p-10 text-center text-muted">جاري تحميل البيانات الأساسية...</div>
 });
-const DocumentsTab = dynamic(() => import("../../../components/DocumentsTab"), {
+const DocumentsTab = dynamic(() => import("../../components/DocumentsTab"), {
     loading: () => <div className="p-10 text-center text-muted">جاري تحميل المستندات...</div>
 });
 const FinancialTab = dynamic(() => import("./components/FinancialTab"), {
     loading: () => <div className="p-10 text-center text-muted">جاري تحميل البيانات المالية...</div>
 });
 
-export default function ViewEmployeePage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = use(params);
+function ViewEmployeePageContent() {
+    const searchParams = useSearchParams();
+    const id = searchParams.get("id") || "";
     const router = useRouter();
 
     const [user, setUser] = useState<User | null>(null);
@@ -110,5 +111,14 @@ export default function ViewEmployeePage({ params }: { params: Promise<{ id: str
                 </div>
             </div>
         </MainLayout>
+    );
+}
+
+
+export default function ViewEmployeePage() {
+    return (
+        <Suspense fallback={<div className="p-8 text-center">جاري التحميل...</div>}>
+            <ViewEmployeePageContent />
+        </Suspense>
     );
 }

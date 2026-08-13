@@ -1,18 +1,18 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "accore",
+  "productName": "Accore ERP",
   "version": "0.1.0",
-  "identifier": "com.mycompany.accore",
+  "identifier": "com.accore.erp",
   "build": {
-    "frontendDist": "../.next",
-    "devUrl": "http://localhost:3000",
+    "frontendDist": "../out",
+    "devUrl": "http://localhost:5000",
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build"
   },
   "app": {
     "windows": [
       {
-        "title": "accore",
+        "title": "Accore ERP",
         "width": 800,
         "height": 600,
         "resizable": true,
