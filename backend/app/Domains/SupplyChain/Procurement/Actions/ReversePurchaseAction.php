@@ -12,6 +12,6 @@ class ReversePurchaseAction
     {
         $this->purchaseService->reversePurchase($id, $userId);
 
-        return Purchase::withTrashed()->findOrFail($id);
+        return Purchase::findOrFail($id);
     }
 }

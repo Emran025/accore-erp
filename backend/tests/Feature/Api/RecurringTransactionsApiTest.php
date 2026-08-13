@@ -36,7 +36,7 @@ class RecurringTransactionsApiTest extends TestCase
             'template_data' => ['account_code' => '5100', 'amount' => 1000, 'description' => 'Monthly Rent'],
         ]);
 
-        $response = $this->authGet(route('api.recurring.index'));
+        $response = $this->authGet(route('v2.gl.recurring.index'));
 
         $response->assertStatus(200)
             ->assertJson(['success' => true]);
@@ -56,7 +56,7 @@ class RecurringTransactionsApiTest extends TestCase
             ],
         ];
 
-        $response = $this->authPost(route('api.recurring.store'), $data);
+        $response = $this->authPost(route('v2.gl.recurring.store'), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('recurring_transactions', ['name' => 'Weekly Supplies']);
@@ -81,7 +81,7 @@ class RecurringTransactionsApiTest extends TestCase
             'template_data' => ['account_code' => '5100', 'amount' => 300, 'description' => 'Updated'],
         ];
 
-        $response = $this->authPut(route('api.recurring.update'), $data);
+        $response = $this->authPut(route('v2.gl.recurring.update', ['id' => $template->id]), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('recurring_transactions', [
@@ -101,7 +101,7 @@ class RecurringTransactionsApiTest extends TestCase
             'template_data' => ['account_code' => '5100', 'amount' => 100, 'description' => 'Delete Me'],
         ]);
 
-        $response = $this->authDelete(route('api.recurring.destroy', ['id' => $template->id]));
+        $response = $this->authDelete(route('v2.gl.recurring.destroy', ['id' => $template->id]));
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseMissing('recurring_transactions', ['id' => $template->id]);
@@ -121,16 +121,19 @@ class RecurringTransactionsApiTest extends TestCase
             ],
         ]);
 
-        $response = $this->authPost(route('api.recurring.process'), [
+        $response = $this->authPost(route('v2.gl.recurring.process'), [
             'template_id' => $template->id,
             'generation_date' => now()->toDateString(),
         ]);
 
         $this->assertSuccessResponse($response);
 
-        // Verify GL entries were created
-        $voucherNumber = $response->json('voucher_number');
-        $this->assertNotNull($voucherNumber);
+        // Verify the processed transaction is returned and posted to the ledger.
+        $this->assertEquals($template->id, $response->json('data.id'));
+        $this->assertDatabaseHas('general_ledger', [
+            'reference_type' => 'recurring_transactions',
+            'reference_id' => $template->id,
+        ]);
 
         // Verify next_due_date was updated
         $this->assertNotEquals(
@@ -141,7 +144,7 @@ class RecurringTransactionsApiTest extends TestCase
 
     public function test_create_validates_required_fields()
     {
-        $response = $this->authPost(route('api.recurring.store'), []);
+        $response = $this->authPost(route('v2.gl.recurring.store'), []);
 
         $response->assertStatus(422);
     }

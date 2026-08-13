@@ -15,9 +15,9 @@ class SessionResource extends JsonResource
             'device'        => $this->parseUserAgent($this->user_agent),
             'user_agent'    => $this->user_agent,
             'is_current'    => $this->session_token === $request->header('X-Session-Token'),
-            'last_activity' => $this->created_at?->toDateTimeString(),
-            'created_at'    => $this->created_at?->toDateTimeString(),
-            'updated_at'    => $this->updated_at?->toDateTimeString(),
+            'last_activity' => $this->created_at instanceof \DateTimeInterface ? $this->created_at->toDateTimeString() : $this->created_at,
+            'created_at'    => $this->created_at instanceof \DateTimeInterface ? $this->created_at->toDateTimeString() : $this->created_at,
+            'updated_at'    => $this->updated_at instanceof \DateTimeInterface ? $this->updated_at->toDateTimeString() : $this->updated_at,
         ];
     }
 

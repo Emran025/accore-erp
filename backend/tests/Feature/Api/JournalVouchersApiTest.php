@@ -38,11 +38,11 @@ class JournalVouchersApiTest extends TestCase
             'amount' => 500
         ]);
 
-        $response = $this->authGet(route('api.journal_vouchers.index'));
+        $response = $this->authGet(route('v2.journal_vouchers.index'));
 
         $this->assertSuccessResponse($response);
-        $this->assertEquals(1, $response->json('total')); // 1 unique voucher number
-        $this->assertEquals('JV-TEST', $response->json('vouchers.0.voucher_number'));
+        $this->assertEquals(1, $response->json('pagination.total_records')); // 1 unique voucher number
+        $this->assertEquals('JV-TEST', $response->json('data.0.voucher_number'));
     }
 
     public function test_can_create_journal_voucher()
@@ -69,7 +69,7 @@ class JournalVouchersApiTest extends TestCase
             ]
         ];
 
-        $response = $this->authPost(route('api.journal_vouchers.store'), $data);
+        $response = $this->authPost(route('v2.journal_vouchers.store'), $data);
 
         $this->assertSuccessResponse($response);
         
@@ -100,7 +100,7 @@ class JournalVouchersApiTest extends TestCase
             ]
         ];
 
-        $response = $this->authPost(route('api.journal_vouchers.store'), $data);
+        $response = $this->authPost(route('v2.journal_vouchers.store'), $data);
 
         $this->assertErrorResponse($response, 400);
         $this->assertStringContainsString('Debits (1000) must equal Credits (900)', $response->json('message')); // Assuming error format

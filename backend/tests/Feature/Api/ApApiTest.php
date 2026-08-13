@@ -35,7 +35,7 @@ class ApApiTest extends TestCase
     {
         ApSupplier::factory()->count(3)->create();
 
-        $response = $this->authGet(route('api.ap.suppliers'));
+        $response = $this->authGet(route('v2.ap.suppliers'));
 
         $this->assertSuccessResponse($response);
         $this->assertEquals(3, $response->json('pagination.total_records'));
@@ -50,7 +50,7 @@ class ApApiTest extends TestCase
             'tax_number' => '300000000000003',
         ];
 
-        $response = $this->authPost(route('api.ap.suppliers.store'), $data);
+        $response = $this->authPost(route('v2.ap.suppliers.store'), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('ap_suppliers', ['name' => 'Test Supplier']);
@@ -61,7 +61,7 @@ class ApApiTest extends TestCase
     {
         ApSupplier::factory()->create(['name' => 'Duplicate']);
 
-        $response = $this->authPost(route('api.ap.suppliers.store'), ['name' => 'Duplicate']);
+        $response = $this->authPost(route('v2.ap.suppliers.store'), ['name' => 'Duplicate']);
 
         $this->assertErrorResponse($response, 409);
     }
@@ -78,7 +78,7 @@ class ApApiTest extends TestCase
             'date' => now()->toDateString(),
         ];
 
-        $response = $this->authPost(route('api.ap.transactions.store'), $data);
+        $response = $this->authPost(route('v2.ap.transactions.store'), $data);
 
         $this->assertSuccessResponse($response);
         
@@ -119,7 +119,7 @@ class ApApiTest extends TestCase
             'date' => now()->toDateString(),
         ];
 
-        $response = $this->authPost(route('api.ap.payments.store'), $data);
+        $response = $this->authPost(route('v2.ap.payments.store'), $data);
 
         $this->assertSuccessResponse($response);
         
@@ -163,7 +163,7 @@ class ApApiTest extends TestCase
             'voucher_date' => now(),
         ]);
 
-        $response = $this->authGet(route('api.ap.ledger', ['supplier_id' => $supplier->id]));
+        $response = $this->authGet(route('v2.ap.ledger', ['supplier_id' => $supplier->id]));
 
         $this->assertSuccessResponse($response);
         $this->assertEquals(100, $response->json('aging.over_90'));

@@ -22,15 +22,13 @@ class ZatcaSettingsTest extends TestCase
         Setting::create(['setting_key' => 'zatca_environment', 'setting_value' => 'sandbox']);
         Setting::create(['setting_key' => 'zatca_vat_number', 'setting_value' => '300000000000003']);
 
-        $response = $this->authGet(route('api.settings.zatca'));
+        $response = $this->authGet(route('v2.settings.zatca.show'));
 
         $this->assertSuccessResponse($response);
         $response->assertJson([
-            'settings' => [
-                'zatca_enabled' => true,
-                'zatca_environment' => 'sandbox',
-                'zatca_vat_number' => '300000000000003'
-            ]
+            'zatca_enabled' => true,
+            'zatca_environment' => 'sandbox',
+            'zatca_vat_number' => '300000000000003',
         ]);
     }
 
@@ -42,7 +40,7 @@ class ZatcaSettingsTest extends TestCase
             'zatca_vat_number' => '300000000000004'
         ];
 
-        $response = $this->authPut(route('api.settings.zatca.update'), $payload);
+        $response = $this->authPost(route('v2.settings.zatca.update'), $payload);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('settings', ['setting_key' => 'zatca_environment', 'setting_value' => 'production']);
@@ -59,7 +57,7 @@ class ZatcaSettingsTest extends TestCase
             ]
         ];
 
-        $response = $this->authPost(route('api.zatca.onboard'), $payload);
+        $response = $this->authPost(route('v2.settings.zatca.onboard'), $payload);
 
         $response->assertStatus(200);
         $response->assertJson(['success' => true]);

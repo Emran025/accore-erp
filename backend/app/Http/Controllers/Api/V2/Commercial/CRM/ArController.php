@@ -82,7 +82,13 @@ class ArController extends Controller
         try {
             $id = (int)$request->validated()['id'];
             $oldValues = $action->execute($id);
-            TelescopeService::logOperation('DELETE', 'ar_customers', $id, $oldValues, null);
+            TelescopeService::logOperation(
+                'DELETE',
+                'ar_customers',
+                $id,
+                $oldValues instanceof \Illuminate\Support\Collection ? $oldValues->all() : $oldValues,
+                null,
+            );
 
             return $this->successResponse([], 'Customer deleted successfully');
         } catch (\Exception $e) {

@@ -64,9 +64,9 @@ class PayrollApiTest extends TestCase
             'payment_date' => now()->format('Y-m-d'),
         ];
 
-        $response = $this->authPost(route('api.payroll.generate'), $data);
+        $response = $this->authPost(route('v2.payroll.generate'), $data);
 
-        $this->assertSuccessResponse($response, 200); // Assuming 201 Created or 200 OK
+        $this->assertSuccessResponse($response, 201);
         $this->assertDatabaseHas('payroll_cycles', [
             'created_by' => $this->authenticatedUser->id,
             'cycle_type' => 'salary'
@@ -89,7 +89,7 @@ class PayrollApiTest extends TestCase
              'created_by' => $this->authenticatedUser->id
         ]);
 
-        $response = $this->authPost(route('api.payroll.approve', ['id' => $cycle->id]));
+        $response = $this->authPost(route('v2.payroll.cycles.approve', ['id' => $cycle->id]));
 
         $this->assertSuccessResponse($response);
         $this->assertEquals('approved', $cycle->fresh()->status);
@@ -126,7 +126,7 @@ class PayrollApiTest extends TestCase
             'account_code' => '1110'
         ]);
 
-        $response = $this->authPost(route('api.payroll.payment', ['id' => $cycle->id]), [
+        $response = $this->authPost(route('v2.payroll.cycles.pay', ['id' => $cycle->id]), [
             'account_id' => $cash->id
         ]);
 

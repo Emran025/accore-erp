@@ -20,7 +20,7 @@ class UsersApiTest extends TestCase
 
     public function test_can_list_users()
     {
-        $response = $this->authGet(route('api.users.index'));
+        $response = $this->authGet(route('v2.users.index'));
 
         $this->assertSuccessResponse($response);
     }
@@ -36,7 +36,7 @@ class UsersApiTest extends TestCase
             'role_id' => $role->id,
         ];
 
-        $response = $this->authPost(route('api.users.store'), $data);
+        $response = $this->authPost(route('v2.users.store'), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('users', ['username' => 'newuser']);
@@ -51,7 +51,7 @@ class UsersApiTest extends TestCase
             'password' => 'password123',
         ];
 
-        $response = $this->authPost(route('api.users.store'), $data);
+        $response = $this->authPost(route('v2.users.store'), $data);
 
         $response->assertStatus(422);
     }
@@ -66,7 +66,7 @@ class UsersApiTest extends TestCase
             'full_name' => 'Updated Name',
         ];
 
-        $response = $this->authPut(route('api.users.update'), $data);
+        $response = $this->authPut(route('v2.users.update', ['id' => $user->id]), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('users', [
@@ -79,7 +79,7 @@ class UsersApiTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->authDelete(route('api.users.destroy'), ['id' => $user->id]);
+        $response = $this->authDelete(route('v2.users.destroy', ['id' => $user->id]), ['id' => $user->id]);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseMissing('users', ['id' => $user->id]);
@@ -99,7 +99,7 @@ class UsersApiTest extends TestCase
             'new_password' => 'newpassword123',
         ];
 
-        $response = $this->authPost(route('api.change_password'), $data);
+        $response = $this->authPost(route('v2.change_password'), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertTrue(Hash::check('newpassword123', $user->fresh()->password));
@@ -118,7 +118,7 @@ class UsersApiTest extends TestCase
             'new_password' => 'newpassword123',
         ];
 
-        $response = $this->authPost(route('api.change_password'), $data);
+        $response = $this->authPost(route('v2.change_password'), $data);
 
         $this->assertErrorResponse($response, 400);
     }
@@ -127,14 +127,14 @@ class UsersApiTest extends TestCase
     {
         User::factory()->create(['role' => 'manager']);
 
-        $response = $this->authGet(route('api.manager_list'));
+        $response = $this->authGet(route('v2.manager_list'));
 
         $this->assertSuccessResponse($response);
     }
 
     public function test_can_list_my_sessions()
     {
-        $response = $this->authGet(route('api.my_sessions'));
+        $response = $this->authGet(route('v2.my_sessions'));
 
         $this->assertSuccessResponse($response);
     }

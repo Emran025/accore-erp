@@ -23,7 +23,7 @@ class SettingsApiTest extends TestCase
     {
         Role::factory()->count(2)->create();
 
-        $response = $this->authGet(route('api.roles.index'));
+        $response = $this->authGet(route('v2.roles.index'));
 
         $this->assertSuccessResponse($response);
         // Admin role + 2 created = 3 at least
@@ -32,7 +32,7 @@ class SettingsApiTest extends TestCase
 
     public function test_can_create_role()
     {
-        $response = $this->authPost(route('api.roles.store'), [
+        $response = $this->authPost(route('v2.roles.store'), [
             'name' => 'Store Team Lead', // Unique name
             'description' => 'Team Lead'
         ]);
@@ -46,7 +46,7 @@ class SettingsApiTest extends TestCase
     {
         User::factory()->count(2)->create();
 
-        $response = $this->authGet(route('api.users.index'));
+        $response = $this->authGet(route('v2.users.index'));
 
         $this->assertSuccessResponse($response);
         // Auth user + 2 created = 3
@@ -65,7 +65,7 @@ class SettingsApiTest extends TestCase
             'is_active' => true
         ];
 
-        $response = $this->authPost(route('api.users.store'), $data);
+        $response = $this->authPost(route('v2.users.store'), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('users', ['username' => 'newuser']);
@@ -75,7 +75,7 @@ class SettingsApiTest extends TestCase
     public function test_can_list_active_sessions()
     {
         // Route assumed: api.sessions.index
-        $response = $this->authGet(route('api.sessions.index'));
+        $response = $this->authGet(route('v2.sessions.index'));
         
         // This might fail if route doesn't exist, but we saw SessionsController.
         $this->assertSuccessResponse($response);

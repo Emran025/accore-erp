@@ -20,7 +20,7 @@ class CurrencyApiTest extends TestCase
     {
         Currency::factory()->count(2)->create();
 
-        $response = $this->authGet(route('api.currencies.index'));
+        $response = $this->authGet(route('v2.currencies.index'));
 
         $response->assertStatus(200)
             ->assertJson(['success' => true])
@@ -36,9 +36,9 @@ class CurrencyApiTest extends TestCase
             'exchange_rate' => 1.08,
         ];
 
-        $response = $this->authPost(route('api.currencies.store'), $data);
+        $response = $this->authPost(route('v2.currencies.store'), $data);
 
-        $response->assertStatus(200)
+        $response->assertStatus(201)
             ->assertJson(['success' => true]);
         $this->assertDatabaseHas('currencies', ['code' => 'EUR', 'name' => 'Euro']);
     }
@@ -54,7 +54,7 @@ class CurrencyApiTest extends TestCase
             'exchange_rate' => 1.0,
         ];
 
-        $response = $this->authPost(route('api.currencies.store'), $data);
+        $response = $this->authPost(route('v2.currencies.store'), $data);
 
         $response->assertStatus(422);
     }
@@ -70,7 +70,7 @@ class CurrencyApiTest extends TestCase
             'exchange_rate' => 0.82,
         ];
 
-        $response = $this->authPut(route('api.currencies.update', ['id' => $currency->id]), $data);
+        $response = $this->authPut(route('v2.currencies.update', ['id' => $currency->id]), $data);
 
         $response->assertStatus(200)
             ->assertJson(['success' => true]);
@@ -81,7 +81,7 @@ class CurrencyApiTest extends TestCase
     {
         $currency = Currency::factory()->create(['is_primary' => false]);
 
-        $response = $this->authDelete(route('api.currencies.destroy', ['id' => $currency->id]));
+        $response = $this->authDelete(route('v2.currencies.destroy', ['id' => $currency->id]));
 
         $response->assertStatus(200)
             ->assertJson(['success' => true]);
@@ -92,7 +92,7 @@ class CurrencyApiTest extends TestCase
     {
         $currency = Currency::factory()->create(['is_primary' => true]);
 
-        $response = $this->authDelete(route('api.currencies.destroy', ['id' => $currency->id]));
+        $response = $this->authDelete(route('v2.currencies.destroy', ['id' => $currency->id]));
 
         $response->assertStatus(400)
             ->assertJson(['success' => false]);
@@ -103,7 +103,7 @@ class CurrencyApiTest extends TestCase
     {
         $currency = Currency::factory()->create(['is_active' => true, 'is_primary' => false]);
 
-        $response = $this->authPost(route('api.currencies.toggle', ['id' => $currency->id]));
+        $response = $this->authPost(route('v2.currencies.toggle', ['id' => $currency->id]));
 
         $response->assertStatus(200)
             ->assertJson(['success' => true]);
@@ -114,7 +114,7 @@ class CurrencyApiTest extends TestCase
     {
         $currency = Currency::factory()->create(['is_primary' => true, 'is_active' => true]);
 
-        $response = $this->authPost(route('api.currencies.toggle', ['id' => $currency->id]));
+        $response = $this->authPost(route('v2.currencies.toggle', ['id' => $currency->id]));
 
         $response->assertStatus(400)
             ->assertJson(['success' => false]);
@@ -122,7 +122,7 @@ class CurrencyApiTest extends TestCase
 
     public function test_create_currency_validates_required_fields()
     {
-        $response = $this->authPost(route('api.currencies.store'), []);
+        $response = $this->authPost(route('v2.currencies.store'), []);
 
         $response->assertStatus(422);
     }

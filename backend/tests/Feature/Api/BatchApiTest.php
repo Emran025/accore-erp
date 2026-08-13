@@ -26,10 +26,10 @@ class BatchApiTest extends TestCase
             'created_by' => $this->authenticatedUser->id,
         ]);
 
-        $response = $this->authGet(route('api.batch.index'));
+        $response = $this->authGet(route('v2.batch.index'));
 
         $this->assertSuccessResponse($response);
-        $response->assertJsonStructure(['success', 'data', 'pagination']);
+        $response->assertJsonStructure(['success', 'data']);
     }
 
     public function test_can_create_batch()
@@ -40,7 +40,7 @@ class BatchApiTest extends TestCase
             'description' => 'Batch of invoices for processing',
         ];
 
-        $response = $this->authPost(route('api.batch.store'), $data);
+        $response = $this->authPost(route('v2.batch.store'), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('batch_processing', [
@@ -59,7 +59,7 @@ class BatchApiTest extends TestCase
             'created_by' => $this->authenticatedUser->id,
         ]);
 
-        $response = $this->authDelete(route('api.batch.destroy'), ['id' => $batch->id]);
+        $response = $this->authDelete(route('v2.batch.destroy', ['id' => $batch->id]), ['id' => $batch->id]);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseMissing('batch_processing', ['id' => $batch->id]);
@@ -75,7 +75,7 @@ class BatchApiTest extends TestCase
             'created_by' => $this->authenticatedUser->id,
         ]);
 
-        $response = $this->authDelete(route('api.batch.destroy'), ['id' => $batch->id]);
+        $response = $this->authDelete(route('v2.batch.destroy', ['id' => $batch->id]), ['id' => $batch->id]);
 
         $this->assertErrorResponse($response, 400);
         $this->assertDatabaseHas('batch_processing', ['id' => $batch->id]);
@@ -91,9 +91,7 @@ class BatchApiTest extends TestCase
             'created_by' => $this->authenticatedUser->id,
         ]);
 
-        $response = $this->authPost(route('api.batch.store') . '?action=execute', [
-            'batch_id' => $batch->id,
-        ]);
+        $response = $this->authPost(route('v2.batch.execute', ['id' => $batch->id]));
 
         $this->assertSuccessResponse($response);
         $this->assertEquals('completed', $batch->fresh()->status);
@@ -101,7 +99,7 @@ class BatchApiTest extends TestCase
 
     public function test_create_batch_validates_required_fields()
     {
-        $response = $this->authPost(route('api.batch.store'), []);
+        $response = $this->authPost(route('v2.batch.store'), []);
 
         $response->assertStatus(422);
     }

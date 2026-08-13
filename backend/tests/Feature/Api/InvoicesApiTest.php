@@ -33,16 +33,11 @@ class InvoicesApiTest extends TestCase
     {
         Invoice::factory()->count(5)->create();
 
-        $response = $this->authGet(route('api.invoices.index'));
+        $response = $this->authGet(route('v2.invoices.index'));
 
         $this->assertSuccessResponse($response);
-        $response->assertJsonStructure([
-            'success',
-            'data',
-            'pagination'
-        ]);
-        
-        $this->assertEquals(5, $response->json('pagination.total_records'));
+        $response->assertJsonStructure(['success', 'data']);
+        $response->assertJsonCount(5, 'data');
     }
 
     public function test_can_create_invoice()
@@ -71,11 +66,11 @@ class InvoicesApiTest extends TestCase
             'notes' => 'Test Invoice API'
         ];
 
-        $response = $this->authPost(route('api.invoices.store'), $data);
+        $response = $this->authPost(route('v2.invoices.store'), $data);
 
         $this->assertSuccessResponse($response);
         
-        $invoiceId = $response->json('id');
+        $invoiceId = $response->json('data.id');
         $this->assertDatabaseHas('invoices', ['id' => $invoiceId]);
         $this->assertDatabaseHas('invoice_items', [
             'invoice_id' => $invoiceId,
@@ -88,7 +83,7 @@ class InvoicesApiTest extends TestCase
     {
         $invoice = Invoice::factory()->create();
         
-        $response = $this->authGet(route('api.invoice_details', ['id' => $invoice->id]));
+        $response = $this->authGet(route('v2.invoices.details', ['id' => $invoice->id]));
 
         $this->assertSuccessResponse($response);
         $response->assertJson([
@@ -103,7 +98,7 @@ class InvoicesApiTest extends TestCase
     // {
     //     $invoice = Invoice::factory()->create(['is_reversed' => false]);
      
-    //     $response = $this->authDelete(route('api.invoices.destroy'), ['id' => $invoice->id]);
+    //     $response = $this->authDelete(route('v2.invoices.destroy'), ['id' => $invoice->id]);
 
     //     $this->assertSuccessResponse($response);
         

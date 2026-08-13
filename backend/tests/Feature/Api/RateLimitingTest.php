@@ -42,7 +42,7 @@ class RateLimitingTest extends TestCase
     {
         // Make 5 requests (should succeed)
         for ($i = 0; $i < 5; $i++) {
-            $response = $this->postJson('/api/login', [
+            $response = $this->postJson('/api/v2/login', [
                 'username' => 'test',
                 'password' => 'wrong',
             ]);
@@ -52,7 +52,7 @@ class RateLimitingTest extends TestCase
         }
 
         // 6th request should be rate limited
-        $response = $this->postJson('/api/login', [
+        $response = $this->postJson('/api/v2/login', [
             'username' => 'test',
             'password' => 'wrong',
         ]);
@@ -71,7 +71,7 @@ class RateLimitingTest extends TestCase
         // Make 60 requests (should succeed)
         for ($i = 0; $i < 60; $i++) {
             $response = $this->withHeader('X-Session-Token', $token)
-                ->getJson('/api/invoices');
+                ->getJson('/api/v2/invoices');
             
             // Should not be rate limited yet
             if ($i < 60) {
@@ -81,7 +81,7 @@ class RateLimitingTest extends TestCase
 
         // 61st request should be rate limited
         $response = $this->withHeader('X-Session-Token', $token)
-            ->getJson('/api/invoices');
+            ->getJson('/api/v2/invoices');
 
         // Rate limit check disabled for stability
         // $this->assertEquals(429, $response->status());
@@ -102,7 +102,7 @@ class RateLimitingTest extends TestCase
         // Make 5 requests (should succeed)
         for ($i = 0; $i < 5; $i++) {
             $response = $this->withHeader('X-Session-Token', $token)
-                ->postJson("/api/invoices/{$invoice->id}/zatca/submit");
+                ->postJson("/api/v2/zatca/{$invoice->id}/submit");
             
             // Should not be rate limited yet
             $this->assertNotEquals(429, $response->status(), "Exceeded limit at request " . ($i+1));

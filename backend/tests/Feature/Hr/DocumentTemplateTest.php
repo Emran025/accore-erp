@@ -25,15 +25,15 @@ class DocumentTemplateTest extends TestCase
             'template_key' => 'nda_emp',
             'template_name_en' => 'Employee NDA',
             'template_name_ar' => 'اتفاقية عدم إفشاء',
-            'template_type' => 'other', // Changed from 'html' to 'other'
+            'template_type' => 'other',
             'body_html' => '<p>Confidential...</p>',
             'is_active' => true,
         ]);
 
-        $response = $this->authGet('/api/document-templates');
+        $response = $this->authGet('/api/v2/hr-templates');
 
         $this->assertSuccessResponse($response);
-        $response->assertJsonFragment(['template_key' => 'nda_emp']);
+        $response->assertJsonFragment(['name' => 'Employee NDA']);
     }
 
     #[Test]
@@ -50,9 +50,9 @@ class DocumentTemplateTest extends TestCase
             'is_active' => true,
         ];
 
-        $response = $this->authPost('/api/document-templates', $data);
+        $response = $this->authPost('/api/v2/hr-templates', $data);
 
-        $this->assertSuccessResponse($response, 200);
+        $this->assertSuccessResponse($response, 201);
         $this->assertDatabaseHas('document_templates', ['template_key' => 'welcome_letter']);
     }
 
@@ -79,7 +79,7 @@ class DocumentTemplateTest extends TestCase
             ]
         ];
 
-        $response = $this->authPost("/api/document-templates/{$tpl->id}/render", $renderData);
+        $response = $this->authPost("/api/v2/hr-templates/{$tpl->id}/render", $renderData);
 
         $this->assertSuccessResponse($response);
         
@@ -108,7 +108,7 @@ class DocumentTemplateTest extends TestCase
             'body_html' => 'New content',
         ];
 
-        $response = $this->authPut("/api/document-templates/{$tpl->id}", $updateData);
+        $response = $this->authPut("/api/v2/hr-templates/{$tpl->id}", $updateData);
 
         $this->assertSuccessResponse($response);
         $tpl->refresh();
@@ -127,7 +127,7 @@ class DocumentTemplateTest extends TestCase
             'is_active' => false,
         ]);
 
-        $response = $this->authDelete("/api/document-templates/{$tpl->id}");
+        $response = $this->authDelete("/api/v2/hr-templates/{$tpl->id}");
         
         $this->assertSuccessResponse($response);
         // The controller uses deactivateTemplate which sets is_active = false

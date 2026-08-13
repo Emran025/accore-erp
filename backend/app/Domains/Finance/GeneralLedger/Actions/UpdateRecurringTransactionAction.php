@@ -9,7 +9,7 @@ class UpdateRecurringTransactionAction
 {
     public function execute(array $data, int $id): RecurringTransaction
     {
-        PermissionService::requirePermission('general_ledger', 'update');
+        PermissionService::requirePermission('general_ledger', 'edit');
 
         $template = RecurringTransaction::findOrFail($id);
         $template->update($data);

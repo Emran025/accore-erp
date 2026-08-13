@@ -47,7 +47,7 @@ class NumberRangeApiTest extends TestCase
         // 2. Perform Request
         $this->authenticateUser();
         
-        $response = $this->authPost("/api/number-ranges/next-number", [
+        $response = $this->authPost("/api/v2/number-ranges/next-number", [
             'object_id' => $object->id,
             'group_id' => $group->id
         ]);
@@ -63,7 +63,7 @@ class NumberRangeApiTest extends TestCase
         ]);
         
         // Generate another number
-        $response2 = $this->authPost("/api/number-ranges/next-number", [
+        $response2 = $this->authPost("/api/v2/number-ranges/next-number", [
             'object_id' => $object->id,
             'group_id' => $group->id
         ]);
@@ -79,12 +79,12 @@ class NumberRangeApiTest extends TestCase
 
         $this->authenticateUser();
         
-        $response = $this->authPost("/api/number-ranges/next-number", [
+        $response = $this->authPost("/api/v2/number-ranges/next-number", [
             'object_id' => $object->id,
             'group_id' => $group->id
         ]);
 
-        $this->assertStatusResolved($response, 400);
+        $this->assertStatusResolved($response, 422);
     }
     
     public function test_can_retrieve_object_by_type()
@@ -98,10 +98,10 @@ class NumberRangeApiTest extends TestCase
         ]);
 
         $this->authenticateUser();
-        $response = $this->authGet("/api/number-ranges/type/ar_customers");
+        $response = $this->authGet("/api/v2/number-ranges/objects/type/ar_customers");
 
         $this->assertStatusResolved($response, 200);
-        $response->assertJsonPath('object_type', 'ar_customers');
-        $this->assertCount(1, $response->json('groups'));
+        $response->assertJsonPath('data.object_type', 'ar_customers');
+        $this->assertCount(1, $response->json('data.groups'));
     }
 }

@@ -28,7 +28,7 @@ class ListAssetsAction
         $assets->each(fn($asset) => $asset->recorder_name = $asset->createdBy->name ?? null);
 
         return [
-            'data'         => $assets->toArray(),
+            'data'         => $assets,
             'total'        => $total,
             'current_page' => $page,
             'per_page'     => $perPage,

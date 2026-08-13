@@ -20,7 +20,7 @@ class CategoriesApiTest extends TestCase
     {
         Category::factory()->count(3)->create();
 
-        $response = $this->authGet(route('api.categories.index'));
+        $response = $this->authGet(route('v2.inventory.categories.index'));
 
         $this->assertSuccessResponse($response);
     }
@@ -29,7 +29,7 @@ class CategoriesApiTest extends TestCase
     {
         $data = ['name' => 'Electronics'];
 
-        $response = $this->authPost(route('api.categories.store'), $data);
+        $response = $this->authPost(route('v2.inventory.categories.store'), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('categories', ['name' => 'Electronics']);
@@ -39,7 +39,7 @@ class CategoriesApiTest extends TestCase
     {
         Category::factory()->create(['name' => 'Existing']);
 
-        $response = $this->authPost(route('api.categories.store'), ['name' => 'Existing']);
+        $response = $this->authPost(route('v2.inventory.categories.store'), ['name' => 'Existing']);
 
         $response->assertStatus(422);
     }
@@ -53,7 +53,7 @@ class CategoriesApiTest extends TestCase
             'name' => 'New Name',
         ];
 
-        $response = $this->authPut(route('api.categories.update'), $data);
+        $response = $this->authPut(route('v2.inventory.categories.update', ['id' => $category->id]), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('categories', [
@@ -66,7 +66,7 @@ class CategoriesApiTest extends TestCase
     {
         $category = Category::factory()->create();
 
-        $response = $this->authDelete(route('api.categories.destroy'), ['id' => $category->id]);
+        $response = $this->authDelete(route('v2.inventory.categories.destroy', ['id' => $category->id]), ['id' => $category->id]);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseMissing('categories', ['id' => $category->id]);
@@ -74,7 +74,7 @@ class CategoriesApiTest extends TestCase
 
     public function test_create_validates_required_name()
     {
-        $response = $this->authPost(route('api.categories.store'), []);
+        $response = $this->authPost(route('v2.inventory.categories.store'), []);
 
         $response->assertStatus(422);
     }

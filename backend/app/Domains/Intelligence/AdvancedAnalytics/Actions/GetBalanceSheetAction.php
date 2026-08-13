@@ -38,8 +38,12 @@ class GetBalanceSheetAction
 
     private function getAccountTypeDetails(string $type, string $date): array
     {
+        $balanceExpression = in_array(strtolower($type), ['asset', 'expense'], true)
+            ? "SUM(CASE WHEN entry_type = 'DEBIT' THEN amount ELSE -amount END)"
+            : "SUM(CASE WHEN entry_type = 'CREDIT' THEN amount ELSE -amount END)";
+
         return GeneralLedger::select('coa.account_code', 'coa.account_name')
-            ->selectRaw("SUM(CASE WHEN entry_type = 'DEBIT' THEN amount ELSE -amount END) as balance")
+            ->selectRaw("{$balanceExpression} as balance")
             ->join('chart_of_accounts as coa', 'coa.id', '=', 'general_ledger.account_id')
             ->where('coa.account_type', $type)
             ->whereDate('voucher_date', '<=', $date)

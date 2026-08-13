@@ -12,8 +12,7 @@ describe('CRUD Store Factory Stores', () => {
         let useProductStore: typeof import('@/stores/useProductStore').useProductStore;
 
         beforeEach(async () => {
-            vi.clearAllMocks();
-            vi.resetModules();
+            vi.resetAllMocks();
             const mod = await import('@/stores/useProductStore');
             useProductStore = mod.useProductStore;
             // Reset
@@ -38,6 +37,7 @@ describe('CRUD Store Factory Stores', () => {
                 { id: 2, name: 'Gadget', barcode: 'G001', unit_price: 200, stock_quantity: 30 },
             ];
             mockedFetchAPI.mockResolvedValueOnce({
+                success: true,
                 data: mockProducts,
                 meta: { current_page: 1, last_page: 1, total: 2 },
             });
@@ -62,8 +62,8 @@ describe('CRUD Store Factory Stores', () => {
 
         it('saves a new product', async () => {
             mockedFetchAPI
-                .mockResolvedValueOnce({ id: 3, product_name: 'New' })  // save
-                .mockResolvedValueOnce({ data: [] });                     // reload
+                .mockResolvedValueOnce({ success: true, id: 3, product_name: 'New' })  // save
+                .mockResolvedValueOnce({ success: true, data: [] });                     // reload
 
             const result = await useProductStore.getState().save({ name: 'New', barcode: 'N001' });
             expect(result).toBe(true);
@@ -81,7 +81,7 @@ describe('CRUD Store Factory Stores', () => {
                 ],
             });
 
-            mockedFetchAPI.mockResolvedValueOnce({});
+            mockedFetchAPI.mockResolvedValueOnce({ success: true });
 
             const result = await useProductStore.getState().remove(1);
             expect(result).toBe(true);
@@ -101,8 +101,7 @@ describe('CRUD Store Factory Stores', () => {
         let useCustomerStore: typeof import('@/stores/useCustomerStore').useCustomerStore;
 
         beforeEach(async () => {
-            vi.clearAllMocks();
-            vi.resetModules();
+            vi.resetAllMocks();
             const mod = await import('@/stores/useCustomerStore');
             useCustomerStore = mod.useCustomerStore;
             useCustomerStore.setState({
@@ -120,6 +119,7 @@ describe('CRUD Store Factory Stores', () => {
 
         it('loads customers', async () => {
             mockedFetchAPI.mockResolvedValueOnce({
+                success: true,
                 data: [{ id: 1, name: 'Customer A' }],
                 meta: { current_page: 1, last_page: 1, total: 1 },
             });
@@ -132,7 +132,7 @@ describe('CRUD Store Factory Stores', () => {
             useCustomerStore.setState({
                 items: [{ id: 1, name: 'Cust A' } as any, { id: 2, name: 'Cust B' } as any],
             });
-            mockedFetchAPI.mockResolvedValueOnce({});
+            mockedFetchAPI.mockResolvedValueOnce({ success: true });
 
             await useCustomerStore.getState().remove(1);
             expect(useCustomerStore.getState().items).toHaveLength(1);
@@ -145,8 +145,7 @@ describe('CRUD Store Factory Stores', () => {
         let useSupplierStore: typeof import('@/stores/useSupplierStore').useSupplierStore;
 
         beforeEach(async () => {
-            vi.clearAllMocks();
-            vi.resetModules();
+            vi.resetAllMocks();
             const mod = await import('@/stores/useSupplierStore');
             useSupplierStore = mod.useSupplierStore;
             useSupplierStore.setState({
@@ -158,6 +157,7 @@ describe('CRUD Store Factory Stores', () => {
 
         it('loads suppliers', async () => {
             mockedFetchAPI.mockResolvedValueOnce({
+                success: true,
                 data: [{ id: 1, name: 'Supplier X' }],
                 meta: { current_page: 1, last_page: 1, total: 1 },
             });
@@ -172,8 +172,7 @@ describe('CRUD Store Factory Stores', () => {
         let usePurchaseStore: typeof import('@/stores/usePurchaseStore').usePurchaseStore;
 
         beforeEach(async () => {
-            vi.clearAllMocks();
-            vi.resetModules();
+            vi.resetAllMocks();
             const mod = await import('@/stores/usePurchaseStore');
             usePurchaseStore = mod.usePurchaseStore;
             usePurchaseStore.setState({
@@ -185,6 +184,7 @@ describe('CRUD Store Factory Stores', () => {
 
         it('loads purchases', async () => {
             mockedFetchAPI.mockResolvedValueOnce({
+                success: true,
                 data: [{ id: 1, supplier: 'Supplier A', total: 5000 }],
                 meta: { current_page: 1, last_page: 1, total: 1 },
             });
@@ -195,8 +195,8 @@ describe('CRUD Store Factory Stores', () => {
 
         it('saves a purchase', async () => {
             mockedFetchAPI
-                .mockResolvedValueOnce({ id: 1 })
-                .mockResolvedValueOnce({ data: [] });
+                .mockResolvedValueOnce({ success: true, id: 1 })
+                .mockResolvedValueOnce({ success: true, data: [] });
 
             const result = await usePurchaseStore.getState().save({ supplier_id: 1, total: 5000 });
             expect(result).toBe(true);

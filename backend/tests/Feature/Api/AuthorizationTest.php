@@ -36,7 +36,7 @@ class AuthorizationTest extends TestCase
         $this->authenticateUser($user);
 
         // Attempt to list invoices
-        $response = $this->authGet(route('api.invoices.index'));
+        $response = $this->authGet(route('v2.invoices.index'));
 
         // improved assertion
         $response->assertStatus(403);
@@ -59,7 +59,7 @@ class AuthorizationTest extends TestCase
 
         $this->authenticateUser($user);
 
-        $response = $this->authPost(route('api.products.store'), [
+        $response = $this->authPost(route('v2.inventory.products.store'), [
             'name' => 'Test',
             'sku' => 'TEST-001'
         ]);

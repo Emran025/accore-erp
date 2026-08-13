@@ -20,16 +20,16 @@ class ChartOfAccountsApiTest extends TestCase
 
     public function test_can_list_accounts()
     {
-        $response = $this->authGet(route('api.accounts.index'));
+        $response = $this->authGet(route('v2.coa.index'));
 
         $response->assertStatus(200)
             ->assertJson(['success' => true])
-            ->assertJsonStructure(['success', 'accounts']);
+            ->assertJsonStructure(['success', 'data']);
     }
 
     public function test_can_search_accounts()
     {
-        $response = $this->authGet(route('api.accounts.index') . '?search=Cash');
+        $response = $this->authGet(route('v2.coa.index') . '?search=Cash');
 
         $response->assertStatus(200)
             ->assertJson(['success' => true]);
@@ -43,7 +43,7 @@ class ChartOfAccountsApiTest extends TestCase
             'type' => 'expense',
         ];
 
-        $response = $this->authPost(route('api.accounts.store'), $data);
+        $response = $this->authPost(route('v2.coa.store'), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('chart_of_accounts', [
@@ -60,7 +60,7 @@ class ChartOfAccountsApiTest extends TestCase
             'type' => 'asset',
         ];
 
-        $response = $this->authPost(route('api.accounts.store'), $data);
+        $response = $this->authPost(route('v2.coa.store'), $data);
 
         $response->assertStatus(422);
     }
@@ -74,7 +74,7 @@ class ChartOfAccountsApiTest extends TestCase
             'type' => 'asset',
         ];
 
-        $response = $this->authPut(route('api.accounts.update', ['id' => $account->id]), $data);
+        $response = $this->authPut(route('v2.coa.update', ['id' => $account->id]), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('chart_of_accounts', [
@@ -90,7 +90,7 @@ class ChartOfAccountsApiTest extends TestCase
             'account_name' => 'Temporary',
         ]);
 
-        $response = $this->authDelete(route('api.accounts.destroy', ['id' => $account->id]));
+        $response = $this->authDelete(route('v2.coa.destroy', ['id' => $account->id]));
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseMissing('chart_of_accounts', ['id' => $account->id]);
@@ -105,7 +105,7 @@ class ChartOfAccountsApiTest extends TestCase
             'account_id' => $account->id,
         ]);
 
-        $response = $this->authDelete(route('api.accounts.destroy', ['id' => $account->id]));
+        $response = $this->authDelete(route('v2.coa.destroy', ['id' => $account->id]));
 
         $this->assertSuccessResponse($response);
         // Account should be deactivated, not deleted
@@ -117,16 +117,16 @@ class ChartOfAccountsApiTest extends TestCase
 
     public function test_can_get_account_balances()
     {
-        $response = $this->authGet(route('api.accounts.balances'));
+        $response = $this->authGet(route('v2.coa.balances'));
 
         $response->assertStatus(200)
             ->assertJson(['success' => true])
-            ->assertJsonStructure(['success', 'accounts', 'totals']);
+            ->assertJsonStructure(['success', 'data' => ['accounts', 'totals']]);
     }
 
     public function test_can_filter_balances_by_type()
     {
-        $response = $this->authGet(route('api.accounts.balances') . '?account_type=Asset');
+        $response = $this->authGet(route('v2.coa.balances') . '?account_type=Asset');
 
         $response->assertStatus(200)
             ->assertJson(['success' => true]);

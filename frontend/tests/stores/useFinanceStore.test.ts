@@ -31,7 +31,7 @@ describe('useFinanceStore', () => {
                 { id: 1, code: '1000', name: 'Assets', type: 'asset' },
                 { id: 2, code: '2000', name: 'Liabilities', type: 'liability' },
             ];
-            mockedFetchAPI.mockResolvedValueOnce({ accounts: mockAccounts });
+            mockedFetchAPI.mockResolvedValueOnce({ success: true, data: mockAccounts });
 
             await useFinanceStore.getState().loadAccounts();
 
@@ -61,7 +61,7 @@ describe('useFinanceStore', () => {
                 accountsLastFetched: Date.now() - 6 * 60 * 1000, // 6 min ago (TTL = 5 min)
             });
 
-            mockedFetchAPI.mockResolvedValueOnce({ accounts: [{ id: 1 }, { id: 2 }] });
+            mockedFetchAPI.mockResolvedValueOnce({ success: true, data: [{ id: 1 }, { id: 2 }] });
 
             await useFinanceStore.getState().loadAccounts();
 
@@ -83,7 +83,7 @@ describe('useFinanceStore', () => {
             const mockPeriods = [
                 { id: 1, name: 'Q1 2026', start_date: '2026-01-01', end_date: '2026-03-31' },
             ];
-            mockedFetchAPI.mockResolvedValueOnce({ data: mockPeriods });
+            mockedFetchAPI.mockResolvedValueOnce({ success: true, data: mockPeriods });
 
             await useFinanceStore.getState().loadFiscalPeriods();
 
@@ -97,7 +97,7 @@ describe('useFinanceStore', () => {
             const mockVouchers = [
                 { id: 1, voucher_number: 'JV-001', total_debit: 1000, total_credit: 1000 },
             ];
-            mockedFetchAPI.mockResolvedValueOnce({ data: mockVouchers });
+            mockedFetchAPI.mockResolvedValueOnce({ success: true, data: mockVouchers });
 
             await useFinanceStore.getState().loadJournalVouchers();
 

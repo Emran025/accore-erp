@@ -21,7 +21,7 @@ class DeleteBatchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'required|exists:batches,id',
+            'id' => 'required|exists:batch_processing,id',
         ];
     }
 }

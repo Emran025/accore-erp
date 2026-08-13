@@ -134,6 +134,7 @@ Route::group(['prefix' => 'foreign-exchange', 'middleware' => 'can:currency,view
     });
     
     Route::middleware(['can:currency,edit', 'throttle:api-write'])->group(function () {
+        Route::put('/currencies/{id}', [CurrencyController::class, 'update'])->name('v2.currencies.update');
         Route::post('/currencies/{id}/toggle', [CurrencyController::class, 'toggleActive'])->name('v2.currencies.toggle');
         Route::put('/policies/{id}', [CurrencyPolicyController::class, 'update'])->name('v2.currency_policies.update');
         Route::post('/policies/{id}/activate', [CurrencyPolicyController::class, 'activate'])->name('v2.currency_policies.activate');
@@ -142,6 +143,7 @@ Route::group(['prefix' => 'foreign-exchange', 'middleware' => 'can:currency,view
     });
 
     Route::middleware(['can:currency,delete', 'throttle:api-delete'])->group(function () {
+        Route::delete('/currencies/{id}', [CurrencyController::class, 'destroy'])->name('v2.currencies.destroy');
         Route::delete('/policies/{id}', [CurrencyPolicyController::class, 'destroy'])->name('v2.currency_policies.destroy');
     });
 
@@ -151,9 +153,8 @@ Route::group(['prefix' => 'foreign-exchange', 'middleware' => 'can:currency,view
         Route::post('/convert', [CurrencyPolicyController::class, 'convert'])->name('v2.treasury.convert');
         Route::post('/revaluation', [CurrencyPolicyController::class, 'processRevaluation'])->name('v2.treasury.revaluation');
         Route::post('/currencies/{id}/toggle-active', [CurrencyController::class, 'toggleActive'])->name('v2.treasury.toggle_active');
-    });
+        });
 });
-
 // ── Unified Tax Engine
 Route::group(['prefix' => 'tax-engine', 'middleware' => 'can:settings,view'], function () {
     Route::get('/setup', [TaxEngineController::class, 'getSetup'])->name('v2.tax_engine.setup');

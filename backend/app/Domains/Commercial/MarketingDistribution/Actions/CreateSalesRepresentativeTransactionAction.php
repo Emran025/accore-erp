@@ -7,7 +7,6 @@ use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentativeTransaction;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
 use App\Domains\Finance\GeneralLedger\Services\ChartOfAccountsMappingService;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Collection;
 
 class CreateSalesRepresentativeTransactionAction
 {
@@ -16,7 +15,7 @@ class CreateSalesRepresentativeTransactionAction
         private readonly ChartOfAccountsMappingService $coaService
     ) {}
 
-    public function execute(array $data, int $userId): Collection
+    public function execute(array $data, int $userId): SalesRepresentativeTransaction
     {
         return DB::transaction(function () use ($data, $userId) {
             $amount = (float)$data['amount'];
@@ -74,10 +73,7 @@ class CreateSalesRepresentativeTransactionAction
             SalesRepresentative::where('id', $data['sales_representative_id'])
                 ->increment('current_balance', $balanceChange);
 
-            return collect([
-                'id' => $transaction->id,
-                'voucher_number' => $voucherNumber
-            ]);
+            return $transaction->fresh();
         });
     }
 }

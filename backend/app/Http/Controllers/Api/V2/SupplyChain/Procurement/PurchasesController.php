@@ -25,6 +25,7 @@ use App\Domains\SupplyChain\Procurement\Actions\AutoGenerateRequestsAction;
 use App\Domains\SupplyChain\Procurement\Models\Purchase;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 use App\Http\Resources\SupplyChain\Procurement\PurchaseResource;
+use App\Http\Resources\SupplyChain\PayablesExpenses\ApTransactionResource;
 use App\Http\Resources\SupplyChain\Procurement\PurchaseRequestResource;
 use App\Domains\SupplyChain\Procurement\Models\PurchaseRequest;
 use Illuminate\Http\Request;
@@ -47,9 +48,13 @@ class PurchasesController extends Controller
      */
     public function index(ListPurchasesRequest $request, ListPurchasesAction $action): JsonResponse
     {
-        $paginator = $action->execute($request->validated());
-
-        return $this->successResponse(PurchaseResource::collection($paginator));
+                $result = $action->execute($request->validated());
+        return $this->paginatedResponse(
+            PurchaseResource::collection($result['data'])->resolve(),
+            $result['total'],
+            $result['current_page'],
+            $result['per_page'],
+        );
     }
 
     /**
@@ -68,7 +73,7 @@ class PurchasesController extends Controller
                 $validated = app(StorePurchaseReturnRequest::class)->validated();
                 $purchase = $returnAction->execute($validated, $userId);
                 TelescopeService::logOperation('CREATE', 'purchase_returns', $purchase->id, null, $validated);
-                return $this->successResponse(new PurchaseResource($purchase), 'Purchase return created successfully');
+                return $this->successResponse(new ApTransactionResource($purchase), 'Purchase return created successfully');
             }
 
             $validated = app(StorePurchaseRequest::class)->validated();

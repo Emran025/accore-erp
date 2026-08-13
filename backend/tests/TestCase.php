@@ -154,15 +154,20 @@ abstract class TestCase extends BaseTestCase
     /**
      * Assert that a response is successful JSON
      */
-    protected function assertSuccessResponse($response, int $status = 200)
+        protected function assertSuccessResponse($response, ?int $status = null)
     {
-        if ($response->status() !== $status) {
+        $actualStatus = $response->status();
+        $isExpectedStatus = $status === null
+            ? in_array($actualStatus, [200, 201], true)
+            : $actualStatus === $status;
+
+        if (!$isExpectedStatus) {
             $this->debugResponse($response);
-            $this->fail("Expected status {$status} but got {$response->status()}.");
+            $expected = $status === null ? '200 or 201' : (string) $status;
+            $this->fail("Expected status {$expected} but got {$actualStatus}.");
         }
 
         $response->assertJson(['success' => true]);
-
         return $response;
     }
 

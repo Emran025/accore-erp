@@ -34,7 +34,7 @@ class SalesRepresentativeApiTest extends TestCase
     {
         SalesRepresentative::factory()->count(3)->create();
 
-        $response = $this->authGet(route('api.sales_representatives.index'));
+        $response = $this->authGet(route('v2.sales_representatives.index'));
 
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure([
@@ -55,7 +55,7 @@ class SalesRepresentativeApiTest extends TestCase
             'address' => '123 Main St'
         ];
 
-        $response = $this->authPost(route('api.sales_representatives.store'), $data);
+        $response = $this->authPost(route('v2.sales_representatives.store'), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('sales_representatives', [
@@ -73,7 +73,7 @@ class SalesRepresentativeApiTest extends TestCase
             'name' => 'New Name rep',
         ];
 
-        $response = $this->authPut(route('api.sales_representatives.update'), $data);
+        $response = $this->authPut(route('v2.sales_representatives.update'), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('sales_representatives', [
@@ -86,7 +86,7 @@ class SalesRepresentativeApiTest extends TestCase
     {
         $rep = SalesRepresentative::factory()->create();
 
-        $response = $this->authDelete(route('api.sales_representatives.destroy'), ['id' => $rep->id]);
+        $response = $this->authDelete(route('v2.sales_representatives.destroy'), ['id' => $rep->id]);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseMissing('sales_representatives', ['id' => $rep->id]);
@@ -102,13 +102,14 @@ class SalesRepresentativeApiTest extends TestCase
 
         foreach ($transactions as $transaction) {
             GeneralLedger::factory()->create([
+                'account_id' => \App\Domains\Finance\GeneralLedger\Models\ChartOfAccount::where('account_code', '1110')->value('id'),
                 'voucher_number' => $transaction->voucher_number,
                 'entry_type' => 'DEBIT',
                 'amount' => 100
             ]);
         }
 
-        $response = $this->authGet(route('api.sales_representatives.ledger', ['sales_representative_id' => $rep->id]));
+        $response = $this->authGet(route('v2.sales_representatives.ledger', ['sales_representative_id' => $rep->id]));
 
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure([
@@ -133,7 +134,7 @@ class SalesRepresentativeApiTest extends TestCase
             'description' => 'Test Payment'
         ];
 
-        $response = $this->authPost(route('api.sales_representatives.transactions.store'), $data);
+        $response = $this->authPost(route('v2.sales_representatives.transaction.store'), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('sales_representative_transactions', [
@@ -150,7 +151,7 @@ class SalesRepresentativeApiTest extends TestCase
             'type' => 'payment'
         ]);
 
-        $response = $this->authDelete(route('api.sales_representatives.transactions.destroy'), ['id' => $transaction->id]);
+        $response = $this->authDelete(route('v2.sales_representatives.transaction.destroy'), ['id' => $transaction->id]);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('sales_representative_transactions', [

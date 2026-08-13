@@ -23,7 +23,7 @@ class FiscalPeriodsApiTest extends TestCase
     {
         FiscalPeriod::factory()->count(2)->create();
 
-        $response = $this->authGet(route('api.fiscal_periods.index'));
+        $response = $this->authGet(route('v2.fiscal_periods.index'));
 
         $response->assertStatus(200)
             ->assertJson(['success' => true])
@@ -38,7 +38,7 @@ class FiscalPeriodsApiTest extends TestCase
             'end_date' => '2027-12-31',
         ];
 
-        $response = $this->authPost(route('api.fiscal_periods.store'), $data);
+        $response = $this->authPost(route('v2.fiscal_periods.store'), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('fiscal_periods', [
@@ -48,7 +48,7 @@ class FiscalPeriodsApiTest extends TestCase
 
     public function test_create_fiscal_period_validates_required_fields()
     {
-        $response = $this->authPost(route('api.fiscal_periods.store'), []);
+        $response = $this->authPost(route('v2.fiscal_periods.store'), []);
 
         $response->assertStatus(422);
     }
@@ -60,7 +60,7 @@ class FiscalPeriodsApiTest extends TestCase
             'is_locked' => false,
         ]);
 
-        $response = $this->authPost(route('api.fiscal_periods.close'), [
+        $response = $this->authPost(route('v2.fiscal_periods.close', ['id' => $period->id]), [
             'id' => $period->id,
         ]);
 
@@ -75,7 +75,7 @@ class FiscalPeriodsApiTest extends TestCase
             'is_locked' => false,
         ]);
 
-        $response = $this->authPost(route('api.fiscal_periods.lock'), [
+        $response = $this->authPost(route('v2.fiscal_periods.lock', ['id' => $period->id]), [
             'id' => $period->id,
         ]);
 
@@ -90,7 +90,7 @@ class FiscalPeriodsApiTest extends TestCase
             'is_locked' => true,
         ]);
 
-        $response = $this->authPost(route('api.fiscal_periods.unlock'), [
+        $response = $this->authPost(route('v2.fiscal_periods.unlock', ['id' => $period->id]), [
             'id' => $period->id,
         ]);
 

@@ -22,7 +22,7 @@ class BenefitsApiTest extends TestCase
     {
         BenefitsPlan::factory()->count(3)->create();
 
-        $response = $this->authGet(route('api.benefits.plans.index'));
+        $response = $this->authGet(route('v2.payroll.benefits.plans.index'));
 
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure([
@@ -33,8 +33,7 @@ class BenefitsApiTest extends TestCase
                     'plan_type',
                     'is_active'
                 ]
-            ],
-            'pagination'
+            ]
         ]);
     }
 
@@ -50,10 +49,10 @@ class BenefitsApiTest extends TestCase
             'effective_date' => now()->toDateString()
         ];
 
-        $response = $this->authPost(route('api.benefits.plans.store'), $data);
+        $response = $this->authPost(route('v2.payroll.benefits.plans.store'), $data);
 
         $this->assertStatusResolved($response, 201);
-        $response->assertJsonStructure(['success', 'id', 'plan_code']);
+        $response->assertJsonStructure(['success', 'data' => ['id', 'plan_code']]);
         $this->assertDatabaseHas('benefits_plans', [
             'plan_code' => 'HEALTH-2026',
             'plan_type' => 'health'
@@ -64,7 +63,7 @@ class BenefitsApiTest extends TestCase
     {
         $plan = BenefitsPlan::factory()->create();
 
-        $response = $this->authGet(route('api.benefits.plans.show', $plan->id));
+        $response = $this->authGet(route('v2.payroll.benefits.plans.show', $plan->id));
 
         $this->assertSuccessResponse($response);
         $response->assertJsonFragment([
@@ -84,7 +83,7 @@ class BenefitsApiTest extends TestCase
             'description' => 'Updated desc'
         ];
 
-        $response = $this->authPut(route('api.benefits.plans.update', $plan->id), $data);
+        $response = $this->authPut(route('v2.payroll.benefits.plans.update', $plan->id), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('benefits_plans', [
@@ -98,13 +97,10 @@ class BenefitsApiTest extends TestCase
     {
         BenefitsEnrollment::factory()->count(3)->create();
 
-        $response = $this->authGet(route('api.benefits.enrollments.index'));
+        $response = $this->authGet(route('v2.payroll.benefits.enrollments.index'));
 
         $this->assertSuccessResponse($response);
-        $response->assertJsonStructure([
-            'data',
-            'pagination'
-        ]);
+        $response->assertJsonStructure(['data']);
     }
 
     public function test_can_create_benefits_enrollment()
@@ -119,7 +115,7 @@ class BenefitsApiTest extends TestCase
             'effective_date' => now()->toDateString()
         ];
 
-        $response = $this->authPost(route('api.benefits.enrollments.store'), $data);
+        $response = $this->authPost(route('v2.payroll.benefits.enrollments.store'), $data);
 
         $this->assertStatusResolved($response, 201);
         $this->assertDatabaseHas('benefits_enrollments', [
@@ -140,7 +136,7 @@ class BenefitsApiTest extends TestCase
             'notes' => 'Activated coverage'
         ];
 
-        $response = $this->authPut(route('api.benefits.enrollments.update', $enrollment->id), $data);
+        $response = $this->authPut(route('v2.payroll.benefits.enrollments.update', $enrollment->id), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('benefits_enrollments', [

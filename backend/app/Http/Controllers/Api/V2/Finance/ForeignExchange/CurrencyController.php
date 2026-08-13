@@ -77,7 +77,7 @@ class CurrencyController extends Controller
             $currency = $action->execute($id);
             return $this->successResponse(new CurrencyResource($currency), 'Currency status toggled');
         } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 422);
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422);
         }
     }
 

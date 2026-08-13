@@ -8,6 +8,7 @@ describe('useAuthStore', () => {
 
     beforeEach(async () => {
         vi.clearAllMocks();
+        localStorage.clear();
         vi.resetModules();
         const mod = await import('@/stores/useAuthStore');
         useAuthStore = mod.useAuthStore;
@@ -18,6 +19,8 @@ describe('useAuthStore', () => {
             isAuthenticated: false,
             isLoading: true,
             sessionToken: null,
+            lastSyncedAt: null,
+            sessionExpired: false,
         });
     });
 

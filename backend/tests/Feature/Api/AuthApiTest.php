@@ -20,7 +20,7 @@ class AuthApiTest extends TestCase
             'is_active' => true,
         ]);
 
-        $response = $this->postJson(route('api.login'), [
+        $response = $this->postJson(route('v2.login'), [
             'username' => 'apiuser',
             'password' => $password,
         ]);
@@ -44,7 +44,7 @@ class AuthApiTest extends TestCase
             'password' => Hash::make('password'),
         ]);
 
-        $response = $this->postJson(route('api.login'), [
+        $response = $this->postJson(route('v2.login'), [
             'username' => 'apiuser',
             'password' => 'wrong',
         ]);
@@ -60,7 +60,7 @@ class AuthApiTest extends TestCase
         $this->authenticateUser($user);
         $token = $this->sessionToken;
 
-        $response = $this->postJson(route('api.logout'), [], [
+        $response = $this->postJson(route('v2.logout'), [], [
             'X-Session-Token' => $token
         ]);
 
@@ -73,7 +73,7 @@ class AuthApiTest extends TestCase
         $user = User::factory()->create();
         $this->authenticateUser($user);
 
-        $response = $this->getJson(route('api.check'), [
+        $response = $this->getJson(route('v2.check'), [
             'X-Session-Token' => $this->sessionToken
         ]);
 
@@ -88,7 +88,7 @@ class AuthApiTest extends TestCase
 
     public function test_check_returns_unauthorized_when_not_logged_in()
     {
-        $response = $this->getJson(route('api.check'));
+        $response = $this->getJson(route('v2.check'));
 
         // Middleware might return 401 or Controller might return false.
         // Based on ApiAuth middleware I read:

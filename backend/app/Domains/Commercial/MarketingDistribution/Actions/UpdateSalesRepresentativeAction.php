@@ -3,11 +3,10 @@
 namespace App\Domains\Commercial\MarketingDistribution\Actions;
 
 use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentative;
-use Illuminate\Support\Collection;
 
 class UpdateSalesRepresentativeAction
 {
-    public function execute(array $data): Collection
+    public function execute(array $data): SalesRepresentative
     {
         $representative = SalesRepresentative::findOrFail($data['id']);
 
@@ -19,7 +18,6 @@ class UpdateSalesRepresentativeAction
             throw new \Exception('Another representative with this name already exists', 409);
         }
 
-        $oldValues = $representative->toArray();
         $representative->update([
             'name' => $data['name'],
             'phone' => $data['phone'] ?? null,
@@ -27,6 +25,6 @@ class UpdateSalesRepresentativeAction
             'address' => $data['address'] ?? null,
         ]);
 
-        return collect(['id' => $representative->id, 'old_values' => $oldValues]);
+        return $representative->fresh();
     }
 }

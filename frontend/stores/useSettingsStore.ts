@@ -23,7 +23,7 @@ interface SettingsState {
     getSetting: <T = unknown>(key: string, defaultValue?: T) => T;
 }
 
-let initPromise: Promise<SystemSettings> | null = null;
+let initPromise: Promise<SystemSettings | null> | null = null;
 
 export const useSettingsStore = create<SettingsState>()(
     devtools(
@@ -63,7 +63,7 @@ export const useSettingsStore = create<SettingsState>()(
                     } catch (e) {
                         console.error("Failed to initialize system settings", e);
                         set({ settings: {}, isLoading: false });
-                        return {};
+                        return null;
                     } finally {
                         initPromise = null;
                     }

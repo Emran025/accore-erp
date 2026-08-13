@@ -31,7 +31,7 @@ class PurchasesApiTest extends TestCase
             'user_id' => $this->authenticatedUser->id
         ]);
 
-        $response = $this->authGet(route('api.purchases.index'));
+        $response = $this->authGet(route('v2.purchases.index'));
         
         $this->assertSuccessResponse($response);
         $response->assertJsonCount(3, 'data');
@@ -57,7 +57,7 @@ class PurchasesApiTest extends TestCase
 
         Config::set('accounting.vat_rate', 0.15);
 
-        $response = $this->authPost(route('api.purchases.store'), $data);
+        $response = $this->authPost(route('v2.purchases.store'), $data);
 
         $this->assertSuccessResponse($response, 201);
         $this->assertDatabaseHas('purchases', [
@@ -73,7 +73,7 @@ class PurchasesApiTest extends TestCase
             'approval_status' => 'pending'
         ]);
 
-        $response = $this->authPost(route('api.purchases.approve'), [
+        $response = $this->authPost(route('v2.purchases.approve', ['id' => $purchase->id]), [
              'id' => $purchase->id
         ]);
 
@@ -103,7 +103,7 @@ class PurchasesApiTest extends TestCase
             'entry_type' => 'CREDIT' 
         ]);
 
-        $response = $this->authDelete(route('api.purchases.destroy'), [
+        $response = $this->authDelete(route('v2.purchases.destroy', ['id' => $purchase->id]), [
             'id' => $purchase->id
         ]);
 
@@ -144,13 +144,8 @@ class PurchasesApiTest extends TestCase
         ];
 
         // Make the return request
-        $response = $this->authPost(route('api.purchases.store'), $data);
+        $response = $this->authPost(route('v2.purchases.store'), $data);
         
-        // Output response content for debugging if it fails
-        if (!$response->isSuccessful()) {
-             dd($response->json());
-        }
-
         $this->assertSuccessResponse($response, 200);
         
         // Assert inventory is decremented by 2

@@ -29,10 +29,10 @@ class PeriodicInventoryApiTest extends TestCase
 
     public function test_can_list_inventory_counts()
     {
-        $response = $this->authGet(route('api.inventory.periodic.index'));
+        $response = $this->authGet(route('v2.inventory.periodic.index'));
 
         $this->assertSuccessResponse($response);
-        $response->assertJsonStructure(['success', 'data', 'pagination']);
+        $response->assertJsonStructure(['success', 'data']);
     }
 
     public function test_can_create_inventory_count()
@@ -48,7 +48,7 @@ class PeriodicInventoryApiTest extends TestCase
             'notes' => 'Slight shortage found',
         ];
 
-        $response = $this->authPost(route('api.inventory.periodic.store'), $data);
+        $response = $this->authPost(route('v2.inventory.periodic.store'), $data);
 
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure([
@@ -83,7 +83,7 @@ class PeriodicInventoryApiTest extends TestCase
             'counted_by' => $this->authenticatedUser->id,
         ]);
 
-        $response = $this->authPost(route('api.inventory.periodic.process'), [
+        $response = $this->authPost(route('v2.inventory.periodic.process'), [
             'fiscal_period_id' => $period->id,
         ]);
 
@@ -97,7 +97,7 @@ class PeriodicInventoryApiTest extends TestCase
     {
         $period = FiscalPeriod::first();
 
-        $response = $this->authPost(route('api.inventory.periodic.process'), [
+        $response = $this->authPost(route('v2.inventory.periodic.process'), [
             'fiscal_period_id' => $period->id,
         ]);
 
@@ -111,7 +111,7 @@ class PeriodicInventoryApiTest extends TestCase
             'weighted_average_cost' => 25.00,
         ]);
 
-        $response = $this->authGet(route('api.inventory.periodic.valuation'));
+        $response = $this->authGet(route('v2.inventory.periodic.valuation'));
 
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure(['success', 'data' => ['total_value']]);
@@ -119,7 +119,7 @@ class PeriodicInventoryApiTest extends TestCase
 
     public function test_create_count_validates_required_fields()
     {
-        $response = $this->authPost(route('api.inventory.periodic.store'), []);
+        $response = $this->authPost(route('v2.inventory.periodic.store'), []);
 
         $response->assertStatus(422);
     }

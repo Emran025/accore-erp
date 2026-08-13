@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Log;
 
 trait BaseApiController
 {
-    protected function successResponse($data = [], string $message = ''): JsonResponse
+    protected function successResponse($data = [], string $message = '', int $statusCode = 200): JsonResponse
     {
         $response = ['success' => true];
 
@@ -23,7 +23,7 @@ trait BaseApiController
             $response['message'] = $message;
         }
 
-        return response()->json($response);
+        return response()->json($response, $statusCode);
     }
 
     protected function errorResponse(string $message, int $statusCode = 400): JsonResponse

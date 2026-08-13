@@ -21,14 +21,14 @@ class AttendanceApiTest extends TestCase
     {
         $employee = Employee::factory()->create();
 
-        $response = $this->authGet(route('api.attendance.index', [
+        $response = $this->authGet(route('v2.attendance.index', [
             'employee_id' => $employee->id,
             'start_date' => now()->startOfMonth()->toDateString(),
             'end_date' => now()->endOfMonth()->toDateString(),
         ]));
 
         $this->assertStatusResolved($response, 200);
-        $response->assertJsonIsArray();
+        $response->assertJsonStructure(['success', 'data']);
     }
 
     public function test_can_record_attendance()
@@ -45,7 +45,7 @@ class AttendanceApiTest extends TestCase
             'source' => 'manual'
         ];
 
-        $response = $this->authPost(route('api.attendance.store'), $data);
+        $response = $this->authPost(route('v2.attendance.store'), $data);
 
         $this->assertStatusResolved($response, 201);
         $this->assertDatabaseHas('attendance_records', [
@@ -78,7 +78,7 @@ class AttendanceApiTest extends TestCase
             ]
         ];
 
-        $response = $this->authPost(route('api.attendance.bulk_import'), $data);
+        $response = $this->authPost(route('v2.attendance.bulk_import'), $data);
 
         $this->assertStatusResolved($response, 201);
         $this->assertDatabaseCount('attendance_records', 2);
@@ -88,7 +88,7 @@ class AttendanceApiTest extends TestCase
     {
         $employee = Employee::factory()->create();
 
-        $response = $this->authGet(route('api.attendance.summary', [
+        $response = $this->authGet(route('v2.attendance.summary', [
             'employee_id' => $employee->id,
             'start_date' => now()->startOfMonth()->toDateString(),
             'end_date' => now()->endOfMonth()->toDateString(),
@@ -96,10 +96,13 @@ class AttendanceApiTest extends TestCase
 
         $this->assertStatusResolved($response, 200);
         $response->assertJsonStructure([
-            'total_hours',
-            'total_days_present',
-            'total_days_absent',
-            'total_late_minutes'
+            'success',
+            'data' => [
+                'total_hours',
+                'total_days_present',
+                'total_days_absent',
+                'total_late_minutes',
+            ],
         ]);
     }
 
@@ -112,7 +115,7 @@ class AttendanceApiTest extends TestCase
         // Re-authenticate as the specific user using TestCase method
         $this->authenticateUser($user);
 
-        $response = $this->authGet(route('api.employee_portal.attendance'));
+        $response = $this->authGet(route('v2.employee_portal.attendance'));
 
         $this->assertStatusResolved($response, 200);
         $response->assertJsonStructure([

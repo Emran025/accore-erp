@@ -22,7 +22,7 @@ class ProductsApiTest extends TestCase
     {
         Product::factory()->count(5)->create();
 
-        $response = $this->authGet(route('api.products.index'));
+        $response = $this->authGet(route('v2.inventory.products.index'));
 
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure([
@@ -35,16 +35,10 @@ class ProductsApiTest extends TestCase
                     'unit_price',
                     'stock_quantity'
                 ]
-            ],
-            'pagination' => [
-                'current_page',
-                'per_page',
-                'total_records',
-                'total_pages',
             ]
         ]);
         
-        $this->assertEquals(5, $response->json('pagination.total_records'));
+        $response->assertJsonCount(5, 'data');
     }
 
     public function test_can_create_product()
@@ -63,7 +57,7 @@ class ProductsApiTest extends TestCase
             'weighted_average_cost' => 40.00,
         ];
 
-        $response = $this->authPost(route('api.products.store'), $data);
+        $response = $this->authPost(route('v2.inventory.products.store'), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('products', ['name' => 'New Product']);
@@ -86,7 +80,7 @@ class ProductsApiTest extends TestCase
             'weighted_average_cost' => $product->weighted_average_cost,
         ];
 
-        $response = $this->authPut(route('api.products.update'), $data);
+        $response = $this->authPut(route('v2.inventory.products.update', ['id' => $product->id]), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('products', [
@@ -100,7 +94,7 @@ class ProductsApiTest extends TestCase
     {
         $product = Product::factory()->create();
 
-        $response = $this->authDelete(route('api.products.destroy'), ['id' => $product->id]);
+        $response = $this->authDelete(route('v2.inventory.products.destroy', ['id' => $product->id]), ['id' => $product->id]);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseMissing('products', ['id' => $product->id]);

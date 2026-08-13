@@ -44,11 +44,11 @@ class BankReconciliationApiTest extends TestCase
     {
         Reconciliation::factory()->count(2)->create();
 
-        $response = $this->authGet(route('api.reconciliation.index')); // Route likely named this way based on controller
+        $response = $this->authGet(route('v2.reconciliation.index')); // Route likely named this way based on controller
 
         // Adjust route name if needed. Typically api.reconciliation.index
         $this->assertSuccessResponse($response);
-        $this->assertEquals(2, $response->json('total'));
+        $response->assertJsonCount(2, 'data');
     }
 
     public function test_can_calculate_ledger_balance()
@@ -69,7 +69,7 @@ class BankReconciliationApiTest extends TestCase
         ]);
         
         // Pass explicit date to ensure controller uses same date context as test
-        $response = $this->authGet(route('api.reconciliation.index', ['action' => 'calculate', 'date' => now()->toDateString()]));
+        $response = $this->authGet(route('v2.reconciliation.index', ['action' => 'calculate', 'date' => now()->toDateString()]));
 
         $this->assertSuccessResponse($response);
         
@@ -94,7 +94,7 @@ class BankReconciliationApiTest extends TestCase
             'notes' => 'Month End'
         ];
 
-        $response = $this->authPost(route('api.reconciliation.store'), $data);
+        $response = $this->authPost(route('v2.reconciliation.store'), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('reconciliations', [
@@ -138,7 +138,7 @@ class BankReconciliationApiTest extends TestCase
 
         // Route: PUT /api/reconciliation?action=adjust
         // Wait, route parameters or query? Controller says $request->query('action')
-        $response = $this->authPut(route('api.reconciliation.update', ['id' => $reconciliation->id, 'action' => 'adjust']), $data);
+        $response = $this->authPut(route('v2.reconciliation.update', ['id' => $reconciliation->id, 'action' => 'adjust']), $data);
 
         $this->assertSuccessResponse($response);
         

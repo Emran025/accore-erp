@@ -42,12 +42,10 @@ class PurchaseRequestsTest extends TestCase
         ]);
 
         // Trigger auto-generation
-        $response = $this->authPost(route('api.requests.auto_generate'));
+        $response = $this->authPost(route('v2.requests.auto_generate'));
 
         $this->assertSuccessResponse($response);
-        $response->assertJson([
-            'generated_count' => 2
-        ]);
+        $response->assertJsonPath('data.generated_count', 2);
 
         // Verify requests created for product 1 and 3
         $this->assertDatabaseHas('purchase_requests', [
@@ -87,12 +85,10 @@ class PurchaseRequestsTest extends TestCase
         ]);
 
         // Trigger auto-generation
-        $response = $this->authPost(route('api.requests.auto_generate'));
+        $response = $this->authPost(route('v2.requests.auto_generate'));
 
         $this->assertSuccessResponse($response);
-        $response->assertJson([
-            'generated_count' => 0
-        ]);
+        $response->assertJsonPath('data.generated_count', 0);
 
         // Verify only one request exists
         $this->assertEquals(1, PurchaseRequest::where('product_id', $product->id)->count());
@@ -109,7 +105,7 @@ class PurchaseRequestsTest extends TestCase
             'status' => 'pending',
         ]);
 
-        $response = $this->authGet(route('api.requests.index'));
+        $response = $this->authGet(route('v2.requests.index'));
 
         $this->assertSuccessResponse($response);
         $response->assertJsonPath('data.0.product_name', 'Manual Request');
@@ -127,7 +123,7 @@ class PurchaseRequestsTest extends TestCase
             'notes' => 'Urgent',
         ];
 
-        $response = $this->authPost(route('api.requests.store'), $data);
+        $response = $this->authPost(route('v2.requests.store'), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('purchase_requests', [

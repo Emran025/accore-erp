@@ -41,7 +41,7 @@ class ZatcaApiTest extends TestCase
             'subtotal' => 100.00
         ]);
 
-        $response = $this->authPost(route('api.zatca.submit', ['invoice_id' => $invoice->id]));
+        $response = $this->authPost(route('v2.zatca.submit', ['id' => $invoice->id]));
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('zatca_einvoices', ['invoice_id' => $invoice->id, 'status' => 'submitted']);
@@ -52,10 +52,10 @@ class ZatcaApiTest extends TestCase
         Setting::where('setting_key', 'zatca_enabled')->update(['setting_value' => 'false']);
         
         $invoice = Invoice::factory()->create();
-        InvoiceItem::factory()->create(['invoice_id' => $invoice->id]);
+        InvoiceItem::factory()->create(['id' => $invoice->id]);
 
-        $response = $this->authPost(route('api.zatca.submit', ['invoice_id' => $invoice->id]));
+        $response = $this->authPost(route('v2.zatca.submit', ['id' => $invoice->id]));
         
-        $response->assertJson(['status' => 'skipped']);
+        $response->assertJsonPath('data.status', 'skipped');
     }
 }

@@ -20,7 +20,7 @@ class RolesApiTest extends TestCase
 
     public function test_can_list_roles()
     {
-        $response = $this->authGet(route('api.roles.index'));
+        $response = $this->authGet(route('v2.roles.index'));
 
         $response->assertStatus(200)
             ->assertJson(['success' => true])
@@ -29,7 +29,7 @@ class RolesApiTest extends TestCase
 
     public function test_can_list_roles_with_action_roles()
     {
-        $response = $this->authGet(route('api.roles.index') . '?action=roles');
+        $response = $this->authGet(route('v2.roles.index') . '?action=roles');
 
         $response->assertStatus(200)
             ->assertJson(['success' => true]);
@@ -45,7 +45,7 @@ class RolesApiTest extends TestCase
             'sort_order' => 1,
         ]);
 
-        $response = $this->authGet(route('api.roles.index') . '?action=modules');
+        $response = $this->authGet(route('v2.roles.index') . '?action=modules');
 
         $response->assertStatus(200)
             ->assertJson(['success' => true]);
@@ -58,7 +58,7 @@ class RolesApiTest extends TestCase
             'description' => 'A custom manager role',
         ];
 
-        $response = $this->authPost(route('api.roles.store'), $data);
+        $response = $this->authPost(route('v2.roles.store'), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('roles', ['role_key' => 'custom-manager']);
@@ -74,7 +74,7 @@ class RolesApiTest extends TestCase
             'is_active' => true,
         ]);
 
-        $response = $this->authDelete(route('api.roles.destroy', ['id' => $role->id]));
+        $response = $this->authDelete(route('v2.roles.destroy', ['id' => $role->id]));
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseMissing('roles', ['id' => $role->id]);
@@ -90,7 +90,7 @@ class RolesApiTest extends TestCase
             'is_active' => true,
         ]);
 
-        $response = $this->authDelete(route('api.roles.destroy', ['id' => $role->id]));
+        $response = $this->authDelete(route('v2.roles.destroy', ['id' => $role->id]));
 
         $this->assertErrorResponse($response, 403);
         $this->assertDatabaseHas('roles', ['id' => $role->id]);
@@ -108,7 +108,7 @@ class RolesApiTest extends TestCase
 
         User::factory()->create(['role_id' => $role->id]);
 
-        $response = $this->authDelete(route('api.roles.destroy', ['id' => $role->id]));
+        $response = $this->authDelete(route('v2.roles.destroy', ['id' => $role->id]));
 
         $this->assertErrorResponse($response, 422);
     }
@@ -144,7 +144,7 @@ class RolesApiTest extends TestCase
             ],
         ];
 
-        $response = $this->authPost(route('api.roles.store') . '?action=update_permissions', $data);
+        $response = $this->authPost(route('v2.roles.store') . '?action=update_permissions', $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('role_permissions', [

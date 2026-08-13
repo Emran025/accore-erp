@@ -21,7 +21,7 @@ class InventoryApiTest extends TestCase
     {
         Category::factory()->count(3)->create();
 
-        $response = $this->authGet(route('api.categories.index'));
+        $response = $this->authGet(route('v2.inventory.categories.index'));
 
         $this->assertSuccessResponse($response);
 
@@ -30,7 +30,7 @@ class InventoryApiTest extends TestCase
 
     public function test_can_create_category()
     {
-        $response = $this->authPost(route('api.categories.store'), [
+        $response = $this->authPost(route('v2.inventory.categories.store'), [
             'name' => 'Electronics',
             'description' => 'Gadgets',
             'type' => 'product'
@@ -45,7 +45,7 @@ class InventoryApiTest extends TestCase
     {
         // This endpoint likely calculates valuation based on products and FIFO/Weighted Average
         // Route assumption
-        $response = $this->authGet(route('api.inventory.periodic.valuation'));
+        $response = $this->authGet(route('v2.inventory.periodic.valuation'));
 
         $this->assertSuccessResponse($response);
         // Expect a valuation structure

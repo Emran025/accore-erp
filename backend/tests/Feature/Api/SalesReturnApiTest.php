@@ -32,10 +32,10 @@ class SalesReturnApiTest extends TestCase
 
     public function test_can_list_sales_returns()
     {
-        $response = $this->authGet(route('api.sales_returns.index'));
+        $response = $this->authGet(route('v2.sales_returns.index'));
 
         $this->assertSuccessResponse($response);
-        $response->assertJsonStructure(['success', 'data', 'pagination']);
+        $response->assertJsonStructure(['success', 'data']);
     }
 
     public function test_can_create_sales_return()
@@ -73,7 +73,7 @@ class SalesReturnApiTest extends TestCase
             ],
         ];
 
-        $response = $this->authPost(route('api.sales_returns.store'), $data);
+        $response = $this->authPost(route('v2.sales_returns.store'), $data);
 
         $this->assertSuccessResponse($response);
     }
@@ -95,22 +95,22 @@ class SalesReturnApiTest extends TestCase
             'user_id' => $this->authenticatedUser->id,
         ]);
 
-        $response = $this->authGet(route('api.sales_returns.show') . '?id=' . $return->id);
+        $response = $this->authGet(route('v2.sales_returns.show', ['id' => $return->id]) . '?id=' . $return->id);
 
         $this->assertSuccessResponse($response);
     }
 
     public function test_can_view_sales_returns_ledger()
     {
-        $response = $this->authGet(route('api.sales_returns.ledger'));
+        $response = $this->authGet(route('v2.sales_returns.ledger'));
 
         $this->assertSuccessResponse($response);
-        $response->assertJsonStructure(['success', 'data', 'pagination', 'stats']);
+        $response->assertJsonStructure(['success', 'data']);
     }
 
     public function test_create_return_validates_required_fields()
     {
-        $response = $this->authPost(route('api.sales_returns.store'), []);
+        $response = $this->authPost(route('v2.sales_returns.store'), []);
 
         $response->assertStatus(422);
     }

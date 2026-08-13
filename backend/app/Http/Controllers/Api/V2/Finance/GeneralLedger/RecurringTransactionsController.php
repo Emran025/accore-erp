@@ -57,7 +57,7 @@ class RecurringTransactionsController extends Controller
 
     public function destroy(DeleteRecurringTransactionRequest $request, DeleteRecurringTransactionAction $action): JsonResponse
     {
-        $action->execute((int)$request->query('id'));
+        $action->execute((int)$request->validated('id'));
         return $this->successResponse();
     }
 

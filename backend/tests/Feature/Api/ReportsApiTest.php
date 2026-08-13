@@ -49,7 +49,7 @@ class ReportsApiTest extends TestCase
 
     public function test_balance_sheet()
     {
-        $response = $this->authGet(route('api.reports.balance_sheet'));
+        $response = $this->authGet(route('v2.reports.balance_sheet'));
 
         $this->assertSuccessResponse($response);
         $data = $response->json('data');
@@ -60,19 +60,19 @@ class ReportsApiTest extends TestCase
         // Check Equity (Net Income should be 5000 - 2000 = 3000)
         // Note: Logic adds a virtual Net Income line to Equity
         $equity = $data['equity']['accounts'];
-        $netIncomeLine = collect($equity)->firstWhere('account_code', 'NET_INCOME_VIRTUAL');
+        $netIncomeLine = collect($equity)->firstWhere('account_code', 'NET_INCOME');
         $this->assertEquals(3000, $netIncomeLine['balance']);
     }
 
     public function test_profit_loss()
     {
-        $response = $this->authGet(route('api.reports.profit_loss'));
+        $response = $this->authGet(route('v2.reports.profit_loss'));
 
 
         $this->assertSuccessResponse($response);
         $data = $response->json('data');
         
-        $this->assertEquals(5000, $data['revenue']['total']);
+        $this->assertEquals(5000, $data['revenues']['total']);
 
         $this->assertEquals(2000, $data['expenses']['total']);
         $this->assertEquals(3000, $data['net_income']);
@@ -80,7 +80,7 @@ class ReportsApiTest extends TestCase
 
     public function test_cash_flow()
     {
-        $response = $this->authGet(route('api.reports.cash_flow'));
+        $response = $this->authGet(route('v2.reports.cash_flow'));
 
         $this->assertSuccessResponse($response);
         $data = $response->json('data');
@@ -98,6 +98,6 @@ class ReportsApiTest extends TestCase
         // End Cash = 10000.
         // Net Change should be 10000.
         
-        $this->assertEquals(10000, $data['ending_cash']);
+        $this->assertEquals(10000, $data['data']['ending_cash']);
     }
 }

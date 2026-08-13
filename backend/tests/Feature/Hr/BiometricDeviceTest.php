@@ -27,7 +27,7 @@ class BiometricDeviceTest extends TestCase
             'is_active' => true,
         ]);
 
-        $response = $this->authGet('/api/biometric/devices');
+        $response = $this->authGet('/api/v2/biometric/devices');
 
         $this->assertSuccessResponse($response);
         $response->assertJsonFragment(['device_name' => 'Main Gate']);
@@ -44,7 +44,7 @@ class BiometricDeviceTest extends TestCase
             'is_active' => true,
         ];
 
-        $response = $this->authPost('/api/biometric/devices', $data);
+        $response = $this->authPost('/api/v2/biometric/devices', $data);
 
         $this->assertSuccessResponse($response, 200);
         $this->assertDatabaseHas('biometric_devices', ['device_name' => 'Office Entrance']);
@@ -64,7 +64,7 @@ class BiometricDeviceTest extends TestCase
             'device_port' => 5005,
         ];
 
-        $response = $this->authPut("/api/biometric/devices/{$device->id}", $updateData);
+        $response = $this->authPut("/api/v2/biometric/devices/{$device->id}", $updateData);
 
         $this->assertSuccessResponse($response);
         $device->refresh();
@@ -80,7 +80,7 @@ class BiometricDeviceTest extends TestCase
             'device_ip' => '10.0.0.1',
         ]);
 
-        $response = $this->authDelete("/api/biometric/devices/{$device->id}");
+        $response = $this->authDelete("/api/v2/biometric/devices/{$device->id}");
 
         $this->assertSuccessResponse($response);
         $this->assertNull(BiometricDevice::find($device->id));
@@ -106,7 +106,7 @@ class BiometricDeviceTest extends TestCase
         // However, if we just want to ensure the route works:
 
         try {
-            $response = $this->authPost("/api/biometric/devices/{$device->id}/sync");
+            $response = $this->authPost("/api/v2/biometric/devices/{$device->id}/sync");
             // It might return 200 or 400 depending on connection logic.
             // If it returns 200 (Success: Commands sent), good.
             // If it returns 400 (Failed to connect), that's also a valid response from the endpoint.

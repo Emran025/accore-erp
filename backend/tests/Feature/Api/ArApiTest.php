@@ -36,7 +36,7 @@ class ArApiTest extends TestCase
     {
         ArCustomer::factory()->count(3)->create();
 
-        $response = $this->authGet(route('api.ar.customers'));
+        $response = $this->authGet(route('v2.crm.customers.index'));
 
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure(['success', 'data', 'pagination']);
@@ -52,7 +52,7 @@ class ArApiTest extends TestCase
             'tax_number' => '300000000000003',
         ];
 
-        $response = $this->authPost(route('api.ar.customers.store'), $data);
+        $response = $this->authPost(route('v2.crm.customers.store'), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('ar_customers', ['name' => 'Acme Corp']);
@@ -67,7 +67,7 @@ class ArApiTest extends TestCase
             'name' => 'New Name',
         ];
 
-        $response = $this->authPut(route('api.ar.customers.update'), $data);
+        $response = $this->authPut(route('v2.crm.customers.update'), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('ar_customers', [
@@ -80,7 +80,7 @@ class ArApiTest extends TestCase
     {
         $customer = ArCustomer::factory()->create();
 
-        $response = $this->authDelete(route('api.ar.customers.destroy'), ['id' => $customer->id]);
+        $response = $this->authDelete(route('v2.crm.customers.destroy'), ['id' => $customer->id]);
 
         $this->assertSuccessResponse($response);
     }
@@ -89,7 +89,7 @@ class ArApiTest extends TestCase
     {
         $customer = ArCustomer::factory()->create();
 
-        $response = $this->authGet(route('api.ar.ledger') . '?customer_id=' . $customer->id);
+        $response = $this->authGet(route('v2.crm.ledger') . '?customer_id=' . $customer->id);
 
         $this->assertSuccessResponse($response);
     }
@@ -103,7 +103,7 @@ class ArApiTest extends TestCase
             'customer_id' => $customer->id,
         ]);
 
-        $response = $this->authGet(route('api.ar.transactions'));
+        $response = $this->authGet(route('v2.ar.transactions.index'));
 
         $response->assertStatus(200)
             ->assertJson(['success' => true])
@@ -122,7 +122,7 @@ class ArApiTest extends TestCase
             'date' => now()->toDateString(),
         ];
 
-        $response = $this->authPost(route('api.ar.transactions.store'), $data);
+        $response = $this->authPost(route('v2.ar.transactions.store'), $data);
 
         $response->assertStatus(200)
             ->assertJson(['success' => true]);
@@ -170,7 +170,7 @@ class ArApiTest extends TestCase
             'reference_id' => $transaction->id,
         ]);
 
-        $response = $this->authDelete(route('api.ar.transactions.destroy', ['id' => $transaction->id]));
+        $response = $this->authDelete(route('v2.ar.transactions.destroy', ['id' => $transaction->id]));
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('ar_transactions', [
@@ -187,14 +187,14 @@ class ArApiTest extends TestCase
             'type' => 'invoice',
         ]);
 
-        $response = $this->authDelete(route('api.ar.transactions.destroy', ['id' => $transaction->id]));
+        $response = $this->authDelete(route('v2.ar.transactions.destroy', ['id' => $transaction->id]));
 
         $this->assertErrorResponse($response, 400);
     }
 
     public function test_create_ar_transaction_validates_fields()
     {
-        $response = $this->authPost(route('api.ar.transactions.store'), []);
+        $response = $this->authPost(route('v2.ar.transactions.store'), []);
 
         $response->assertStatus(422);
     }

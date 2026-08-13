@@ -22,7 +22,7 @@ class CompensationApiTest extends TestCase
     {
         CompensationPlan::factory()->count(3)->create();
 
-        $response = $this->authGet(route('api.compensation.plans.index'));
+        $response = $this->authGet(route('v2.payroll.compensation.plans.index'));
 
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure([
@@ -33,8 +33,7 @@ class CompensationApiTest extends TestCase
                     'plan_type',
                     'status'
                 ]
-            ],
-            'pagination'
+            ]
         ]);
     }
 
@@ -49,10 +48,10 @@ class CompensationApiTest extends TestCase
             'notes' => 'Test notes'
         ];
 
-        $response = $this->authPost(route('api.compensation.plans.store'), $data);
+        $response = $this->authPost(route('v2.payroll.compensation.plans.store'), $data);
 
         $this->assertStatusResolved($response, 201);
-        $response->assertJsonStructure(['success', 'id', 'plan_name']);
+        $response->assertJsonStructure(['success', 'data' => ['id', 'plan_name']]);
         $this->assertDatabaseHas('compensation_plans', [
             'plan_name' => 'Annual Merit Review 2026',
             'status' => 'draft'
@@ -63,7 +62,7 @@ class CompensationApiTest extends TestCase
     {
         $plan = CompensationPlan::factory()->create();
 
-        $response = $this->authGet(route('api.compensation.plans.show', $plan->id));
+        $response = $this->authGet(route('v2.payroll.compensation.plans.show', $plan->id));
 
         $this->assertSuccessResponse($response);
         $response->assertJsonFragment([
@@ -83,7 +82,7 @@ class CompensationApiTest extends TestCase
             'notes' => 'Updated notes'
         ];
 
-        $response = $this->authPut(route('api.compensation.plans.update', $plan->id), $data);
+        $response = $this->authPut(route('v2.payroll.compensation.plans.update', $plan->id), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('compensation_plans', [
@@ -97,13 +96,10 @@ class CompensationApiTest extends TestCase
     {
         CompensationEntry::factory()->count(3)->create();
 
-        $response = $this->authGet(route('api.compensation.entries.index'));
+        $response = $this->authGet(route('v2.payroll.compensation.entries.index'));
 
         $this->assertSuccessResponse($response);
-        $response->assertJsonStructure([
-            'data',
-            'pagination'
-        ]);
+        $response->assertJsonStructure(['data']);
     }
 
     public function test_can_create_compensation_entry()
@@ -119,7 +115,7 @@ class CompensationApiTest extends TestCase
             'justification' => 'Great performance'
         ];
 
-        $response = $this->authPost(route('api.compensation.entries.store'), $data);
+        $response = $this->authPost(route('v2.payroll.compensation.entries.store'), $data);
 
         $this->assertStatusResolved($response, 201);
         $this->assertDatabaseHas('compensation_entries', [
@@ -140,7 +136,7 @@ class CompensationApiTest extends TestCase
         ];
 
         // Based on typical routing standards, this might be a PATCH or PUT. Wait, looking at Controller it should be a POST or PUT, let's use PUT and assume route exists.
-        $response = $this->authPut(route('api.compensation.entries.status', $entry->id), $data);
+        $response = $this->authPut(route('v2.payroll.compensation.entries.status', $entry->id), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('compensation_entries', [

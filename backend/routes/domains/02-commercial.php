@@ -73,8 +73,8 @@ Route::group(['prefix' => 'sales', 'middleware' => 'can:sales,view'], function (
 
     // Returns
     Route::get('/returns', [SalesReturnController::class, 'index'])->name('v2.sales_returns.index');
-    Route::get('/returns/{id}', [SalesReturnController::class, 'show'])->name('v2.sales_returns.show');
     Route::get('/returns/ledger', [SalesReturnController::class, 'ledger'])->name('v2.sales_returns.ledger');
+    Route::get('/returns/{id}', [SalesReturnController::class, 'show'])->name('v2.sales_returns.show');
     Route::middleware(['can:sales,create', 'throttle:api-write'])->post('/returns', [SalesReturnController::class, 'store'])->name('v2.sales_returns.store');
 
     // ZATCA (Refactored to Controller)

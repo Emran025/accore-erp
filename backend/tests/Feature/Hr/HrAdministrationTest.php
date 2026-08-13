@@ -32,10 +32,10 @@ class HrAdministrationTest extends TestCase
             'is_active' => true,
         ]);
 
-        $response = $this->authGet(route('api.employees.index')); // HR Admin routes are in same group usually
+        $response = $this->authGet(route('v2.employees.index')); // HR Admin routes are in same group usually
 
         // Actually the route is '/api/hr/job-titles' based on my reading of api/hr.php line 258
-        $response = $this->authGet('/api/job-titles');
+        $response = $this->authGet('/api/v2/job-titles');
 
         $this->assertSuccessResponse($response);
         $response->assertJsonFragment(['title_en' => 'Software Engineer']);
@@ -55,7 +55,7 @@ class HrAdministrationTest extends TestCase
         $department = Department::factory()->create();
         $data['department_id'] = $department->id;
 
-        $response = $this->authPost('/api/job-titles', $data);
+        $response = $this->authPost('/api/v2/job-titles', $data);
 
         $this->assertSuccessResponse($response, 200);
         $this->assertDatabaseHas('job_titles', ['title_en' => 'Senior Developer']);
@@ -74,7 +74,7 @@ class HrAdministrationTest extends TestCase
             'description' => 'Entry-level developer position',
         ];
 
-        $response = $this->authPut("/api/job-titles/{$jobTitle->id}", $updateData);
+        $response = $this->authPut("/api/v2/job-titles/{$jobTitle->id}", $updateData);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('job_titles', ['title_en' => 'Junior Developer', 'description' => 'Entry-level developer position']);
@@ -88,7 +88,7 @@ class HrAdministrationTest extends TestCase
             'title_ar' => 'دور قديم',
         ]);
 
-        $response = $this->authDelete("/api/job-titles/{$jobTitle->id}");
+        $response = $this->authDelete("/api/v2/job-titles/{$jobTitle->id}");
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseMissing('job_titles', ['id' => $jobTitle->id]);
@@ -104,7 +104,7 @@ class HrAdministrationTest extends TestCase
             'is_active' => true,
         ]);
 
-        $response = $this->authGet('/api/permission-templates');
+        $response = $this->authGet('/api/v2/permission-templates');
 
         $this->assertSuccessResponse($response);
         $response->assertJsonFragment(['template_key' => 'manager_tpl']);
@@ -128,9 +128,9 @@ class HrAdministrationTest extends TestCase
             'is_active' => true,
         ];
 
-        $response = $this->authPost('/api/permission-templates', $data);
+        $response = $this->authPost('/api/v2/permission-templates', $data);
 
-        $this->assertSuccessResponse($response, 200);
+        $this->assertSuccessResponse($response, 201);
         $this->assertDatabaseHas('permission_templates', ['template_key' => 'hr_staff']);
     }
 }

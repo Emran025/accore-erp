@@ -15,7 +15,7 @@ class CloseFiscalPeriodAction
         private readonly ChartOfAccountsMappingService $coaService
     ) {}
 
-    public function execute(int $id): array
+    public function execute(int $id): FiscalPeriod
     {
         PermissionService::requirePermission('fiscal_periods', 'edit');
 
@@ -116,11 +116,7 @@ class CloseFiscalPeriodAction
                 'net_income' => $netIncome,
             ]);
 
-            return [
-                'message' => 'Fiscal period closed successfully',
-                'net_income' => $netIncome,
-                'voucher_number' => $period->closing_voucher_number,
-            ];
+            return $period->refresh();
         });
     }
 

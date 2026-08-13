@@ -48,10 +48,10 @@ class SalesReturnController extends Controller
     /**
      * Get a single return with details
      */
-    public function show(int $id, ShowSalesReturnAction $action): JsonResponse
+    public function show(int|string $id, ShowSalesReturnAction $action): JsonResponse
     {
         try {
-            $return = $action->execute($id);
+            $return = $action->execute((int) $id);
             return $this->successResponse(new SalesReturnResource($return));
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 404);

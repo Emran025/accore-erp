@@ -1,6 +1,6 @@
 /**
  * Global test setup for Vitest.
- * Mocks browser APIs and common dependencies used by stores.
+ * Mocks browser APIs and external dependencies used by stores.
  */
 import { vi } from 'vitest';
 
@@ -10,6 +10,7 @@ global.fetch = vi.fn();
 // ─── Mock localStorage ────────────────────────────────────────
 const localStorageMock = (() => {
     let store: Record<string, string> = {};
+
     return {
         getItem: vi.fn((key: string) => store[key] ?? null),
         setItem: vi.fn((key: string, value: string) => { store[key] = value; }),
@@ -32,37 +33,9 @@ vi.mock('@/lib/api', () => ({
     fetchAPI: vi.fn(),
 }));
 
-// ─── Mock API_ENDPOINTS ───────────────────────────────────────
-vi.mock('@/lib/endpoints', () => ({
-    API_ENDPOINTS: {
-        AUTH: {
-            CHECK: '/api/auth/check',
-            LOGIN: '/api/auth/login',
-            LOGOUT: '/api/auth/logout',
-        },
-        HR: {
-            EMPLOYEES: { BASE: '/api/employees' },
-            PAYROLL: {
-                CYCLES: '/api/payroll/cycles',
-                GENERATE: '/api/payroll/generate',
-                CYCLE_ITEMS: (id: number) => `/api/payroll/cycles/${id}/items`,
-                APPROVE: (id: number) => `/api/payroll/cycles/${id}/approve`,
-                PROCESS_PAYMENT: (id: number) => `/api/payroll/cycles/${id}/payment`,
-                TOGGLE_ITEM: (id: number) => `/api/payroll/items/${id}/toggle`,
-                UPDATE_ITEM: (id: number) => `/api/payroll/items/${id}`,
-                PAY_ITEM: (id: number) => `/api/payroll/items/${id}/pay`,
-                ITEM_TRANSACTIONS: (id: number) => `/api/payroll/items/${id}/transactions`,
-            },
-        },
-        FINANCE: {
-            ACCOUNTS: { BASE: '/api/finance/accounts' },
-        },
-        PRODUCTS: { BASE: '/api/products' },
-        CUSTOMERS: { BASE: '/api/customers' },
-        SUPPLIERS: { BASE: '/api/suppliers' },
-        PURCHASES: { BASE: '/api/purchases' },
-    },
-}));
+// API_ENDPOINTS intentionally remains unmocked. It is a pure collection of
+// constants and path builders; using its real implementation keeps tests
+// aligned with the current endpoint hierarchy used by the stores.
 
 // ─── Mock auth helpers ────────────────────────────────────────
 vi.mock('@/lib/auth', () => ({

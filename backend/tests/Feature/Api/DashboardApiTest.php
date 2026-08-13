@@ -33,7 +33,7 @@ class DashboardApiTest extends TestCase
             'amount' => 1000
         ]);
 
-        $response = $this->authGet(route('api.dashboard.index'));
+        $response = $this->authGet(route('v2.dashboard.index'));
 
         $this->assertSuccessResponse($response);
         $data = $response->json('data');
@@ -47,7 +47,7 @@ class DashboardApiTest extends TestCase
     {
         Product::factory()->create(['name' => 'Low Item', 'stock_quantity' => 2]);
 
-        $response = $this->authGet(route('api.dashboard.index', ['detail' => 'low_stock']));
+        $response = $this->authGet(route('v2.dashboard.index', ['detail' => 'low_stock']));
 
         $this->assertSuccessResponse($response);
         $this->assertEquals('Low Item', $response->json('data.0.name'));

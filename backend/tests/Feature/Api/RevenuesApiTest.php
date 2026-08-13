@@ -33,7 +33,7 @@ class RevenuesApiTest extends TestCase
             'user_id' => $this->authenticatedUser->id,
         ]);
 
-        $response = $this->authGet(route('api.revenues.index'));
+        $response = $this->authGet(route('v2.revenues.index'));
 
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure([
@@ -52,12 +52,12 @@ class RevenuesApiTest extends TestCase
             'description' => 'Monthly consulting fee',
         ];
 
-        $response = $this->authPost(route('api.revenues.store'), $data);
+        $response = $this->authPost(route('v2.revenues.store'), $data);
 
         $this->assertSuccessResponse($response);
-        $response->assertJsonStructure(['success', 'id', 'voucher_number']);
+        $response->assertJsonStructure(['success', 'data' => ['id', 'voucher_number']]);
 
-        $voucherNumber = $response->json('voucher_number');
+        $voucherNumber = $response->json('data.voucher_number');
 
         // Verify double-entry: Debit Cash, Credit Revenue
         $this->assertDatabaseHas('general_ledger', [
@@ -75,7 +75,7 @@ class RevenuesApiTest extends TestCase
 
     public function test_create_revenue_validates_required_fields()
     {
-        $response = $this->authPost(route('api.revenues.store'), []);
+        $response = $this->authPost(route('v2.revenues.store'), []);
 
         $response->assertStatus(422);
     }
@@ -93,7 +93,7 @@ class RevenuesApiTest extends TestCase
             'description' => 'Updated desc',
         ];
 
-        $response = $this->authPut(route('api.revenues.update'), $data);
+        $response = $this->authPut(route('v2.revenues.update', ['id' => $revenue->id]), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('revenues', [
@@ -111,13 +111,13 @@ class RevenuesApiTest extends TestCase
             'description' => 'Test delete',
         ];
 
-        $response = $this->authPost(route('api.revenues.store'), $data);
+        $response = $this->authPost(route('v2.revenues.store'), $data);
         $this->assertSuccessResponse($response);
 
-        $revenueId = $response->json('id');
-        $voucherNumber = $response->json('voucher_number');
+        $revenueId = $response->json('data.id');
+        $voucherNumber = $response->json('data.voucher_number');
 
-        $response = $this->authDelete(route('api.revenues.destroy'), ['id' => $revenueId]);
+        $response = $this->authDelete(route('v2.revenues.destroy', ['id' => $revenueId]));
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseMissing('revenues', ['id' => $revenueId]);
@@ -130,7 +130,7 @@ class RevenuesApiTest extends TestCase
             'amount' => -100,
         ];
 
-        $response = $this->authPost(route('api.revenues.store'), $data);
+        $response = $this->authPost(route('v2.revenues.store'), $data);
 
         $response->assertStatus(422);
     }

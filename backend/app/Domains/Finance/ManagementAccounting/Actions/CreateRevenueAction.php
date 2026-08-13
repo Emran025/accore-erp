@@ -15,7 +15,7 @@ class CreateRevenueAction
         private readonly ChartOfAccountsMappingService $coaService
     ) {}
 
-    public function execute(array $data): array
+    public function execute(array $data): Revenue
     {
         PermissionService::requirePermission('revenues', 'create');
 

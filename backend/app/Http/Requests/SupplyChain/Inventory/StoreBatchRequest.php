@@ -18,7 +18,7 @@ class StoreBatchRequest extends FormRequest
             'batch_type' => 'required_without:action|string|max:50',
             'description' => 'nullable|string',
             'action' => 'nullable|string',
-            'batch_id' => 'required_with:action|exists:batches,id',
+            'batch_id' => 'required_with:action|exists:batch_processing,id',
         ];
     }
 }

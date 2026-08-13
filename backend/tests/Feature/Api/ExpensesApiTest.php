@@ -34,7 +34,7 @@ class ExpensesApiTest extends TestCase
             'user_id' => $this->authenticatedUser->id,
         ]);
 
-        $response = $this->authGet(route('api.expenses.index'));
+        $response = $this->authGet(route('v2.expenses.index'));
 
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure([
@@ -54,7 +54,7 @@ class ExpensesApiTest extends TestCase
             'payment_type' => 'cash',
         ];
 
-        $response = $this->authPost(route('api.expenses.store'), $data);
+        $response = $this->authPost(route('v2.expenses.store'), $data);
 
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure(['success', 'data' => ['id', 'voucher_number']]);
@@ -77,7 +77,7 @@ class ExpensesApiTest extends TestCase
 
     public function test_create_expense_validates_required_fields()
     {
-        $response = $this->authPost(route('api.expenses.store'), []);
+        $response = $this->authPost(route('v2.expenses.store'), []);
 
         $response->assertStatus(422);
     }
@@ -95,7 +95,7 @@ class ExpensesApiTest extends TestCase
             'description' => 'Updated description',
         ];
 
-        $response = $this->authPut(route('api.expenses.update', ['id' => $expense->id]), $data);
+        $response = $this->authPut(route('v2.expenses.update', ['id' => $expense->id]), $data);
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('expenses', [
@@ -115,13 +115,13 @@ class ExpensesApiTest extends TestCase
             'payment_type' => 'cash',
         ];
 
-        $response = $this->authPost(route('api.expenses.store'), $data);
+        $response = $this->authPost(route('v2.expenses.store'), $data);
         $this->assertSuccessResponse($response);
         
         $expenseId = $response->json('data.id');
         $voucherNumber = $response->json('data.voucher_number');
 
-        $response = $this->authDelete(route('api.expenses.destroy', ['id' => $expenseId]));
+        $response = $this->authDelete(route('v2.expenses.destroy', ['id' => $expenseId]));
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseMissing('expenses', ['id' => $expenseId]);
@@ -136,7 +136,7 @@ class ExpensesApiTest extends TestCase
             'payment_type' => 'credit',
         ];
 
-        $response = $this->authPost(route('api.expenses.store'), $data);
+        $response = $this->authPost(route('v2.expenses.store'), $data);
 
         $this->assertSuccessResponse($response);
         $voucherNumber = $response->json('data.voucher_number');

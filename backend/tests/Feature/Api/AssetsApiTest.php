@@ -19,7 +19,7 @@ class AssetsApiTest extends TestCase
     public function test_can_crud_assets()
     {
         // Create
-        $response = $this->authPost(route('api.assets.store'), [
+        $response = $this->authPost(route('v2.assets.store'), [
             'name' => 'Laptop',
             'purchase_value' => 1500,
             'purchase_date' => now()->toDateString(),
@@ -29,10 +29,12 @@ class AssetsApiTest extends TestCase
         $assetId = $response->json('id');
 
         // List
-        $this->authGet(route('api.assets.index'))->assertJsonCount(1, 'data');
+        $response = $this->authGet(route('v2.assets.index'));
+        $this->assertSuccessResponse($response);
+        $response->assertJsonCount(1, 'data');
 
         // Update
-        $this->authPut(route('api.assets.update'), [
+        $this->authPut(route('v2.assets.update', ['id' => $assetId]), [
             'id' => $assetId,
             'name' => 'Laptop Pro',
             'purchase_value' => 1500,
@@ -40,7 +42,7 @@ class AssetsApiTest extends TestCase
         ])->assertStatus(200);
 
         // Delete
-        $this->authDelete(route('api.assets.destroy'), ['id' => $assetId])
+        $this->authDelete(route('v2.assets.destroy', ['id' => $assetId]))
             ->assertStatus(200);
             
         $this->assertDatabaseMissing('assets', ['id' => $assetId]);

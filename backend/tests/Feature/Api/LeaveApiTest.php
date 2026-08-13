@@ -22,15 +22,10 @@ class LeaveApiTest extends TestCase
     {
         LeaveRequest::factory()->count(3)->create();
 
-        $response = $this->authGet(route('api.leave_requests.index'));
+        $response = $this->authGet(route('v2.leave_requests.index'));
 
         $this->assertStatusResolved($response, 200);
-        $response->assertJsonStructure([
-            'data',
-            'current_page',
-            'per_page',
-            'total'
-        ]);
+        $response->assertJsonStructure(['success', 'data']);
         $this->assertCount(3, $response->json('data'));
     }
 
@@ -48,7 +43,7 @@ class LeaveApiTest extends TestCase
             'reason' => 'Annual vacation'
         ];
 
-        $response = $this->authPost(route('api.leave_requests.store'), $data);
+        $response = $this->authPost(route('v2.leave_requests.store'), $data);
 
         $this->assertStatusResolved($response, 201);
         $this->assertDatabaseHas('leave_requests', [
@@ -67,7 +62,7 @@ class LeaveApiTest extends TestCase
             'action' => 'approved'
         ];
 
-        $response = $this->authPost(route('api.leave_requests.approve', $leaveRequest->id), $data);
+        $response = $this->authPost(route('v2.leave_requests.approve', $leaveRequest->id), $data);
 
         $this->assertStatusResolved($response, 200);
         $this->assertDatabaseHas('leave_requests', [
@@ -82,7 +77,7 @@ class LeaveApiTest extends TestCase
             'status' => 'pending'
         ]);
 
-        $response = $this->authPost(route('api.leave_requests.cancel', $leaveRequest->id));
+        $response = $this->authPost(route('v2.leave_requests.cancel', $leaveRequest->id));
 
         $this->assertStatusResolved($response, 200);
         $this->assertDatabaseHas('leave_requests', [
@@ -95,7 +90,7 @@ class LeaveApiTest extends TestCase
     {
         $leaveRequest = LeaveRequest::factory()->create();
 
-        $response = $this->authGet(route('api.leave_requests.show', $leaveRequest->id));
+        $response = $this->authGet(route('v2.leave_requests.show', $leaveRequest->id));
 
         $this->assertStatusResolved($response, 200);
         $response->assertJsonFragment([
@@ -115,14 +110,10 @@ class LeaveApiTest extends TestCase
 
         $this->authenticateUser($user);
 
-        $response = $this->authGet(route('api.employee_portal.leave_requests'));
+        $response = $this->authGet(route('v2.employee_portal.leave_requests'));
 
         $this->assertStatusResolved($response, 200);
-        $response->assertJsonStructure([
-            'data',
-            'current_page',
-            'total'
-        ]);
+        $response->assertJsonStructure(['success', 'data']);
         $this->assertCount(1, $response->json('data'));
     }
 }

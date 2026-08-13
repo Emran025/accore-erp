@@ -59,7 +59,7 @@ class BankReconciliationController extends Controller
     public function update(UpdateReconciliationRequest $request, int $id, UpdateReconciliationAction $action): JsonResponse
     {
         try {
-            PermissionService::requirePermission('reconciliations', 'update');
+            PermissionService::requirePermission('reconciliations', 'edit');
             $reconciliation = $action->execute($request->validated(), $id);
             return $this->successResponse(new ReconciliationResource($reconciliation), 'Reconciliation updated successfully');
         } catch (\Exception $e) {

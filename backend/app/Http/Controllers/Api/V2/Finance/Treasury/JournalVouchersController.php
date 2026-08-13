@@ -31,7 +31,7 @@ class JournalVouchersController extends Controller
         $result = $action->execute($request->validated());
 
         return $this->paginatedResponse(
-            JournalVoucherResource::collection($result['vouchers']),
+            JournalVoucherResource::collection($result['vouchers']->map(fn ($voucher) => (object) $voucher)),
             $result['total'],
             $result['page'],
             $result['per_page']
@@ -60,7 +60,7 @@ class JournalVouchersController extends Controller
         try {
             PermissionService::requirePermission('journal_vouchers', 'create');
             $voucher = $action->execute($request->validated());
-            return $this->successResponse(new JournalVoucherResource((object)$voucher->all()), 'Journal Voucher created successfully', 201);
+            return $this->successResponse($voucher->all(), 'Journal Voucher created successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
         }

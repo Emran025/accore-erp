@@ -5,6 +5,8 @@ namespace Tests\Feature\Api;
 use Tests\TestCase;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Employee;
 use App\Domains\HumanCapital\WorkforceAdmin\Models\Department;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\JobTitle;
+use App\Domains\HumanCapital\WorkforceAdmin\Models\Position;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class HRApiTest extends TestCase
@@ -22,15 +24,15 @@ class HRApiTest extends TestCase
     {
         Department::factory()->count(3)->create();
 
-        $response = $this->authGet(route('api.departments.index'));
+        $response = $this->authGet(route('v2.departments.index'));
 
         $this->assertSuccessResponse($response);
-        $this->assertEquals(3, $response->json('total'));
+        $this->assertCount(3, $response->json('data'));
     }
 
     public function test_can_create_department()
     {
-        $response = $this->authPost(route('api.departments.store'), [
+        $response = $this->authPost(route('v2.departments.store'), [
             'name_ar' => 'قسم التقنية',
             'name_en' => 'IT Department',
             'description' => 'Tech Support'
@@ -44,7 +46,7 @@ class HRApiTest extends TestCase
     {
         $department = Department::factory()->create();
 
-        $response = $this->authPut(route('api.departments.update', $department->id), [
+        $response = $this->authPut(route('v2.departments.update', $department->id), [
             'name_en' => 'Updated Name',
             'name_ar' => 'اسم محدث',
             'description' => 'Updated Description'
@@ -58,7 +60,7 @@ class HRApiTest extends TestCase
     {
         $department = Department::factory()->create();
 
-        $response = $this->authDelete(route('api.departments.destroy', $department->id));
+        $response = $this->authDelete(route('v2.departments.destroy', $department->id));
 
         $this->assertSuccessResponse($response, 200);
 
@@ -70,16 +72,29 @@ class HRApiTest extends TestCase
     {
         Employee::factory()->count(3)->create();
 
-        $response = $this->authGet(route('api.employees.index'));
+        $response = $this->authGet(route('v2.employees.index'));
 
         $this->assertSuccessResponse($response);
-        $this->assertEquals(3, $response->json('total'));
+        $this->assertCount(3, $response->json('data'));
     }
 
     public function test_can_create_employee()
     {
         $department = Department::factory()->create();
-        
+        $jobTitle = JobTitle::create([
+            'title_ar' => 'مطور',
+            'title_en' => 'Developer',
+            'department_id' => $department->id,
+        ]);
+        $position = Position::create([
+            'position_code' => 'POS-TEST-001',
+            'position_name_ar' => 'مطور',
+            'position_name_en' => 'Developer',
+            'job_title_id' => $jobTitle->id,
+            'department_id' => $department->id,
+            'is_active' => true,
+        ]);
+
         $data = [
             'full_name' => 'John Doe',
             'email' => 'john@example.com',
@@ -87,13 +102,13 @@ class HRApiTest extends TestCase
             'password' => 'password123',
             'phone' => '1234567890',
             'department_id' => $department->id,
-            'position' => 'Developer',
+            'position_id' => $position->id,
             'base_salary' => 5000,
             'employment_status' => 'active',
             'hire_date' => now()->toDateString(),
         ];
 
-        $response = $this->authPost(route('api.employees.store'), $data);
+        $response = $this->authPost(route('v2.employees.store'), $data);
 
         $this->assertSuccessResponse($response, 201);
         $this->assertDatabaseHas('employees', ['email' => 'john@example.com']);
@@ -108,7 +123,7 @@ class HRApiTest extends TestCase
             'base_salary' => 6000,
         ];
 
-        $response = $this->authPut(route('api.employees.update', $employee->id), $data);
+        $response = $this->authPut(route('v2.employees.update', $employee->id), $data);
         
         $this->assertSuccessResponse($response);
         $this->assertDatabaseHas('employees', ['full_name' => 'Jane Doe', 'base_salary' => 6000]);

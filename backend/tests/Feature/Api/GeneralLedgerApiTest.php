@@ -28,12 +28,12 @@ class GeneralLedgerApiTest extends TestCase
             'amount' => 1000
         ]);
 
-        $response = $this->authGet(route('api.gl.trial_balance'));
+        $response = $this->authGet(route('v2.gl.trial_balance'));
 
         $this->assertSuccessResponse($response);
         // We expect at least one item with non-zero balance
         // The structure is {success, items: [...]}
-        $items = $response->json('items');
+        $items = $response->json('data.items');
         $this->assertNotEmpty($items);
         
         // Find our cash account
@@ -51,11 +51,11 @@ class GeneralLedgerApiTest extends TestCase
             'description' => 'Test Deposit'
         ]);
 
-        $response = $this->authGet(route('api.gl.account_details', ['account_code' => '1110']));
+        $response = $this->authGet(route('v2.gl.account_details', ['account_code' => '1110']));
 
         $this->assertSuccessResponse($response);
-        $this->assertEquals(500, $response->json('account.current_balance'));
-        $this->assertEquals('Test Deposit', $response->json('transactions.0.description'));
+        $this->assertEquals(500, $response->json('data.account.current_balance'));
+        $this->assertEquals('Test Deposit', $response->json('data.transactions.0.description'));
     }
 
     public function test_can_filter_gl_entries()
@@ -70,11 +70,11 @@ class GeneralLedgerApiTest extends TestCase
             'voucher_number' => 'V-200'
         ]);
 
-        $response = $this->authGet(route('api.gl.entries', ['voucher_number' => 'V-100']));
+        $response = $this->authGet(route('v2.gl.entries', ['voucher_number' => 'V-100']));
 
         $this->assertSuccessResponse($response);
-        $this->assertEquals(1, $response->json('total'));
-        $this->assertEquals('V-100', $response->json('entries.0.entry_number'));
+        $this->assertCount(1, $response->json('data'));
+        $this->assertEquals('V-100', $response->json('data.0.voucher_number'));
     }
 
     public function test_account_activity_summary()
@@ -86,7 +86,7 @@ class GeneralLedgerApiTest extends TestCase
             'amount' => 100
         ], now()->subDays(1)); // Make sure it's within default date range if needed, or we specify range
 
-        $response = $this->authGet(route('api.gl.account_activity', [
+        $response = $this->authGet(route('v2.gl.account_activity', [
             'start_date' => now()->subDays(5)->format('Y-m-d'),
             'end_date' => now()->addDays(1)->format('Y-m-d')
         ]));
@@ -114,7 +114,7 @@ class GeneralLedgerApiTest extends TestCase
              'amount' => 200,
          ], now()->startOfMonth());
 
-         $response = $this->authGet(route('api.gl.balance_history', [
+         $response = $this->authGet(route('v2.gl.balance_history', [
              'account_code' => '1110',
              'interval' => 'month',
              'start_date' => now()->subMonths(2)->format('Y-m-d'),
@@ -122,7 +122,7 @@ class GeneralLedgerApiTest extends TestCase
          ]));
 
          $this->assertSuccessResponse($response);
-         $history = $response->json('history');
+         $history = $response->json('data.history');
          $this->assertCount(2, $history); // 2 months with data, or depending on implementation might fill gaps?
          // Our implementation groups existing entries, so it won't fill gaps probably unless we check implementation.
          // Logic: $entries->groupBy... foreach $grouped. So only periods with data.

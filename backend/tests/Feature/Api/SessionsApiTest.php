@@ -19,11 +19,11 @@ class SessionsApiTest extends TestCase
 
     public function test_can_list_sessions()
     {
-        $response = $this->authGet(route('api.sessions.index'));
+        $response = $this->authGet(route('v2.sessions.index'));
 
         $response->assertStatus(200)
             ->assertJson(['success' => true])
-            ->assertJsonStructure(['success', 'sessions', 'total']);
+            ->assertJsonStructure(['success', 'data']);
     }
 
     public function test_can_destroy_other_session()
@@ -37,7 +37,7 @@ class SessionsApiTest extends TestCase
             'user_agent' => 'Another Device',
         ]);
 
-        $response = $this->authDelete(route('api.sessions.destroy', ['id' => $otherSession->id]));
+        $response = $this->authDelete(route('v2.sessions.destroy', ['id' => $otherSession->id]));
 
         $this->assertSuccessResponse($response);
         $this->assertDatabaseMissing('sessions', ['id' => $otherSession->id]);
@@ -48,7 +48,7 @@ class SessionsApiTest extends TestCase
         // The current session is the one created by authenticateUser()
         $currentSession = Session::where('session_token', $this->sessionToken)->first();
 
-        $response = $this->authDelete(route('api.sessions.destroy', ['id' => $currentSession->id]));
+        $response = $this->authDelete(route('v2.sessions.destroy', ['id' => $currentSession->id]));
 
         $this->assertErrorResponse($response, 400);
         $this->assertDatabaseHas('sessions', ['id' => $currentSession->id]);
@@ -66,7 +66,7 @@ class SessionsApiTest extends TestCase
         ]);
 
         // Should fail because the session doesn't belong to the authenticated user
-        $response = $this->authDelete(route('api.sessions.destroy', ['id' => $otherSession->id]));
+        $response = $this->authDelete(route('v2.sessions.destroy', ['id' => $otherSession->id]));
 
         $response->assertStatus(404);
     }

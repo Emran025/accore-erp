@@ -24,7 +24,7 @@ class UpdateJobTitleAction
             $empUpdated = $this->orgIntegration->syncJobTitleToEmployees($title->fresh());
 
             return collect([
-                'title' => $title->load('department')->toArray(),
+                'title' => $title->load('department'),
                 'positions_synced' => $posUpdated,
                 'employees_synced' => $empUpdated,
             ]);
