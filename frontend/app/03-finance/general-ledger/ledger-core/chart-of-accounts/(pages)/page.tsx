@@ -59,7 +59,20 @@ export default function ChartOfAccountsPage() {
     try {
       setIsLoading(true);
       const response = await fetchAPI(`${API_ENDPOINTS.FINANCE.ACCOUNTS.BASE}?search=${encodeURIComponent(search)}`);
-      setAccounts(response.accounts as Account[] || []);
+      const rawAccounts = Array.isArray(response.data) ? response.data : [];
+      setAccounts(rawAccounts.map((account: Record<string, unknown>): Account => ({
+        id: Number(account.id),
+        code: String(account.account_code ?? account.code ?? ''),
+        name: String(account.account_name ?? account.name ?? ''),
+        type: String(account.account_type ?? account.type ?? '').toLowerCase(),
+        parent_id: account.parent_id == null ? undefined : Number(account.parent_id),
+        parent_name: typeof account.parent === 'object' && account.parent !== null
+          ? String((account.parent as Record<string, unknown>).account_name ?? '')
+          : undefined,
+        balance: Number(account.balance ?? 0),
+        is_active: Boolean(account.is_active),
+        description: typeof account.description === 'string' ? account.description : undefined,
+      })));
     } catch {
       showToast("خطأ في تحميل الحسابات", "error");
     } finally {

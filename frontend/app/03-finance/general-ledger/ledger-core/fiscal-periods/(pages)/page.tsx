@@ -45,10 +45,11 @@ export default function FiscalPeriodsPage() {
     try {
       setIsLoading(true);
       const response = await fetchAPI(`${API_ENDPOINTS.FINANCE.FISCAL_PERIODS.BASE}?page=${page}&limit=${itemsPerPage}`);
-      if (response.success && response.data) {
-        setPeriods(response.data as FiscalPeriod[]);
-        const total = Number(response.total) || 0;
-        setTotalPages(Math.ceil(total / itemsPerPage));
+      if (response.success && Array.isArray(response.data)) {
+        const periods = response.data as FiscalPeriod[];
+        setPeriods(periods);
+        const pagination = response.pagination as { total_pages?: number } | undefined;
+        setTotalPages(pagination?.total_pages ?? Math.max(1, Math.ceil(periods.length / itemsPerPage)));
         setCurrentPage(page);
       } else {
         showAlert("alert-container", response.message || "فشل تحميل الفترات المالية", "error");

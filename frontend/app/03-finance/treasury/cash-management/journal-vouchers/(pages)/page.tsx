@@ -81,8 +81,12 @@ export default function JournalVouchersPage() {
     try {
       setIsLoading(true);
       const response = await fetchAPI(`${API_ENDPOINTS.FINANCE.TREASURY.VOUCHERS.BASE}?page=${page}&limit=${itemsPerPage}`);
-      setVouchers(response.vouchers as Voucher[] || []);
-      setTotalPages(Math.ceil((response.total as number || 0) / itemsPerPage));
+      if (!response.success || !Array.isArray(response.data)) {
+        throw new Error(response.message || "فشل تحميل السندات");
+      }
+      setVouchers(response.data as Voucher[]);
+      const pagination = response.pagination as { total_pages?: number } | undefined;
+      setTotalPages(pagination?.total_pages ?? 1);
       setCurrentPage(page);
     } catch {
       showToast("خطأ في تحميل السندات", "error");
@@ -98,7 +102,12 @@ export default function JournalVouchersPage() {
         fetchAPI(`${API_ENDPOINTS.FINANCE.COST_CENTERS.BASE}?is_active=true&limit=500`),
         fetchAPI(`${API_ENDPOINTS.FINANCE.PROFIT_CENTERS.BASE}?is_active=true&limit=500`),
       ]);
-      setAccounts(accountsRes.accounts as Account[] || []);
+      const rawAccounts = Array.isArray(accountsRes.data) ? accountsRes.data : [];
+      setAccounts(rawAccounts.map((account: Record<string, unknown>): Account => ({
+        id: Number(account.id),
+        code: String(account.account_code ?? account.code ?? ''),
+        name: String(account.account_name ?? account.name ?? ''),
+      })));
       if (ccRes.success && ccRes.data) setCostCenters(ccRes.data as CenterOption[]);
       if (pcRes.success && pcRes.data) setProfitCenters(pcRes.data as CenterOption[]);
     } catch {

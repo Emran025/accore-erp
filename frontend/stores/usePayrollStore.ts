@@ -114,9 +114,17 @@ export const usePayrollStore = create<PayrollState>()(
             loadAccounts: async () => {
                 try {
                     const res: any = await fetchAPI(API_ENDPOINTS.FINANCE.ACCOUNTS.BASE);
-                    const data = res.accounts || (Array.isArray(res) ? res : []);
-                    const assetAccounts = data.filter(
-                        (acc: PayrollAccount) => acc.type === 'asset' || acc.code.startsWith('1')
+                    const rawAccounts = Array.isArray(res.data)
+                        ? res.data
+                        : (Array.isArray(res.accounts) ? res.accounts : []);
+                    const accounts = rawAccounts.map((account: Record<string, unknown>): PayrollAccount => ({
+                        id: Number(account.id),
+                        code: String(account.account_code ?? account.code ?? ''),
+                        name: String(account.account_name ?? account.name ?? ''),
+                        type: String(account.account_type ?? account.type ?? ''),
+                    }));
+                    const assetAccounts = accounts.filter(
+                        (acc: PayrollAccount) => acc.type.toLowerCase() === 'asset' || acc.code.startsWith('1')
                     );
 
                     const cashAcc =

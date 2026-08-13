@@ -43,10 +43,11 @@ export default function ReconciliationPage() {
     try {
       setIsLoading(true);
       const response = await fetchAPI(`${API_ENDPOINTS.FINANCE.RECONCILIATION}?page=${page}&limit=${itemsPerPage}`);
-      if (response.success && response.data) {
-        setReconciliations(response.data as Reconciliation[]);
-        const total = Number(response.total) || 0;
-        setTotalPages(Math.ceil(total / itemsPerPage));
+      if (response.success && Array.isArray(response.data)) {
+        const reconciliations = response.data as Reconciliation[];
+        setReconciliations(reconciliations);
+        const pagination = response.pagination as { total_pages?: number } | undefined;
+        setTotalPages(pagination?.total_pages ?? Math.max(1, Math.ceil(reconciliations.length / itemsPerPage)));
         setCurrentPage(page);
       } else {
         showAlert("alert-container", response.message || "فشل تحميل التسويات", "error");
@@ -87,8 +88,9 @@ export default function ReconciliationPage() {
     try {
       // Get ledger balance from API
       const response = await fetchAPI(`${API_ENDPOINTS.FINANCE.RECONCILIATION}?action=calculate&date=${reconciliationDate}`);
-      if (response.success && response.data) {
-        setLedgerBalance((response.data as Reconciliation).ledger_balance || 0);
+      if (response.success) {
+        const balance = response.ledger_balance ?? (response.data as Partial<Reconciliation> | undefined)?.ledger_balance;
+        setLedgerBalance(Number(balance) || 0);
       }
     } catch {
       // Ignore - will show in form
@@ -106,7 +108,7 @@ export default function ReconciliationPage() {
         method: "POST",
         body: JSON.stringify({
           reconciliation_date: reconciliationDate,
-          bank_balance: parseNumber(bankBalance),
+          physical_balance: parseNumber(bankBalance),
           notes: reconciliationNotes,
         }),
       });

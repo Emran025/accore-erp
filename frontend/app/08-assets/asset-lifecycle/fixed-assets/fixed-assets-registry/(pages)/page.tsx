@@ -53,10 +53,11 @@ export default function AssetsPage() {
             const response = await fetchAPI(
                 `${API_ENDPOINTS.ASSETS.FIXED_ASSETS}?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`
             );
-            if (response.success && response.data) {
-                setAssets(response.data as Asset[]);
-                const total = Number(response.total) || 0;
-                setTotalPages(Math.ceil(total / itemsPerPage));
+            if (response.success && Array.isArray(response.data)) {
+                const assets = response.data as Asset[];
+                setAssets(assets);
+                const pagination = response.pagination as { total_pages?: number } | undefined;
+                setTotalPages(pagination?.total_pages ?? Math.max(1, Math.ceil(assets.length / itemsPerPage)));
                 setCurrentPage(page);
             } else {
                 showAlert("alert-container", response.message || "فشل تحميل الأصول", "error");
