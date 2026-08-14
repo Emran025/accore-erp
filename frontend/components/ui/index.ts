@@ -50,5 +50,6 @@ export { InvoiceDetailsDialog } from "./InvoiceDetailsDialog";
 export { SessionExpiredModal } from "./SessionExpiredModal";
 export { ProductSales } from "./ProductSales";
 export { ProductPurchases } from "./ProductPurchases";
+export { QuotationWorkspace } from "./QuotationWorkspace";
 export { ServiceSales } from "./ServiceSales";
 export { DatePicker } from "./DatePicker";

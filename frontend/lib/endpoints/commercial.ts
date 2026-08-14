@@ -3,6 +3,11 @@ export interface CommercialEndpoints {
         INVOICES: string;
         INVOICE_BY_ID: (id: string | number) => string;
         INVOICE_DETAILS: string;
+        QUOTATIONS: {
+            BASE: string;
+            withId: (id: string | number) => string;
+            STATUS: (id: string | number) => string;
+        };
         RETURNS: {
             BASE: string;
             SHOW: string;
@@ -66,6 +71,11 @@ export const COMMERCIAL: CommercialEndpoints = {
         INVOICES: "/v2/sales/invoices",
         INVOICE_BY_ID: (id: string | number) => `/v2/sales/invoices/${id}`,
         INVOICE_DETAILS: "/v2/sales/invoice_details",
+        QUOTATIONS: {
+            BASE: "/v2/sales/quotations",
+            withId: (id: string | number) => `/v2/sales/quotations/${id}`,
+            STATUS: (id: string | number) => `/v2/sales/quotations/${id}/status`,
+        },
         RETURNS: {
             BASE: "/v2/sales/returns",
             SHOW: "/v2/sales/returns/show",

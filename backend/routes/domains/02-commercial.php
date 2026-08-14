@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\V2\SupplyChain\Procurement\PurchasesController;
 use App\Http\Controllers\Api\V2\SupplyChain\PayablesExpenses\ApTransactionsController;
 
 // Commercial Controllers (Descending File Tree)
-use App\Http\Controllers\Api\V2\Commercial\SalesLifecycle\{SalesController, SalesReturnController, ServiceController, ServiceSaleController};
+use App\Http\Controllers\Api\V2\Commercial\SalesLifecycle\{SalesController, SalesQuotationController, SalesReturnController, ServiceController, ServiceSaleController};
 use App\Http\Controllers\Api\V2\Commercial\RevenueReceivables\ArTransactionsController;
 use App\Http\Controllers\Api\V2\Commercial\MarketingDistribution\SalesRepresentativeController;
 use App\Http\Controllers\Api\V2\Commercial\CRM\ArController;
@@ -70,6 +70,12 @@ Route::group(['prefix' => 'sales', 'middleware' => 'can:sales,view'], function (
     Route::get('/invoice_details/{id}', [SalesController::class, 'show'])->name('v2.invoices.details');
     Route::middleware(['can:sales,create', 'throttle:api-write'])->post('/invoices', [SalesController::class, 'store'])->name('v2.invoices.store');
     Route::middleware(['can:sales,delete', 'throttle:api-delete'])->delete('/invoices/{id}', [SalesController::class, 'destroy'])->name('v2.invoices.destroy');
+
+    // Quotations
+    Route::get('/quotations', [SalesQuotationController::class, 'index'])->name('v2.sales.quotations.index');
+    Route::get('/quotations/{id}', [SalesQuotationController::class, 'show'])->name('v2.sales.quotations.show');
+    Route::middleware(['can:sales,create', 'throttle:api-write'])->post('/quotations', [SalesQuotationController::class, 'store'])->name('v2.sales.quotations.store');
+    Route::middleware(['can:sales,edit', 'throttle:api-write'])->post('/quotations/{id}/status', [SalesQuotationController::class, 'updateStatus'])->name('v2.sales.quotations.status');
 
     // Returns
     Route::get('/returns', [SalesReturnController::class, 'index'])->name('v2.sales_returns.index');
