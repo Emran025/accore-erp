@@ -152,6 +152,15 @@ export const CommercialDomain: Domain = {
                             permissions: [],
                             module: "returns",
                         },
+                        {
+                            id: "commercial-reports",
+                            title: "تقارير التجارة",
+                            icon: "eye",
+                            description: "كشوف المبيعات والعملاء والمرتجعات والتصدير",
+                            href: "/02-commercial/sales-lifecycle/direct-sales/reports",
+                            permissions: [],
+                            module: "sales",
+                        },
                     ],
                 },
                 {
@@ -172,11 +181,10 @@ export const CommercialDomain: Domain = {
                             id: "quotations",
                             title: "عروض الأسعار",
                             icon: "cart",
-                            description: "إنشاء عروض الأسعار (قريباً)",
+                            description: "إنشاء عروض الأسعار وإصدارها",
                             href: "/02-commercial/sales-lifecycle/sales-orders/quotations",
                             permissions: [],
                             module: "sales",
-                            status: "pending",
                         },
                         {
                             id: "sales-orders-list",

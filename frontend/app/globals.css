@@ -6703,3 +6703,64 @@ body.nav-sidebar-is-collapsed .sidebar-toggle-btn {
   body { background: #fff !important; }
   .quotation-report { box-shadow: none; max-width: none; min-height: auto; }
 }
+
+/* ─── Unified Arabic commercial and supply chain reporting ─────────────── */
+.operational-reports-workspace { display: grid; gap: 1.25rem; padding: 1.5rem; }
+.operational-reports-header { align-items: center; background: linear-gradient(125deg, #1b2e43 0%, #334f6b 62%, #44708d 100%); border-radius: 18px; color: #fff; display: flex; justify-content: space-between; overflow: hidden; padding: 1.75rem 2rem; position: relative; }
+.operational-reports-header::after { border: 34px solid rgba(255,255,255,.08); border-radius: 50%; content: ""; height: 150px; left: -76px; position: absolute; top: -98px; width: 150px; }
+.operational-reports-header > * { position: relative; z-index: 1; }
+.operational-reports-header p { color: #aad8ea; font-size: .7rem; font-weight: 800; letter-spacing: .12em; margin: 0 0 .3rem; }
+.operational-reports-header h1 { color: inherit; font-size: 1.6rem; margin: 0 0 .32rem; }
+.operational-reports-header span { color: #d8e9f1; font-size: .88rem; }
+.operational-reports-stamp { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18); border-radius: 12px; color: #eaf8ff; font-family: "Cairo", sans-serif; font-size: .76rem; font-weight: 800; letter-spacing: .12em; line-height: 1.55; padding: .55rem 1.2rem; text-align: center; }
+.operational-reports-grid { display: grid; gap: .8rem; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.operational-report-card { background: var(--surface-white, #fff); border: 1px solid var(--border-color, #e5e7eb); border-radius: 12px; color: var(--text-primary); cursor: pointer; display: grid; gap: .48rem; min-height: 156px; padding: 1rem; text-align: right; transition: border-color .18s var(--ease-out, ease), box-shadow .18s var(--ease-out, ease), transform .18s var(--ease-out, ease); }
+.operational-report-card:hover { border-color: #7ba7bd; box-shadow: 0 8px 20px rgba(31, 70, 98, .1); transform: translateY(-2px); }
+.operational-report-card.selected { background: #f0f7fa; border-color: #2e7599; box-shadow: inset 0 0 0 1px #2e7599; }
+.operational-report-card strong { font-size: .95rem; }
+.operational-report-card small { color: var(--text-secondary); font-size: .76rem; line-height: 1.65; }
+.operational-report-icon { align-items: center; background: #e2f0f6; border-radius: 8px; color: #286488; display: inline-flex; font-size: 1.1rem; font-weight: 800; height: 31px; justify-content: center; width: 31px; }
+.operational-report-builder { align-items: end; display: flex; gap: 1rem; justify-content: space-between; padding: 1.2rem 1.3rem; }
+.operational-report-builder h2 { font-size: 1.08rem; margin: 0 0 .25rem; }
+.operational-report-builder p { color: var(--text-secondary); font-size: .82rem; margin: 0; }
+.operational-report-overline { color: #397593 !important; font-size: .68rem !important; font-weight: 800; letter-spacing: .1em; margin-bottom: .35rem !important; }
+.operational-party-picker { display: grid; gap: .35rem; min-width: 230px; }
+.operational-party-picker span { color: var(--text-secondary); font-size: .75rem; font-weight: 700; }
+.operational-party-picker select { background: #fff; border: 1px solid var(--border-color); border-radius: 7px; color: var(--text-primary); font: inherit; font-size: .83rem; padding: .6rem .7rem; }
+
+.quotation-report, .unified-report { font-family: "Cairo", "Outfit", sans-serif; }
+.unified-report { background: #fff; box-shadow: 0 14px 42px rgba(15, 39, 61, .12); color: #1d2939; font-family: "Cairo", "Outfit", sans-serif; margin: 0 auto; max-width: 860px; min-height: 1040px; padding: 38px 42px; }
+.unified-report-header { align-items: flex-start; background: linear-gradient(110deg, #1b2e43, #355c78); color: #fff; display: flex; justify-content: space-between; margin: -38px -42px 27px; padding: 27px 42px; }
+.unified-report-brand { align-items: center; display: flex; gap: 13px; }
+.unified-report-mark { align-items: center; background: #a6dfef; border-radius: 8px; color: #17364b; display: flex; font-family: "Outfit", sans-serif; font-size: 23px; font-weight: 800; height: 45px; justify-content: center; width: 45px; }
+.unified-report-brand p { color: #a7d5e5; font-family: "Outfit", sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; margin: 0 0 3px; }
+.unified-report-brand h1 { color: #fff; font-size: 22px; margin: 0; }
+.unified-report-brand small { color: #d5e8ef; font-size: 9px; }
+.unified-report-reference { display: grid; gap: 3px; justify-items: end; text-align: left; }
+.unified-report-reference span { color: #b8d2df; font-size: 9px; }
+.unified-report-reference strong { color: #fff; font-size: 11px; }
+.unified-report-context { background: #f3f7f9; border: 1px solid #e0ebf0; display: grid; gap: 1px; grid-template-columns: repeat(3, 1fr); margin-bottom: 22px; }
+.unified-report-context > div { background: #fff; display: grid; gap: 4px; padding: 11px 14px; }
+.unified-report-context span { color: #758b99; font-size: 9px; font-weight: 700; }
+.unified-report-context strong { color: #284052; font-size: 11px; }
+.unified-report-table-wrap { overflow: hidden; }
+.unified-report-table { border-collapse: collapse; font-size: 10px; width: 100%; }
+.unified-report-table th { background: #244e68; color: #fff; font-size: 9px; font-weight: 700; padding: 9px 8px; text-align: right; }
+.unified-report-table td { border-bottom: 1px solid #e1eaee; color: #304657; padding: 9px 8px; }
+.unified-report-table tbody tr:nth-child(even) { background: #f8fafb; }
+.unified-report-table .numeric { direction: ltr; font-family: "Outfit", "Cairo", sans-serif; text-align: left; white-space: nowrap; }
+.unified-report-table .empty { color: #70818e; padding: 32px; text-align: center; }
+.unified-report-summary { border: 1px solid #dce7eb; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-top: 23px; }
+.unified-report-summary-item { display: grid; gap: 5px; padding: 12px 14px; }
+.unified-report-summary-item + .unified-report-summary-item { border-right: 1px solid #dce7eb; }
+.unified-report-summary-item span { color: #718895; font-size: 9px; }
+.unified-report-summary-item strong { color: #263f51; font-family: "Outfit", "Cairo", sans-serif; font-size: 12px; }
+.unified-report-summary-item.emphasis { background: #1f465f; }
+.unified-report-summary-item.emphasis span { color: #c8dce5; }
+.unified-report-summary-item.emphasis strong { color: #fff; font-size: 13px; }
+.unified-report-note { background: #f4f8f9; border-right: 3px solid #4b91ad; color: #506876; font-size: 10px; line-height: 1.85; margin-top: 20px; padding: 11px 13px; }
+.unified-report-footer { border-top: 1px solid #dce7eb; color: #748995; display: flex; font-size: 9px; justify-content: space-between; margin-top: 30px; padding-top: 14px; }
+
+@media (max-width: 950px) { .operational-reports-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .operational-reports-workspace { padding: .75rem; } .operational-reports-header, .operational-report-builder { align-items: flex-start; flex-direction: column; } .operational-reports-stamp { display: none; } .operational-report-builder .btn, .operational-party-picker { width: 100%; } .unified-report { padding: 25px 18px; } .unified-report-header { margin: -25px -18px 20px; padding: 20px 18px; } .unified-report-reference { display: none; } .unified-report-table-wrap { overflow-x: auto; } .unified-report-table { min-width: 680px; } .unified-report-context { grid-template-columns: 1fr; } .unified-report-summary-item + .unified-report-summary-item { border-right: 0; border-top: 1px solid #dce7eb; } }
+@media print { .unified-report { box-shadow: none; max-width: none; min-height: auto; } }

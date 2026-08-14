@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Button } from "./Button";
 import { PageSubHeader } from "@/components/layout";
@@ -8,6 +10,7 @@ export interface DocumentPreviewProps {
     onBack: () => void;
     isLoading?: boolean;
     titleIcon?: any;
+    onExportCsv?: () => void;
 }
 
 export function DocumentPreview({
@@ -15,17 +18,21 @@ export function DocumentPreview({
     htmlContent,
     onBack,
     isLoading = false,
-    titleIcon = "file-signature"
+    titleIcon = "file-signature",
+    onExportCsv,
 }: DocumentPreviewProps) {
     const handlePrint = () => {
         const printWindow = window.open("", "_blank");
         if (printWindow) {
+            const documentStyles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+                .map((node) => node.outerHTML)
+                .join("\n");
             printWindow.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head>
-<meta charset="UTF-8"><title>${title || 'مستند'}</title>
-</head><body><style>
+<meta charset="UTF-8"><title>${title || "مستند"}</title>${documentStyles}
+<style>
 @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
-@page { size: A4; margin: 15mm 12mm; }
-</style>${htmlContent}</body></html>`);
+@page { size: A4; margin: 12mm; }
+</style></head><body>${htmlContent}</body></html>`);
             printWindow.document.close();
             printWindow.focus();
             setTimeout(() => printWindow.print(), 400);
@@ -42,8 +49,13 @@ export function DocumentPreview({
                         <Button variant="secondary" onClick={onBack}>
                             رجوع
                         </Button>
+                        {onExportCsv && (
+                            <Button variant="secondary" icon="download" onClick={onExportCsv} disabled={isLoading}>
+                                تصدير CSV
+                            </Button>
+                        )}
                         <Button variant="primary" icon="printer" onClick={handlePrint} disabled={isLoading}>
-                            طباعة
+                            طباعة / حفظ PDF
                         </Button>
                     </>
                 }
