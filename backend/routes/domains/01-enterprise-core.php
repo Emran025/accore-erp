@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 // Enterprise Core Controllers (Descending File Tree)
 use App\Http\Controllers\Api\V2\EnterpriseCore\SystemOverview\NumberRangeController;
 use App\Http\Controllers\Api\V2\EnterpriseCore\OrganizationGovernance\{
-    OrgIntegrationController, OrgStructureController, AuditTrailController, 
+    OrgIntegrationController, OrgStructureController, OperatingContextController, AuditTrailController,
     AuditLogController, SettingsController
 };
 use App\Http\Controllers\Api\V2\EnterpriseCore\IdentityAccess\{
@@ -84,7 +84,16 @@ use App\Http\Controllers\Api\V2\EnterpriseCore\Automation\SystemTemplateControll
             Route::get('/issues', [OrgIntegrationController::class, 'issues'])->name('v2.org_integration.issues');
         });
 
-        // ── 03. Org Structure (OrganizationGovernance)
+        // ── 03. Operating Context (OrganizationGovernance)
+        Route::group(['prefix' => 'operating-context', 'middleware' => 'can:settings,view'], function () {
+            Route::get('/readiness', [OperatingContextController::class, 'readiness'])->name('v2.operating_context.readiness');
+            Route::get('/warehouses', [OperatingContextController::class, 'warehouses'])->name('v2.operating_context.warehouses');
+            Route::get('/pos-terminals', [OperatingContextController::class, 'posTerminals'])->name('v2.operating_context.pos_terminals');
+            Route::middleware(['can:settings,create', 'throttle:api-write'])->post('/configure', [OperatingContextController::class, 'configure'])->name('v2.operating_context.configure');
+            Route::middleware(['can:settings,edit', 'throttle:api-write'])->post('/{id}/select', [OperatingContextController::class, 'select'])->name('v2.operating_context.select');
+        });
+
+        // ── 04. Org Structure (OrganizationGovernance)
         Route::group(['prefix' => 'org-structure', 'middleware' => 'can:settings,view'], function () {
             Route::get('/meta-types', [OrgStructureController::class, 'metaTypes'])->name('v2.org.meta_types');
             Route::get('/topology-rules', [OrgStructureController::class, 'topologyRules'])->name('v2.org.topology_rules');

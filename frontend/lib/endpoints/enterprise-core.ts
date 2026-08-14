@@ -36,6 +36,13 @@ export interface EnterpriseCoreEndpoints {
         CHANGE_HISTORY: string;
         BULK_STATUS: string;
     };
+    OPERATING_CONTEXT: {
+        READINESS: string;
+        CONFIGURE: string;
+        WAREHOUSES: string;
+        POS_TERMINALS: string;
+        SELECT: (id: string | number) => string;
+    };
     ORG_INTEGRATION: {
         STATUS: string;
         ISSUES: string;
@@ -105,6 +112,13 @@ export const ENTERPRISE_CORE: EnterpriseCoreEndpoints = {
         INTEGRITY_CHECK: "/v2/org-structure/integrity-check",
         CHANGE_HISTORY: "/v2/org-structure/change-history",
         BULK_STATUS: "/v2/org-structure/bulk-status-update",
+    },
+    OPERATING_CONTEXT: {
+        READINESS: "/v2/operating-context/readiness",
+        CONFIGURE: "/v2/operating-context/configure",
+        WAREHOUSES: "/v2/operating-context/warehouses",
+        POS_TERMINALS: "/v2/operating-context/pos-terminals",
+        SELECT: (id: string | number) => `/v2/operating-context/${id}/select`,
     },
     ORG_INTEGRATION: {
         STATUS: "/v2/org-integration/status",

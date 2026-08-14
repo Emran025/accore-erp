@@ -16,6 +16,9 @@ use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use App\Domains\Commercial\CRM\Models\ArCustomer;
 use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentative;
 use App\Domains\Finance\TaxCompliance\Models\ZatcaEinvoice;
+use App\Domains\Finance\ManagementAccounting\Models\CostCenter;
+use App\Domains\Finance\ManagementAccounting\Models\ProfitCenter;
+use App\Domains\SupplyChain\Inventory\Models\Warehouse;
 
 /**
  * SAP FI Pattern — Invoice as a DOCUMENT, not a store of amounts.
@@ -48,6 +51,10 @@ class Invoice extends Model
         'invoice_type',
         'customer_id',
         'sales_representative_id',
+        'warehouse_id',
+        'pos_terminal_id',
+        'cost_center_id',
+        'profit_center_id',
         'user_id',
         'is_reversed',
         'reversed_at',
@@ -77,6 +84,26 @@ class Invoice extends Model
     public function items(): HasMany
     {
         return $this->hasMany(InvoiceItem::class);
+    }
+
+    public function warehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class);
+    }
+
+    public function posTerminal(): BelongsTo
+    {
+        return $this->belongsTo(PosTerminal::class);
+    }
+
+    public function costCenter(): BelongsTo
+    {
+        return $this->belongsTo(CostCenter::class);
+    }
+
+    public function profitCenter(): BelongsTo
+    {
+        return $this->belongsTo(ProfitCenter::class);
     }
 
     public function reversedBy(): BelongsTo

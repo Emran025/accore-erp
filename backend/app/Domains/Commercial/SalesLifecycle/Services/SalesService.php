@@ -230,6 +230,10 @@ class SalesService
                 'invoice_type' => $productRevenue > 0 ? 'product' : 'service',
                 'customer_id' => $customerId,
                 'sales_representative_id' => $salesRepresentativeId,
+                'warehouse_id' => $data['warehouse_id'] ?? null,
+                'pos_terminal_id' => $data['pos_terminal_id'] ?? null,
+                'cost_center_id' => $data['cost_center_id'] ?? null,
+                'profit_center_id' => $data['profit_center_id'] ?? null,
                 'user_id' => $userId,
             ]);
 

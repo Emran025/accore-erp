@@ -24,6 +24,10 @@ class StoreInvoiceRequest extends FormRequest
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
             'sales_representative_id' => 'nullable|exists:sales_representatives,id',
+            'warehouse_id' => 'nullable|exists:warehouses,id',
+            'pos_terminal_id' => 'nullable|exists:pos_terminals,id',
+            'cost_center_id' => 'nullable|exists:cost_centers,id',
+            'profit_center_id' => 'nullable|exists:profit_centers,id',
             'items.*.unit_type' => 'nullable|string|in:main,sub,piece,package',
             'vat_rate' => 'nullable|numeric|min:0|max:100',
         ];

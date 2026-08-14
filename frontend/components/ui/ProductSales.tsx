@@ -31,6 +31,7 @@ import { Currency, GovernmentFee, Product, InvoiceItem, Customer, Invoice, TaxAu
 import { PaginatedResponse } from "@/types/types";
 import { formatCurrency, formatDateTime, parseNumber } from "@/lib/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useOperatingContextStore } from "@/stores/useOperatingContextStore";
 
 export interface ProductSalesPageProps {
     mode: "cash" | "credit";
@@ -38,6 +39,7 @@ export interface ProductSalesPageProps {
 
 export function ProductSales({ mode }: ProductSalesPageProps) {
     const isCash = mode === "cash";
+    const { readiness, loadReadiness } = useOperatingContextStore();
 
     // Ref for advancing focus to quantity field after barcode auto-select
     const quantityInputRef = useRef<HTMLInputElement | null>(null);
@@ -273,12 +275,12 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                 }
             } catch (e) { }
 
-            await Promise.all([loadProducts(), loadInvoices(), loadFees(), loadRepresentatives()]);
+            await Promise.all([loadProducts(), loadInvoices(), loadFees(), loadRepresentatives(), loadReadiness()]);
             generateInvoiceNumber();
             setIsLoading(false);
         };
         init();
-    }, [loadProducts, loadInvoices, generateInvoiceNumber, loadFees, loadRepresentatives]);
+    }, [loadProducts, loadInvoices, generateInvoiceNumber, loadFees, loadRepresentatives, loadReadiness]);
 
     useEffect(() => {
         if (!isCash && customerSearchTerm) {
@@ -461,6 +463,11 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
             return;
         }
 
+        if (!readiness?.ready || !readiness.context?.warehouse_id) {
+            showAlert("alert-container", "لا يمكن ترحيل البيع قبل إكمال إعداد المستودع ونقطة البيع.", "error");
+            return;
+        }
+
         if (!isCash && !selectedCustomer) {
             showAlert("alert-container", "يرجى اختيار العميل للفاتورة الآجلة", "error");
             return;
@@ -481,6 +488,10 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                 discount_amount: calculatedDiscount(),
                 subtotal: baseItemsTotal,
                 payment_type: mode,
+                warehouse_id: readiness.context.warehouse_id,
+                pos_terminal_id: readiness.context.pos_terminal_id,
+                cost_center_id: readiness.context.cost_center_id,
+                profit_center_id: readiness.context.profit_center_id,
             };
 
             if (isCash) {
@@ -827,6 +838,16 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
         <MainLayout>
             <div id="alert-container"></div>
             <div className="sales-layout">
+                <div className="sales-card" style={{ marginBottom: "1rem" }}>
+                    {readiness?.ready && readiness.context?.warehouse ? (
+                        <span>
+                            سياق التشغيل: {readiness.context.warehouse.name}
+                            {readiness.context.pos_terminal ? ` — ${readiness.context.pos_terminal.name}` : ""}
+                        </span>
+                    ) : (
+                        <span>إعداد المتجر غير مكتمل. أكمل إعداد المستودع ونقطة البيع من الهيكل التنظيمي قبل ترحيل المبيعات.</span>
+                    )}
+                </div>
                 <div className="sales-top-grids">
                     {/* Left: Input panels */}
                     {isCash ? InputPanelForm : (
@@ -901,7 +922,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                                     <span className="stat-label">{isCash ? 'إجمالي الفاتورة' : 'المبلغ الإجمالي'}</span>
                                     <span id="total-amount" className="stat-value highlight">{formatCurrency(finalTotal)}</span>
                                 </div>
-                                <button type="button" className="btn btn-primary btn-add" onClick={finishInvoice} id="finish-btn" data-icon="check" disabled={invoiceItems.length === 0}>
+                                <button type="button" className="btn btn-primary btn-add" onClick={finishInvoice} id="finish-btn" data-icon="check" disabled={invoiceItems.length === 0 || !readiness?.ready}>
                                     {isCash ? 'إنهاء الفاتورة' : 'حفظ الفاتورة'}
                                 </button>
                             </div>

@@ -13,6 +13,7 @@ import { ToastContainer, FullLogo } from "@/components/ui";
 import { initSystemSettings } from "@/lib/settings";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useUIStore } from "@/stores/useUIStore";
+import { useOperatingContextStore } from "@/stores/useOperatingContextStore";
 import { getIcon } from "@/lib/icons";
 
 interface MainLayoutProps {
@@ -36,6 +37,7 @@ export function MainLayout({
 
   const { isLoading, checkAuth, sessionExpired } = useAuthStore();
   const { mobileOpen, setMobileOpen, sideNavCollapsed, sideNavWidth, setSideNavCollapsed } = useUIStore();
+  const { readiness, loadReadiness } = useOperatingContextStore();
 
   useEffect(() => {
     const verifyAuth = async () => {
@@ -49,6 +51,8 @@ export function MainLayout({
         return;
       }
 
+      await loadReadiness();
+
       if (requiredModule) {
         const hasAccess = useAuthStore.getState().canAccess(requiredModule, requiredAction);
         if (!hasAccess) {
@@ -59,7 +63,7 @@ export function MainLayout({
     };
 
     verifyAuth();
-  }, [router, requiredModule, requiredAction, checkAuth]);
+  }, [router, requiredModule, requiredAction, checkAuth, loadReadiness]);
 
   if (isLoading || sessionExpired) {
     return (
@@ -100,6 +104,11 @@ export function MainLayout({
   return (
     <div className="test-shell-column">
       <div>
+        {!readiness?.ready && readiness?.next_action && (
+          <div className="status-notification-bar" role="status">
+            <span>Operating setup is incomplete: {readiness.missing[0]?.action}</span>
+          </div>
+        )}
         <Suspense fallback={<div className="top-global-bar" />}>
           <TopGlobalBar />
         </Suspense>

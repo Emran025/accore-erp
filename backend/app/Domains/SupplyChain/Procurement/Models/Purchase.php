@@ -14,6 +14,9 @@ use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\ForeignExchange\Models\Currency;
 use App\Domains\Finance\GeneralLedger\Services\ChartOfAccountsMappingService;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
+use App\Domains\Finance\ManagementAccounting\Models\CostCenter;
+use App\Domains\Finance\ManagementAccounting\Models\ProfitCenter;
+use App\Domains\SupplyChain\Inventory\Models\Warehouse;
 
 /**
  * Purchase model — SAP FI pattern.
@@ -35,6 +38,9 @@ class Purchase extends Model
         'expiry_date',
         'user_id',
         'supplier_id',
+        'warehouse_id',
+        'cost_center_id',
+        'profit_center_id',
         'payment_type',
         'voucher_number',
         'notes',
@@ -82,6 +88,21 @@ class Purchase extends Model
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(ApSupplier::class, 'supplier_id');
+    }
+
+    public function warehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class);
+    }
+
+    public function costCenter(): BelongsTo
+    {
+        return $this->belongsTo(CostCenter::class);
+    }
+
+    public function profitCenter(): BelongsTo
+    {
+        return $this->belongsTo(ProfitCenter::class);
     }
 
     public function approvedBy(): BelongsTo

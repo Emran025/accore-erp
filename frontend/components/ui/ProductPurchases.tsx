@@ -26,6 +26,7 @@ import { Permission, User, checkAuth, getStoredPermissions, getStoredUser } from
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { formatCurrency, formatDate, formatDateTime, parseNumber } from "@/lib/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useOperatingContextStore } from "@/stores/useOperatingContextStore";
 
 // ─── Local types ───────────────────────────────────────────────────────────────
 
@@ -91,6 +92,7 @@ export interface ProductPurchasesPageProps {
 
 export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
     const isCredit = mode === "credit";
+    const { readiness, loadReadiness } = useOperatingContextStore();
     const [user, setUser] = useState<User | null>(null);
     const [permissions, setPermissions] = useState<Permission[]>([]);
 
@@ -219,12 +221,12 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
             if (!authenticated) return;
             setUser(getStoredUser());
             setPermissions(getStoredPermissions());
-            await Promise.all([loadProducts(), loadPurchases()]);
+            await Promise.all([loadProducts(), loadPurchases(), loadReadiness()]);
             generateInvoiceNumber();
             setIsLoading(false);
         };
         init();
-    }, [loadProducts, loadPurchases, generateInvoiceNumber]);
+    }, [loadProducts, loadPurchases, generateInvoiceNumber, loadReadiness]);
 
     // Supplier search debounce
     useEffect(() => {
@@ -352,6 +354,10 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
             showAlert("alert-container", "أضف منتجاً واحداً على الأقل للفاتورة!", "error");
             return;
         }
+        if (!readiness?.ready || !readiness.context?.warehouse_id) {
+            showAlert("alert-container", "لا يمكن ترحيل الشراء قبل إكمال إعداد المستودع.", "error");
+            return;
+        }
         if (isCredit && !selectedSupplier) {
             showAlert("alert-container", "يرجى اختيار المورد للشراء الآجل", "error");
             return;
@@ -372,6 +378,9 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                     discount_type: discountType,
                     expiry_date: item.expiry_date || null,
                     notes: invoiceNotes || null,
+                    warehouse_id: readiness.context.warehouse_id,
+                    cost_center_id: readiness.context.cost_center_id,
+                    profit_center_id: readiness.context.profit_center_id,
                 };
                 const response = await fetchAPI(API_ENDPOINTS.COMMERCIAL.PROCUREMENT.BASE, {
                     method: "POST",
@@ -788,6 +797,13 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
         <MainLayout>
             <div id="alert-container"></div>
             <div className="sales-layout">
+                <div className="sales-card" style={{ marginBottom: "1rem" }}>
+                    {readiness?.ready && readiness.context?.warehouse ? (
+                        <span>سياق التشغيل: {readiness.context.warehouse.name}</span>
+                    ) : (
+                        <span>إعداد المتجر غير مكتمل. أكمل إعداد المستودع من الهيكل التنظيمي قبل ترحيل المشتريات.</span>
+                    )}
+                </div>
                 <div className="sales-top-grids">
                     {/* Left: product entry */}
                     {InputPanelForm}
@@ -872,7 +888,7 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                                     onClick={finishPurchase}
                                     id="finish-purchase-btn"
                                     data-icon="check"
-                                    disabled={purchaseItems.length === 0}
+                                    disabled={purchaseItems.length === 0 || !readiness?.ready}
                                 >
                                     {isCredit ? 'حفظ الفاتورة' : 'إنهاء الفاتورة'}
                                 </button>
