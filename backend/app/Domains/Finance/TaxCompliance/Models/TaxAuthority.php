@@ -17,7 +17,7 @@ class TaxAuthority extends Model
     use HasFactory;
     
     protected $fillable = [
-        'code', 'name', 'country_code', 'adapter_class', 'config',
+        'code', 'name', 'name_ar', 'name_en', 'country_code', 'adapter_class', 'config',
         'connection_type', 'connection_credentials', 'endpoint_url',
         'is_active', 'is_primary',
     ];

@@ -19,7 +19,9 @@ class TaxSeeder extends Seeder
         $zatca = TaxAuthority::updateOrCreate(
             ['code' => 'ZATCA'],
             [
-                'name' => 'ZATCA - Saudi Tax Authority',
+                'name' => 'هيئة الزكاة والضريبة والجمارك - السعودية',
+                'name_ar' => 'هيئة الزكاة والضريبة والجمارك - السعودية',
+                'name_en' => 'ZATCA - Saudi Tax Authority',
                 'country_code' => 'SA',
                 'adapter_class' => \App\Domains\Finance\Taxation\Services\ZATCATaxAuthority::class,
                 'config' => null,
@@ -31,7 +33,9 @@ class TaxSeeder extends Seeder
         $vat = TaxType::updateOrCreate(
             ['tax_authority_id' => $zatca->id, 'code' => 'VAT'],
             [
-                'name' => 'Value Added Tax',
+                'name' => 'ضريبة القيمة المضافة',
+                'name_ar' => 'ضريبة القيمة المضافة',
+                'name_en' => 'Value Added Tax',
                 'gl_account_code' => null, // From ChartOfAccountsMappingService
                 'is_active' => true,
             ]
@@ -45,7 +49,9 @@ class TaxSeeder extends Seeder
             [
                 'rate' => 0.15,
                 'effective_to' => null,
-                'description' => 'Standard VAT 15%',
+                'description' => 'ضريبة القيمة المضافة الأساسية بنسبة 15٪',
+                    'description_ar' => 'ضريبة القيمة المضافة الأساسية بنسبة 15٪',
+                    'description_en' => 'Standard VAT at 15%.',
                 'is_default' => true,
             ]
         );
@@ -54,7 +60,9 @@ class TaxSeeder extends Seeder
         TaxType::updateOrCreate(
             ['tax_authority_id' => $zatca->id, 'code' => 'ZERO'],
             [
-                'name' => 'Zero Rated',
+                'name' => 'ضريبة بنسبة صفر',
+                    'name_ar' => 'ضريبة بنسبة صفر',
+                    'name_en' => 'Zero Rated',
                 'gl_account_code' => null,
                 'is_active' => true,
             ]

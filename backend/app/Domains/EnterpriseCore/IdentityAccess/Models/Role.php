@@ -16,6 +16,8 @@ class Role extends Model
         'role_name_ar',
         'role_name_en',
         'description',
+        'description_ar',
+        'description_en',
         'is_system',
         'is_active',
         'created_by',

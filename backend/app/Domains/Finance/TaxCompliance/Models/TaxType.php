@@ -16,7 +16,7 @@ class TaxType extends Model
 {
     use HasFactory;
     
-    protected $fillable = ['tax_authority_id', 'code', 'name', 'gl_account_code', 'calculation_type', 'applicable_areas', 'is_active'];
+    protected $fillable = ['tax_authority_id', 'code', 'name', 'name_ar', 'name_en', 'gl_account_code', 'calculation_type', 'applicable_areas', 'is_active'];
 
     protected function casts(): array
     {

@@ -18,7 +18,7 @@ class TaxRate extends Model
     
     protected $fillable = [
         'tax_type_id', 'rate', 'fixed_amount', 'effective_from', 'effective_to',
-        'description', 'is_default',
+            'description', 'description_ar', 'description_en', 'is_default',
     ];
 
     protected function casts(): array

@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Finance\TaxCompliance;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Support\Localization\LocalizedValue;
 
 class TaxTypeResource extends JsonResource
 {
@@ -12,7 +13,9 @@ class TaxTypeResource extends JsonResource
             'id'                 => $this->id,
             'tax_authority_id'   => $this->tax_authority_id,
             'code'               => $this->code,
-            'name'               => $this->name,
+            'name'               => LocalizedValue::resolve($this->resource, 'name'),
+            'name_ar'            => $this->name_ar,
+            'name_en'            => $this->name_en,
             'gl_account_code'    => $this->gl_account_code,
             'calculation_type'   => $this->calculation_type,
             'applicable_areas'   => $this->applicable_areas,

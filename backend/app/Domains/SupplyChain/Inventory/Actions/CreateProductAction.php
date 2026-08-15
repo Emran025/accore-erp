@@ -4,6 +4,7 @@ namespace App\Domains\SupplyChain\Inventory\Actions;
 use App\Domains\SupplyChain\Inventory\Models\Product;
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
 use App\Domains\SupplyChain\Inventory\Services\InventoryCostingService;
+use App\Support\Localization\LocalizedValue;
 use Illuminate\Support\Facades\DB;
 
 class CreateProductAction
@@ -15,6 +16,9 @@ class CreateProductAction
     public function execute(array $data): Product
     {
         
+        foreach (['name', 'description', 'unit_name', 'sub_unit_name'] as $attribute) {
+            $data = LocalizedValue::normaliseInput($data, $attribute);
+        }
         $data['created_by'] = auth()->id() ?? session('user_id');
 
         return DB::transaction(function () use ($data) {

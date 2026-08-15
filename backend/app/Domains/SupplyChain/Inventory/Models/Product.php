@@ -11,6 +11,7 @@ use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use App\Domains\Finance\ForeignExchange\Models\Currency;
 use App\Domains\Commercial\SalesLifecycle\Models\InvoiceItem;
 use App\Domains\SupplyChain\Procurement\Models\Purchase;
+use App\Support\Localization\LocalizedValue;
 
 /**
  * Model representing an item in the unified item catalogue.
@@ -48,20 +49,40 @@ class Product extends Model
         'taxable',
         'inventory_control',
         'sellable',
+        'catalog_code',
         'name',
+        'name_ar',
+        'name_en',
         'description',
+        'description_ar',
+        'description_en',
         'category_id',
         'unit_price',
         'minimum_profit_margin',
         'stock_quantity',
         'low_stock_threshold',
         'unit_name',
+        'unit_name_ar',
+        'unit_name_en',
         'items_per_unit',
         'sub_unit_name',
+        'sub_unit_name_ar',
+        'sub_unit_name_en',
         'weighted_average_cost',
         'created_by',
         'purchase_currency_id',
     ];
+
+    public function localized(string $attribute, ?string $locale = null): ?string
+    {
+        return LocalizedValue::resolve($this, $attribute, $locale);
+    }
+
+    /** @return array<string, string|null> */
+    public function translationsFor(string $attribute): array
+    {
+        return LocalizedValue::translations($this, $attribute);
+    }
 
     protected function casts(): array
     {
