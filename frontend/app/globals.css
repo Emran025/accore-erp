@@ -73,6 +73,7 @@
     0 4px 6px -4px rgb(0 0 0 / 0.1);
 
   --grad-primary: linear-gradient(135deg, #394860 0%, #233045 100%);
+  --app-font-family: "Cairo", "Outfit", sans-serif;
 }
 
 html {
@@ -82,7 +83,7 @@ html {
 }
 
 body {
-  font-family: "Cairo", "Outfit", sans-serif;
+  font-family: var(--app-font-family);
   background: var(--bg-color);
   color: var(--text-primary);
   margin: 0;

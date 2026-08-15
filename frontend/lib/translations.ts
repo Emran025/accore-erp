@@ -1,4 +1,7 @@
-// Arabic translations - exact copy from original translations.js
+/**
+ * @deprecated Use the typed `useI18n()` runtime from `@/lib/i18n` for all new UI.
+ * This flat Arabic map remains only as a migration source for the locale platform.
+ */
 export const translations = {
   // General
   loading: "جاري التحميل...",
@@ -224,7 +227,8 @@ export const translations = {
 
 export type TranslationKey = keyof typeof translations;
 
+/** @deprecated Use `useI18n().t` instead of string-key translation. */
 export function t(key: TranslationKey): string {
-  return translations[key] || key;
+  return translations[key] || "هذا المحتوى غير متاح حالياً.";
 }
 

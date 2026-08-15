@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import React from "react";
 import { SessionExpiredModal } from "@/components/ui/SessionExpiredModal";
+import { LocaleProvider } from "@/lib/i18n";
 
 export const metadata: Metadata = {
   title: "نظام أكور",
@@ -28,8 +29,10 @@ export default function RootLayout({
         />
       </head>
       <body>
-        {children}
-        <SessionExpiredModal />
+        <LocaleProvider>
+          {children}
+          <SessionExpiredModal />
+        </LocaleProvider>
       </body>
     </html>
   );
