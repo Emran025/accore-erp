@@ -33,8 +33,8 @@ export function TopologyRulesTab() {
                 fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.TOPOLOGY_RULES),
                 fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.META_TYPES),
             ]);
-            setRules((rulesRes.topology_rules as TopologyRule[]) || []);
-            setMetaTypes((metaRes.meta_types as MetaType[]) || []);
+            setRules((rulesRes.data as TopologyRule[]) || []);
+            setMetaTypes((metaRes.data as MetaType[]) || []);
         } catch { showToast(i18n.catalog["enterpriseCore.topologyrules.errorLoadingRules"], "error"); }
         finally { setIsLoading(false); }
     }, []);

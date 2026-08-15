@@ -58,10 +58,10 @@ export function LinksTab() {
                 fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.META_TYPES),
                 fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.TOPOLOGY_RULES),
             ]);
-            setLinks((linksRes.links as StructureLink[]) || []);
-            setNodes((nodesRes.nodes as StructureNode[]) || []);
-            setMetaTypes((metaRes.meta_types as MetaType[]) || []);
-            setTopologyRules((rulesRes.topology_rules as TopologyRule[]) || []);
+            setLinks((linksRes.data as StructureLink[]) || []);
+            setNodes((nodesRes.data as StructureNode[]) || []);
+            setMetaTypes((metaRes.data as MetaType[]) || []);
+            setTopologyRules((rulesRes.data as TopologyRule[]) || []);
         } catch { showToast(i18n.catalog["common.general.errorLoadingData"], "error"); }
         finally { setIsLoading(false); }
     }, [filterSourceType, filterTargetType, filterLinkType, showActiveOnly]);

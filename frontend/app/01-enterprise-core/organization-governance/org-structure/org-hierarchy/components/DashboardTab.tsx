@@ -1,6 +1,6 @@
 "use client";
 
-import { useI18n, catalogText, catalogMessage } from "@/lib/i18n";
+import { useI18n, catalogText } from "@/lib/i18n";
 import { PageSubHeader } from "@/components/layout";
 import { DomainCardRow, KPICardRow } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -29,39 +29,51 @@ interface Statistics {
     recent_changes_7d: number;
 }
 
-const DOMAIN_LABELS_AR: Record<string, string> = {
-    Enterprise: catalogMessage("enterpriseCore.dashboard.organization"),
-    Financial: catalogMessage("common.general.finance"),
-    Controlling: catalogMessage("enterpriseCore.dashboard.control"),
-    Logistics: catalogMessage("enterpriseCore.dashboard.logistics"),
-    Sales: catalogMessage("common.general.sales"),
-    HR: catalogMessage("common.general.humanResources"),
-    Project: catalogMessage("common.general.projects"),
-};
+interface MetaType {
+    id: string;
+    level_domain: string;
+    sort_order: number;
+}
 
 export function DashboardTab() {
     const { t: i18n } = useI18n();
     const [stats, setStats] = useState<Statistics | null>(null);
+    const [metaTypes, setMetaTypes] = useState<MetaType[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const loadStats = useCallback(async () => {
+    const loadDashboardData = useCallback(async () => {
         try {
             setIsLoading(true);
-            const res = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.STATISTICS);
-            if (res.statistics) {
-                setStats(res.statistics as Statistics);
+            const [statsResponse, metaTypesResponse] = await Promise.all([
+                fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.STATISTICS),
+                fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.META_TYPES),
+            ]);
+
+            if (statsResponse.statistics) {
+                setStats(statsResponse.statistics as Statistics);
             }
-        } catch { /* silently fail — fallback below */ }
-        finally { setIsLoading(false); }
+            setMetaTypes((metaTypesResponse.data as MetaType[]) || []);
+        } catch {
+            // The individual cards retain zero-value fallbacks when an endpoint is unavailable.
+        } finally {
+            setIsLoading(false);
+        }
     }, []);
 
-    useEffect(() => { loadStats(); }, [loadStats]);
+    useEffect(() => { loadDashboardData(); }, [loadDashboardData]);
 
     if (isLoading) {
         return <div className="loading-spinner" style={{ margin: "2rem auto" }} />;
     }
 
-    const domains = ["Enterprise", "Financial", "Controlling", "Logistics", "Sales", "HR", "Project"];
+    const domains = Array.from(new Set(
+        [...metaTypes]
+            .sort((left, right) => left.sort_order - right.sort_order)
+            .map((type) => type.level_domain)
+            .filter(Boolean)
+    ));
+    const domainCounts = stats?.domain_breakdown ?? {};
+    const maxDomainCount = Math.max(1, ...domains.map((domain) => domainCounts[domain] ?? 0));
 
     return (
         <div className="animate-fade">
@@ -71,7 +83,6 @@ export function DashboardTab() {
                 subTitle={i18n.catalog["enterpriseCore.dashboard.comprehensiveCoverageCoreSystemDimensionsSimulatingSapSpro"]}
             />
 
-            {/* KPI Cards Row */}
             <KPICardRow
                 KPICards={[
                     { icon: "sitemap", label: i18n.catalog["enterpriseCore.dashboard.totalUnits"], value: stats?.total_nodes ?? 0, subtitle: catalogText(i18n, "common.general.active.alternative3", { value0: stats?.active_nodes ?? 0 }) },
@@ -83,40 +94,35 @@ export function DashboardTab() {
                 ]}
             />
 
-
-            {/* Dimension Grid */}
             <h4 style={{ margin: "0 0 1rem", color: "var(--text-primary)" }}>{getIcon("tree")} {i18n.catalog["enterpriseCore.dashboard.organizationalStructureDimensionsModuleDimensions"]}</h4>
             <DomainCardRow
                 domainCards={domains.map((domain) => ({
                     key: domain,
-                    domain: domain,
-                    domainAr: DOMAIN_LABELS_AR[domain],
+                    domain,
                     icon: DOMAIN_ICONS[domain] || "cube",
-                    count: stats?.domain_breakdown?.[domain] ?? 0,
-                    description: i18n.catalog["enterpriseCore.dashboard.registeredOrganizationalUnits"]
+                    count: domainCounts[domain] ?? 0,
+                    maxForBar: maxDomainCount,
+                    description: i18n.catalog["enterpriseCore.dashboard.registeredOrganizationalUnits"],
                 }))}
             />
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-                {/* Health Status */}
                 <div className="sales-card">
                     <h4 style={{ margin: "0 0 1rem" }}>{getIcon("check-circle")} {i18n.catalog["enterpriseCore.dashboard.primaryStructureSafetyStatus"]}</h4>
                     <div style={{ display: "grid", gap: "0.75rem" }}>
-                        <StatusItem label={i18n.catalog["enterpriseCore.dashboard.clientDefinitionClientSetup"]} active={(stats?.domain_breakdown?.Enterprise ?? 0) > 0} />
-                        <StatusItem label={i18n.catalog["enterpriseCore.dashboard.companyCodes"]} active={(stats?.domain_breakdown?.Financial ?? 0) > 0} />
-                        <StatusItem label={i18n.catalog["enterpriseCore.dashboard.controllingCostAreasControlling"]} active={(stats?.domain_breakdown?.Controlling ?? 0) > 0} />
-                        <StatusItem label={i18n.catalog["enterpriseCore.dashboard.factoriesSitesLogisticsPlants"]} active={(stats?.domain_breakdown?.Logistics ?? 0) > 0} />
-                        <StatusItem label={i18n.catalog["enterpriseCore.dashboard.salesOrganizationsSalesOrgs"]} active={(stats?.domain_breakdown?.Sales ?? 0) > 0} />
-                        <StatusItem label={i18n.catalog["enterpriseCore.dashboard.hrPersonnelAreasHrPersonnelAreas"]} active={(stats?.domain_breakdown?.HR ?? 0) > 0} />
-                        <StatusItem label={i18n.catalog["enterpriseCore.dashboard.projectStructureProjectSystems"]} active={(stats?.domain_breakdown?.Project ?? 0) > 0} />
+                        {domains.map((domain) => (
+                            <StatusItem
+                                key={domain}
+                                label={domain}
+                                active={(domainCounts[domain] ?? 0) > 0}
+                            />
+                        ))}
                     </div>
                 </div>
 
-                {/* Node Status Breakdown + SPRO Quick Actions */}
                 <div className="sales-card">
                     <h4 style={{ margin: "0 0 1rem" }}>{getIcon("settings")} {i18n.catalog["enterpriseCore.dashboard.systemCustomizationSproStyle"]}</h4>
 
-                    {/* Status bars */}
                     <div style={{ display: "grid", gap: "0.5rem", marginBottom: "1.5rem" }}>
                         <StatusBar label={i18n.catalog["common.general.activeActive"]} count={stats?.active_nodes ?? 0} total={stats?.total_nodes || 1} color="#10b981" />
                         <StatusBar label={i18n.catalog["common.general.inactiveInactive"]} count={stats?.inactive_nodes ?? 0} total={stats?.total_nodes || 1} color="#f59e0b" />
@@ -135,7 +141,6 @@ export function DashboardTab() {
                 </div>
             </div>
 
-            {/* Type Breakdown Table */}
             {stats?.type_breakdown && Object.keys(stats.type_breakdown).length > 0 && (
                 <div className="sales-card" style={{ marginTop: "1.5rem" }}>
                     <h4 style={{ margin: "0 0 1rem" }}>{getIcon("chart-bar")} {i18n.catalog["enterpriseCore.dashboard.unitsDistributionType"]}</h4>

@@ -26,7 +26,7 @@ export function MetaTypesTab() {
         try {
             setIsLoading(true);
             const response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.META_TYPES);
-            setMetaTypes((response.meta_types as MetaType[]) || []);
+            setMetaTypes((response.data as MetaType[]) || []);
         } catch { showToast(i18n.catalog["common.general.errorLoadingUnitTypes"], "error"); }
         finally { setIsLoading(false); }
     }, []);

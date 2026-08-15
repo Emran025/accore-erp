@@ -73,8 +73,8 @@ export function HierarchyTab() {
                 fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES),
                 fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.META_TYPES),
             ]);
-            setNodes((nodesRes.nodes as StructureNode[]) || []);
-            setMetaTypes((metaRes.meta_types as MetaType[]) || []);
+            setNodes((nodesRes.data as StructureNode[]) || []);
+            setMetaTypes((metaRes.data as MetaType[]) || []);
         } catch {
             showToast(i18n.catalog["common.general.errorLoadingData"], "error");
         } finally {

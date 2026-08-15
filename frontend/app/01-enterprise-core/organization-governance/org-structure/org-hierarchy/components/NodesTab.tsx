@@ -73,7 +73,7 @@ export function NodesTab() {
             if (filterStatus) params.set("status", filterStatus);
             if (filterDomain) params.set("level_domain", filterDomain);
             const response = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES}?${params}`);
-            setNodes((response.nodes as StructureNode[]) || []);
+            setNodes((response.data as StructureNode[]) || []);
             setInitialDataLoaded(true);
         } catch { showToast(i18n.catalog["enterpriseCore.nodes.errorLoadingOrganizationalUnits"], "error"); }
         finally { setIsLoading(false); }
@@ -82,14 +82,14 @@ export function NodesTab() {
     const loadMetaTypes = useCallback(async () => {
         try {
             const response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.META_TYPES);
-            setMetaTypes((response.meta_types as MetaType[]) || []);
+            setMetaTypes((response.data as MetaType[]) || []);
         } catch { showToast(i18n.catalog["common.general.errorLoadingUnitTypes"], "error"); }
     }, []);
 
     const loadTopologyRules = useCallback(async () => {
         try {
             const response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.TOPOLOGY_RULES);
-            setTopologyRules((response.topology_rules as TopologyRule[]) || []);
+            setTopologyRules((response.data as TopologyRule[]) || []);
         } catch { /* ignore */ }
     }, []);
 
