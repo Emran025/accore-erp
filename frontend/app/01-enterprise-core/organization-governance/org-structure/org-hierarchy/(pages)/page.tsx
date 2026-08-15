@@ -64,6 +64,18 @@ export default function OrganizationalStructurePage() {
   const [costCenters, setCostCenters] = useState<any[]>([]);
   const [profitCenters, setProfitCenters] = useState<any[]>([]);
   const { readiness, loadReadiness } = useOperatingContextStore();
+  const readinessLabels: Record<string, string> = {
+    warehouse: i18n.catalog["enterpriseCore.orgHierarchy.readinessWarehouse"],
+    cost_center: i18n.catalog["enterpriseCore.orgHierarchy.readinessCostCenter"],
+    profit_center: i18n.catalog["enterpriseCore.orgHierarchy.readinessProfitCenter"],
+    pos_terminal: i18n.catalog["enterpriseCore.orgHierarchy.readinessPosTerminal"],
+  };
+  const readinessActions: Record<string, string> = {
+    warehouse: i18n.catalog["enterpriseCore.orgHierarchy.readinessActionWarehouse"],
+    cost_center: i18n.catalog["enterpriseCore.orgHierarchy.readinessActionCostCenter"],
+    profit_center: i18n.catalog["enterpriseCore.orgHierarchy.readinessActionProfitCenter"],
+    pos_terminal: i18n.catalog["enterpriseCore.orgHierarchy.readinessActionPosTerminal"],
+  };
 
   useEffect(() => {
     const loadSetupData = async () => {
@@ -180,7 +192,9 @@ export default function OrganizationalStructurePage() {
                 <p>{i18n.catalog["enterpriseCore.orgHierarchy.readyWarehouseDrivenSalesPurchasing"]}</p>
               ) : (
                 <p>
-                  {readiness?.missing?.[0]?.action ||
+                  {(readiness?.missing?.[0]?.key
+                    ? readinessActions[readiness.missing[0].key]
+                    : null) ||
                     i18n.catalog["enterpriseCore.orgHierarchy.configureWarehouseFinancialCentersPosTerminalBeginOperations"]}
                 </p>
               )}
@@ -199,7 +213,9 @@ export default function OrganizationalStructurePage() {
                   key={check.key}
                   className={`badge ${check.complete ? 'badge-success' : 'badge-warning'}`}
                 >
-                  {check.key.replaceAll('_', ' ')}: {check.complete ? 'ready' : 'required'}
+                  {readinessLabels[check.key] || i18n.catalog["common.general.readiness"]}: {check.complete
+                    ? i18n.catalog["enterpriseCore.orgHierarchy.readinessReady"]
+                    : i18n.catalog["common.general.required"]}
                 </span>
               ))}
             </div>
@@ -234,7 +250,7 @@ export default function OrganizationalStructurePage() {
         footer={
           <>
             <Button variant="secondary" onClick={() => setSetupOpen(false)} disabled={isSaving}>
-              Cancel
+              {i18n.catalog["common.general.cancel"]}
             </Button>
             <Button onClick={configureStore} isLoading={isSaving}>
               {i18n.catalog["enterpriseCore.orgHierarchy.saveOperatingContext"]}</Button>

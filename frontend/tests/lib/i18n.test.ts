@@ -47,4 +47,16 @@ describe("typed locale runtime", () => {
         expect(getLocaleMetadata("ar-SA")).toMatchObject({ direction: "rtl", formattingLocale: "ar-SA" });
         expect(getLocaleMetadata("en-US")).toMatchObject({ direction: "ltr", formattingLocale: "en-US" });
     });
+
+    it("localizes organizational readiness labels and actions in both supported locales", () => {
+        expect(arSA.catalog["enterpriseCore.orgHierarchy.operationalStoreReadiness"]).toBe("جاهزية متجر التشغيل");
+        expect(arSA.catalog["enterpriseCore.orgHierarchy.configureStore"]).toBe("تهيئة المتجر");
+        expect(arSA.catalog["enterpriseCore.orgHierarchy.readinessActionWarehouse"]).toBe("قم بإنشاء وتفعيل مستودع.");
+        expect(arSA.catalog["enterpriseCore.orgHierarchy.readinessPosTerminal"]).toBe("نقطة البيع");
+
+        expect(enUS.catalog["enterpriseCore.orgHierarchy.operationalStoreReadiness"]).toBe("Operational Store Readiness");
+        expect(enUS.catalog["enterpriseCore.orgHierarchy.configureStore"]).toBe("Configure Store");
+        expect(enUS.catalog["enterpriseCore.orgHierarchy.readinessActionWarehouse"]).toBe("Create and activate a warehouse.");
+        expect(enUS.catalog["enterpriseCore.orgHierarchy.readinessPosTerminal"]).toBe("POS terminal");
+    });
 });

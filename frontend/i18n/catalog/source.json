@@ -56598,7 +56598,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.configureOperationalStore",
-      "source": "Configure operational store",
+      "source": "تهيئة متجر التشغيل",
       "classification": "user-facing",
       "occurrences": [
         {
@@ -56613,7 +56613,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.configureStore",
-      "source": "Configure Store",
+      "source": "تهيئة المتجر",
       "classification": "review-required",
       "occurrences": [
         {
@@ -56628,7 +56628,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.configureWarehouseFinancialCentersPosTerminalBeginOperations",
-      "source": "Configure a warehouse, financial centers, and POS terminal to begin operations.",
+      "source": "قم بتهيئة مستودع ومراكز مالية ونقطة بيع لبدء العمليات.",
       "classification": "review-required",
       "occurrences": [
         {
@@ -56643,7 +56643,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.costCenter",
-      "source": "Cost center *",
+      "source": "مركز التكلفة *",
       "classification": "review-required",
       "occurrences": [
         {
@@ -56658,7 +56658,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.mainPos",
-      "source": "Main POS",
+      "source": "نقطة البيع الرئيسية",
       "classification": "review-required",
       "occurrences": [
         {
@@ -56673,7 +56673,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.mainWarehouse",
-      "source": "Main Warehouse",
+      "source": "المستودع الرئيسي",
       "classification": "review-required",
       "occurrences": [
         {
@@ -56688,7 +56688,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.operatingContextConfiguredSuccessfully",
-      "source": "Operating context configured successfully.",
+      "source": "تمت تهيئة سياق التشغيل بنجاح.",
       "classification": "user-facing",
       "occurrences": [
         {
@@ -56703,7 +56703,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.operationalStoreReadiness",
-      "source": "Operational Store Readiness",
+      "source": "جاهزية متجر التشغيل",
       "classification": "review-required",
       "occurrences": [
         {
@@ -56718,7 +56718,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.organizationalUnit",
-      "source": "Organizational unit",
+      "source": "الوحدة التنظيمية",
       "classification": "review-required",
       "occurrences": [
         {
@@ -56748,7 +56748,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.pleaseCompleteRequiredOperatingConfigurationFields",
-      "source": "Please complete the required operating configuration fields.",
+      "source": "يرجى استكمال حقول تهيئة التشغيل المطلوبة.",
       "classification": "user-facing",
       "occurrences": [
         {
@@ -56763,7 +56763,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.posTerminalCode",
-      "source": "POS terminal code *",
+      "source": "رمز نقطة البيع *",
       "classification": "review-required",
       "occurrences": [
         {
@@ -56778,7 +56778,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.posTerminalName",
-      "source": "POS terminal name *",
+      "source": "اسم نقطة البيع *",
       "classification": "review-required",
       "occurrences": [
         {
@@ -56793,7 +56793,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.profitCenter",
-      "source": "Profit center *",
+      "source": "مركز الربح *",
       "classification": "review-required",
       "occurrences": [
         {
@@ -56807,8 +56807,143 @@
       ]
     },
     {
+      "id": "enterpriseCore.orgHierarchy.readinessActionCostCenter",
+      "source": "اربط مركز تكلفة نشطًا بسياق التشغيل.",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx:readiness:enterpriseCore.orgHierarchy.readinessActionCostCenter",
+          "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx",
+          "line": 0,
+          "column": 0,
+          "kind": "derived-readiness-label",
+          "context": "Operating-context readiness banner"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgHierarchy.readinessActionPosTerminal",
+      "source": "قم بإنشاء وتفعيل نقطة بيع مرتبطة بالمستودع.",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx:readiness:enterpriseCore.orgHierarchy.readinessActionPosTerminal",
+          "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx",
+          "line": 0,
+          "column": 0,
+          "kind": "derived-readiness-label",
+          "context": "Operating-context readiness banner"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgHierarchy.readinessActionProfitCenter",
+      "source": "اربط مركز ربح نشطًا بسياق التشغيل.",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx:readiness:enterpriseCore.orgHierarchy.readinessActionProfitCenter",
+          "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx",
+          "line": 0,
+          "column": 0,
+          "kind": "derived-readiness-label",
+          "context": "Operating-context readiness banner"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgHierarchy.readinessActionWarehouse",
+      "source": "قم بإنشاء وتفعيل مستودع.",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx:readiness:enterpriseCore.orgHierarchy.readinessActionWarehouse",
+          "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx",
+          "line": 0,
+          "column": 0,
+          "kind": "derived-readiness-label",
+          "context": "Operating-context readiness banner"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgHierarchy.readinessCostCenter",
+      "source": "مركز التكلفة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx:readiness:enterpriseCore.orgHierarchy.readinessCostCenter",
+          "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx",
+          "line": 0,
+          "column": 0,
+          "kind": "derived-readiness-label",
+          "context": "Operating-context readiness banner"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgHierarchy.readinessPosTerminal",
+      "source": "نقطة البيع",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx:readiness:enterpriseCore.orgHierarchy.readinessPosTerminal",
+          "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx",
+          "line": 0,
+          "column": 0,
+          "kind": "derived-readiness-label",
+          "context": "Operating-context readiness banner"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgHierarchy.readinessProfitCenter",
+      "source": "مركز الربح",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx:readiness:enterpriseCore.orgHierarchy.readinessProfitCenter",
+          "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx",
+          "line": 0,
+          "column": 0,
+          "kind": "derived-readiness-label",
+          "context": "Operating-context readiness banner"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgHierarchy.readinessReady",
+      "source": "جاهز",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx:readiness:enterpriseCore.orgHierarchy.readinessReady",
+          "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx",
+          "line": 0,
+          "column": 0,
+          "kind": "derived-readiness-label",
+          "context": "Operating-context readiness banner"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgHierarchy.readinessWarehouse",
+      "source": "المستودع",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx:readiness:enterpriseCore.orgHierarchy.readinessWarehouse",
+          "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx",
+          "line": 0,
+          "column": 0,
+          "kind": "derived-readiness-label",
+          "context": "Operating-context readiness banner"
+        }
+      ]
+    },
+    {
       "id": "enterpriseCore.orgHierarchy.readyWarehouseDrivenSalesPurchasing",
-      "source": "Ready for warehouse-driven sales and purchasing.",
+      "source": "جاهز للمبيعات والمشتريات المعتمدة على المستودع.",
       "classification": "review-required",
       "occurrences": [
         {
@@ -56823,7 +56958,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.reviewOperatingContext",
-      "source": "Review Operating Context",
+      "source": "مراجعة سياق التشغيل",
       "classification": "review-required",
       "occurrences": [
         {
@@ -56838,7 +56973,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.saveOperatingContext",
-      "source": "Save operating context",
+      "source": "حفظ سياق التشغيل",
       "classification": "review-required",
       "occurrences": [
         {
@@ -56853,7 +56988,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.selectActiveCostCenter",
-      "source": "Select an active cost center",
+      "source": "اختر مركز تكلفة نشط",
       "classification": "user-facing",
       "occurrences": [
         {
@@ -56868,7 +57003,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.selectActiveProfitCenter",
-      "source": "Select an active profit center",
+      "source": "اختر مركز ربح نشط",
       "classification": "user-facing",
       "occurrences": [
         {
@@ -56883,7 +57018,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.selectOperatingUnitOptional",
-      "source": "Select operating unit (optional)",
+      "source": "اختر وحدة تشغيلية (اختياري)",
       "classification": "user-facing",
       "occurrences": [
         {
@@ -56913,7 +57048,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.warehouseCode",
-      "source": "Warehouse code *",
+      "source": "رمز المستودع *",
       "classification": "review-required",
       "occurrences": [
         {
@@ -56928,7 +57063,7 @@
     },
     {
       "id": "enterpriseCore.orgHierarchy.warehouseName",
-      "source": "Warehouse name *",
+      "source": "اسم المستودع *",
       "classification": "review-required",
       "occurrences": [
         {

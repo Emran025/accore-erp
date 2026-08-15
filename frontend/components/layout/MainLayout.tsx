@@ -71,12 +71,25 @@ export function MainLayout({
   useEffect(() => {
     if (!readiness || readiness.ready) return;
 
+    const readinessLabels: Record<string, string> = {
+      warehouse: i18n.catalog["enterpriseCore.orgHierarchy.readinessWarehouse"],
+      cost_center: i18n.catalog["enterpriseCore.orgHierarchy.readinessCostCenter"],
+      profit_center: i18n.catalog["enterpriseCore.orgHierarchy.readinessProfitCenter"],
+      pos_terminal: i18n.catalog["enterpriseCore.orgHierarchy.readinessPosTerminal"],
+    };
+    const readinessActions: Record<string, string> = {
+      warehouse: i18n.catalog["enterpriseCore.orgHierarchy.readinessActionWarehouse"],
+      cost_center: i18n.catalog["enterpriseCore.orgHierarchy.readinessActionCostCenter"],
+      profit_center: i18n.catalog["enterpriseCore.orgHierarchy.readinessActionProfitCenter"],
+      pos_terminal: i18n.catalog["enterpriseCore.orgHierarchy.readinessActionPosTerminal"],
+    };
     const missingActions = readiness.missing
-      .map((item) => item.action)
+      .map((item) => readinessActions[item.key])
       .filter((action): action is string => Boolean(action));
+    const nextActionLabel = readiness.next_action ? readinessLabels[readiness.next_action] : "";
 
     publishProductNotification({
-      message: `${i18n.catalog["components.mainlayout.operatingSetupIsIncomplete"]} ${readiness.next_action ?? ""}`.trim(),
+      message: `${i18n.catalog["components.mainlayout.operatingSetupIsIncomplete"]} ${nextActionLabel}`.trim(),
       source: "operating-context",
       details: missingActions.join(" • ") || undefined,
       dedupeKey: "operating-readiness:incomplete",

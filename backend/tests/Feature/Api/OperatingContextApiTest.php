@@ -24,7 +24,9 @@ class OperatingContextApiTest extends TestCase
 
         $this->assertSuccessResponse($response);
         $response->assertJsonPath('data.ready', false)
-            ->assertJsonPath('data.next_action', 'warehouse');
+            ->assertJsonPath('data.next_action', 'warehouse')
+            ->assertJsonPath('data.checks.0.action_key', 'operating_context.readiness.warehouse')
+            ->assertJsonMissingPath('data.checks.0.action');
     }
 
     public function test_can_configure_an_operating_context_with_warehouse_and_pos(): void

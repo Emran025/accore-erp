@@ -32,8 +32,8 @@ export interface OperatingContext {
 export interface OperatingReadiness {
   ready: boolean;
   status: 'draft' | 'ready';
-  checks: Array<{ key: string; complete: boolean; action: string | null }>;
-  missing: Array<{ key: string; complete: boolean; action: string }>;
+  checks: Array<{ key: string; complete: boolean; action_key: string | null }>;
+  missing: Array<{ key: string; complete: boolean; action_key: string }>;
   next_action: string | null;
   context: OperatingContext | null;
 }

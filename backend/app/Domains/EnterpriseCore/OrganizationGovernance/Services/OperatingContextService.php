@@ -33,10 +33,10 @@ class OperatingContextService
         $profitCenter = $context?->profitCenter;
 
         $checks = [
-            $this->check('warehouse', $warehouse !== null && $warehouse->is_active && $warehouse->status === 'active', 'Create and activate a warehouse.'),
-            $this->check('cost_center', $costCenter !== null && $costCenter->is_active, 'Link an active cost center to the operating context.'),
-            $this->check('profit_center', $profitCenter !== null && $profitCenter->is_active, 'Link an active profit center to the operating context.'),
-            $this->check('pos_terminal', $terminal !== null && $terminal->is_active && $terminal->status === 'active', 'Create and activate a POS terminal linked to the warehouse.'),
+            $this->check('warehouse', $warehouse !== null && $warehouse->is_active && $warehouse->status === 'active'),
+            $this->check('cost_center', $costCenter !== null && $costCenter->is_active),
+            $this->check('profit_center', $profitCenter !== null && $profitCenter->is_active),
+            $this->check('pos_terminal', $terminal !== null && $terminal->is_active && $terminal->status === 'active'),
         ];
 
         $missing = collect($checks)->where('complete', false)->values()->all();
@@ -135,12 +135,12 @@ class OperatingContextService
         });
     }
 
-    private function check(string $key, bool $complete, string $action): array
+    private function check(string $key, bool $complete): array
     {
         return [
             'key' => $key,
             'complete' => $complete,
-            'action' => $complete ? null : $action,
+            'action_key' => $complete ? null : "operating_context.readiness.{$key}",
         ];
     }
 }
