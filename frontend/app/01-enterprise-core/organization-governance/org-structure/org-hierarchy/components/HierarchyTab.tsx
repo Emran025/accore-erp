@@ -304,6 +304,7 @@ export function HierarchyTab() {
                 <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1rem", flexWrap: "wrap" }}>
                     {filteredDomains.map((d) => (
                         <BadgeLabel
+                            key={d}
                             label={d}
                             color={getDomainColor(d)}
                             setIsFilter={() => setFilterDomain(filterDomain === d ? "" : d)}
