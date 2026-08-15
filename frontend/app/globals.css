@@ -5519,38 +5519,429 @@ body.nav-sidebar-is-collapsed .sidebar-toggle-btn {
   margin-left: 0.6rem;
 }
 
-/* ─── Status & Notification Bar ─── */
+/* ─── Status & Notification Center ─────────────────────────────────────
+   The status bar is the single global surface for retained operational,
+   product, configuration, and code feedback. Its center must sit above the
+   navigation shell so it remains usable while the side navigation is visible.
+   ─────────────────────────────────────────────────────────────────────── */
+.status-notification-root {
+  position: relative;
+  z-index: 1200;
+  flex-shrink: 0;
+  isolation: isolate;
+}
+
 .status-notification-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0.25rem 1.5rem;
+  min-height: 2.25rem;
+  gap: 0.75rem;
+  padding: 0.25rem 1rem;
+  color: #e5e7eb;
   font-size: 0.75rem;
   background: var(--grad-primary);
-  color: #e5e7eb;
+  border-top: 1px solid rgba(148, 163, 184, 0.24);
   box-shadow: 0 -1px 0 rgba(15, 23, 42, 0.7);
-  flex-shrink: 0;
 }
 
-.status-notification-left {
+.status-notification-summary-button,
+.status-notification-icon-button,
+.status-notification-category-button,
+.status-notification-list-item,
+.status-notification-action-link {
+  font: inherit;
+}
+
+.status-notification-summary-button {
   display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.status-notification-icon .icon {
-  width: 14px;
-  height: 14px;
-}
-
-.status-notification-right {
-  display: flex;
+  flex: 1;
+  min-width: 0;
   align-items: center;
   gap: 0.5rem;
+  padding: 0.2rem 0.35rem;
+  color: inherit;
+  text-align: start;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
 }
 
-.status-notification-env {
-  opacity: 0.8;
+.status-notification-summary-button:hover,
+.status-notification-summary-button:focus-visible {
+  background: rgba(255, 255, 255, 0.09);
+  outline: none;
+}
+
+.status-notification-summary-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-notification-summary-icon .icon,
+.status-notification-icon-button .icon {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.status-notification-summary-text {
+  overflow: hidden;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.25rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-notification-tone-operational { color: #fbbf24; }
+.status-notification-tone-code { color: #f87171; }
+.status-notification-tone-product { color: #60a5fa; }
+.status-notification-tone-ready { color: #a7f3d0; }
+
+.status-notification-unread-badge {
+  display: inline-flex;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.25rem;
+  color: #0f172a;
+  font-size: 0.67rem;
+  font-weight: 800;
+  line-height: 1;
+  background: #f8fafc;
+  border-radius: 999px;
+}
+
+.status-notification-environment {
+  flex: 0 0 auto;
+  padding-inline-start: 0.75rem;
+  color: #cbd5e1;
+  font-size: 0.72rem;
+  opacity: 0.9;
+  border-inline-start: 1px solid rgba(148, 163, 184, 0.32);
+}
+
+.status-notification-center {
+  position: absolute;
+  z-index: 1201;
+  right: 0.75rem;
+  bottom: calc(100% + 0.5rem);
+  display: grid;
+  width: min(58rem, calc(100vw - 1.5rem));
+  max-height: min(38rem, calc(100vh - 4rem));
+  grid-template-rows: auto auto minmax(0, 1fr);
+  overflow: hidden;
+  color: var(--text-primary);
+  background: var(--surface-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.status-notification-center-header,
+.status-notification-center-controls,
+.status-notification-detail-header,
+.status-notification-detail-meta,
+.status-notification-detail-footer,
+.status-notification-manual-navigation {
+  display: flex;
+  align-items: center;
+}
+
+.status-notification-center-header {
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.status-notification-center-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 750;
+}
+
+.status-notification-center-controls {
+  gap: 0.3rem;
+}
+
+.status-notification-icon-button {
+  display: inline-flex;
+  min-width: 1.85rem;
+  min-height: 1.85rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.status-notification-icon-button:hover,
+.status-notification-icon-button:focus-visible {
+  color: var(--text-primary);
+  background: var(--bg-color);
+  border-color: var(--border-color);
+  outline: none;
+}
+
+.status-notification-icon-button:disabled {
+  color: var(--text-light);
+  cursor: not-allowed;
+  background: transparent;
+}
+
+.status-notification-category-tabs {
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.7rem 1rem;
+  overflow-x: auto;
+  background: var(--surface-white);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.status-notification-category-button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.55rem;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 650;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.status-notification-category-button:hover,
+.status-notification-category-button:focus-visible {
+  color: var(--text-primary);
+  border-color: var(--text-light);
+  outline: none;
+}
+
+.status-notification-category-button-active {
+  color: #ffffff;
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.status-notification-category-count {
+  min-width: 1rem;
+  color: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  opacity: 0.82;
+}
+
+.status-notification-center-body {
+  display: grid;
+  min-height: 0;
+  grid-template-columns: minmax(14rem, 0.85fr) minmax(20rem, 1.25fr);
+}
+
+.status-notification-list {
+  min-height: 0;
+  padding: 0.45rem;
+  overflow-y: auto;
+  background: var(--bg-color);
+  border-inline-end: 1px solid var(--border-color);
+}
+
+.status-notification-list-item {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin-bottom: 0.25rem;
+  padding: 0.65rem 0.7rem 0.65rem 0.85rem;
+  overflow: hidden;
+  color: var(--text-secondary);
+  text-align: start;
+  background: var(--surface-white);
+  border: 1px solid var(--border-color);
+  border-inline-start-width: 3px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.status-notification-list-item:hover,
+.status-notification-list-item:focus-visible {
+  border-color: var(--text-light);
+  outline: none;
+}
+
+.status-notification-list-item-selected {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-color) 18%, transparent);
+}
+
+.status-notification-list-item-unread .status-notification-list-message {
+  font-weight: 700;
+}
+
+.status-notification-category-operational { border-inline-start-color: #f59e0b; }
+.status-notification-category-code { border-inline-start-color: #ef4444; }
+.status-notification-category-product { border-inline-start-color: #3b82f6; }
+
+.status-notification-list-message {
+  display: block;
+  overflow: hidden;
+  font-size: 0.76rem;
+  line-height: 1.25rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-notification-list-meta {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--text-light);
+  font-size: 0.68rem;
+}
+
+.status-notification-unread-dot {
+  position: absolute;
+  top: 0.65rem;
+  inset-inline-end: 0.65rem;
+  width: 0.42rem;
+  height: 0.42rem;
+  background: var(--primary-color);
+  border-radius: 999px;
+}
+
+.status-notification-detail {
+  min-width: 0;
+  padding: 1rem;
+  overflow-y: auto;
+  background: var(--surface-white);
+}
+
+.status-notification-detail-empty,
+.status-notification-empty-state {
+  display: grid;
+  min-height: 100%;
+  place-items: center;
+  padding: 2rem;
+  color: var(--text-light);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.status-notification-detail-header {
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.status-notification-category-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.23rem 0.5rem;
+  font-size: 0.69rem;
+  font-weight: 750;
+  border-radius: 999px;
+}
+
+.status-notification-pill-operational { color: #92400e; background: #fef3c7; }
+.status-notification-pill-code { color: #991b1b; background: #fee2e2; }
+.status-notification-pill-product { color: #1d4ed8; background: #dbeafe; }
+
+.status-notification-detail-time {
+  flex: 0 0 auto;
+  color: var(--text-light);
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+
+.status-notification-detail-message {
+  margin: 1rem 0;
+  color: var(--text-primary);
+  font-size: 0.91rem;
+  font-weight: 650;
+  line-height: 1.55;
+}
+
+.status-notification-detail-meta {
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0.85rem 0;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.status-notification-detail-meta-label {
+  flex: 0 0 auto;
+  font-weight: 750;
+}
+
+.status-notification-detail-code {
+  display: block;
+  max-height: 10rem;
+  margin: 0.85rem 0;
+  padding: 0.7rem;
+  overflow: auto;
+  color: var(--text-secondary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+}
+
+.status-notification-detail-footer {
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 1.2rem;
+}
+
+.status-notification-action-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.42rem 0.65rem;
+  color: #ffffff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-decoration: none;
+  background: var(--primary-color);
+  border-radius: var(--radius-sm);
+}
+
+.status-notification-action-link:hover,
+.status-notification-action-link:focus-visible {
+  background: var(--primary-dark);
+  outline: none;
+}
+
+.status-notification-manual-navigation {
+  gap: 0.25rem;
+  margin-inline-start: auto;
+}
+
+@media (max-width: 720px) {
+  .status-notification-bar { padding-inline: 0.55rem; }
+  .status-notification-environment { display: none; }
+  .status-notification-center {
+    right: 0.35rem;
+    width: calc(100vw - 0.7rem);
+    max-height: min(40rem, calc(100vh - 4rem));
+  }
+  .status-notification-center-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(10rem, 0.75fr) minmax(13rem, 1fr);
+  }
+  .status-notification-list {
+    border-inline-end: 0;
+    border-bottom: 1px solid var(--border-color);
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -5742,14 +6133,6 @@ body.nav-sidebar-is-collapsed .sidebar-toggle-btn {
     font-size: 0.68rem;
   }
 
-  .status-notification-icon .icon {
-    width: 12px;
-    height: 12px;
-  }
-
-  .status-notification-env {
-    font-size: 0.65rem;
-  }
 
   /* ─── Main Content — mobile ─── */
   .main-layout-content {
@@ -5798,9 +6181,6 @@ body.nav-sidebar-is-collapsed .sidebar-toggle-btn {
     font-size: 0.62rem;
   }
 
-  .status-notification-env {
-    display: none;
-  }
 
   .side-navigation-bar {
     width: 260px !important;

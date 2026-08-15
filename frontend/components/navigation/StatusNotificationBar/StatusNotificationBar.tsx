@@ -10,7 +10,6 @@ import {
     useNotificationStore,
 } from "@/stores/useNotificationStore";
 import { getStatusNotificationCopy } from "./content";
-import styles from "./StatusNotificationBar.module.css";
 
 interface StatusNotificationBarProps {
     text?: string;
@@ -23,21 +22,21 @@ const categoryIcons: Record<NotificationCategory, "landmark" | "cpu" | "box"> = 
 };
 
 const categoryTone: Record<NotificationCategory, string> = {
-    operational: styles.toneOperational,
-    code: styles.toneCode,
-    product: styles.toneProduct,
+    operational: "status-notification-tone-operational",
+    code: "status-notification-tone-code",
+    product: "status-notification-tone-product",
 };
 
 const categoryBorder: Record<NotificationCategory, string> = {
-    operational: styles.categoryOperational,
-    code: styles.categoryCode,
-    product: styles.categoryProduct,
+    operational: "status-notification-category-operational",
+    code: "status-notification-category-code",
+    product: "status-notification-category-product",
 };
 
 const categoryPill: Record<NotificationCategory, string> = {
-    operational: styles.pillOperational,
-    code: styles.pillCode,
-    product: styles.pillProduct,
+    operational: "status-notification-pill-operational",
+    code: "status-notification-pill-code",
+    product: "status-notification-pill-product",
 };
 
 function formatTime(timestamp: number, locale: string): string {
@@ -127,19 +126,19 @@ export function StatusNotificationBar({ text }: StatusNotificationBarProps) {
     };
 
     const summaryText = latestNotification?.message ?? text ?? copy.ready;
-    const summaryTone = latestNotification ? categoryTone[latestNotification.category] : styles.toneReady;
+    const summaryTone = latestNotification ? categoryTone[latestNotification.category] : "status-notification-tone-ready";
     const summaryIcon = latestNotification ? categoryIcons[latestNotification.category] : "check-circle";
 
     return (
-        <div className={styles.root} ref={rootRef}>
+        <div className="status-notification-root" ref={rootRef}>
             {isCenterOpen && (
-                <section className={styles.center} role="dialog" aria-label={copy.centerTitle}>
-                    <header className={styles.centerHeader}>
-                        <h2 className={styles.centerTitle}>{copy.centerTitle}</h2>
-                        <div className={styles.centerControls}>
+                <section className="status-notification-center" role="dialog" aria-label={copy.centerTitle}>
+                    <header className="status-notification-center-header">
+                        <h2 className="status-notification-center-title">{copy.centerTitle}</h2>
+                        <div className="status-notification-center-controls">
                             <button
                                 type="button"
-                                className={styles.iconButton}
+                                className="status-notification-icon-button"
                                 onClick={markAllRead}
                                 title={copy.markAllRead}
                                 aria-label={copy.markAllRead}
@@ -149,7 +148,7 @@ export function StatusNotificationBar({ text }: StatusNotificationBarProps) {
                             </button>
                             <button
                                 type="button"
-                                className={styles.iconButton}
+                                className="status-notification-icon-button"
                                 onClick={clearDismissed}
                                 title={copy.clearDismissed}
                                 aria-label={copy.clearDismissed}
@@ -158,7 +157,7 @@ export function StatusNotificationBar({ text }: StatusNotificationBarProps) {
                             </button>
                             <button
                                 type="button"
-                                className={styles.iconButton}
+                                className="status-notification-icon-button"
                                 onClick={() => setCenterOpen(false)}
                                 title={copy.closeCenter}
                                 aria-label={copy.closeCenter}
@@ -168,81 +167,81 @@ export function StatusNotificationBar({ text }: StatusNotificationBarProps) {
                         </div>
                     </header>
 
-                    <nav className={styles.categoryTabs} aria-label={copy.centerTitle}>
+                    <nav className="status-notification-category-tabs" aria-label={copy.centerTitle}>
                         {(["all", ...NOTIFICATION_CATEGORIES] as const).map((category) => {
                             const unreadCount = countUnread(activeNotifications, category);
                             return (
                                 <button
                                     type="button"
                                     key={category}
-                                    className={`${styles.categoryButton} ${selectedCategory === category ? styles.categoryButtonActive : ""}`}
+                                    className={`status-notification-category-button ${selectedCategory === category ? "status-notification-category-button-active" : ""}`}
                                     onClick={() => selectFilter(category)}
                                     aria-pressed={selectedCategory === category}
                                 >
                                     <span>{copy.categories[category]}</span>
-                                    {unreadCount > 0 && <span className={styles.categoryCount}>{unreadCount}</span>}
+                                    {unreadCount > 0 && <span className="status-notification-category-count">{unreadCount}</span>}
                                 </button>
                             );
                         })}
                     </nav>
 
-                    <div className={styles.centerBody}>
-                        <div className={styles.notificationList} role="list" aria-label={copy.centerTitle}>
+                    <div className="status-notification-center-body">
+                        <div className="status-notification-list" role="list" aria-label={copy.centerTitle}>
                             {visibleNotifications.length === 0 ? (
-                                <div className={styles.emptyState}>{copy.noNotifications}</div>
+                                <div className="status-notification-empty-state">{copy.noNotifications}</div>
                             ) : (
                                 visibleNotifications.map((notification) => (
                                     <button
                                         type="button"
                                         role="listitem"
                                         key={notification.id}
-                                        className={`${styles.listItem} ${categoryBorder[notification.category]} ${selectedNotification?.id === notification.id ? styles.listItemSelected : ""} ${!notification.read ? styles.listItemUnread : ""}`}
+                                        className={`status-notification-list-item ${categoryBorder[notification.category]} ${selectedNotification?.id === notification.id ? "status-notification-list-item-selected" : ""} ${!notification.read ? "status-notification-list-item-unread" : ""}`}
                                         onClick={() => openNotification(notification)}
                                     >
-                                        <span className={styles.listMessage}>{notification.message}</span>
-                                        <span className={styles.listMeta}>{formatTime(notification.timestamp, locale)}</span>
-                                        {!notification.read && <span className={styles.unreadDot} aria-label={copy.unreadSuffix} />}
+                                        <span className="status-notification-list-message">{notification.message}</span>
+                                        <span className="status-notification-list-meta">{formatTime(notification.timestamp, locale)}</span>
+                                        {!notification.read && <span className="status-notification-unread-dot" aria-label={copy.unreadSuffix} />}
                                     </button>
                                 ))
                             )}
                         </div>
 
-                        <article className={styles.detail} aria-live="polite">
+                        <article className="status-notification-detail" aria-live="polite">
                             {!selectedNotification ? (
-                                <div className={styles.detailEmpty}>{copy.noNotifications}</div>
+                                <div className="status-notification-detail-empty">{copy.noNotifications}</div>
                             ) : (
                                 <>
-                                    <div className={styles.detailHeader}>
-                                        <span className={`${styles.categoryPill} ${categoryPill[selectedNotification.category]}`}>
+                                    <div className="status-notification-detail-header">
+                                        <span className={`status-notification-category-pill ${categoryPill[selectedNotification.category]}`}>
                                             {copy.categories[selectedNotification.category]}
                                         </span>
-                                        <time className={styles.detailTime} dateTime={new Date(selectedNotification.timestamp).toISOString()}>
+                                        <time className="status-notification-detail-time" dateTime={new Date(selectedNotification.timestamp).toISOString()}>
                                             {formatTime(selectedNotification.timestamp, locale)}
                                         </time>
                                     </div>
-                                    <p className={styles.detailMessage}>{selectedNotification.message}</p>
+                                    <p className="status-notification-detail-message">{selectedNotification.message}</p>
                                     {selectedNotification.source && (
-                                        <div className={styles.detailMeta}>
-                                            <span className={styles.detailMetaLabel}>{copy.source}</span>
+                                        <div className="status-notification-detail-meta">
+                                            <span className="status-notification-detail-meta-label">{copy.source}</span>
                                             <span>{selectedNotification.source}</span>
                                         </div>
                                     )}
                                     {selectedNotification.details && (
                                         <>
-                                            <div className={styles.detailMetaLabel}>{copy.details}</div>
-                                            <code className={styles.detailCode}>{selectedNotification.details}</code>
+                                            <div className="status-notification-detail-meta-label">{copy.details}</div>
+                                            <code className="status-notification-detail-code">{selectedNotification.details}</code>
                                         </>
                                     )}
-                                    <footer className={styles.detailFooter}>
+                                    <footer className="status-notification-detail-footer">
                                         {selectedNotification.action && (
-                                            <a className={styles.actionLink} href={selectedNotification.action.href}>
+                                            <a className="status-notification-action-link" href={selectedNotification.action.href}>
                                                 {selectedNotification.action.label || copy.openRelatedScreen}
                                             </a>
                                         )}
-                                        <div className={styles.manualNavigation}>
+                                        <div className="status-notification-manual-navigation">
                                             <button
                                                 type="button"
-                                                className={styles.iconButton}
+                                                className="status-notification-icon-button"
                                                 onClick={() => moveSelection(-1)}
                                                 title={copy.previous}
                                                 aria-label={copy.previous}
@@ -252,7 +251,7 @@ export function StatusNotificationBar({ text }: StatusNotificationBarProps) {
                                             </button>
                                             <button
                                                 type="button"
-                                                className={styles.iconButton}
+                                                className="status-notification-icon-button"
                                                 onClick={() => moveSelection(1)}
                                                 title={copy.next}
                                                 aria-label={copy.next}
@@ -262,7 +261,7 @@ export function StatusNotificationBar({ text }: StatusNotificationBarProps) {
                                             </button>
                                             <button
                                                 type="button"
-                                                className={styles.iconButton}
+                                                className="status-notification-icon-button"
                                                 onClick={() => dismissNotification(selectedNotification.id)}
                                                 title={copy.dismiss}
                                                 aria-label={copy.dismiss}
@@ -278,20 +277,20 @@ export function StatusNotificationBar({ text }: StatusNotificationBarProps) {
                 </section>
             )}
 
-            <footer className={styles.bar} role="status">
+            <footer className="status-notification-bar" role="status">
                 <button
                     type="button"
-                    className={styles.summaryButton}
+                    className="status-notification-summary-button"
                     onClick={toggleCenter}
                     title={isCenterOpen ? copy.closeCenter : copy.openCenter}
                     aria-expanded={isCenterOpen}
                     aria-haspopup="dialog"
                 >
-                    <span className={`${styles.summaryIcon} ${summaryTone}`}>{getIcon(summaryIcon)}</span>
-                    <span className={styles.summaryText}>{summaryText}</span>
-                    {unreadTotal > 0 && <span className={styles.unreadBadge}>{unreadTotal}</span>}
+                    <span className={`status-notification-summary-icon ${summaryTone}`}>{getIcon(summaryIcon)}</span>
+                    <span className="status-notification-summary-text">{summaryText}</span>
+                    {unreadTotal > 0 && <span className="status-notification-unread-badge">{unreadTotal}</span>}
                 </button>
-                <span className={styles.environment}>{locale === "ar-SA" ? "بيئة الاختبار" : "Test environment"}</span>
+                <span className="status-notification-environment">{locale === "ar-SA" ? "بيئة الاختبار" : "Test environment"}</span>
             </footer>
         </div>
     );

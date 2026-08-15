@@ -12,7 +12,7 @@
 
 `StatusNotificationBar` is the single, non-blocking feedback surface for the application shell. It replaces transient floating feedback with a compact status summary and a manually browsable notification center. The active item is visible in the bottom bar; selecting it opens the center without interrupting the current business flow.
 
-The component deliberately separates **data**, **presentation**, **runtime capture**, and **legacy compatibility**. `useNotificationStore.ts` owns typed state and history; `content.ts` owns the Arabic and English interface copy; `StatusNotificationBar.tsx` renders and navigates the history; `StatusNotificationBar.module.css` contains isolated styles; and `NotificationRuntimeBridge.tsx` captures otherwise unhandled client runtime failures.
+The component deliberately separates **data**, **presentation**, **runtime capture**, and **legacy compatibility**. `useNotificationStore.ts` owns typed state and history; `content.ts` owns the Arabic and English interface copy; `StatusNotificationBar.tsx` renders and navigates the history; the dedicated **Status & Notification Center** section in `app/globals.css` owns the shared shell styles; and `NotificationRuntimeBridge.tsx` captures otherwise unhandled client runtime failures.
 
 ## Semantic notification channels
 
@@ -58,4 +58,4 @@ The center uses a labelled dialog, accessible state for category filters, keyboa
 
 ## Maintenance rules
 
-New interface labels belong in `content.ts`; new store fields and publishing rules belong in `useNotificationStore.ts`; visual changes belong in `StatusNotificationBar.module.css`; and rendering changes belong in `StatusNotificationBar.tsx`. Do not reintroduce temporary floating feedback for global operational results. Feature pages should call `showToast` for ordinary operation feedback or one of the dedicated publishing helpers when they know the semantic channel.
+New interface labels belong in `content.ts`; new store fields and publishing rules belong in `useNotificationStore.ts`; visual changes belong in the **Status & Notification Center** section of `app/globals.css`; and rendering changes belong in `StatusNotificationBar.tsx`. Do not create a separate stylesheet for this global shell component. Do not reintroduce temporary floating feedback for global operational results. Feature pages should call `showToast` for ordinary operation feedback or one of the dedicated publishing helpers when they know the semantic channel.
