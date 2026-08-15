@@ -18,29 +18,29 @@ import { Domain } from "../../types/navigation";
 export const ManufacturingDomain: Domain = {
     id: "manufacturing",
     order: 5,
-    title: catalogMessage("text_82bc33d7db92"),
+    title: catalogMessage("navigation.manufacturingConfig.manufacturingProduction"),
     icon: "factory",
-    description: catalogMessage("text_081fb71b21d9"),
+    description: catalogMessage("navigation.manufacturingConfig.productEngineeringProductionControlMaintenance"),
     capabilities: [
         // ─────────────────────────────────────────────────────────────
         // Capability: Engineering
         // ─────────────────────────────────────────────────────────────
         {
             id: "engineering",
-            title: catalogMessage("text_7cd5d0145cce"),
+            title: catalogMessage("navigation.manufacturingConfig.engineering"),
             icon: "files",
-            description: catalogMessage("text_a59bbbefa785"),
+            description: catalogMessage("navigation.manufacturingConfig.materialsWorkCenters"),
             groups: [
                 {
                     id: "bom",
-                    title: catalogMessage("text_c07439465724"),
-                    description: catalogMessage("text_e376b57a8cad"),
+                    title: catalogMessage("common.general.billMaterialsBom"),
+                    description: catalogMessage("navigation.manufacturingConfig.productRawMaterialComposition"),
                     screens: [
                         {
                             id: "bom-list",
-                            title: catalogMessage("text_c07439465724"),
+                            title: catalogMessage("common.general.billMaterialsBom"),
                             icon: "files",
-                            description: catalogMessage("text_8eca77762950"),
+                            description: catalogMessage("navigation.manufacturingConfig.productCompositionComingSoon"),
                             href: "/05-manufacturing/engineering/bom/bom-list",
                             permissions: [],
                             module: "manufacturing",
@@ -55,20 +55,20 @@ export const ManufacturingDomain: Domain = {
         // ─────────────────────────────────────────────────────────────
         {
             id: "production-control",
-            title: catalogMessage("text_c74da4d95b71"),
+            title: catalogMessage("navigation.manufacturingConfig.productionControl"),
             icon: "hammer",
-            description: catalogMessage("text_8fecafbe3d93"),
+            description: catalogMessage("navigation.manufacturingConfig.workOrdersProductionPlanning"),
             groups: [
                 {
                     id: "work-orders",
-                    title: catalogMessage("text_807ea7a9685e"),
-                    description: catalogMessage("text_7127dbf2df86"),
+                    title: catalogMessage("navigation.manufacturingConfig.productionOrders"),
+                    description: catalogMessage("navigation.manufacturingConfig.manageProductionOperations"),
                     screens: [
                         {
                             id: "work-orders-list",
-                            title: catalogMessage("text_894a14ff60b2"),
+                            title: catalogMessage("navigation.manufacturingConfig.workOrders"),
                             icon: "hammer",
-                            description: catalogMessage("text_9310cbbd42d2"),
+                            description: catalogMessage("navigation.manufacturingConfig.productionOrdersComingSoon"),
                             href: "/05-manufacturing/production-control/work-orders/work-orders-list",
                             permissions: [],
                             module: "manufacturing",
@@ -76,9 +76,9 @@ export const ManufacturingDomain: Domain = {
                         },
                         {
                             id: "production-planning",
-                            title: catalogMessage("text_df776916379a"),
+                            title: catalogMessage("navigation.manufacturingConfig.productionPlanning"),
                             icon: "cpu",
-                            description: catalogMessage("text_b2b0969f4b80"),
+                            description: catalogMessage("navigation.manufacturingConfig.productionSchedulingComingSoon"),
                             href: "/05-manufacturing/production-control/work-orders/production-planning",
                             permissions: [],
                             module: "manufacturing",
@@ -94,20 +94,20 @@ export const ManufacturingDomain: Domain = {
         // ─────────────────────────────────────────────────────────────
         {
             id: "quality-control",
-            title: catalogMessage("text_671e1e1977d0"),
+            title: catalogMessage("common.general.qualityControl"),
             icon: "clipboard-check",
-            description: catalogMessage("text_ca1e087d2e73"),
+            description: catalogMessage("navigation.manufacturingConfig.qualityControlProductInspection"),
             groups: [
                 {
                     id: "qc-inspection",
-                    title: catalogMessage("text_31163fe4cd64"),
-                    description: catalogMessage("text_c5749ee3834f"),
+                    title: catalogMessage("navigation.manufacturingConfig.qualityControl"),
+                    description: catalogMessage("navigation.manufacturingConfig.productInspectionEvaluation"),
                     screens: [
                         {
                             id: "quality-check",
-                            title: catalogMessage("text_671e1e1977d0"),
+                            title: catalogMessage("common.general.qualityControl"),
                             icon: "clipboard-check",
-                            description: catalogMessage("text_ed07e224f044"),
+                            description: catalogMessage("navigation.manufacturingConfig.qualityControlComingSoon"),
                             href: "/05-manufacturing/quality-control/qc-inspection/quality-check",
                             permissions: [],
                             module: "manufacturing",

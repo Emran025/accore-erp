@@ -46,7 +46,7 @@ export function JobTitlesTab() {
             const res = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.JOB_TITLES.BASE);
             setJobTitles((res as any).data || []);
         } catch {
-            console.error(i18n.catalog["text_8e59c4f27144"]);
+            console.error(i18n.catalog["humanCapital.capacityplanning.failedLoadJobTitles"]);
         } finally {
             setIsLoading(false);
         }
@@ -57,13 +57,13 @@ export function JobTitlesTab() {
             const res = await fetchAPI("/departments");
             setDepartments((res as any).data || (res as any) || []);
         } catch {
-            console.error(i18n.catalog["text_02704ff3c975"]);
+            console.error(i18n.catalog["humanCapital.capacityplanning.failedLoadDepartments"]);
         }
     };
 
     const handleSave = async () => {
         if (!form.title_ar) {
-            showToast(i18n.catalog["text_61fd99c10d81"], "error");
+            showToast(i18n.catalog["humanCapital.capacityplanning.pleaseEnterJobTitle"], "error");
             return;
         }
         try {
@@ -79,13 +79,13 @@ export function JobTitlesTab() {
                     method: "PUT",
                     body: JSON.stringify(payload),
                 });
-                showToast(i18n.catalog["text_54ee75999f21"], "success");
+                showToast(i18n.catalog["humanCapital.capacityplanning.jobTitleUpdated"], "success");
             } else {
                 await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.JOB_TITLES.BASE, {
                     method: "POST",
                     body: JSON.stringify(payload),
                 });
-                showToast(i18n.catalog["text_2051c313cdc2"], "success");
+                showToast(i18n.catalog["humanCapital.capacityplanning.positionCreated"], "success");
             }
 
             setShowDialog(false);
@@ -93,18 +93,18 @@ export function JobTitlesTab() {
             setForm(emptyForm);
             loadJobTitles();
         } catch {
-            showToast(i18n.catalog["text_0400d60b037c"], "error");
+            showToast(i18n.catalog["humanCapital.capacityplanning.failedSaveJobTitle"], "error");
         }
     };
 
     const handleDelete = async (id: number) => {
-        if (!confirm(i18n.catalog["text_2db4f790af3b"])) return;
+        if (!confirm(i18n.catalog["humanCapital.capacityplanning.areYouSureYouWantDeleteThisTitle"])) return;
         try {
             await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.JOB_TITLES.withId(id), { method: "DELETE" });
-            showToast(i18n.catalog["text_95678800bb0e"], "success");
+            showToast(i18n.catalog["humanCapital.capacityplanning.jobTitleDeleted"], "success");
             loadJobTitles();
         } catch (e: any) {
-            showToast(e?.message || i18n.catalog["text_eba584368e93"], "error");
+            showToast(e?.message || i18n.catalog["humanCapital.capacityplanning.failedDeleteTitle"], "error");
         }
     };
 
@@ -120,23 +120,23 @@ export function JobTitlesTab() {
     };
 
     const columns: Column<JobTitle>[] = [
-        { key: "title_ar", header: i18n.catalog["text_48e553211f36"], dataLabel: i18n.catalog["text_39adfb54212e"] },
+        { key: "title_ar", header: i18n.catalog["humanCapital.capacityplanning.jobTitleArabic"], dataLabel: i18n.catalog["common.general.title.alternative2"] },
         {
             key: "title_en",
-            header: i18n.catalog["text_2808878aaf17"],
+            header: i18n.catalog["common.general.jobTitleEnglish"],
             dataLabel: "English",
             render: (item) => <span>{item.title_en || "—"}</span>,
         },
         {
             key: "department",
-            header: i18n.catalog["text_0771c3ff9336"],
-            dataLabel: i18n.catalog["text_0771c3ff9336"],
-            render: (item) => <span>{item.department?.name_ar || i18n.catalog["text_5a0374f3ff5a"]}</span>,
+            header: i18n.catalog["common.general.section"],
+            dataLabel: i18n.catalog["common.general.section"],
+            render: (item) => <span>{item.department?.name_ar || i18n.catalog["common.general.unspecified"]}</span>,
         },
         {
             key: "description",
-            header: i18n.catalog["text_95023fc76e1b"],
-            dataLabel: i18n.catalog["text_95023fc76e1b"],
+            header: i18n.catalog["common.general.description.alternative2"],
+            dataLabel: i18n.catalog["common.general.description.alternative2"],
             render: (item) => (
                 <span style={{ maxWidth: "200px", display: "inline-block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {item.description || "—"}
@@ -145,24 +145,24 @@ export function JobTitlesTab() {
         },
         {
             key: "is_active",
-            header: i18n.catalog["text_c3a4749caed4"],
-            dataLabel: i18n.catalog["text_c3a4749caed4"],
+            header: i18n.catalog["common.general.status.alternative2"],
+            dataLabel: i18n.catalog["common.general.status.alternative2"],
             render: (item) => (
                 <span className={`badge ${item.is_active ? "badge-success" : "badge-danger"}`}>
-                    {item.is_active ? i18n.catalog["text_629e90b3af3d"] : i18n.catalog["text_21dc96b9f9f8"]}
+                    {item.is_active ? i18n.catalog["common.general.active"] : i18n.catalog["common.general.disabled"]}
                 </span>
             ),
         },
         {
             key: "id",
-            header: i18n.catalog["text_7797240d6caf"],
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (item) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "edit",
-                            title: i18n.catalog["text_113d570d6555"],
+                            title: i18n.catalog["common.general.edit"],
                             variant: "edit",
                             onClick: () => openEdit(item),
                         },
@@ -170,7 +170,7 @@ export function JobTitlesTab() {
                             ? [
                                 {
                                     icon: "trash" as const,
-                                    title: i18n.catalog["text_59ca629220a6"],
+                                    title: i18n.catalog["common.general.delete"],
                                     variant: "delete" as const,
                                     onClick: () => handleDelete(item.id),
                                 },
@@ -185,7 +185,7 @@ export function JobTitlesTab() {
     return (
         <>
             <PageSubHeader
-                title={i18n.catalog["text_5a2b952f8036"]}
+                title={i18n.catalog["common.general.jobTitles"]}
                 titleIcon="file-signature"
                 actions={
                     <>
@@ -199,7 +199,7 @@ export function JobTitlesTab() {
                                     setShowDialog(true);
                                 }}
                             >
-                                {i18n.catalog["text_2fe66e5eeaea"]}</Button>
+                                {i18n.catalog["common.general.newJobTitle"]}</Button>
                         )}
                     </>
                 }
@@ -209,46 +209,46 @@ export function JobTitlesTab() {
                 columns={columns}
                 data={jobTitles}
                 keyExtractor={(i) => i.id.toString()}
-                emptyMessage={i18n.catalog["text_498b31a8adaf"]}
+                emptyMessage={i18n.catalog["humanCapital.capacityplanning.noJobTitles"]}
                 isLoading={isLoading}
             />
 
             <Dialog
                 isOpen={showDialog}
                 onClose={() => setShowDialog(false)}
-                title={editItem ? i18n.catalog["text_4616cfe98d62"] : i18n.catalog["text_2fe66e5eeaea"]}
+                title={editItem ? i18n.catalog["humanCapital.capacityplanning.editJobTitle"] : i18n.catalog["common.general.newJobTitle"]}
                 footer={
                     <>
                         <Button variant="secondary" onClick={() => setShowDialog(false)}>
-                            {i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                            {i18n.catalog["common.general.cancel"]}</Button>
                         <Button variant="primary" onClick={handleSave}>
-                            {editItem ? i18n.catalog["text_00eab31f95b7"] : i18n.catalog["text_a820f3590d36"]}
+                            {editItem ? i18n.catalog["common.general.update"] : i18n.catalog["common.general.create"]}
                         </Button>
                     </>
                 }
             >
                 <div className="space-y-4">
                     <TextInput
-                        label={i18n.catalog["text_9d4ba6ace3f3"]}
+                        label={i18n.catalog["humanCapital.capacityplanning.jobTitleArabic.alternative2"]}
                         value={form.title_ar}
                         onChange={(e) => setForm({ ...form, title_ar: e.target.value })}
                     />
                     <TextInput
-                        label={i18n.catalog["text_2808878aaf17"]}
+                        label={i18n.catalog["common.general.jobTitleEnglish"]}
                         value={form.title_en}
                         onChange={(e) => setForm({ ...form, title_en: e.target.value })}
                     />
                     <Select
-                        label={i18n.catalog["text_0771c3ff9336"]}
+                        label={i18n.catalog["common.general.section"]}
                         value={form.department_id}
                         onChange={(e) => setForm({ ...form, department_id: e.target.value })}
                         options={[
-                            { value: "", label: i18n.catalog["text_883061768176"] },
+                            { value: "", label: i18n.catalog["common.general.selectDepartment"] },
                             ...departments.map((d) => ({ value: d.id.toString(), label: d.name_ar })),
                         ]}
                     />
                     <Textarea
-                        label={i18n.catalog["text_95023fc76e1b"]}
+                        label={i18n.catalog["common.general.description.alternative2"]}
                         value={form.description}
                         onChange={(e) => setForm({ ...form, description: e.target.value })}
                         rows={3}

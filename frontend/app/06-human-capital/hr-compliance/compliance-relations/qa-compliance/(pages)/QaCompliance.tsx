@@ -24,17 +24,17 @@ interface Compliance {
 const typeLabels: Record<string, string> = {
   iso: "ISO",
   soc: "SOC",
-  internal_audit: catalogMessage("text_cee0b03d70da"),
-  regulatory: catalogMessage("text_8053803bdbb7"),
-  other: catalogMessage("text_17a9f38e22b6"),
+  internal_audit: catalogMessage("humanCapital.qacompliance.internalAudit"),
+  regulatory: catalogMessage("humanCapital.qacompliance.organizational"),
+  other: catalogMessage("common.general.other"),
 };
 
 const statusLabels: Record<string, string> = {
-  pending: catalogMessage("text_7d7913fdef74"),
-  in_progress: catalogMessage("text_d761119224ab"),
-  completed: catalogMessage("text_c2da5684d63b"),
-  non_compliant: catalogMessage("text_684a0f3b8fac"),
-  cancelled: catalogMessage("text_616d302cb016"),
+  pending: catalogMessage("common.general.pending.alternative2"),
+  in_progress: catalogMessage("common.general.progress.alternative3"),
+  completed: catalogMessage("common.general.completed"),
+  non_compliant: catalogMessage("humanCapital.qacompliance.incompatible"),
+  cancelled: catalogMessage("common.general.canceled"),
 };
 
 const statusBadges: Record<string, string> = {
@@ -69,7 +69,7 @@ export function QaCompliance() {
       setRecords(res.data as Compliance[] || []);
       setTotalPages(Number(res.last_page) || 1);
     } catch (error) {
-      console.error(i18n.catalog["text_cfed6eadcc4a"], error);
+      console.error(i18n.catalog["humanCapital.qacompliance.failedLoadComplianceRecords"], error);
     } finally {
       setIsLoading(false);
     }
@@ -78,30 +78,30 @@ export function QaCompliance() {
   const columns: Column<Compliance>[] = [
     {
       key: "compliance_number",
-      header: i18n.catalog["text_9bc067822064"],
-      dataLabel: i18n.catalog["text_9bc067822064"],
+      header: i18n.catalog["common.general.complianceNumber"],
+      dataLabel: i18n.catalog["common.general.complianceNumber"],
     },
     {
       key: "standard_name",
-      header: i18n.catalog["text_76a30341e72e"],
-      dataLabel: i18n.catalog["text_76a30341e72e"],
+      header: i18n.catalog["common.general.standardName"],
+      dataLabel: i18n.catalog["common.general.standardName"],
     },
     {
       key: "compliance_type",
-      header: i18n.catalog["text_caa3f2bb4a36"],
-      dataLabel: i18n.catalog["text_caa3f2bb4a36"],
+      header: i18n.catalog["common.general.type.alternative3"],
+      dataLabel: i18n.catalog["common.general.type.alternative3"],
       render: (item) => typeLabels[item.compliance_type] || item.compliance_type,
     },
     {
       key: "employee",
-      header: i18n.catalog["text_b71a39c832a6"],
-      dataLabel: i18n.catalog["text_b71a39c832a6"],
+      header: i18n.catalog["common.general.employee.alternative3"],
+      dataLabel: i18n.catalog["common.general.employee.alternative3"],
       render: (item) => item.employee?.full_name || '-',
     },
     {
       key: "status",
-      header: i18n.catalog["text_c3a4749caed4"],
-      dataLabel: i18n.catalog["text_c3a4749caed4"],
+      header: i18n.catalog["common.general.status.alternative2"],
+      dataLabel: i18n.catalog["common.general.status.alternative2"],
       render: (item) => (
         <span className={`badge ${statusBadges[item.status] || 'badge-secondary'}`}>
           {statusLabels[item.status] || item.status}
@@ -110,22 +110,22 @@ export function QaCompliance() {
     },
     {
       key: "due_date",
-      header: i18n.catalog["text_206afce1e45e"],
-      dataLabel: i18n.catalog["text_206afce1e45e"],
+      header: i18n.catalog["common.general.dueDate"],
+      dataLabel: i18n.catalog["common.general.dueDate"],
       render: (item) => item.due_date ? formatDate(item.due_date) : '-',
     },
     {
       key: "id",
-      header: i18n.catalog["text_7797240d6caf"],
-      dataLabel: i18n.catalog["text_7797240d6caf"],
+      header: i18n.catalog["common.general.actions"],
+      dataLabel: i18n.catalog["common.general.actions"],
       render: (item) => (
         <ActionButtons
           actions={[
             {
               icon: "eye",
-              title: i18n.catalog["text_4b615d0e6dd2"],
+              title: i18n.catalog["common.general.viewDetails"],
               variant: "view",
-              onClick: () => alert(i18n.catalog["text_5ba17dbe5a91"])
+              onClick: () => alert(i18n.catalog["common.general.thisFeatureIsUnderDevelopmentWillBeAdded"])
             }
           ]}
         />
@@ -136,7 +136,7 @@ export function QaCompliance() {
   return (
     <div className="sales-card animate-fade">
       <PageSubHeader
-        title={i18n.catalog["text_a4a91ea866ef"]}
+        title={i18n.catalog["common.general.qualityCompliance"]}
         titleIcon="shield-check"
         actions={
           <>
@@ -147,15 +147,15 @@ export function QaCompliance() {
                 setCurrentPage(1);
               }}
               style={{ minWidth: "150px" }}
-              placeholder={i18n.catalog["text_1ef213109d57"]}
+              placeholder={i18n.catalog["common.general.allStatuses"]}
               options={Object.entries(statusLabels).map(([value, label]) => ({ value, label })).filter(o => ["pending", "in_progress", "completed", "non_compliant"].includes(o.value))}
             />
             <Button
-              onClick={() => alert(i18n.catalog["text_5ba17dbe5a91"])}
+              onClick={() => alert(i18n.catalog["common.general.thisFeatureIsUnderDevelopmentWillBeAdded"])}
               variant="primary"
               icon="plus"
             >
-              {i18n.catalog["text_c9dbf41298cc"]}</Button>
+              {i18n.catalog["humanCapital.qacompliance.addComplianceRecord"]}</Button>
           </>
         }
       />
@@ -164,7 +164,7 @@ export function QaCompliance() {
         columns={columns}
         data={records}
         keyExtractor={(item) => item.id.toString()}
-        emptyMessage={i18n.catalog["text_5afe0117e423"]}
+        emptyMessage={i18n.catalog["humanCapital.qacompliance.noComplianceRecords"]}
         isLoading={isLoading}
         pagination={{
           currentPage,

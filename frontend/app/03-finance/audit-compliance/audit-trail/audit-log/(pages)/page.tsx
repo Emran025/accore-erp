@@ -20,25 +20,25 @@ interface AuditLog {
 }
 
 const actionTypes = [
-  { value: "", label: catalogMessage("text_c6cd32defc32") },
-  { value: "create", label: catalogMessage("text_a820f3590d36") },
-  { value: "update", label: catalogMessage("text_113d570d6555") },
-  { value: "delete", label: catalogMessage("text_59ca629220a6") },
-  { value: "login", label: catalogMessage("text_e8408f9d3589") },
-  { value: "logout", label: catalogMessage("text_1850ba90fe7e") },
+  { value: "", label: catalogMessage("finance.auditLog.allActions") },
+  { value: "create", label: catalogMessage("common.general.create") },
+  { value: "update", label: catalogMessage("common.general.edit") },
+  { value: "delete", label: catalogMessage("common.general.delete") },
+  { value: "login", label: catalogMessage("finance.auditLog.login.alternative2") },
+  { value: "logout", label: catalogMessage("finance.auditLog.signOut") },
 ];
 
 const moduleTypes = [
-  { value: "", label: catalogMessage("text_a9051bd4dd17") },
-  { value: "auth", label: catalogMessage("text_e3c1917077fd") },
-  { value: "sales", label: catalogMessage("text_7bf1b13416bc") },
-  { value: "products", label: catalogMessage("text_c8775206b252") },
-  { value: "purchases", label: catalogMessage("text_2a14f93caa32") },
-  { value: "expenses", label: catalogMessage("text_4d514b65a483") },
-  { value: "users", label: catalogMessage("text_b378cbffd5df") },
-  { value: "settings", label: catalogMessage("text_5fd9563e6846") },
-  { value: "accounts", label: catalogMessage("text_c447ac426926") },
-  { value: "vouchers", label: catalogMessage("text_22a192d98656") },
+  { value: "", label: catalogMessage("finance.auditLog.allUnits") },
+  { value: "auth", label: catalogMessage("finance.auditLog.authentication") },
+  { value: "sales", label: catalogMessage("common.general.sales") },
+  { value: "products", label: catalogMessage("finance.auditLog.products") },
+  { value: "purchases", label: catalogMessage("common.general.purchases") },
+  { value: "expenses", label: catalogMessage("common.general.expenses") },
+  { value: "users", label: catalogMessage("common.general.users") },
+  { value: "settings", label: catalogMessage("common.general.settings") },
+  { value: "accounts", label: catalogMessage("finance.auditLog.accounts") },
+  { value: "vouchers", label: catalogMessage("finance.auditLog.vouchers") },
 ];
 
 export default function AuditTrailPage() {
@@ -75,7 +75,7 @@ export default function AuditTrailPage() {
       setTotalPages(Math.ceil((response.total as number || 0) / itemsPerPage));
       setCurrentPage(page);
     } catch {
-      showToast(i18n.catalog["text_bfd528946468"], "error");
+      showToast(i18n.catalog["finance.auditLog.errorLoadingAuditLog"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -92,22 +92,22 @@ export default function AuditTrailPage() {
   };
 
   const handleExport = () => {
-    showToast(i18n.catalog["text_02fab3be3aba"], "info");
+    showToast(i18n.catalog["finance.auditLog.exportingRecord"], "info");
     // Export logic would go here
   };
 
   const getActionBadge = (action: string) => {
     switch (action) {
       case "create":
-        return <span className="badge badge-success">{i18n.catalog["text_a820f3590d36"]}</span>;
+        return <span className="badge badge-success">{i18n.catalog["common.general.create"]}</span>;
       case "update":
-        return <span className="badge badge-info">{i18n.catalog["text_113d570d6555"]}</span>;
+        return <span className="badge badge-info">{i18n.catalog["common.general.edit"]}</span>;
       case "delete":
-        return <span className="badge badge-danger">{i18n.catalog["text_59ca629220a6"]}</span>;
+        return <span className="badge badge-danger">{i18n.catalog["common.general.delete"]}</span>;
       case "login":
-        return <span className="badge badge-primary">{i18n.catalog["text_2c860cedec90"]}</span>;
+        return <span className="badge badge-primary">{i18n.catalog["finance.auditLog.login"]}</span>;
       case "logout":
-        return <span className="badge badge-secondary">{i18n.catalog["text_39db927c23ae"]}</span>;
+        return <span className="badge badge-secondary">{i18n.catalog["finance.auditLog.logout"]}</span>;
       default:
         return <span className="badge badge-secondary">{action}</span>;
     }
@@ -121,25 +121,25 @@ export default function AuditTrailPage() {
   const columns: Column<AuditLog>[] = [
     {
       key: "created_at",
-      header: i18n.catalog["text_78e9c561195c"],
-      dataLabel: i18n.catalog["text_78e9c561195c"],
+      header: i18n.catalog["common.general.dateTime"],
+      dataLabel: i18n.catalog["common.general.dateTime"],
       render: (item) => formatDateTime(item.created_at),
     },
-    { key: "user_name", header: i18n.catalog["text_2fb01868740d"], dataLabel: i18n.catalog["text_2fb01868740d"] },
+    { key: "user_name", header: i18n.catalog["common.general.user"], dataLabel: i18n.catalog["common.general.user"] },
     {
       key: "action",
-      header: i18n.catalog["text_9200595fd0fe"],
-      dataLabel: i18n.catalog["text_9200595fd0fe"],
+      header: i18n.catalog["common.general.action.alternative2"],
+      dataLabel: i18n.catalog["common.general.action.alternative2"],
       render: (item) => getActionBadge(item.action),
     },
     {
       key: "module",
-      header: i18n.catalog["text_9a08d7d4bf73"],
-      dataLabel: i18n.catalog["text_9a08d7d4bf73"],
+      header: i18n.catalog["common.general.unit.alternative2"],
+      dataLabel: i18n.catalog["common.general.unit.alternative2"],
       render: (item) => getModuleLabel(item.module),
     },
-    { key: "description", header: i18n.catalog["text_95023fc76e1b"], dataLabel: i18n.catalog["text_95023fc76e1b"] },
-    { key: "ip_address", header: i18n.catalog["text_662315283697"], dataLabel: i18n.catalog["text_662315283697"] },
+    { key: "description", header: i18n.catalog["common.general.description.alternative2"], dataLabel: i18n.catalog["common.general.description.alternative2"] },
+    { key: "ip_address", header: i18n.catalog["common.general.ipAddress"], dataLabel: i18n.catalog["common.general.ipAddress"] },
   ];
 
   return (
@@ -149,19 +149,19 @@ export default function AuditTrailPage() {
         <PageSubHeader
           actions={
             <Button variant="secondary" onClick={handleExport} icon="download">
-              {i18n.catalog["text_4fa0ad254538"]}</Button>
+              {i18n.catalog["common.general.export"]}</Button>
           }
         />
         {/* Filters */}
         <FilterSection>
           <DateRangePicker
-            label={i18n.catalog["text_703172db8cd5"]}
+            label={i18n.catalog["finance.auditLog.reviewPeriod"]}
             startDate={dateFrom}
             endDate={dateTo}
             onStartDateChange={setDateFrom}
             onEndDateChange={setDateTo}
           />
-          <FilterGroup label={i18n.catalog["text_9200595fd0fe"]}>
+          <FilterGroup label={i18n.catalog["common.general.action.alternative2"]}>
             <select
               value={actionFilter}
               onChange={(e) => setActionFilter(e.target.value)}
@@ -173,7 +173,7 @@ export default function AuditTrailPage() {
               ))}
             </select>
           </FilterGroup>
-          <FilterGroup label={i18n.catalog["text_9a08d7d4bf73"]}>
+          <FilterGroup label={i18n.catalog["common.general.unit.alternative2"]}>
             <select
               value={moduleFilter}
               onChange={(e) => setModuleFilter(e.target.value)}
@@ -185,17 +185,17 @@ export default function AuditTrailPage() {
               ))}
             </select>
           </FilterGroup>
-          <FilterGroup label={i18n.catalog["text_d0f6edcf6d65"]}>
+          <FilterGroup label={i18n.catalog["common.general.search.alternative2"]}>
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={i18n.catalog["text_ce0b389bffe4"]}
+              placeholder={i18n.catalog["finance.auditLog.searchUserDescription"]}
             />
           </FilterGroup>
           <FilterActions>
             <Button onClick={handleFilter} icon="search">
-              {i18n.catalog["text_a826a913e567"]}</Button>
+              {i18n.catalog["common.general.filter"]}</Button>
           </FilterActions>
         </FilterSection>
 
@@ -203,7 +203,7 @@ export default function AuditTrailPage() {
           columns={columns}
           data={logs}
           keyExtractor={(item) => item.id}
-          emptyMessage={i18n.catalog["text_6db2fc201fed"]}
+          emptyMessage={i18n.catalog["common.general.noRecords"]}
           isLoading={isLoading}
           pagination={{
             currentPage,

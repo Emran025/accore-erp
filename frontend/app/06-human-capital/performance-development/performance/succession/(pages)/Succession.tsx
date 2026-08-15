@@ -26,9 +26,9 @@ interface Candidate {
   development_plan?: string; notes?: string;
 }
 
-const readinessLabels: Record<string, string> = { ready_now: catalogMessage("text_09ec8dda5bec"), ready_1_2_years: catalogMessage("text_2c9bea33eb49"), ready_3_5_years: catalogMessage("text_1ca694ce2033"), not_ready: catalogMessage("text_9c352a11e2f8") };
+const readinessLabels: Record<string, string> = { ready_now: catalogMessage("humanCapital.succession.readyNow"), ready_1_2_years: catalogMessage("humanCapital.succession.within12Years"), ready_3_5_years: catalogMessage("humanCapital.succession.within35Years"), not_ready: catalogMessage("humanCapital.succession.notReady") };
 const readinessBadges: Record<string, string> = { ready_now: "badge-success", ready_1_2_years: "badge-info", ready_3_5_years: "badge-warning", not_ready: "badge-danger" };
-const statusLabels: Record<string, string> = { active: catalogMessage("text_629e90b3af3d"), inactive: catalogMessage("text_b719ac8add4e"), filled: catalogMessage("text_c2da5684d63b") };
+const statusLabels: Record<string, string> = { active: catalogMessage("common.general.active"), inactive: catalogMessage("common.general.inactive"), filled: catalogMessage("common.general.completed") };
 const statusBadges: Record<string, string> = { active: "badge-success", inactive: "badge-secondary", filled: "badge-info" };
 
 export function Succession() {
@@ -56,12 +56,12 @@ export function Succession() {
     try {
       const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.SUCCESSION.BASE}?page=${currentPage}`);
       setPlans(res.data || []); setTotalPages(Number(res.last_page) || 1);
-    } catch { showToast(i18n.catalog["text_02d26aa7a499"], "error"); }
+    } catch { showToast(i18n.catalog["humanCapital.succession.failedLoadSuccessionPlans"], "error"); }
     finally { setIsLoading(false); }
   };
 
   const handleSavePlan = async () => {
-    if (!planForm.position_title) { showToast(i18n.catalog["text_69f149aba782"], "error"); return; }
+    if (!planForm.position_title) { showToast(i18n.catalog["humanCapital.succession.pleaseEnterJobTitle"], "error"); return; }
     try {
       await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.SUCCESSION.BASE, {
         method: "POST", body: JSON.stringify({
@@ -69,26 +69,26 @@ export function Succession() {
           readiness_level: planForm.readiness_level, notes: planForm.notes || undefined,
         })
       });
-      showToast(i18n.catalog["text_f12a28575e6c"], "success"); setShowPlanDialog(false); loadPlans();
-    } catch (e: any) { showToast(e.message || i18n.catalog["text_b0dbba00004b"], "error"); }
+      showToast(i18n.catalog["humanCapital.succession.successionPlanCreated"], "success"); setShowPlanDialog(false); loadPlans();
+    } catch (e: any) { showToast(e.message || i18n.catalog["common.general.failedSave"], "error"); }
   };
 
   const handleUpdatePlanStatus = async (id: number, status: string) => {
     try {
       await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.SUCCESSION.withId(id), { method: "PUT", body: JSON.stringify({ status }) });
-      showToast(i18n.catalog["text_5b8139e25125"], "success"); loadPlans();
-    } catch (e: any) { showToast(e.message || i18n.catalog["text_96c789857dbf"], "error"); }
+      showToast(i18n.catalog["common.general.statusUpdated"], "success"); loadPlans();
+    } catch (e: any) { showToast(e.message || i18n.catalog["common.general.updateFailed"], "error"); }
   };
 
   const viewDetail = async (id: number) => {
     try {
       const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.SUCCESSION.withId(id));
       setSelectedPlan(res.data || res); setShowDetailDialog(true);
-    } catch { showToast(i18n.catalog["text_6467762a8e34"], "error"); }
+    } catch { showToast(i18n.catalog["common.general.failedLoadDetails"], "error"); }
   };
 
   const handleAddCandidate = async () => {
-    if (!selectedPlan || !candForm.employee_id) { showToast(i18n.catalog["text_8c0019b7fcee"], "error"); return; }
+    if (!selectedPlan || !candForm.employee_id) { showToast(i18n.catalog["common.general.pleaseSelectEmployee"], "error"); return; }
     try {
       await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.SUCCESSION.CANDIDATES(selectedPlan.id), {
         method: "POST", body: JSON.stringify({
@@ -98,38 +98,38 @@ export function Succession() {
           development_plan: candForm.development_plan || undefined, notes: candForm.notes || undefined,
         })
       });
-      showToast(i18n.catalog["text_32172fb179f1"], "success"); setShowCandidateDialog(false);
+      showToast(i18n.catalog["common.general.candidateAdded"], "success"); setShowCandidateDialog(false);
       const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.SUCCESSION.withId(selectedPlan.id));
       setSelectedPlan(res.data || res); loadPlans();
-    } catch (e: any) { showToast(e.message || i18n.catalog["text_b0dbba00004b"], "error"); }
+    } catch (e: any) { showToast(e.message || i18n.catalog["common.general.failedSave"], "error"); }
   };
 
   const columns: Column<SuccessionPlan>[] = [
-    { key: "position_title", header: i18n.catalog["text_de98bd734462"], dataLabel: i18n.catalog["text_39adfb54212e"] },
-    { key: "incumbent", header: i18n.catalog["text_6fe6300a7a3a"], dataLabel: i18n.catalog["text_1e177c80cb13"], render: (i) => i.incumbent?.full_name || "-" },
-    { key: "readiness_level", header: i18n.catalog["text_0e77e94b4559"], dataLabel: i18n.catalog["text_0e77e94b4559"], render: (i) => <span className={`badge ${readinessBadges[i.readiness_level]}`}>{readinessLabels[i.readiness_level] || i.readiness_level}</span> },
-    { key: "candidates", header: i18n.catalog["text_d30908a0b6c6"], dataLabel: i18n.catalog["text_d30908a0b6c6"], render: (i) => <span style={{ fontWeight: 600 }}>{i.candidates?.length || 0}</span> },
-    { key: "status", header: i18n.catalog["text_c3a4749caed4"], dataLabel: i18n.catalog["text_c3a4749caed4"], render: (i) => <span className={`badge ${statusBadges[i.status]}`}>{statusLabels[i.status] || i.status}</span> },
+    { key: "position_title", header: i18n.catalog["common.general.jobTitle.alternative3"], dataLabel: i18n.catalog["common.general.title.alternative2"] },
+    { key: "incumbent", header: i18n.catalog["humanCapital.succession.positionHolder"], dataLabel: i18n.catalog["humanCapital.succession.incumbent"], render: (i) => i.incumbent?.full_name || "-" },
+    { key: "readiness_level", header: i18n.catalog["common.general.readiness"], dataLabel: i18n.catalog["common.general.readiness"], render: (i) => <span className={`badge ${readinessBadges[i.readiness_level]}`}>{readinessLabels[i.readiness_level] || i.readiness_level}</span> },
+    { key: "candidates", header: i18n.catalog["common.general.candidates.alternative2"], dataLabel: i18n.catalog["common.general.candidates.alternative2"], render: (i) => <span style={{ fontWeight: 600 }}>{i.candidates?.length || 0}</span> },
+    { key: "status", header: i18n.catalog["common.general.status.alternative2"], dataLabel: i18n.catalog["common.general.status.alternative2"], render: (i) => <span className={`badge ${statusBadges[i.status]}`}>{statusLabels[i.status] || i.status}</span> },
     {
-      key: "id", header: i18n.catalog["text_9f0a0f722601"], dataLabel: i18n.catalog["text_9f0a0f722601"], render: (i) => (
+      key: "id", header: i18n.catalog["common.general.actions.alternative2"], dataLabel: i18n.catalog["common.general.actions.alternative2"], render: (i) => (
         <ActionButtons
           actions={[
             {
               icon: "eye",
-              title: i18n.catalog["text_29f382c73779"],
+              title: i18n.catalog["common.general.details"],
               variant: "view",
               onClick: () => viewDetail(i.id)
             },
             ...(canAccess("succession", "edit") ? [{
               icon: "pause" as const,
-              title: i18n.catalog["text_6d0a1e214b60"],
+              title: i18n.catalog["humanCapital.succession.disable"],
               variant: "edit" as const,
               onClick: () => handleUpdatePlanStatus(i.id, "inactive"),
               hidden: i.status !== "active"
             }] : []),
             ...(canAccess("succession", "edit") ? [{
               icon: "play" as const,
-              title: i18n.catalog["text_c3c09fe13363"],
+              title: i18n.catalog["common.general.activate"],
               variant: "success" as const,
               onClick: () => handleUpdatePlanStatus(i.id, "active"),
               hidden: i.status !== "inactive"
@@ -148,7 +148,7 @@ export function Succession() {
   return (
     <div className="sales-card animate-fade">
       <PageSubHeader
-        title={i18n.catalog["text_e789ea97a5d1"]}
+        title={i18n.catalog["common.general.successionPlanning"]}
         titleIcon="sitemap"
         actions={
           canAccess("succession", "create") && (
@@ -157,56 +157,56 @@ export function Succession() {
               variant="primary"
               icon="plus"
             >
-              {i18n.catalog["text_65482bbdfde3"]}</Button>
+              {i18n.catalog["common.general.newSuccessionPlan"]}</Button>
           )
         }
       />
 
-      <Table columns={columns} data={plans} keyExtractor={(i) => i.id.toString()} emptyMessage={i18n.catalog["text_d5d90a34055f"]} isLoading={isLoading} pagination={{ currentPage, totalPages, onPageChange: setCurrentPage }} />
+      <Table columns={columns} data={plans} keyExtractor={(i) => i.id.toString()} emptyMessage={i18n.catalog["humanCapital.succession.noSuccessionPlans"]} isLoading={isLoading} pagination={{ currentPage, totalPages, onPageChange: setCurrentPage }} />
 
       {/* Create Plan Dialog */}
-      <Dialog isOpen={showPlanDialog} onClose={() => setShowPlanDialog(false)} title={i18n.catalog["text_65482bbdfde3"]} maxWidth="550px">
+      <Dialog isOpen={showPlanDialog} onClose={() => setShowPlanDialog(false)} title={i18n.catalog["common.general.newSuccessionPlan"]} maxWidth="550px">
         <div className="space-y-4">
-          <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_a360f80290e8"]}</Label><TextInput value={planForm.position_title} onChange={(e) => setPlanForm({ ...planForm, position_title: e.target.value })} /></div>
-          <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_62d363d1e859"]}</Label>
+          <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["common.general.jobTitle"]}</Label><TextInput value={planForm.position_title} onChange={(e) => setPlanForm({ ...planForm, position_title: e.target.value })} /></div>
+          <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["humanCapital.succession.currentPositionHolder"]}</Label>
             <Select
               value={planForm.incumbent_id}
               onChange={(e) => setPlanForm({ ...planForm, incumbent_id: e.target.value })}
-              placeholder={i18n.catalog["text_d6b8d3e4d508"]}
+              placeholder={i18n.catalog["common.general.select"]}
               options={employees.map((e: Employee) => ({ value: e.id.toString(), label: e.full_name }))}
             /></div>
-          <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_550e4bb431c6"]}</Label>
+          <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["common.general.readinessLevel"]}</Label>
             <Select
               value={planForm.readiness_level}
               onChange={(e) => setPlanForm({ ...planForm, readiness_level: e.target.value })}
               options={Object.entries(readinessLabels).map(([value, label]) => ({ value, label }))}
             /></div>
-          <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_d446d2dc6b81"]}</Label><Textarea value={planForm.notes} onChange={(e) => setPlanForm({ ...planForm, notes: e.target.value })} rows={2} /></div>
-          <div className="flex justify-end gap-2" style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}><Button variant="secondary" onClick={() => setShowPlanDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button><Button variant="primary" onClick={handleSavePlan} icon="save">{i18n.catalog["text_ddfcaf9d0144"]}</Button></div>
+          <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["common.general.notes.alternative2"]}</Label><Textarea value={planForm.notes} onChange={(e) => setPlanForm({ ...planForm, notes: e.target.value })} rows={2} /></div>
+          <div className="flex justify-end gap-2" style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}><Button variant="secondary" onClick={() => setShowPlanDialog(false)}>{i18n.catalog["common.general.cancel"]}</Button><Button variant="primary" onClick={handleSavePlan} icon="save">{i18n.catalog["common.general.save"]}</Button></div>
         </div>
       </Dialog>
 
       {/* Detail Dialog with Candidates */}
-      <Dialog isOpen={showDetailDialog} onClose={() => setShowDetailDialog(false)} title={i18n.catalog["text_cdd701c3524c"]} maxWidth="750px">
+      <Dialog isOpen={showDetailDialog} onClose={() => setShowDetailDialog(false)} title={i18n.catalog["humanCapital.succession.successionPlanDetails"]} maxWidth="750px">
         {selectedPlan && <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div><strong>{i18n.catalog["text_651da673b258"]}</strong> {selectedPlan.position_title}</div>
-            <div><strong>{i18n.catalog["text_b14c407160ba"]}</strong> {selectedPlan.incumbent?.full_name || "-"}</div>
-            <div><strong>{i18n.catalog["text_2fb3eb37fc76"]}</strong> <span className={`badge ${readinessBadges[selectedPlan.readiness_level]}`}>{readinessLabels[selectedPlan.readiness_level]}</span></div>
-            <div><strong>{i18n.catalog["text_02e196bdec60"]}</strong> <span className={`badge ${statusBadges[selectedPlan.status]}`}>{statusLabels[selectedPlan.status]}</span></div>
+            <div><strong>{i18n.catalog["common.general.title.alternative3"]}</strong> {selectedPlan.position_title}</div>
+            <div><strong>{i18n.catalog["humanCapital.succession.operator"]}</strong> {selectedPlan.incumbent?.full_name || "-"}</div>
+            <div><strong>{i18n.catalog["humanCapital.succession.readiness"]}</strong> <span className={`badge ${readinessBadges[selectedPlan.readiness_level]}`}>{readinessLabels[selectedPlan.readiness_level]}</span></div>
+            <div><strong>{i18n.catalog["common.general.status"]}</strong> <span className={`badge ${statusBadges[selectedPlan.status]}`}>{statusLabels[selectedPlan.status]}</span></div>
           </div>
-          {selectedPlan.notes && <div><strong>{i18n.catalog["text_8c9d1b5aec34"]}</strong> {selectedPlan.notes}</div>}
+          {selectedPlan.notes && <div><strong>{i18n.catalog["common.general.notes"]}</strong> {selectedPlan.notes}</div>}
 
           <div style={{ marginTop: "1rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-              <h4 style={{ margin: 0 }}>{i18n.catalog["text_264f6f17f513"]}{selectedPlan.candidates?.length || 0})</h4>
+              <h4 style={{ margin: 0 }}>{i18n.catalog["common.general.candidates"]}{selectedPlan.candidates?.length || 0})</h4>
               {canAccess("succession", "edit") && (
                 <Button
                   onClick={() => { setCandForm({ employee_id: "", readiness_level: "not_ready", performance_rating: "", potential_rating: "", development_plan: "", notes: "" }); setShowCandidateDialog(true); }}
                   variant="primary"
                   icon="plus"
                 >
-                  {i18n.catalog["text_72052973b127"]}</Button>
+                  {i18n.catalog["common.general.addFilter"]}</Button>
               )}
             </div>
             {selectedPlan.candidates && selectedPlan.candidates.length > 0 ? (
@@ -218,41 +218,41 @@ export function Succession() {
                       <span className={`badge ${readinessBadges[c.readiness_level]}`}>{readinessLabels[c.readiness_level]}</span>
                     </div>
                     <div style={{ display: "flex", gap: "1.5rem", fontSize: "0.85rem" }}>
-                      <div><span style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_bdb2296cf4ac"]}</span> {renderRatingStars(c.performance_rating)}</div>
-                      <div><span style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_b009f513e642"]}</span> {renderRatingStars(c.potential_rating)}</div>
+                      <div><span style={{ color: "var(--text-secondary)" }}>{i18n.catalog["humanCapital.succession.performance"]}</span> {renderRatingStars(c.performance_rating)}</div>
+                      <div><span style={{ color: "var(--text-secondary)" }}>{i18n.catalog["humanCapital.succession.capabilities"]}</span> {renderRatingStars(c.potential_rating)}</div>
                     </div>
-                    {c.development_plan && <div style={{ marginTop: "0.5rem", fontSize: "0.85rem" }}><span style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_f16ca777c217"]}</span> {c.development_plan}</div>}
+                    {c.development_plan && <div style={{ marginTop: "0.5rem", fontSize: "0.85rem" }}><span style={{ color: "var(--text-secondary)" }}>{i18n.catalog["humanCapital.succession.developmentPlan.alternative2"]}</span> {c.development_plan}</div>}
                   </div>
                 ))}
               </div>
-            ) : <p style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_c6b037c12bf4"]}</p>}
+            ) : <p style={{ color: "var(--text-secondary)" }}>{i18n.catalog["humanCapital.succession.noCandidatesYet"]}</p>}
           </div>
         </div>}
       </Dialog>
 
       {/* Add Candidate Dialog */}
-      <Dialog isOpen={showCandidateDialog} onClose={() => setShowCandidateDialog(false)} title={i18n.catalog["text_0d90e878de9b"]} maxWidth="550px">
+      <Dialog isOpen={showCandidateDialog} onClose={() => setShowCandidateDialog(false)} title={i18n.catalog["humanCapital.succession.addSuccessionCandidate"]} maxWidth="550px">
         <div className="space-y-4">
-          <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_972803dc7d86"]}</Label>
+          <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["common.general.employee"]}</Label>
             <Select
               value={candForm.employee_id}
               onChange={(e) => setCandForm({ ...candForm, employee_id: e.target.value })}
-              placeholder={i18n.catalog["text_d6b8d3e4d508"]}
+              placeholder={i18n.catalog["common.general.select"]}
               options={employees.map((e: Employee) => ({ value: e.id.toString(), label: e.full_name }))}
             /></div>
-          <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_550e4bb431c6"]}</Label>
+          <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["common.general.readinessLevel"]}</Label>
             <Select
               value={candForm.readiness_level}
               onChange={(e) => setCandForm({ ...candForm, readiness_level: e.target.value })}
               options={Object.entries(readinessLabels).map(([value, label]) => ({ value, label }))}
             /></div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_47e0270956cb"]}</Label><TextInput type="number" min="1" max="5" value={candForm.performance_rating} onChange={(e) => setCandForm({ ...candForm, performance_rating: e.target.value })} /></div>
-            <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_0ad8351f6b4e"]}</Label><TextInput type="number" min="1" max="5" value={candForm.potential_rating} onChange={(e) => setCandForm({ ...candForm, potential_rating: e.target.value })} /></div>
+            <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["humanCapital.succession.performanceRating15"]}</Label><TextInput type="number" min="1" max="5" value={candForm.performance_rating} onChange={(e) => setCandForm({ ...candForm, performance_rating: e.target.value })} /></div>
+            <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["humanCapital.succession.capabilityRating15"]}</Label><TextInput type="number" min="1" max="5" value={candForm.potential_rating} onChange={(e) => setCandForm({ ...candForm, potential_rating: e.target.value })} /></div>
           </div>
-          <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_ee21cac52e25"]}</Label><Textarea value={candForm.development_plan} onChange={(e) => setCandForm({ ...candForm, development_plan: e.target.value })} rows={3} /></div>
-          <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_d446d2dc6b81"]}</Label><Textarea value={candForm.notes} onChange={(e) => setCandForm({ ...candForm, notes: e.target.value })} rows={2} /></div>
-          <div className="flex justify-end gap-2" style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}><Button variant="secondary" onClick={() => setShowCandidateDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button><Button variant="primary" onClick={handleAddCandidate} icon="save">{i18n.catalog["text_d52453ac627d"]}</Button></div>
+          <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["humanCapital.succession.developmentPlan"]}</Label><Textarea value={candForm.development_plan} onChange={(e) => setCandForm({ ...candForm, development_plan: e.target.value })} rows={3} /></div>
+          <div><Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["common.general.notes.alternative2"]}</Label><Textarea value={candForm.notes} onChange={(e) => setCandForm({ ...candForm, notes: e.target.value })} rows={2} /></div>
+          <div className="flex justify-end gap-2" style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}><Button variant="secondary" onClick={() => setShowCandidateDialog(false)}>{i18n.catalog["common.general.cancel"]}</Button><Button variant="primary" onClick={handleAddCandidate} icon="save">{i18n.catalog["common.general.add"]}</Button></div>
         </div>
       </Dialog>
     </div>

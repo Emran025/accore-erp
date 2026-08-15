@@ -12,6 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->api(prepend: [
+            \App\Http\Middleware\NegotiateApiLocale::class,
+        ]);
+
         $middleware->alias([
             'api.auth' => \App\Http\Middleware\ApiAuth::class,
             'can' => \App\Http\Middleware\CheckPermission::class,

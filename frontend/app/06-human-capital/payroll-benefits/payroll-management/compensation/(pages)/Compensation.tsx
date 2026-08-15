@@ -33,22 +33,22 @@ interface CompensationEntry {
 }
 
 const planTypeLabels: Record<string, string> = {
-    merit: catalogMessage("text_6e8c89702521"),
-    promotion: catalogMessage("text_dd4fb886e84d"),
-    adjustment: catalogMessage("text_113d570d6555"),
-    bonus: catalogMessage("text_c396e6b8b30a"),
-    commission: catalogMessage("text_1cae74794eb1"),
+    merit: catalogMessage("humanCapital.compensation.entitlement"),
+    promotion: catalogMessage("humanCapital.compensation.promotion"),
+    adjustment: catalogMessage("common.general.edit"),
+    bonus: catalogMessage("common.general.bonus"),
+    commission: catalogMessage("humanCapital.compensation.commission"),
 };
 
 const statusLabels: Record<string, string> = {
-    draft: catalogMessage("text_552aec56f591"),
-    pending_approval: catalogMessage("text_38c10ba741b1"),
-    approved: catalogMessage("text_a98d8a418ba0"),
-    active: catalogMessage("text_629e90b3af3d"),
-    closed: catalogMessage("text_e655261f9c96"),
-    pending: catalogMessage("text_7d7913fdef74"),
-    rejected: catalogMessage("text_5d969a71dad3"),
-    processed: catalogMessage("text_15fa5b98bec0"),
+    draft: catalogMessage("common.general.draft"),
+    pending_approval: catalogMessage("common.general.pendingApproval"),
+    approved: catalogMessage("common.general.approved"),
+    active: catalogMessage("common.general.active"),
+    closed: catalogMessage("common.general.closed.alternative2"),
+    pending: catalogMessage("common.general.pending.alternative2"),
+    rejected: catalogMessage("common.general.rejected"),
+    processed: catalogMessage("humanCapital.compensation.wizard"),
 };
 
 const statusBadges: Record<string, string> = {
@@ -91,7 +91,7 @@ export function Compensation() {
             setPlans(res.data as CompensationPlan[] || []);
             setTotalPages(Number(res.last_page) || 1);
         } catch (error) {
-            console.error(i18n.catalog["text_a37d4d9af6c0"], error);
+            console.error(i18n.catalog["common.general.failedLoadPlans"], error);
         } finally {
             setIsLoading(false);
         }
@@ -107,7 +107,7 @@ export function Compensation() {
             setEntries(res.data as CompensationEntry[] || []);
             setTotalPages(Number(res.last_page) || 1);
         } catch (error) {
-            console.error(i18n.catalog["text_345d08a2a175"], error);
+            console.error(i18n.catalog["humanCapital.compensation.failedLoadEntries"], error);
         } finally {
             setIsLoading(false);
         }
@@ -116,36 +116,36 @@ export function Compensation() {
     const planColumns: Column<CompensationPlan>[] = [
         {
             key: "plan_name",
-            header: i18n.catalog["text_0dbb5c16476f"],
-            dataLabel: i18n.catalog["text_0dbb5c16476f"],
+            header: i18n.catalog["common.general.planName"],
+            dataLabel: i18n.catalog["common.general.planName"],
         },
         {
             key: "plan_type",
-            header: i18n.catalog["text_caa3f2bb4a36"],
-            dataLabel: i18n.catalog["text_caa3f2bb4a36"],
+            header: i18n.catalog["common.general.type.alternative3"],
+            dataLabel: i18n.catalog["common.general.type.alternative3"],
             render: (item) => planTypeLabels[item.plan_type] || item.plan_type,
         },
         {
             key: "fiscal_year",
-            header: i18n.catalog["text_956acd975554"],
-            dataLabel: i18n.catalog["text_956acd975554"],
+            header: i18n.catalog["common.general.fiscalYear"],
+            dataLabel: i18n.catalog["common.general.fiscalYear"],
         },
         {
             key: "budget_pool",
-            header: i18n.catalog["text_c15b068a504b"],
-            dataLabel: i18n.catalog["text_c15b068a504b"],
+            header: i18n.catalog["common.general.planBudget"],
+            dataLabel: i18n.catalog["common.general.planBudget"],
             render: (item) => formatCurrency(item.budget_pool),
         },
         {
             key: "allocated_amount",
-            header: i18n.catalog["text_e8fabd53d8e4"],
-            dataLabel: i18n.catalog["text_e8fabd53d8e4"],
+            header: i18n.catalog["common.general.provision"],
+            dataLabel: i18n.catalog["common.general.provision"],
             render: (item) => formatCurrency(item.allocated_amount),
         },
         {
             key: "status",
-            header: i18n.catalog["text_c3a4749caed4"],
-            dataLabel: i18n.catalog["text_c3a4749caed4"],
+            header: i18n.catalog["common.general.status.alternative2"],
+            dataLabel: i18n.catalog["common.general.status.alternative2"],
             render: (item) => (
                 <span className={`badge ${statusBadges[item.status] || 'badge-secondary'}`}>
                     {statusLabels[item.status] || item.status}
@@ -154,22 +154,22 @@ export function Compensation() {
         },
         {
             key: "id",
-            header: i18n.catalog["text_7797240d6caf"],
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (item) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "eye",
-                            title: i18n.catalog["text_4b615d0e6dd2"],
+                            title: i18n.catalog["common.general.viewDetails"],
                             variant: "view",
-                            onClick: () => alert(i18n.catalog["text_5ba17dbe5a91"])
+                            onClick: () => alert(i18n.catalog["common.general.thisFeatureIsUnderDevelopmentWillBeAdded"])
                         },
                         ...(canAccess("compensation", "edit") ? [{
                             icon: "edit" as const,
-                            title: i18n.catalog["text_113d570d6555"],
+                            title: i18n.catalog["common.general.edit"],
                             variant: "edit" as const,
-                            onClick: () => alert(i18n.catalog["text_5ba17dbe5a91"])
+                            onClick: () => alert(i18n.catalog["common.general.thisFeatureIsUnderDevelopmentWillBeAdded"])
                         }] : [])
                     ]}
                 />
@@ -180,26 +180,26 @@ export function Compensation() {
     const entryColumns: Column<CompensationEntry>[] = [
         {
             key: "employee",
-            header: i18n.catalog["text_b71a39c832a6"],
-            dataLabel: i18n.catalog["text_b71a39c832a6"],
+            header: i18n.catalog["common.general.employee.alternative3"],
+            dataLabel: i18n.catalog["common.general.employee.alternative3"],
             render: (item) => item.employee?.full_name || '-',
         },
         {
             key: "current_salary",
-            header: i18n.catalog["text_c6db8a859950"],
-            dataLabel: i18n.catalog["text_c6db8a859950"],
+            header: i18n.catalog["common.general.currentSalary"],
+            dataLabel: i18n.catalog["common.general.currentSalary"],
             render: (item) => formatCurrency(item.current_salary),
         },
         {
             key: "proposed_salary",
-            header: i18n.catalog["text_cd4af52917a0"],
-            dataLabel: i18n.catalog["text_cd4af52917a0"],
+            header: i18n.catalog["common.general.proposedSalary"],
+            dataLabel: i18n.catalog["common.general.proposedSalary"],
             render: (item) => formatCurrency(item.proposed_salary),
         },
         {
             key: "increase_amount",
-            header: i18n.catalog["text_c70faaf771c7"],
-            dataLabel: i18n.catalog["text_c70faaf771c7"],
+            header: i18n.catalog["common.general.increaseAmount"],
+            dataLabel: i18n.catalog["common.general.increaseAmount"],
             render: (item) => (
                 <span className={item.increase_amount > 0 ? 'text-success' : 'text-danger'}>
                     {formatCurrency(item.increase_amount)}
@@ -208,20 +208,20 @@ export function Compensation() {
         },
         {
             key: "increase_percentage",
-            header: i18n.catalog["text_0778d2bfe740"],
-            dataLabel: i18n.catalog["text_0778d2bfe740"],
-            render: (item) => catalogText(i18n, "text_518ef1823474", { value0: item.increase_percentage }),
+            header: i18n.catalog["common.general.percentageIncrease"],
+            dataLabel: i18n.catalog["common.general.percentageIncrease"],
+            render: (item) => catalogText(i18n, "common.general.message.alternative4", { value0: item.increase_percentage }),
         },
         {
             key: "comp_ratio",
-            header: i18n.catalog["text_a98fb08fe037"],
-            dataLabel: i18n.catalog["text_a98fb08fe037"],
+            header: i18n.catalog["common.general.compensationRate"],
+            dataLabel: i18n.catalog["common.general.compensationRate"],
             render: (item) => item.comp_ratio ? item.comp_ratio.toFixed(2) : '-',
         },
         {
             key: "status",
-            header: i18n.catalog["text_c3a4749caed4"],
-            dataLabel: i18n.catalog["text_c3a4749caed4"],
+            header: i18n.catalog["common.general.status.alternative2"],
+            dataLabel: i18n.catalog["common.general.status.alternative2"],
             render: (item) => (
                 <span className={`badge ${statusBadges[item.status] || 'badge-secondary'}`}>
                     {statusLabels[item.status] || item.status}
@@ -230,22 +230,22 @@ export function Compensation() {
         },
         {
             key: "id",
-            header: i18n.catalog["text_7797240d6caf"],
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (item) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "eye",
-                            title: i18n.catalog["text_4b615d0e6dd2"],
+                            title: i18n.catalog["common.general.viewDetails"],
                             variant: "view",
-                            onClick: () => alert(i18n.catalog["text_5ba17dbe5a91"])
+                            onClick: () => alert(i18n.catalog["common.general.thisFeatureIsUnderDevelopmentWillBeAdded"])
                         },
                         ...(canAccess("compensation", "edit") ? [{
                             icon: "edit" as const,
-                            title: i18n.catalog["text_113d570d6555"],
+                            title: i18n.catalog["common.general.edit"],
                             variant: "edit" as const,
-                            onClick: () => alert(i18n.catalog["text_5ba17dbe5a91"])
+                            onClick: () => alert(i18n.catalog["common.general.thisFeatureIsUnderDevelopmentWillBeAdded"])
                         }] : [])
                     ]}
                 />
@@ -256,25 +256,25 @@ export function Compensation() {
     return (
         <div className="sales-card animate-fade">
             <PageSubHeader
-                title={i18n.catalog["text_6334fe113b74"]}
+                title={i18n.catalog["common.general.compensationManagement"]}
                 titleIcon="money-bill-wave"
                 actions={
                     <>
                         {activeTab === "plans" && canAccess("compensation", "create") && (
                             <Button
-                                onClick={() => alert(i18n.catalog["text_5ba17dbe5a91"])}
+                                onClick={() => alert(i18n.catalog["common.general.thisFeatureIsUnderDevelopmentWillBeAdded"])}
                                 variant="primary"
                                 icon="plus"
                             >
-                                {i18n.catalog["text_4687f6dd0432"]}</Button>
+                                {i18n.catalog["humanCapital.compensation.newCompensationPlan"]}</Button>
                         )}
                         {activeTab === "entries" && canAccess("compensation", "create") && (
                             <Button
-                                onClick={() => alert(i18n.catalog["text_5ba17dbe5a91"])}
+                                onClick={() => alert(i18n.catalog["common.general.thisFeatureIsUnderDevelopmentWillBeAdded"])}
                                 variant="primary"
                                 icon="plus"
                             >
-                                {i18n.catalog["text_10120057af71"]}</Button>
+                                {i18n.catalog["humanCapital.compensation.addNewCompensation"]}</Button>
                         )}
                     </>
                 }
@@ -282,8 +282,8 @@ export function Compensation() {
 
             <TabNavigation
                 tabs={[
-                    { key: "plans", label: i18n.catalog["text_082dde4337e4"], icon: "file-alt" },
-                    { key: "entries", label: i18n.catalog["text_bf7821475226"], icon: "list" },
+                    { key: "plans", label: i18n.catalog["humanCapital.compensation.compensationPlans"], icon: "file-alt" },
+                    { key: "entries", label: i18n.catalog["humanCapital.compensation.compensationEntries"], icon: "list" },
                 ]}
                 activeTab={activeTab}
                 onTabChange={setActiveTab}
@@ -294,7 +294,7 @@ export function Compensation() {
                     columns={planColumns}
                     data={plans}
                     keyExtractor={(item) => item.id.toString()}
-                    emptyMessage={i18n.catalog["text_2bbc89afcfa2"]}
+                    emptyMessage={i18n.catalog["humanCapital.compensation.noCompensationPlans"]}
                     isLoading={isLoading}
                     pagination={{
                         currentPage,
@@ -307,7 +307,7 @@ export function Compensation() {
                     columns={entryColumns}
                     data={entries}
                     keyExtractor={(item) => item.id.toString()}
-                    emptyMessage={i18n.catalog["text_c404fe3ad7c2"]}
+                    emptyMessage={i18n.catalog["humanCapital.compensation.noCompensationEntries"]}
                     isLoading={isLoading}
                     pagination={{
                         currentPage,

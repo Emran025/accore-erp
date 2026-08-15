@@ -104,7 +104,7 @@ export default function GeneralLedgerPage() {
       setJournalTotalPages(Math.ceil((response.total as number || 0) / itemsPerPage));
       setJournalPage(page);
     } catch {
-      showToast(i18n.catalog["text_5cd3338c8c87"], "error");
+      showToast(i18n.catalog["finance.generalLedgerBook.errorLoadingEntries"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -121,7 +121,7 @@ export default function GeneralLedgerPage() {
         balance: response.balance as number || 0,
       });
     } catch {
-      showToast(i18n.catalog["text_efd108d11120"], "error");
+      showToast(i18n.catalog["finance.generalLedgerBook.errorLoadingTrialBalance"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -132,7 +132,7 @@ export default function GeneralLedgerPage() {
       const response = await fetchAPI(API_ENDPOINTS.FINANCE.ACCOUNTS.BASE);
       setAccounts(response.accounts as Account[] || []);
     } catch {
-      console.error(i18n.catalog["text_a8ded9e0e1f3"]);
+      console.error(i18n.catalog["common.general.errorLoadingAccounts"]);
     }
   }, []);
 
@@ -161,12 +161,12 @@ export default function GeneralLedgerPage() {
         debit: item.debits,
         credit: item.credits,
         running_balance: item.balance,
-        description: catalogText(i18n, "text_b3fc0cb35cf0", { value0: item.period }) // "Summary balance for day..."
+        description: catalogText(i18n, "finance.generalLedgerBook.accumulatedBalanceDay", { value0: item.period }) // "Summary balance for day..."
       }));
 
       setAccountHistory(mappedHistory as AccountHistoryItem[]);
     } catch {
-      showToast(i18n.catalog["text_226844967c58"], "error");
+      showToast(i18n.catalog["finance.generalLedgerBook.errorLoadingAccountRecord"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -198,7 +198,7 @@ export default function GeneralLedgerPage() {
   }, [activeTab, loadJournalEntries, loadTrialBalance, loadAccountHistory, selectedAccountId]);
 
   const handleExport = () => {
-    showToast(i18n.catalog["text_7cb56fc1c226"], "info");
+    showToast(i18n.catalog["finance.generalLedgerBook.exportingData"], "info");
   };
 
   const handleRefresh = () => {
@@ -212,47 +212,47 @@ export default function GeneralLedgerPage() {
   };
 
   const journalColumns: Column<JournalEntry>[] = [
-    { key: "entry_number", header: i18n.catalog["text_cb6fc9a27e0d"], dataLabel: i18n.catalog["text_cb6fc9a27e0d"] },
+    { key: "entry_number", header: i18n.catalog["common.general.entryNumber"], dataLabel: i18n.catalog["common.general.entryNumber"] },
     {
       key: "entry_date",
-      header: i18n.catalog["text_d90c384199ac"],
-      dataLabel: i18n.catalog["text_d90c384199ac"],
+      header: i18n.catalog["common.general.date.alternative7"],
+      dataLabel: i18n.catalog["common.general.date.alternative7"],
       render: (item) => formatDate(item.entry_date),
     },
-    { key: "description", header: i18n.catalog["text_15391f77cefa"], dataLabel: i18n.catalog["text_15391f77cefa"] },
-    { key: "debit_account", header: i18n.catalog["text_66adbc515c95"], dataLabel: i18n.catalog["text_66adbc515c95"] },
-    { key: "credit_account", header: i18n.catalog["text_034aa5c4e065"], dataLabel: i18n.catalog["text_034aa5c4e065"] },
+    { key: "description", header: i18n.catalog["common.general.statement"], dataLabel: i18n.catalog["common.general.statement"] },
+    { key: "debit_account", header: i18n.catalog["common.general.debitAccount"], dataLabel: i18n.catalog["common.general.debitAccount"] },
+    { key: "credit_account", header: i18n.catalog["common.general.creditAccount"], dataLabel: i18n.catalog["common.general.creditAccount"] },
     {
       key: "amount",
-      header: i18n.catalog["text_1cd480f91b24"],
-      dataLabel: i18n.catalog["text_1cd480f91b24"],
+      header: i18n.catalog["common.general.amount"],
+      dataLabel: i18n.catalog["common.general.amount"],
       render: (item) => formatCurrency(item.amount),
     },
-    { key: "reference", header: i18n.catalog["text_d6a838d92c8d"], dataLabel: i18n.catalog["text_d6a838d92c8d"] },
+    { key: "reference", header: i18n.catalog["common.general.reference"], dataLabel: i18n.catalog["common.general.reference"] },
   ];
 
   const trialColumns: Column<TrialBalanceItem>[] = [
-    { key: "account_code", header: i18n.catalog["text_62a19661ff2e"], dataLabel: i18n.catalog["text_62a19661ff2e"] },
-    { key: "account_name", header: i18n.catalog["text_03cec4ee9ea4"], dataLabel: i18n.catalog["text_03cec4ee9ea4"] },
+    { key: "account_code", header: i18n.catalog["common.general.accountNumber"], dataLabel: i18n.catalog["common.general.accountNumber"] },
+    { key: "account_name", header: i18n.catalog["common.general.accountName"], dataLabel: i18n.catalog["common.general.accountName"] },
     {
       key: "debit",
-      header: i18n.catalog["text_b19917a31039"],
-      dataLabel: i18n.catalog["text_b19917a31039"],
+      header: i18n.catalog["common.general.debit"],
+      dataLabel: i18n.catalog["common.general.debit"],
       render: (item) => (item.debit > 0 ? formatCurrency(item.debit) : "-"),
     },
     {
       key: "credit",
-      header: i18n.catalog["text_a91798231743"],
-      dataLabel: i18n.catalog["text_a91798231743"],
+      header: i18n.catalog["common.general.credit"],
+      dataLabel: i18n.catalog["common.general.credit"],
       render: (item) => (item.credit > 0 ? formatCurrency(item.credit) : "-"),
     },
     {
       key: "balance",
-      header: i18n.catalog["text_f311da916aa5"],
-      dataLabel: i18n.catalog["text_f311da916aa5"],
+      header: i18n.catalog["common.general.balance"],
+      dataLabel: i18n.catalog["common.general.balance"],
       render: (item) => (
         <span className={item.balance >= 0 ? "text-success" : "text-danger"}>
-          {formatCurrency(Math.abs(item.balance))} {item.balance >= 0 ? i18n.catalog["text_b19917a31039"] : i18n.catalog["text_a91798231743"]}
+          {formatCurrency(Math.abs(item.balance))} {item.balance >= 0 ? i18n.catalog["common.general.debit"] : i18n.catalog["common.general.credit"]}
         </span>
       ),
     },
@@ -261,27 +261,27 @@ export default function GeneralLedgerPage() {
   const historyColumns: Column<AccountHistoryItem>[] = [
     {
       key: "entry_date",
-      header: i18n.catalog["text_d90c384199ac"],
-      dataLabel: i18n.catalog["text_d90c384199ac"],
+      header: i18n.catalog["common.general.date.alternative7"],
+      dataLabel: i18n.catalog["common.general.date.alternative7"],
       render: (item) => formatDate(item.entry_date),
     },
-    { key: "description", header: i18n.catalog["text_15391f77cefa"], dataLabel: i18n.catalog["text_15391f77cefa"] },
+    { key: "description", header: i18n.catalog["common.general.statement"], dataLabel: i18n.catalog["common.general.statement"] },
     {
       key: "debit",
-      header: i18n.catalog["text_b19917a31039"],
-      dataLabel: i18n.catalog["text_b19917a31039"],
+      header: i18n.catalog["common.general.debit"],
+      dataLabel: i18n.catalog["common.general.debit"],
       render: (item) => (item.debit > 0 ? formatCurrency(item.debit) : "-"),
     },
     {
       key: "credit",
-      header: i18n.catalog["text_a91798231743"],
-      dataLabel: i18n.catalog["text_a91798231743"],
+      header: i18n.catalog["common.general.credit"],
+      dataLabel: i18n.catalog["common.general.credit"],
       render: (item) => (item.credit > 0 ? formatCurrency(item.credit) : "-"),
     },
     {
       key: "running_balance",
-      header: i18n.catalog["text_f311da916aa5"],
-      dataLabel: i18n.catalog["text_f311da916aa5"],
+      header: i18n.catalog["common.general.balance"],
+      dataLabel: i18n.catalog["common.general.balance"],
       render: (item) => (
         <span className={item.running_balance >= 0 ? "text-success" : "text-danger"}>
           {formatCurrency(Math.abs(item.running_balance))}
@@ -298,17 +298,17 @@ export default function GeneralLedgerPage() {
           actions={
             <>
               <Button variant="secondary" onClick={handleExport} icon="download">
-                {i18n.catalog["text_4fa0ad254538"]}</Button>
+                {i18n.catalog["common.general.export"]}</Button>
               <Button variant="primary" onClick={handleRefresh} icon="refresh">
-                {i18n.catalog["text_00eab31f95b7"]}</Button>
+                {i18n.catalog["common.general.update"]}</Button>
             </>
           }
         />
         <TabNavigation
           tabs={[
-            { key: "journal", label: i18n.catalog["text_510b9f89882b"], icon: "fa-book" },
-            { key: "trial", label: i18n.catalog["text_10f3050f24f0"], icon: "fa-balance-scale" },
-            { key: "history", label: i18n.catalog["text_a695041e88e7"], icon: "fa-history" },
+            { key: "journal", label: i18n.catalog["common.general.journalEntries"], icon: "fa-book" },
+            { key: "trial", label: i18n.catalog["finance.generalLedgerBook.trialBalance"], icon: "fa-balance-scale" },
+            { key: "history", label: i18n.catalog["finance.generalLedgerBook.accountRecord"], icon: "fa-history" },
           ]}
           activeTab={activeTab}
           onTabChange={(key) => setActiveTab(key)}
@@ -318,7 +318,7 @@ export default function GeneralLedgerPage() {
         <div className={`tab-content ${activeTab === "journal" ? "active" : ""}`}>
           <div className="sales-card">
             <PageSubHeader
-              title={i18n.catalog["text_510b9f89882b"]}
+              title={i18n.catalog["common.general.journalEntries"]}
               titleIcon="chart-line"
               actions={
                 <>
@@ -335,7 +335,7 @@ export default function GeneralLedgerPage() {
                       icon="search"
                       variant="primary"
                     >
-                      {i18n.catalog["text_d0f6edcf6d65"]}</Button>
+                      {i18n.catalog["common.general.search.alternative2"]}</Button>
                   </FilterActions>
                 </>
               } />
@@ -343,7 +343,7 @@ export default function GeneralLedgerPage() {
               columns={journalColumns}
               data={journalEntries}
               keyExtractor={(item) => item.id}
-              emptyMessage={i18n.catalog["text_71882ad45d10"]}
+              emptyMessage={i18n.catalog["finance.generalLedgerBook.noEntries"]}
               isLoading={isLoading}
               pagination={{
                 currentPage: journalPage,
@@ -361,22 +361,22 @@ export default function GeneralLedgerPage() {
               columns={trialColumns}
               data={trialBalance}
               keyExtractor={(item) => item.account_code}
-              emptyMessage={i18n.catalog["text_d812e8bbc06f"]}
+              emptyMessage={i18n.catalog["common.general.noData"]}
               isLoading={isLoading}
             />
 
             {trialBalance.length > 0 && (
               <div className="summary-stat-box" style={{ marginTop: "1.5rem" }}>
                 <div className="stat-item">
-                  <span className="stat-label">{i18n.catalog["text_9b3ffc60129b"]}</span>
+                  <span className="stat-label">{i18n.catalog["common.general.totalDebit"]}</span>
                   <span className="stat-value">{formatCurrency(trialTotals.debit)}</span>
                 </div>
                 <div className="stat-item">
-                  <span className="stat-label">{i18n.catalog["text_ccfe7f015017"]}</span>
+                  <span className="stat-label">{i18n.catalog["common.general.totalCredit"]}</span>
                   <span className="stat-value">{formatCurrency(trialTotals.credit)}</span>
                 </div>
                 <div className="stat-item">
-                  <span className="stat-label">{i18n.catalog["text_0b5254487af9"]}</span>
+                  <span className="stat-label">{i18n.catalog["common.general.teams"]}</span>
                   <span className={`stat-value ${trialTotals.balance === 0 ? "text-success" : "text-danger"}`}>
                     {formatCurrency(trialTotals.balance)}
                     {trialTotals.balance === 0 && " ✓"}
@@ -392,16 +392,16 @@ export default function GeneralLedgerPage() {
           <div className="sales-card">
             <FilterSection>
               <Select
-                label={i18n.catalog["text_66dcee1f4616"]}
+                label={i18n.catalog["common.general.account"]}
                 value={selectedAccountId}
                 onChange={(e) => setSelectedAccountId(e.target.value)}
                 options={[
-                  { value: "", label: i18n.catalog["text_b2e1c053ebe5"] },
-                  ...accounts.map(acc => ({ value: acc.id, label: catalogText(i18n, "text_2a9059a3c52f", { value0: acc.code, value1: acc.name }) }))
+                  { value: "", label: i18n.catalog["common.general.selectAccount"] },
+                  ...accounts.map(acc => ({ value: acc.id, label: catalogText(i18n, "common.general.notAvailable", { value0: acc.code, value1: acc.name }) }))
                 ]}
               />
               <DateRangePicker
-                label={i18n.catalog["text_0335edfeb5f3"]}
+                label={i18n.catalog["common.general.period"]}
                 startDate={historyDateFrom}
                 endDate={historyDateTo}
                 onStartDateChange={setHistoryDateFrom}
@@ -413,7 +413,7 @@ export default function GeneralLedgerPage() {
                   disabled={!selectedAccountId}
                   icon="search"
                 >
-                  {i18n.catalog["text_3824e18ca83b"]}</Button>
+                  {i18n.catalog["common.general.view"]}</Button>
               </FilterActions>
             </FilterSection>
 
@@ -422,12 +422,12 @@ export default function GeneralLedgerPage() {
                 columns={historyColumns}
                 data={accountHistory}
                 keyExtractor={(item) => item.id}
-                emptyMessage={i18n.catalog["text_42817b82a8c0"]}
+                emptyMessage={i18n.catalog["finance.generalLedgerBook.noTransactions"]}
                 isLoading={isLoading}
               />
             ) : (
               <p style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2rem" }}>
-                {i18n.catalog["text_9f335fab90a7"]}</p>
+                {i18n.catalog["finance.generalLedgerBook.selectAccountViewTransactionHistory"]}</p>
             )}
           </div>
         </div>

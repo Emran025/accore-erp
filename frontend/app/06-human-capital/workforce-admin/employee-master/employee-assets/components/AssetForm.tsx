@@ -57,14 +57,14 @@ export function AssetForm({ asset }: AssetFormProps) {
             // Generate a default asset code
             setForm(prev => ({
                 ...prev,
-                asset_code: catalogText(i18n, "text_a0030f646de9", { value0: new Date().getFullYear(), value1: Math.floor(Math.random() * 10000) })
+                asset_code: catalogText(i18n, "humanCapital.asset.ast", { value0: new Date().getFullYear(), value1: Math.floor(Math.random() * 10000) })
             }));
         }
     }, [asset, loadAllEmployees]);
 
     const handleSubmit = async () => {
         if (!form.employee_id || !form.asset_code || !form.asset_name || !form.allocation_date) {
-            showToast(i18n.catalog["text_08af4c986257"], "error");
+            showToast(i18n.catalog["common.general.pleaseFillRequiredFields"], "error");
             return;
         }
 
@@ -80,21 +80,21 @@ export function AssetForm({ asset }: AssetFormProps) {
             };
 
             if (asset) {
-                await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_ASSETS.BASE, value1: asset.id }), {
+                await fetchAPI(catalogText(i18n, "common.general.message", { value0: API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_ASSETS.BASE, value1: asset.id }), {
                     method: 'PUT',
                     body: JSON.stringify(payload)
                 });
-                showToast(i18n.catalog["text_2d8f82297dc6"], "success");
+                showToast(i18n.catalog["humanCapital.asset.lossUpdatedSuccessfully"], "success");
             } else {
                 await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_ASSETS.BASE, {
                     method: 'POST',
                     body: JSON.stringify(payload)
                 });
-                showToast(i18n.catalog["text_cbf35ec9bde1"], "success");
+                showToast(i18n.catalog["humanCapital.asset.assetCreatedSuccessfully"], "success");
             }
             router.push('/06-human-capital/workforce-admin/employee-master/employee-assets');
         } catch (error: any) {
-            showToast(error.message || i18n.catalog["text_eedea505eb2b"], "error");
+            showToast(error.message || i18n.catalog["humanCapital.asset.failedSaveAsset"], "error");
         } finally {
             setIsSubmitting(false);
         }
@@ -103,26 +103,26 @@ export function AssetForm({ asset }: AssetFormProps) {
     return (
         <div className="sales-card animate-fade">
             <PageSubHeader
-                title={asset ? i18n.catalog["text_a659477bae08"] : i18n.catalog["text_7e430444cd59"]}
+                title={asset ? i18n.catalog["humanCapital.asset.editSource"] : i18n.catalog["common.general.addNewAsset"]}
                 titleIcon="laptop"
                 actions={
                     <Button variant="secondary" onClick={() => router.back()}>
-                        {i18n.catalog["text_0dfcbc2d5f2a"]}</Button>
+                        {i18n.catalog["common.general.back.alternative2"]}</Button>
                 }
             />
             <div className="space-y-4 p-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex flex-col gap-1">
-                        <Label className="text-secondary mb-1">{i18n.catalog["text_972803dc7d86"]}</Label>
+                        <Label className="text-secondary mb-1">{i18n.catalog["common.general.employee"]}</Label>
                         <SearchableSelect
                             options={employees.map((e: Employee) => ({ value: e.id.toString(), label: e.full_name }))}
                             value={form.employee_id}
                             onChange={(val) => setForm({ ...form, employee_id: val?.toString() || "" })}
-                            placeholder={i18n.catalog["text_dee783929dea"]}
+                            placeholder={i18n.catalog["common.general.selectEmployee"]}
                         />
                     </div>
                     <TextInput
-                        label={i18n.catalog["text_ff25014f125e"]}
+                        label={i18n.catalog["humanCapital.asset.sourceCode"]}
                         value={form.asset_code}
                         onChange={(e) => setForm({ ...form, asset_code: e.target.value })}
                     />
@@ -130,33 +130,33 @@ export function AssetForm({ asset }: AssetFormProps) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <TextInput
-                        label={i18n.catalog["text_1f7f12d037c9"]}
+                        label={i18n.catalog["common.general.assetName"]}
                         value={form.asset_name}
                         onChange={(e) => setForm({ ...form, asset_name: e.target.value })}
                     />
                     <Select
-                        label={i18n.catalog["text_5996fef2064b"]}
+                        label={i18n.catalog["humanCapital.asset.assetType"]}
                         value={form.asset_type}
                         onChange={(e) => setForm({ ...form, asset_type: e.target.value })}
                         options={[
-                            { value: 'laptop', label: i18n.catalog["text_fe1966fd0299"] },
-                            { value: 'phone', label: i18n.catalog["text_c2e72da6dba5"] },
-                            { value: 'vehicle', label: i18n.catalog["text_1a83da3f0239"] },
-                            { value: 'key', label: i18n.catalog["text_8a9d0e6c56ec"] },
-                            { value: 'equipment', label: i18n.catalog["text_441296311989"] },
-                            { value: 'other', label: i18n.catalog["text_17a9f38e22b6"] }
+                            { value: 'laptop', label: i18n.catalog["common.general.laptop"] },
+                            { value: 'phone', label: i18n.catalog["common.general.phone.alternative2"] },
+                            { value: 'vehicle', label: i18n.catalog["common.general.vehicle"] },
+                            { value: 'key', label: i18n.catalog["common.general.key"] },
+                            { value: 'equipment', label: i18n.catalog["common.general.equipment"] },
+                            { value: 'other', label: i18n.catalog["common.general.other"] }
                         ]}
                     />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <TextInput
-                        label={i18n.catalog["text_5789f0fed61c"]}
+                        label={i18n.catalog["common.general.serialNumber"]}
                         value={form.serial_number}
                         onChange={(e) => setForm({ ...form, serial_number: e.target.value })}
                     />
                     <TextInput
-                        label={i18n.catalog["text_6cb924e56b65"]}
+                        label={i18n.catalog["humanCapital.asset.qrCode"]}
                         value={form.qr_code}
                         onChange={(e) => setForm({ ...form, qr_code: e.target.value })}
                     />
@@ -164,13 +164,13 @@ export function AssetForm({ asset }: AssetFormProps) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <TextInput
-                        label={i18n.catalog["text_3357bc98239a"]}
+                        label={i18n.catalog["humanCapital.asset.assignmentDate"]}
                         type="date"
                         value={form.allocation_date}
                         onChange={(e) => setForm({ ...form, allocation_date: e.target.value })}
                     />
                     <TextInput
-                        label={i18n.catalog["text_de108b8c052e"]}
+                        label={i18n.catalog["humanCapital.asset.redemptionDate"]}
                         type="date"
                         value={form.return_date}
                         onChange={(e) => setForm({ ...form, return_date: e.target.value })}
@@ -179,19 +179,19 @@ export function AssetForm({ asset }: AssetFormProps) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Select
-                        label={i18n.catalog["text_9a7e78d89b23"]}
+                        label={i18n.catalog["humanCapital.asset.status"]}
                         value={form.status}
                         onChange={(e) => setForm({ ...form, status: e.target.value })}
                         options={[
-                            { value: 'allocated', label: i18n.catalog["text_17c28aaaa777"] },
-                            { value: 'returned', label: i18n.catalog["text_75fbb16d08be"] },
-                            { value: 'maintenance', label: i18n.catalog["text_9c499d210797"] },
-                            { value: 'lost', label: i18n.catalog["text_b4e5ae7ca0e7"] },
-                            { value: 'damaged', label: i18n.catalog["text_c4c3267f2898"] }
+                            { value: 'allocated', label: i18n.catalog["common.general.custom"] },
+                            { value: 'returned', label: i18n.catalog["common.general.refunded"] },
+                            { value: 'maintenance', label: i18n.catalog["common.general.maintenance"] },
+                            { value: 'lost', label: i18n.catalog["common.general.missing"] },
+                            { value: 'damaged', label: i18n.catalog["common.general.damaged"] }
                         ]}
                     />
                     <TextInput
-                        label={i18n.catalog["text_be268bda526f"]}
+                        label={i18n.catalog["humanCapital.asset.nextMaintenanceDate"]}
                         type="date"
                         value={form.next_maintenance_date}
                         onChange={(e) => setForm({ ...form, next_maintenance_date: e.target.value })}
@@ -199,16 +199,16 @@ export function AssetForm({ asset }: AssetFormProps) {
                 </div>
 
                 <Textarea
-                    label={i18n.catalog["text_d446d2dc6b81"]}
+                    label={i18n.catalog["common.general.notes.alternative2"]}
                     value={form.notes}
                     onChange={(e) => setForm({ ...form, notes: e.target.value })}
                     rows={3}
                 />
 
                 <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-border">
-                    <Button variant="secondary" onClick={() => router.back()}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                    <Button variant="secondary" onClick={() => router.back()}>{i18n.catalog["common.general.cancel"]}</Button>
                     <Button variant="primary" onClick={handleSubmit} icon="save" disabled={isSubmitting}>
-                        {isSubmitting ? i18n.catalog["text_8688b0ff5f34"] : i18n.catalog["text_ddfcaf9d0144"]}
+                        {isSubmitting ? i18n.catalog["common.general.saving"] : i18n.catalog["common.general.save"]}
                     </Button>
                 </div>
             </div>

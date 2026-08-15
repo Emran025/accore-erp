@@ -45,11 +45,11 @@ export default function CurrencyPositionsPage() {
       if (res.success) {
         setPositions(res.data as CurrencyPosition[]);
       } else {
-        showToast(res.message || i18n.catalog["text_aadc27dda997"], "error");
+        showToast(res.message || i18n.catalog["finance.currencyPositions.failedLoadCurrencyCenters"], "error");
       }
     } catch (e) {
       console.error(e);
-      showToast(i18n.catalog["text_460810e230d6"], "error");
+      showToast(i18n.catalog["finance.currencyPositions.errorLoadingCurrencyCenters"], "error");
     } finally {
       setLoading(false);
     }
@@ -62,19 +62,19 @@ export default function CurrencyPositionsPage() {
   const columns: Column<CurrencyPositionAccount>[] = [
     {
       key: "account_code",
-      header: i18n.catalog["text_62a19661ff2e"],
+      header: i18n.catalog["common.general.accountNumber"],
       render: (row) => (
         <span style={{ fontFamily: "monospace" }}>{row.account_code}</span>
       ),
     },
     {
       key: "account_name",
-      header: i18n.catalog["text_03cec4ee9ea4"],
+      header: i18n.catalog["common.general.accountName"],
       render: (row) => row.account_name,
     },
     {
       key: "debit_balance",
-      header: i18n.catalog["text_4b2ef7352916"],
+      header: i18n.catalog["finance.currencyPositions.debitBalance"],
       render: (row) =>
         row.debit_balance
           ? Number(row.debit_balance).toLocaleString("en-US", {
@@ -84,7 +84,7 @@ export default function CurrencyPositionsPage() {
     },
     {
       key: "credit_balance",
-      header: i18n.catalog["text_3017b7fc9f81"],
+      header: i18n.catalog["finance.currencyPositions.creditBalance"],
       render: (row) =>
         row.credit_balance
           ? Number(row.credit_balance).toLocaleString("en-US", {
@@ -113,12 +113,12 @@ export default function CurrencyPositionsPage() {
             }}
           >
             <div>
-              <h3 style={{ margin: 0 }}>{i18n.catalog["text_0aef4886b833"]}</h3>
+              <h3 style={{ margin: 0 }}>{i18n.catalog["common.general.currencyCenters"]}</h3>
               <p
                 className="text-muted"
                 style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem" }}
               >
-                {i18n.catalog["text_175d1485d822"]}</p>
+                {i18n.catalog["finance.currencyPositions.monitorAccountBalancesCurrencyEnsureIntegrityForeignCurrency"]}</p>
             </div>
           </div>
 
@@ -134,8 +134,8 @@ export default function CurrencyPositionsPage() {
           >
             <div className="form-group">
               <TextInput
-                label={i18n.catalog["text_48e954a1635b"]}
-                placeholder={i18n.catalog["text_4bb2741d9fe5"]}
+                label={i18n.catalog["common.general.currencyCode"]}
+                placeholder={i18n.catalog["finance.currencyPositions.exampleUsd"]}
                 value={filterCurrencyCode}
                 onChange={(e) => setFilterCurrencyCode(e.target.value)}
               />
@@ -143,7 +143,7 @@ export default function CurrencyPositionsPage() {
 
             <div className="form-group">
               <TextInput
-                label={i18n.catalog["text_d0035a06988e"]}
+                label={i18n.catalog["finance.currencyPositions.as"]}
                 type="date"
                 value={filterAsOfDate}
                 onChange={(e) => setFilterAsOfDate(e.target.value)}
@@ -156,7 +156,7 @@ export default function CurrencyPositionsPage() {
                 type="button"
                 onClick={loadPositions}
               >
-                <i className="fas fa-sync-alt"></i> {i18n.catalog["text_2ad21c85eed0"]}</button>
+                <i className="fas fa-sync-alt"></i> {i18n.catalog["finance.currencyPositions.updateCenters"]}</button>
             </div>
           </div>
 
@@ -171,8 +171,8 @@ export default function CurrencyPositionsPage() {
               }}
             >
               <i className="fas fa-balance-scale" style={{ fontSize: "2.5rem" }}></i>
-              <h3>{i18n.catalog["text_8f73941c65b5"]}</h3>
-              <p>{i18n.catalog["text_2054599501da"]}</p>
+              <h3>{i18n.catalog["finance.currencyPositions.noActiveCurrencyCenters"]}</h3>
+              <p>{i18n.catalog["finance.currencyPositions.noOpenCurrencyBalancesFoundCurrentEntries"]}</p>
             </div>
           ) : (
             filteredPositions.map((position) => (
@@ -197,7 +197,7 @@ export default function CurrencyPositionsPage() {
                 >
                   <div>
                     <h4 style={{ margin: 0 }}>
-                      {i18n.catalog["text_c4a113b90ef2"]}{" "}
+                      {i18n.catalog["finance.currencyPositions.currencyCenter"]}{" "}
                       <span style={{ fontFamily: "monospace" }}>
                         {position.currency_code}
                       </span>
@@ -206,11 +206,11 @@ export default function CurrencyPositionsPage() {
                       className="text-muted"
                       style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem" }}
                     >
-                      {i18n.catalog["text_0fe5b61de838"]}</p>
+                      {i18n.catalog["finance.currencyPositions.totalForeignCurrencyBalancesAccountLevel"]}</p>
                   </div>
                   <div style={{ textAlign: "end" }}>
                     <div style={{ fontSize: "0.8rem" }}>
-                      <span className="text-muted">{i18n.catalog["text_e3c25e2cea31"]}</span>
+                      <span className="text-muted">{i18n.catalog["finance.currencyPositions.totalDebit"]}</span>
                       <strong style={{ fontFamily: "monospace" }}>
                         {Number(position.total_debits).toLocaleString(
                           "en-US",
@@ -219,7 +219,7 @@ export default function CurrencyPositionsPage() {
                       </strong>
                     </div>
                     <div style={{ fontSize: "0.8rem" }}>
-                      <span className="text-muted">{i18n.catalog["text_42a15350418c"]}</span>
+                      <span className="text-muted">{i18n.catalog["finance.currencyPositions.totalCredit"]}</span>
                       <strong style={{ fontFamily: "monospace" }}>
                         {Number(position.total_credits).toLocaleString(
                           "en-US",
@@ -236,8 +236,8 @@ export default function CurrencyPositionsPage() {
                       style={{ marginTop: "0.5rem", display: "inline-block" }}
                     >
                       {position.is_balanced
-                        ? i18n.catalog["text_707e82d6d92a"]
-                        : i18n.catalog["text_27059c971b1e"]}
+                        ? i18n.catalog["finance.currencyPositions.balanced"]
+                        : i18n.catalog["finance.currencyPositions.unbalancedReviewRequired"]}
                     </span>
                   </div>
                 </div>
@@ -247,7 +247,7 @@ export default function CurrencyPositionsPage() {
                   columns={columns}
                   keyExtractor={(item) => item.account_code}
                   isLoading={loading}
-                  emptyMessage={i18n.catalog["text_54ef9a21a2df"]}
+                  emptyMessage={i18n.catalog["finance.currencyPositions.noAccountsThisCurrency"]}
                 />
               </div>
             ))

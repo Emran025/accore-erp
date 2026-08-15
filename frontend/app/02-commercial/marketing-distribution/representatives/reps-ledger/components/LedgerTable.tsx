@@ -39,21 +39,21 @@ export function LedgerTable({
     const [activeTab, setActiveTab] = useState("all");
 
     const tabs = [
-        { key: "all", label: catalogMessage("text_b8080d923b38"), icon: "list" },
-        { key: "commission", label: catalogMessage("text_5c7f63974760"), icon: "dollar-sign" },
-        { key: "payment", label: catalogMessage("text_89fef1e7d7d5"), icon: "credit-card" },
-        { key: "return", label: catalogMessage("text_87c752574f28"), icon: "repeat" },
-        { key: "adjustment", label: catalogMessage("text_9db6abc1db97"), icon: "settings" },
+        { key: "all", label: catalogMessage("common.general.allOperations"), icon: "list" },
+        { key: "commission", label: catalogMessage("common.general.commissions"), icon: "dollar-sign" },
+        { key: "payment", label: catalogMessage("common.general.paymentsRepresentative"), icon: "credit-card" },
+        { key: "return", label: catalogMessage("commercial.ledgertable.returns"), icon: "repeat" },
+        { key: "adjustment", label: catalogMessage("commercial.ledgertable.settlements"), icon: "settings" },
     ];
 
     const filteredTransactions = transactions.filter(t => activeTab === 'all' || t.type === activeTab);
 
     const getTypeName = (type: string) => {
         const types: Record<string, string> = {
-            commission: catalogMessage("text_615f84ef8576"),
-            payment: catalogMessage("text_986382af6232"),
-            return: catalogMessage("text_f996c544ba6c"),
-            adjustment: catalogMessage("text_402ad7c2cbd4")
+            commission: catalogMessage("commercial.ledgertable.salesCommission"),
+            payment: catalogMessage("commercial.ledgertable.paidInstallment"),
+            return: catalogMessage("common.general.return"),
+            adjustment: catalogMessage("commercial.ledgertable.settlement")
         };
         return types[type] || type;
     };
@@ -85,8 +85,8 @@ export function LedgerTable({
         },
         {
             key: "transaction_date",
-            header: catalogMessage("text_d90c384199ac"),
-            dataLabel: catalogMessage("text_d90c384199ac"),
+            header: catalogMessage("common.general.date.alternative7"),
+            dataLabel: catalogMessage("common.general.date.alternative7"),
             render: (item) => (
                 <span style={{ fontSize: "0.9em" }}>
                     {formatDateTime(item.transaction_date)}
@@ -95,8 +95,8 @@ export function LedgerTable({
         },
         {
             key: "type",
-            header: catalogMessage("text_4567eb273df3"),
-            dataLabel: catalogMessage("text_4567eb273df3"),
+            header: catalogMessage("common.general.transactionType"),
+            dataLabel: catalogMessage("common.general.transactionType"),
             render: (item) => (
                 <span
                     className={`badge ${item.type === "commission" ? "badge-success" : item.type === "payment" ? "badge-primary" : item.type === "return" ? "badge-danger" : "badge-warning"
@@ -108,22 +108,22 @@ export function LedgerTable({
         },
         {
             key: "description",
-            header: catalogMessage("text_95023fc76e1b"),
-            dataLabel: catalogMessage("text_95023fc76e1b"),
+            header: catalogMessage("common.general.description.alternative2"),
+            dataLabel: catalogMessage("common.general.description.alternative2"),
             render: (item) => (
                 <div
                     className={item.reference_type === "invoices" ? "clickable-desc" : ""}
                     onClick={() => item.reference_type === "invoices" && onViewInvoice(Number(item.reference_id))}
                     style={{ cursor: item.reference_type === "invoices" ? "pointer" : "default" }}
                 >
-                    {item.description || "-"} {item.is_deleted && catalogMessage("text_13a743673003")}
+                    {item.description || "-"} {item.is_deleted && catalogMessage("common.general.deleted")}
                 </div>
             ),
         },
         {
             key: "credit",
-            header: catalogMessage("text_4353646f7085"),
-            dataLabel: catalogMessage("text_253a506d231f"),
+            header: catalogMessage("commercial.ledgertable.commissionEarningsRepresentative"),
+            dataLabel: catalogMessage("commercial.ledgertable.commissionEarnings"),
             render: (item) => (
                 <span className="text-success font-bold">
                     {item.type === "commission" || (item.type === "adjustment" && item.amount > 0) ? formatCurrency(Math.abs(item.amount)) : "-"}
@@ -132,8 +132,8 @@ export function LedgerTable({
         },
         {
             key: "debit",
-            header: catalogMessage("text_3ee801c5b6c3"),
-            dataLabel: catalogMessage("text_c3b5e0d27481"),
+            header: catalogMessage("commercial.ledgertable.discountPaymentRepresentative"),
+            dataLabel: catalogMessage("commercial.ledgertable.deductPay"),
             render: (item) => (
                 <span className="text-danger font-bold">
                     {item.type === "return" || item.type === "payment" || (item.type === "adjustment" && item.amount < 0) ? formatCurrency(Math.abs(item.amount)) : "-"}
@@ -142,41 +142,41 @@ export function LedgerTable({
         },
         {
             key: "created_by",
-            header: catalogMessage("text_2fb01868740d"),
-            dataLabel: catalogMessage("text_2fb01868740d"),
+            header: catalogMessage("common.general.user"),
+            dataLabel: catalogMessage("common.general.user"),
             render: (item) => item.created_by || "-",
         },
         {
             key: "actions",
-            header: catalogMessage("text_7797240d6caf"),
-            dataLabel: catalogMessage("text_7797240d6caf"),
+            header: catalogMessage("common.general.actions"),
+            dataLabel: catalogMessage("common.general.actions"),
             render: (item) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "check",
-                            title: catalogMessage("text_56f1dce3e781"),
+                            title: catalogMessage("common.general.restore"),
                             variant: "edit",
                             onClick: () => onRestoreTransaction(item.id),
                             hidden: !item.is_deleted
                         },
                         {
                             icon: "edit",
-                            title: catalogMessage("text_113d570d6555"),
+                            title: catalogMessage("common.general.edit"),
                             variant: "edit",
                             onClick: () => onEditTransaction(item),
                             hidden: item.is_deleted || !canEdit(item)
                         },
                         {
                             icon: "trash",
-                            title: catalogMessage("text_59ca629220a6"),
+                            title: catalogMessage("common.general.delete"),
                             variant: "delete",
                             onClick: () => onDeleteTransaction(item.id),
                             hidden: item.is_deleted || item.type === "commission" || item.type === "return"
                         },
                         {
                             icon: "eye",
-                            title: catalogMessage("text_64fb0d77cd4e"),
+                            title: catalogMessage("common.general.viewInvoice"),
                             variant: "view",
                             onClick: () => onViewInvoice(Number(item.reference_id)),
                             hidden: item.is_deleted || item.reference_type !== "invoices"
@@ -202,7 +202,7 @@ export function LedgerTable({
                 onSearch={setSearch}
                 getInvoiceItems={getInvoiceItems}
                 renderCustomExpandedRow={renderCustomExpandedRow}
-                emptyMessage={catalogMessage("text_96dede8eb705")}
+                emptyMessage={catalogMessage("common.general.noOperations")}
                 FilterTabNavigation={
                     <TabSubNavigation
                         tabs={tabs}

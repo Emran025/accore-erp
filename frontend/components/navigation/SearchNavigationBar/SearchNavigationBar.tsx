@@ -65,7 +65,7 @@ export function SearchNavigationBar({ onNavigate, titleOverride }: SearchNavigat
     }, [allLinks, pathname]);
 
     const crumbs = useMemo(() => {
-        const base = [{ label: i18n.catalog["text_bfcf48307970"], href: "/navigation" }];
+        const base = [{ label: i18n.catalog["common.general.home"], href: "/navigation" }];
 
         if (!currentGroup && !currentLink) {
             return base;

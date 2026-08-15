@@ -70,11 +70,11 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
   keyExtractor,
   onSelectionChange,
   onSearch,
-  searchPlaceholder = catalogMessage("text_aa511cb1c4c3"),
+  searchPlaceholder = catalogMessage("ui.selectableinvoicetable.searchInvoiceNumber"),
   isLoading = false,
   pagination,
   getInvoiceItems,
-  emptyMessage = catalogMessage("text_e954a549b77f"),
+  emptyMessage = catalogMessage("common.general.noInvoices"),
   multiInvoiceSelection = false,
   isExpandable,
   openReturnDialog,
@@ -126,7 +126,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
   const searchOptions: SelectOption[] = invoices.map(inv => ({
     value: inv.id,
     label: inv.invoice_number,
-    subtitle: catalogText(i18n, "text_2944777ec6bf", { value0: formatCurrency(inv.total_amount ?? inv.amount ?? 0) })
+    subtitle: catalogText(i18n, "ui.selectableinvoicetable.total", { value0: formatCurrency(inv.total_amount ?? inv.amount ?? 0) })
   }));
 
   // Fetch items when expanding
@@ -138,7 +138,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
         const items = await getInvoiceItems(invoice);
         setInvoiceItems(prev => ({ ...prev, [invId]: items }));
       } catch (error) {
-        console.error(i18n.catalog["text_6d54b0001795"], error);
+        console.error(i18n.catalog["ui.selectableinvoicetable.failedLoadItems"], error);
       } finally {
         setLoadingItems(prev => ({ ...prev, [invId]: false }));
       }
@@ -157,7 +157,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
           invoiceItemId: Number(item.id),
           quantity: item.quantity,
           maxQuantity: item.quantity,
-          productName: item.product?.name || (item as any).product_name || catalogText(i18n, "text_46d08c61c7d5", { value0: item.product_id }),
+          productName: item.product?.name || (item as any).product_name || catalogText(i18n, "ui.selectableinvoicetable.product", { value0: item.product_id }),
           unitPrice: item.unit_price,
           originalQuantity: item.original_quantity,
         }));
@@ -179,7 +179,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
     // Enforce Single Invoice Constraint if not multi-invoice
     if (!multiInvoiceSelection && currentInvoiceId && currentInvoiceId !== invoiceId && selectedIds.length > 0) {
       setConfirmData({
-        message: i18n.catalog["text_7fcda5a704e7"],
+        message: i18n.catalog["ui.selectableinvoicetable.doYouWantDeselectItemsPreviousInvoiceStart"],
         onConfirm: processSelection
       });
       setShowConfirm(true);
@@ -193,7 +193,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
   const itemColumns: SelectableColumn<InvoiceItem>[] = [
     {
       key: "product_name",
-      header: i18n.catalog["text_a79e304d96a1"],
+      header: i18n.catalog["common.general.product"],
       render: (item) => (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <span>{item.product?.name || (item as any).product_name || item.product_id}</span>
@@ -203,7 +203,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
               color: item.quantity === 0 ? 'var(--danger-color)' : 'var(--warning-color)',
               fontWeight: 'bold'
             }}>
-              {item.quantity === 0 ? i18n.catalog["text_4af7488d2163"] : catalogText(i18n, "text_1922f97d21a6", { value0: item.returned_quantity })}
+              {item.quantity === 0 ? i18n.catalog["common.general.fullyRefunded"] : catalogText(i18n, "ui.selectableinvoicetable.returned", { value0: item.returned_quantity })}
             </span>
           )}
         </div>
@@ -211,7 +211,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
     },
     {
       key: "quantity",
-      header: i18n.catalog["text_935e21853946"],
+      header: i18n.catalog["common.general.quantity.alternative3"],
       render: (item) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {item.original_quantity !== undefined && item.original_quantity !== item.quantity && (
@@ -228,8 +228,8 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
         </div>
       )
     },
-    { key: "unit_price", header: i18n.catalog["text_259862e8b313"], render: (item) => formatCurrency(item.unit_price) },
-    { key: "subtotal", header: i18n.catalog["text_baed6e999960"], render: (item) => formatCurrency(item.unit_price * item.quantity) },
+    { key: "unit_price", header: i18n.catalog["common.general.price"], render: (item) => formatCurrency(item.unit_price) },
+    { key: "subtotal", header: i18n.catalog["common.general.total.alternative3"], render: (item) => formatCurrency(item.unit_price * item.quantity) },
   ];
 
   const clearSelection = () => {
@@ -248,7 +248,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
 
       {FilterTabNavigation &&
         (<PageSubHeader
-          title={i18n.catalog["text_62bd2aabbe5f"]}
+          title={i18n.catalog["ui.selectableinvoicetable.invoiceList"]}
           titleIcon="receipt"
           actions={
             <>
@@ -274,16 +274,16 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
         </div>
         <FloatingActionTableBar
           isVisible={selectionMode}
-          message={catalogText(i18n, "text_6dc5241b1d0e", { value0: selectedItems.length, value1: new Set(selectedItems.map(i => i.invoiceId)).size })}
+          message={catalogText(i18n, "ui.selectableinvoicetable.itemSelectedInvoice", { value0: selectedItems.length, value1: new Set(selectedItems.map(i => i.invoiceId)).size })}
           actions={[
             {
-              label: i18n.catalog["text_1aeab420bcd7"],
+              label: i18n.catalog["ui.selectableinvoicetable.registerReturn"],
               icon: "repeat",
               onClick: openReturnDialog,
               variant: "primary"
             },
             {
-              label: i18n.catalog["text_1551d5ed3d4d"],
+              label: i18n.catalog["ui.selectableinvoicetable.deselect"],
               icon: "shield-check",
               onClick: clearSelection,
               variant: "secondary"
@@ -319,7 +319,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
           return (
             <>
               {isLoading ? (
-                <div className="p-4 text-center text-secondary">{i18n.catalog["text_bb3a8d5d282e"]}</div>
+                <div className="p-4 text-center text-secondary">{i18n.catalog["ui.selectableinvoicetable.loadingItems"]}</div>
               ) : (
                 <div className="inner-table-container">
 
@@ -331,7 +331,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
                     onSelectionChange={(ids) => handleItemSelectionChange(ids, invId)}
                     selectionMode={true} // Always allow selection in expanded row
                     isRowSelectable={(item) => item.quantity > 0}
-                    emptyMessage={i18n.catalog["text_8d63376ad1e9"]}
+                    emptyMessage={i18n.catalog["ui.selectableinvoicetable.noItemsThisInvoice"]}
                   // If user wants long press to toggle "selection mode" visually (checkboxes), pass state.
                   // Here we just enable checkboxes always for clarity or logic.
                   // User "Selection is not long-pressed" fix: 
@@ -350,9 +350,9 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
         onClose={() => setShowConfirm(false)}
         onConfirm={() => confirmData?.onConfirm()}
         message={confirmData?.message || ""}
-        title={i18n.catalog["text_dbe619a3f14f"]}
-        confirmText={i18n.catalog["text_b6d8927cdf78"]}
-        cancelText={i18n.catalog["text_9a30dc2a96b8"]}
+        title={i18n.catalog["ui.selectableinvoicetable.confirmChange"]}
+        confirmText={i18n.catalog["ui.selectableinvoicetable.yesStartNew"]}
+        cancelText={i18n.catalog["common.general.cancel"]}
       />
     </div>
   );

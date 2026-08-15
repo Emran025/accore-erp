@@ -20,11 +20,11 @@ interface Revenue {
 }
 
 const revenueCategories = [
-    { value: "sales", label: catalogMessage("text_f05df07cd974") },
-    { value: "services", label: catalogMessage("text_f53b39989760") },
-    { value: "rental", label: catalogMessage("text_b73ae0125ca9") },
-    { value: "investment", label: catalogMessage("text_e5829f405a45") },
-    { value: "other", label: catalogMessage("text_17a9f38e22b6") },
+    { value: "sales", label: catalogMessage("commercial.revenues.sales") },
+    { value: "services", label: catalogMessage("commercial.revenues.services") },
+    { value: "rental", label: catalogMessage("common.general.rent") },
+    { value: "investment", label: catalogMessage("commercial.revenues.investment") },
+    { value: "other", label: catalogMessage("common.general.other") },
 ];
 
 export default function RevenuesPage() {
@@ -64,7 +64,7 @@ export default function RevenuesPage() {
             setTotalPages(Math.ceil((Number(response.total) || 0) / itemsPerPage));
             setCurrentPage(page);
         } catch {
-            showToast(i18n.catalog["text_3172de175d99"], "error");
+            showToast(i18n.catalog["commercial.revenues.errorLoadingRevenues"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -110,13 +110,13 @@ export default function RevenuesPage() {
 
     const handleSubmit = async () => {
         if (!formData.description.trim() || !formData.amount) {
-            showToast(i18n.catalog["text_0a8eb85d0081"], "error");
+            showToast(i18n.catalog["common.general.pleaseFillAllRequiredFields"], "error");
             return;
         }
 
         try {
             if (selectedRevenue) {
-                await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.FINANCE.REVENUES, value1: selectedRevenue.id }), {
+                await fetchAPI(catalogText(i18n, "common.general.message", { value0: API_ENDPOINTS.FINANCE.REVENUES, value1: selectedRevenue.id }), {
                     method: "PUT",
                     body: JSON.stringify({
                         id: selectedRevenue.id,
@@ -126,7 +126,7 @@ export default function RevenuesPage() {
                         description: formData.description,
                     }),
                 });
-                showToast(i18n.catalog["text_2a5a3a6fbd3e"], "success");
+                showToast(i18n.catalog["commercial.revenues.revenueUpdatedSuccessfully"], "success");
             } else {
                 await fetchAPI(API_ENDPOINTS.FINANCE.REVENUES, {
                     method: "POST",
@@ -137,12 +137,12 @@ export default function RevenuesPage() {
                         description: formData.description,
                     }),
                 });
-                showToast(i18n.catalog["text_b89b1a6d79c5"], "success");
+                showToast(i18n.catalog["commercial.revenues.revenueAddedSuccessfully"], "success");
             }
             setFormDialog(false);
             loadRevenues(currentPage, searchTerm);
         } catch {
-            showToast(i18n.catalog["text_8403e059a507"], "error");
+            showToast(i18n.catalog["commercial.revenues.errorSavingRevenue"], "error");
         }
     };
 
@@ -155,11 +155,11 @@ export default function RevenuesPage() {
         if (!deleteId) return;
 
         try {
-            await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.FINANCE.REVENUES, value1: deleteId }), { method: "DELETE" });
-            showToast(i18n.catalog["text_f6a7a617e006"], "success");
+            await fetchAPI(catalogText(i18n, "common.general.message", { value0: API_ENDPOINTS.FINANCE.REVENUES, value1: deleteId }), { method: "DELETE" });
+            showToast(i18n.catalog["commercial.revenues.revenueDeleted"], "success");
             loadRevenues(currentPage, searchTerm);
         } catch {
-            showToast(i18n.catalog["text_c794e4b3f12c"], "error");
+            showToast(i18n.catalog["commercial.revenues.errorDeletingRevenue"], "error");
         }
     };
 
@@ -169,40 +169,40 @@ export default function RevenuesPage() {
     };
 
     const columns: Column<Revenue>[] = [
-        { key: "description", header: i18n.catalog["text_95023fc76e1b"], dataLabel: i18n.catalog["text_95023fc76e1b"] },
+        { key: "description", header: i18n.catalog["common.general.description.alternative2"], dataLabel: i18n.catalog["common.general.description.alternative2"] },
         {
             key: "amount",
-            header: i18n.catalog["text_1cd480f91b24"],
-            dataLabel: i18n.catalog["text_1cd480f91b24"],
+            header: i18n.catalog["common.general.amount"],
+            dataLabel: i18n.catalog["common.general.amount"],
             render: (item) => <span className="text-success">{formatCurrency(item.amount)}</span>,
         },
         {
             key: "source",
-            header: i18n.catalog["text_ff61fb213ffc"],
-            dataLabel: i18n.catalog["text_ff61fb213ffc"],
+            header: i18n.catalog["common.general.category"],
+            dataLabel: i18n.catalog["common.general.category"],
             render: (item) => (
                 <span className="badge badge-info">{getCategoryLabel(item.source)}</span>
             ),
         },
         {
             key: "revenue_date",
-            header: i18n.catalog["text_d90c384199ac"],
-            dataLabel: i18n.catalog["text_d90c384199ac"],
+            header: i18n.catalog["common.general.date.alternative7"],
+            dataLabel: i18n.catalog["common.general.date.alternative7"],
             render: (item) => formatDate(item.revenue_date),
         },
         {
             key: "actions",
-            header: i18n.catalog["text_7797240d6caf"],
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (item) => (
                 <div className="action-buttons">
                     {canAccess(permissions, "revenues", "edit") && (
-                        <button className="icon-btn edit" onClick={() => openEditDialog(item)} title={i18n.catalog["text_113d570d6555"]}>
+                        <button className="icon-btn edit" onClick={() => openEditDialog(item)} title={i18n.catalog["common.general.edit"]}>
                             {getIcon("edit")}
                         </button>
                     )}
                     {canAccess(permissions, "revenues", "delete") && (
-                        <button className="icon-btn delete" onClick={() => confirmDelete(item.id)} title={i18n.catalog["text_59ca629220a6"]}>
+                        <button className="icon-btn delete" onClick={() => confirmDelete(item.id)} title={i18n.catalog["common.general.delete"]}>
                             {getIcon("trash")}
                         </button>
                     )}
@@ -227,14 +227,14 @@ export default function RevenuesPage() {
                                 setSearchTerm(val);
                                 loadRevenues(1, val);
                             }}
-                            placeholder={i18n.catalog["text_c0d15d40fd31"]}
+                            placeholder={i18n.catalog["common.general.quickSearch"]}
                             className="header-search-bar"
                         />
                     }
                     actions={
                         canAccess(permissions, "revenues", "create") && (
                             <Button icon="plus" onClick={openAddDialog}>
-                                {i18n.catalog["text_fd924320d9e6"]}</Button>
+                                {i18n.catalog["commercial.revenues.addRevenue"]}</Button>
                         )
                     }
                 />
@@ -242,7 +242,7 @@ export default function RevenuesPage() {
                     columns={columns}
                     data={revenues}
                     keyExtractor={(item) => item.id}
-                    emptyMessage={i18n.catalog["text_c67a7f573316"]}
+                    emptyMessage={i18n.catalog["commercial.revenues.noRevenues"]}
                     isLoading={isLoading}
                     pagination={{
                         currentPage,
@@ -256,19 +256,19 @@ export default function RevenuesPage() {
             <Dialog
                 isOpen={formDialog}
                 onClose={() => setFormDialog(false)}
-                title={selectedRevenue ? i18n.catalog["text_cc3a82d4dc42"] : i18n.catalog["text_1991728a3e18"]}
+                title={selectedRevenue ? i18n.catalog["commercial.revenues.editRevenue"] : i18n.catalog["commercial.revenues.addNewRevenue"]}
                 footer={
                     <>
                         <Button variant="secondary" onClick={() => setFormDialog(false)}>
-                            {i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                            {i18n.catalog["common.general.cancel"]}</Button>
                         <Button variant="primary" onClick={handleSubmit}>
-                            {selectedRevenue ? i18n.catalog["text_00eab31f95b7"] : i18n.catalog["text_d52453ac627d"]}
+                            {selectedRevenue ? i18n.catalog["common.general.update"] : i18n.catalog["common.general.add"]}
                         </Button>
                     </>
                 }
             >
                 <div className="form-group">
-                    <label htmlFor="description">{i18n.catalog["text_c5293e340faa"]}</label>
+                    <label htmlFor="description">{i18n.catalog["common.general.description.alternative3"]}</label>
                     <input
                         type="text"
                         id="description"
@@ -279,7 +279,7 @@ export default function RevenuesPage() {
 
                 <div className="form-row">
                     <div className="form-group">
-                        <label htmlFor="amount">{i18n.catalog["text_3cfbd3350215"]}</label>
+                        <label htmlFor="amount">{i18n.catalog["common.general.amount.alternative3"]}</label>
                         <input
                             type="number"
                             id="amount"
@@ -290,19 +290,19 @@ export default function RevenuesPage() {
                         />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="category">{i18n.catalog["text_ff61fb213ffc"]}</label>
+                        <label htmlFor="category">{i18n.catalog["common.general.category"]}</label>
                         <SearchableSelect
                             id="category"
                             options={revenueCategories}
                             value={formData.category}
                             onChange={(val) => setFormData({ ...formData, category: String(val) })}
-                            placeholder={i18n.catalog["text_c2670d58ec52"]}
+                            placeholder={i18n.catalog["commercial.revenues.selectCategory"]}
                         />
                     </div>
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="revenue_date">{i18n.catalog["text_d90c384199ac"]}</label>
+                    <label htmlFor="revenue_date">{i18n.catalog["common.general.date.alternative7"]}</label>
                     <input
                         type="date"
                         id="revenue_date"
@@ -312,7 +312,7 @@ export default function RevenuesPage() {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="notes">{i18n.catalog["text_d446d2dc6b81"]}</label>
+                    <label htmlFor="notes">{i18n.catalog["common.general.notes.alternative2"]}</label>
                     <textarea
                         id="notes"
                         value={formData.notes}
@@ -327,9 +327,9 @@ export default function RevenuesPage() {
                 isOpen={confirmDialog}
                 onClose={() => setConfirmDialog(false)}
                 onConfirm={handleDelete}
-                title={i18n.catalog["text_5f9cb54dc136"]}
-                message={i18n.catalog["text_248146fff48f"]}
-                confirmText={i18n.catalog["text_59ca629220a6"]}
+                title={i18n.catalog["common.general.confirmDeletion"]}
+                message={i18n.catalog["commercial.revenues.areYouSureYouWantDeleteThisRevenue"]}
+                confirmText={i18n.catalog["common.general.delete"]}
                 confirmVariant="danger"
             />
         </MainLayout>

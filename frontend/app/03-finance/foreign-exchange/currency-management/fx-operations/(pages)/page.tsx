@@ -47,7 +47,7 @@ export default function FxOperationsPage() {
             }
         } catch (e) {
             console.error(e);
-            showToast(i18n.catalog["text_0f3bf5f8f012"], "error");
+            showToast(i18n.catalog["common.general.errorLoadingCurrencies"], "error");
         } finally {
             setLoading(false);
         }
@@ -59,7 +59,7 @@ export default function FxOperationsPage() {
 
     const handleConvert = async () => {
         if (!formData.amount || !formData.source_currency_id || !formData.target_currency_id) {
-            showToast(i18n.catalog["text_0a8eb85d0081"], "error");
+            showToast(i18n.catalog["common.general.pleaseFillAllRequiredFields"], "error");
             return;
         }
 
@@ -77,12 +77,12 @@ export default function FxOperationsPage() {
 
             if (res.success) {
                 setResult(res.data as ConversionResult);
-                showToast(i18n.catalog["text_f642b474d11b"], "success");
+                showToast(i18n.catalog["finance.fxOperations.conversionCompletedSuccessfully"], "success");
             } else {
-                showToast(res.message || i18n.catalog["text_6fa979efcafd"], "error");
+                showToast(res.message || i18n.catalog["finance.fxOperations.transferFailed"], "error");
             }
         } catch (e) {
-            showToast(i18n.catalog["text_1ac65f6d78f4"], "error");
+            showToast(i18n.catalog["common.general.connectionError"], "error");
         } finally {
             setConverting(false);
         }
@@ -106,9 +106,9 @@ export default function FxOperationsPage() {
                 <div className="sales-card animate-fade">
                     {/* Header */}
                     <div style={{ marginBottom: "1.5rem" }}>
-                        <h3 style={{ margin: 0 }}>{i18n.catalog["text_fc6a1b2619b0"]}</h3>
+                        <h3 style={{ margin: 0 }}>{i18n.catalog["common.general.foreignExchangeOperations"]}</h3>
                         <p className="text-muted" style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem" }}>
-                            {i18n.catalog["text_6d7a8d138f1b"]}</p>
+                            {i18n.catalog["finance.fxOperations.executeCurrencyConversionsBasedApprovedExchangeRates"]}</p>
                     </div>
 
                     {/* Conversion Form */}
@@ -126,13 +126,13 @@ export default function FxOperationsPage() {
                         {/* Source */}
                         <div>
                             <div className="form-group" style={{ marginBottom: "1rem" }}>
-                                <label className="form-label">{i18n.catalog["text_755378c0729d"]}</label>
+                                <label className="form-label">{i18n.catalog["common.general.sourceCurrency"]}</label>
                                 <select
                                     className="form-control"
                                     value={formData.source_currency_id}
                                     onChange={(e) => { setFormData({ ...formData, source_currency_id: e.target.value }); setResult(null); }}
                                 >
-                                    <option value="">{i18n.catalog["text_7fa36bc2854c"]}</option>
+                                    <option value="">{i18n.catalog["common.general.selectCurrency"]}</option>
                                     {currencies.filter(c => c.id.toString() !== formData.target_currency_id).map((c) => (
                                         <option key={c.id} value={c.id}>
                                             {c.symbol} {c.name} ({c.code})
@@ -142,12 +142,12 @@ export default function FxOperationsPage() {
                             </div>
                             <div className="form-group">
                                 <TextInput
-                                    label={i18n.catalog["text_3cfbd3350215"]}
+                                    label={i18n.catalog["common.general.amount.alternative3"]}
                                     type="number"
                                     step="0.01"
                                     value={formData.amount}
                                     onChange={(e) => { setFormData({ ...formData, amount: e.target.value }); setResult(null); }}
-                                    placeholder={i18n.catalog["text_561b2814d3c0"]}
+                                    placeholder={i18n.catalog["common.general.message000"]}
                                 />
                             </div>
                         </div>
@@ -166,7 +166,7 @@ export default function FxOperationsPage() {
                                     justifyContent: "center",
                                     padding: 0,
                                 }}
-                                title={i18n.catalog["text_ae1b1c8c6557"]}
+                                title={i18n.catalog["finance.fxOperations.currencyExchange"]}
                             >
                                 <i className="fas fa-exchange-alt"></i>
                             </button>
@@ -175,13 +175,13 @@ export default function FxOperationsPage() {
                         {/* Target */}
                         <div>
                             <div className="form-group" style={{ marginBottom: "1rem" }}>
-                                <label className="form-label">{i18n.catalog["text_e15b38936754"]}</label>
+                                <label className="form-label">{i18n.catalog["common.general.targetCurrency.alternative2"]}</label>
                                 <select
                                     className="form-control"
                                     value={formData.target_currency_id}
                                     onChange={(e) => { setFormData({ ...formData, target_currency_id: e.target.value }); setResult(null); }}
                                 >
-                                    <option value="">{i18n.catalog["text_7fa36bc2854c"]}</option>
+                                    <option value="">{i18n.catalog["common.general.selectCurrency"]}</option>
                                     {currencies.filter(c => c.id.toString() !== formData.source_currency_id).map((c) => (
                                         <option key={c.id} value={c.id}>
                                             {c.symbol} {c.name} ({c.code})
@@ -191,7 +191,7 @@ export default function FxOperationsPage() {
                             </div>
                             <div className="form-group">
                                 <TextInput
-                                    label={i18n.catalog["text_665cb85a9cac"]}
+                                    label={i18n.catalog["finance.fxOperations.transferDateOptional"]}
                                     type="date"
                                     value={formData.date}
                                     onChange={(e) => { setFormData({ ...formData, date: e.target.value }); setResult(null); }}
@@ -209,9 +209,9 @@ export default function FxOperationsPage() {
                             style={{ minWidth: "200px", padding: "0.75rem 2rem", fontSize: "1rem" }}
                         >
                             {converting ? (
-                                <><span className="btn-spinner" style={{ width: '16px', height: '16px', marginLeft: '0.5rem' }}></span> {i18n.catalog["text_d43a71f3c3e4"]}</>
+                                <><span className="btn-spinner" style={{ width: '16px', height: '16px', marginLeft: '0.5rem' }}></span> {i18n.catalog["finance.fxOperations.transferring"]}</>
                             ) : (
-                                <><i className="fas fa-sync-alt"></i> {i18n.catalog["text_4f0356aad001"]}</>
+                                <><i className="fas fa-sync-alt"></i> {i18n.catalog["common.general.transfer.alternative2"]}</>
                             )}
                         </button>
                     </div>
@@ -227,7 +227,7 @@ export default function FxOperationsPage() {
                         }}>
                             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "2rem", flexWrap: "wrap" }}>
                                 <div>
-                                    <p className="text-muted" style={{ margin: 0, fontSize: "0.85rem" }}>{i18n.catalog["text_ab7099c73d2c"]}</p>
+                                    <p className="text-muted" style={{ margin: 0, fontSize: "0.85rem" }}>{i18n.catalog["finance.fxOperations.originalAmount"]}</p>
                                     <h2 style={{ margin: "0.25rem 0", fontFamily: "monospace" }}>
                                         {Number(result.original_amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                                         <span className="text-muted" style={{ fontSize: "0.9rem", marginRight: "0.5rem" }}>{sourceCurrency?.code}</span>
@@ -237,7 +237,7 @@ export default function FxOperationsPage() {
                                 <i className="fas fa-arrow-left" style={{ fontSize: "1.5rem", color: "var(--primary-color)" }}></i>
 
                                 <div>
-                                    <p className="text-muted" style={{ margin: 0, fontSize: "0.85rem" }}>{i18n.catalog["text_20eff811c130"]}</p>
+                                    <p className="text-muted" style={{ margin: 0, fontSize: "0.85rem" }}>{i18n.catalog["finance.fxOperations.amountAfterConversion"]}</p>
                                     <h2 style={{ margin: "0.25rem 0", fontFamily: "monospace", color: "var(--primary-color)" }}>
                                         {Number(result.converted_amount).toLocaleString("en-US", { minimumFractionDigits: 4 })}
                                         <span className="text-muted" style={{ fontSize: "0.9rem", marginRight: "0.5rem" }}>{targetCurrency?.code}</span>
@@ -246,7 +246,7 @@ export default function FxOperationsPage() {
                             </div>
 
                             <div style={{ marginTop: "1rem", padding: "0.75rem", background: "rgba(255,255,255,0.5)", borderRadius: "var(--radius-md)", display: "inline-block" }}>
-                                <span className="text-muted">{i18n.catalog["text_d15bf3739039"]}</span>
+                                <span className="text-muted">{i18n.catalog["finance.fxOperations.exchangeRateUsed"]}</span>
                                 <strong style={{ fontFamily: "monospace" }}>{Number(result.exchange_rate).toFixed(6)}</strong>
                             </div>
                         </div>

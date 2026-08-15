@@ -35,9 +35,9 @@ export function NavigationGridContent({ groupId }: NavigationGridContentProps) {
                 <i className="text-primary">
                     <Icon name="search" size={48} />
                 </i>
-                <h3>{i18n.catalog["text_68c6a5645a71"]}</h3>
+                <h3>{i18n.catalog["shared.navigationgridcontent.groupNotFound"]}</h3>
                 <p>
-                    {i18n.catalog["text_3cc6d1b3a312"]}<code>{activeGroup}</code>.
+                    {i18n.catalog["shared.navigationgridcontent.namedListGroupNotFound"]}<code>{activeGroup}</code>.
                     قد يكون الرابط خاطئاً أو تم نقل المحتوى.
                 </p>
                 <Button
@@ -46,7 +46,7 @@ export function NavigationGridContent({ groupId }: NavigationGridContentProps) {
                     icon="home"
                     onClick={() => router.push('/navigation')}
                 >
-                    {i18n.catalog["text_0c2449c125b0"]}</Button>
+                    {i18n.catalog["shared.navigationgridcontent.returnMainMenu"]}</Button>
             </div>
         );
     }

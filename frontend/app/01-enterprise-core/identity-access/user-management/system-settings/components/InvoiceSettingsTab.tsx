@@ -34,7 +34,7 @@ export function InvoiceSettingsTab() {
         setInvoiceSettings(response.settings as InvoiceSettings);
       }
     } catch {
-      console.error(catalogMessage("text_6a1aebcf84cb"));
+      console.error(catalogMessage("enterpriseCore.invoicesettings.errorLoadingInvoiceSettings"));
     }
   }, []);
 
@@ -45,7 +45,7 @@ export function InvoiceSettingsTab() {
         setStoreSettings(response.settings as StoreSettings);
       }
     } catch {
-      console.error(catalogMessage("text_e0bc163df330"));
+      console.error(catalogMessage("enterpriseCore.invoicesettings.errorLoadingStoreSettingsPreview"));
     }
   }, []);
 
@@ -60,9 +60,9 @@ export function InvoiceSettingsTab() {
         method: "PUT",
         body: JSON.stringify(invoiceSettings),
       });
-      showToast(catalogMessage("text_2870ff2cbee7"), "success");
+      showToast(catalogMessage("enterpriseCore.invoicesettings.invoiceSettingsSaved"), "success");
     } catch {
-      showToast(catalogMessage("text_fc7bf4aa6124"), "error");
+      showToast(catalogMessage("common.general.errorSavingSettings"), "error");
     }
   };
 
@@ -72,7 +72,7 @@ export function InvoiceSettingsTab() {
       if (!storeSettings) {
         await loadStoreSettings(); // Ensure we have them
         if (!storeSettings) {
-          showToast(catalogMessage("text_cb18d4baba17"), "error");
+          showToast(catalogMessage("enterpriseCore.invoicesettings.failedLoadStoreInformationPreview"), "error");
           return;
         }
       }
@@ -81,14 +81,14 @@ export function InvoiceSettingsTab() {
       const invoicesResponse = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICES}?page=1&limit=1`);
       const invoices = invoicesResponse.invoices as InvoiceData[] | undefined;
       if (!invoicesResponse.success || !invoices || invoices.length === 0) {
-        showToast(catalogMessage("text_df218d19d49c"), "error");
+        showToast(catalogMessage("enterpriseCore.invoicesettings.noPriorInvoicesPreview"), "error");
         return;
       }
 
       const sampleInvoice = invoices[0];
       const detailResponse = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICE_DETAILS}?id=${sampleInvoice.id}`);
       if (!detailResponse.success && !detailResponse.invoice) {
-        showToast(catalogMessage("text_c260a701b5b7"), "error");
+        showToast(catalogMessage("common.general.failedLoadInvoiceDetails"), "error");
         return;
       }
 
@@ -102,7 +102,7 @@ export function InvoiceSettingsTab() {
         tax_number: storeSettings!.tax_number,
         invoice_size: (invoiceSettings.show_qr ? "thermal" : "a4") as "thermal" | "a4",
         footer_message: invoiceSettings.footer_text,
-        currency_symbol: getSetting("currency_symbol", catalogMessage("text_62814ade7518")),
+        currency_symbol: getSetting("currency_symbol", catalogMessage("enterpriseCore.invoicesettings.rial")),
         show_logo: invoiceSettings.show_logo,
         show_qr: invoiceSettings.show_qr,
       };
@@ -122,8 +122,8 @@ export function InvoiceSettingsTab() {
 
       setPreviewDialog(true);
     } catch (error) {
-      console.error(catalogMessage("text_7943d3df6962"), error);
-      showToast(catalogMessage("text_d82c5b97e7f9"), "error");
+      console.error(catalogMessage("enterpriseCore.invoicesettings.previewError"), error);
+      showToast(catalogMessage("enterpriseCore.invoicesettings.errorOccurredDuringPreview"), "error");
     } finally {
       setIsGeneratingPreview(false);
     }
@@ -132,12 +132,12 @@ export function InvoiceSettingsTab() {
   return (
     <>
       <div className="sales-card">
-        <h3>{catalogMessage("text_e217fe66e326")}</h3>
+        <h3>{catalogMessage("common.general.invoiceSettings")}</h3>
         <div className="settings-form-grid">
           <div className="form-group">
             <Checkbox
               id="show_logo"
-              label={catalogMessage("text_46f631eac62e")}
+              label={catalogMessage("enterpriseCore.invoicesettings.displayLogo")}
               checked={invoiceSettings.show_logo}
               onChange={(e) => setInvoiceSettings({ ...invoiceSettings, show_logo: e.target.checked })}
             />
@@ -145,14 +145,14 @@ export function InvoiceSettingsTab() {
           <div className="form-group">
             <Checkbox
               id="show_qr"
-              label={catalogMessage("text_988e3c12cddd")}
+              label={catalogMessage("enterpriseCore.invoicesettings.showQrCode")}
               checked={invoiceSettings.show_qr}
               onChange={(e) => setInvoiceSettings({ ...invoiceSettings, show_qr: e.target.checked })}
             />
           </div>
 
           <div style={{ marginTop: "2rem", paddingTop: "1rem", borderTop: "1px dashed var(--border-color)" }}>
-            <h4 style={{ marginBottom: "1rem", color: "var(--text-primary)" }}>{catalogMessage("text_8a0b1f3c26b5")}</h4>
+            <h4 style={{ marginBottom: "1rem", color: "var(--text-primary)" }}>{catalogMessage("enterpriseCore.invoicesettings.taxComplianceGovernmentIntegration")}</h4>
             <div className="form-group">
               <div className="checkbox-group" style={{
                 borderRight: "4px solid #10b981",
@@ -172,10 +172,10 @@ export function InvoiceSettingsTab() {
                   style={{ marginTop: "4px" }}
                 />
                 <div>
-                  <label htmlFor="zatca_enabled" style={{ fontWeight: 600, display: "block", cursor: "pointer" }}>{catalogMessage("text_4241d4bf5648")}</label>
+                  <label htmlFor="zatca_enabled" style={{ fontWeight: 600, display: "block", cursor: "pointer" }}>{catalogMessage("enterpriseCore.invoicesettings.enableGovernmentIntegrationEGZakatAuthorityZatca")}</label>
                   <p style={{ marginTop: "0.25rem", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                    {catalogMessage("text_0a0739dfd25c")}<br />
-                    <span style={{ fontSize: "0.8rem", opacity: 0.8 }}>{catalogMessage("text_ef249c970127")}</span>
+                    {catalogMessage("enterpriseCore.invoicesettings.enablingThisOptionWillActivateEInvoicingFeaturesAutomatically")}<br />
+                    <span style={{ fontSize: "0.8rem", opacity: 0.8 }}>{catalogMessage("enterpriseCore.invoicesettings.establishmentsRequiredLinkTaxZakat")}</span>
                   </p>
                 </div>
               </div>
@@ -183,7 +183,7 @@ export function InvoiceSettingsTab() {
           </div>
           <div className="form-group full-width">
             <Textarea
-              label={catalogMessage("text_679cb585cd6b")}
+              label={catalogMessage("enterpriseCore.invoicesettings.footerText")}
               id="footer_text"
               value={invoiceSettings.footer_text}
               onChange={(e) => setInvoiceSettings({ ...invoiceSettings, footer_text: e.target.value })}
@@ -192,7 +192,7 @@ export function InvoiceSettingsTab() {
           </div>
           <div className="form-group full-width">
             <Textarea
-              label={catalogMessage("text_370b1e9cba0a")}
+              label={catalogMessage("common.general.termsConditions")}
               id="terms_text"
               value={invoiceSettings.terms_text}
               onChange={(e) => setInvoiceSettings({ ...invoiceSettings, terms_text: e.target.value })}
@@ -202,10 +202,10 @@ export function InvoiceSettingsTab() {
         </div>
         <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
           <button className="btn btn-secondary" onClick={previewInvoice} disabled={isGeneratingPreview}>
-            {isGeneratingPreview ? catalogMessage("text_ceac78d7f5d3") : catalogMessage("text_b30abc9f9eae")}
+            {isGeneratingPreview ? catalogMessage("common.general.loading") : catalogMessage("common.general.invoicePreview")}
           </button>
           <button className="btn btn-primary" onClick={saveInvoiceSettings}>
-            {catalogMessage("text_9b70c9af5cbd")}</button>
+            {catalogMessage("common.general.saveChanges.alternative2")}</button>
         </div>
       </div>
 
@@ -213,7 +213,7 @@ export function InvoiceSettingsTab() {
       <Dialog
         isOpen={previewDialog}
         onClose={() => setPreviewDialog(false)}
-        title={catalogMessage("text_b30abc9f9eae")}
+        title={catalogMessage("common.general.invoicePreview")}
         maxWidth="900px"
         footer={
           <>
@@ -226,9 +226,9 @@ export function InvoiceSettingsTab() {
                 }
               }}
             >
-              {getIcon("print")} {catalogMessage("text_2e00e00acffe")}</button>
+              {getIcon("print")} {catalogMessage("common.general.print")}</button>
             <button className="btn btn-primary" onClick={() => setPreviewDialog(false)}>
-              {catalogMessage("text_ca90c297b099")}</button>
+              {catalogMessage("common.general.close")}</button>
           </>
         }
       >
@@ -242,7 +242,7 @@ export function InvoiceSettingsTab() {
               background: "white",
               borderRadius: "4px",
             }}
-            title={catalogMessage("text_178147261084")}
+            title={catalogMessage("enterpriseCore.invoicesettings.invoicePreview")}
           />
         </div>
       </Dialog>

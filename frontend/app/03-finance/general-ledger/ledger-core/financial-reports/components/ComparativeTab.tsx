@@ -44,10 +44,10 @@ export function ComparativeTab() {
             if (response.success && response.data) {
                 setComparative(response.data as APIComparative);
             } else {
-                showToast(response.message || catalogMessage("text_7dbad840ee90"), "error");
+                showToast(response.message || catalogMessage("finance.comparative.failedLoadComparison"), "error");
             }
         } catch {
-            showToast(catalogMessage("text_22fa79f17c32"), "error");
+            showToast(catalogMessage("common.general.errorConnectingServer"), "error");
         } finally {
             setIsLoading(false);
         }
@@ -55,18 +55,18 @@ export function ComparativeTab() {
 
     return (
         <div className="sales-card">
-            <h2><i className="fas fa-chart-bar"></i> {catalogMessage("text_28e104b46abb")}</h2>
+            <h2><i className="fas fa-chart-bar"></i> {catalogMessage("common.general.financialComparison")}</h2>
 
             <FilterSection>
                 <DateRangePicker
-                    label={catalogMessage("text_871f50a0a403")}
+                    label={catalogMessage("common.general.currentPeriod")}
                     startDate={currentStart}
                     endDate={currentEnd}
                     onStartDateChange={setCurrentStart}
                     onEndDateChange={setCurrentEnd}
                 />
                 <DateRangePicker
-                    label={catalogMessage("text_898a9d4946fa")}
+                    label={catalogMessage("finance.comparative.previousPeriodOptional")}
                     startDate={previousStart}
                     endDate={previousEnd}
                     onStartDateChange={setPreviousStart}
@@ -74,7 +74,7 @@ export function ComparativeTab() {
                 />
                 <FilterActions>
                     <Button onClick={loadComparative} icon="search">
-                        {catalogMessage("text_610707bb8707")}</Button>
+                        {catalogMessage("finance.comparative.comparisonView")}</Button>
                 </FilterActions>
             </FilterSection>
 
@@ -85,28 +85,28 @@ export function ComparativeTab() {
             ) : comparative ? (
                 <div className="report-section animate-fade" style={{ marginTop: "1.5rem" }}>
                     <h2 style={{ marginBottom: "1.5rem" }}>
-                        <i className="fas fa-chart-bar"></i> {catalogMessage("text_28e104b46abb")}</h2>
+                        <i className="fas fa-chart-bar"></i> {catalogMessage("common.general.financialComparison")}</h2>
 
                     <Table
                         columns={[
                             {
                                 key: "label",
-                                header: catalogMessage("text_40c96b966fe4"),
+                                header: catalogMessage("finance.comparative.item"),
                                 render: (item) => <strong>{item.label}</strong>
                             },
                             {
                                 key: "previous",
-                                header: catalogMessage("text_0837908a71b3"),
+                                header: catalogMessage("finance.comparative.previousPeriod"),
                                 render: (item) => formatCurrency(item.previous)
                             },
                             {
                                 key: "current",
-                                header: catalogMessage("text_871f50a0a403"),
+                                header: catalogMessage("common.general.currentPeriod"),
                                 render: (item) => formatCurrency(item.current)
                             },
                             {
                                 key: "amount",
-                                header: catalogMessage("text_836525ac953b"),
+                                header: catalogMessage("finance.comparative.change"),
                                 render: (item) => (
                                     <span className={item.amount >= 0 ? (item.positiveIsGood ? "text-success" : "text-danger") : (item.positiveIsGood ? "text-danger" : "text-success")}>
                                         {formatCurrency(item.amount)}
@@ -115,7 +115,7 @@ export function ComparativeTab() {
                             },
                             {
                                 key: "percentage",
-                                header: catalogMessage("text_475c77138a8e"),
+                                header: catalogMessage("finance.comparative.changePercentage"),
                                 render: (item) => (
                                     <span style={{ direction: 'ltr', textAlign: 'right', display: 'block' }}>
                                         {item.percentage.toFixed(2)}%
@@ -125,7 +125,7 @@ export function ComparativeTab() {
                         ]}
                         data={[
                             {
-                                label: catalogMessage("text_8188deffd656"),
+                                label: catalogMessage("common.general.revenue"),
                                 previous: comparative.previous_period?.revenue || 0,
                                 current: comparative.current_period?.revenue || 0,
                                 amount: comparative.changes?.revenue?.amount || 0,
@@ -133,7 +133,7 @@ export function ComparativeTab() {
                                 positiveIsGood: true
                             },
                             {
-                                label: catalogMessage("text_4d514b65a483"),
+                                label: catalogMessage("common.general.expenses"),
                                 previous: comparative.previous_period?.expenses || 0,
                                 current: comparative.current_period?.expenses || 0,
                                 amount: comparative.changes?.expenses?.amount || 0,
@@ -141,7 +141,7 @@ export function ComparativeTab() {
                                 positiveIsGood: false
                             },
                             {
-                                label: catalogMessage("text_cceeb6ff14e3"),
+                                label: catalogMessage("common.general.netProfit"),
                                 previous: comparative.previous_period?.net_profit || 0,
                                 current: comparative.current_period?.net_profit || 0,
                                 amount: comparative.changes?.net_profit?.amount || 0,
@@ -154,7 +154,7 @@ export function ComparativeTab() {
                 </div>
             ) : (
                 <p style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)" }}>
-                    {catalogMessage("text_c305479d8ba8")}</p>
+                    {catalogMessage("finance.comparative.selectTimePeriodsClickShowComparison")}</p>
             )}
         </div>
     );

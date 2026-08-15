@@ -41,13 +41,13 @@ export function SearchableSelect({
     value,
     onChange,
     onSearch,
-    placeholder = catalogMessage("text_76b858f96489"),
+    placeholder = catalogMessage("common.general.search"),
     disabled = false,
     id,
     name,
     required = false,
     className = "",
-    noResultsText = catalogMessage("text_2d8a461130e0"),
+    noResultsText = catalogMessage("common.general.noResults"),
     renderOption,
     paddingVertical,
     filterOption,
@@ -227,7 +227,7 @@ export function SearchableSelect({
                     type="button"
                     onClick={handleClear}
                     className="clear-btn"
-                    title={i18n.catalog["text_308cf07fa826"]}
+                    title={i18n.catalog["common.general.clear"]}
                 >
                     <Icon name="x" size={16} />
                 </button>

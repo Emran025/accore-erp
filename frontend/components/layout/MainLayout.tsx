@@ -90,7 +90,7 @@ export function MainLayout({
               margin: "0 auto 1rem",
             }}
           />
-          <p style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_8d754b49b541"]}</p>
+          <p style={{ color: "var(--text-secondary)" }}>{i18n.catalog["components.mainlayout.loading"]}</p>
         </div>
         <style jsx>{`
           @keyframes spin {
@@ -108,7 +108,7 @@ export function MainLayout({
       <div>
         {!readiness?.ready && readiness?.next_action && (
           <div className="status-notification-bar" role="status">
-            <span>{i18n.catalog["text_addbd7721037"]}{readiness.missing[0]?.action}</span>
+            <span>{i18n.catalog["components.mainlayout.operatingSetupIsIncomplete"]}{readiness.missing[0]?.action}</span>
           </div>
         )}
         <Suspense fallback={<div className="top-global-bar" />}>

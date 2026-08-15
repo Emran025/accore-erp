@@ -82,7 +82,7 @@ export function Dialog({
       >
         <div className="dialog-header">
           <h2 id="dialog-title">{title}</h2>
-          <button className="close-btn" onClick={onClose} aria-label={i18n.catalog["text_ca90c297b099"]}>×</button>
+          <button className="close-btn" onClick={onClose} aria-label={i18n.catalog["common.general.close"]}>×</button>
         </div>
         <div className="dialog-body">{children}</div>
         {footer && <div className="dialog-footer">{footer}</div>}
@@ -108,10 +108,10 @@ export function ConfirmDialog({
   isOpen,
   onClose,
   onConfirm,
-  title = catalogMessage("text_8f7d74ac0eac"),
+  title = catalogMessage("common.general.confirm"),
   message,
-  confirmText = catalogMessage("text_8f7d74ac0eac"),
-  cancelText = catalogMessage("text_9a30dc2a96b8"),
+  confirmText = catalogMessage("common.general.confirm"),
+  cancelText = catalogMessage("common.general.cancel"),
   confirmVariant = "primary",
 }: ConfirmDialogProps) {
   const handleConfirm = () => {

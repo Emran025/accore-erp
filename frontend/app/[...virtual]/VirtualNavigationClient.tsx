@@ -31,7 +31,7 @@ export default function VirtualNavigationPage() {
             <Suspense fallback={
                 <div style={{ textAlign: "center", padding: "5rem", color: "var(--text-secondary)" }} className="animate-fade">
                     <div className="btn-spinner" style={{ width: '40px', height: '40px', borderTopColor: 'var(--primary-color)' }}></div>
-                    <div style={{ marginTop: '1rem', fontWeight: 600 }}>{i18n.catalog["text_ceac78d7f5d3"]}</div>
+                    <div style={{ marginTop: '1rem', fontWeight: 600 }}>{i18n.catalog["common.general.loading"]}</div>
                 </div>
             }>
                 {group ? (
@@ -41,9 +41,9 @@ export default function VirtualNavigationPage() {
                         <i className="text-danger">
                             <Icon name="x-octagon" size={64} />
                         </i>
-                        <h3 className="text-danger">{i18n.catalog["text_c7e1eafe11e1"]}</h3>
+                        <h3 className="text-danger">{i18n.catalog["shared.virtualnavigationclient.pageUnavailable"]}</h3>
                         <p>
-                            {i18n.catalog["text_d31165f30135"]}<code>/{virtual?.join('/')}</code> {i18n.catalog["text_8d159ce85e3a"]}</p>
+                            {i18n.catalog["shared.virtualnavigationclient.path"]}<code>/{virtual?.join('/')}</code> {i18n.catalog["shared.virtualnavigationclient.currentlyNotLinkedAnyScreenMenuGroupPlease"]}</p>
                         <div style={{ display: 'flex', gap: '1rem' }}>
                             <Button 
                                 variant="outline" 
@@ -51,14 +51,14 @@ export default function VirtualNavigationPage() {
                                 icon="arrow-right" 
                                 onClick={() => window.history.back()}
                             >
-                                {i18n.catalog["text_04636a88419e"]}</Button>
+                                {i18n.catalog["shared.virtualnavigationclient.goBack"]}</Button>
                             <Button 
                                 variant="primary" 
                                 size="lg" 
                                 icon="home" 
                                 onClick={() => router.push('/navigation')}
                             >
-                                {i18n.catalog["text_37ff6aa9896c"]}</Button>
+                                {i18n.catalog["shared.virtualnavigationclient.mainMenu"]}</Button>
                         </div>
                     </div>
                 )}

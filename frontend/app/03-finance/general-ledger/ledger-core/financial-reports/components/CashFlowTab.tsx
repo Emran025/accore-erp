@@ -46,10 +46,10 @@ export function CashFlowTab() {
                     net_cash_flow: Number(apiData.net_change_in_cash || 0)
                 });
             } else {
-                showToast(response.message || catalogMessage("text_3bdb68306fc6"), "error");
+                showToast(response.message || catalogMessage("finance.cashflow.failedLoadCashFlowList"), "error");
             }
         } catch {
-            showToast(catalogMessage("text_22fa79f17c32"), "error");
+            showToast(catalogMessage("common.general.errorConnectingServer"), "error");
         } finally {
             setIsLoading(false);
         }
@@ -58,7 +58,7 @@ export function CashFlowTab() {
     return (
         <div className="sales-card">
             <PageSubHeader
-                title={catalogMessage("text_f8ffa9d3f4d5")}
+                title={catalogMessage("finance.cashflow.cashFlowStatement.alternative2")}
                 titleIcon="money-bill-wave"
                 actions={
                     <>
@@ -71,7 +71,7 @@ export function CashFlowTab() {
                         />
                         <FilterActions>
                             <Button onClick={loadCashFlow} icon="search">
-                                {catalogMessage("text_92ad0d774e56")}</Button>
+                                {catalogMessage("common.general.viewReport")}</Button>
                         </FilterActions>
                     </>
                 } />
@@ -83,39 +83,39 @@ export function CashFlowTab() {
             ) : cashFlow ? (
                 <div className="report-section animate-fade" style={{ marginTop: "1.5rem" }}>
                     <h2 style={{ marginBottom: "1.5rem" }}>
-                        <i className="fas fa-money-bill-wave"></i> {catalogMessage("text_ebe3ca1ccedb")}{startDate} {catalogMessage("text_97fe3fe5b063")}{endDate})
+                        <i className="fas fa-money-bill-wave"></i> {catalogMessage("finance.cashflow.cashFlowStatement")}{startDate} {catalogMessage("common.general.notAvailable.alternative6")}{endDate})
                     </h2>
 
-                    <h3 style={{ marginTop: "1.5rem", marginBottom: "1rem", color: "var(--primary-dark)" }}>{catalogMessage("text_b077acc711be")}</h3>
+                    <h3 style={{ marginTop: "1.5rem", marginBottom: "1rem", color: "var(--primary-dark)" }}>{catalogMessage("finance.cashflow.operationalActivities")}</h3>
                     <div className="financial-row">
-                        <span className="report-label">{catalogMessage("text_cceeb6ff14e3")}</span>
+                        <span className="report-label">{catalogMessage("common.general.netProfit")}</span>
                         <span className="report-value">{formatCurrency(cashFlow.operating_activities?.net_profit || 0)}</span>
                     </div>
                     <div className="financial-row">
-                        <span className="report-label">{catalogMessage("text_12da860fc5d3")}</span>
+                        <span className="report-label">{catalogMessage("finance.cashflow.cashFlowsOperatingActivities")}</span>
                         <span className="report-value">{formatCurrency(cashFlow.operating_activities?.net_cash_flow || 0)}</span>
                     </div>
 
-                    <h3 style={{ marginTop: "1.5rem", marginBottom: "1rem", color: "var(--primary-dark)" }}>{catalogMessage("text_1032d80d7d58")}</h3>
+                    <h3 style={{ marginTop: "1.5rem", marginBottom: "1rem", color: "var(--primary-dark)" }}>{catalogMessage("finance.cashflow.investmentActivities")}</h3>
                     <div className="financial-row">
-                        <span className="report-label">{catalogMessage("text_4a079e0ce5e0")}</span>
+                        <span className="report-label">{catalogMessage("finance.cashflow.assetPurchase")}</span>
                         <span className="report-value text-danger">-{formatCurrency(cashFlow.investing_activities?.asset_purchases || 0)}</span>
                     </div>
 
-                    <h3 style={{ marginTop: "1.5rem", marginBottom: "1rem", color: "var(--primary-dark)" }}>{catalogMessage("text_df61cb67d19c")}</h3>
+                    <h3 style={{ marginTop: "1.5rem", marginBottom: "1rem", color: "var(--primary-dark)" }}>{catalogMessage("finance.cashflow.financingActivities")}</h3>
                     <div className="financial-row">
-                        <span className="report-label">{catalogMessage("text_659bd974c93a")}</span>
+                        <span className="report-label">{catalogMessage("common.general.capital")}</span>
                         <span className="report-value text-success">{formatCurrency(cashFlow.financing_activities?.capital || 0)}</span>
                     </div>
 
                     <div className="financial-row">
-                        <span className="report-label">{catalogMessage("text_d39b337da01d")}</span>
+                        <span className="report-label">{catalogMessage("finance.cashflow.netCashFlow")}</span>
                         <span className="report-value">{formatCurrency(cashFlow.net_cash_flow || 0)}</span>
                     </div>
                 </div>
             ) : (
                 <p style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)" }}>
-                    {catalogMessage("text_1c49fa1be4b0")}</p>
+                    {catalogMessage("common.general.selectTimePeriodClickShowReport")}</p>
             )}
         </div>
     );

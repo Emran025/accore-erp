@@ -23,14 +23,14 @@ export function GroupPassword({
     const { t: i18n } = useI18n();
     
     // Auto-detect mismatch if confirm has value
-    const mismatch = confirmValue && passwordValue !== confirmValue ? i18n.catalog["text_bc7412a2d230"] : null;
+    const mismatch = confirmValue && passwordValue !== confirmValue ? i18n.catalog["ui.grouppassword.passwordsDoNotMatch"] : null;
     const finalConfirmError = confirmError || mismatch;
 
     return (
         <div className="space-y-4">
             <PasswordInput
                 id="password"
-                label={i18n.catalog["text_b05d306b5591"]}
+                label={i18n.catalog["common.general.password"]}
                 value={passwordValue}
                 onChange={onPasswordChange}
                 error={passwordError}
@@ -38,7 +38,7 @@ export function GroupPassword({
             />
             <PasswordInput
                 id="confirm_password"
-                label={i18n.catalog["text_57e87f00ead1"]}
+                label={i18n.catalog["common.general.confirmPassword"]}
                 value={confirmValue}
                 onChange={onConfirmChange}
                 error={finalConfirmError || undefined}

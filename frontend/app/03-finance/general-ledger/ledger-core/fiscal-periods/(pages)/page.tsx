@@ -54,10 +54,10 @@ export default function FiscalPeriodsPage() {
         setTotalPages(pagination?.total_pages ?? Math.max(1, Math.ceil(periods.length / itemsPerPage)));
         setCurrentPage(page);
       } else {
-        showAlert("alert-container", response.message || i18n.catalog["text_e5fbfede7e09"], "error");
+        showAlert("alert-container", response.message || i18n.catalog["finance.fiscalPeriods.failedLoadFinancialPeriods"], "error");
       }
     } catch {
-      showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
+      showAlert("alert-container", i18n.catalog["common.general.errorConnectingServer"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -90,12 +90,12 @@ export default function FiscalPeriodsPage() {
         const period = Array.isArray(response.data) ? response.data[0] : response.data;
         if (period) {
           alert(
-            catalogText(i18n, "text_85e1ec56a68a", { value0: period.period_name, value1: formatDate(period.start_date), value2: formatDate(period.end_date), value3: period.is_locked ? i18n.catalog["text_4b2d2c65d365"] : i18n.catalog["text_2bd073516a87"], value4: period.is_closed ? i18n.catalog["text_4b2d2c65d365"] : i18n.catalog["text_2bd073516a87"] })
+            catalogText(i18n, "finance.fiscalPeriods.periodNameLockedClosed", { value0: period.period_name, value1: formatDate(period.start_date), value2: formatDate(period.end_date), value3: period.is_locked ? i18n.catalog["common.general.yes"] : i18n.catalog["common.general.no"], value4: period.is_closed ? i18n.catalog["common.general.yes"] : i18n.catalog["common.general.no"] })
           );
         }
       }
     } catch {
-      showToast(i18n.catalog["text_416cc1248be5"], "error");
+      showToast(i18n.catalog["common.general.errorLoadingPeriod"], "error");
     }
   };
 
@@ -105,7 +105,7 @@ export default function FiscalPeriodsPage() {
       if (response.success && response.data) {
         const period = Array.isArray(response.data) ? response.data[0] : response.data;
         if (!period) {
-          showAlert("alert-container", i18n.catalog["text_5cea9853fe98"], "error");
+          showAlert("alert-container", i18n.catalog["finance.fiscalPeriods.periodNotFound"], "error");
           return;
         }
 
@@ -116,13 +116,13 @@ export default function FiscalPeriodsPage() {
         setPeriodDialog(true);
       }
     } catch {
-      showAlert("alert-container", i18n.catalog["text_416cc1248be5"], "error");
+      showAlert("alert-container", i18n.catalog["common.general.errorLoadingPeriod"], "error");
     }
   };
 
   const savePeriod = async () => {
     if (!periodName || !periodStart || !periodEnd) {
-      showAlert("alert-container", i18n.catalog["text_ee5bf2016153"], "error");
+      showAlert("alert-container", i18n.catalog["common.general.pleaseFillAllFields"], "error");
       return;
     }
 
@@ -140,14 +140,14 @@ export default function FiscalPeriodsPage() {
       });
 
       if (response.success) {
-        showAlert("alert-container", i18n.catalog["text_ff783ee2826d"], "success");
+        showAlert("alert-container", i18n.catalog["common.general.savedSuccessfully"], "success");
         setPeriodDialog(false);
         await loadPeriods(currentPage);
       } else {
-        showAlert("alert-container", response.message || i18n.catalog["text_b0dbba00004b"], "error");
+        showAlert("alert-container", response.message || i18n.catalog["common.general.failedSave"], "error");
       }
     } catch {
-      showAlert("alert-container", i18n.catalog["text_c574313242be"], "error");
+      showAlert("alert-container", i18n.catalog["common.general.errorSaving"], "error");
     }
   };
 
@@ -170,9 +170,9 @@ export default function FiscalPeriodsPage() {
     if (!confirmAction) return;
 
     const messages = {
-      lock: i18n.catalog["text_64e46a01635b"],
-      unlock: i18n.catalog["text_1ff4d2f17553"],
-      close: i18n.catalog["text_7fae2238d44c"],
+      lock: i18n.catalog["common.general.areYouSureYouWantLockThisPeriod"],
+      unlock: i18n.catalog["common.general.areYouSureYouWantOpenThisPeriod"],
+      close: i18n.catalog["common.general.areYouSureYouWantCloseThisPeriod"],
     };
 
     try {
@@ -191,98 +191,98 @@ export default function FiscalPeriodsPage() {
 
       if (response.success) {
         const successMessages = {
-          lock: i18n.catalog["text_8642af4236c5"],
-          unlock: i18n.catalog["text_a247c8409452"],
-          close: i18n.catalog["text_d9926ef2082b"],
+          lock: i18n.catalog["finance.fiscalPeriods.periodLockedSuccessfully"],
+          unlock: i18n.catalog["finance.fiscalPeriods.periodOpenedSuccessfully"],
+          close: i18n.catalog["finance.fiscalPeriods.periodClosedSuccessfully"],
         };
         showAlert("alert-container", successMessages[confirmAction.type], "success");
         setConfirmDialog(false);
         setConfirmAction(null);
         await loadPeriods(currentPage);
       } else {
-        showAlert("alert-container", response.message || i18n.catalog["text_c10db3dd267c"], "error");
+        showAlert("alert-container", response.message || i18n.catalog["finance.fiscalPeriods.operationFailed"], "error");
       }
     } catch {
-      showAlert("alert-container", i18n.catalog["text_a42849991074"], "error");
+      showAlert("alert-container", i18n.catalog["finance.fiscalPeriods.errorExecutingOperation"], "error");
     }
   };
 
   const getStatusBadge = (period: FiscalPeriod) => {
     if (period.is_closed) {
-      return <span className="badge badge-danger">{i18n.catalog["text_ca7e1dec1654"]}</span>;
+      return <span className="badge badge-danger">{i18n.catalog["common.general.closed"]}</span>;
     } else if (period.is_locked) {
-      return <span className="badge badge-warning">{i18n.catalog["text_03fc404e13c8"]}</span>;
+      return <span className="badge badge-warning">{i18n.catalog["common.general.locked"]}</span>;
     }
-    return <span className="badge badge-success">{i18n.catalog["text_8ab217d48613"]}</span>;
+    return <span className="badge badge-success">{i18n.catalog["common.general.active.alternative2"]}</span>;
   };
 
   const columns: Column<FiscalPeriod>[] = [
     {
       key: "period_name",
-      header: i18n.catalog["text_eaad95530396"],
-      dataLabel: i18n.catalog["text_eaad95530396"],
+      header: i18n.catalog["common.general.periodName"],
+      dataLabel: i18n.catalog["common.general.periodName"],
       render: (item) => <strong>{item.period_name}</strong>,
     },
     {
       key: "start_date",
-      header: i18n.catalog["text_fa53acac3b29"],
-      dataLabel: i18n.catalog["text_fa53acac3b29"],
+      header: i18n.catalog["common.general.startDate.alternative4"],
+      dataLabel: i18n.catalog["common.general.startDate.alternative4"],
       render: (item) => formatDate(item.start_date),
     },
     {
       key: "end_date",
-      header: i18n.catalog["text_5b51836ad9ac"],
-      dataLabel: i18n.catalog["text_5b51836ad9ac"],
+      header: i18n.catalog["common.general.endDate"],
+      dataLabel: i18n.catalog["common.general.endDate"],
       render: (item) => formatDate(item.end_date),
     },
     {
       key: "status",
-      header: i18n.catalog["text_c3a4749caed4"],
-      dataLabel: i18n.catalog["text_c3a4749caed4"],
+      header: i18n.catalog["common.general.status.alternative2"],
+      dataLabel: i18n.catalog["common.general.status.alternative2"],
       render: (item) => getStatusBadge(item),
     },
     {
       key: "is_locked",
-      header: i18n.catalog["text_03fc404e13c8"],
-      dataLabel: i18n.catalog["text_03fc404e13c8"],
+      header: i18n.catalog["common.general.locked"],
+      dataLabel: i18n.catalog["common.general.locked"],
       render: (item) => (item.is_locked ? "✓" : "✗"),
     },
     {
       key: "is_closed",
-      header: i18n.catalog["text_ca7e1dec1654"],
-      dataLabel: i18n.catalog["text_ca7e1dec1654"],
+      header: i18n.catalog["common.general.closed"],
+      dataLabel: i18n.catalog["common.general.closed"],
       render: (item) => (item.is_closed ? "✓" : "✗"),
     },
     {
       key: "actions",
-      header: i18n.catalog["text_7797240d6caf"],
-      dataLabel: i18n.catalog["text_7797240d6caf"],
+      header: i18n.catalog["common.general.actions"],
+      dataLabel: i18n.catalog["common.general.actions"],
       render: (item) => (
         <ActionButtons
           actions={[
             {
               icon: "eye",
-              title: i18n.catalog["text_3824e18ca83b"],
+              title: i18n.catalog["common.general.view"],
               variant: "view",
               onClick: () => viewPeriod(item.id)
             },
             {
               icon: item.is_locked ? "unlock" : "lock",
-              title: item.is_locked ? i18n.catalog["text_3765484d0c5f"] : i18n.catalog["text_7815a91262fc"],
+              title: item.is_locked ? i18n.catalog["finance.fiscalPeriods.open"] : i18n.catalog["finance.fiscalPeriods.lock"],
               variant: "view",
               onClick: () => (item.is_locked ? confirmUnlockPeriod(item.id) : confirmLockPeriod(item.id)),
               hidden: item.is_closed
             },
             {
               icon: "edit",
-              title: i18n.catalog["text_113d570d6555"],
+              title: i18n.catalog["common.general.edit"],
               variant: "edit",
               onClick: () => editPeriod(item.id),
               hidden: item.is_closed || item.is_locked
             },
             {
               icon: "check",
-              title: i18n.catalog["text_ca90c297b099"],
+              title: i18n.catalog["common.general.close"],
               variant: "delete", // Closing is a "danger" action here
               onClick: () => confirmClosePeriod(item.id),
               hidden: item.is_closed
@@ -304,14 +304,14 @@ export default function FiscalPeriodsPage() {
           user={user}
           actions={
             <Button variant="primary" icon="plus" onClick={openCreateDialog}>
-              {i18n.catalog["text_e14d8ac47493"]}</Button>
+              {i18n.catalog["finance.fiscalPeriods.newPeriod"]}</Button>
           }
         />
         <Table
           columns={columns}
           data={periods}
           keyExtractor={(item) => item.id}
-          emptyMessage={i18n.catalog["text_a90b97f9b44c"]}
+          emptyMessage={i18n.catalog["finance.fiscalPeriods.noFinancialPeriods"]}
           isLoading={isLoading}
           pagination={{
             currentPage,
@@ -325,13 +325,13 @@ export default function FiscalPeriodsPage() {
       <Dialog
         isOpen={periodDialog}
         onClose={() => setPeriodDialog(false)}
-        title={currentPeriodId ? i18n.catalog["text_642c3b34ca7b"] : i18n.catalog["text_becf48aac6bc"]}
+        title={currentPeriodId ? i18n.catalog["finance.fiscalPeriods.editPeriod"] : i18n.catalog["finance.fiscalPeriods.newFiscalPeriod"]}
         footer={
           <>
             <Button variant="secondary" onClick={() => setPeriodDialog(false)}>
-              {i18n.catalog["text_9a30dc2a96b8"]}</Button>
+              {i18n.catalog["common.general.cancel"]}</Button>
             <Button variant="primary" onClick={savePeriod}>
-              {i18n.catalog["text_ddfcaf9d0144"]}</Button>
+              {i18n.catalog["common.general.save"]}</Button>
           </>
         }
       >
@@ -343,7 +343,7 @@ export default function FiscalPeriodsPage() {
           className="space-y-4"
         >
           <TextInput
-            label={i18n.catalog["text_f1aecdc2642f"]}
+            label={i18n.catalog["finance.fiscalPeriods.periodName"]}
             id="period-name"
             value={periodName}
             onChange={(e) => setPeriodName(e.target.value)}
@@ -353,7 +353,7 @@ export default function FiscalPeriodsPage() {
           <div className="form-row">
             <TextInput
               type="date"
-              label={i18n.catalog["text_d5176c9868fe"]}
+              label={i18n.catalog["finance.fiscalPeriods.startDate"]}
               id="period-start"
               value={periodStart}
               onChange={(e) => setPeriodStart(e.target.value)}
@@ -362,7 +362,7 @@ export default function FiscalPeriodsPage() {
             />
             <TextInput
               type="date"
-              label={i18n.catalog["text_1afab48eab54"]}
+              label={i18n.catalog["finance.fiscalPeriods.endDate"]}
               id="period-end"
               value={periodEnd}
               onChange={(e) => setPeriodEnd(e.target.value)}
@@ -381,15 +381,15 @@ export default function FiscalPeriodsPage() {
           setConfirmAction(null);
         }}
         onConfirm={executeAction}
-        title={i18n.catalog["text_c094165ba1ec"]}
+        title={i18n.catalog["finance.fiscalPeriods.confirmOperation"]}
         message={
           confirmAction?.type === "lock"
-            ? i18n.catalog["text_64e46a01635b"]
+            ? i18n.catalog["common.general.areYouSureYouWantLockThisPeriod"]
             : confirmAction?.type === "unlock"
-              ? i18n.catalog["text_1ff4d2f17553"]
-              : i18n.catalog["text_7fae2238d44c"]
+              ? i18n.catalog["common.general.areYouSureYouWantOpenThisPeriod"]
+              : i18n.catalog["common.general.areYouSureYouWantCloseThisPeriod"]
         }
-        confirmText={i18n.catalog["text_8f7d74ac0eac"]}
+        confirmText={i18n.catalog["common.general.confirm"]}
         confirmVariant={confirmAction?.type === "close" ? "danger" : "primary"}
       />
     </MainLayout>

@@ -14,7 +14,7 @@ fs.mkdirSync(outDir, { recursive: true });
 
 const arabic = /[\u0600-\u06FF]/u;
 const placeholder = /\{value\d+\}/g;
-const technical = /^(?:[./@]|https?:\/\/)|(?:\.(?:tsx?|css|json)$)|(?:^|\s)(?:bg-|text-|border-|flex|grid|hover:|focus:|px-|py-|mx-|my-|w-|h-|min-|max-)[\w:[\]./-]+|(?:rgba\(|linear-gradient\(|repeat\(|minmax\(|var\(--|@keyframes)|(?:^|\/)api\/|(?:next\/|react\/)|^(?:GET|POST|PUT|PATCH|DELETE)\s+\/|^(?:text\/html|application\/json)$/i;
+const technical = /^(?:[./@]|https?:\/\/)|(?:\.(?:tsx?|css|json)$)|(?:^|\s)(?:bg-|text-|border-|flex|grid|hover:|focus:|px-|py-|mx-|my-|w-|h-|min-|max-|items-|justify-|rounded-|shadow-|animate-|transition-|duration-|ease-|absolute(?=\s|$)|relative(?=\s|$)|fixed(?=\s|$))[\w:[\]./-]+|(?:rgba\(|linear-gradient\(|repeat\(|minmax\(|var\(--|@keyframes|translate[XYZ]?\(|scale[XYZ]?\(|rotate\(|skew[XY]?\(|matrix\(|calc\()|(?:^|\/)api\/|(?:next\/|react\/)|^(?:GET|POST|PUT|PATCH|DELETE)\s+\/|^(?:text\/html|application\/json)$/i;
 
 const tokens = (value: string) => value.match(placeholder) ?? [];
 const sameTokens = (left: string, right: string) => JSON.stringify(tokens(left)) === JSON.stringify(tokens(right));

@@ -76,7 +76,7 @@ export function HierarchyTab() {
             setNodes((nodesRes.nodes as StructureNode[]) || []);
             setMetaTypes((metaRes.meta_types as MetaType[]) || []);
         } catch {
-            showToast(i18n.catalog["text_f10d2b4c7fe1"], "error");
+            showToast(i18n.catalog["common.general.errorLoadingData"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -158,7 +158,7 @@ export function HierarchyTab() {
                 setContextData(res as Record<string, unknown>);
             }
         } catch {
-            showToast(i18n.catalog["text_34e337df7e2d"], "error");
+            showToast(i18n.catalog["enterpriseCore.hierarchy.errorLoadingContext"], "error");
         }
     };
 
@@ -271,7 +271,7 @@ export function HierarchyTab() {
         return (
             <div className="sales-card animate-fade" style={{ textAlign: "center", padding: "3rem" }}>
                 <div className="loading-spinner" />
-                <p style={{ color: "var(--text-secondary)", marginTop: "1rem" }}>{i18n.catalog["text_e3c66ea34419"]}</p>
+                <p style={{ color: "var(--text-secondary)", marginTop: "1rem" }}>{i18n.catalog["enterpriseCore.hierarchy.loadingOrganizationalStructure"]}</p>
             </div>
         );
     }
@@ -281,7 +281,7 @@ export function HierarchyTab() {
             {/* Tree Panel */}
             <div className="sales-card animate-fade">
                 <PageSubHeader
-                    title={i18n.catalog["text_50f1b8f79175"]}
+                    title={i18n.catalog["common.general.organizationalChart"]}
                     titleIcon="tree"
                     actions={
                         <>
@@ -289,13 +289,13 @@ export function HierarchyTab() {
                                 value={filterDomain}
                                 onChange={(e) => setFilterDomain(e.target.value)}
                                 options={filteredDomains.map((d) => ({ value: d, label: d }))}
-                                placeholder={i18n.catalog["text_89a4eea1bc00"]}
+                                placeholder={i18n.catalog["common.general.allFields"]}
                                 style={{ maxWidth: "160px" }}
                             />
                             <Button variant="secondary" onClick={expandAll} style={{ fontSize: "0.9rem", minHeight: "45px" }}>
-                                {i18n.catalog["text_5bec92ef8f33"]}</Button>
+                                {i18n.catalog["enterpriseCore.hierarchy.expandAll"]}</Button>
                             <Button variant="secondary" onClick={collapseAll} style={{ fontSize: "0.9rem", minHeight: "45px" }}>
-                                {i18n.catalog["text_277668a2faff"]}</Button>
+                                {i18n.catalog["enterpriseCore.hierarchy.collapseAll"]}</Button>
                         </>
                     }
                 />
@@ -316,7 +316,7 @@ export function HierarchyTab() {
 
                 {tree.length === 0 ? (
                     <div style={{ textAlign: "center", padding: "2rem", color: "var(--text-muted)" }}>
-                        <p>{i18n.catalog["text_c591f496064f"]}</p>
+                        <p>{i18n.catalog["enterpriseCore.hierarchy.noOrganizationalUnitsStartAddingUnitsOrganizationalUnits"]}</p>
                     </div>
                 ) : (
                     <div style={{ maxHeight: "65vh", overflowY: "auto" }}>
@@ -325,8 +325,8 @@ export function HierarchyTab() {
                 )}
 
                 <div style={{ marginTop: "1rem", fontSize: "0.75rem", color: "var(--text-muted)", display: "flex", gap: "1rem" }}>
-                    <span>{nodes.length} {i18n.catalog["text_edeadb5736ca"]}</span>
-                    <span>{metaTypes.length} {i18n.catalog["text_b55501074dc5"]}</span>
+                    <span>{nodes.length} {i18n.catalog["common.general.organizationalUnit"]}</span>
+                    <span>{metaTypes.length} {i18n.catalog["common.general.type.alternative2"]}</span>
                 </div>
             </div>
 
@@ -334,7 +334,7 @@ export function HierarchyTab() {
             {selectedNode && (
                 <div className="sales-card animate-fade" style={{ alignSelf: "start" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-                        <h4 style={{ margin: 0 }}>{i18n.catalog["text_9f739660881e"]}</h4>
+                        <h4 style={{ margin: 0 }}>{i18n.catalog["enterpriseCore.hierarchy.unitDetails"]}</h4>
                         <button
                             onClick={() => { setSelectedNode(null); setContextData(null); }}
                             style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}
@@ -345,7 +345,7 @@ export function HierarchyTab() {
 
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                         <div>
-                            <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{i18n.catalog["text_caa3f2bb4a36"]}</span>
+                            <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{i18n.catalog["common.general.type.alternative3"]}</span>
                             <div style={{
                                 display: "inline-block",
                                 marginRight: "0.5rem",
@@ -360,23 +360,23 @@ export function HierarchyTab() {
                             </div>
                         </div>
                         <div>
-                            <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{i18n.catalog["text_589c6420ea10"]}</span>
+                            <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{i18n.catalog["common.general.code"]}</span>
                             <p style={{ margin: 0, fontWeight: 600 }}>{selectedNode.code}</p>
                         </div>
                         <div>
-                            <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{i18n.catalog["text_52ab09847cf8"]}</span>
+                            <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{i18n.catalog["common.general.name"]}</span>
                             <p style={{ margin: 0 }}>{(selectedNode.attributes_json?.name as string) || "—"}</p>
                         </div>
                         <div>
-                            <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{i18n.catalog["text_c3a4749caed4"]}</span>
+                            <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{i18n.catalog["common.general.status.alternative2"]}</span>
                             <span className={`badge ${selectedNode.status === "active" ? "badge-success" : "badge-secondary"}`} style={{ marginRight: "4px" }}>
-                                {selectedNode.status === "active" ? i18n.catalog["text_629e90b3af3d"] : selectedNode.status}
+                                {selectedNode.status === "active" ? i18n.catalog["common.general.active"] : selectedNode.status}
                             </span>
                         </div>
 
                         {selectedNode.attributes_json && Object.keys(selectedNode.attributes_json).filter(k => k !== "name").length > 0 && (
                             <div>
-                                <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>{i18n.catalog["text_8e5f319dd13f"]}</span>
+                                <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>{i18n.catalog["common.general.attributes"]}</span>
                                 <div style={{ background: "var(--bg-secondary)", borderRadius: "6px", padding: "0.5rem", fontSize: "0.8rem" }}>
                                     {Object.entries(selectedNode.attributes_json)
                                         .filter(([k]) => k !== "name")
@@ -394,7 +394,7 @@ export function HierarchyTab() {
                         {contextData && (contextData as { resolved?: Record<string, unknown> }).resolved && (
                             <div>
                                 <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>
-                                    {getIcon("search")} {i18n.catalog["text_bc3a4726ee4a"]}</span>
+                                    {getIcon("search")} {i18n.catalog["enterpriseCore.hierarchy.derivedContext"]}</span>
                                 <div style={{ background: "var(--bg-secondary)", borderRadius: "6px", padding: "0.5rem", fontSize: "0.75rem" }}>
                                     {Object.entries((contextData as { resolved: Record<string, Record<string, unknown>> }).resolved).map(([typeId, data]) => (
                                         <div key={typeId} style={{ display: "flex", justifyContent: "space-between", padding: "3px 0", borderBottom: "1px solid var(--border-color)" }}>

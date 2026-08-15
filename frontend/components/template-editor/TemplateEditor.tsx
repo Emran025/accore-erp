@@ -9,8 +9,8 @@ import "./styles.css";
 
 // ── Language options ──
 const languageOptions = [
-    { value: "ar", label: catalogMessage("text_82abd0b8a67c") },
-    { value: "en", label: catalogMessage("text_ea7ca460c428") },
+    { value: "ar", label: catalogMessage("components.templateeditor.arabicRtl") },
+    { value: "en", label: catalogMessage("components.templateeditor.englishLtr") },
 ];
 
 export function TemplateEditor({
@@ -170,7 +170,7 @@ export function TemplateEditor({
         if (!editor) return;
         const start = editor.selectionStart;
         const end = editor.selectionEnd;
-        const placeholder = catalogText(i18n, "text_ee3104aa901f", { value0: key });
+        const placeholder = catalogText(i18n, "common.general.message.alternative10", { value0: key });
         const newValue = bodyHtml.substring(0, start) + placeholder + bodyHtml.substring(end);
         updateBodyHtml(newValue);
         setTimeout(() => {
@@ -231,7 +231,7 @@ export function TemplateEditor({
             e.preventDefault();
             const formatted = prettifyHTML(bodyHtml);
             updateBodyHtml(formatted);
-            showToast(i18n.catalog["text_8eeb7a1279fd"], "success");
+            showToast(i18n.catalog["common.general.codeFormatted"], "success");
             return;
         }
 
@@ -261,7 +261,7 @@ export function TemplateEditor({
             editor.focus();
             editor.scrollIntoView({ block: "center", behavior: "smooth" });
         } else {
-            showToast(i18n.catalog["text_ecf19c161732"], "warning");
+            showToast(i18n.catalog["components.templateeditor.textNotFound"], "warning");
         }
     }, [findQuery, findMatchCase]);
 
@@ -289,7 +289,7 @@ export function TemplateEditor({
         const regex = new RegExp(findQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), findMatchCase ? "g" : "gi");
         const newValue = bodyHtml.replace(regex, replaceQuery);
         updateBodyHtml(newValue);
-        showToast(i18n.catalog["text_1f382297ad53"], "success");
+        showToast(i18n.catalog["components.templateeditor.allMatchesHaveBeenReplaced"], "success");
     }, [findQuery, replaceQuery, findMatchCase, bodyHtml, updateBodyHtml]);
 
     // ── Line numbers ──
@@ -298,19 +298,19 @@ export function TemplateEditor({
     // ── Save handler ──
     const handleSave = async () => {
         if (!templateKey.trim()) {
-            showToast(i18n.catalog["text_52c53a8c0d76"], "error");
+            showToast(i18n.catalog["components.templateeditor.templateKeyIsRequired"], "error");
             return;
         }
         if (!nameAr.trim()) {
-            showToast(i18n.catalog["text_a693a6c20227"], "error");
+            showToast(i18n.catalog["components.templateeditor.templateNameArabicIsRequired"], "error");
             return;
         }
         if (forbiddenIssues.length > 0) {
-            showToast(i18n.catalog["text_c0a07a5b3a40"], "error");
+            showToast(i18n.catalog["components.templateeditor.templateContainsProhibitedItemsPleaseFixThem"], "error");
             return;
         }
         if (invalidKeys.length > 0) {
-            showToast(catalogText(i18n, "text_0fd934be8ab2", { value0: invalidKeys.length }), "error");
+            showToast(catalogText(i18n, "components.templateeditor.thereAreUnapprovedKeysPleaseFixThem", { value0: invalidKeys.length }), "error");
             return;
         }
 
@@ -375,29 +375,29 @@ export function TemplateEditor({
                 <div className="te-topbar-right">
                     <div className="te-topbar-title">
                         <i className="fas fa-file-code" />
-                        <span>{isNew ? catalogText(i18n, "text_4f9aa1cc9b17", { value0: moduleName }) : catalogText(i18n, "text_e5beff21dfec", { value0: template?.template_name_ar || "", value1: moduleName })}</span>
+                        <span>{isNew ? catalogText(i18n, "components.templateeditor.createNewTemplate", { value0: moduleName }) : catalogText(i18n, "components.templateeditor.amendment", { value0: template?.template_name_ar || "", value1: moduleName })}</span>
                     </div>
                     <div className="te-status-badges">
                         {forbiddenIssues.length > 0 && (
                             <span className="te-badge te-badge-danger">
-                                <i className="fas fa-exclamation-triangle" /> {forbiddenIssues.length} {i18n.catalog["text_d3b5b7ac8894"]}</span>
+                                <i className="fas fa-exclamation-triangle" /> {forbiddenIssues.length} {i18n.catalog["components.templateeditor.violation"]}</span>
                         )}
                         {invalidKeys.length > 0 && (
                             <span className="te-badge te-badge-warning">
-                                <i className="fas fa-key" /> {invalidKeys.length} {i18n.catalog["text_f614324704b6"]}</span>
+                                <i className="fas fa-key" /> {invalidKeys.length} {i18n.catalog["components.templateeditor.unauthorizedKey"]}</span>
                         )}
                         {forbiddenIssues.length === 0 && invalidKeys.length === 0 && bodyHtml.trim() && (
                             <span className="te-badge te-badge-success">
-                                <i className="fas fa-check-circle" /> {i18n.catalog["text_905435284fad"]}</span>
+                                <i className="fas fa-check-circle" /> {i18n.catalog["components.templateeditor.templateIsValid"]}</span>
                         )}
                         <span className="te-badge te-badge-info">
-                            <i className="fas fa-hashtag" /> {lineCount} {i18n.catalog["text_297814b61dd2"]}</span>
+                            <i className="fas fa-hashtag" /> {lineCount} {i18n.catalog["components.templateeditor.line"]}</span>
                         <span className="te-badge te-badge-info">
-                            <i className="fas fa-key" /> {usedKeyNames.length} {i18n.catalog["text_167922020988"]}</span>
+                            <i className="fas fa-key" /> {usedKeyNames.length} {i18n.catalog["components.templateeditor.userKey"]}</span>
                     </div>
                 </div>
                 <div className="te-topbar-actions">
-                    <Button size="sm" variant="secondary" icon="times" onClick={onCancel}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                    <Button size="sm" variant="secondary" icon="times" onClick={onCancel}>{i18n.catalog["common.general.cancel"]}</Button>
                     <Button
                         size="sm"
                         variant="primary"
@@ -405,7 +405,7 @@ export function TemplateEditor({
                         onClick={handleSave}
                         disabled={isSaving || forbiddenIssues.length > 0 || invalidKeys.length > 0}
                     >
-                        {isSaving ? i18n.catalog["text_8688b0ff5f34"] : isNew ? i18n.catalog["text_2c3b0daf2dfd"] : i18n.catalog["text_6c03d6737c2f"]}
+                        {isSaving ? i18n.catalog["common.general.saving"] : isNew ? i18n.catalog["components.templateeditor.createTemplate"] : i18n.catalog["common.general.saveChanges"]}
                     </Button>
                 </div>
             </div>
@@ -413,39 +413,39 @@ export function TemplateEditor({
             {/* ── Definition Bar ── */}
             <div className="te-definition-bar">
                 <div className="te-def-field">
-                    <label>{i18n.catalog["text_98389123b2e7"]}</label>
+                    <label>{i18n.catalog["components.templateeditor.templateKey"]}</label>
                     <input
                         type="text"
                         value={templateKey}
                         onChange={(e) => setTemplateKey(e.target.value)}
-                        placeholder={i18n.catalog["text_c8a9c5b73080"]}
+                        placeholder={i18n.catalog["components.templateeditor.templateKey.alternative2"]}
                         disabled={!isNew}
                         className="te-input"
                     />
                 </div>
                 <div className="te-def-field">
-                    <label>{i18n.catalog["text_9545ff35e736"]}</label>
+                    <label>{i18n.catalog["components.templateeditor.nameArabic"]}</label>
                     <input
                         type="text"
                         value={nameAr}
                         onChange={(e) => setNameAr(e.target.value)}
-                        placeholder={i18n.catalog["text_fc37790aa634"]}
+                        placeholder={i18n.catalog["components.templateeditor.templateNameArabic"]}
                         className="te-input"
                     />
                 </div>
                 <div className="te-def-field">
-                    <label>{i18n.catalog["text_88e20529da90"]}</label>
+                    <label>{i18n.catalog["components.templateeditor.nameEnglish"]}</label>
                     <input
                         type="text"
                         value={nameEn}
                         onChange={(e) => setNameEn(e.target.value)}
-                        placeholder={i18n.catalog["text_da5311c7bf18"]}
+                        placeholder={i18n.catalog["components.templateeditor.templateNameEnglish"]}
                         className="te-input"
                     />
                 </div>
                 {Object.keys(templateTypeLabels).length > 0 && (
                     <div className="te-def-field">
-                        <label>{i18n.catalog["text_1aeafc6bad8d"]}</label>
+                        <label>{i18n.catalog["components.templateeditor.templateType"]}</label>
                         <select
                             value={templateType}
                             onChange={(e) => setTemplateType(e.target.value)}
@@ -458,7 +458,7 @@ export function TemplateEditor({
                     </div>
                 )}
                 <div className="te-def-field">
-                    <label>{i18n.catalog["text_3bab9c2b0200"]}</label>
+                    <label>{i18n.catalog["components.templateeditor.language"]}</label>
                     <select
                         value={language}
                         onChange={(e) => setLanguage(e.target.value)}
@@ -471,12 +471,12 @@ export function TemplateEditor({
                     </select>
                 </div>
                 <div className="te-def-field te-def-field-wide">
-                    <label>{i18n.catalog["text_95023fc76e1b"]}</label>
+                    <label>{i18n.catalog["common.general.description.alternative2"]}</label>
                     <input
                         type="text"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        placeholder={i18n.catalog["text_bbe8f04c659f"]}
+                        placeholder={i18n.catalog["components.templateeditor.briefTemplateDescription"]}
                         className="te-input"
                     />
                 </div>
@@ -488,11 +488,11 @@ export function TemplateEditor({
                 {showKeysPanel && (
                     <div className="te-keys-panel">
                         <div className="te-keys-header">
-                            <h3><i className="fas fa-key" /> {i18n.catalog["text_8a10377ca2d6"]}</h3>
+                            <h3><i className="fas fa-key" /> {i18n.catalog["components.templateeditor.authorizedKeys"]}</h3>
                             <button
                                 className="te-keys-close"
                                 onClick={() => setShowKeysPanel(false)}
-                                title={i18n.catalog["text_80b44ac83814"]}
+                                title={i18n.catalog["common.general.hide"]}
                             >
                                 <i className="fas fa-chevron-left" />
                             </button>
@@ -503,14 +503,14 @@ export function TemplateEditor({
                                 type="text"
                                 value={keysSearchQuery}
                                 onChange={(e) => setKeysSearchQuery(e.target.value)}
-                                placeholder={i18n.catalog["text_76b858f96489"]}
+                                placeholder={i18n.catalog["common.general.search"]}
                             />
                         </div>
                         <div className="te-keys-list">
                             {filteredKeys.length === 0 ? (
                                 <div className="te-keys-empty">
                                     <i className="fas fa-search" />
-                                    <span>{i18n.catalog["text_2d8a461130e0"]}</span>
+                                    <span>{i18n.catalog["common.general.noResults"]}</span>
                                 </div>
                             ) : (
                                 filteredKeys.map((k) => {
@@ -520,10 +520,10 @@ export function TemplateEditor({
                                             key={k.key}
                                             className={`te-key-item ${isUsed ? "used" : ""}`}
                                             onClick={() => insertKey(k.key)}
-                                            title={catalogText(i18n, "text_a6972c4ff140", { value0: k.key })}
+                                            title={catalogText(i18n, "components.templateeditor.insert", { value0: k.key })}
                                         >
                                             <div className="te-key-item-top">
-                                                <code>{catalogText(i18n, "text_ee3104aa901f", { value0: k.key })}</code>
+                                                <code>{catalogText(i18n, "common.general.message.alternative10", { value0: k.key })}</code>
                                                 {isUsed && <i className="fas fa-check-circle te-key-used-icon" />}
                                             </div>
                                             <span className="te-key-desc">{k.description}</span>
@@ -542,20 +542,20 @@ export function TemplateEditor({
                     <div className="te-editor-tabs">
                         <div className="te-editor-tabs-left">
                             <div className="te-tab active" style={{ cursor: 'default', borderBottom: 'none' }}>
-                                <i className="fas fa-code" /> {i18n.catalog["text_9f236402d688"]}</div>
+                                <i className="fas fa-code" /> {i18n.catalog["components.templateeditor.codeEditor"]}</div>
                             <div className="te-tab active" style={{ cursor: 'default', borderBottom: 'none' }}>
-                                <i className="fas fa-eye" /> {i18n.catalog["text_7f69dce61661"]}</div>
+                                <i className="fas fa-eye" /> {i18n.catalog["components.templateeditor.livePreview"]}</div>
                         </div>
                         <div className="te-editor-tabs-right">
                             <div className="te-preview-controls">
                                 <span className="te-preview-label">
-                                    <i className="fas fa-flask" /> {i18n.catalog["text_ecb51d883709"]}</span>
+                                    <i className="fas fa-flask" /> {i18n.catalog["components.templateeditor.liveDemoData"]}</span>
                             </div>
                             <button
                                 className="te-toolbar-btn"
                                 onClick={handleUndo}
                                 disabled={historyIndex <= 0}
-                                title={i18n.catalog["text_9d52aaa0a25c"]}
+                                title={i18n.catalog["components.templateeditor.undoCtrlZ"]}
                             >
                                 <i className="fas fa-undo" />
                             </button>
@@ -563,7 +563,7 @@ export function TemplateEditor({
                                 className="te-toolbar-btn"
                                 onClick={handleRedo}
                                 disabled={historyIndex >= history.length - 1}
-                                title={i18n.catalog["text_07174c2bde18"]}
+                                title={i18n.catalog["components.templateeditor.redoCtrlY"]}
                             >
                                 <i className="fas fa-redo" />
                             </button>
@@ -575,7 +575,7 @@ export function TemplateEditor({
                                         setTimeout(() => findInputRef.current?.focus(), 0);
                                     }
                                 }}
-                                title={i18n.catalog["text_b3788c8a260b"]}
+                                title={i18n.catalog["components.templateeditor.findReplaceCtrlF"]}
                             >
                                 <i className="fas fa-search" />
                             </button>
@@ -584,9 +584,9 @@ export function TemplateEditor({
                                 onClick={() => {
                                     const formatted = prettifyHTML(bodyHtml);
                                     updateBodyHtml(formatted);
-                                    showToast(i18n.catalog["text_8eeb7a1279fd"], "success");
+                                    showToast(i18n.catalog["common.general.codeFormatted"], "success");
                                 }}
-                                title={i18n.catalog["text_7ffe5c5c09fd"]}
+                                title={i18n.catalog["common.general.formatCodeCtrlK"]}
                             >
                                 <i className="fas fa-indent" />
                             </button>
@@ -594,7 +594,7 @@ export function TemplateEditor({
                                 <button
                                     className="te-keys-toggle"
                                     onClick={() => setShowKeysPanel(true)}
-                                    title={i18n.catalog["text_0d602c58c5f8"]}
+                                    title={i18n.catalog["common.general.showKeys"]}
                                 >
                                     <i className="fas fa-key" />
                                 </button>
@@ -617,13 +617,13 @@ export function TemplateEditor({
                                             handleFind();
                                         }
                                     }}
-                                    placeholder={i18n.catalog["text_76b858f96489"]}
+                                    placeholder={i18n.catalog["common.general.search"]}
                                     className="te-find-input"
                                 />
                                 <button
                                     className="te-find-btn"
                                     onClick={handleFind}
-                                    title={i18n.catalog["text_8d046db49c54"]}
+                                    title={i18n.catalog["components.templateeditor.searchEnter"]}
                                 >
                                     <i className="fas fa-arrow-down" />
                                 </button>
@@ -639,20 +639,20 @@ export function TemplateEditor({
                                             handleReplace();
                                         }
                                     }}
-                                    placeholder={i18n.catalog["text_3af30a72d766"]}
+                                    placeholder={i18n.catalog["components.templateeditor.replace.alternative2"]}
                                     className="te-replace-input"
                                 />
                                 <button
                                     className="te-replace-btn"
                                     onClick={handleReplace}
-                                    title={i18n.catalog["text_374cdcc38839"]}
+                                    title={i18n.catalog["components.templateeditor.replace"]}
                                 >
                                     <i className="fas fa-exchange-alt" />
                                 </button>
                                 <button
                                     className="te-replace-all-btn"
                                     onClick={handleReplaceAll}
-                                    title={i18n.catalog["text_2c7e3eed9b26"]}
+                                    title={i18n.catalog["components.templateeditor.replaceAll"]}
                                 >
                                     <i className="fas fa-sync" />
                                 </button>
@@ -664,7 +664,7 @@ export function TemplateEditor({
                                         checked={findMatchCase}
                                         onChange={(e) => setFindMatchCase(e.target.checked)}
                                     />
-                                    <span>{i18n.catalog["text_656c8ee73bf1"]}</span>
+                                    <span>{i18n.catalog["components.templateeditor.caseSensitive"]}</span>
                                 </label>
                             </div>
                             <button
@@ -673,7 +673,7 @@ export function TemplateEditor({
                                     setShowFindReplace(false);
                                     editorRef.current?.focus();
                                 }}
-                                title={i18n.catalog["text_0f790c6cece8"]}
+                                title={i18n.catalog["components.templateeditor.closeEsc"]}
                             >
                                 <i className="fas fa-times" />
                             </button>
@@ -689,7 +689,7 @@ export function TemplateEditor({
                                         key={i + 1}
                                         className="te-line-num"
                                         onClick={() => jumpToLine(i + 1)}
-                                        title={catalogText(i18n, "text_9abe1989eabc", { value0: i + 1 })}
+                                        title={catalogText(i18n, "common.general.goLine", { value0: i + 1 })}
                                     >
                                         {i + 1}
                                     </div>
@@ -716,7 +716,7 @@ export function TemplateEditor({
                                     autoCorrect="off"
                                     autoCapitalize="off"
                                     wrap="off"
-                                    placeholder={i18n.catalog["text_2cfc9bf5ae1a"]}
+                                    placeholder={i18n.catalog["components.templateeditor.notAvailable"]}
                                     style={{ direction: 'ltr', textAlign: 'left' }}
                                 />
                             </div>
@@ -740,7 +740,7 @@ export function TemplateEditor({
                                         const fullHtml = `<!DOCTYPE html><html dir="${dir}" lang="${language}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>body{margin:0;padding:20px;font-family:'Tajawal','Segoe UI',sans-serif;background:#ffffff;} ::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-track { background: #f1f1f1; } ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; } ::-webkit-scrollbar-thumb:hover { background: #555; }</style></head><body>${processed}</body></html>`;
                                         setPreviewHtml(fullHtml);
                                     }}
-                                    title={i18n.catalog["text_735266537e58"]}
+                                    title={i18n.catalog["components.templateeditor.updatePreview"]}
                                 >
                                     <i className="fas fa-sync-alt" />
                                 </button>
@@ -749,7 +749,7 @@ export function TemplateEditor({
                                 ref={previewIframeRef}
                                 className="te-preview-iframe"
                                 sandbox="allow-same-origin"
-                                title={i18n.catalog["text_71ac9117bba2"]}
+                                title={i18n.catalog["components.templateeditor.templatePreview"]}
                             />
                         </div>
                     </div>
@@ -761,7 +761,7 @@ export function TemplateEditor({
                 <div className="te-validation-panel">
                     <div className="te-validation-header">
                         <i className="fas fa-exclamation-circle" />
-                        <span>{i18n.catalog["text_bcaa8e6ec329"]}</span>
+                        <span>{i18n.catalog["components.templateeditor.issuesFixBeforeSaving"]}</span>
                     </div>
                     <div className="te-validation-items">
                         {forbiddenIssues.map((issue, i) => (
@@ -776,11 +776,11 @@ export function TemplateEditor({
                                 className="te-validation-item te-validation-warning"
                                 onClick={() => jumpToLine(k.line)}
                                 style={{ cursor: "pointer" }}
-                                title={catalogText(i18n, "text_9abe1989eabc", { value0: k.line })}
+                                title={catalogText(i18n, "common.general.goLine", { value0: k.line })}
                             >
                                 <i className="fas fa-key" />
                                 <span>
-                                    {i18n.catalog["text_65afc73dd210"]}<code>{catalogText(i18n, "text_ee3104aa901f", { value0: k.key })}</code> {i18n.catalog["text_66a28928dd8b"]}{k.line}{i18n.catalog["text_7bba3e20a415"]}{k.column}
+                                    {i18n.catalog["components.templateeditor.unsupportedKey"]}<code>{catalogText(i18n, "common.general.message.alternative10", { value0: k.key })}</code> {i18n.catalog["components.templateeditor.line.alternative2"]}{k.line}{i18n.catalog["components.templateeditor.column"]}{k.column}
                                 </span>
                             </div>
                         ))}

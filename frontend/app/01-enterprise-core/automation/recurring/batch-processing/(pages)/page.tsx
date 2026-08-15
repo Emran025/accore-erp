@@ -66,10 +66,10 @@ export default function BatchProcessingPage() {
         setTotalPages(Math.ceil(total / itemsPerPage));
         setCurrentPage(page);
       } else {
-        showToast(response.message || i18n.catalog["text_4322533d32d7"], "error");
+        showToast(response.message || i18n.catalog["enterpriseCore.batchProcessing.failedLoadBatches"], "error");
       }
     } catch {
-      showToast(i18n.catalog["text_22fa79f17c32"], "error");
+      showToast(i18n.catalog["common.general.errorConnectingServer"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -96,19 +96,19 @@ export default function BatchProcessingPage() {
 
   const getBatchTypeLabel = (type: string) => {
     const types: Record<string, string> = {
-      journal_entry_import: i18n.catalog["text_927d1e98cb04"],
-      expense_posting: i18n.catalog["text_b60732404e72"],
+      journal_entry_import: i18n.catalog["common.general.importJournalEntries"],
+      expense_posting: i18n.catalog["common.general.postExpenses"],
     };
     return types[type] || type;
   };
 
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { class: string; text: string }> = {
-      pending: { class: "badge-secondary", text: i18n.catalog["text_debc42b60ecd"] },
-      processing: { class: "badge-info", text: i18n.catalog["text_0cc6a7db6080"] },
-      completed: { class: "badge-success", text: i18n.catalog["text_f1d6d15f76da"] },
-      completed_with_errors: { class: "badge-warning", text: i18n.catalog["text_bfe4957eb0ac"] },
-      failed: { class: "badge-danger", text: i18n.catalog["text_f5c4293be71d"] },
+      pending: { class: "badge-secondary", text: i18n.catalog["common.general.pending.alternative3"] },
+      processing: { class: "badge-info", text: i18n.catalog["common.general.processing"] },
+      completed: { class: "badge-success", text: i18n.catalog["common.general.completed.alternative2"] },
+      completed_with_errors: { class: "badge-warning", text: i18n.catalog["enterpriseCore.batchProcessing.completedErrors"] },
+      failed: { class: "badge-danger", text: i18n.catalog["common.general.failed.alternative3"] },
     };
 
     const statusLower = status?.toLowerCase() || "pending";
@@ -138,7 +138,7 @@ export default function BatchProcessingPage() {
     e.preventDefault();
 
     if (!batchName || !batchType) {
-      showToast(i18n.catalog["text_d22e1b0282c3"], "error");
+      showToast(i18n.catalog["enterpriseCore.batchProcessing.pleaseEnterBatchNameType"], "error");
       return;
     }
 
@@ -154,7 +154,7 @@ export default function BatchProcessingPage() {
 
       if (response.success && response.data) {
         const data = response.data as Batch;
-        showToast(i18n.catalog["text_17c8e33cdc65"], "success");
+        showToast(i18n.catalog["enterpriseCore.batchProcessing.batchCreatedSuccessfullyYouCanNowAddItems"], "success");
         setCreateDialog(false);
         await loadBatches(1);
 
@@ -165,10 +165,10 @@ export default function BatchProcessingPage() {
           }, 500);
         }
       } else {
-        showToast(response.message || i18n.catalog["text_3583476d1f64"], "error");
+        showToast(response.message || i18n.catalog["enterpriseCore.batchProcessing.batchCreationFailed"], "error");
       }
     } catch {
-      showToast(i18n.catalog["text_cd14f52d2adf"], "error");
+      showToast(i18n.catalog["enterpriseCore.batchProcessing.errorCreatingBatch"], "error");
     }
   };
 
@@ -183,11 +183,11 @@ export default function BatchProcessingPage() {
         const items = (response.data as { items?: BatchItem[] }).items || [];
         setBatchItems(items);
       } else {
-        showToast(response.message || i18n.catalog["text_e6aa99062649"], "error");
+        showToast(response.message || i18n.catalog["enterpriseCore.batchProcessing.failedLoadItems.alternative2"], "error");
         setItemsDialog(false);
       }
     } catch {
-      showToast(i18n.catalog["text_3d1f569c8842"], "error");
+      showToast(i18n.catalog["enterpriseCore.batchProcessing.failedLoadItems"], "error");
       setItemsDialog(false);
     } finally {
       setIsLoadingItems(false);
@@ -210,15 +210,15 @@ export default function BatchProcessingPage() {
       });
 
       if (response.success) {
-        showToast(i18n.catalog["text_7c0e942076ed"], "success");
+        showToast(i18n.catalog["enterpriseCore.batchProcessing.paymentExecutedSuccessfully"], "success");
         setConfirmDialog(false);
         setExecuteBatchId(null);
         await loadBatches(currentPage);
       } else {
-        showToast(response.message || i18n.catalog["text_d3f336fffb19"], "error");
+        showToast(response.message || i18n.catalog["enterpriseCore.batchProcessing.failedExecuteBatch"], "error");
       }
     } catch {
-      showToast(i18n.catalog["text_5e0959cfa6b2"], "error");
+      showToast(i18n.catalog["enterpriseCore.batchProcessing.errorExecutingPayment"], "error");
     }
   };
 
@@ -231,18 +231,18 @@ export default function BatchProcessingPage() {
     if (!deleteBatchId) return;
 
     try {
-      const response = await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.ENTERPRISE_CORE.BATCH, value1: deleteBatchId }), { method: "DELETE" });
+      const response = await fetchAPI(catalogText(i18n, "common.general.message", { value0: API_ENDPOINTS.ENTERPRISE_CORE.BATCH, value1: deleteBatchId }), { method: "DELETE" });
 
       if (response.success) {
-        showToast(i18n.catalog["text_1d25a38f4084"], "success");
+        showToast(i18n.catalog["enterpriseCore.batchProcessing.batchDeletedSuccessfully"], "success");
         setConfirmDialog(false);
         setDeleteBatchId(null);
         await loadBatches(currentPage);
       } else {
-        showToast(response.message || i18n.catalog["text_d8f1b96d3ff6"], "error");
+        showToast(response.message || i18n.catalog["enterpriseCore.batchProcessing.failedDeleteBatch"], "error");
       }
     } catch {
-      showToast(i18n.catalog["text_e2f6dd925b80"], "error");
+      showToast(i18n.catalog["enterpriseCore.batchProcessing.errorDeletingPayment"], "error");
     }
   };
 
@@ -256,11 +256,11 @@ export default function BatchProcessingPage() {
 
   const getItemStatusBadge = (status: string) => {
     const statusMap: Record<string, { class: string; text: string }> = {
-      pending: { class: "badge-secondary", text: i18n.catalog["text_debc42b60ecd"] },
-      success: { class: "badge-success", text: i18n.catalog["text_f1d6d15f76da"] },
-      completed: { class: "badge-success", text: i18n.catalog["text_f1d6d15f76da"] },
-      error: { class: "badge-danger", text: i18n.catalog["text_f5c4293be71d"] },
-      failed: { class: "badge-danger", text: i18n.catalog["text_f5c4293be71d"] },
+      pending: { class: "badge-secondary", text: i18n.catalog["common.general.pending.alternative3"] },
+      success: { class: "badge-success", text: i18n.catalog["common.general.completed.alternative2"] },
+      completed: { class: "badge-success", text: i18n.catalog["common.general.completed.alternative2"] },
+      error: { class: "badge-danger", text: i18n.catalog["common.general.failed.alternative3"] },
+      failed: { class: "badge-danger", text: i18n.catalog["common.general.failed.alternative3"] },
     };
 
     const statusLower = status?.toLowerCase() || "pending";
@@ -272,50 +272,50 @@ export default function BatchProcessingPage() {
   const columns: Column<Batch>[] = [
     {
       key: "batch_name",
-      header: i18n.catalog["text_21d5e8a1e88c"],
-      dataLabel: i18n.catalog["text_21d5e8a1e88c"],
+      header: i18n.catalog["common.general.paymentName"],
+      dataLabel: i18n.catalog["common.general.paymentName"],
       render: (item) => <strong>{item.batch_name}</strong>,
     },
     {
       key: "batch_type",
-      header: i18n.catalog["text_448543036e9c"],
-      dataLabel: i18n.catalog["text_448543036e9c"],
+      header: i18n.catalog["common.general.paymentType"],
+      dataLabel: i18n.catalog["common.general.paymentType"],
       render: (item) => getBatchTypeLabel(item.batch_type),
     },
     {
       key: "status",
-      header: i18n.catalog["text_c3a4749caed4"],
-      dataLabel: i18n.catalog["text_c3a4749caed4"],
+      header: i18n.catalog["common.general.status.alternative2"],
+      dataLabel: i18n.catalog["common.general.status.alternative2"],
       render: (item) => getStatusBadge(item.status),
     },
     {
       key: "total_items",
-      header: i18n.catalog["text_ea45bc23f2a5"],
-      dataLabel: i18n.catalog["text_ea45bc23f2a5"],
+      header: i18n.catalog["common.general.numberItems"],
+      dataLabel: i18n.catalog["common.general.numberItems"],
       render: (item) => item.total_items || 0,
     },
     {
       key: "created_at",
-      header: i18n.catalog["text_dc08056fa4f2"],
-      dataLabel: i18n.catalog["text_dc08056fa4f2"],
+      header: i18n.catalog["common.general.creationDate"],
+      dataLabel: i18n.catalog["common.general.creationDate"],
       render: (item) => formatDate(item.created_at),
     },
     {
       key: "started_at",
-      header: i18n.catalog["text_90f719b91522"],
-      dataLabel: i18n.catalog["text_90f719b91522"],
+      header: i18n.catalog["common.general.startDate.alternative2"],
+      dataLabel: i18n.catalog["common.general.startDate.alternative2"],
       render: (item) => item.started_at ? formatDate(item.started_at) : "-",
     },
     {
       key: "completed_at",
-      header: i18n.catalog["text_408f41c7f4d5"],
-      dataLabel: i18n.catalog["text_408f41c7f4d5"],
+      header: i18n.catalog["common.general.completionDate"],
+      dataLabel: i18n.catalog["common.general.completionDate"],
       render: (item) => item.completed_at ? formatDate(item.completed_at) : "-",
     },
     {
       key: "actions",
-      header: i18n.catalog["text_7797240d6caf"],
-      dataLabel: i18n.catalog["text_7797240d6caf"],
+      header: i18n.catalog["common.general.actions"],
+      dataLabel: i18n.catalog["common.general.actions"],
       render: (item) => {
         const isPending = item.status?.toLowerCase() === "pending";
         return (
@@ -323,7 +323,7 @@ export default function BatchProcessingPage() {
             <button
               className="icon-btn view"
               onClick={() => viewBatchItems(item.id)}
-              title={i18n.catalog["text_f75b6132088e"]}
+              title={i18n.catalog["enterpriseCore.batchProcessing.viewItems"]}
             >
               {getIcon("eye")}
             </button>
@@ -332,14 +332,14 @@ export default function BatchProcessingPage() {
                 <button
                   className="icon-btn edit"
                   onClick={() => confirmExecuteBatch(item.id, item.batch_type)}
-                  title={i18n.catalog["text_5087e935ba15"]}
+                  title={i18n.catalog["common.general.execute"]}
                 >
                   {getIcon("check")}
                 </button>
                 <button
                   className="icon-btn delete"
                   onClick={() => confirmDeleteBatch(item.id)}
-                  title={i18n.catalog["text_59ca629220a6"]}
+                  title={i18n.catalog["common.general.delete"]}
                 >
                   {getIcon("trash")}
                 </button>
@@ -360,8 +360,8 @@ export default function BatchProcessingPage() {
     },
     {
       key: "item_data",
-      header: i18n.catalog["text_08ab6ec0960e"],
-      dataLabel: i18n.catalog["text_08ab6ec0960e"],
+      header: i18n.catalog["common.general.itemDetails"],
+      dataLabel: i18n.catalog["common.general.itemDetails"],
       render: (item) => {
         const dataStr = JSON.stringify(item.item_data || {}, null, 2);
         const truncated = dataStr.length > 100 ? dataStr.substring(0, 100) + "..." : dataStr;
@@ -374,14 +374,14 @@ export default function BatchProcessingPage() {
     },
     {
       key: "status",
-      header: i18n.catalog["text_c3a4749caed4"],
-      dataLabel: i18n.catalog["text_c3a4749caed4"],
+      header: i18n.catalog["common.general.status.alternative2"],
+      dataLabel: i18n.catalog["common.general.status.alternative2"],
       render: (item) => getItemStatusBadge(item.status),
     },
     {
       key: "error_message",
-      header: i18n.catalog["text_ee81747fe922"],
-      dataLabel: i18n.catalog["text_ee81747fe922"],
+      header: i18n.catalog["common.general.errorMessage"],
+      dataLabel: i18n.catalog["common.general.errorMessage"],
       render: (item) => item.error_message || "-",
     },
   ];
@@ -399,14 +399,14 @@ export default function BatchProcessingPage() {
               onClick={openCreateDialog}
               icon="plus"
             >
-              {i18n.catalog["text_57ee14656ff9"]}</Button>
+              {i18n.catalog["enterpriseCore.batchProcessing.newPayment"]}</Button>
           }
         />
         <Table
           columns={columns}
           data={batches}
           keyExtractor={(item) => item.id}
-          emptyMessage={i18n.catalog["text_1e7a035eca9d"]}
+          emptyMessage={i18n.catalog["enterpriseCore.batchProcessing.noPayments"]}
           isLoading={isLoading}
           pagination={{
             currentPage,
@@ -420,19 +420,19 @@ export default function BatchProcessingPage() {
       <Dialog
         isOpen={createDialog}
         onClose={closeCreateDialog}
-        title={i18n.catalog["text_88af98e092ea"]}
+        title={i18n.catalog["enterpriseCore.batchProcessing.createNewBatch"]}
         footer={
           <>
             <button className="btn btn-secondary" onClick={closeCreateDialog}>
-              {i18n.catalog["text_9a30dc2a96b8"]}</button>
+              {i18n.catalog["common.general.cancel"]}</button>
             <button className="btn btn-primary" onClick={createBatch}>
-              {i18n.catalog["text_a820f3590d36"]}</button>
+              {i18n.catalog["common.general.create"]}</button>
           </>
         }
       >
         <form onSubmit={createBatch}>
           <div className="form-group">
-            <label htmlFor="batch-name">{i18n.catalog["text_42c9e54dc4f1"]}</label>
+            <label htmlFor="batch-name">{i18n.catalog["enterpriseCore.batchProcessing.batchName"]}</label>
             <input
               type="text"
               id="batch-name"
@@ -443,21 +443,21 @@ export default function BatchProcessingPage() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="batch-type">{i18n.catalog["text_e23f625bb935"]}</label>
+            <label htmlFor="batch-type">{i18n.catalog["enterpriseCore.batchProcessing.paymentType"]}</label>
             <select
               id="batch-type"
               value={batchType}
               onChange={(e) => setBatchType(e.target.value)}
               required
             >
-              <option value="">{i18n.catalog["text_5eaa1d03bdd9"]}</option>
-              <option value="journal_entry_import">{i18n.catalog["text_927d1e98cb04"]}</option>
-              <option value="expense_posting">{i18n.catalog["text_b60732404e72"]}</option>
+              <option value="">{i18n.catalog["enterpriseCore.batchProcessing.selectPaymentType"]}</option>
+              <option value="journal_entry_import">{i18n.catalog["common.general.importJournalEntries"]}</option>
+              <option value="expense_posting">{i18n.catalog["common.general.postExpenses"]}</option>
             </select>
           </div>
 
           <div className="form-group">
-            <label htmlFor="batch-description">{i18n.catalog["text_95023fc76e1b"]}</label>
+            <label htmlFor="batch-description">{i18n.catalog["common.general.description.alternative2"]}</label>
             <textarea
               id="batch-description"
               value={batchDescription}
@@ -472,23 +472,23 @@ export default function BatchProcessingPage() {
       <Dialog
         isOpen={itemsDialog}
         onClose={closeItemsDialog}
-        title={i18n.catalog["text_044dd0f15b5f"]}
+        title={i18n.catalog["enterpriseCore.batchProcessing.batchItems"]}
         maxWidth="900px"
       >
         {isLoadingItems ? (
           <div style={{ textAlign: "center", padding: "3rem" }}>
             <i className="fas fa-spinner fa-spin" style={{ fontSize: "2rem" }}></i>
-            <p style={{ marginTop: "1rem" }}>{i18n.catalog["text_ceac78d7f5d3"]}</p>
+            <p style={{ marginTop: "1rem" }}>{i18n.catalog["common.general.loading"]}</p>
           </div>
         ) : batchItems.length === 0 ? (
           <p style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)" }}>
-            {i18n.catalog["text_8deb714c7ec2"]}</p>
+            {i18n.catalog["common.general.noItems.alternative2"]}</p>
         ) : (
           <Table
             columns={itemColumns}
             data={batchItems}
             keyExtractor={(item, index) => `${item.id}-${index}`}
-            emptyMessage={i18n.catalog["text_8deb714c7ec2"]}
+            emptyMessage={i18n.catalog["common.general.noItems.alternative2"]}
           />
         )}
       </Dialog>
@@ -502,13 +502,13 @@ export default function BatchProcessingPage() {
           setExecuteBatchId(null);
         }}
         onConfirm={handleConfirm}
-        title={i18n.catalog["text_8f7d74ac0eac"]}
+        title={i18n.catalog["common.general.confirm"]}
         message={
           deleteBatchId
-            ? i18n.catalog["text_9889d784c0a8"]
-            : i18n.catalog["text_ea0bc590678a"]
+            ? i18n.catalog["enterpriseCore.batchProcessing.areYouSureYouWantDeleteThisPayment"]
+            : i18n.catalog["enterpriseCore.batchProcessing.areYouSureYouWantExecuteThisBatch"]
         }
-        confirmText={deleteBatchId ? i18n.catalog["text_59ca629220a6"] : i18n.catalog["text_5087e935ba15"]}
+        confirmText={deleteBatchId ? i18n.catalog["common.general.delete"] : i18n.catalog["common.general.execute"]}
         confirmVariant={deleteBatchId ? "danger" : "primary"}
       />
     </MainLayout>

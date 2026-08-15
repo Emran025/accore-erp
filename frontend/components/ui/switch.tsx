@@ -1,6 +1,5 @@
 "use client";
 
-import { catalogMessage } from "@/lib/i18n";
 import { forwardRef, useState, useEffect } from "react";
 import { Label } from "./Label";
 
@@ -29,9 +28,9 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(({
     // RTL: Unchecked (OFF) = Right (20px), Checked (ON) = Left (0px)
     const getTransform = () => {
         if (isRtl) {
-            return checked ? catalogMessage("text_021079a3f9e2") : catalogMessage("text_c8240da8c225");
+            return checked ? "translateX(0)" : "translateX(20px)";
         }
-        return checked ? catalogMessage("text_c8240da8c225") : catalogMessage("text_021079a3f9e2");
+        return checked ? "translateX(20px)" : "translateX(0)";
     };
 
     return (

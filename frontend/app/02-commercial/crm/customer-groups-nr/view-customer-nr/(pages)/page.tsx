@@ -10,8 +10,8 @@ export default function ViewNumberRangeIntervalsPage() {
         <MainLayout>
             <NumberRangeManager
                 objectType="ar_customers"
-                title={i18n.catalog["text_747d667d5a4d"]}
-                defaultConfig={{ name: i18n.catalog["text_813d9a8a1065"], name_en: "Customers", number_length: 8, prefix: "CUS-" }}
+                title={i18n.catalog["common.general.customerNumberingSettings"]}
+                defaultConfig={{ name: i18n.catalog["common.general.customers"], name_en: "Customers", number_length: 8, prefix: "CUS-" }}
             />
         </MainLayout>
     );

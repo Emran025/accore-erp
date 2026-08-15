@@ -71,17 +71,17 @@ interface Summary {
 
 // ── Type translations ────────────────────────────────────────────────
 const TYPE_MAP: Record<string, string> = {
-    operational: catalogMessage("text_85116cea780e"),
-    administrative: catalogMessage("text_ba433520879c"),
-    production: catalogMessage("text_5a8ffb95ff6f"),
-    support: catalogMessage("text_cdfa93f63f42"),
+    operational: catalogMessage("common.general.operational"),
+    administrative: catalogMessage("common.general.administrative"),
+    production: catalogMessage("common.general.productive"),
+    support: catalogMessage("common.general.support"),
 };
 
 const TYPE_OPTIONS = [
-    { value: "operational", label: catalogMessage("text_85116cea780e") },
-    { value: "administrative", label: catalogMessage("text_ba433520879c") },
-    { value: "production", label: catalogMessage("text_5a8ffb95ff6f") },
-    { value: "support", label: catalogMessage("text_cdfa93f63f42") },
+    { value: "operational", label: catalogMessage("common.general.operational") },
+    { value: "administrative", label: catalogMessage("common.general.administrative") },
+    { value: "production", label: catalogMessage("common.general.productive") },
+    { value: "support", label: catalogMessage("common.general.support") },
 ];
 
 const TYPE_COLORS: Record<string, string> = {
@@ -146,10 +146,10 @@ export default function CostCentersPage() {
                 setTotalPages(Math.ceil(total / itemsPerPage));
                 setCurrentPage(page);
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_c7915787f5a6"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["finance.costCenters.failedLoadCostCenters"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.errorConnectingServer"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -207,15 +207,15 @@ export default function CostCentersPage() {
             if (response.success) {
                 showAlert(
                     "alert-container",
-                    currentlyActive ? i18n.catalog["text_4b305b1d7000"] : i18n.catalog["text_e88ae5b85423"],
+                    currentlyActive ? i18n.catalog["common.general.positionClosedOrganizationalStructureUpdated"] : i18n.catalog["common.general.centerOpenedOrganizationalStructureUpdated"],
                     "success"
                 );
                 await Promise.all([loadCenters(currentPage, searchTerm, filterType), loadLookups()]);
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_6766d88b51c9"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["common.general.failedChangeCenterStatus"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_1ac65f6d78f4"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.connectionError"], "error");
         }
     };
 
@@ -241,7 +241,7 @@ export default function CostCentersPage() {
             const num = parseInt(c.code.replace(/\D/g, "")) || 0;
             return num > max ? num : max;
         }, 0);
-        setFormCode(catalogText(i18n, "text_0ea98e4f2c67", { value0: String(maxNum + 1).padStart(3, "0") }));
+        setFormCode(catalogText(i18n, "finance.costCenters.cc", { value0: String(maxNum + 1).padStart(3, "0") }));
         setFormDialog(true);
     };
 
@@ -264,7 +264,7 @@ export default function CostCentersPage() {
 
     const saveCenter = async () => {
         if (!formCode || !formName) {
-            showAlert("alert-container", i18n.catalog["text_9bb430444d33"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.pleaseFillRequiredFieldsCodeName"], "error");
             return;
         }
 
@@ -293,15 +293,15 @@ export default function CostCentersPage() {
             });
 
             if (response.success) {
-                showAlert("alert-container", editId ? i18n.catalog["text_becf9fd5bc8f"] : i18n.catalog["text_bba4533a5a48"], "success");
+                showAlert("alert-container", editId ? i18n.catalog["finance.costCenters.costCenterUpdated"] : i18n.catalog["finance.costCenters.costCenterCreated"], "success");
                 setFormDialog(false);
                 resetForm();
                 await Promise.all([loadCenters(currentPage, searchTerm, filterType), loadLookups()]);
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_b0dbba00004b"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["common.general.failedSave"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.errorConnectingServer"], "error");
         }
     };
 
@@ -315,15 +315,15 @@ export default function CostCentersPage() {
         try {
             const response = await fetchAPI(API_ENDPOINTS.FINANCE.COST_CENTERS.withId(deleteId), { method: "DELETE" });
             if (response.success) {
-                showAlert("alert-container", i18n.catalog["text_c7b2b22f8b9b"], "success");
+                showAlert("alert-container", i18n.catalog["finance.costCenters.costCenterDeleted"], "success");
                 setConfirmDialog(false);
                 setDeleteId(null);
                 await Promise.all([loadCenters(currentPage, searchTerm, filterType), loadLookups()]);
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_f46bfc521612"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["common.general.deletionFailed"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_3bdb299872fb"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.deletionError"], "error");
         }
     };
 
@@ -331,8 +331,8 @@ export default function CostCentersPage() {
     const columns: Column<CostCenter>[] = [
         {
             key: "code",
-            header: i18n.catalog["text_e28ef005ab68"],
-            dataLabel: i18n.catalog["text_e28ef005ab68"],
+            header: i18n.catalog["common.general.code.alternative4"],
+            dataLabel: i18n.catalog["common.general.code.alternative4"],
             render: (item) => (
                 <span style={{ fontFamily: "monospace", fontWeight: 700, color: "var(--accent-primary)" }}>
                     {item.code}
@@ -341,8 +341,8 @@ export default function CostCentersPage() {
         },
         {
             key: "name",
-            header: i18n.catalog["text_52ab09847cf8"],
-            dataLabel: i18n.catalog["text_52ab09847cf8"],
+            header: i18n.catalog["common.general.name"],
+            dataLabel: i18n.catalog["common.general.name"],
             render: (item) => (
                 <div>
                     <strong>{item.name}</strong>
@@ -352,8 +352,8 @@ export default function CostCentersPage() {
         },
         {
             key: "type",
-            header: i18n.catalog["text_caa3f2bb4a36"],
-            dataLabel: i18n.catalog["text_caa3f2bb4a36"],
+            header: i18n.catalog["common.general.type.alternative3"],
+            dataLabel: i18n.catalog["common.general.type.alternative3"],
             render: (item) => (
                 <span className={`badge ${TYPE_COLORS[item.type] || "badge-secondary"}`}>
                     {TYPE_MAP[item.type] || item.type}
@@ -362,24 +362,24 @@ export default function CostCentersPage() {
         },
         {
             key: "parent_name",
-            header: i18n.catalog["text_737f847aa339"],
-            dataLabel: i18n.catalog["text_737f847aa339"],
+            header: i18n.catalog["common.general.parentCenter"],
+            dataLabel: i18n.catalog["common.general.parentCenter"],
             render: (item) => item.parent_name ? (
                 <span className="badge badge-secondary">{item.parent_name}</span>
             ) : (
-                <span style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>{i18n.catalog["text_48edee59831b"]}</span>
+                <span style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>{i18n.catalog["common.general.primary"]}</span>
             ),
         },
         {
             key: "budget",
-            header: i18n.catalog["text_94410bef3fe2"],
-            dataLabel: i18n.catalog["text_94410bef3fe2"],
+            header: i18n.catalog["common.general.budget"],
+            dataLabel: i18n.catalog["common.general.budget"],
             render: (item) => item.budget ? formatCurrency(item.budget) : "—",
         },
         {
             key: "actual_cost",
-            header: i18n.catalog["text_7735776bca61"],
-            dataLabel: i18n.catalog["text_7735776bca61"],
+            header: i18n.catalog["common.general.actualCosts"],
+            dataLabel: i18n.catalog["common.general.actualCosts"],
             render: (item) => (
                 <span style={{ color: item.actual_cost > 0 ? "#ef4444" : "var(--text-muted)" }}>
                     {formatCurrency(item.actual_cost)}
@@ -388,8 +388,8 @@ export default function CostCentersPage() {
         },
         {
             key: "budget_utilization",
-            header: i18n.catalog["text_905db3269be8"],
-            dataLabel: i18n.catalog["text_905db3269be8"],
+            header: i18n.catalog["common.general.usage"],
+            dataLabel: i18n.catalog["common.general.usage"],
             render: (item) => {
                 if (!item.budget) return <span style={{ color: "var(--text-muted)" }}>—</span>;
                 const pct = item.budget_utilization;
@@ -423,16 +423,16 @@ export default function CostCentersPage() {
         },
         {
             key: "is_active",
-            header: i18n.catalog["text_c3a4749caed4"],
-            dataLabel: i18n.catalog["text_c3a4749caed4"],
+            header: i18n.catalog["common.general.status.alternative2"],
+            dataLabel: i18n.catalog["common.general.status.alternative2"],
             render: (item) => (
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                     <span className={`badge ${item.is_active ? "badge-success" : "badge-danger"}`}>
-                        {item.is_active ? i18n.catalog["text_46ea59915eec"] : i18n.catalog["text_e655261f9c96"]}
+                        {item.is_active ? i18n.catalog["common.general.open"] : i18n.catalog["common.general.closed.alternative2"]}
                     </span>
                     {item.structure_node_uuid && (
                         <span
-                            title={i18n.catalog["text_47d45034947d"]}
+                            title={i18n.catalog["common.general.linkedOrganizationalStructure"]}
                             style={{
                                 display: "inline-flex",
                                 alignItems: "center",
@@ -453,28 +453,28 @@ export default function CostCentersPage() {
         },
         {
             key: "actions",
-            header: i18n.catalog["text_7797240d6caf"],
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (item) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: item.is_active ? "x-octagon" : "check-circle",
-                            title: item.is_active ? i18n.catalog["text_ffe852986bcb"] : i18n.catalog["text_7faca43b0eea"],
+                            title: item.is_active ? i18n.catalog["common.general.closeCenter"] : i18n.catalog["common.general.openCenter"],
                             variant: item.is_active ? "warning" : "success",
                             onClick: () => toggleCenterStatus(item.id, item.is_active),
                             hidden: !canAccess(permissions, "chart_of_accounts", "edit"),
                         },
                         {
                             icon: "edit",
-                            title: i18n.catalog["text_113d570d6555"],
+                            title: i18n.catalog["common.general.edit"],
                             variant: "edit",
                             onClick: () => openEditDialog(item.id),
                             hidden: !canAccess(permissions, "chart_of_accounts", "edit"),
                         },
                         {
                             icon: "trash",
-                            title: i18n.catalog["text_59ca629220a6"],
+                            title: i18n.catalog["common.general.delete"],
                             variant: "delete",
                             onClick: () => confirmDelete(item.id),
                             hidden: !canAccess(permissions, "chart_of_accounts", "delete"),
@@ -496,31 +496,31 @@ export default function CostCentersPage() {
                     KPICards={[
                         {
                             icon: "building",
-                            label: i18n.catalog["text_e86090dd229a"],
+                            label: i18n.catalog["finance.costCenters.activeCostCenters"],
                             value: summary.cost_centers_count,
                             color: "#3b82f6",
-                            subtitle: i18n.catalog["text_a553bf3a5305"],
+                            subtitle: i18n.catalog["finance.costCenters.costCenter"],
                         },
                         {
                             icon: "wallet",
-                            label: i18n.catalog["text_279e8e2997e0"],
+                            label: i18n.catalog["finance.costCenters.totalBudgets"],
                             value: summary.total_budget,
                             color: "#8b5cf6",
                             subtitle: formatCurrency(summary.total_budget),
                         },
                         {
                             icon: "credit-card",
-                            label: i18n.catalog["text_7735776bca61"],
+                            label: i18n.catalog["common.general.actualCosts"],
                             value: summary.total_actual_cost,
                             color: "#ef4444",
                             subtitle: formatCurrency(summary.total_actual_cost),
                         },
                         {
                             icon: "pie-chart",
-                            label: i18n.catalog["text_16c36b085606"],
+                            label: i18n.catalog["finance.costCenters.utilizationRate"],
                             value: summary.budget_utilization,
                             color: getUtilizationColor(summary.budget_utilization),
-                            subtitle: catalogText(i18n, "text_843ea80042e6", { value0: summary.budget_utilization }),
+                            subtitle: catalogText(i18n, "finance.costCenters.budget", { value0: summary.budget_utilization }),
                         },
                     ]}
                 />
@@ -531,9 +531,9 @@ export default function CostCentersPage() {
                     user={user}
                     searchInput={
                         <SearchableSelect
-                            placeholder={i18n.catalog["text_eda980b83daa"]}
+                            placeholder={i18n.catalog["common.general.searchCodeName"]}
                             value={searchTerm}
-                            options={centers.map((c) => ({ value: c.name, label: catalogText(i18n, "text_2a9059a3c52f", { value0: c.code, value1: c.name }) }))}
+                            options={centers.map((c) => ({ value: c.name, label: catalogText(i18n, "common.general.notAvailable", { value0: c.code, value1: c.name }) }))}
                             onChange={(val) => setSearchTerm(val?.toString() || "")}
                             onSearch={(term) => setSearchTerm(term)}
                             className="header-search-bar"
@@ -544,7 +544,7 @@ export default function CostCentersPage() {
                         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
                             <SegmentedToggle
                                 options={[
-                                    { value: "all", label: i18n.catalog["text_65f276da33cf"] },
+                                    { value: "all", label: i18n.catalog["common.general.all"] },
                                     ...TYPE_OPTIONS,
                                 ]}
                                 value={filterType}
@@ -552,7 +552,7 @@ export default function CostCentersPage() {
                             />
                             {canAccess(permissions, "chart_of_accounts", "create") && (
                                 <Button variant="primary" onClick={openAddDialog} icon="plus">
-                                    {i18n.catalog["text_aaebfd5d71ff"]}</Button>
+                                    {i18n.catalog["finance.costCenters.newCostCenter"]}</Button>
                             )}
                         </div>
                     }
@@ -562,7 +562,7 @@ export default function CostCentersPage() {
                     columns={columns}
                     data={centers}
                     keyExtractor={(item) => item.id}
-                    emptyMessage={i18n.catalog["text_086cdac2ed73"]}
+                    emptyMessage={i18n.catalog["finance.costCenters.noCostCentersRegistered"]}
                     isLoading={isLoading}
                     pagination={{
                         currentPage,
@@ -576,27 +576,27 @@ export default function CostCentersPage() {
             <Dialog
                 isOpen={formDialog}
                 onClose={() => setFormDialog(false)}
-                title={editId ? i18n.catalog["text_20444d689568"] : i18n.catalog["text_d8524df86005"]}
+                title={editId ? i18n.catalog["finance.costCenters.editCostCenter"] : i18n.catalog["finance.costCenters.addNewCostCenter"]}
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setFormDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
-                        <Button variant="primary" onClick={saveCenter}>{i18n.catalog["text_ddfcaf9d0144"]}</Button>
+                        <Button variant="secondary" onClick={() => setFormDialog(false)}>{i18n.catalog["common.general.cancel"]}</Button>
+                        <Button variant="primary" onClick={saveCenter}>{i18n.catalog["common.general.save"]}</Button>
                     </>
                 }
             >
                 <form onSubmit={(e) => { e.preventDefault(); saveCenter(); }}>
                     <div className="form-row">
                         <TextInput
-                            label={i18n.catalog["text_d7e401b615ba"]}
+                            label={i18n.catalog["common.general.code.alternative3"]}
                             id="cc-code"
                             value={formCode}
                             onChange={(e) => setFormCode(e.target.value)}
                             required
                             className="flex-1"
-                            placeholder={i18n.catalog["text_67c569ef57b3"]}
+                            placeholder={i18n.catalog["finance.costCenters.cc001"]}
                         />
                         <Select
-                            label={i18n.catalog["text_caa3f2bb4a36"]}
+                            label={i18n.catalog["common.general.type.alternative3"]}
                             id="cc-type"
                             value={formType}
                             onChange={(e) => setFormType(e.target.value)}
@@ -607,7 +607,7 @@ export default function CostCentersPage() {
 
                     <div className="form-row">
                         <TextInput
-                            label={i18n.catalog["text_b90b881d800d"]}
+                            label={i18n.catalog["common.general.nameArabic"]}
                             id="cc-name"
                             value={formName}
                             onChange={(e) => setFormName(e.target.value)}
@@ -615,7 +615,7 @@ export default function CostCentersPage() {
                             className="flex-1"
                         />
                         <TextInput
-                            label={i18n.catalog["text_07450d9ff8ed"]}
+                            label={i18n.catalog["common.general.nameEnglish"]}
                             id="cc-name-en"
                             value={formNameEn}
                             onChange={(e) => setFormNameEn(e.target.value)}
@@ -625,45 +625,45 @@ export default function CostCentersPage() {
 
                     <div className="form-row">
                         <Select
-                            label={i18n.catalog["text_737f847aa339"]}
+                            label={i18n.catalog["common.general.parentCenter"]}
                             id="cc-parent"
                             value={formParentId}
                             onChange={(e) => setFormParentId(e.target.value)}
                             className="flex-1"
                             options={[
-                                { value: "", label: i18n.catalog["text_16f6e8e85cf0"] },
+                                { value: "", label: i18n.catalog["common.general.noneHeadOffice"] },
                                 ...centers
                                     .filter((c) => c.id !== editId)
-                                    .map((c) => ({ value: String(c.id), label: catalogText(i18n, "text_2a9059a3c52f", { value0: c.code, value1: c.name }) })),
+                                    .map((c) => ({ value: String(c.id), label: catalogText(i18n, "common.general.notAvailable", { value0: c.code, value1: c.name }) })),
                             ]}
                         />
                         <Select
-                            label={i18n.catalog["text_3023f2fa97fb"]}
+                            label={i18n.catalog["finance.costCenters.linkedAccount"]}
                             id="cc-account"
                             value={formAccountId}
                             onChange={(e) => setFormAccountId(e.target.value)}
                             className="flex-1"
                             options={[
-                                { value: "", label: i18n.catalog["text_10d55a2623de"] },
-                                ...accounts.map((a) => ({ value: String(a.id), label: catalogText(i18n, "text_2a9059a3c52f", { value0: a.account_code, value1: a.account_name }) })),
+                                { value: "", label: i18n.catalog["common.general.unlinked"] },
+                                ...accounts.map((a) => ({ value: String(a.id), label: catalogText(i18n, "common.general.notAvailable", { value0: a.account_code, value1: a.account_name }) })),
                             ]}
                         />
                     </div>
 
                     <div className="form-row">
                         <Select
-                            label={i18n.catalog["text_98ea1b1cf854"]}
+                            label={i18n.catalog["common.general.responsibleManager"]}
                             id="cc-manager"
                             value={formManagerId}
                             onChange={(e) => setFormManagerId(e.target.value)}
                             className="flex-1"
                             options={[
-                                { value: "", label: i18n.catalog["text_d61e2f352ee3"] },
+                                { value: "", label: i18n.catalog["common.general.unassigned"] },
                                 ...employees.map((emp) => ({ value: String(emp.id), label: emp.name })),
                             ]}
                         />
                         <NumberInput
-                            label={i18n.catalog["text_94410bef3fe2"]}
+                            label={i18n.catalog["common.general.budget"]}
                             id="cc-budget"
                             value={formBudget}
                             onChange={(val) => setFormBudget(val)}
@@ -675,20 +675,20 @@ export default function CostCentersPage() {
 
                     <div className="form-row">
                         <Select
-                            label={i18n.catalog["text_c3a4749caed4"]}
+                            label={i18n.catalog["common.general.status.alternative2"]}
                             id="cc-status"
                             value={formIsActive}
                             onChange={(e) => setFormIsActive(e.target.value)}
                             className="flex-1"
                             options={[
-                                { value: "true", label: i18n.catalog["text_629e90b3af3d"] },
-                                { value: "false", label: i18n.catalog["text_b719ac8add4e"] },
+                                { value: "true", label: i18n.catalog["common.general.active"] },
+                                { value: "false", label: i18n.catalog["common.general.inactive"] },
                             ]}
                         />
                     </div>
 
                     <Textarea
-                        label={i18n.catalog["text_95023fc76e1b"]}
+                        label={i18n.catalog["common.general.description.alternative2"]}
                         id="cc-description"
                         value={formDescription}
                         onChange={(e) => setFormDescription(e.target.value)}
@@ -702,9 +702,9 @@ export default function CostCentersPage() {
                 isOpen={confirmDialog}
                 onClose={() => setConfirmDialog(false)}
                 onConfirm={deleteCenter}
-                title={i18n.catalog["text_5f9cb54dc136"]}
-                message={i18n.catalog["text_7d13e29aa162"]}
-                confirmText={i18n.catalog["text_59ca629220a6"]}
+                title={i18n.catalog["common.general.confirmDeletion"]}
+                message={i18n.catalog["finance.costCenters.areYouSureYouWantDeleteThisCost"]}
+                confirmText={i18n.catalog["common.general.delete"]}
                 confirmVariant="danger"
             />
         </MainLayout>

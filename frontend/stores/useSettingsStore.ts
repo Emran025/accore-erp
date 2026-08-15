@@ -62,7 +62,7 @@ export const useSettingsStore = create<SettingsState>()(
                         set({ settings: settingsObj, isLoading: false });
                         return settingsObj;
                     } catch (e) {
-                        console.error(catalogMessage("text_e19f4348c1b5"), e);
+                        console.error(catalogMessage("state.usesettingsstore.failedInitializeSystemSettings"), e);
                         set({ settings: {}, isLoading: false });
                         return null;
                     } finally {

@@ -15,12 +15,12 @@ import type { Employee, TravelExpense, TravelRequest } from "@/types";
 import { useEffect, useState } from "react";
 
 const requestStatusLabels: Record<string, string> = {
-    draft: catalogMessage("text_552aec56f591"),
-    pending_approval: catalogMessage("text_aa37635e9733"),
-    approved: catalogMessage("text_a98d8a418ba0"),
-    rejected: catalogMessage("text_5d969a71dad3"),
-    cancelled: catalogMessage("text_616d302cb016"),
-    completed: catalogMessage("text_c2da5684d63b"),
+    draft: catalogMessage("common.general.draft"),
+    pending_approval: catalogMessage("common.general.pendingApproval.alternative2"),
+    approved: catalogMessage("common.general.approved"),
+    rejected: catalogMessage("common.general.rejected"),
+    cancelled: catalogMessage("common.general.canceled"),
+    completed: catalogMessage("common.general.completed"),
 };
 
 const requestStatusBadges: Record<string, string> = {
@@ -33,19 +33,19 @@ const requestStatusBadges: Record<string, string> = {
 };
 
 const expenseTypeLabels: Record<string, string> = {
-    flight: catalogMessage("text_bf0e3e5812fb"),
-    hotel: catalogMessage("text_5d43f0e61f9b"),
-    meal: catalogMessage("text_abef2dc5e0ce"),
-    transportation: catalogMessage("text_e582d12c00be"),
-    other: catalogMessage("text_17a9f38e22b6"),
+    flight: catalogMessage("humanCapital.travelexpenses.aviation"),
+    hotel: catalogMessage("humanCapital.travelexpenses.hotel"),
+    meal: catalogMessage("humanCapital.travelexpenses.meals"),
+    transportation: catalogMessage("humanCapital.travelexpenses.transportation"),
+    other: catalogMessage("common.general.other"),
 };
 
 const expenseStatusLabels: Record<string, string> = {
-    pending: catalogMessage("text_701d5d7a86f9"),
-    submitted: catalogMessage("text_311f340e77c5"),
-    approved: catalogMessage("text_a98d8a418ba0"),
-    rejected: catalogMessage("text_5d969a71dad3"),
-    reimbursed: catalogMessage("text_5a9c61c2cf8b"),
+    pending: catalogMessage("common.general.pending"),
+    submitted: catalogMessage("common.general.submitted.alternative2"),
+    approved: catalogMessage("common.general.approved"),
+    rejected: catalogMessage("common.general.rejected"),
+    reimbursed: catalogMessage("common.general.paid"),
 };
 
 const expenseStatusBadges: Record<string, string> = {
@@ -118,7 +118,7 @@ export function TravelExpenses() {
             setReqTotal(Number(res.total) || data.length);
         } catch (e) {
             console.error(e);
-            showToast(i18n.catalog["text_f83e503c5fb9"], "error");
+            showToast(i18n.catalog["humanCapital.travelexpenses.failedLoadTravelRequests"], "error");
         } finally { setReqLoading(false); }
     };
 
@@ -133,7 +133,7 @@ export function TravelExpenses() {
             setExpTotal(Number(res.total) || data.length);
         } catch (e) {
             console.error(e);
-            showToast(i18n.catalog["text_11cde7b363c8"], "error");
+            showToast(i18n.catalog["humanCapital.travelexpenses.failedLoadExpenses"], "error");
         } finally { setExpLoading(false); }
     };
 
@@ -149,7 +149,7 @@ export function TravelExpenses() {
 
     const handleSaveRequest = async () => {
         if (!reqForm.employee_id || !reqForm.destination || !reqForm.purpose || !reqForm.return_date) {
-            showToast(i18n.catalog["text_0a8eb85d0081"], "error");
+            showToast(i18n.catalog["common.general.pleaseFillAllRequiredFields"], "error");
             return;
         }
         try {
@@ -165,11 +165,11 @@ export function TravelExpenses() {
                     notes: reqForm.notes || undefined,
                 }),
             });
-            showToast(i18n.catalog["text_da1a83e16d72"], "success");
+            showToast(i18n.catalog["humanCapital.travelexpenses.travelRequestCreatedSuccessfully"], "success");
             setShowReqDialog(false);
             loadRequests();
         } catch (e: any) {
-            showToast(e.message || i18n.catalog["text_e55ab05748be"], "error");
+            showToast(e.message || i18n.catalog["humanCapital.travelexpenses.failedSaveTravelRequest"], "error");
         }
     };
 
@@ -179,10 +179,10 @@ export function TravelExpenses() {
                 method: "PUT",
                 body: JSON.stringify({ status }),
             });
-            showToast(i18n.catalog["text_eab16608fb6b"], "success");
+            showToast(i18n.catalog["humanCapital.travelexpenses.requestStatusUpdated"], "success");
             loadRequests();
         } catch (e: any) {
-            showToast(e.message || i18n.catalog["text_0b460415228d"], "error");
+            showToast(e.message || i18n.catalog["common.general.failedUpdateStatus"], "error");
         }
     };
 
@@ -198,7 +198,7 @@ export function TravelExpenses() {
 
     const handleSaveExpense = async () => {
         if (!expForm.employee_id || !expForm.amount) {
-            showToast(i18n.catalog["text_7a89e1495a76"], "error");
+            showToast(i18n.catalog["humanCapital.travelexpenses.pleaseSelectEmployeeEnterAmount"], "error");
             return;
         }
         try {
@@ -216,11 +216,11 @@ export function TravelExpenses() {
                     notes: expForm.notes || undefined,
                 }),
             });
-            showToast(i18n.catalog["text_a3823dc9fa63"], "success");
+            showToast(i18n.catalog["humanCapital.travelexpenses.expenseRecordedSuccessfully"], "success");
             setShowExpDialog(false);
             loadExpenses();
         } catch (e: any) {
-            showToast(e.message || i18n.catalog["text_3b330286c2e2"], "error");
+            showToast(e.message || i18n.catalog["humanCapital.travelexpenses.failedSaveExpense"], "error");
         }
     };
 
@@ -230,26 +230,26 @@ export function TravelExpenses() {
                 method: "PUT",
                 body: JSON.stringify({ status }),
             });
-            showToast(i18n.catalog["text_dcbac96e4595"], "success");
+            showToast(i18n.catalog["humanCapital.travelexpenses.expenseStatusUpdated"], "success");
             loadExpenses();
         } catch (e: any) {
-            showToast(e.message || i18n.catalog["text_0b460415228d"], "error");
+            showToast(e.message || i18n.catalog["common.general.failedUpdateStatus"], "error");
         }
     };
 
     // ── Columns ──
     const requestColumns: Column<TravelRequest>[] = [
-        { key: "request_number", header: i18n.catalog["text_9916d665a946"], dataLabel: i18n.catalog["text_9916d665a946"] },
-        { key: "employee", header: i18n.catalog["text_b71a39c832a6"], dataLabel: i18n.catalog["text_b71a39c832a6"], render: (item) => item.employee?.full_name || "-" },
-        { key: "destination", header: i18n.catalog["text_8b068efc0421"], dataLabel: i18n.catalog["text_8b068efc0421"] },
-        { key: "departure_date", header: i18n.catalog["text_ab81dc5d8fdf"], dataLabel: i18n.catalog["text_ab81dc5d8fdf"], render: (item) => formatDate(item.departure_date) },
-        { key: "return_date", header: i18n.catalog["text_0ab5dfc2f677"], dataLabel: i18n.catalog["text_0ab5dfc2f677"], render: (item) => formatDate(item.return_date) },
+        { key: "request_number", header: i18n.catalog["common.general.orderNumber"], dataLabel: i18n.catalog["common.general.orderNumber"] },
+        { key: "employee", header: i18n.catalog["common.general.employee.alternative3"], dataLabel: i18n.catalog["common.general.employee.alternative3"], render: (item) => item.employee?.full_name || "-" },
+        { key: "destination", header: i18n.catalog["common.general.destination"], dataLabel: i18n.catalog["common.general.destination"] },
+        { key: "departure_date", header: i18n.catalog["common.general.departure"], dataLabel: i18n.catalog["common.general.departure"], render: (item) => formatDate(item.departure_date) },
+        { key: "return_date", header: i18n.catalog["common.general.back"], dataLabel: i18n.catalog["common.general.back"], render: (item) => formatDate(item.return_date) },
         {
-            key: "estimated_cost", header: i18n.catalog["text_38bb69712c59"], dataLabel: i18n.catalog["text_38bb69712c59"],
+            key: "estimated_cost", header: i18n.catalog["common.general.estimatedCost"], dataLabel: i18n.catalog["common.general.estimatedCost"],
             render: (item) => item.estimated_cost ? formatCurrency(item.estimated_cost) : "-"
         },
         {
-            key: "status", header: i18n.catalog["text_c3a4749caed4"], dataLabel: i18n.catalog["text_c3a4749caed4"],
+            key: "status", header: i18n.catalog["common.general.status.alternative2"], dataLabel: i18n.catalog["common.general.status.alternative2"],
             render: (item) => (
                 <span className={`badge ${requestStatusBadges[item.status] || "badge-secondary"}`}>
                     {requestStatusLabels[item.status] || item.status}
@@ -257,33 +257,33 @@ export function TravelExpenses() {
             ),
         },
         {
-            key: "id", header: i18n.catalog["text_7797240d6caf"], dataLabel: i18n.catalog["text_7797240d6caf"],
+            key: "id", header: i18n.catalog["common.general.actions"], dataLabel: i18n.catalog["common.general.actions"],
             render: (item) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "eye",
-                            title: i18n.catalog["text_4b615d0e6dd2"],
+                            title: i18n.catalog["common.general.viewDetails"],
                             variant: "view",
                             onClick: () => { setSelectedRequest(item); setShowReqDetails(true); }
                         },
                         ...(canAccess("travel", "edit") ? [{
                             icon: "send" as const,
-                            title: i18n.catalog["text_f94d2b528730"],
+                            title: i18n.catalog["common.general.submitApproval"],
                             variant: "edit" as const,
                             onClick: () => handleUpdateRequestStatus(item.id, "pending_approval"),
                             hidden: item.status !== "draft"
                         }] : []),
                         ...(canAccess("travel", "edit") ? [{
                             icon: "check" as const,
-                            title: i18n.catalog["text_f4e17def8c1b"],
+                            title: i18n.catalog["common.general.approval"],
                             variant: "success" as const,
                             onClick: () => handleUpdateRequestStatus(item.id, "approved"),
                             hidden: item.status !== "pending_approval"
                         }] : []),
                         ...(canAccess("travel", "edit") ? [{
                             icon: "x" as const,
-                            title: i18n.catalog["text_eb3b1bcc04e5"],
+                            title: i18n.catalog["common.general.rejected.alternative2"],
                             variant: "delete" as const,
                             onClick: () => handleUpdateRequestStatus(item.id, "rejected"),
                             hidden: item.status !== "pending_approval"
@@ -295,22 +295,22 @@ export function TravelExpenses() {
     ];
 
     const expenseColumns: Column<TravelExpense>[] = [
-        { key: "employee", header: i18n.catalog["text_b71a39c832a6"], dataLabel: i18n.catalog["text_b71a39c832a6"], render: (item) => item.employee?.full_name || "-" },
+        { key: "employee", header: i18n.catalog["common.general.employee.alternative3"], dataLabel: i18n.catalog["common.general.employee.alternative3"], render: (item) => item.employee?.full_name || "-" },
         {
-            key: "expense_type", header: i18n.catalog["text_1e69c4dc7b8f"], dataLabel: i18n.catalog["text_1e69c4dc7b8f"],
+            key: "expense_type", header: i18n.catalog["common.general.expenseType"], dataLabel: i18n.catalog["common.general.expenseType"],
             render: (item) => expenseTypeLabels[item.expense_type] || item.expense_type
         },
-        { key: "expense_date", header: i18n.catalog["text_d90c384199ac"], dataLabel: i18n.catalog["text_d90c384199ac"], render: (item) => formatDate(item.expense_date) },
+        { key: "expense_date", header: i18n.catalog["common.general.date.alternative7"], dataLabel: i18n.catalog["common.general.date.alternative7"], render: (item) => formatDate(item.expense_date) },
         {
-            key: "amount", header: i18n.catalog["text_1cd480f91b24"], dataLabel: i18n.catalog["text_1cd480f91b24"],
-            render: (item) => catalogText(i18n, "text_54ef3bb1085e", { value0: formatCurrency(item.amount), value1: item.currency })
+            key: "amount", header: i18n.catalog["common.general.amount"], dataLabel: i18n.catalog["common.general.amount"],
+            render: (item) => catalogText(i18n, "common.general.notAvailable.alternative3", { value0: formatCurrency(item.amount), value1: item.currency })
         },
         {
-            key: "travel_request", header: i18n.catalog["text_d5de9d7ae783"], dataLabel: i18n.catalog["text_d5de9d7ae783"],
+            key: "travel_request", header: i18n.catalog["common.general.travelRequest"], dataLabel: i18n.catalog["common.general.travelRequest"],
             render: (item) => item.travel_request?.request_number || "-"
         },
         {
-            key: "status", header: i18n.catalog["text_c3a4749caed4"], dataLabel: i18n.catalog["text_c3a4749caed4"],
+            key: "status", header: i18n.catalog["common.general.status.alternative2"], dataLabel: i18n.catalog["common.general.status.alternative2"],
             render: (item) => (
                 <span className={`badge ${expenseStatusBadges[item.status] || "badge-secondary"}`}>
                     {expenseStatusLabels[item.status] || item.status}
@@ -318,34 +318,34 @@ export function TravelExpenses() {
             ),
         },
         {
-            key: "id", header: i18n.catalog["text_7797240d6caf"], dataLabel: i18n.catalog["text_7797240d6caf"],
+            key: "id", header: i18n.catalog["common.general.actions"], dataLabel: i18n.catalog["common.general.actions"],
             render: (item) => (
                 <ActionButtons
                     actions={[
                         ...(canAccess("travel", "edit") ? [{
                             icon: "send" as const,
-                            title: i18n.catalog["text_fa027836f5a7"],
+                            title: i18n.catalog["humanCapital.travelexpenses.submit"],
                             variant: "edit" as const,
                             onClick: () => handleUpdateExpenseStatus(item.id, "submitted"),
                             hidden: item.status !== "pending"
                         }] : []),
                         ...(canAccess("travel", "edit") ? [{
                             icon: "check" as const,
-                            title: i18n.catalog["text_f4e17def8c1b"],
+                            title: i18n.catalog["common.general.approval"],
                             variant: "success" as const,
                             onClick: () => handleUpdateExpenseStatus(item.id, "approved"),
                             hidden: item.status !== "submitted"
                         }] : []),
                         ...(canAccess("travel", "edit") ? [{
                             icon: "x" as const,
-                            title: i18n.catalog["text_eb3b1bcc04e5"],
+                            title: i18n.catalog["common.general.rejected.alternative2"],
                             variant: "delete" as const,
                             onClick: () => handleUpdateExpenseStatus(item.id, "rejected"),
                             hidden: item.status !== "submitted"
                         }] : []),
                         ...(canAccess("travel", "edit") ? [{
                             icon: "banknote" as const,
-                            title: i18n.catalog["text_5db54ed5c748"],
+                            title: i18n.catalog["humanCapital.travelexpenses.payment"],
                             variant: "view" as const,
                             onClick: () => handleUpdateExpenseStatus(item.id, "reimbursed"),
                             hidden: item.status !== "approved"
@@ -357,15 +357,15 @@ export function TravelExpenses() {
     ];
 
     const tabs = [
-        { key: "requests", label: i18n.catalog["text_9e5aa2f670c5"], icon: "plane" },
-        { key: "expenses", label: i18n.catalog["text_4d514b65a483"], icon: "receipt" },
+        { key: "requests", label: i18n.catalog["humanCapital.travelexpenses.travelRequests"], icon: "plane" },
+        { key: "expenses", label: i18n.catalog["common.general.expenses"], icon: "receipt" },
     ];
 
     return (
         <div className="sales-card animate-fade">
             <div className="card-header-flex" style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.5rem", alignItems: "center" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <h3 style={{ margin: 0 }}>{getIcon("plane")} {i18n.catalog["text_28a68602812c"]}</h3>
+                    <h3 style={{ margin: 0 }}>{getIcon("plane")} {i18n.catalog["common.general.travelExpenses"]}</h3>
                 </div>
             </div>
 
@@ -376,10 +376,10 @@ export function TravelExpenses() {
                     {/* Stats */}
                     <div className="sales-card compact" style={{ marginBottom: "1.5rem", marginTop: "1rem", background: "linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%)", border: "1px solid #bfdbfe" }}>
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "1rem" }}>
-                            <div className="stat-card"><div className="stat-label">{i18n.catalog["text_7ddc56117f2b"]}</div><div className="stat-value">{reqTotal}</div></div>
-                            <div className="stat-card"><div className="stat-label">{i18n.catalog["text_552aec56f591"]}</div><div className="stat-value text-secondary">{requests.filter(r => r.status === "draft").length}</div></div>
-                            <div className="stat-card"><div className="stat-label">{i18n.catalog["text_aa37635e9733"]}</div><div className="stat-value text-warning">{requests.filter(r => r.status === "pending_approval").length}</div></div>
-                            <div className="stat-card"><div className="stat-label">{i18n.catalog["text_c1e04da3c533"]}</div><div className="stat-value text-success">{requests.filter(r => r.status === "approved").length}</div></div>
+                            <div className="stat-card"><div className="stat-label">{i18n.catalog["humanCapital.travelexpenses.totalOrders"]}</div><div className="stat-value">{reqTotal}</div></div>
+                            <div className="stat-card"><div className="stat-label">{i18n.catalog["common.general.draft"]}</div><div className="stat-value text-secondary">{requests.filter(r => r.status === "draft").length}</div></div>
+                            <div className="stat-card"><div className="stat-label">{i18n.catalog["common.general.pendingApproval.alternative2"]}</div><div className="stat-value text-warning">{requests.filter(r => r.status === "pending_approval").length}</div></div>
+                            <div className="stat-card"><div className="stat-label">{i18n.catalog["humanCapital.travelexpenses.approved"]}</div><div className="stat-value text-success">{requests.filter(r => r.status === "approved").length}</div></div>
                         </div>
                     </div>
 
@@ -388,7 +388,7 @@ export function TravelExpenses() {
                             value={reqStatusFilter}
                             onChange={(e) => { setReqStatusFilter(e.target.value); setReqPage(1); }}
                             style={{ minWidth: "160px" }}
-                            placeholder={i18n.catalog["text_1ef213109d57"]}
+                            placeholder={i18n.catalog["common.general.allStatuses"]}
                             options={Object.entries(requestStatusLabels).map(([value, label]) => ({ value, label }))}
                         />
                         {canAccess("travel", "create") && (
@@ -397,11 +397,11 @@ export function TravelExpenses() {
                                 variant="primary"
                                 icon="plus"
                             >
-                                {i18n.catalog["text_4e7342fcc07c"]}</Button>
+                                {i18n.catalog["common.general.newTravelRequest"]}</Button>
                         )}
                     </div>
 
-                    <Table columns={requestColumns} data={requests} keyExtractor={(item) => item.id.toString()} emptyMessage={i18n.catalog["text_eed153fb21a7"]} isLoading={reqLoading}
+                    <Table columns={requestColumns} data={requests} keyExtractor={(item) => item.id.toString()} emptyMessage={i18n.catalog["humanCapital.travelexpenses.noTravelRequestsRecorded"]} isLoading={reqLoading}
                         pagination={{ currentPage: reqPage, totalPages: reqTotalPages, onPageChange: setReqPage }} />
                 </>
             )}
@@ -410,9 +410,9 @@ export function TravelExpenses() {
                 <>
                     <div className="sales-card compact" style={{ marginBottom: "1.5rem", marginTop: "1rem", background: "linear-gradient(135deg, #fef9c3 0%, #fefce8 100%)", border: "1px solid #fde68a" }}>
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "1rem" }}>
-                            <div className="stat-card"><div className="stat-label">{i18n.catalog["text_03a4c3145ccb"]}</div><div className="stat-value">{expTotal}</div></div>
-                            <div className="stat-card"><div className="stat-label">{i18n.catalog["text_debc42b60ecd"]}</div><div className="stat-value text-warning">{expenses.filter(e => e.status === "pending" || e.status === "submitted").length}</div></div>
-                            <div className="stat-card"><div className="stat-label">{i18n.catalog["text_5a9c61c2cf8b"]}</div><div className="stat-value text-success">{expenses.filter(e => e.status === "reimbursed").length}</div></div>
+                            <div className="stat-card"><div className="stat-label">{i18n.catalog["common.general.totalExpenses"]}</div><div className="stat-value">{expTotal}</div></div>
+                            <div className="stat-card"><div className="stat-label">{i18n.catalog["common.general.pending.alternative3"]}</div><div className="stat-value text-warning">{expenses.filter(e => e.status === "pending" || e.status === "submitted").length}</div></div>
+                            <div className="stat-card"><div className="stat-label">{i18n.catalog["common.general.paid"]}</div><div className="stat-value text-success">{expenses.filter(e => e.status === "reimbursed").length}</div></div>
                         </div>
                     </div>
 
@@ -421,95 +421,95 @@ export function TravelExpenses() {
                             value={expStatusFilter}
                             onChange={(e) => { setExpStatusFilter(e.target.value); setExpPage(1); }}
                             style={{ minWidth: "160px" }}
-                            placeholder={i18n.catalog["text_1ef213109d57"]}
+                            placeholder={i18n.catalog["common.general.allStatuses"]}
                             options={Object.entries(expenseStatusLabels).map(([value, label]) => ({ value, label }))}
                         />
-                        {canAccess("travel", "create") && <Button onClick={openNewExpense} className="btn-primary"><i className="fas fa-plus"></i> {i18n.catalog["text_30ae2661ca7d"]}</Button>}
+                        {canAccess("travel", "create") && <Button onClick={openNewExpense} className="btn-primary"><i className="fas fa-plus"></i> {i18n.catalog["humanCapital.travelexpenses.recordExpense"]}</Button>}
                     </div>
 
-                    <Table columns={expenseColumns} data={expenses} keyExtractor={(item) => item.id.toString()} emptyMessage={i18n.catalog["text_5d8b84f4b0b4"]} isLoading={expLoading}
+                    <Table columns={expenseColumns} data={expenses} keyExtractor={(item) => item.id.toString()} emptyMessage={i18n.catalog["humanCapital.travelexpenses.noExpensesRecorded"]} isLoading={expLoading}
                         pagination={{ currentPage: expPage, totalPages: expTotalPages, onPageChange: setExpPage }} />
                 </>
             )}
 
             {/* New Travel Request Dialog */}
-            <Dialog isOpen={showReqDialog} onClose={() => setShowReqDialog(false)} title={i18n.catalog["text_4e7342fcc07c"]} maxWidth="700px">
+            <Dialog isOpen={showReqDialog} onClose={() => setShowReqDialog(false)} title={i18n.catalog["common.general.newTravelRequest"]} maxWidth="700px">
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_972803dc7d86"]}</Label>
+                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["common.general.employee"]}</Label>
                             <SearchableSelect options={employees.map((emp: Employee) => ({ value: emp.id.toString(), label: emp.full_name }))}
-                                value={reqForm.employee_id} onChange={(val) => setReqForm(prev => ({ ...prev, employee_id: val?.toString() || "" }))} placeholder={i18n.catalog["text_dee783929dea"]} />
+                                value={reqForm.employee_id} onChange={(val) => setReqForm(prev => ({ ...prev, employee_id: val?.toString() || "" }))} placeholder={i18n.catalog["common.general.selectEmployee"]} />
                         </div>
                         <div>
-                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_d80c4b0690aa"]}</Label>
-                            <TextInput value={reqForm.destination} onChange={(e) => setReqForm({ ...reqForm, destination: e.target.value })} placeholder={i18n.catalog["text_edde1e4919d2"]} />
+                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["humanCapital.travelexpenses.destination.alternative2"]}</Label>
+                            <TextInput value={reqForm.destination} onChange={(e) => setReqForm({ ...reqForm, destination: e.target.value })} placeholder={i18n.catalog["humanCapital.travelexpenses.exampleRiyadhJeddah"]} />
                         </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_ae375720b446"]}</Label>
+                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["humanCapital.travelexpenses.departureDate"]}</Label>
                             <TextInput type="date" value={reqForm.departure_date} onChange={(e) => setReqForm({ ...reqForm, departure_date: e.target.value })} />
                         </div>
                         <div>
-                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_2f140e516c34"]}</Label>
+                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["humanCapital.travelexpenses.returnDate"]}</Label>
                             <TextInput type="date" value={reqForm.return_date} onChange={(e) => setReqForm({ ...reqForm, return_date: e.target.value })} />
                         </div>
                         <div>
-                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_38bb69712c59"]}</Label>
-                            <TextInput type="number" value={reqForm.estimated_cost} onChange={(e) => setReqForm({ ...reqForm, estimated_cost: e.target.value })} placeholder={i18n.catalog["text_561b2814d3c0"]} />
+                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["common.general.estimatedCost"]}</Label>
+                            <TextInput type="number" value={reqForm.estimated_cost} onChange={(e) => setReqForm({ ...reqForm, estimated_cost: e.target.value })} placeholder={i18n.catalog["common.general.message000"]} />
                         </div>
                     </div>
                     <div>
-                        <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_1cbacd5fa7d9"]}</Label>
+                        <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["humanCapital.travelexpenses.purposeTravel"]}</Label>
                         <Textarea value={reqForm.purpose} onChange={(e) => setReqForm({ ...reqForm, purpose: e.target.value })} rows={3} />
                     </div>
                     <div>
-                        <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_d446d2dc6b81"]}</Label>
+                        <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["common.general.notes.alternative2"]}</Label>
                         <Textarea value={reqForm.notes} onChange={(e) => setReqForm({ ...reqForm, notes: e.target.value })} rows={2} />
                     </div>
                     <div className="flex justify-end gap-2" style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}>
-                        <Button variant="secondary" onClick={() => setShowReqDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
-                        <Button variant="primary" onClick={handleSaveRequest} icon="save">{i18n.catalog["text_ddfcaf9d0144"]}</Button>
+                        <Button variant="secondary" onClick={() => setShowReqDialog(false)}>{i18n.catalog["common.general.cancel"]}</Button>
+                        <Button variant="primary" onClick={handleSaveRequest} icon="save">{i18n.catalog["common.general.save"]}</Button>
                     </div>
                 </div>
             </Dialog>
 
             {/* Request Details Dialog */}
-            <Dialog isOpen={showReqDetails} onClose={() => setShowReqDetails(false)} title={i18n.catalog["text_9eb35841ca38"]} maxWidth="700px">
+            <Dialog isOpen={showReqDetails} onClose={() => setShowReqDetails(false)} title={i18n.catalog["humanCapital.travelexpenses.travelRequestDetails"]} maxWidth="700px">
                 {selectedRequest && (
                     <div className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><strong>{i18n.catalog["text_e818dcdaed37"]}</strong> {selectedRequest.request_number}</div>
-                            <div><strong>{i18n.catalog["text_b6293eeef8b9"]}</strong> {selectedRequest.employee?.full_name || "-"}</div>
-                            <div><strong>{i18n.catalog["text_7fdc7c576673"]}</strong> {selectedRequest.destination}</div>
-                            <div><strong>{i18n.catalog["text_02e196bdec60"]}</strong>{" "}
+                            <div><strong>{i18n.catalog["common.general.orderNumber.alternative2"]}</strong> {selectedRequest.request_number}</div>
+                            <div><strong>{i18n.catalog["common.general.employee.alternative2"]}</strong> {selectedRequest.employee?.full_name || "-"}</div>
+                            <div><strong>{i18n.catalog["humanCapital.travelexpenses.destination"]}</strong> {selectedRequest.destination}</div>
+                            <div><strong>{i18n.catalog["common.general.status"]}</strong>{" "}
                                 <span className={`badge ${requestStatusBadges[selectedRequest.status] || "badge-secondary"}`}>
                                     {requestStatusLabels[selectedRequest.status] || selectedRequest.status}
                                 </span>
                             </div>
-                            <div><strong>{i18n.catalog["text_f11227d2bb98"]}</strong> {formatDate(selectedRequest.departure_date)}</div>
-                            <div><strong>{i18n.catalog["text_85b2d5580fc0"]}</strong> {formatDate(selectedRequest.return_date)}</div>
-                            {selectedRequest.estimated_cost && <div><strong>{i18n.catalog["text_b23cff3c3dda"]}</strong> {formatCurrency(selectedRequest.estimated_cost)}</div>}
+                            <div><strong>{i18n.catalog["humanCapital.travelexpenses.departure"]}</strong> {formatDate(selectedRequest.departure_date)}</div>
+                            <div><strong>{i18n.catalog["humanCapital.travelexpenses.return"]}</strong> {formatDate(selectedRequest.return_date)}</div>
+                            {selectedRequest.estimated_cost && <div><strong>{i18n.catalog["humanCapital.travelexpenses.estimatedCost"]}</strong> {formatCurrency(selectedRequest.estimated_cost)}</div>}
                         </div>
-                        <div><strong>{i18n.catalog["text_9db12fd1b50f"]}</strong><p style={{ marginTop: "0.5rem" }}>{selectedRequest.purpose}</p></div>
-                        {selectedRequest.notes && <div><strong>{i18n.catalog["text_8c9d1b5aec34"]}</strong><p style={{ marginTop: "0.5rem" }}>{selectedRequest.notes}</p></div>}
-                        {selectedRequest.rejection_reason && <div><strong>{i18n.catalog["text_4a2b9a7126e4"]}</strong><p style={{ marginTop: "0.5rem", color: "var(--danger-color)" }}>{selectedRequest.rejection_reason}</p></div>}
+                        <div><strong>{i18n.catalog["humanCapital.travelexpenses.purpose"]}</strong><p style={{ marginTop: "0.5rem" }}>{selectedRequest.purpose}</p></div>
+                        {selectedRequest.notes && <div><strong>{i18n.catalog["common.general.notes"]}</strong><p style={{ marginTop: "0.5rem" }}>{selectedRequest.notes}</p></div>}
+                        {selectedRequest.rejection_reason && <div><strong>{i18n.catalog["humanCapital.travelexpenses.reasonRejection"]}</strong><p style={{ marginTop: "0.5rem", color: "var(--danger-color)" }}>{selectedRequest.rejection_reason}</p></div>}
                     </div>
                 )}
             </Dialog>
 
             {/* New Expense Dialog */}
-            <Dialog isOpen={showExpDialog} onClose={() => setShowExpDialog(false)} title={i18n.catalog["text_bc2c2c0e44f7"]} maxWidth="700px">
+            <Dialog isOpen={showExpDialog} onClose={() => setShowExpDialog(false)} title={i18n.catalog["humanCapital.travelexpenses.registerNewExpense"]} maxWidth="700px">
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_972803dc7d86"]}</Label>
+                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["common.general.employee"]}</Label>
                             <SearchableSelect options={employees.map((emp: Employee) => ({ value: emp.id.toString(), label: emp.full_name }))}
-                                value={expForm.employee_id} onChange={(val) => setExpForm(prev => ({ ...prev, employee_id: val?.toString() || "" }))} placeholder={i18n.catalog["text_dee783929dea"]} />
+                                value={expForm.employee_id} onChange={(val) => setExpForm(prev => ({ ...prev, employee_id: val?.toString() || "" }))} placeholder={i18n.catalog["common.general.selectEmployee"]} />
                         </div>
                         <div>
-                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_1e69c4dc7b8f"]}</Label>
+                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["common.general.expenseType"]}</Label>
                             <Select
                                 value={expForm.expense_type}
                                 onChange={(e) => setExpForm({ ...expForm, expense_type: e.target.value })}
@@ -519,25 +519,25 @@ export function TravelExpenses() {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_3cfbd3350215"]}</Label>
-                            <TextInput type="number" value={expForm.amount} onChange={(e) => setExpForm({ ...expForm, amount: e.target.value })} placeholder={i18n.catalog["text_561b2814d3c0"]} />
+                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["common.general.amount.alternative3"]}</Label>
+                            <TextInput type="number" value={expForm.amount} onChange={(e) => setExpForm({ ...expForm, amount: e.target.value })} placeholder={i18n.catalog["common.general.message000"]} />
                         </div>
                         <div>
-                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_30ce3a1dae2c"]}</Label>
-                            <TextInput value={expForm.currency} onChange={(e) => setExpForm({ ...expForm, currency: e.target.value })} placeholder={i18n.catalog["text_c00b2014ab00"]} />
+                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["common.general.currency"]}</Label>
+                            <TextInput value={expForm.currency} onChange={(e) => setExpForm({ ...expForm, currency: e.target.value })} placeholder={i18n.catalog["humanCapital.travelexpenses.sar"]} />
                         </div>
                         <div>
-                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_588804a2f564"]}</Label>
+                            <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["humanCapital.travelexpenses.expenseDate"]}</Label>
                             <TextInput type="date" value={expForm.expense_date} onChange={(e) => setExpForm({ ...expForm, expense_date: e.target.value })} />
                         </div>
                     </div>
                     <div>
-                        <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["text_95023fc76e1b"]}</Label>
+                        <Label className="block mb-1" style={{ color: "var(--text-secondary)" }}>{i18n.catalog["common.general.description.alternative2"]}</Label>
                         <Textarea value={expForm.description} onChange={(e) => setExpForm({ ...expForm, description: e.target.value })} rows={2} />
                     </div>
                     <div className="flex justify-end gap-2" style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}>
-                        <Button variant="secondary" onClick={() => setShowExpDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
-                        <Button variant="primary" onClick={handleSaveExpense} icon="save">{i18n.catalog["text_ddfcaf9d0144"]}</Button>
+                        <Button variant="secondary" onClick={() => setShowExpDialog(false)}>{i18n.catalog["common.general.cancel"]}</Button>
+                        <Button variant="primary" onClick={handleSaveExpense} icon="save">{i18n.catalog["common.general.save"]}</Button>
                     </div>
                 </div>
             </Dialog>

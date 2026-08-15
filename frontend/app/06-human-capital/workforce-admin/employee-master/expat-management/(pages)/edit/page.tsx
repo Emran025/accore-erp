@@ -28,10 +28,10 @@ function EditExpatPageContent() {
     const loadRecord = async () => {
         setIsLoading(true);
         try {
-            const res: any = await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.HUMAN_CAPITAL.EXPAT_MANAGEMENT.BASE, value1: id }));
+            const res: any = await fetchAPI(catalogText(i18n, "common.general.message", { value0: API_ENDPOINTS.HUMAN_CAPITAL.EXPAT_MANAGEMENT.BASE, value1: id }));
             setRecord(res.data || res);
         } catch (error) {
-            showToast(i18n.catalog["text_f8ab81e6fb34"], "error");
+            showToast(i18n.catalog["common.general.failedLoadRecord.alternative2"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -40,7 +40,7 @@ function EditExpatPageContent() {
     return (
         <MainLayout >
             {isLoading ? (
-                <div className="text-center p-8">{i18n.catalog["text_ceac78d7f5d3"]}</div>
+                <div className="text-center p-8">{i18n.catalog["common.general.loading"]}</div>
             ) : (
                 record && <ExpatForm record={record} />
             )}
@@ -52,7 +52,7 @@ function EditExpatPageContent() {
 export default function EditExpatPage() {
     const { t: i18n } = useI18n();
     return (
-        <Suspense fallback={<div className="p-8 text-center">{i18n.catalog["text_ceac78d7f5d3"]}</div>}>
+        <Suspense fallback={<div className="p-8 text-center">{i18n.catalog["common.general.loading"]}</div>}>
             <EditExpatPageContent />
         </Suspense>
     );

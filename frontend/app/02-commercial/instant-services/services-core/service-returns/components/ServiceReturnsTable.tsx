@@ -33,9 +33,9 @@ export function ServiceReturnsTable({
     const [activeTab, setActiveTab] = useState("all");
 
     const tabs = [
-        { key: "all", label: catalogMessage("text_dd1712a2b1bc"), icon: "list" },
-        { key: "cash", label: catalogMessage("text_eb286e2d1542"), icon: "dollar" },
-        { key: "credit", label: catalogMessage("text_447d3445b7f1"), icon: "file-text" },
+        { key: "all", label: catalogMessage("common.general.allReturns"), icon: "list" },
+        { key: "cash", label: catalogMessage("common.general.cashRefunds"), icon: "dollar" },
+        { key: "credit", label: catalogMessage("common.general.deferredReturns"), icon: "file-text" },
     ];
 
     const filteredTransactions = transactions.filter((t) => {
@@ -45,8 +45,8 @@ export function ServiceReturnsTable({
 
     const getPaymentTypeName = (paymentType: string) => {
         const types: Record<string, string> = {
-            cash: catalogMessage("text_1beb05a45173"),
-            credit: catalogMessage("text_70122ff036ec"),
+            cash: catalogMessage("common.general.cash"),
+            credit: catalogMessage("common.general.creditReceivables"),
         };
         return types[paymentType] || paymentType;
     };
@@ -62,8 +62,8 @@ export function ServiceReturnsTable({
         },
         {
             key: "transaction_date",
-            header: catalogMessage("text_d90c384199ac"),
-            dataLabel: catalogMessage("text_d90c384199ac"),
+            header: catalogMessage("common.general.date.alternative7"),
+            dataLabel: catalogMessage("common.general.date.alternative7"),
             render: (item) => (
                 <span style={{ fontSize: "0.9em" }}>
                     {formatDateTime(item.transaction_date)}
@@ -72,8 +72,8 @@ export function ServiceReturnsTable({
         },
         {
             key: "customer_name" as any,
-            header: catalogMessage("text_a042411e90be"),
-            dataLabel: catalogMessage("text_a042411e90be"),
+            header: catalogMessage("common.general.customer"),
+            dataLabel: catalogMessage("common.general.customer"),
             render: (item) => (
                 <span style={{ fontWeight: 500 }}>
                     {(item as any).customer_name || "—"}
@@ -82,8 +82,8 @@ export function ServiceReturnsTable({
         },
         {
             key: "payment_type" as any,
-            header: catalogMessage("text_1670fc15da04"),
-            dataLabel: catalogMessage("text_1670fc15da04"),
+            header: catalogMessage("common.general.invoiceType"),
+            dataLabel: catalogMessage("common.general.invoiceType"),
             render: (item) => (
                 <span
                     className={`badge ${(item as any).payment_type === "credit" ? "badge-warning" : "badge-success"
@@ -95,14 +95,14 @@ export function ServiceReturnsTable({
         },
         {
             key: "description",
-            header: catalogMessage("text_32d887d68e89"),
-            dataLabel: catalogMessage("text_32d887d68e89"),
+            header: catalogMessage("common.general.descriptionReason"),
+            dataLabel: catalogMessage("common.general.descriptionReason"),
             render: (item) => <div>{item.description || "—"}</div>,
         },
         {
             key: "related_invoice_number" as any,
-            header: catalogMessage("text_3a682728f828"),
-            dataLabel: catalogMessage("text_b6e71278be04"),
+            header: catalogMessage("common.general.originalInvoiceNumber"),
+            dataLabel: catalogMessage("common.general.invoiceNumber.alternative2"),
             render: (item) => (
                 <span style={{ color: "var(--primary-color)", fontWeight: "bold" }}>
                     {(item as any).related_invoice_number || item.invoice_number || "—"}
@@ -111,8 +111,8 @@ export function ServiceReturnsTable({
         },
         {
             key: "amount",
-            header: catalogMessage("text_7be7892e0ba6"),
-            dataLabel: catalogMessage("text_ad81c0b4e84a"),
+            header: catalogMessage("common.general.returnedAmountCredit"),
+            dataLabel: catalogMessage("common.general.refundAmount"),
             render: (item) => (
                 <span className="text-success font-bold">
                     {formatCurrency(item.amount)}
@@ -121,8 +121,8 @@ export function ServiceReturnsTable({
         },
         {
             key: "created_by",
-            header: catalogMessage("text_2fb01868740d"),
-            dataLabel: catalogMessage("text_2fb01868740d"),
+            header: catalogMessage("common.general.user"),
+            dataLabel: catalogMessage("common.general.user"),
             render: (item) => item.created_by || "—",
         },
     ];
@@ -146,19 +146,19 @@ export function ServiceReturnsTable({
                 }}
             >
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ fontWeight: "bold" }}>{catalogMessage("text_e1bd376e208c")}</span>
+                    <span style={{ fontWeight: "bold" }}>{catalogMessage("commercial.servicereturnstable.returnServiceInvoice")}</span>
                     <span style={{ color: "var(--primary-color)", fontWeight: "bold" }}>
                         {relatedInvoice || item.invoice_number || "—"}
                     </span>
                 </div>
                 {customerName && (
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <span style={{ fontWeight: "bold" }}>{catalogMessage("text_a9fd8b729e26")}</span>
+                        <span style={{ fontWeight: "bold" }}>{catalogMessage("common.general.customer.alternative2")}</span>
                         <span>{customerName}</span>
                     </div>
                 )}
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ fontWeight: "bold" }}>{catalogMessage("text_75bd3b347558")}</span>
+                    <span style={{ fontWeight: "bold" }}>{catalogMessage("common.general.invoiceType.alternative2")}</span>
                     <span
                         className={`badge ${paymentType === "credit" ? "badge-warning" : "badge-success"
                             }`}
@@ -167,7 +167,7 @@ export function ServiceReturnsTable({
                     </span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ fontWeight: "bold" }}>{catalogMessage("text_c50fb897b3c3")}</span>
+                    <span style={{ fontWeight: "bold" }}>{catalogMessage("common.general.refundAmount.alternative2")}</span>
                     <span
                         style={{
                             color: "var(--success-color)",
@@ -193,7 +193,7 @@ export function ServiceReturnsTable({
                 onSearch={setSearch}
                 getInvoiceItems={getInvoiceItems}
                 renderCustomExpandedRow={renderReturnDetails}
-                emptyMessage={catalogMessage("text_e97d491200b6")}
+                emptyMessage={catalogMessage("commercial.servicereturnstable.noServiceReturns")}
                 FilterTabNavigation={
                     <TabSubNavigation
                         tabs={tabs}

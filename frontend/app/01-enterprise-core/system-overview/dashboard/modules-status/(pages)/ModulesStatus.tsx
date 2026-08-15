@@ -48,7 +48,7 @@ interface DomainSummary {
 function deriveStatus(screen: NavScreen): ScreenStatus {
   if (screen.status) return screen.status;
   const desc = screen.description;
-  if (desc.includes(catalogMessage("text_1f921420481d")) || desc.includes(catalogMessage("text_0fb2d6f7c302")) || desc.includes(catalogMessage("text_62bfdf0b726c"))) {
+  if (desc.includes(catalogMessage("common.general.comingSoon")) || desc.includes(catalogMessage("enterpriseCore.modulesstatus.comingSoon")) || desc.includes(catalogMessage("enterpriseCore.modulesstatus.comingSoon.alternative2"))) {
     return "pending";
   }
   return "operational";
@@ -117,9 +117,9 @@ function buildDomainSummaries(entries: DerivedScreenEntry[]): DomainSummary[] {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<ScreenStatus, { label: string; bg: string; color: string }> = {
-  operational: { label: catalogMessage("text_85116cea780e"),      bg: "rgba(16,185,129,0.12)",  color: "#10b981" },
-  in_progress: { label: catalogMessage("text_b8364f7ad474"), bg: "rgba(245,158,11,0.12)",  color: "#f59e0b" },
-  pending:     { label: catalogMessage("text_1f921420481d"),      bg: "rgba(148,163,184,0.12)", color: "#94a3b8" },
+  operational: { label: catalogMessage("common.general.operational"),      bg: "rgba(16,185,129,0.12)",  color: "#10b981" },
+  in_progress: { label: catalogMessage("common.general.development"), bg: "rgba(245,158,11,0.12)",  color: "#f59e0b" },
+  pending:     { label: catalogMessage("common.general.comingSoon"),      bg: "rgba(148,163,184,0.12)", color: "#94a3b8" },
 };
 
 const DOMAIN_PALETTE: Record<number, { accent: string; glow: string }> = {
@@ -301,19 +301,19 @@ export function ModulesStatus() {
 
   // ── KPICardRow data ────────────────────────────────────────────────────────
   const kpiCards = [
-    { icon: "sitemap"      as const, label: i18n.catalog["text_a982e947d551"], value: stats.total,       subtitle: catalogText(i18n, "text_844dd9e38b2f", { value0: stats.totalDomains }) },
-    { icon: "check-circle" as const, label: i18n.catalog["text_85116cea780e"],          value: stats.operational,  subtitle: i18n.catalog["text_6571dfb52109"], color: "#10b981" },
-    { icon: "clock"        as const, label: i18n.catalog["text_b8364f7ad474"],     value: stats.inProgress,   subtitle: i18n.catalog["text_1413ef0591a2"],    color: "#f59e0b" },
-    { icon: "hourglass"    as const, label: i18n.catalog["text_1f921420481d"],           value: stats.pending,      subtitle: i18n.catalog["text_f4e1b3c3e6e8"],         color: "#94a3b8" },
-    { icon: "trending-up"  as const, label: i18n.catalog["text_1a0842b2e08c"],    value: stats.percentage,   subtitle: i18n.catalog["text_73e961c826aa"], color: stats.percentage === 100 ? "#10b981" : "#6366f1" },
+    { icon: "sitemap"      as const, label: i18n.catalog["enterpriseCore.modulesstatus.totalScreens.alternative2"], value: stats.total,       subtitle: catalogText(i18n, "enterpriseCore.modulesstatus.field", { value0: stats.totalDomains }) },
+    { icon: "check-circle" as const, label: i18n.catalog["common.general.operational"],          value: stats.operational,  subtitle: i18n.catalog["enterpriseCore.modulesstatus.readyUse"], color: "#10b981" },
+    { icon: "clock"        as const, label: i18n.catalog["common.general.development"],     value: stats.inProgress,   subtitle: i18n.catalog["enterpriseCore.modulesstatus.progress"],    color: "#f59e0b" },
+    { icon: "hourglass"    as const, label: i18n.catalog["common.general.comingSoon"],           value: stats.pending,      subtitle: i18n.catalog["enterpriseCore.modulesstatus.planned"],         color: "#94a3b8" },
+    { icon: "trending-up"  as const, label: i18n.catalog["enterpriseCore.modulesstatus.completionPercentage"],    value: stats.percentage,   subtitle: i18n.catalog["enterpriseCore.modulesstatus.totalScreens"], color: stats.percentage === 100 ? "#10b981" : "#6366f1" },
   ];
 
   // ── Table column definitions ───────────────────────────────────────────────
   const columns: Column<DerivedScreenEntry>[] = [
     {
       key: "domainTitle",
-      header: i18n.catalog["text_d197ebe8e67a"],
-      dataLabel: i18n.catalog["text_d197ebe8e67a"],
+      header: i18n.catalog["common.general.domain"],
+      dataLabel: i18n.catalog["common.general.domain"],
       render: (entry) => {
         const domainIdx = domainSummaries.findIndex((d) => d.id === entry.domainId);
         const palette = DOMAIN_PALETTE[domainIdx % 10];
@@ -329,8 +329,8 @@ export function ModulesStatus() {
     },
     {
       key: "capabilityTitle",
-      header: i18n.catalog["text_d340445b7426"],
-      dataLabel: i18n.catalog["text_d340445b7426"],
+      header: i18n.catalog["common.general.capability"],
+      dataLabel: i18n.catalog["common.general.capability"],
       render: (entry) => (
         <div style={{ display: "flex", alignItems: "center", gap: 5, whiteSpace: "nowrap", color: "var(--text-secondary)", fontSize: "0.77rem" }}>
           <span style={{ color: "var(--text-muted)" }}>{getIcon(entry.capabilityIcon, undefined, 12)}</span>
@@ -340,8 +340,8 @@ export function ModulesStatus() {
     },
     {
       key: "featureGroupTitle",
-      header: i18n.catalog["text_a73be01ddb83"],
-      dataLabel: i18n.catalog["text_a73be01ddb83"],
+      header: i18n.catalog["common.general.group"],
+      dataLabel: i18n.catalog["common.general.group"],
       render: (entry) => (
         <span style={{ color: "var(--text-muted)", fontSize: "0.74rem", whiteSpace: "nowrap" }}>
           {entry.featureGroupTitle}
@@ -350,8 +350,8 @@ export function ModulesStatus() {
     },
     {
       key: "screenTitle",
-      header: i18n.catalog["text_4d362588e46e"],
-      dataLabel: i18n.catalog["text_4d362588e46e"],
+      header: i18n.catalog["common.general.screen"],
+      dataLabel: i18n.catalog["common.general.screen"],
       render: (entry) => {
         const cfg = STATUS_CONFIG[entry.status];
         return (
@@ -381,8 +381,8 @@ export function ModulesStatus() {
     },
     {
       key: "status",
-      header: i18n.catalog["text_c3a4749caed4"],
-      dataLabel: i18n.catalog["text_c3a4749caed4"],
+      header: i18n.catalog["common.general.status.alternative2"],
+      dataLabel: i18n.catalog["common.general.status.alternative2"],
       render: (entry) => <StatusBadge status={entry.status} />,
     },
     // {
@@ -411,15 +411,15 @@ export function ModulesStatus() {
 
   const domainOptions = domainSummaries.map((d) => ({ value: d.id, label: d.title }));
   const statusOptions = [
-    { value: "operational", label: i18n.catalog["text_85116cea780e"] },
-    { value: "in_progress", label: i18n.catalog["text_b8364f7ad474"] },
-    { value: "pending",     label: i18n.catalog["text_1f921420481d"] },
+    { value: "operational", label: i18n.catalog["common.general.operational"] },
+    { value: "in_progress", label: i18n.catalog["common.general.development"] },
+    { value: "pending",     label: i18n.catalog["common.general.comingSoon"] },
   ];
 
   return (
     <div className="sales-card animate-fade">
       <PageSubHeader
-        title={i18n.catalog["text_7d555bc68c1a"]}
+        title={i18n.catalog["common.general.unitsStatus"]}
         titleIcon="check-circle"
         actions={
           <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
@@ -427,14 +427,14 @@ export function ModulesStatus() {
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
               options={statusOptions}
-              placeholder={i18n.catalog["text_1ef213109d57"]}
+              placeholder={i18n.catalog["common.general.allStatuses"]}
               style={{ minWidth: "160px" }}
             />
             <Select
               value={filterDomain}
               onChange={(e) => setFilterDomain(e.target.value)}
               options={domainOptions}
-              placeholder={i18n.catalog["text_89a4eea1bc00"]}
+              placeholder={i18n.catalog["common.general.allFields"]}
               style={{ minWidth: "200px" }}
             />
           </div>
@@ -469,7 +469,7 @@ export function ModulesStatus() {
       {/* ── Filter info bar ──────────────────────────────────────────────── */}
       <div style={{ marginBottom: "0.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", fontWeight: 600 }}>
-          {i18n.catalog["text_3824e18ca83b"]}{filteredEntries.length} {i18n.catalog["text_4d7d679f7b4c"]}{allEntries.length} {i18n.catalog["text_b5f171901bbf"]}</span>
+          {i18n.catalog["common.general.view"]}{filteredEntries.length} {i18n.catalog["common.general.notAvailable.alternative2"]}{allEntries.length} {i18n.catalog["enterpriseCore.modulesstatus.screen"]}</span>
         {(filterDomain || filterStatus) && (
           <button
             onClick={() => { setFilterDomain(""); setFilterStatus(""); }}
@@ -481,7 +481,7 @@ export function ModulesStatus() {
             }}
           >
             {getIcon("x", undefined, 12)}
-            {i18n.catalog["text_ed8d7157618f"]}</button>
+            {i18n.catalog["enterpriseCore.modulesstatus.clearFilters"]}</button>
         )}
       </div>
 
@@ -490,7 +490,7 @@ export function ModulesStatus() {
         columns={columns}
         data={filteredEntries}
         keyExtractor={(entry) => `${entry.domainId}-${entry.capabilityId}-${entry.screenId}`}
-        emptyMessage={i18n.catalog["text_7b5f291c7bd0"]}
+        emptyMessage={i18n.catalog["enterpriseCore.modulesstatus.noResultsMatchSelectedFilter"]}
         isLoading={false}
       />
     </div>

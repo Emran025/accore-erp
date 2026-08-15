@@ -28,8 +28,8 @@ import { InvoiceDetailsDialog } from "@/components/ui";
 
 /** Top-level page tabs */
 const PAGE_TABS = [
-    { key: "records", label: catalogMessage("text_96b959815e98"), icon: "list" },
-    { key: "new-return", label: catalogMessage("text_eeeb15dc112c"), icon: "plus" },
+    { key: "records", label: catalogMessage("common.general.returnsLog"), icon: "list" },
+    { key: "new-return", label: catalogMessage("common.general.addReturn"), icon: "plus" },
 ];
 
 function ServiceReturnsPageContent() {
@@ -113,10 +113,10 @@ function ServiceReturnsPageContent() {
                     }
                     setCurrentPage(page);
                 } else {
-                    showAlert("alert-container", response.message || i18n.catalog["text_04d2b03f06e0"], "error");
+                    showAlert("alert-container", response.message || i18n.catalog["common.general.failedLoadReturns"], "error");
                 }
             } catch {
-                showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
+                showAlert("alert-container", i18n.catalog["common.general.errorConnectingServer"], "error");
             } finally {
                 setIsLoading(false);
             }
@@ -152,7 +152,7 @@ function ServiceReturnsPageContent() {
                 setViewDialog(true);
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_7e684f9a5c3b"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.failedFetchInvoiceDetails"], "error");
         }
     };
 
@@ -183,7 +183,7 @@ function ServiceReturnsPageContent() {
 
     const openReturnDialog = async () => {
         if (selectedReturnItems.length === 0) {
-            showToast(i18n.catalog["text_54f0b0947619"], "warning");
+            showToast(i18n.catalog["common.general.pleaseSelectItemsReturnFirst"], "warning");
             return;
         }
 
@@ -206,7 +206,7 @@ function ServiceReturnsPageContent() {
                 );
                 setInvoicesMap(newMap);
             } catch {
-                showToast(i18n.catalog["text_f154fa31b161"], "error");
+                showToast(i18n.catalog["common.general.failedLoadInvoiceData"], "error");
             } finally {
                 setIsLoadingInvoices(false);
             }
@@ -223,10 +223,10 @@ function ServiceReturnsPageContent() {
                 body: JSON.stringify(returnData),
             });
             if (!response.success) {
-                throw new Error(response.message || i18n.catalog["text_311143511f9e"]);
+                throw new Error(response.message || i18n.catalog["common.general.failedRegisterReturn"]);
             }
         }
-        showToast(i18n.catalog["text_23e6f8991b99"], "success");
+        showToast(i18n.catalog["common.general.returnRecordedSuccessfully"], "success");
     };
 
     const applyFilters = () => {
@@ -254,7 +254,7 @@ function ServiceReturnsPageContent() {
                             icon="search"
                             onClick={() => setFilterDialog(true)}
                         >
-                            {i18n.catalog["text_a826a913e567"]}</Button>
+                            {i18n.catalog["common.general.filter"]}</Button>
                     </>
                 }
             />
@@ -323,7 +323,7 @@ function ServiceReturnsPageContent() {
 export default function ServiceReturnsPage() {
     const { t: i18n } = useI18n();
     return (
-        <Suspense fallback={<div className="p-4 text-center">{i18n.catalog["text_ceac78d7f5d3"]}</div>}>
+        <Suspense fallback={<div className="p-4 text-center">{i18n.catalog["common.general.loading"]}</div>}>
             <ServiceReturnsPageContent />
         </Suspense>
     );

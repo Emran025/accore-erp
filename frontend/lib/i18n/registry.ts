@@ -59,7 +59,7 @@ export function getDictionary(locale?: string | null): Readonly<AppDictionary> {
     return dictionaries[resolveSupportedLocale(locale)];
 }
 
-function getRuntimeLocale(): SupportedLocale {
+export function getActiveLocale(): SupportedLocale {
     if (typeof window === "undefined") return DEFAULT_LOCALE;
     try {
         return resolveSupportedLocale(window.localStorage.getItem("accore.locale") ?? document.documentElement.lang);
@@ -70,7 +70,7 @@ function getRuntimeLocale(): SupportedLocale {
 
 /** Safe non-hook lookup for server output, module configuration, and store messages. */
 export function catalogMessage(key: CatalogKey, values?: Record<string, unknown>): string {
-    return catalogText(getDictionary(getRuntimeLocale()), key, values);
+    return catalogText(getDictionary(getActiveLocale()), key, values);
 }
 
 export async function loadDictionary(locale?: string | null): Promise<Readonly<AppDictionary>> {

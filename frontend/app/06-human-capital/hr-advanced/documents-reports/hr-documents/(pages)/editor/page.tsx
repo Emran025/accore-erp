@@ -38,13 +38,13 @@ function DocumentEditorContent() {
             if (templateData && templateData.template_key) {
                 setTemplate(templateData);
             } else {
-                console.error(i18n.catalog["text_ecf3b9e34517"], res);
-                showToast(i18n.catalog["text_f98b35d32447"], "error");
+                console.error(i18n.catalog["common.general.invalidTemplateData"], res);
+                showToast(i18n.catalog["common.general.failedLoadTemplateData"], "error");
                 router.push("/06-human-capital/hr-advanced/documents-reports/hr-documents");
             }
         } catch (error) {
-            console.error(i18n.catalog["text_6bcb5b1100be"], error);
-            showToast(i18n.catalog["text_7c28fdce1a4e"], "error");
+            console.error(i18n.catalog["common.general.fetchError"], error);
+            showToast(i18n.catalog["common.general.errorOccurredWhileConnectingServer"], "error");
             router.push("/06-human-capital/hr-advanced/documents-reports/hr-documents");
         } finally {
             setIsLoading(false);
@@ -60,7 +60,7 @@ function DocumentEditorContent() {
                     body: JSON.stringify(data),
                 });
                 if (res.success === false) throw new Error(res.message as string);
-                showToast(i18n.catalog["text_e42f906591c2"], "success");
+                showToast(i18n.catalog["humanCapital.pages.templateUpdatedSuccessfully"], "success");
             } else {
                 // Create
                 const body = data.body_html || "";
@@ -69,12 +69,12 @@ function DocumentEditorContent() {
                     body: JSON.stringify({ ...data, body_html: body }),
                 });
                 if (res.success === false) throw new Error(res.message as string);
-                showToast(i18n.catalog["text_46676f04e406"], "success");
+                showToast(i18n.catalog["common.general.templateCreatedSuccessfully"], "success");
             }
             router.push("/06-human-capital/hr-advanced/documents-reports/hr-documents");
         } catch (error) {
             const err = error as Error;
-            showToast(err.message || i18n.catalog["text_4f9ddf3e39da"], "error");
+            showToast(err.message || i18n.catalog["common.general.errorOccurredWhileSavingTemplate"], "error");
             throw err;
         }
     };
@@ -96,7 +96,7 @@ function DocumentEditorContent() {
             <TemplateEditor
                 key={id ? `edit-${id}` : "create"}
                 template={template}
-                moduleName={i18n.catalog["text_6c30b5a7d30b"]}
+                moduleName={i18n.catalog["common.general.humanResources"]}
                 templateTypeLabels={templateTypeLabels}
                 approvedKeys={HR_APPROVED_KEYS}
                 mockContext={HR_MOCK_CONTEXT}

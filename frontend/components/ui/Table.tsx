@@ -36,7 +36,7 @@ export function TableLoding<T>({
       <td colSpan={columns?.length}>
         <div className="empty-state" style={{ textAlign: "center" }}>
           <i className="fas fa-spinner fa-spin" style={{ fontSize: "2rem", marginBottom: "1rem" }}></i>
-          <div>{i18n.catalog["text_ceac78d7f5d3"]}</div>
+          <div>{i18n.catalog["common.general.loading"]}</div>
         </div>
       </td>
     </tr>
@@ -44,7 +44,7 @@ export function TableLoding<T>({
 };
 
 export function TableEmpty<T>({
-  emptyMessage = catalogMessage("text_d812e8bbc06f"),
+  emptyMessage = catalogMessage("common.general.noData"),
   columns = []
 }: {
   emptyMessage: String,
@@ -79,7 +79,7 @@ export function Table<T>({
   columns,
   data,
   keyExtractor,
-  emptyMessage = catalogMessage("text_d812e8bbc06f"),
+  emptyMessage = catalogMessage("common.general.noData"),
   pagination,
   isLoading = false,
 }: TableProps<T>) {

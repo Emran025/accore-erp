@@ -8,7 +8,7 @@ export default function NavigationPage() {
         <MainLayout>
             <Suspense fallback={
                 <div style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)" }}>
-                    {catalogMessage("text_ceac78d7f5d3")}</div>
+                    {catalogMessage("common.general.loading")}</div>
             }>
                 <NavigationGridContent />
             </Suspense>

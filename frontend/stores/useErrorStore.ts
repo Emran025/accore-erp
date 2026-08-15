@@ -40,7 +40,7 @@ let errorCounter = 0;
 
 function generateErrorId(): string {
     errorCounter += 1;
-    return catalogMessage("text_1ff2e1ed9274", { value0: Date.now(), value1: errorCounter });
+    return catalogMessage("state.useerrorstore.err", { value0: Date.now(), value1: errorCounter });
 }
 
 // ─── Store ──────────────────────────────────────────────────────

@@ -18,29 +18,29 @@ import { Domain } from "../../types/navigation";
 export const ProjectsDomain: Domain = {
     id: "projects",
     order: 7,
-    title: catalogMessage("text_bb58c4a176b5"),
+    title: catalogMessage("navigation.projectsConfig.projectsServicesManagement"),
     icon: "briefcase",
-    description: catalogMessage("text_b7a34221eb30"),
+    description: catalogMessage("navigation.projectsConfig.projectPlanningExecutionTrackingFinance"),
     capabilities: [
         // ─────────────────────────────────────────────────────────────
         // Capability: Project Planning
         // ─────────────────────────────────────────────────────────────
         {
             id: "project-planning",
-            title: catalogMessage("text_e24a6c0139c7"),
+            title: catalogMessage("navigation.projectsConfig.projectPlanning"),
             icon: "briefcase",
-            description: catalogMessage("text_a4bb3f802eb9"),
+            description: catalogMessage("navigation.projectsConfig.projectStructuresResourceAllocation"),
             groups: [
                 {
                     id: "projects-overview",
-                    title: catalogMessage("text_95b47e6ba891"),
-                    description: catalogMessage("text_456c2c4469cd"),
+                    title: catalogMessage("navigation.projectsConfig.projectsOverview"),
+                    description: catalogMessage("navigation.projectsConfig.projectTaskManagement"),
                     screens: [
                         {
                             id: "projects-list",
-                            title: catalogMessage("text_5818066ebd9f"),
+                            title: catalogMessage("common.general.projects"),
                             icon: "briefcase",
-                            description: catalogMessage("text_5c2e235163ed"),
+                            description: catalogMessage("navigation.projectsConfig.projectManagementComingSoon"),
                             href: "/07-projects/project-planning/projects-overview/projects-list",
                             permissions: [],
                             module: "projects",
@@ -48,9 +48,9 @@ export const ProjectsDomain: Domain = {
                         },
                         {
                             id: "tasks",
-                            title: catalogMessage("text_001eea528d3c"),
+                            title: catalogMessage("common.general.tasks"),
                             icon: "check-square",
-                            description: catalogMessage("text_e50915453d4a"),
+                            description: catalogMessage("navigation.projectsConfig.taskFollowUpComingSoon"),
                             href: "/07-projects/project-planning/projects-overview/tasks",
                             permissions: [],
                             module: "projects",
@@ -66,20 +66,20 @@ export const ProjectsDomain: Domain = {
         // ─────────────────────────────────────────────────────────────
         {
             id: "execution-tracking",
-            title: catalogMessage("text_576ab95a0c51"),
+            title: catalogMessage("navigation.projectsConfig.executionTracking"),
             icon: "hourglass",
-            description: catalogMessage("text_52fb8aa97db3"),
+            description: catalogMessage("navigation.projectsConfig.timeTrackingProgressMonitoring"),
             groups: [
                 {
                     id: "time-tracking",
-                    title: catalogMessage("text_8a7a14bc876a"),
-                    description: catalogMessage("text_142f432f9b14"),
+                    title: catalogMessage("common.general.timeTracking"),
+                    description: catalogMessage("navigation.projectsConfig.projectWorkHours"),
                     screens: [
                         {
                             id: "timesheets",
-                            title: catalogMessage("text_8a7a14bc876a"),
+                            title: catalogMessage("common.general.timeTracking"),
                             icon: "hourglass",
-                            description: catalogMessage("text_39f7cbace737"),
+                            description: catalogMessage("navigation.projectsConfig.workHoursLoggingComingSoon"),
                             href: "/07-projects/execution-tracking/time-tracking/timesheets",
                             permissions: [],
                             module: "projects",
@@ -95,20 +95,20 @@ export const ProjectsDomain: Domain = {
         // ─────────────────────────────────────────────────────────────
         {
             id: "project-finance",
-            title: catalogMessage("text_34349df807e8"),
+            title: catalogMessage("navigation.projectsConfig.projectFinance"),
             icon: "hand-coins",
-            description: catalogMessage("text_87abc149f1fa"),
+            description: catalogMessage("navigation.projectsConfig.projectCostsBilling"),
             groups: [
                 {
                     id: "project-costs",
-                    title: catalogMessage("text_90ccb41c0159"),
-                    description: catalogMessage("text_f94cb5f23e6f"),
+                    title: catalogMessage("common.general.projectCosts"),
+                    description: catalogMessage("navigation.projectsConfig.projectBudgetsCosts"),
                     screens: [
                         {
                             id: "project-billing",
-                            title: catalogMessage("text_90ccb41c0159"),
+                            title: catalogMessage("common.general.projectCosts"),
                             icon: "hand-coins",
-                            description: catalogMessage("text_140a1bb56a50"),
+                            description: catalogMessage("navigation.projectsConfig.projectBudgetsComingSoon"),
                             href: "/07-projects/project-finance/project-costs/project-billing",
                             permissions: [],
                             module: "projects",

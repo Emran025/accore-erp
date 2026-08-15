@@ -66,7 +66,7 @@ export function FullLogo({
   return (
     <Image
       src={logo}
-      alt={catalogMessage("text_d707dc2f1936")}
+      alt={catalogMessage("common.general.logo")}
       height={size.height}
       width={size.width}
       style={{ opacity: isWatermark ? opacity : 1 }}

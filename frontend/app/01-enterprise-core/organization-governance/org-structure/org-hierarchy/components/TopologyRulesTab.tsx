@@ -35,7 +35,7 @@ export function TopologyRulesTab() {
             ]);
             setRules((rulesRes.topology_rules as TopologyRule[]) || []);
             setMetaTypes((metaRes.meta_types as MetaType[]) || []);
-        } catch { showToast(i18n.catalog["text_ddc7cd0ad0d7"], "error"); }
+        } catch { showToast(i18n.catalog["enterpriseCore.topologyrules.errorLoadingRules"], "error"); }
         finally { setIsLoading(false); }
     }, []);
 
@@ -52,11 +52,11 @@ export function TopologyRulesTab() {
 
     const topologyColumns: Column<TopologyRule>[] = [
         {
-            key: "source", header: i18n.catalog["text_b09a92d06205"], dataLabel: i18n.catalog["text_64660bb87d89"],
+            key: "source", header: i18n.catalog["common.general.sourceSource"], dataLabel: i18n.catalog["common.general.source"],
             render: (r) => <span style={{ fontWeight: 600 }}>{r.source_type?.display_name_ar || getTypeLabel(r.source_node_type_id)}</span>,
         },
         {
-            key: "cardinality", header: i18n.catalog["text_ca62d074353f"], dataLabel: i18n.catalog["text_ca62d074353f"],
+            key: "cardinality", header: i18n.catalog["common.general.relationship"], dataLabel: i18n.catalog["common.general.relationship"],
             render: (r) => {
                 const color = CARDINALITY_COLORS[r.cardinality] || "#6b7280";
                 return (
@@ -70,12 +70,12 @@ export function TopologyRulesTab() {
             },
         },
         {
-            key: "target", header: i18n.catalog["text_d46024b07e28"], dataLabel: i18n.catalog["text_acd37606a532"],
+            key: "target", header: i18n.catalog["common.general.targetTarget"], dataLabel: i18n.catalog["common.general.target"],
             render: (r) => <span style={{ fontWeight: 600 }}>{r.target_type?.display_name_ar || getTypeLabel(r.target_node_type_id)}</span>,
         },
-        { key: "description", header: i18n.catalog["text_95023fc76e1b"], dataLabel: i18n.catalog["text_95023fc76e1b"], render: (r) => <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>{r.description || "—"}</span> },
+        { key: "description", header: i18n.catalog["common.general.description.alternative2"], dataLabel: i18n.catalog["common.general.description.alternative2"], render: (r) => <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>{r.description || "—"}</span> },
         {
-            key: "constraints", header: i18n.catalog["text_62944c87a3d6"], dataLabel: i18n.catalog["text_62944c87a3d6"],
+            key: "constraints", header: i18n.catalog["common.general.constraints"], dataLabel: i18n.catalog["common.general.constraints"],
             render: (r) => {
                 const constraints = r.constraint_logic?.rules || [];
                 if (!constraints.length) return <span style={{ color: "var(--text-muted)" }}>—</span>;
@@ -95,8 +95,8 @@ export function TopologyRulesTab() {
     return (
         <div className="sales-card animate-fade">
             <PageSubHeader
-                title={i18n.catalog["text_e3e1caae49f1"]}
-                subTitle={i18n.catalog["text_ca3eca4c4221"]}
+                title={i18n.catalog["enterpriseCore.topologyrules.linkingRulesTopologyRules"]}
+                subTitle={i18n.catalog["enterpriseCore.topologyrules.rulesGoverningAllowedRelationshipsBetweenOrganizationalUnitTypes"]}
                 titleIcon="route"
                 actions={
                     <>
@@ -112,7 +112,7 @@ export function TopologyRulesTab() {
                                 maxWidth: "200px",
                                 fontSize: "1rem"
                             }}
-                            placeholder={i18n.catalog["text_c9434c71d391"]}
+                            placeholder={i18n.catalog["common.general.selectUnit"]}
                         />
                     </>
                 }
@@ -125,16 +125,16 @@ export function TopologyRulesTab() {
                         <span style={{ width: 12, height: 12, borderRadius: "3px", background: color + "30", border: `1px solid ${color}`, display: "inline-block" }} />
                         <strong style={{ color }}>{card}</strong>
                         <span style={{ color: "var(--text-muted)" }}>
-                            {card === i18n.catalog["text_d6b5915c4605"] ? i18n.catalog["text_946d475a59fa"] : card === i18n.catalog["text_2636c6bccd0c"] ? i18n.catalog["text_5f4a13d44f7d"] : card === i18n.catalog["text_238b99a5f262"] ? i18n.catalog["text_ef1140fc7257"] : i18n.catalog["text_982838392d87"]}
+                            {card === i18n.catalog["enterpriseCore.topologyrules.message11"] ? i18n.catalog["enterpriseCore.topologyrules.oneOne"] : card === i18n.catalog["enterpriseCore.topologyrules.message1N"] ? i18n.catalog["enterpriseCore.topologyrules.oneMany"] : card === i18n.catalog["enterpriseCore.topologyrules.n1"] ? i18n.catalog["enterpriseCore.topologyrules.manyOne"] : i18n.catalog["enterpriseCore.topologyrules.manyMany"]}
                         </span>
                     </span>
                 ))}
             </div>
 
-            <Table columns={topologyColumns} data={filteredRules} keyExtractor={(r) => String(r.id)} emptyMessage={i18n.catalog["text_59ed74df7015"]} isLoading={isLoading} />
+            <Table columns={topologyColumns} data={filteredRules} keyExtractor={(r) => String(r.id)} emptyMessage={i18n.catalog["enterpriseCore.topologyrules.noRules"]} isLoading={isLoading} />
 
             <div style={{ marginTop: "0.5rem", fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                {i18n.catalog["text_97bd2075da0f"]}{filteredRules.length} {i18n.catalog["text_444040107f0b"]}{rules.length}
+                {i18n.catalog["common.general.total"]}{filteredRules.length} {i18n.catalog["enterpriseCore.topologyrules.based"]}{rules.length}
             </div>
         </div>
     );

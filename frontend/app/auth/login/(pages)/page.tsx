@@ -20,7 +20,7 @@ export default function LoginPage() {
             }
             return result;
         } catch {
-            return { success: false, error: i18n.catalog["text_5e224aae1f83"] };
+            return { success: false, error: i18n.catalog["common.general.serverConnectionError"] };
         } finally {
             setIsLoading(false);
         }

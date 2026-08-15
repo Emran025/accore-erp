@@ -23,17 +23,17 @@ export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
         setError(null);
 
         if (!username.trim() || !password.trim()) {
-            setError(i18n.catalog["text_37c5d56ab389"]);
+            setError(i18n.catalog["auth.login.pleaseEnterUsernamePassword"]);
             return;
         }
 
         try {
             const result = await onSubmit(username, password);
             if (!result.success) {
-                setError(result.error || i18n.catalog["text_48aee85d50a3"]);
+                setError(result.error || i18n.catalog["common.general.loginFailed"]);
             }
         } catch {
-            setError(i18n.catalog["text_5e224aae1f83"]);
+            setError(i18n.catalog["common.general.serverConnectionError"]);
         }
     };
 
@@ -41,24 +41,24 @@ export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
         <div className="login-card animate-slide-up">
             <Image
                 src="/logo.svg"
-                alt={i18n.catalog["text_d707dc2f1936"]}
+                alt={i18n.catalog["common.general.logo"]}
                 width={80}
                 height={80}
                 style={{ margin: "0 auto 1.5rem", display: "block" }}
                 priority
             />
 
-            <h1>{i18n.catalog["text_015f1beb39b7"]}</h1>
+            <h1>{i18n.catalog["auth.login.signSystem"]}</h1>
 
             {error && <Alert type="error" message={error} />}
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 <TextInput
                     id="username"
-                    label={i18n.catalog["text_06668ac85e3d"]}
+                    label={i18n.catalog["auth.login.username"]}
                     value={username}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
-                    placeholder={i18n.catalog["text_f0d5db5ca340"]}
+                    placeholder={i18n.catalog["auth.login.enterUsername"]}
                     autoComplete="username"
                     disabled={isLoading}
                     icon="user"
@@ -66,10 +66,10 @@ export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
 
                 <PasswordInput
                     id="password"
-                    label={i18n.catalog["text_b05d306b5591"]}
+                    label={i18n.catalog["common.general.password"]}
                     value={password}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                    placeholder={i18n.catalog["text_fcd318aaae5d"]}
+                    placeholder={i18n.catalog["auth.login.enterPassword"]}
                     autoComplete="current-password"
                     disabled={isLoading}
                 />
@@ -80,7 +80,7 @@ export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
                     style={{ width: "100%", marginTop: "1rem" }}
                     isLoading={isLoading}
                 >
-                    {i18n.catalog["text_beb869eecc12"]}</Button>
+                    {i18n.catalog["auth.login.log"]}</Button>
             </form>
         </div>
     );

@@ -53,7 +53,7 @@ export function EmployeePositionTab() {
             const empData = (empRes as any).data || (empRes as any).employees || [];
             setEmployeesWithPositions(empData);
         } catch {
-            console.error(i18n.catalog["text_afa69443bb93"]);
+            console.error(i18n.catalog["common.general.failedLoadData"]);
         } finally {
             setIsLoading(false);
         }
@@ -61,7 +61,7 @@ export function EmployeePositionTab() {
 
     const handleAssign = async () => {
         if (!selectedEmployeeId || !selectedPositionId) {
-            showToast(i18n.catalog["text_bd9102761c00"], "error");
+            showToast(i18n.catalog["humanCapital.employeeposition.pleaseSelectBothEmployeePosition"], "error");
             return;
         }
         try {
@@ -72,26 +72,26 @@ export function EmployeePositionTab() {
                     position_id: Number(selectedPositionId),
                 }),
             });
-            showToast(i18n.catalog["text_379dde10a8f5"], "success");
+            showToast(i18n.catalog["humanCapital.employeeposition.employeeAssignedPositionSuccessfullyRolePermissionsInherited"], "success");
             setShowAssign(false);
             setSelectedEmployeeId("");
             setSelectedPositionId("");
             loadData();
         } catch (e: any) {
-            showToast(e?.message || i18n.catalog["text_cb7fc15b04df"], "error");
+            showToast(e?.message || i18n.catalog["humanCapital.employeeposition.failedAssignEmployee"], "error");
         }
     };
 
     const handleUnassign = async (employeeId: number) => {
-        if (!confirm(i18n.catalog["text_b4acff89b80f"])) return;
+        if (!confirm(i18n.catalog["humanCapital.employeeposition.areYouSureYouWantUnassignThisEmployee"])) return;
         try {
             await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.POSITIONS.UNASSIGN(employeeId), {
                 method: "DELETE",
             });
-            showToast(i18n.catalog["text_98c956850b7a"], "success");
+            showToast(i18n.catalog["humanCapital.employeeposition.employeeUnassigned"], "success");
             loadData();
         } catch {
-            showToast(i18n.catalog["text_b9c13cce8559"], "error");
+            showToast(i18n.catalog["humanCapital.employeeposition.failedUnassign"], "error");
         }
     };
 
@@ -111,23 +111,23 @@ export function EmployeePositionTab() {
     const columns: Column<EmployeeWithPosition>[] = [
         {
             key: "employee_code",
-            header: i18n.catalog["text_5a5681b59ed0"],
-            dataLabel: i18n.catalog["text_e28ef005ab68"],
+            header: i18n.catalog["humanCapital.employeeposition.employeeCode"],
+            dataLabel: i18n.catalog["common.general.code.alternative4"],
             render: (item) => (
                 <span style={{ fontFamily: "monospace", fontWeight: 600 }}>{item.employee_code}</span>
             ),
         },
-        { key: "full_name", header: i18n.catalog["text_394f067f92ff"], dataLabel: i18n.catalog["text_52ab09847cf8"] },
+        { key: "full_name", header: i18n.catalog["common.general.employeeName"], dataLabel: i18n.catalog["common.general.name"] },
         {
             key: "department",
-            header: i18n.catalog["text_0771c3ff9336"],
-            dataLabel: i18n.catalog["text_0771c3ff9336"],
-            render: (item) => <span>{item.department?.name_ar || i18n.catalog["text_5a0374f3ff5a"]}</span>,
+            header: i18n.catalog["common.general.section"],
+            dataLabel: i18n.catalog["common.general.section"],
+            render: (item) => <span>{item.department?.name_ar || i18n.catalog["common.general.unspecified"]}</span>,
         },
         {
             key: "position",
-            header: i18n.catalog["text_66e3bc906d4b"],
-            dataLabel: i18n.catalog["text_66e3bc906d4b"],
+            header: i18n.catalog["common.general.position.alternative2"],
+            dataLabel: i18n.catalog["common.general.position.alternative2"],
             render: (item) =>
                 item.position ? (
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
@@ -139,13 +139,13 @@ export function EmployeePositionTab() {
                         </span>
                     </div>
                 ) : (
-                    <span className="badge badge-warning">{i18n.catalog["text_3eed0035cf5d"]}</span>
+                    <span className="badge badge-warning">{i18n.catalog["humanCapital.employeeposition.unspecified"]}</span>
                 ),
         },
         {
             key: "role",
-            header: i18n.catalog["text_9897db2426d7"],
-            dataLabel: i18n.catalog["text_de69d94fee12"],
+            header: i18n.catalog["humanCapital.employeeposition.inheritedRole"],
+            dataLabel: i18n.catalog["common.general.role.alternative2"],
             render: (item) =>
                 item.position?.role ? (
                     <span className="badge badge-success" style={{ fontSize: "0.8rem" }}>
@@ -161,8 +161,8 @@ export function EmployeePositionTab() {
         },
         {
             key: "job_title",
-            header: i18n.catalog["text_de98bd734462"],
-            dataLabel: i18n.catalog["text_39adfb54212e"],
+            header: i18n.catalog["common.general.jobTitle.alternative3"],
+            dataLabel: i18n.catalog["common.general.title.alternative2"],
             render: (item) => (
                 <span>
                     {item.position?.job_title?.title_ar || item.job_title?.title_ar || "—"}
@@ -171,8 +171,8 @@ export function EmployeePositionTab() {
         },
         {
             key: "id",
-            header: i18n.catalog["text_7797240d6caf"],
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (item) => (
                 <ActionButtons
                     actions={[
@@ -180,7 +180,7 @@ export function EmployeePositionTab() {
                             ? [
                                 {
                                     icon: "link" as const,
-                                    title: i18n.catalog["text_63ede7f49d05"],
+                                    title: i18n.catalog["humanCapital.employeeposition.assignPosition"],
                                     variant: "view" as const,
                                     onClick: () => {
                                         setSelectedEmployeeId(item.id.toString());
@@ -194,7 +194,7 @@ export function EmployeePositionTab() {
                             ? [
                                 {
                                     icon: "unlink" as const,
-                                    title: i18n.catalog["text_422b5ac73e82"],
+                                    title: i18n.catalog["humanCapital.employeeposition.unassign"],
                                     variant: "delete" as const,
                                     onClick: () => handleUnassign(item.id),
                                 },
@@ -214,24 +214,24 @@ export function EmployeePositionTab() {
                     className={`btn btn-sm ${filter === "all" ? "btn-primary" : "btn-ghost"}`}
                     onClick={() => setFilter("all")}
                 >
-                    {i18n.catalog["text_62ea41744d9a"]}{employeesWithPositions.length})
+                    {i18n.catalog["humanCapital.employeeposition.all"]}{employeesWithPositions.length})
                 </button>
                 <button
                     className={`btn btn-sm ${filter === "assigned" ? "btn-primary" : "btn-ghost"}`}
                     onClick={() => setFilter("assigned")}
                 >
-                    {getIcon("check-circle")} {i18n.catalog["text_90ece19ba0f2"]}{assignedCount})
+                    {getIcon("check-circle")} {i18n.catalog["humanCapital.employeeposition.assigned"]}{assignedCount})
                 </button>
                 <button
                     className={`btn btn-sm ${filter === "unassigned" ? "btn-primary" : "btn-ghost"}`}
                     onClick={() => setFilter("unassigned")}
                 >
-                    {getIcon("alert-circle")} {i18n.catalog["text_093e986c5c2f"]}{unassignedCount})
+                    {getIcon("alert-circle")} {i18n.catalog["humanCapital.employeeposition.unassigned"]}{unassignedCount})
                 </button>
             </div>
 
             <PageSubHeader
-                title={i18n.catalog["text_d0663c8fd54e"]}
+                title={i18n.catalog["humanCapital.employeeposition.assignEmployeesPositions"]}
                 titleIcon="users"
                 actions={
                     <>
@@ -245,7 +245,7 @@ export function EmployeePositionTab() {
                                     setShowAssign(true);
                                 }}
                             >
-                                {i18n.catalog["text_e102619f95e1"]}</Button>
+                                {i18n.catalog["humanCapital.employeeposition.assignEmployeePosition"]}</Button>
                         )}
                     </>
                 }
@@ -255,7 +255,7 @@ export function EmployeePositionTab() {
                 columns={columns}
                 data={filteredEmployees}
                 keyExtractor={(i) => i.id.toString()}
-                emptyMessage={i18n.catalog["text_d812e8bbc06f"]}
+                emptyMessage={i18n.catalog["common.general.noData"]}
                 isLoading={isLoading}
             />
 
@@ -263,18 +263,18 @@ export function EmployeePositionTab() {
             <Dialog
                 isOpen={showAssign}
                 onClose={() => setShowAssign(false)}
-                title={i18n.catalog["text_2deab183607f"]}
+                title={i18n.catalog["humanCapital.employeeposition.assignEmployeeJobPosition"]}
                 footer={
                     <>
                         <Button variant="secondary" onClick={() => setShowAssign(false)}>
-                            {i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                            {i18n.catalog["common.general.cancel"]}</Button>
                         <Button
                             variant="primary"
                             icon="link"
                             onClick={handleAssign}
                             disabled={!selectedEmployeeId || !selectedPositionId}
                         >
-                            {i18n.catalog["text_961e2be91215"]}</Button>
+                            {i18n.catalog["common.general.assign"]}</Button>
                     </>
                 }
             >
@@ -285,40 +285,40 @@ export function EmployeePositionTab() {
                     >
                         {getIcon("info")}
                         <div>
-                            <strong>{i18n.catalog["text_d1a63c173a87"]}</strong>
+                            <strong>{i18n.catalog["humanCapital.employeeposition.automaticInheritance"]}</strong>
                             <p style={{ margin: "0.25rem 0 0", fontSize: "0.85rem" }}>
-                                {i18n.catalog["text_0867526593b4"]}<br />{i18n.catalog["text_9ec4bbc51c0e"]}<strong>{i18n.catalog["text_5e7dccdb4d93"]}</strong> {i18n.catalog["text_fdf3a627b72b"]}<br />{i18n.catalog["text_037be498aa84"]}<strong>{i18n.catalog["text_de98bd734462"]}</strong>
-                                <br />{i18n.catalog["text_b25d21702c28"]}<strong>{i18n.catalog["text_0771c3ff9336"]}</strong> {i18n.catalog["text_7899041f6538"]}</p>
+                                {i18n.catalog["humanCapital.employeeposition.whenEmployeeIsAssignedPositionSystemAutomatically"]}<br />{i18n.catalog["humanCapital.employeeposition.inheritance"]}<strong>{i18n.catalog["common.general.jobRole"]}</strong> {i18n.catalog["humanCapital.employeeposition.permissions"]}<br />{i18n.catalog["humanCapital.employeeposition.assign"]}<strong>{i18n.catalog["common.general.jobTitle.alternative3"]}</strong>
+                                <br />{i18n.catalog["humanCapital.employeeposition.select"]}<strong>{i18n.catalog["common.general.section"]}</strong> {i18n.catalog["humanCapital.employeeposition.linkedPosition"]}</p>
                         </div>
                     </div>
 
                     <div className="form-group">
-                        <Label>{i18n.catalog["text_3d8e9985377a"]}</Label>
+                        <Label>{i18n.catalog["humanCapital.employeeposition.selectEmployee"]}</Label>
                         <SearchableSelect
                             options={allEmployees
                                 .filter((e: any) => !e.position_id)
                                 .map((e: any) => ({
                                     value: e.id.toString(),
-                                    label: catalogText(i18n, "text_e11f55b693d8", { value0: e.full_name, value1: e.employee_code }),
+                                    label: catalogText(i18n, "common.general.message.alternative7", { value0: e.full_name, value1: e.employee_code }),
                                 }))}
                             value={selectedEmployeeId}
                             onChange={(val) => setSelectedEmployeeId(val?.toString() || "")}
-                            placeholder={i18n.catalog["text_73eecad18c9a"]}
+                            placeholder={i18n.catalog["humanCapital.employeeposition.searchUnassignedEmployee"]}
                         />
                     </div>
 
                     <div className="form-group">
-                        <Label>{i18n.catalog["text_070481f5ecc8"]}</Label>
+                        <Label>{i18n.catalog["humanCapital.employeeposition.selectPosition"]}</Label>
                         <SearchableSelect
                             options={positions
                                 .filter((p) => p.is_active)
                                 .map((p) => ({
                                     value: p.id.toString(),
-                                    label: catalogText(i18n, "text_e11f55b693d8", { value0: p.position_name_ar, value1: p.position_code }),
+                                    label: catalogText(i18n, "common.general.message.alternative7", { value0: p.position_name_ar, value1: p.position_code }),
                                 }))}
                             value={selectedPositionId}
                             onChange={(val) => setSelectedPositionId(val?.toString() || "")}
-                            placeholder={i18n.catalog["text_fe9d5c934e37"]}
+                            placeholder={i18n.catalog["humanCapital.employeeposition.searchPosition"]}
                         />
                     </div>
 
@@ -342,7 +342,7 @@ export function EmployeePositionTab() {
                                     color: "var(--primary)",
                                 }}
                             >
-                                {getIcon("eye")} {i18n.catalog["text_52c9ede74573"]}</h4>
+                                {getIcon("eye")} {i18n.catalog["humanCapital.employeeposition.previewSelectedPosition"]}</h4>
                             <div
                                 style={{
                                     display: "grid",
@@ -352,27 +352,27 @@ export function EmployeePositionTab() {
                                 }}
                             >
                                 <div>
-                                    <span className="stat-label">{i18n.catalog["text_de98bd734462"]}</span>
+                                    <span className="stat-label">{i18n.catalog["common.general.jobTitle.alternative3"]}</span>
                                     <p>{selectedPosition.job_title?.title_ar || "—"}</p>
                                 </div>
                                 <div>
-                                    <span className="stat-label">{i18n.catalog["text_5e7dccdb4d93"]}</span>
+                                    <span className="stat-label">{i18n.catalog["common.general.jobRole"]}</span>
                                     <p>
                                         {selectedPosition.role ? (
                                             <span className="badge badge-info">
                                                 {selectedPosition.role.role_name_ar || selectedPosition.role.role_key}
                                             </span>
                                         ) : (
-                                            i18n.catalog["text_5a0374f3ff5a"]
+                                            i18n.catalog["common.general.unspecified"]
                                         )}
                                     </p>
                                 </div>
                                 <div>
-                                    <span className="stat-label">{i18n.catalog["text_0771c3ff9336"]}</span>
-                                    <p>{selectedPosition.department?.name_ar || i18n.catalog["text_5a0374f3ff5a"]}</p>
+                                    <span className="stat-label">{i18n.catalog["common.general.section"]}</span>
+                                    <p>{selectedPosition.department?.name_ar || i18n.catalog["common.general.unspecified"]}</p>
                                 </div>
                                 <div>
-                                    <span className="stat-label">{i18n.catalog["text_961a0a03b98b"]}</span>
+                                    <span className="stat-label">{i18n.catalog["common.general.level"]}</span>
                                     <p>{selectedPosition.grade_level || "—"}</p>
                                 </div>
                             </div>

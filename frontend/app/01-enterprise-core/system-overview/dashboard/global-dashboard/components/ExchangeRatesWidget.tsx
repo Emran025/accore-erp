@@ -34,13 +34,13 @@ export function ExchangeRatesWidget() {
   return (
     <div className="sales-card mb-4" style={{ marginBottom: "1.5rem" }}>
       <PageSubHeader
-        title={i18n.catalog["text_c05208c09a3b"]}
+        title={i18n.catalog["enterpriseCore.exchangerateswidget.todaySExchangeRates"]}
         titleIcon="repeat"
         actions={
           <>
 
             <span style={{ fontSize: "0.9em", fontWeight: "bold", color: "var(--text-secondary)", marginRight: "10px" }}>
-              {i18n.catalog["text_5590955ea45b"]}{displayBase?.symbol})
+              {i18n.catalog["enterpriseCore.exchangerateswidget.exchange"]}{displayBase?.symbol})
             </span>
 
             <Button
@@ -49,7 +49,7 @@ export function ExchangeRatesWidget() {
               key="refresh"
             // onClick={() => loadDashboardData()}
             >
-              {i18n.catalog["text_00eab31f95b7"]}</Button>
+              {i18n.catalog["common.general.update"]}</Button>
           </>
         }
       />

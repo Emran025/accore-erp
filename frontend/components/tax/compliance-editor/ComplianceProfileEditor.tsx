@@ -20,51 +20,51 @@ import "./styles.css";
 
 // ── Transmission format options ──
 const formatOptions: { value: TransmissionFormat; label: string; icon: string }[] = [
-    { value: "json", label: catalogMessage("text_db1a21a0bc2e"), icon: "fas fa-brackets-curly" },
-    { value: "xml", label: catalogMessage("text_40658e9af8fd"), icon: "fas fa-code" },
-    { value: "yml", label: catalogMessage("text_996518f221d2"), icon: "fas fa-file-alt" },
-    { value: "excel", label: catalogMessage("text_48d53635551c"), icon: "fas fa-file-excel" },
+    { value: "json", label: catalogMessage("tax.complianceprofileeditor.json"), icon: "fas fa-brackets-curly" },
+    { value: "xml", label: catalogMessage("tax.complianceprofileeditor.xml"), icon: "fas fa-code" },
+    { value: "yml", label: catalogMessage("tax.complianceprofileeditor.yml"), icon: "fas fa-file-alt" },
+    { value: "excel", label: catalogMessage("tax.complianceprofileeditor.excel"), icon: "fas fa-file-excel" },
 ];
 
 // ── Auth type options ──
 const authTypeOptions: { value: AuthType; label: string }[] = [
-    { value: "none", label: catalogMessage("text_ad45158f2562") },
-    { value: "bearer", label: catalogMessage("text_105f8fe557fe") },
-    { value: "basic", label: catalogMessage("text_f0a792cf36e6") },
-    { value: "oauth2", label: catalogMessage("text_aebabad39063") },
-    { value: "api_key", label: catalogMessage("text_23189d55f697") },
+    { value: "none", label: catalogMessage("tax.complianceprofileeditor.unauthenticated") },
+    { value: "bearer", label: catalogMessage("tax.complianceprofileeditor.bearerToken") },
+    { value: "basic", label: catalogMessage("tax.complianceprofileeditor.basicAuth") },
+    { value: "oauth2", label: catalogMessage("tax.complianceprofileeditor.oauth20") },
+    { value: "api_key", label: catalogMessage("tax.complianceprofileeditor.apiKey.alternative2") },
 ];
 
 // ── Default system keys (these would typically be fetched from API) ──
 const defaultSystemKeys: SystemKey[] = [
-    { key: "invoice_number", label: catalogMessage("text_b6e71278be04"), type: "string" },
-    { key: "invoice_date", label: catalogMessage("text_4994aa18979f"), type: "date" },
-    { key: "invoice_type", label: catalogMessage("text_1670fc15da04"), type: "string" },
-    { key: "subtotal", label: catalogMessage("text_4793cceb7aa3"), type: "number" },
-    { key: "total_tax", label: catalogMessage("text_d8f7fda426b0"), type: "number" },
-    { key: "grand_total", label: catalogMessage("text_63c2f6768cf8"), type: "number" },
-    { key: "discount_amount", label: catalogMessage("text_7d815bba7b75"), type: "number" },
-    { key: "currency_code", label: catalogMessage("text_48e954a1635b"), type: "string" },
-    { key: "tax_type_code", label: catalogMessage("text_9c528eb38b35"), type: "string" },
-    { key: "tax_rate", label: catalogMessage("text_093feaffdf0c"), type: "number" },
-    { key: "taxable_amount", label: catalogMessage("text_c2c42c8813fc"), type: "number" },
-    { key: "tax_amount", label: catalogMessage("text_fa13267975f9"), type: "number" },
-    { key: "tax_authority_code", label: catalogMessage("text_a5075a8961b7"), type: "string" },
-    { key: "seller_name", label: catalogMessage("text_07b03bb3d5d0"), type: "string" },
-    { key: "seller_vat_number", label: catalogMessage("text_b5b5dcbf0186"), type: "string" },
-    { key: "seller_cr_number", label: catalogMessage("text_3767ae186e95"), type: "string" },
-    { key: "seller_address", label: catalogMessage("text_1cb381b18f89"), type: "string" },
-    { key: "buyer_name", label: catalogMessage("text_b86625c75377"), type: "string" },
-    { key: "buyer_vat_number", label: catalogMessage("text_bb55b47b40f8"), type: "string" },
-    { key: "buyer_address", label: catalogMessage("text_97bd9e9f5221"), type: "string" },
-    { key: "item_name", label: catalogMessage("text_ba490b3b4be5"), type: "string" },
-    { key: "item_quantity", label: catalogMessage("text_935e21853946"), type: "number" },
-    { key: "item_unit_price", label: catalogMessage("text_c274e3ec351e"), type: "number" },
-    { key: "item_total", label: catalogMessage("text_ca2c57c400ff"), type: "number" },
-    { key: "item_tax_amount", label: catalogMessage("text_3cd9a2ef895e"), type: "number" },
-    { key: "payment_method", label: catalogMessage("text_ae2d60052976"), type: "string" },
-    { key: "payment_date", label: catalogMessage("text_e35687ed04c0"), type: "date" },
-    { key: "payment_reference", label: catalogMessage("text_f215a289905e"), type: "string" },
+    { key: "invoice_number", label: catalogMessage("common.general.invoiceNumber.alternative2"), type: "string" },
+    { key: "invoice_date", label: catalogMessage("common.general.invoiceDate"), type: "date" },
+    { key: "invoice_type", label: catalogMessage("common.general.invoiceType"), type: "string" },
+    { key: "subtotal", label: catalogMessage("common.general.subtotal"), type: "number" },
+    { key: "total_tax", label: catalogMessage("tax.complianceprofileeditor.totalTax"), type: "number" },
+    { key: "grand_total", label: catalogMessage("tax.complianceprofileeditor.finalTotal"), type: "number" },
+    { key: "discount_amount", label: catalogMessage("tax.complianceprofileeditor.discountAmount"), type: "number" },
+    { key: "currency_code", label: catalogMessage("common.general.currencyCode"), type: "string" },
+    { key: "tax_type_code", label: catalogMessage("tax.complianceprofileeditor.taxTypeCode"), type: "string" },
+    { key: "tax_rate", label: catalogMessage("tax.complianceprofileeditor.taxRate"), type: "number" },
+    { key: "taxable_amount", label: catalogMessage("tax.complianceprofileeditor.taxableAmount"), type: "number" },
+    { key: "tax_amount", label: catalogMessage("tax.complianceprofileeditor.taxAmount"), type: "number" },
+    { key: "tax_authority_code", label: catalogMessage("tax.complianceprofileeditor.taxAuthorityCode"), type: "string" },
+    { key: "seller_name", label: catalogMessage("tax.complianceprofileeditor.vendorName"), type: "string" },
+    { key: "seller_vat_number", label: catalogMessage("tax.complianceprofileeditor.vendorTaxNumber"), type: "string" },
+    { key: "seller_cr_number", label: catalogMessage("tax.complianceprofileeditor.sellerSCommercialRegistration"), type: "string" },
+    { key: "seller_address", label: catalogMessage("tax.complianceprofileeditor.vendorAddress"), type: "string" },
+    { key: "buyer_name", label: catalogMessage("tax.complianceprofileeditor.buyerName"), type: "string" },
+    { key: "buyer_vat_number", label: catalogMessage("tax.complianceprofileeditor.buyerSTaxNumber"), type: "string" },
+    { key: "buyer_address", label: catalogMessage("tax.complianceprofileeditor.buyerAddress"), type: "string" },
+    { key: "item_name", label: catalogMessage("tax.complianceprofileeditor.itemName"), type: "string" },
+    { key: "item_quantity", label: catalogMessage("common.general.quantity.alternative3"), type: "number" },
+    { key: "item_unit_price", label: catalogMessage("common.general.unitPrice.alternative3"), type: "number" },
+    { key: "item_total", label: catalogMessage("tax.complianceprofileeditor.itemTotal"), type: "number" },
+    { key: "item_tax_amount", label: catalogMessage("tax.complianceprofileeditor.itemTax"), type: "number" },
+    { key: "payment_method", label: catalogMessage("common.general.paymentMethod"), type: "string" },
+    { key: "payment_date", label: catalogMessage("tax.complianceprofileeditor.paymentDate"), type: "date" },
+    { key: "payment_reference", label: catalogMessage("tax.complianceprofileeditor.paymentReference"), type: "string" },
 ];
 
 /**
@@ -152,19 +152,19 @@ export function ComplianceProfileEditor({
     // ── Save Handler ──
     const handleSave = async () => {
         if (!name.trim()) {
-            showToast(i18n.catalog["text_026df915c3d4"], "error");
+            showToast(i18n.catalog["tax.complianceprofileeditor.profileNameIsRequired"], "error");
             return;
         }
         if (!code.trim()) {
-            showToast(i18n.catalog["text_ba5d6a04a189"], "error");
+            showToast(i18n.catalog["tax.complianceprofileeditor.identifierIsRequired"], "error");
             return;
         }
         if (!taxAuthorityId) {
-            showToast(i18n.catalog["text_932d008fbbd5"], "error");
+            showToast(i18n.catalog["tax.complianceprofileeditor.pleaseSelectTaxAuthority"], "error");
             return;
         }
         if (policyType === "push" && !endpointUrl.trim()) {
-            showToast(i18n.catalog["text_101a3056782b"], "error");
+            showToast(i18n.catalog["tax.complianceprofileeditor.endpointUrlRequiredPolicy1Send"], "error");
             return;
         }
 
@@ -172,7 +172,7 @@ export function ComplianceProfileEditor({
         if (structureTemplate.trim() && transmissionFormat !== "excel") {
             const validation = validateFormat(structureTemplate, editorFormat);
             if (!validation.valid) {
-                showToast(i18n.catalog["text_a8a80b6e15d8"], "error");
+                showToast(i18n.catalog["tax.complianceprofileeditor.templateStructureContainsErrorsPleaseFixThem"], "error");
                 return;
             }
         }
@@ -184,7 +184,7 @@ export function ComplianceProfileEditor({
                 try {
                     parsedOpenApiSpec = JSON.parse(openApiSpec);
                 } catch {
-                    showToast(i18n.catalog["text_8686034d39b6"], "error");
+                    showToast(i18n.catalog["tax.complianceprofileeditor.openapiSpecificationInvalidJson"], "error");
                     setIsSaving(false);
                     return;
                 }
@@ -226,16 +226,16 @@ export function ComplianceProfileEditor({
     const handleCopyToken = useCallback(() => {
         if (rawToken) {
             navigator.clipboard.writeText(rawToken);
-            showToast(i18n.catalog["text_69b8b3133653"], "success");
+            showToast(i18n.catalog["tax.complianceprofileeditor.fullTokenCopied"], "success");
         } else if (tokenPreview) {
-            showToast(i18n.catalog["text_837963cc4ee3"], "warning");
+            showToast(i18n.catalog["tax.complianceprofileeditor.tokenHiddenRegenerateRetrieveFullToken"], "warning");
         }
     }, [rawToken, tokenPreview]);
 
     // ── Regenerate token ──
     const handleRegenerateToken = useCallback(async () => {
         if (!profile?.id) {
-            showToast(i18n.catalog["text_57f69608c48c"], "warning");
+            showToast(i18n.catalog["tax.complianceprofileeditor.profileMustBeSavedFirst"], "warning");
             return;
         }
         const res = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.COMPLIANCE_PROFILES.GENERATE_TOKEN(profile.id), {
@@ -247,9 +247,9 @@ export function ComplianceProfileEditor({
             setRawToken(newToken);
             setTokenPreview(newToken.substring(0, 12) + '••••••••' + newToken.substring(newToken.length - 6));
             setTokenExpiresAt((res as Record<string, unknown>).token_expires_at as string || "");
-            showToast(i18n.catalog["text_0dabe0c6f86a"], "success");
+            showToast(i18n.catalog["tax.complianceprofileeditor.tokenSuccessfullyRegeneratedCopyItNow"], "success");
         } else {
-            showToast(res.message || i18n.catalog["text_6d95e4a69876"], "error");
+            showToast(res.message || i18n.catalog["tax.complianceprofileeditor.failedCreateToken"], "error");
         }
     }, [profile?.id]);
 
@@ -263,9 +263,9 @@ export function ComplianceProfileEditor({
             setTokenPreview("");
             setRawToken(null);
             setTokenExpiresAt("");
-            showToast(i18n.catalog["text_86a553b2c8bb"], "success");
+            showToast(i18n.catalog["tax.complianceprofileeditor.tokenRevoked"], "success");
         } else {
-            showToast(res.message || i18n.catalog["text_af1c943cff83"], "error");
+            showToast(res.message || i18n.catalog["tax.complianceprofileeditor.tokenRevocationFailed"], "error");
         }
     }, [profile?.id]);
 
@@ -287,14 +287,14 @@ export function ComplianceProfileEditor({
                         <i className="fas fa-shield-alt" />
                         <span>
                             {isNew
-                                ? i18n.catalog["text_03622bfee2c5"]
-                                : catalogText(i18n, "text_5ac6e84eaa5a", { value0: profile?.name || "" })}
+                                ? i18n.catalog["tax.complianceprofileeditor.createComplianceProfile"]
+                                : catalogText(i18n, "tax.complianceprofileeditor.amendment", { value0: profile?.name || "" })}
                         </span>
                     </div>
                     <div className="ce-status-badges">
                         <span className={`ce-badge ce-badge-${policyType}`}>
                             <i className={`fas fa-${policyType === "push" ? "paper-plane" : "download"}`} />
-                            {policyType === "push" ? i18n.catalog["text_80c19dc251b2"] : i18n.catalog["text_582efd7f4b25"]}
+                            {policyType === "push" ? i18n.catalog["tax.complianceprofileeditor.policy1Send"] : i18n.catalog["tax.complianceprofileeditor.policy2Reception"]}
                         </span>
                         <span className="ce-badge ce-badge-format">
                             <i className="fas fa-file-code" />
@@ -302,12 +302,12 @@ export function ComplianceProfileEditor({
                         </span>
                         <span className={`ce-badge ${isActive ? "ce-badge-active" : "ce-badge-inactive"}`}>
                             <i className={`fas fa-${isActive ? "check-circle" : "times-circle"}`} />
-                            {isActive ? i18n.catalog["text_629e90b3af3d"] : i18n.catalog["text_b719ac8add4e"]}
+                            {isActive ? i18n.catalog["common.general.active"] : i18n.catalog["common.general.inactive"]}
                         </span>
                     </div>
                 </div>
                 <div className="ce-topbar-actions">
-                    <Button size="sm" variant="secondary" icon="times" onClick={onCancel}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                    <Button size="sm" variant="secondary" icon="times" onClick={onCancel}>{i18n.catalog["common.general.cancel"]}</Button>
                     <Button
                         size="sm"
                         variant="primary"
@@ -315,7 +315,7 @@ export function ComplianceProfileEditor({
                         onClick={handleSave}
                         disabled={isSaving}
                     >
-                        {isSaving ? i18n.catalog["text_8688b0ff5f34"] : isNew ? i18n.catalog["text_a820f3590d36"] : i18n.catalog["text_6c03d6737c2f"]}
+                        {isSaving ? i18n.catalog["common.general.saving"] : isNew ? i18n.catalog["common.general.create"] : i18n.catalog["common.general.saveChanges"]}
                     </Button>
                 </div>
             </div>
@@ -327,18 +327,18 @@ export function ComplianceProfileEditor({
                         className={`ce-tab ${activeView === "config" ? "active" : ""}`}
                         onClick={() => setActiveView("config")}
                     >
-                        <i className="fas fa-cog" /> {i18n.catalog["text_5fd9563e6846"]}</button>
+                        <i className="fas fa-cog" /> {i18n.catalog["common.general.settings"]}</button>
                     <button
                         className={`ce-tab ${activeView === "editor" ? "active" : ""}`}
                         onClick={() => setActiveView("editor")}
                     >
-                        <i className="fas fa-code" /> {i18n.catalog["text_2fdd9e8e47a1"]}</button>
+                        <i className="fas fa-code" /> {i18n.catalog["tax.complianceprofileeditor.structureEditor"]}</button>
                 </div>
                 <div className="ce-editor-tabs-right">
                     {activeView === "editor" && (
                         <span style={{ fontSize: 11, color: "#8890a4", display: "flex", alignItems: "center", gap: 5 }}>
                             <i className="fas fa-info-circle" style={{ color: "#6c8cff" }} />
-                            {i18n.catalog["text_325d78c284e5"]}{i18n.catalog["text_d0f7284a94b4"]} {i18n.catalog["text_c6fdf80ff75b"]}</span>
+                            {i18n.catalog["tax.complianceprofileeditor.use"]}{i18n.catalog["tax.complianceprofileeditor.key"]} {i18n.catalog["tax.complianceprofileeditor.insertSystemKey"]}</span>
                     )}
                 </div>
             </div>
@@ -349,32 +349,32 @@ export function ComplianceProfileEditor({
                     <div className="ce-config-panel" style={{ borderBottom: "none" }}>
                         {/* ── Basic Info ── */}
                         <div className="ce-config-section-label">
-                            <i className="fas fa-info-circle" /> {i18n.catalog["text_66a68be6dd8a"]}</div>
+                            <i className="fas fa-info-circle" /> {i18n.catalog["common.general.basicInformation"]}</div>
                         <div className="ce-config-row">
                             <div className="ce-field">
-                                <label>{i18n.catalog["text_08c8e8814cdf"]}</label>
+                                <label>{i18n.catalog["tax.complianceprofileeditor.profileName"]}</label>
                                 <input
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    placeholder={i18n.catalog["text_acf1b798b352"]}
+                                    placeholder={i18n.catalog["tax.complianceprofileeditor.exampleZakatAuthorityReport"]}
                                     className="ce-input"
                                 />
                             </div>
                             <div className="ce-field">
-                                <label>{i18n.catalog["text_803cc32ed119"]}</label>
+                                <label>{i18n.catalog["tax.complianceprofileeditor.identifier"]}</label>
                                 <input
                                     type="text"
                                     value={code}
                                     onChange={(e) => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, ""))}
-                                    placeholder={i18n.catalog["text_97b981b6224b"]}
+                                    placeholder={i18n.catalog["tax.complianceprofileeditor.zatcaVatPush"]}
                                     className="ce-input"
                                     disabled={!isNew}
                                     style={{ direction: "ltr", textAlign: "left" }}
                                 />
                             </div>
                             <div className="ce-field">
-                                <label>{i18n.catalog["text_b65ad533c1a8"]}</label>
+                                <label>{i18n.catalog["tax.complianceprofileeditor.taxAuthority"]}</label>
                                 <select
                                     value={taxAuthorityId}
                                     onChange={(e) => setTaxAuthorityId(Number(e.target.value))}
@@ -386,21 +386,21 @@ export function ComplianceProfileEditor({
                                 </select>
                             </div>
                             <div className="ce-field" style={{ minWidth: 100, flex: "0 0 auto" }}>
-                                <label>{i18n.catalog["text_c3a4749caed4"]}</label>
+                                <label>{i18n.catalog["common.general.status.alternative2"]}</label>
                                 <select
                                     value={isActive ? "1" : "0"}
                                     onChange={(e) => setIsActive(e.target.value === "1")}
                                     className="ce-select"
                                 >
-                                    <option value="1">{i18n.catalog["text_629e90b3af3d"]}</option>
-                                    <option value="0">{i18n.catalog["text_b719ac8add4e"]}</option>
+                                    <option value="1">{i18n.catalog["common.general.active"]}</option>
+                                    <option value="0">{i18n.catalog["common.general.inactive"]}</option>
                                 </select>
                             </div>
                         </div>
 
                         {/* ── Policy Selection ── */}
                         <div className="ce-config-section-label" style={{ marginTop: 4 }}>
-                            <i className="fas fa-route" /> {i18n.catalog["text_8263f1a89ee2"]}</div>
+                            <i className="fas fa-route" /> {i18n.catalog["tax.complianceprofileeditor.policyType"]}</div>
                         <div className="ce-config-row">
                             <div className="ce-policy-toggle">
                                 <button
@@ -409,9 +409,9 @@ export function ComplianceProfileEditor({
                                     type="button"
                                 >
                                     <i className="fas fa-paper-plane ce-policy-icon" />
-                                    <span className="ce-policy-label">{i18n.catalog["text_97df31193a2f"]}</span>
+                                    <span className="ce-policy-label">{i18n.catalog["tax.complianceprofileeditor.policy1SendPush"]}</span>
                                     <span className="ce-policy-desc">
-                                        {i18n.catalog["text_48ca2884016a"]}</span>
+                                        {i18n.catalog["tax.complianceprofileeditor.ourSystemAutomaticallySendsDataEntitySEndpoint"]}</span>
                                 </button>
                                 <button
                                     className={`ce-policy-option ${policyType === "pull" ? "active pull" : ""}`}
@@ -419,16 +419,16 @@ export function ComplianceProfileEditor({
                                     type="button"
                                 >
                                     <i className="fas fa-download ce-policy-icon" />
-                                    <span className="ce-policy-label">{i18n.catalog["text_73fe261a9d42"]}</span>
+                                    <span className="ce-policy-label">{i18n.catalog["tax.complianceprofileeditor.policy2ReceptionPull"]}</span>
                                     <span className="ce-policy-desc">
-                                        {i18n.catalog["text_f3f2473dab7b"]}</span>
+                                        {i18n.catalog["tax.complianceprofileeditor.entityAccessesOurDataViaApiGeneratedSecurity"]}</span>
                                 </button>
                             </div>
                         </div>
 
                         {/* ── Format Selection ── */}
                         <div className="ce-config-section-label">
-                            <i className="fas fa-file-export" /> {i18n.catalog["text_290eba083a3c"]}</div>
+                            <i className="fas fa-file-export" /> {i18n.catalog["tax.complianceprofileeditor.transmissionFormat"]}</div>
                         <div className="ce-config-row">
                             <div className="ce-field-full">
                                 <div className="ce-format-selector">
@@ -451,10 +451,10 @@ export function ComplianceProfileEditor({
                         {policyType === "push" && (
                             <>
                                 <div className="ce-config-section-label" style={{ marginTop: 4 }}>
-                                    <i className="fas fa-server" /> {i18n.catalog["text_290aad95abe2"]}</div>
+                                    <i className="fas fa-server" /> {i18n.catalog["tax.complianceprofileeditor.pushSettings"]}</div>
                                 <div className="ce-config-row">
                                     <div className="ce-field ce-field-wide">
-                                        <label>{i18n.catalog["text_1ab6a589f765"]}</label>
+                                        <label>{i18n.catalog["tax.complianceprofileeditor.endpointUrl"]}</label>
                                         <input
                                             type="url"
                                             value={endpointUrl}
@@ -465,7 +465,7 @@ export function ComplianceProfileEditor({
                                         />
                                     </div>
                                     <div className="ce-field" style={{ minWidth: 120, flex: "0 0 auto" }}>
-                                        <label>{i18n.catalog["text_596fe2e088b3"]}</label>
+                                        <label>{i18n.catalog["tax.complianceprofileeditor.httpMethod"]}</label>
                                         <select
                                             value={httpMethod}
                                             onChange={(e) => setHttpMethod(e.target.value)}
@@ -479,7 +479,7 @@ export function ComplianceProfileEditor({
                                 </div>
                                 <div className="ce-config-row">
                                     <div className="ce-field">
-                                        <label>{i18n.catalog["text_119babff2748"]}</label>
+                                        <label>{i18n.catalog["tax.complianceprofileeditor.authenticationType"]}</label>
                                         <select
                                             value={authType}
                                             onChange={(e) => setAuthType(e.target.value as AuthType)}
@@ -492,16 +492,16 @@ export function ComplianceProfileEditor({
                                     </div>
                                     {authType !== "none" && (
                                         <div className="ce-field ce-field-wide">
-                                            <label>{i18n.catalog["text_b2ebbefd586a"]}</label>
+                                            <label>{i18n.catalog["tax.complianceprofileeditor.authenticationData"]}</label>
                                             <input
                                                 type="password"
                                                 value={authCredentials}
                                                 onChange={(e) => setAuthCredentials(e.target.value)}
                                                 placeholder={
-                                                    authType === i18n.catalog["text_2454ad61c2ac"] ? i18n.catalog["text_5e4f407b48c5"] :
-                                                        authType === i18n.catalog["text_fbb7b5bf4ca3"] ? i18n.catalog["text_bc842c31a9e5"] :
-                                                            authType === i18n.catalog["text_2e9bc6c94a4c"] ? i18n.catalog["text_226cfd9ea50d"] :
-                                                                i18n.catalog["text_ca0e88ea2d25"]
+                                                    authType === i18n.catalog["tax.complianceprofileeditor.bearer"] ? i18n.catalog["tax.complianceprofileeditor.bearerToken.alternative2"] :
+                                                        authType === i18n.catalog["tax.complianceprofileeditor.basic"] ? i18n.catalog["tax.complianceprofileeditor.usernamePassword"] :
+                                                            authType === i18n.catalog["tax.complianceprofileeditor.apiKey.alternative3"] ? i18n.catalog["tax.complianceprofileeditor.apiKey"] :
+                                                                i18n.catalog["tax.complianceprofileeditor.credentials"]
                                                 }
                                                 className="ce-input"
                                                 style={{ direction: "ltr", textAlign: "left" }}
@@ -511,11 +511,11 @@ export function ComplianceProfileEditor({
                                 </div>
                                 <div className="ce-config-row">
                                     <div className="ce-field-full">
-                                        <label>{i18n.catalog["text_2ab497db3f85"]}</label>
+                                        <label>{i18n.catalog["tax.complianceprofileeditor.additionalHttpHeadersOptionalJson"]}</label>
                                         <textarea
                                             value={requestHeaders}
                                             onChange={(e) => setRequestHeaders(e.target.value)}
-                                            placeholder={i18n.catalog["text_ba706d3707b1"]}
+                                            placeholder={i18n.catalog["tax.complianceprofileeditor.xCustomHeaderValueAcceptLanguageAr"]}
                                             className="ce-textarea"
                                             rows={3}
                                             style={{ direction: "ltr", textAlign: "left" }}
@@ -524,18 +524,18 @@ export function ComplianceProfileEditor({
                                 </div>
                                 <div className="ce-config-row">
                                     <div className="ce-field-full">
-                                        <label>{i18n.catalog["text_e76fe1849d63"]}</label>
+                                        <label>{i18n.catalog["tax.complianceprofileeditor.openapiSpecificationOptionalJson"]}</label>
                                         <textarea
                                             value={openApiSpec}
                                             onChange={(e) => setOpenApiSpec(e.target.value)}
-                                            placeholder={i18n.catalog["text_9a9c15c97a8f"]}
+                                            placeholder={i18n.catalog["tax.complianceprofileeditor.openapi300InfoPaths"]}
                                             className="ce-textarea"
                                             rows={4}
                                             style={{ direction: "ltr", textAlign: "left" }}
                                         />
                                         <span style={{ fontSize: 10, color: "#6c8cff", marginTop: 2 }}>
                                             <i className="fas fa-info-circle" style={{ marginLeft: 4 }} />
-                                            {i18n.catalog["text_522ec464f7c2"]}</span>
+                                            {i18n.catalog["tax.complianceprofileeditor.whenOpenapiSpecificationsAreProvidedSystemWillAutomatically"]}</span>
                                     </div>
                                 </div>
                             </>
@@ -545,26 +545,26 @@ export function ComplianceProfileEditor({
                         {policyType === "pull" && (
                             <>
                                 <div className="ce-config-section-label" style={{ marginTop: 4 }}>
-                                    <i className="fas fa-key" /> {i18n.catalog["text_df3bf5f6b8dc"]}</div>
+                                    <i className="fas fa-key" /> {i18n.catalog["tax.complianceprofileeditor.receivingSettingsPull"]}</div>
                                 <div className="ce-config-row">
                                     <div className="ce-field">
-                                        <label>{i18n.catalog["text_41a30dff4aec"]}</label>
+                                        <label>{i18n.catalog["tax.complianceprofileeditor.endpointPath"]}</label>
                                         <input
                                             type="text"
                                             value={pullEndpointPath}
                                             onChange={(e) => setPullEndpointPath(e.target.value.replace(/[^a-zA-Z0-9_-]/g, ""))}
-                                            placeholder={i18n.catalog["text_c9d9b1e8a3df"]}
+                                            placeholder={i18n.catalog["tax.complianceprofileeditor.complianceData"]}
                                             className="ce-input"
                                             style={{ direction: "ltr", textAlign: "left" }}
                                         />
                                     </div>
                                     <div className="ce-field ce-field-wide">
-                                        <label>{i18n.catalog["text_91e71ba1752a"]}</label>
+                                        <label>{i18n.catalog["tax.complianceprofileeditor.allowedIpAddressesOptionalCommaSeparated"]}</label>
                                         <input
                                             type="text"
                                             value={allowedIps}
                                             onChange={(e) => setAllowedIps(e.target.value)}
-                                            placeholder={i18n.catalog["text_75e1d58991bc"]}
+                                            placeholder={i18n.catalog["tax.complianceprofileeditor.message192168111000024"]}
                                             className="ce-input"
                                             style={{ direction: "ltr", textAlign: "left" }}
                                         />
@@ -574,7 +574,7 @@ export function ComplianceProfileEditor({
                                 {/* Endpoint Preview */}
                                 <div className="ce-config-row">
                                     <div className="ce-field-full">
-                                        <label>{i18n.catalog["text_3bdcf1d3b90f"]}</label>
+                                        <label>{i18n.catalog["tax.complianceprofileeditor.entityEndpoint"]}</label>
                                         <div className="ce-endpoint-info">
                                             <span className="ce-method-badge">GET</span>
                                             <code>{pullEndpoint}</code>
@@ -585,40 +585,40 @@ export function ComplianceProfileEditor({
                                 {/* Token Display */}
                                 <div className="ce-config-row">
                                     <div className="ce-field-full">
-                                        <label>{i18n.catalog["text_0c5fbf4ab285"]}</label>
+                                        <label>{i18n.catalog["tax.complianceprofileeditor.accessToken"]}</label>
                                         <div className="ce-token-display">
                                             {(tokenPreview || rawToken) ? (
                                                 <>
                                                     <div className="ce-token-value">
                                                         <code>{rawToken || tokenPreview}</code>
                                                         <button className="ce-token-copy" onClick={handleCopyToken}>
-                                                            <i className="fas fa-copy" /> {rawToken ? i18n.catalog["text_29a0e2739a92"] : i18n.catalog["text_2ba494867920"]}
+                                                            <i className="fas fa-copy" /> {rawToken ? i18n.catalog["tax.complianceprofileeditor.copy"] : i18n.catalog["tax.complianceprofileeditor.hidden"]}
                                                         </button>
                                                     </div>
                                                     {rawToken && (
                                                         <div style={{ fontSize: 10, color: "#f59e0b", margin: "4px 0", display: "flex", alignItems: "center", gap: 4 }}>
                                                             <i className="fas fa-exclamation-triangle" />
-                                                            {i18n.catalog["text_4da20aa7276d"]}</div>
+                                                            {i18n.catalog["tax.complianceprofileeditor.thisTokenIsShownOnlyOnceCopy"]}</div>
                                                     )}
                                                     <div className="ce-token-meta">
                                                         {tokenExpiresAt && (
                                                             <span>
                                                                 <i className="fas fa-clock" />
-                                                                {i18n.catalog["text_c13403f9b32d"]}{new Date(tokenExpiresAt).toLocaleDateString("ar-SA")}
+                                                                {i18n.catalog["tax.complianceprofileeditor.expires"]}{new Date(tokenExpiresAt).toLocaleDateString("ar-SA")}
                                                             </span>
                                                         )}
                                                     </div>
                                                     <div className="ce-token-actions">
                                                         <button className="ce-token-btn generate" onClick={handleRegenerateToken}>
-                                                            <i className="fas fa-sync" /> {i18n.catalog["text_adcb933a3cb3"]}</button>
+                                                            <i className="fas fa-sync" /> {i18n.catalog["tax.complianceprofileeditor.recreate"]}</button>
                                                         <button className="ce-token-btn revoke" onClick={handleRevokeToken}>
-                                                            <i className="fas fa-ban" /> {i18n.catalog["text_feecb98abc70"]}</button>
+                                                            <i className="fas fa-ban" /> {i18n.catalog["tax.complianceprofileeditor.revokeToken"]}</button>
                                                     </div>
                                                 </>
                                             ) : (
                                                 <div style={{ textAlign: "center", padding: "12px 0" }}>
                                                     <span style={{ color: "#8890a4", fontSize: 12 }}>
-                                                        {i18n.catalog["text_c969380c2022"]}</span>
+                                                        {i18n.catalog["tax.complianceprofileeditor.noTokenHasBeenCreatedYetTokenWill"]}</span>
                                                 </div>
                                             )}
                                         </div>
@@ -629,13 +629,13 @@ export function ComplianceProfileEditor({
 
                         {/* ── Notes ── */}
                         <div className="ce-config-section-label" style={{ marginTop: 4 }}>
-                            <i className="fas fa-sticky-note" /> {i18n.catalog["text_d446d2dc6b81"]}</div>
+                            <i className="fas fa-sticky-note" /> {i18n.catalog["common.general.notes.alternative2"]}</div>
                         <div className="ce-config-row" style={{ paddingBottom: 20 }}>
                             <div className="ce-field-full">
                                 <textarea
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
-                                    placeholder={i18n.catalog["text_d3da818ddc30"]}
+                                    placeholder={i18n.catalog["tax.complianceprofileeditor.additionalNotesAboutThisProfile"]}
                                     className="ce-textarea"
                                     rows={3}
                                 />

@@ -20,7 +20,7 @@ export function NavigationControls({ onUp }: NavigationControlsProps) {
             <button
                 type="button"
                 className="search-nav-icon-btn"
-                aria-label={i18n.catalog["text_041aefc44394"]}
+                aria-label={i18n.catalog["components.navigationcontrols.toggleSidebar"]}
                 onClick={() => {
                     if (window.innerWidth <= 1024) {
                         setMobileOpen(!mobileOpen);
@@ -35,7 +35,7 @@ export function NavigationControls({ onUp }: NavigationControlsProps) {
             <button
                 type="button"
                 className="search-nav-icon-btn"
-                aria-label={i18n.catalog["text_f1c65e14817e"]}
+                aria-label={i18n.catalog["components.navigationcontrols.forward"]}
                 onClick={() => router.forward()}
             >
                 {getIcon("arrow-right")}
@@ -43,7 +43,7 @@ export function NavigationControls({ onUp }: NavigationControlsProps) {
             <button
                 type="button"
                 className="search-nav-icon-btn"
-                aria-label={i18n.catalog["text_76900f1bfd16"]}
+                aria-label={i18n.catalog["components.navigationcontrols.back"]}
                 onClick={() => router.back()}
             >
                 {getIcon("arrow-left")}
@@ -51,7 +51,7 @@ export function NavigationControls({ onUp }: NavigationControlsProps) {
             <button
                 type="button"
                 className="search-nav-icon-btn"
-                aria-label={i18n.catalog["text_ad18290855a2"]}
+                aria-label={i18n.catalog["components.navigationcontrols.upOneLevel"]}
                 onClick={onUp}
             >
                 {getIcon("arrow-up")}

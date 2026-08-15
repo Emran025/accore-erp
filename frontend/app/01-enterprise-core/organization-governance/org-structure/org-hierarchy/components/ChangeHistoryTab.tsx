@@ -24,17 +24,17 @@ interface ChangeRecord {
 }
 
 const ENTITY_LABELS: Record<string, string> = {
-    node: catalogMessage("text_edeadb5736ca"),
-    link: catalogMessage("text_cdc6fcf112b9"),
-    meta_type: catalogMessage("text_46084affa676"),
-    topology_rule: catalogMessage("text_9beaf758c058"),
+    node: catalogMessage("common.general.organizationalUnit"),
+    link: catalogMessage("enterpriseCore.changehistory.link"),
+    meta_type: catalogMessage("enterpriseCore.changehistory.unitType"),
+    topology_rule: catalogMessage("enterpriseCore.changehistory.linkingRule"),
 };
 
 const CHANGE_TYPE_LABELS: Record<string, string> = {
-    created: catalogMessage("text_a820f3590d36"),
-    updated: catalogMessage("text_00eab31f95b7"),
-    deleted: catalogMessage("text_59ca629220a6"),
-    status_change: catalogMessage("text_2a38ee752b4e"),
+    created: catalogMessage("common.general.create"),
+    updated: catalogMessage("common.general.update"),
+    deleted: catalogMessage("common.general.delete"),
+    status_change: catalogMessage("enterpriseCore.changehistory.changeStatus"),
 };
 
 const CHANGE_TYPE_COLORS: Record<string, string> = {
@@ -70,7 +70,7 @@ export function ChangeHistoryTab() {
             }
             const res = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.ORG.CHANGE_HISTORY}?${params}`);
             setHistory((res.history as ChangeRecord[]) || []);
-        } catch { showToast(i18n.catalog["text_3beccbe19c43"], "error"); }
+        } catch { showToast(i18n.catalog["enterpriseCore.changehistory.failedLoadChangeLog"], "error"); }
         finally { setIsLoading(false); }
     }, [limit, filterEntity]);
 
@@ -95,10 +95,10 @@ export function ChangeHistoryTab() {
             const diffHrs = Math.floor(diffMins / 60);
             const diffDays = Math.floor(diffHrs / 24);
 
-            if (diffMins < 1) return i18n.catalog["text_baef96cba5de"];
-            if (diffMins < 60) return catalogText(i18n, "text_7bfdc7e11d9d", { value0: diffMins });
-            if (diffHrs < 24) return catalogText(i18n, "text_5b184df0c3a6", { value0: diffHrs });
-            if (diffDays < 7) return catalogText(i18n, "text_71de43eee227", { value0: diffDays });
+            if (diffMins < 1) return i18n.catalog["enterpriseCore.changehistory.now"];
+            if (diffMins < 60) return catalogText(i18n, "enterpriseCore.changehistory.minutesAgo", { value0: diffMins });
+            if (diffHrs < 24) return catalogText(i18n, "enterpriseCore.changehistory.hoursAgo", { value0: diffHrs });
+            if (diffDays < 7) return catalogText(i18n, "enterpriseCore.changehistory.daysAgo", { value0: diffDays });
 
             return d.toLocaleDateString("ar-SA", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
         } catch { return dateStr; }
@@ -116,7 +116,7 @@ export function ChangeHistoryTab() {
         const ignoreKeys = ["created_at", "updated_at", "created_by", "updated_by", "node_uuid"];
         const relevantKeys = [...allKeys].filter(k => !ignoreKeys.includes(k));
 
-        if (relevantKeys.length === 0) return <span style={{ color: "var(--text-muted)", fontSize: "0.78rem" }}>{i18n.catalog["text_06c05940bb2e"]}</span>;
+        if (relevantKeys.length === 0) return <span style={{ color: "var(--text-muted)", fontSize: "0.78rem" }}>{i18n.catalog["enterpriseCore.changehistory.noDetails"]}</span>;
 
         return (
             <div style={{ display: "grid", gap: "4px", fontSize: "0.78rem" }}>
@@ -170,7 +170,7 @@ export function ChangeHistoryTab() {
 
     const historyColumns: Column<ChangeRecord>[] = [
         {
-            key: "time", header: i18n.catalog["text_a3a18dc9c6f1"], dataLabel: i18n.catalog["text_a3a18dc9c6f1"],
+            key: "time", header: i18n.catalog["common.general.time"], dataLabel: i18n.catalog["common.general.time"],
             render: (r) => (
                 <div>
                     <div style={{ fontWeight: 500, fontSize: "0.83rem" }}>{formatDate(r.created_at)}</div>
@@ -181,7 +181,7 @@ export function ChangeHistoryTab() {
             ),
         },
         {
-            key: "change_type", header: i18n.catalog["text_1937a4fdfca8"], dataLabel: i18n.catalog["text_1937a4fdfca8"],
+            key: "change_type", header: i18n.catalog["common.general.operation"], dataLabel: i18n.catalog["common.general.operation"],
             render: (r) => {
                 const color = CHANGE_TYPE_COLORS[r.change_type] || "#6b7280";
                 return (
@@ -198,7 +198,7 @@ export function ChangeHistoryTab() {
             },
         },
         {
-            key: "entity_type", header: i18n.catalog["text_8b20cd227b59"], dataLabel: i18n.catalog["text_8b20cd227b59"],
+            key: "entity_type", header: i18n.catalog["common.general.entity"], dataLabel: i18n.catalog["common.general.entity"],
             render: (r) => (
                 <div>
                     <span style={{ fontWeight: 500, fontSize: "0.85rem" }}>{ENTITY_LABELS[r.entity_type] || r.entity_type}</span>
@@ -209,7 +209,7 @@ export function ChangeHistoryTab() {
             ),
         },
         {
-            key: "changed_by", header: i18n.catalog["text_a98b66bae2c9"], dataLabel: i18n.catalog["text_a98b66bae2c9"],
+            key: "changed_by", header: i18n.catalog["common.general.notAvailable.alternative7"], dataLabel: i18n.catalog["common.general.notAvailable.alternative7"],
             render: (r) => (
                 <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
                     <span style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>{getIcon("user")}</span>
@@ -218,7 +218,7 @@ export function ChangeHistoryTab() {
             ),
         },
         {
-            key: "details", header: i18n.catalog["text_bb75fc39849a"], dataLabel: i18n.catalog["text_bb75fc39849a"],
+            key: "details", header: i18n.catalog["common.general.details.alternative2"], dataLabel: i18n.catalog["common.general.details.alternative2"],
             render: (r) => (
                 <button
                     onClick={() => setExpandedId(expandedId === r.id ? null : r.id)}
@@ -229,7 +229,7 @@ export function ChangeHistoryTab() {
                         transition: "all 0.15s",
                     }}
                 >
-                    {expandedId === r.id ? i18n.catalog["text_80b44ac83814"] : i18n.catalog["text_3824e18ca83b"]} {getIcon(expandedId === r.id ? "chevron-up" : "chevron-down")}
+                    {expandedId === r.id ? i18n.catalog["common.general.hide"] : i18n.catalog["common.general.view"]} {getIcon(expandedId === r.id ? "chevron-up" : "chevron-down")}
                 </button>
             ),
         },
@@ -239,31 +239,31 @@ export function ChangeHistoryTab() {
         <div className="sales-card animate-fade">
             <PageSubHeader
                 titleIcon="history"
-                title={i18n.catalog["text_d3e10428c577"]}
-                subTitle={i18n.catalog["text_297793f598d8"]}
+                title={i18n.catalog["enterpriseCore.changehistory.changeDocumentsScdo"]}
+                subTitle={i18n.catalog["enterpriseCore.changehistory.trackAllChangesUnitsLinksRulesSimulation"]}
                 actions={
                     <>
                         <Select value={filterEntity} onChange={(e) => setFilterEntity(e.target.value)} style={{ maxWidth: "160px" }}
                             options={[
-                                { value: "", label: i18n.catalog["text_d176adabe317"] },
-                                { value: "node", label: i18n.catalog["text_e7ca190379e9"] },
-                                { value: "link", label: i18n.catalog["text_7c2fceaa8407"] },
-                                { value: "meta_type", label: i18n.catalog["text_ed5104e388c6"] },
-                                { value: "topology_rule", label: i18n.catalog["text_a168cb818790"] },
+                                { value: "", label: i18n.catalog["enterpriseCore.changehistory.allEntities"] },
+                                { value: "node", label: i18n.catalog["enterpriseCore.changehistory.organizationalUnits"] },
+                                { value: "link", label: i18n.catalog["enterpriseCore.changehistory.links"] },
+                                { value: "meta_type", label: i18n.catalog["common.general.typesUnits"] },
+                                { value: "topology_rule", label: i18n.catalog["common.general.linkingRules"] },
                             ]}
                         />
                         <Select value={String(limit)} onChange={(e) => setLimit(parseInt(e.target.value))} style={{ maxWidth: "120px" }}
                             options={[
-                                { value: 25, label: i18n.catalog["text_3f97a3ac44f7"] },
-                                { value: 50, label: i18n.catalog["text_e0195f602cc1"] },
-                                { value: 100, label: i18n.catalog["text_0208ea902abd"] },
-                                { value: 200, label: i18n.catalog["text_87ca4b6b9d3f"] },
+                                { value: 25, label: i18n.catalog["enterpriseCore.changehistory.last25"] },
+                                { value: 50, label: i18n.catalog["enterpriseCore.changehistory.last50"] },
+                                { value: 100, label: i18n.catalog["enterpriseCore.changehistory.last100"] },
+                                { value: 200, label: i18n.catalog["enterpriseCore.changehistory.last200"] },
                             ]}
                         />
                         <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>
-                            {i18n.catalog["text_892946733d2c"]}{filteredHistory.length} {i18n.catalog["text_4d7d679f7b4c"]}{history.length} {i18n.catalog["text_a925525adbfc"]}</span>
+                            {i18n.catalog["enterpriseCore.changehistory.visible"]}{filteredHistory.length} {i18n.catalog["common.general.notAvailable.alternative2"]}{history.length} {i18n.catalog["enterpriseCore.changehistory.log"]}</span>
                         <Button variant="secondary" onClick={loadHistory} disabled={isLoading}>
-                            {isLoading ? i18n.catalog["text_ceac78d7f5d3"] : i18n.catalog["text_00eab31f95b7"]}
+                            {isLoading ? i18n.catalog["common.general.loading"] : i18n.catalog["common.general.update"]}
                         </Button>
                     </>
                 }
@@ -292,7 +292,7 @@ export function ChangeHistoryTab() {
                 })}
             </div>
 
-            <Table columns={historyColumns} data={filteredHistory} keyExtractor={(r) => String(r.id)} emptyMessage={i18n.catalog["text_0b842f5ceb1a"]} isLoading={isLoading} />
+            <Table columns={historyColumns} data={filteredHistory} keyExtractor={(r) => String(r.id)} emptyMessage={i18n.catalog["enterpriseCore.changehistory.noChangeLogYet"]} isLoading={isLoading} />
 
             {/* Expanded Detail */}
             {expandedId && (() => {
@@ -306,7 +306,7 @@ export function ChangeHistoryTab() {
                     }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
                             <h4 style={{ margin: 0, fontSize: "0.95rem" }}>
-                                {getIcon("search")} {i18n.catalog["text_c64add80da01"]}{record.id}
+                                {getIcon("search")} {i18n.catalog["enterpriseCore.changehistory.changeDetails"]}{record.id}
                             </h4>
                             <button onClick={() => setExpandedId(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}>
                                 {getIcon("close")}
@@ -316,12 +316,12 @@ export function ChangeHistoryTab() {
                         {/* Change metadata — using MetaGrid */}
                         <div style={{ marginBottom: "1rem" }}>
                             <MetaGrid items={[
-                                { label: i18n.catalog["text_8b20cd227b59"], value: ENTITY_LABELS[record.entity_type] || record.entity_type },
-                                { label: i18n.catalog["text_1e1c955cdb06"], value: record.entity_id },
-                                { label: i18n.catalog["text_1937a4fdfca8"], value: CHANGE_TYPE_LABELS[record.change_type] || record.change_type },
-                                { label: i18n.catalog["text_a98b66bae2c9"], value: record.changed_by_user?.name || `#${record.changed_by || "—"}` },
-                                { label: i18n.catalog["text_9c19003be80c"], value: new Date(record.created_at).toLocaleString("ar-SA") },
-                                ...(record.change_reason ? [{ label: i18n.catalog["text_c3b023d78238"], value: record.change_reason }] : []),
+                                { label: i18n.catalog["common.general.entity"], value: ENTITY_LABELS[record.entity_type] || record.entity_type },
+                                { label: i18n.catalog["common.general.identifier"], value: record.entity_id },
+                                { label: i18n.catalog["common.general.operation"], value: CHANGE_TYPE_LABELS[record.change_type] || record.change_type },
+                                { label: i18n.catalog["common.general.notAvailable.alternative7"], value: record.changed_by_user?.name || `#${record.changed_by || "—"}` },
+                                { label: i18n.catalog["enterpriseCore.changehistory.timing"], value: new Date(record.created_at).toLocaleString("ar-SA") },
+                                ...(record.change_reason ? [{ label: i18n.catalog["common.general.reason"], value: record.change_reason }] : []),
                             ]} />
                         </div>
 
@@ -330,14 +330,14 @@ export function ChangeHistoryTab() {
                             {record.old_values && (
                                 <div>
                                     <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--danger)", marginBottom: "0.35rem" }}>
-                                        {getIcon("minus-circle")} {i18n.catalog["text_3eec8d91b7c4"]}</div>
+                                        {getIcon("minus-circle")} {i18n.catalog["enterpriseCore.changehistory.previousValues"]}</div>
                                     {renderDiff(record.old_values, undefined)}
                                 </div>
                             )}
                             {record.new_values && (
                                 <div>
                                     <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--success)", marginBottom: "0.35rem" }}>
-                                        {getIcon("plus-circle")} {i18n.catalog["text_521d52257885"]}</div>
+                                        {getIcon("plus-circle")} {i18n.catalog["enterpriseCore.changehistory.newValues"]}</div>
                                     {renderDiff(undefined, record.new_values)}
                                 </div>
                             )}
@@ -347,7 +347,7 @@ export function ChangeHistoryTab() {
                         {record.old_values && record.new_values && (
                             <div style={{ marginTop: "1rem" }}>
                                 <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--primary)", marginBottom: "0.35rem" }}>
-                                    {getIcon("edit")} {i18n.catalog["text_cf0988548793"]}</div>
+                                    {getIcon("edit")} {i18n.catalog["enterpriseCore.changehistory.compareChanges"]}</div>
                                 {renderDiff(record.old_values, record.new_values)}
                             </div>
                         )}

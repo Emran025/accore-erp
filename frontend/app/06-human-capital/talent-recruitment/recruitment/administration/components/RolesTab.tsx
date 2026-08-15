@@ -36,7 +36,7 @@ export function RolesTab() {
         setRoles(mappedRoles);
       }
     } catch {
-      console.error(catalogMessage("text_2f4a55a67cba"));
+      console.error(catalogMessage("humanCapital.roles.errorLoadingRoles"));
     }
   }, []);
 
@@ -54,7 +54,7 @@ export function RolesTab() {
         setFlatModules(flat);
       }
     } catch {
-      console.error(catalogMessage("text_dc96f19b9ad6"));
+      console.error(catalogMessage("humanCapital.roles.errorLoadingModules"));
     }
   }, []);
 
@@ -82,7 +82,7 @@ export function RolesTab() {
         setSelectedRole({ ...role, permissions: mappedPermissions });
       }
     } catch {
-      showToast(catalogMessage("text_f26313c4a1ea"), "error");
+      showToast(catalogMessage("humanCapital.roles.errorLoadingPermissions"), "error");
     }
   };
 
@@ -128,10 +128,10 @@ export function RolesTab() {
           }).filter(p => p.module_id)
         }),
       });
-      showToast(catalogMessage("text_a046b13e1447"), "success");
+      showToast(catalogMessage("humanCapital.roles.permissionsSaved"), "success");
       loadRoles();
     } catch {
-      showToast(catalogMessage("text_510af2350e99"), "error");
+      showToast(catalogMessage("humanCapital.roles.errorSavingPermissions"), "error");
     }
   };
 
@@ -143,7 +143,7 @@ export function RolesTab() {
 
   const createRole = async () => {
     if (!newRoleName.trim()) {
-      showToast(catalogMessage("text_c2ca8269b7a1"), "error");
+      showToast(catalogMessage("humanCapital.roles.pleaseEnterRoleName"), "error");
       return;
     }
 
@@ -152,11 +152,11 @@ export function RolesTab() {
         method: "POST",
         body: JSON.stringify({ name: newRoleName, description: newRoleDescription }),
       });
-      showToast(catalogMessage("text_dcf9efdf04a9"), "success");
+      showToast(catalogMessage("humanCapital.roles.roleCreatedSuccessfully"), "success");
       setRoleDialog(false);
       loadRoles();
     } catch {
-      showToast(catalogMessage("text_17e521548a3d"), "error");
+      showToast(catalogMessage("humanCapital.roles.errorCreatingRole"), "error");
     }
   };
 
@@ -170,13 +170,13 @@ export function RolesTab() {
 
     try {
       await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.IAM.USERS.ROLES_WITH_ID(deleteRoleId), { method: "DELETE" });
-      showToast(catalogMessage("text_a0c01a231019"), "success");
+      showToast(catalogMessage("humanCapital.roles.roleDeleted"), "success");
       if (selectedRole?.id === deleteRoleId) {
         setSelectedRole(null);
       }
       loadRoles();
     } catch {
-      showToast(catalogMessage("text_b321ee20d42f"), "error");
+      showToast(catalogMessage("humanCapital.roles.errorDeletingRole"), "error");
     }
   };
 
@@ -188,15 +188,15 @@ export function RolesTab() {
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
-      dashboard: catalogMessage("text_336496c4f685"),
-      sales: catalogMessage("text_7bf1b13416bc"),
-      inventory: catalogMessage("text_a0e7c1b2423d"),
-      purchases: catalogMessage("text_2a14f93caa32"),
-      finance: catalogMessage("text_66fe73615494"),
-      hr: catalogMessage("text_6c30b5a7d30b"),
-      reports: catalogMessage("text_2157b1313ba3"),
-      system: catalogMessage("text_df8d4a3bd114"),
-      users: catalogMessage("text_b378cbffd5df")
+      dashboard: catalogMessage("common.general.dashboard"),
+      sales: catalogMessage("common.general.sales"),
+      inventory: catalogMessage("common.general.inventory"),
+      purchases: catalogMessage("common.general.purchases"),
+      finance: catalogMessage("common.general.finance"),
+      hr: catalogMessage("common.general.humanResources"),
+      reports: catalogMessage("humanCapital.roles.reports"),
+      system: catalogMessage("common.general.system"),
+      users: catalogMessage("common.general.users")
     };
     return labels[category] || category;
   };
@@ -207,22 +207,22 @@ export function RolesTab() {
         {/* Roles List */}
         <div className="roles-list-card">
           <div className="section-header" style={{ padding: "1.25rem", borderBottom: "1px solid var(--border-color)" }}>
-            <h3>{catalogMessage("text_5130f6cf7138")}</h3>
+            <h3>{catalogMessage("humanCapital.roles.jobRoles")}</h3>
             <button
               className="btn btn-primary btn-sm"
               onClick={openCreateRoleDialog}
             >
-              {getIcon("plus")} {catalogMessage("text_9d45d2b81af0")}</button>
+              {getIcon("plus")} {catalogMessage("humanCapital.roles.newRole")}</button>
           </div>
           <div className="roles-list" id="rolesList">
             {isLoading ? (
               <div className="empty-state">
                 <i className="fas fa-spinner fa-spin"></i>
-                <p>{catalogMessage("text_6815ab379ae7")}</p>
+                <p>{catalogMessage("humanCapital.roles.loadingRoles")}</p>
               </div>
             ) : roles.length === 0 ? (
               <div className="empty-state">
-                <p>{catalogMessage("text_e64436a59a4c")}</p>
+                <p>{catalogMessage("humanCapital.roles.noRolesAdded")}</p>
               </div>
             ) : (
               roles.map((role) => (
@@ -235,9 +235,9 @@ export function RolesTab() {
                     <h4>
                       {role.role_name_en}
                       {/* Add system badge if needed, though interface doesn't strictly have is_system yet */}
-                      {role.role_name_en === 'admin' && <span className="badge-system">{catalogMessage("text_c339ab0ce05e")}</span>}
+                      {role.role_name_en === 'admin' && <span className="badge-system">{catalogMessage("humanCapital.roles.system")}</span>}
                     </h4>
-                    <p>{role.description || catalogMessage("text_00a8639676a3")}</p>
+                    <p>{role.description || catalogMessage("common.general.noDescription")}</p>
                   </div>
                   <div style={{ display: "flex", gap: "8px" }}>
                     {role.role_name_en !== "admin" && (
@@ -247,7 +247,7 @@ export function RolesTab() {
                           e.stopPropagation();
                           confirmDeleteRole(role.id);
                         }}
-                        title={catalogMessage("text_ea1097a04257")}
+                        title={catalogMessage("humanCapital.roles.deleteRole")}
                       >
                         {/* SVG trash icon usually, assuming getIcon returns SVG or we use FA */}
                         <i className="fas fa-trash"></i>
@@ -266,8 +266,8 @@ export function RolesTab() {
           {!selectedRole ? (
             <div className="empty-state" style={{ height: "100%", justifyContent: "center", alignItems: "center" }}>
               <i className="fas fa-shield-halved" style={{ fontSize: "4rem", marginBottom: "1.5rem", color: "var(--primary-light)", opacity: 0.3 }}></i>
-              <h3>{catalogMessage("text_756905c965f6")}</h3>
-              <p>{catalogMessage("text_40bc2355cf04")}</p>
+              <h3>{catalogMessage("humanCapital.roles.permissionsControlPanel")}</h3>
+              <p>{catalogMessage("humanCapital.roles.pleaseSelectJobRoleViewEditItsAssigned")}</p>
             </div>
           ) : (
             <>
@@ -277,13 +277,13 @@ export function RolesTab() {
                   <div>
                     <h3 style={{ margin: 0 }}>{selectedRole.role_name_en}</h3>
                     <p className="text-muted" style={{ margin: 0, fontSize: "0.85rem" }}>
-                      {selectedRole.description || catalogMessage("text_00a8639676a3")}
+                      {selectedRole.description || catalogMessage("common.general.noDescription")}
                     </p>
                   </div>
                 </div>
                 <div className="header-actions">
                   <button className="btn btn-primary btn-sm" onClick={saveRolePermissions}>
-                    <i className="fas fa-save"></i> {catalogMessage("text_9b70c9af5cbd")}</button>
+                    <i className="fas fa-save"></i> {catalogMessage("common.general.saveChanges.alternative2")}</button>
                 </div>
               </div>
 
@@ -298,22 +298,22 @@ export function RolesTab() {
                         <div className="module-name">{module.module_name_ar || module.module_name_ar}</div>
                         <div className="actions-grid">
                           <Checkbox
-                            label={catalogMessage("text_3824e18ca83b")}
+                            label={catalogMessage("common.general.view")}
                             checked={getPermissionValue(module.module_key, "can_view")}
                             onChange={(e) => updateRolePermission(module.module_key, "can_view", e.target.checked)}
                           />
                           <Checkbox
-                            label={catalogMessage("text_d52453ac627d")}
+                            label={catalogMessage("common.general.add")}
                             checked={getPermissionValue(module.module_key, "can_create")}
                             onChange={(e) => updateRolePermission(module.module_key, "can_create", e.target.checked)}
                           />
                           <Checkbox
-                            label={catalogMessage("text_113d570d6555")}
+                            label={catalogMessage("common.general.edit")}
                             checked={getPermissionValue(module.module_key, "can_edit")}
                             onChange={(e) => updateRolePermission(module.module_key, "can_edit", e.target.checked)}
                           />
                           <Checkbox
-                            label={catalogMessage("text_59ca629220a6")}
+                            label={catalogMessage("common.general.delete")}
                             checked={getPermissionValue(module.module_key, "can_delete")}
                             onChange={(e) => updateRolePermission(module.module_key, "can_delete", e.target.checked)}
                           />
@@ -332,18 +332,18 @@ export function RolesTab() {
       <Dialog
         isOpen={roleDialog}
         onClose={() => setRoleDialog(false)}
-        title={catalogMessage("text_018134366c74")}
+        title={catalogMessage("humanCapital.roles.createNewRole")}
         footer={
           <>
             <button className="btn btn-secondary" onClick={() => setRoleDialog(false)}>
-              {catalogMessage("text_9a30dc2a96b8")}</button>
+              {catalogMessage("common.general.cancel")}</button>
             <button className="btn btn-primary" onClick={createRole}>
-              {catalogMessage("text_a820f3590d36")}</button>
+              {catalogMessage("common.general.create")}</button>
           </>
         }
       >
         <div className="form-group">
-          <label htmlFor="role_name">{catalogMessage("text_aeac08f55546")}</label>
+          <label htmlFor="role_name">{catalogMessage("humanCapital.roles.roleName")}</label>
           <input
             type="text"
             id="role_name"
@@ -352,7 +352,7 @@ export function RolesTab() {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="role_description">{catalogMessage("text_95023fc76e1b")}</label>
+          <label htmlFor="role_description">{catalogMessage("common.general.description.alternative2")}</label>
           <textarea
             id="role_description"
             value={newRoleDescription}
@@ -367,9 +367,9 @@ export function RolesTab() {
         isOpen={confirmDialog}
         onClose={() => setConfirmDialog(false)}
         onConfirm={deleteRole}
-        title={catalogMessage("text_5f9cb54dc136")}
-        message={catalogMessage("text_8b195ef47c2d")}
-        confirmText={catalogMessage("text_59ca629220a6")}
+        title={catalogMessage("common.general.confirmDeletion")}
+        message={catalogMessage("humanCapital.roles.areYouSureYouWantDeleteThisRole")}
+        confirmText={catalogMessage("common.general.delete")}
         confirmVariant="danger"
       />
     </>

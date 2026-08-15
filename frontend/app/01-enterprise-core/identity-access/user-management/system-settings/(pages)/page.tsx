@@ -20,10 +20,10 @@ export default function SettingsPage() {
       <div className="settings-wrapper animate-fade">
         <TabNavigation
           tabs={[
-            { key: "store", label: i18n.catalog["text_e11ec54f7103"], icon: "fa-store" },
-            { key: "invoice", label: i18n.catalog["text_e217fe66e326"], icon: "fa-file-invoice" },
-            { key: "security", label: i18n.catalog["text_251996bd474c"], icon: "fa-lock" },
-            { key: "sessions", label: i18n.catalog["text_49726b3d3b3c"], icon: "fa-desktop" },
+            { key: "store", label: i18n.catalog["common.general.storeInformation"], icon: "fa-store" },
+            { key: "invoice", label: i18n.catalog["common.general.invoiceSettings"], icon: "fa-file-invoice" },
+            { key: "security", label: i18n.catalog["enterpriseCore.systemSettings.accountSecurity"], icon: "fa-lock" },
+            { key: "sessions", label: i18n.catalog["common.general.activeSessions"], icon: "fa-desktop" },
           ]}
           activeTab={activeTab}
           onTabChange={setActiveTab}

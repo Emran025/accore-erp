@@ -15,7 +15,7 @@ export function InvoiceDetailsDialog({ isOpen, onClose, selectedInvoice }: Invoi
         <Dialog
             isOpen={isOpen}
             onClose={onClose}
-            title={catalogMessage("text_e603e7637507")}
+            title={catalogMessage("common.general.invoiceDetails")}
         // size="large"
         >
             {selectedInvoice && (
@@ -23,21 +23,21 @@ export function InvoiceDetailsDialog({ isOpen, onClose, selectedInvoice }: Invoi
                     <div style={{ marginBottom: "2rem", borderBottom: "2px solid var(--border-color)", paddingBottom: "1rem" }}>
                         <div className="form-row">
                             <div className="summary-stat">
-                                <span className="stat-label">{catalogMessage("text_b6e71278be04")}</span>
+                                <span className="stat-label">{catalogMessage("common.general.invoiceNumber.alternative2")}</span>
                                 <span className="stat-value">{selectedInvoice.invoice_number}</span>
                             </div>
                             <div className="summary-stat">
-                                <span className="stat-label">{catalogMessage("text_d90c384199ac")}</span>
+                                <span className="stat-label">{catalogMessage("common.general.date.alternative7")}</span>
                                 <span className="stat-value">{formatDate(selectedInvoice.created_at)}</span>
                             </div>
                             <div className="summary-stat">
-                                <span className="stat-label">{catalogMessage("text_d31f653fcdaf")}</span>
+                                <span className="stat-label">{catalogMessage("common.general.paymentType.alternative2")}</span>
                                 <span className="stat-value">
                                     <span
                                         className={`badge ${selectedInvoice.payment_type === "credit" ? "badge-warning" : "badge-success"
                                             }`}
                                     >
-                                        {selectedInvoice.payment_type === "credit" ? catalogMessage("text_70122ff036ec") : catalogMessage("text_1beb05a45173")}
+                                        {selectedInvoice.payment_type === "credit" ? catalogMessage("common.general.creditReceivables") : catalogMessage("common.general.cash")}
                                     </span>
                                 </span>
                             </div>
@@ -53,18 +53,18 @@ export function InvoiceDetailsDialog({ isOpen, onClose, selectedInvoice }: Invoi
                                 }}
                             >
                                 <div className="summary-stat">
-                                    <span className="stat-label">{catalogMessage("text_a042411e90be")}</span>
+                                    <span className="stat-label">{catalogMessage("common.general.customer")}</span>
                                     <span className="stat-value">{selectedInvoice.customer_name}</span>
                                 </div>
                                 {selectedInvoice.customer_phone && (
                                     <div className="summary-stat">
-                                        <span className="stat-label">{catalogMessage("text_94b59a5125fb")}</span>
+                                        <span className="stat-label">{catalogMessage("common.general.phone")}</span>
                                         <span className="stat-value">{selectedInvoice.customer_phone}</span>
                                     </div>
                                 )}
                                 {selectedInvoice.customer_tax && (
                                     <div className="summary-stat">
-                                        <span className="stat-label">{catalogMessage("text_74b3eeb4b88d")}</span>
+                                        <span className="stat-label">{catalogMessage("common.general.taxNumber")}</span>
                                         <span className="stat-value">{selectedInvoice.customer_tax}</span>
                                     </div>
                                 )}
@@ -73,13 +73,13 @@ export function InvoiceDetailsDialog({ isOpen, onClose, selectedInvoice }: Invoi
                         {selectedInvoice.payment_type === "credit" && (
                             <div className="form-row" style={{ marginTop: "1rem" }}>
                                 <div className="summary-stat">
-                                    <span className="stat-label">{catalogMessage("text_558ab4456b6f")}</span>
+                                    <span className="stat-label">{catalogMessage("common.general.amountPaid.alternative2")}</span>
                                     <span className="stat-value" style={{ color: "var(--success-color)" }}>
                                         {formatCurrency(selectedInvoice.amount_paid || 0)}
                                     </span>
                                 </div>
                                 <div className="summary-stat">
-                                    <span className="stat-label">{catalogMessage("text_a707de32d885")}</span>
+                                    <span className="stat-label">{catalogMessage("common.general.remainingAmount")}</span>
                                     <span
                                         className="stat-value"
                                         style={{ color: "var(--danger-color)", fontWeight: 700 }}
@@ -94,16 +94,16 @@ export function InvoiceDetailsDialog({ isOpen, onClose, selectedInvoice }: Invoi
                     </div>
 
                     <div>
-                        <h4 style={{ marginBottom: "1rem" }}>{catalogMessage("text_1cc454c94b3b")}</h4>
+                        <h4 style={{ marginBottom: "1rem" }}>{catalogMessage("common.general.productsSold")}</h4>
                         {selectedInvoice.items.map((item, idx) => (
                             <div key={idx} className="item-row-minimal">
                                 <div className="item-info-pkg">
                                     <span className="item-name-pkg">{item.product_name}</span>
-                                    <span className="item-meta-pkg">{catalogMessage("text_91f3a71d4d14")}{formatCurrency(item.unit_price)}</span>
+                                    <span className="item-meta-pkg">{catalogMessage("common.general.unitPrice")}{formatCurrency(item.unit_price)}</span>
                                 </div>
                                 <div className="item-info-pkg" style={{ textAlign: "left" }}>
                                     <span className="item-name-pkg">{formatCurrency(item.subtotal)}</span>
-                                    <span className="item-meta-pkg">{catalogMessage("text_6936d56084ca")}{item.quantity}</span>
+                                    <span className="item-meta-pkg">{catalogMessage("common.general.quantity")}{item.quantity}</span>
                                 </div>
                             </div>
                         ))}
@@ -129,7 +129,7 @@ export function InvoiceDetailsDialog({ isOpen, onClose, selectedInvoice }: Invoi
                     >
                         <div className="summary-stat">
                             <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>
-                                {catalogMessage("text_1f4a626bcba2")}</span>
+                                {catalogMessage("common.general.totalAmount")}</span>
                             <span className="stat-value highlight" style={{ color: "white" }}>
                                 {formatCurrency(selectedInvoice.total_amount)}
                             </span>

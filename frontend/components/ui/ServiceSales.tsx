@@ -177,7 +177,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                 setGovernmentFees(activeFees);
             }
         } catch (e) {
-            console.error(i18n.catalog["text_08041689c0be"], e);
+            console.error(i18n.catalog["common.general.failedLoadTaxEngineLogic"], e);
         }
     }, []);
 
@@ -199,7 +199,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                     setCurrentPage(page);
                 }
             } catch {
-                showAlert("alert-container", i18n.catalog["text_7df68dc366ee"], "error");
+                showAlert("alert-container", i18n.catalog["common.general.failedLoadRecord"], "error");
             } finally {
                 setIsLoading(false);
             }
@@ -243,7 +243,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                     if (vatSetting) setVatRate(parseFloat(vatSetting.setting_value) / 100);
                 }
             } catch (e) {
-                console.error(i18n.catalog["text_23c311930343"], e);
+                console.error(i18n.catalog["ui.servicesales.failedLoadVatRate"], e);
             }
 
             await Promise.all([loadServices(1), loadInvoices(), loadFees()]);
@@ -315,20 +315,20 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
 
     const addItemToInvoice = () => {
         if (!selectedService) {
-            showAlert("alert-container", i18n.catalog["text_d245d6c7b964"], "error");
+            showAlert("alert-container", i18n.catalog["ui.servicesales.pleaseSelectServiceFirst"], "error");
             return;
         }
         const qty = parseNumber(quantity);
         const price = parseNumber(unitPrice);
         if (qty <= 0) {
-            showAlert("alert-container", i18n.catalog["text_7b4573a8bc5e"], "error");
+            showAlert("alert-container", i18n.catalog["ui.servicesales.quantityMustBeGreaterThanZero"], "error");
             return;
         }
 
         const newItem: InvoiceItem = {
             service_id: selectedService.id,
             service_name: selectedService.name,
-            display_name: catalogText(i18n, "text_e11f55b693d8", { value0: selectedService.name, value1: qty }),
+            display_name: catalogText(i18n, "common.general.message.alternative7", { value0: selectedService.name, value1: qty }),
             quantity: qty,
             unit_price: price,
             subtotal: qty * price,
@@ -346,11 +346,11 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
 
     const finishInvoice = async () => {
         if (invoiceItems.length === 0) {
-            showAlert("alert-container", i18n.catalog["text_8e74806a7149"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.invoiceIsEmpty"], "error");
             return;
         }
         if (!isCash && !selectedCustomer) {
-            showAlert("alert-container", i18n.catalog["text_252e91e07703"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.pleaseSelectCustomerDeferredInvoice"], "error");
             return;
         }
 
@@ -387,7 +387,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
             if (response.success || response.id) {
                 showAlert(
                     "alert-container",
-                    catalogText(i18n, "text_5c8f28364dae", { value0: formatCurrency(finalTotal) }),
+                    catalogText(i18n, "ui.servicesales.successTotal", { value0: formatCurrency(finalTotal) }),
                     "success"
                 );
                 setInvoiceItems([]);
@@ -400,19 +400,19 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                 generateInvoiceNumber();
                 await loadInvoices();
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_ab1f43db92fa"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["common.general.failedSaveInvoice"], "error");
                 if (
                     response.message?.includes("UNIQUE") ||
                     response.message?.includes("exists") ||
-                    response.message?.includes(i18n.catalog["text_8d8ddd2defe0"])
+                    response.message?.includes(i18n.catalog["common.general.available.alternative3"])
                 ) {
                     generateInvoiceNumber();
                 }
             }
         } catch (error) {
-            const msg = error instanceof Error ? error.message : i18n.catalog["text_a80b88135eb4"];
-            showAlert("alert-container", i18n.catalog["text_4c4968aba347"] + msg, "error");
-            if (msg.includes("UNIQUE") || msg.includes("exists") || msg.includes(i18n.catalog["text_8d8ddd2defe0"])) {
+            const msg = error instanceof Error ? error.message : i18n.catalog["common.general.unknownError"];
+            showAlert("alert-container", i18n.catalog["common.general.error"] + msg, "error");
+            if (msg.includes("UNIQUE") || msg.includes("exists") || msg.includes(i18n.catalog["common.general.available.alternative3"])) {
                 generateInvoiceNumber();
             }
         }
@@ -428,7 +428,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                 setViewDialog(true);
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_740c5c55bbc3"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.errorFetchingDetails"], "error");
         }
     };
 
@@ -445,13 +445,13 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                 { method: "DELETE" }
             );
             if (response.success) {
-                showAlert("alert-container", i18n.catalog["text_12b6e3813b40"], "success");
+                showAlert("alert-container", i18n.catalog["common.general.deletedSuccessfully"], "success");
                 await loadInvoices();
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_f46bfc521612"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["common.general.deletionFailed"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_3bdb299872fb"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.deletionError"], "error");
         } finally {
             setConfirmDialog(false);
             setDeleteInvoiceId(null);
@@ -492,7 +492,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
 
     const openReturnDialog = async () => {
         if (selectedReturnItems.length === 0) {
-            showToast(i18n.catalog["text_54f0b0947619"], "warning");
+            showToast(i18n.catalog["common.general.pleaseSelectItemsReturnFirst"], "warning");
             return;
         }
         const uniqueInvoiceIds = Array.from(new Set(selectedReturnItems.map((i) => i.invoiceId)));
@@ -510,7 +510,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                 );
                 setInvoicesMap(newMap);
             } catch {
-                showToast(i18n.catalog["text_f154fa31b161"], "error");
+                showToast(i18n.catalog["common.general.failedLoadInvoiceData"], "error");
             }
         }
         setReturnDialog(true);
@@ -523,9 +523,9 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                 method: "POST",
                 body: JSON.stringify(returnData),
             });
-            if (!response.success) throw new Error(response.message || i18n.catalog["text_311143511f9e"]);
+            if (!response.success) throw new Error(response.message || i18n.catalog["common.general.failedRegisterReturn"]);
         }
-        showToast(i18n.catalog["text_23e6f8991b99"], "success");
+        showToast(i18n.catalog["common.general.returnRecordedSuccessfully"], "success");
     };
 
     /* ──────────────────────────────────────────
@@ -533,35 +533,35 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
     ────────────────────────────────────────── */
 
     const currentInvoiceColumns: Column<InvoiceItem>[] = [
-        { key: "display_name", header: i18n.catalog["text_728e6087980c"], dataLabel: i18n.catalog["text_728e6087980c"] },
+        { key: "display_name", header: i18n.catalog["common.general.service.alternative2"], dataLabel: i18n.catalog["common.general.service.alternative2"] },
         {
             key: "quantity",
-            header: i18n.catalog["text_935e21853946"],
-            dataLabel: i18n.catalog["text_935e21853946"],
+            header: i18n.catalog["common.general.quantity.alternative3"],
+            dataLabel: i18n.catalog["common.general.quantity.alternative3"],
             render: (item) => `${item.quantity}`,
         },
         {
             key: "unit_price",
-            header: i18n.catalog["text_259862e8b313"],
-            dataLabel: i18n.catalog["text_259862e8b313"],
+            header: i18n.catalog["common.general.price"],
+            dataLabel: i18n.catalog["common.general.price"],
             render: (item) => formatCurrency(item.unit_price),
         },
         {
             key: "subtotal",
-            header: i18n.catalog["text_9c33cdc71a89"],
-            dataLabel: i18n.catalog["text_9c33cdc71a89"],
+            header: i18n.catalog["common.general.total.alternative2"],
+            dataLabel: i18n.catalog["common.general.total.alternative2"],
             render: (item) => formatCurrency(item.subtotal),
         },
         {
             key: "actions",
             header: "",
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (_, index) => (
                 <ActionButtons
                 actions={[
                     {
                     icon: "trash",
-                    title: i18n.catalog["text_59ca629220a6"],
+                    title: i18n.catalog["common.general.delete"],
                     variant: "delete",
                     onClick: () => removeInvoiceItem(index)
                     }
@@ -574,14 +574,14 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
     const invoiceColumns: InvoiceTableColumn<Invoice>[] = [
         {
             key: "invoice_number",
-            header: i18n.catalog["text_b6e71278be04"],
-            dataLabel: i18n.catalog["text_b6e71278be04"],
+            header: i18n.catalog["common.general.invoiceNumber.alternative2"],
+            dataLabel: i18n.catalog["common.general.invoiceNumber.alternative2"],
             render: (item) => <strong>{item.invoice_number}</strong>,
         },
         {
             key: "total_amount",
-            header: i18n.catalog["text_1f4a626bcba2"],
-            dataLabel: i18n.catalog["text_1f4a626bcba2"],
+            header: i18n.catalog["common.general.totalAmount"],
+            dataLabel: i18n.catalog["common.general.totalAmount"],
             render: (item) => formatCurrency(item.total_amount),
         },
         ...(isCash
@@ -589,8 +589,8 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
             : [
                 {
                     key: "amount_paid" as keyof Invoice,
-                    header: i18n.catalog["text_904a5d3af9fd"],
-                    dataLabel: i18n.catalog["text_904a5d3af9fd"],
+                    header: i18n.catalog["common.general.paidRemaining"],
+                    dataLabel: i18n.catalog["common.general.paidRemaining"],
                     render: (item: Invoice) => (
                         <div style={{ fontSize: "0.85rem" }}>
                             <span className="text-success">{formatCurrency(item.amount_paid || 0)}</span> /{" "}
@@ -602,26 +602,26 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                 } as InvoiceTableColumn<Invoice>,
                 {
                     key: "customer_name" as keyof Invoice,
-                    header: i18n.catalog["text_a042411e90be"],
+                    header: i18n.catalog["common.general.customer"],
                     render: (item: Invoice) => item.customer_name || "—",
                 } as InvoiceTableColumn<Invoice>,
             ]),
         {
             key: "created_at",
-            header: i18n.catalog["text_78e9c561195c"],
-            dataLabel: i18n.catalog["text_78e9c561195c"],
+            header: i18n.catalog["common.general.dateTime"],
+            dataLabel: i18n.catalog["common.general.dateTime"],
             render: (item) => formatDateTime(item.created_at),
         },
         {
             key: "actions",
-            header: i18n.catalog["text_7797240d6caf"],
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (item) => (
                 <ActionButtons
                     actions={[
                     {
                         icon: "view",
-                        title: i18n.catalog["text_3824e18ca83b"],
+                        title: i18n.catalog["common.general.view"],
                         variant: "view",
                         onClick: () => viewInvoice(item.id)
                     }
@@ -646,9 +646,9 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                         /* Cash mode: single card */
                         <div className="sales-card compact animate-slide">
                             <div className="card-header-flex">
-                                <h3>{i18n.catalog["text_092b3dafaaa0"]}</h3>
+                                <h3>{i18n.catalog["common.general.addServices"]}</h3>
                                 <div className="invoice-badge">
-                                    <span className="stat-label">{i18n.catalog["text_2cd4e7c1b5fb"]}</span>
+                                    <span className="stat-label">{i18n.catalog["common.general.invoiceNumber"]}</span>
                                     <input
                                         type="text"
                                         id="invoice-number"
@@ -666,13 +666,13 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                 }}
                             >
                                 <div className="form-group">
-                                    <label htmlFor="service-select">{i18n.catalog["text_d8c64c9940ea"]}</label>
+                                    <label htmlFor="service-select">{i18n.catalog["common.general.selectService"]}</label>
                                     <SearchableSelect
                                         id="service-select"
                                         options={serviceOptions}
                                         value={selectedService?.id || null}
                                         onChange={handleServiceSelect}
-                                        placeholder={i18n.catalog["text_236fc3420e26"]}
+                                        placeholder={i18n.catalog["common.general.searchService"]}
                                         required
                                     />
                                 </div>
@@ -681,7 +681,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                     <div className="form-group">
                                         <NumberInput
                                             id="item-quantity"
-                                            label={i18n.catalog["text_82ed8e968688"]}
+                                            label={i18n.catalog["common.general.quantity.alternative2"]}
                                             min={1}
                                             value={quantity}
                                             onChange={(val) => setQuantity(val)}
@@ -691,7 +691,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                     <div className="form-group">
                                         <NumberInput
                                             id="item-unit-price"
-                                            label={i18n.catalog["text_a412620a1341"]}
+                                            label={i18n.catalog["common.general.unitPrice.alternative2"]}
                                             min={0}
                                             step={0.01}
                                             value={unitPrice}
@@ -703,7 +703,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
 
                                 <div className="summary-stat-box">
                                     <div className="stat-item">
-                                        <span className="stat-label">{i18n.catalog["text_4793cceb7aa3"]}</span>
+                                        <span className="stat-label">{i18n.catalog["common.general.subtotal"]}</span>
                                         <span id="item-subtotal" className="stat-value highlight">
                                             {formatCurrency(subtotal)}
                                         </span>
@@ -714,7 +714,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                         onClick={addItemToInvoice}
                                         data-icon="plus"
                                     >
-                                        {i18n.catalog["text_c40f2ef41888"]}</button>
+                                        {i18n.catalog["common.general.addInvoice"]}</button>
                                 </div>
                             </form>
                         </div>
@@ -723,9 +723,9 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                         <div className="side-panel">
                             <div className="sales-card compact animate-slide">
                                 <div className="card-header-flex">
-                                    <h3>{i18n.catalog["text_092b3dafaaa0"]}</h3>
+                                    <h3>{i18n.catalog["common.general.addServices"]}</h3>
                                     <div className="invoice-badge">
-                                        <span className="stat-label">{i18n.catalog["text_2cd4e7c1b5fb"]}</span>
+                                        <span className="stat-label">{i18n.catalog["common.general.invoiceNumber"]}</span>
                                         <input
                                             type="text"
                                             id="invoice-number"
@@ -744,13 +744,13 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                     }}
                                 >
                                     <div className="form-group">
-                                        <label htmlFor="service-select">{i18n.catalog["text_d8c64c9940ea"]}</label>
+                                        <label htmlFor="service-select">{i18n.catalog["common.general.selectService"]}</label>
                                         <SearchableSelect
                                             id="service-select"
                                             options={serviceOptions}
                                             value={selectedService?.id || null}
                                             onChange={handleServiceSelect}
-                                            placeholder={i18n.catalog["text_236fc3420e26"]}
+                                            placeholder={i18n.catalog["common.general.searchService"]}
                                             required
                                         />
                                     </div>
@@ -759,7 +759,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                         <div className="form-group">
                                             <NumberInput
                                                 id="item-quantity"
-                                                label={i18n.catalog["text_82ed8e968688"]}
+                                                label={i18n.catalog["common.general.quantity.alternative2"]}
                                                 min={1}
                                                 value={quantity}
                                                 onChange={(val) => setQuantity(val)}
@@ -769,7 +769,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                         <div className="form-group">
                                             <NumberInput
                                                 id="item-unit-price"
-                                                label={i18n.catalog["text_a412620a1341"]}
+                                                label={i18n.catalog["common.general.unitPrice.alternative2"]}
                                                 min={0}
                                                 step={0.01}
                                                 value={unitPrice}
@@ -781,7 +781,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
 
                                     <div className="summary-stat-box">
                                         <div className="stat-item">
-                                            <span className="stat-label">{i18n.catalog["text_4793cceb7aa3"]}</span>
+                                            <span className="stat-label">{i18n.catalog["common.general.subtotal"]}</span>
                                             <span id="item-subtotal" className="stat-value highlight">
                                                 {formatCurrency(subtotal)}
                                             </span>
@@ -792,7 +792,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                             onClick={addItemToInvoice}
                                             data-icon="plus"
                                         >
-                                            {i18n.catalog["text_d52453ac627d"]}</button>
+                                            {i18n.catalog["common.general.add"]}</button>
                                     </div>
                                 </form>
                             </div>
@@ -802,13 +802,13 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                     {/* ── Right panel: Items + Summary ── */}
                     {isCash ? (
                         <div className="sales-card animate-slide" style={{ animationDelay: "0.1s" }}>
-                            <h3>{i18n.catalog["text_0dd962e486c9"]}</h3>
+                            <h3>{i18n.catalog["common.general.currentInvoiceItems"]}</h3>
                             <div className="current-invoice-table" style={{ width: "100%", overflowX: "auto" }}>
                                 <Table
                                     columns={currentInvoiceColumns}
                                     data={invoiceItems}
                                     keyExtractor={(_, index) => index}
-                                    emptyMessage={i18n.catalog["text_9172081b079d"]}
+                                    emptyMessage={i18n.catalog["common.general.noItemsAdded"]}
                                 />
                             </div>
 
@@ -817,20 +817,20 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                     <div className="form-group" style={{ marginBottom: 0, flex: "1 1 200px", minWidth: "0" }}>
                                         <NumberInput
                                             id="invoice-discount"
-                                            label={i18n.catalog["text_9820f0061954"]}
+                                            label={i18n.catalog["common.general.discountAmount"]}
                                             value={discountValue}
                                             onChange={(val) => setDiscountValue(val)}
                                             min={0}
-                                            placeholder={i18n.catalog["text_561b2814d3c0"]}
+                                            placeholder={i18n.catalog["common.general.message000"]}
                                         />
                                     </div>
                                     <SegmentedToggle
-                                        label={i18n.catalog["text_3bf1c1fc67c1"]}
+                                        label={i18n.catalog["common.general.discountType"]}
                                         value={discountType}
                                         onChange={(val) => setDiscountType(val as "fixed" | "percent")}
                                         options={[
-                                            { value: "fixed", label: i18n.catalog["text_30de87b72026"] },
-                                            { value: "percent", label: i18n.catalog["text_d75c4c7090fc"] },
+                                            { value: "fixed", label: i18n.catalog["common.general.amount.alternative2"] },
+                                            { value: "percent", label: i18n.catalog["common.general.percentage.alternative2"] },
                                         ]}
                                     />
                                 </div>
@@ -843,7 +843,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                             paddingRight: "1.5rem",
                                         }}
                                     >
-                                        <span className="stat-label">{i18n.catalog["text_8b9ac0222699"]}</span>
+                                        <span className="stat-label">{i18n.catalog["common.general.totalDiscount"]}</span>
                                         <span className="stat-value text-danger" style={{ fontSize: "1.1rem" }}>
                                             -{formatCurrency(calculatedDiscount())}
                                         </span>
@@ -857,29 +857,29 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                         <div className="side-panel" style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                             {/* Customer card */}
                             <div className="sales-card compact animate-slide">
-                                <h3>{i18n.catalog["text_8d098aea9a44"]}</h3>
+                                <h3>{i18n.catalog["common.general.customerData"]}</h3>
                                 <div className="form-row" style={{ marginTop: "1rem" }}>
                                     <div className="form-group">
-                                        <label htmlFor="customer-select">{i18n.catalog["text_9f9599729768"]}</label>
+                                        <label htmlFor="customer-select">{i18n.catalog["common.general.selectCustomer"]}</label>
                                         <SearchableSelect
                                             id="customer-select"
                                             options={customerOptions}
                                             value={selectedCustomer?.id || null}
                                             onChange={handleCustomerSelect}
                                             onSearch={(term) => setCustomerSearchTerm(term)}
-                                            placeholder={i18n.catalog["text_96b809b02ccc"]}
+                                            placeholder={i18n.catalog["common.general.searchClient"]}
                                             required
                                             noResultsText={
                                                 customerSearchTerm.length < 2
-                                                    ? i18n.catalog["text_d34f5f1ea138"]
-                                                    : i18n.catalog["text_1027871af7c9"]
+                                                    ? i18n.catalog["common.general.typeLeastTwoCharactersSearch"]
+                                                    : i18n.catalog["common.general.noCustomers"]
                                             }
                                         />
                                     </div>
                                     <div className="form-group">
                                         <NumberInput
                                             id="amount-paid"
-                                            label={i18n.catalog["text_623e1883b3d2"]}
+                                            label={i18n.catalog["common.general.amountPaidCash"]}
                                             min={0}
                                             step={0.01}
                                             value={amountPaid}
@@ -888,18 +888,18 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                     </div>
                                 </div>
                                 <small style={{ color: "var(--text-light)", display: "block" }}>
-                                    {i18n.catalog["text_528b8f309bc0"]}</small>
+                                    {i18n.catalog["common.general.amountCustomerWillPayNowTowardInvoice"]}</small>
                             </div>
 
                             {/* Invoice items + summary */}
                             <div className="sales-card animate-slide" style={{ animationDelay: "0.1s" }}>
-                                <h3>{i18n.catalog["text_0dd962e486c9"]}</h3>
+                                <h3>{i18n.catalog["common.general.currentInvoiceItems"]}</h3>
                                 <div className="current-invoice-table" style={{ width: "100%", overflowX: "auto" }}>
                                     <Table
                                         columns={currentInvoiceColumns}
                                         data={invoiceItems}
                                         keyExtractor={(_, index) => index}
-                                        emptyMessage={i18n.catalog["text_9172081b079d"]}
+                                        emptyMessage={i18n.catalog["common.general.noItemsAdded"]}
                                     />
                                 </div>
 
@@ -911,20 +911,20 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                         >
                                             <NumberInput
                                                 id="invoice-discount"
-                                                label={i18n.catalog["text_9820f0061954"]}
+                                                label={i18n.catalog["common.general.discountAmount"]}
                                                 value={discountValue}
                                                 onChange={(val) => setDiscountValue(val)}
                                                 min={0}
-                                                placeholder={i18n.catalog["text_561b2814d3c0"]}
+                                                placeholder={i18n.catalog["common.general.message000"]}
                                             />
                                         </div>
                                         <SegmentedToggle
-                                            label={i18n.catalog["text_3bf1c1fc67c1"]}
+                                            label={i18n.catalog["common.general.discountType"]}
                                             value={discountType}
                                             onChange={(val) => setDiscountType(val as "fixed" | "percent")}
                                             options={[
-                                                { value: "fixed", label: i18n.catalog["text_30de87b72026"] },
-                                                { value: "percent", label: i18n.catalog["text_d75c4c7090fc"] },
+                                                { value: "fixed", label: i18n.catalog["common.general.amount.alternative2"] },
+                                                { value: "percent", label: i18n.catalog["common.general.percentage.alternative2"] },
                                             ]}
                                         />
                                     </div>
@@ -937,7 +937,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                                 paddingRight: "1.5rem",
                                             }}
                                         >
-                                            <span className="stat-label">{i18n.catalog["text_8b9ac0222699"]}</span>
+                                            <span className="stat-label">{i18n.catalog["common.general.totalDiscount"]}</span>
                                             <span className="stat-value text-danger" style={{ fontSize: "1.1rem" }}>
                                                 -{formatCurrency(calculatedDiscount())}
                                             </span>
@@ -953,14 +953,14 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
 
                 {/* ── Bottom: Invoice History ── */}
                 <div className="sales-card animate-slide" style={{ animationDelay: "0.2s" }}>
-                    <h3>{i18n.catalog["text_d4b083328f95"]}</h3>
+                    <h3>{i18n.catalog["common.general.previousInvoiceRecords"]}</h3>
                     <div className="table-container">
                         <div className="table-wrapper">
                             <SelectableInvoiceTable
                                 invoices={invoices}
                                 columns={invoiceColumns}
                                 keyExtractor={(item) => item.id}
-                                emptyMessage={i18n.catalog["text_b20f10f0038b"]}
+                                emptyMessage={i18n.catalog["common.general.noPreviousInvoices"]}
                                 isLoading={isLoading}
                                 pagination={{
                                     currentPage,
@@ -992,7 +992,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
             />
 
             {/* ── View Invoice Dialog ── */}
-            <Dialog isOpen={viewDialog} onClose={() => setViewDialog(false)} title={i18n.catalog["text_e603e7637507"]}>
+            <Dialog isOpen={viewDialog} onClose={() => setViewDialog(false)} title={i18n.catalog["common.general.invoiceDetails"]}>
                 {selectedInvoice && (
                     <div id="view-dialog-body">
                         <div
@@ -1005,18 +1005,18 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                         >
                             <div className="form-row">
                                 <div className="summary-stat">
-                                    <span className="stat-label">{i18n.catalog["text_b6e71278be04"]}</span>
+                                    <span className="stat-label">{i18n.catalog["common.general.invoiceNumber.alternative2"]}</span>
                                     <span className="stat-value">{selectedInvoice.invoice_number}</span>
                                 </div>
                                 <div className="summary-stat">
-                                    <span className="stat-label">{i18n.catalog["text_d90c384199ac"]}</span>
+                                    <span className="stat-label">{i18n.catalog["common.general.date.alternative7"]}</span>
                                     <span className="stat-value">{formatDateTime(selectedInvoice.created_at)}</span>
                                 </div>
                                 <div className="summary-stat">
-                                    <span className="stat-label">{i18n.catalog["text_d31f653fcdaf"]}</span>
+                                    <span className="stat-label">{i18n.catalog["common.general.paymentType.alternative2"]}</span>
                                     <span className="stat-value">
                                         <span className={`badge ${isCash ? "badge-success" : "badge-warning"}`}>
-                                            {isCash ? i18n.catalog["text_1beb05a45173"] : i18n.catalog["text_70122ff036ec"]}
+                                            {isCash ? i18n.catalog["common.general.cash"] : i18n.catalog["common.general.creditReceivables"]}
                                         </span>
                                     </span>
                                 </div>
@@ -1033,12 +1033,12 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                     }}
                                 >
                                     <div className="summary-stat">
-                                        <span className="stat-label">{i18n.catalog["text_a042411e90be"]}</span>
+                                        <span className="stat-label">{i18n.catalog["common.general.customer"]}</span>
                                         <span className="stat-value">{selectedInvoice.customer_name}</span>
                                     </div>
                                     {selectedInvoice.customer_phone && (
                                         <div className="summary-stat">
-                                            <span className="stat-label">{i18n.catalog["text_94b59a5125fb"]}</span>
+                                            <span className="stat-label">{i18n.catalog["common.general.phone"]}</span>
                                             <span className="stat-value">{selectedInvoice.customer_phone}</span>
                                         </div>
                                     )}
@@ -1048,13 +1048,13 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                             {!isCash && (
                                 <div className="form-row" style={{ marginTop: "1rem" }}>
                                     <div className="summary-stat">
-                                        <span className="stat-label">{i18n.catalog["text_558ab4456b6f"]}</span>
+                                        <span className="stat-label">{i18n.catalog["common.general.amountPaid.alternative2"]}</span>
                                         <span className="stat-value" style={{ color: "var(--success-color)" }}>
                                             {formatCurrency(selectedInvoice.amount_paid || 0)}
                                         </span>
                                     </div>
                                     <div className="summary-stat">
-                                        <span className="stat-label">{i18n.catalog["text_a707de32d885"]}</span>
+                                        <span className="stat-label">{i18n.catalog["common.general.remainingAmount"]}</span>
                                         <span
                                             className="stat-value"
                                             style={{ color: "var(--danger-color)", fontWeight: 700 }}
@@ -1069,7 +1069,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                         </div>
 
                         <div className="invoice-items-minimal">
-                            <h4 style={{ marginBottom: "1rem" }}>{i18n.catalog["text_2d4152957d34"]}</h4>
+                            <h4 style={{ marginBottom: "1rem" }}>{i18n.catalog["ui.servicesales.servicesSold"]}</h4>
                             {selectedInvoice.items?.map((item, index) => (
                                 <div
                                     key={index}
@@ -1098,7 +1098,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                             className="item-meta-pkg"
                                             style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}
                                         >
-                                            {i18n.catalog["text_91f3a71d4d14"]}{formatCurrency(item.unit_price)}
+                                            {i18n.catalog["common.general.unitPrice"]}{formatCurrency(item.unit_price)}
                                             {item.returned_quantity && item.returned_quantity > 0 && (
                                                 <span
                                                     style={{
@@ -1110,8 +1110,8 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                                     }}
                                                 >
                                                     {item.quantity === 0
-                                                        ? i18n.catalog["text_4af7488d2163"]
-                                                        : catalogText(i18n, "text_1d6328b75bfd", { value0: item.returned_quantity })}
+                                                        ? i18n.catalog["common.general.fullyRefunded"]
+                                                        : catalogText(i18n, "common.general.returned", { value0: item.returned_quantity })}
                                                 </span>
                                             )}
                                         </span>
@@ -1129,7 +1129,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                         >
                                             {item.quantity}{" "}
                                             {item.quantity !== item.original_quantity &&
-                                                catalogText(i18n, "text_2d9ad16d909d", { value0: item.original_quantity })}
+                                                catalogText(i18n, "common.general.message.alternative3", { value0: item.original_quantity })}
                                         </span>
                                     </div>
                                 </div>
@@ -1142,14 +1142,14 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                         >
                             <div className="summary-stat">
                                 <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>
-                                    {i18n.catalog["text_f6f66d9545bc"]}</span>
+                                    {i18n.catalog["common.general.numberItems.alternative2"]}</span>
                                 <span className="stat-value" style={{ color: "white", fontSize: "1.2rem" }}>
                                     {selectedInvoice.item_count || selectedInvoice.items?.length || 0}
                                 </span>
                             </div>
                             <div className="summary-stat">
                                 <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>
-                                    {i18n.catalog["text_4793cceb7aa3"]}</span>
+                                    {i18n.catalog["common.general.subtotal"]}</span>
                                 <span className="stat-value" style={{ color: "white", fontSize: "1.2rem" }}>
                                     {formatCurrency(selectedInvoice.subtotal || 0)}
                                 </span>
@@ -1157,7 +1157,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                             {selectedInvoice.discount_amount && selectedInvoice.discount_amount > 0 && (
                                 <div className="summary-stat">
                                     <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>
-                                        {i18n.catalog["text_b593a6457673"]}</span>
+                                        {i18n.catalog["common.general.discount"]}</span>
                                     <span className="stat-value" style={{ color: "#ffccd5", fontSize: "1.2rem" }}>
                                         -{formatCurrency(selectedInvoice.discount_amount)}
                                     </span>
@@ -1165,7 +1165,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                             )}
                             <div className="summary-stat">
                                 <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>
-                                    {i18n.catalog["text_baed6e999960"]}</span>
+                                    {i18n.catalog["common.general.total.alternative3"]}</span>
                                 <span className="stat-value highlight" style={{ color: "white" }}>
                                     {formatCurrency(selectedInvoice.total_amount)}
                                 </span>
@@ -1183,9 +1183,9 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                     setDeleteInvoiceId(null);
                 }}
                 onConfirm={deleteInvoice}
-                title={i18n.catalog["text_5f9cb54dc136"]}
-                message={i18n.catalog["text_88d81ac2be07"]}
-                confirmText={i18n.catalog["text_f900e96c0235"]}
+                title={i18n.catalog["common.general.confirmDeletion"]}
+                message={i18n.catalog["ui.servicesales.areYouSureYouWantDeleteThisInvoice"]}
+                confirmText={i18n.catalog["common.general.yesContinue"]}
                 confirmVariant="primary"
             />
         </MainLayout>
@@ -1199,7 +1199,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
         return (
             <div className="sales-summary-bar">
                 <div className="summary-stat">
-                    <span className="stat-label">{i18n.catalog["text_a0676c3ecd8b"]}</span>
+                    <span className="stat-label">{i18n.catalog["ui.servicesales.totalServices"]}</span>
                     <span className="stat-value">{formatCurrency(baseItemsTotal)}</span>
                 </div>
 
@@ -1213,7 +1213,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                     if (feeAmount <= 0) return null;
                     return (
                         <div className="summary-stat" key={fee.id}>
-                            <span className="stat-label">{fee.name} {i18n.catalog["text_fe22a7c4900c"]}</span>
+                            <span className="stat-label">{fee.name} {i18n.catalog["common.general.liability"]}</span>
                             <span className="stat-value">{formatCurrency(feeAmount)}</span>
                         </div>
                     );
@@ -1222,14 +1222,14 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                 {totalVAT > 0 && (
                     <div className="summary-stat">
                         <span className="stat-label">
-                            {i18n.catalog["text_f254555f1f08"]}{(vatRate * 100).toFixed(0)}%)
+                            {i18n.catalog["common.general.valueAddedTax"]}{(vatRate * 100).toFixed(0)}%)
                         </span>
                         <span className="stat-value">{formatCurrency(totalVAT)}</span>
                     </div>
                 )}
 
                 <div className="summary-stat">
-                    <span className="stat-label">{isCash ? i18n.catalog["text_50a90c019154"] : i18n.catalog["text_1f4a626bcba2"]}</span>
+                    <span className="stat-label">{isCash ? i18n.catalog["common.general.invoiceTotal"] : i18n.catalog["common.general.totalAmount"]}</span>
                     <span id="total-amount" className="stat-value highlight">
                         {formatCurrency(finalTotal)}
                     </span>
@@ -1243,7 +1243,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                     data-icon="check"
                     disabled={invoiceItems.length === 0}
                 >
-                    {isCash ? i18n.catalog["text_f663f7a034fa"] : i18n.catalog["text_06873ff74693"]}
+                    {isCash ? i18n.catalog["common.general.finalizeInvoice"] : i18n.catalog["common.general.saveInvoice"]}
                 </button>
             </div>
         );

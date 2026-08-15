@@ -40,7 +40,7 @@ export default function ProductsPage() {
                 setCategories((response.data as Category[]) || []);
             }
         } catch (e) {
-            console.error(i18n.catalog["text_a400f101d9de"], e);
+            console.error(i18n.catalog["supplyChain.products.errorLoadingCategories"], e);
         }
     }, []);
 
@@ -147,7 +147,7 @@ export default function ProductsPage() {
 
     const handleSubmit = async () => {
         if (!formData.name.trim() || !formData.purchase_price || !formData.selling_price) {
-            showToast(i18n.catalog["text_0a8eb85d0081"], "error");
+            showToast(i18n.catalog["common.general.pleaseFillAllRequiredFields"], "error");
             return;
         }
 
@@ -158,9 +158,9 @@ export default function ProductsPage() {
             unit_price: parseFloat(formData.selling_price),
             minimum_profit_margin: parseFloat(formData.profit_margin) || 0,
             stock_quantity: parseInt(formData.stock) || 0,
-            unit_name: formData.unit_type === 'ctn' ? i18n.catalog["text_cc7593424dc5"] : i18n.catalog["text_d400a30ad5f3"],
+            unit_name: formData.unit_type === 'ctn' ? i18n.catalog["common.general.carton"] : i18n.catalog["common.general.each"],
             items_per_unit: parseInt(formData.units_per_package) || 1,
-            sub_unit_name: formData.unit_type === 'ctn' ? i18n.catalog["text_d400a30ad5f3"] : null,
+            sub_unit_name: formData.unit_type === 'ctn' ? i18n.catalog["common.general.each"] : null,
             description: formData.description,
             purchase_price: parseFloat(formData.purchase_price),
             item_type: formData.item_type,
@@ -178,7 +178,7 @@ export default function ProductsPage() {
 
     const addCategory = async () => {
         if (!newCategoryName.trim()) {
-            showToast(i18n.catalog["text_7c496f8155c1"], "error");
+            showToast(i18n.catalog["supplyChain.products.pleaseEnterCategoryName"], "error");
             return;
         }
         try {
@@ -187,13 +187,13 @@ export default function ProductsPage() {
                 body: JSON.stringify({ name: newCategoryName }),
             });
             if (res.success) {
-                showToast(i18n.catalog["text_e5835868a342"], "success");
+                showToast(i18n.catalog["supplyChain.products.categoryAddedSuccessfully"], "success");
                 setCategoryDialog(false);
                 setNewCategoryName("");
                 loadCategories();
             }
         } catch {
-            showToast(i18n.catalog["text_d3373ebaddea"], "error");
+            showToast(i18n.catalog["supplyChain.products.errorAddingCategory"], "error");
         }
     };
 
@@ -206,75 +206,75 @@ export default function ProductsPage() {
     };
 
     const columns: Column<Product>[] = [
-        { key: "name", header: i18n.catalog["text_57efd1ac6869"], dataLabel: i18n.catalog["text_57efd1ac6869"] },
-        { key: "barcode", header: i18n.catalog["text_501881931acd"], dataLabel: i18n.catalog["text_501881931acd"] },
-        { key: "category_name", header: i18n.catalog["text_ff61fb213ffc"], dataLabel: i18n.catalog["text_ff61fb213ffc"] },
+        { key: "name", header: i18n.catalog["common.general.productName"], dataLabel: i18n.catalog["common.general.productName"] },
+        { key: "barcode", header: i18n.catalog["common.general.barcode"], dataLabel: i18n.catalog["common.general.barcode"] },
+        { key: "category_name", header: i18n.catalog["common.general.category"], dataLabel: i18n.catalog["common.general.category"] },
         {
             key: "item_type",
-            header: i18n.catalog["text_caa3f2bb4a36"],
-            dataLabel: i18n.catalog["text_caa3f2bb4a36"],
+            header: i18n.catalog["common.general.type.alternative3"],
+            dataLabel: i18n.catalog["common.general.type.alternative3"],
             render: (it) => (
                 <span className={`badge badge-${it.item_type === 'product' ? 'info' : it.item_type === 'raw_material' ? 'secondary' : 'warning'}`}>
-                    {it.item_type === 'product' ? i18n.catalog["text_f8720c7412f1"] : it.item_type === 'raw_material' ? i18n.catalog["text_ada78f6ec149"] : i18n.catalog["text_11f4216e101b"]}
+                    {it.item_type === 'product' ? i18n.catalog["supplyChain.products.product"] : it.item_type === 'raw_material' ? i18n.catalog["supplyChain.products.rawMaterial"] : i18n.catalog["common.general.service"]}
                 </span>
             )
         },
         {
             key: "sellable",
-            header: i18n.catalog["text_07991139690d"],
-            dataLabel: i18n.catalog["text_07991139690d"],
+            header: i18n.catalog["common.general.notRawMaterial"],
+            dataLabel: i18n.catalog["common.general.notRawMaterial"],
             render: (it) => (
                 <span className={`badge badge-${it.sellable ? 'success' : 'danger'}`}>
-                    {it.sellable ? i18n.catalog["text_4b2d2c65d365"] : i18n.catalog["text_2bd073516a87"]}
+                    {it.sellable ? i18n.catalog["common.general.yes"] : i18n.catalog["common.general.no"]}
                 </span>
             )
         },
         {
             key: "selling_price",
-            header: i18n.catalog["text_2d37565e6fe3"],
-            dataLabel: i18n.catalog["text_2d37565e6fe3"],
+            header: i18n.catalog["common.general.salePrice"],
+            dataLabel: i18n.catalog["common.general.salePrice"],
             render: (it) => formatCurrency(it.selling_price || 0)
         },
         {
             key: "stock",
-            header: i18n.catalog["text_a0e7c1b2423d"],
-            dataLabel: i18n.catalog["text_a0e7c1b2423d"],
+            header: i18n.catalog["common.general.inventory"],
+            dataLabel: i18n.catalog["common.general.inventory"],
             render: (it) => (
                 <div className="stock-badge-container">
                     <span>{it.stock}</span>
                     {(it.stock || 0) <= 0 ? (
-                        <span className="badge badge-danger">{i18n.catalog["text_50777a9576a9"]}</span>
+                        <span className="badge badge-danger">{i18n.catalog["supplyChain.products.execute"]}</span>
                     ) : (it.stock || 0) <= (it.min_stock || 10) ? (
-                        <span className="badge badge-warning">{i18n.catalog["text_5dddca7f4a48"]}</span>
+                        <span className="badge badge-warning">{i18n.catalog["common.general.low"]}</span>
                     ) : (
-                        <span className="badge badge-success">{i18n.catalog["text_17b91f56a97b"]}</span>
+                        <span className="badge badge-success">{i18n.catalog["supplyChain.products.available"]}</span>
                     )}
                 </div>
             )
         },
         {
             key: "actions",
-            header: i18n.catalog["text_7797240d6caf"],
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (it) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "eye",
-                            title: i18n.catalog["text_3824e18ca83b"],
+                            title: i18n.catalog["common.general.view"],
                             variant: "view",
                             onClick: () => { setSelectedProduct(it); setViewDialog(true); }
                         },
                         {
                             icon: "edit",
-                            title: i18n.catalog["text_113d570d6555"],
+                            title: i18n.catalog["common.general.edit"],
                             variant: "edit",
                             onClick: () => openEditDialog(it),
                             hidden: !canAccess(permissions, "products", "edit")
                         },
                         {
                             icon: "trash",
-                            title: i18n.catalog["text_59ca629220a6"],
+                            title: i18n.catalog["common.general.delete"],
                             variant: "delete",
                             onClick: () => { setDeleteId(it.id); setConfirmDialog(true); },
                             hidden: !canAccess(permissions, "products", "delete")
@@ -299,7 +299,7 @@ export default function ProductsPage() {
                                 setSearchTerm(val);
                                 loadProducts(1, val);
                             }}
-                            placeholder={i18n.catalog["text_f52222a6a929"]}
+                            placeholder={i18n.catalog["supplyChain.products.searchNameBarcode"]}
                             className="header-search-bar"
                         />
                     }
@@ -310,7 +310,7 @@ export default function ProductsPage() {
                                 icon="plus"
                                 onClick={openAddDialog}
                             >
-                                {i18n.catalog["text_515506c4eaa6"]}</Button>
+                                {i18n.catalog["common.general.addProduct"]}</Button>
                         )
                     }
                 />
@@ -331,7 +331,7 @@ export default function ProductsPage() {
             <Dialog
                 isOpen={productDialog}
                 onClose={() => setProductDialog(false)}
-                title={selectedProduct ? i18n.catalog["text_f952513ba85f"] : i18n.catalog["text_9f9df8ce10ba"]}
+                title={selectedProduct ? i18n.catalog["supplyChain.products.editProduct"] : i18n.catalog["supplyChain.products.addNewProduct"]}
                 maxWidth="800px"
                 footer={
                     <>
@@ -339,12 +339,12 @@ export default function ProductsPage() {
                             variant="secondary"
                             onClick={() => setProductDialog(false)}
                         >
-                            {i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                            {i18n.catalog["common.general.cancel"]}</Button>
                         <Button
                             variant="primary"
                             onClick={handleSubmit}
                         >
-                            {selectedProduct ? i18n.catalog["text_00eab31f95b7"] : i18n.catalog["text_d52453ac627d"]}
+                            {selectedProduct ? i18n.catalog["common.general.update"] : i18n.catalog["common.general.add"]}
                         </Button>
                     </>
                 }
@@ -353,17 +353,17 @@ export default function ProductsPage() {
                 <div className="permission-group">
                     <div className="group-title">
                         <Icon name="box" size={18} />
-                        <span>{i18n.catalog["text_d8d9330c62c0"]}</span>
+                        <span>{i18n.catalog["supplyChain.products.basicProductInformation"]}</span>
                     </div>
 
                     <div className="form-row">
                         <TextInput
-                            label={i18n.catalog["text_f1f73a577b94"]}
+                            label={i18n.catalog["common.general.productName.alternative2"]}
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         />
                         <TextInput
-                            label={i18n.catalog["text_501881931acd"]}
+                            label={i18n.catalog["common.general.barcode"]}
                             value={formData.barcode}
                             onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
                         />
@@ -371,7 +371,7 @@ export default function ProductsPage() {
 
                     <div className="form-row">
                         <div className="form-group">
-                            <label>{i18n.catalog["text_ff61fb213ffc"]}</label>
+                            <label>{i18n.catalog["common.general.category"]}</label>
                             <div className="input-with-action">
                                 <Select
                                     value={formData.category_id}
@@ -387,7 +387,7 @@ export default function ProductsPage() {
                             </div>
                         </div>
                         <Select
-                            label={i18n.catalog["text_606bf32290b0"]}
+                            label={i18n.catalog["supplyChain.products.itemType"]}
                             value={formData.item_type}
                             onChange={(e) => {
                                 const val = e.target.value as any;
@@ -399,8 +399,8 @@ export default function ProductsPage() {
                                 });
                             }}
                             options={[
-                                { value: "product", label: i18n.catalog["text_b6c9e054c437"] },
-                                { value: "raw_material", label: i18n.catalog["text_16c848be11e7"] }
+                                { value: "product", label: i18n.catalog["supplyChain.products.finishedProduct"] },
+                                { value: "raw_material", label: i18n.catalog["supplyChain.products.rawMaterialNotSale"] }
                             ]}
                         />
                     </div>
@@ -410,7 +410,7 @@ export default function ProductsPage() {
                 <div className="permission-group">
                     <div className="group-title">
                         <Icon name="check-square" size={18} />
-                        <span>{i18n.catalog["text_22fc62eed0bf"]}</span>
+                        <span>{i18n.catalog["supplyChain.products.productPropertiesStatus"]}</span>
                     </div>
 
                     <div className="actions-grid">
@@ -420,7 +420,7 @@ export default function ProductsPage() {
                                 checked={formData.sellable}
                                 onChange={(e) => setFormData({ ...formData, sellable: e.target.checked })}
                             />
-                            <span>{i18n.catalog["text_1f8d8a811d36"]}</span>
+                            <span>{i18n.catalog["supplyChain.products.sellable"]}</span>
                         </label>
                         <label className="action-checkbox">
                             <input
@@ -428,7 +428,7 @@ export default function ProductsPage() {
                                 checked={formData.inventory_control}
                                 onChange={(e) => setFormData({ ...formData, inventory_control: e.target.checked })}
                             />
-                            <span>{i18n.catalog["text_5ba3b4722ba1"]}</span>
+                            <span>{i18n.catalog["supplyChain.products.inventoryTracking"]}</span>
                         </label>
                         <label className="action-checkbox">
                             <input
@@ -436,7 +436,7 @@ export default function ProductsPage() {
                                 checked={formData.taxable}
                                 onChange={(e) => setFormData({ ...formData, taxable: e.target.checked })}
                             />
-                            <span>{i18n.catalog["text_8d1c87e5718b"]}</span>
+                            <span>{i18n.catalog["common.general.taxable"]}</span>
                         </label>
                     </div>
                 </div>
@@ -445,18 +445,18 @@ export default function ProductsPage() {
                 <div className="permission-group">
                     <div className="group-title">
                         <Icon name="coins" size={18} />
-                        <span>{i18n.catalog["text_de07ad8308e2"]}</span>
+                        <span>{i18n.catalog["supplyChain.products.pricingProfitMargin"]}</span>
                     </div>
 
                     <div className="form-row">
                         <NumberInput
-                            label={i18n.catalog["text_f35d3f1366c0"]}
+                            label={i18n.catalog["supplyChain.products.purchasePrice"]}
                             value={formData.purchase_price}
                             onChange={(val) => calculatePrices("purchase_price", String(val))}
                             step={0.01}
                         />
                         <NumberInput
-                            label={i18n.catalog["text_d6bcb1583fc6"]}
+                            label={i18n.catalog["supplyChain.products.profitMargin.alternative2"]}
                             value={formData.profit_margin}
                             onChange={(val) => calculatePrices("profit_margin", String(val))}
                             step={0.1}
@@ -464,13 +464,13 @@ export default function ProductsPage() {
                     </div>
                     <div className="form-row">
                         <NumberInput
-                            label={i18n.catalog["text_76b4385b6ead"]}
+                            label={i18n.catalog["supplyChain.products.salePrice"]}
                             value={formData.selling_price}
                             onChange={(val) => calculatePrices("selling_price", String(val))}
                             step={0.01}
                         />
                         <NumberInput
-                            label={i18n.catalog["text_f9db4a0169a7"]}
+                            label={i18n.catalog["supplyChain.products.unitsBox"]}
                             value={formData.units_per_package}
                             onChange={(val) => calculatePrices("units_per_package", String(val))}
                             min={1}
@@ -482,24 +482,24 @@ export default function ProductsPage() {
                 <div className="permission-group">
                     <div className="group-title">
                         <Icon name="layers" size={18} />
-                        <span>{i18n.catalog["text_6cfe3f8ab8ff"]}</span>
+                        <span>{i18n.catalog["supplyChain.products.inventoryAdditionalData"]}</span>
                     </div>
 
                     <div className="form-row">
                         <NumberInput
-                            label={i18n.catalog["text_eabfe10ecac0"]}
+                            label={i18n.catalog["common.general.currentInventory"]}
                             value={formData.stock}
                             onChange={(val) => setFormData({ ...formData, stock: String(val) })}
                         />
                         <NumberInput
-                            label={i18n.catalog["text_ea7f5f360f4a"]}
+                            label={i18n.catalog["supplyChain.products.minimumOrder"]}
                             value={formData.min_stock}
                             onChange={(val) => setFormData({ ...formData, min_stock: String(val) })}
                         />
                     </div>
 
                     <Textarea
-                        label={i18n.catalog["text_95023fc76e1b"]}
+                        label={i18n.catalog["common.general.description.alternative2"]}
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         rows={2}
@@ -510,7 +510,7 @@ export default function ProductsPage() {
             <Dialog
                 isOpen={categoryDialog}
                 onClose={() => setCategoryDialog(false)}
-                title={i18n.catalog["text_d11d4b31d77b"]}
+                title={i18n.catalog["supplyChain.products.addNewCategory"]}
                 maxWidth="400px"
                 footer={
                     <>
@@ -518,55 +518,55 @@ export default function ProductsPage() {
                             variant="secondary"
                             onClick={() => setCategoryDialog(false)}
                         >
-                            {i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                            {i18n.catalog["common.general.cancel"]}</Button>
                         <Button
                             variant="primary"
                             onClick={addCategory}
                         >
-                            {i18n.catalog["text_d52453ac627d"]}</Button>
+                            {i18n.catalog["common.general.add"]}</Button>
                     </>
                 }
             >
                 <TextInput
-                    label={i18n.catalog["text_b4b331965eea"]}
+                    label={i18n.catalog["supplyChain.products.categoryName"]}
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
                 />
             </Dialog>
 
-            <Dialog isOpen={viewDialog} onClose={() => setViewDialog(false)} title={i18n.catalog["text_d6d397948e95"]} maxWidth="600px">
+            <Dialog isOpen={viewDialog} onClose={() => setViewDialog(false)} title={i18n.catalog["supplyChain.products.productDetails"]} maxWidth="600px">
                 {selectedProduct && (
                     <div className="details-grid">
                         <div className="detail-item">
-                            <span className="label">{i18n.catalog["text_57efd1ac6869"]}</span>
+                            <span className="label">{i18n.catalog["common.general.productName"]}</span>
                             <span className="value strong">{selectedProduct.name}</span>
                         </div>
                         <div className="detail-item">
-                            <span className="label">{i18n.catalog["text_501881931acd"]}</span>
+                            <span className="label">{i18n.catalog["common.general.barcode"]}</span>
                             <span className="value">{selectedProduct.barcode || "-"}</span>
                         </div>
                         <div className="detail-item">
-                            <span className="label">{i18n.catalog["text_ff61fb213ffc"]}</span>
+                            <span className="label">{i18n.catalog["common.general.category"]}</span>
                             <span className="value">{selectedProduct.category_name || "-"}</span>
                         </div>
                         <div className="detail-item">
-                            <span className="label">{i18n.catalog["text_2b080520c372"]}</span>
+                            <span className="label">{i18n.catalog["common.general.purchasePrice"]}</span>
                             <span className="value">{formatCurrency(selectedProduct.purchase_price || 0)}</span>
                         </div>
                         <div className="detail-item">
-                            <span className="label">{i18n.catalog["text_2d37565e6fe3"]}</span>
+                            <span className="label">{i18n.catalog["common.general.salePrice"]}</span>
                             <span className="value strong primary">{formatCurrency(selectedProduct.selling_price || 0)}</span>
                         </div>
                         <div className="detail-item">
-                            <span className="label">{i18n.catalog["text_ceb4ee89b1bd"]}</span>
+                            <span className="label">{i18n.catalog["supplyChain.products.profitMargin"]}</span>
                             <span className="value">{selectedProduct.profit_margin}%</span>
                         </div>
                         <div className="detail-item">
-                            <span className="label">{i18n.catalog["text_a0e7c1b2423d"]}</span>
+                            <span className="label">{i18n.catalog["common.general.inventory"]}</span>
                             <span className="value">{selectedProduct.stock} {selectedProduct.unit_name}</span>
                         </div>
                         <div className="detail-item full-width">
-                            <span className="label">{i18n.catalog["text_95023fc76e1b"]}</span>
+                            <span className="label">{i18n.catalog["common.general.description.alternative2"]}</span>
                             <span className="value">{selectedProduct.description || "-"}</span>
                         </div>
                     </div>
@@ -577,8 +577,8 @@ export default function ProductsPage() {
                 isOpen={confirmDialog}
                 onClose={() => setConfirmDialog(false)}
                 onConfirm={handleDelete}
-                title={i18n.catalog["text_5f9cb54dc136"]}
-                message={i18n.catalog["text_b876352cde8f"]}
+                title={i18n.catalog["common.general.confirmDeletion"]}
+                message={i18n.catalog["supplyChain.products.areYouSureYouWantDeleteThisProduct"]}
             />
         </MainLayout>
     );

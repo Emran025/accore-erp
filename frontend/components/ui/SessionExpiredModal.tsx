@@ -47,7 +47,7 @@ export function SessionExpiredModal() {
             }
             return result;
         } catch {
-            return { success: false, error: i18n.catalog["text_5e224aae1f83"] };
+            return { success: false, error: i18n.catalog["common.general.serverConnectionError"] };
         } finally {
             setIsLoading(false);
         }
@@ -56,7 +56,7 @@ export function SessionExpiredModal() {
     return createPortal(
         <div className="dialog-overlay active" style={{ zIndex: 99999 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem', width: '100%', maxWidth: '420px' }}>
-                <Alert type="warning" message={i18n.catalog["text_76ea6d1e9f2f"]} />
+                <Alert type="warning" message={i18n.catalog["ui.sessionexpiredmodal.sessionExpiredPleaseLogAgain"]} />
                 <LoginForm onSubmit={handleLogin} isLoading={isLoading} />
             </div>
         </div>,

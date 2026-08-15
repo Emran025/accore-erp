@@ -15,12 +15,12 @@ export const useProductStore = createCRUDStore<Product>({
     storeName: 'product-store',
     params: { item_type: 'all' },
     messages: {
-        loadError: catalogMessage("text_bf68e6f346c3"),
-        saveSuccess: catalogMessage("text_795c337065c1"),
-        updateSuccess: catalogMessage("text_36ce2cca21ac"),
-        saveError: catalogMessage("text_21257171efe4"),
-        deleteSuccess: catalogMessage("text_a56ad80a480a"),
-        deleteError: catalogMessage("text_0a0e34eb9478"),
+        loadError: catalogMessage("common.general.errorLoadingProducts"),
+        saveSuccess: catalogMessage("state.useproductstore.productAddedSuccessfully"),
+        updateSuccess: catalogMessage("state.useproductstore.productUpdatedSuccessfully"),
+        saveError: catalogMessage("state.useproductstore.errorSavingProduct"),
+        deleteSuccess: catalogMessage("state.useproductstore.productDeleted"),
+        deleteError: catalogMessage("state.useproductstore.errorDeletingProduct"),
     },
     transform: (raw: unknown[]): Product[] =>
         (raw as Record<string, any>[])
@@ -31,7 +31,7 @@ export const useProductStore = createCRUDStore<Product>({
                 purchase_price: parseFloat(p.purchase_price || p.latest_purchase_price) || 0,
                 stock: p.stock_quantity || 0,
                 min_stock: 10,
-                unit_type: p.unit_name === catalogMessage("text_cc7593424dc5") ? 'ctn' : 'piece',
+                unit_type: p.unit_name === catalogMessage("common.general.carton") ? 'ctn' : 'piece',
                 profit_margin: parseFloat(p.minimum_profit_margin) || 0,
                 description: p.description || '',
             } as Product)),

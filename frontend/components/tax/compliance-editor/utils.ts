@@ -193,7 +193,7 @@ export function validateFormat(code: string, format: EditorFormat): ValidationRe
             try {
                 JSON.parse(code);
             } catch (e) {
-                const msg = e instanceof Error ? e.message : catalogMessage("text_f60c824125e6");
+                const msg = e instanceof Error ? e.message : catalogMessage("tax.utils.invalidJson");
                 errors.push(msg);
             }
             break;
@@ -204,10 +204,10 @@ export function validateFormat(code: string, format: EditorFormat): ValidationRe
                 const doc = parser.parseFromString(code, "application/xml");
                 const parseError = doc.querySelector("parsererror");
                 if (parseError) {
-                    errors.push(parseError.textContent?.split("\n")[0] || catalogMessage("text_9ca7e4667208"));
+                    errors.push(parseError.textContent?.split("\n")[0] || catalogMessage("tax.utils.invalidXml"));
                 }
             } catch {
-                errors.push(catalogMessage("text_07b8acb6712c"));
+                errors.push(catalogMessage("tax.utils.xmlParsingFailed"));
             }
             break;
         }
@@ -220,7 +220,7 @@ export function validateFormat(code: string, format: EditorFormat): ValidationRe
 
                 // Check for tabs (YAML uses spaces)
                 if (line.includes("\t")) {
-                    errors.push(catalogMessage("text_afe806cce6a3", { value0: idx + 1 }));
+                    errors.push(catalogMessage("tax.utils.lineTabsNotAllowedYamlUseSpaces", { value0: idx + 1 }));
                 }
             });
             break;
@@ -247,7 +247,7 @@ export function generateDefaultTemplate(
         case "json": {
             const obj: Record<string, string> = {};
             entries.forEach(([sysKey, entityKey]) => {
-                obj[entityKey || sysKey] = catalogMessage("text_ee3104aa901f", { value0: sysKey });
+                obj[entityKey || sysKey] = catalogMessage("common.general.message.alternative10", { value0: sysKey });
             });
             return JSON.stringify(obj, null, 4);
         }
@@ -255,16 +255,16 @@ export function generateDefaultTemplate(
             let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<report>\n';
             entries.forEach(([sysKey, entityKey]) => {
                 const tag = entityKey || sysKey;
-                xml += catalogMessage("text_da3c16e9b14c", { value0: tag, value1: sysKey, value2: tag });
+                xml += catalogMessage("common.general.message.alternative6", { value0: tag, value1: sysKey, value2: tag });
             });
-            xml += catalogMessage("text_810e52a3c597");
+            xml += catalogMessage("tax.utils.notAvailable");
             return xml;
         }
         case "yml": {
             let yml = "# Compliance Report Structure\nreport:\n";
             entries.forEach(([sysKey, entityKey]) => {
                 const key = entityKey || sysKey;
-                yml += catalogMessage("text_e6f80a7fa9db", { value0: key, value1: sysKey });
+                yml += catalogMessage("common.general.message.alternative8", { value0: key, value1: sysKey });
             });
             return yml;
         }

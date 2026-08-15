@@ -90,7 +90,7 @@ export const usePayrollStore = create<PayrollState>()(
                     set({ cycles: Array.isArray(data) ? data : [] });
                 } catch (error) {
                     console.error(error);
-                    showToast(catalogMessage("text_4b8b467c9440"), 'error');
+                    showToast(catalogMessage("state.usepayrollstore.errorLoadingPayrollCycles"), 'error');
                 } finally {
                     set({ cyclesLoading: false });
                 }
@@ -106,7 +106,7 @@ export const usePayrollStore = create<PayrollState>()(
                     return items;
                 } catch (error) {
                     console.error(error);
-                    showToast(catalogMessage("text_e4112296ed23"), 'error');
+                    showToast(catalogMessage("state.usepayrollstore.errorLoadingCycleDetails"), 'error');
                     return [];
                 }
             },
@@ -138,7 +138,7 @@ export const usePayrollStore = create<PayrollState>()(
                         defaultAccountId: cashAcc ? cashAcc.id.toString() : '',
                     });
                 } catch (e) {
-                    console.error(catalogMessage("text_3867abe1d888"), e);
+                    console.error(catalogMessage("state.usepayrollstore.failedLoadAccounts"), e);
                 }
             },
 
@@ -151,7 +151,7 @@ export const usePayrollStore = create<PayrollState>()(
                     return transactions;
                 } catch (error) {
                     console.error(error);
-                    showToast(catalogMessage("text_aeb4cf930337"), 'error');
+                    showToast(catalogMessage("state.usepayrollstore.errorLoadingTransferLog"), 'error');
                     return [];
                 }
             },
@@ -164,14 +164,14 @@ export const usePayrollStore = create<PayrollState>()(
                         body: JSON.stringify(payload),
                     });
                     if (res.success !== false) {
-                        showToast(catalogMessage("text_4492ec68d413"), 'success');
+                        showToast(catalogMessage("state.usepayrollstore.payrollCreatedSuccessfully"), 'success');
                         get().loadCycles();
                         return true;
                     }
-                    showToast(catalogMessage("text_58188a9245b0") + res.message, 'error');
+                    showToast(catalogMessage("state.usepayrollstore.failedCreatePayroll") + res.message, 'error');
                     return false;
                 } catch {
-                    showToast(catalogMessage("text_cdd288620509"), 'error');
+                    showToast(catalogMessage("common.general.unexpectedErrorOccurred"), 'error');
                     return false;
                 }
             },
@@ -181,14 +181,14 @@ export const usePayrollStore = create<PayrollState>()(
                 try {
                     const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.PAYROLL.APPROVE(id), { method: 'POST' });
                     if (res.success !== false) {
-                        showToast(catalogMessage("text_2c78d4e841c7"), 'success');
+                        showToast(catalogMessage("state.usepayrollstore.approvedSuccessfully"), 'success');
                         get().loadCycles();
                         return true;
                     }
-                    showToast(catalogMessage("text_578a9519e505") + res.message, 'error');
+                    showToast(catalogMessage("state.usepayrollstore.approvalFailed") + res.message, 'error');
                     return false;
                 } catch {
-                    showToast(catalogMessage("text_83d3d40014f9"), 'error');
+                    showToast(catalogMessage("common.general.errorOccurred"), 'error');
                     return false;
                 }
             },
@@ -201,14 +201,14 @@ export const usePayrollStore = create<PayrollState>()(
                         body: JSON.stringify({ account_id: accountId }),
                     });
                     if (res.success !== false) {
-                        showToast(catalogMessage("text_a4a7b8b29df9"), 'success');
+                        showToast(catalogMessage("state.usepayrollstore.payrollMigratedDisbursedSuccessfully"), 'success');
                         get().loadCycles();
                         return true;
                     }
-                    showToast(catalogMessage("text_74816c5ceb8d") + res.message, 'error');
+                    showToast(catalogMessage("state.usepayrollstore.exchangeFailed") + res.message, 'error');
                     return false;
                 } catch {
-                    showToast(catalogMessage("text_83d3d40014f9"), 'error');
+                    showToast(catalogMessage("common.general.errorOccurred"), 'error');
                     return false;
                 }
             },
@@ -222,8 +222,8 @@ export const usePayrollStore = create<PayrollState>()(
                     if (res) {
                         showToast(
                             res.status === 'on_hold'
-                                ? catalogMessage("text_3f0cfce45d88")
-                                : catalogMessage("text_97e2e8b0073e"),
+                                ? catalogMessage("state.usepayrollstore.salaryDisbursementTemporarilySuspended")
+                                : catalogMessage("state.usepayrollstore.salaryDisbursementEnabled"),
                             'info'
                         );
                         get().loadCycleDetails(item.payroll_cycle_id);
@@ -231,7 +231,7 @@ export const usePayrollStore = create<PayrollState>()(
                     }
                     return false;
                 } catch {
-                    showToast(catalogMessage("text_83d3d40014f9"), 'error');
+                    showToast(catalogMessage("common.general.errorOccurred"), 'error');
                     return false;
                 }
             },
@@ -244,7 +244,7 @@ export const usePayrollStore = create<PayrollState>()(
                         body: JSON.stringify(data),
                     });
                     if (res.id) {
-                        showToast(catalogMessage("text_86fba7a2c048"), 'success');
+                        showToast(catalogMessage("common.general.employeeDataUpdatedSuccessfully"), 'success');
                         get().loadCycles(); // refresh totals
                         return true;
                     }
@@ -262,13 +262,13 @@ export const usePayrollStore = create<PayrollState>()(
                         body: JSON.stringify(data),
                     });
                     if (res.success !== false) {
-                        showToast(catalogMessage("text_ae1b23c3a264"), 'success');
+                        showToast(catalogMessage("state.usepayrollstore.transferRecordedSuccessfully"), 'success');
                         return true;
                     }
-                    showToast(res.message || res.error || catalogMessage("text_f9a444a8389a"), 'error');
+                    showToast(res.message || res.error || catalogMessage("state.usepayrollstore.failedRecordTransfer"), 'error');
                     return false;
                 } catch {
-                    showToast(catalogMessage("text_83d3d40014f9"), 'error');
+                    showToast(catalogMessage("common.general.errorOccurred"), 'error');
                     return false;
                 }
             },

@@ -64,7 +64,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(({
                          alignItems: "center",
                          display: "flex"
                     }}
-                    title={showPassword ? catalogMessage("text_b53728d6c3bd") : catalogMessage("text_d794fa009da5")}
+                    title={showPassword ? catalogMessage("ui.passwordinput.hidePassword") : catalogMessage("ui.passwordinput.showPassword")}
                 >
                     {getIcon(showPassword ? "unlock" : "lock")} 
                 </button>

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-15T19:52:31.017Z",
+  "generatedAt": "2026-08-15T20:13:30.096Z",
   "filesScanned": 466,
   "candidatesScanned": 27491,
   "filesPassing": 466,
@@ -3391,11 +3391,11 @@
     },
     {
       "file": "components/ui/Alert.tsx",
-      "candidates": 44,
+      "candidates": 43,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 44,
+      "technical": 43,
       "passed": true
     },
     {
@@ -3733,11 +3733,11 @@
     },
     {
       "file": "components/ui/switch.tsx",
-      "candidates": 41,
+      "candidates": 40,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 41,
+      "technical": 40,
       "passed": true
     },
     {
@@ -3805,11 +3805,11 @@
     },
     {
       "file": "lib/api.ts",
-      "candidates": 40,
+      "candidates": 42,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 40,
+      "technical": 42,
       "passed": true
     },
     {

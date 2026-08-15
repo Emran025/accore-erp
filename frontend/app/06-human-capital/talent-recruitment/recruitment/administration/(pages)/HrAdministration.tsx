@@ -15,17 +15,17 @@ export function HrAdministration() {
     const [activeTab, setActiveTab] = useState<"jobTitles" | "positions" | "empPosition" | "roles" | "templates">("positions");
 
     const tabs = [
-        { key: "positions" as const, label: i18n.catalog["text_ef04a5b86137"], icon: "layers" },
-        { key: "empPosition" as const, label: i18n.catalog["text_b19a16aaf339"], icon: "user-check" },
-        { key: "jobTitles" as const, label: i18n.catalog["text_5a2b952f8036"], icon: "file-signature" },
-        { key: "roles" as const, label: i18n.catalog["text_4fa42e2064ff"], icon: "shield" },
-        { key: "templates" as const, label: i18n.catalog["text_b6999c27b67d"], icon: "copy" },
+        { key: "positions" as const, label: i18n.catalog["common.general.jobPositions"], icon: "layers" },
+        { key: "empPosition" as const, label: i18n.catalog["humanCapital.hradministration.assignEmployees"], icon: "user-check" },
+        { key: "jobTitles" as const, label: i18n.catalog["common.general.jobTitles"], icon: "file-signature" },
+        { key: "roles" as const, label: i18n.catalog["humanCapital.hradministration.rolesPermissions"], icon: "shield" },
+        { key: "templates" as const, label: i18n.catalog["common.general.permissionTemplates"], icon: "copy" },
     ];
 
     return (
         <div className="sales-card animate-fade">
             <PageSubHeader
-                title={i18n.catalog["text_bba6668968f9"]}
+                title={i18n.catalog["humanCapital.hradministration.humanResourcesManagement"]}
                 titleIcon="settings"
                 actions={
                     <>

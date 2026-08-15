@@ -39,9 +39,9 @@ export function NrObjectHeader({ objectData, title }: NrObjectHeaderProps) {
                         <h2>{title || objectData.name}</h2>
                         <div className="nroh-badges">
                             {objectData.name_en && <span className="nroh-badge">{objectData.name_en}</span>}
-                            <span className="nroh-badge">{getIcon("ruler")} {i18n.catalog["text_3f44a9d8a4fb"]}{number_length}</span>
-                            {prefix && <span className="nroh-badge">{getIcon("tag")} {i18n.catalog["text_770bb81dc641"]}{prefix}</span>}
-                            <span className="nroh-badge solid">{i18n.catalog["text_6242ff9df7be"]}{maxBound}</span>
+                            <span className="nroh-badge">{getIcon("ruler")} {i18n.catalog["numberRange.nrobjectheader.length"]}{number_length}</span>
+                            {prefix && <span className="nroh-badge">{getIcon("tag")} {i18n.catalog["numberRange.nrobjectheader.prefix"]}{prefix}</span>}
+                            <span className="nroh-badge solid">{i18n.catalog["numberRange.nrobjectheader.maximum"]}{maxBound}</span>
                         </div>
                     </div>
                 </div>
@@ -49,39 +49,39 @@ export function NrObjectHeader({ objectData, title }: NrObjectHeaderProps) {
                 <div className="nroh-stats-grid">
                     <div className="nroh-stat">
                         <div className="nroh-stat-value">{summary.total_groups.toLocaleString()}</div>
-                        <div className="nroh-stat-label">{i18n.catalog["text_d013065850a1"]}</div>
+                        <div className="nroh-stat-label">{i18n.catalog["numberRange.nrobjectheader.group"]}</div>
                     </div>
                     <div className="nroh-stat">
                         <div className="nroh-stat-value">{summary.total_intervals.toLocaleString()}</div>
-                        <div className="nroh-stat-label">{i18n.catalog["text_0ba4aff8070f"]}</div>
+                        <div className="nroh-stat-label">{i18n.catalog["numberRange.nrobjectheader.range"]}</div>
                     </div>
                     <div className="nroh-stat">
                         <div className="nroh-stat-value">{summary.total_assignments.toLocaleString()}</div>
-                        <div className="nroh-stat-label">{i18n.catalog["text_8840978a5919"]}</div>
+                        <div className="nroh-stat-label">{i18n.catalog["common.general.link"]}</div>
                     </div>
                     <div className="nroh-divider" />
                     <div className="nroh-stat cap">
                         <div className="nroh-stat-value blue">{summary.total_capacity.toLocaleString()}</div>
-                        <div className="nroh-stat-label">{i18n.catalog["text_c3a23882bf48"]}</div>
+                        <div className="nroh-stat-label">{i18n.catalog["numberRange.nrobjectheader.totalCapacity"]}</div>
                     </div>
                     <div className="nroh-stat cap">
                         <div className="nroh-stat-value purple">{summary.total_used.toLocaleString()}</div>
-                        <div className="nroh-stat-label">{i18n.catalog["text_2fb01868740d"]}</div>
+                        <div className="nroh-stat-label">{i18n.catalog["common.general.user"]}</div>
                     </div>
                     <div className="nroh-stat cap">
                         <div className="nroh-stat-value green">{summary.total_remaining.toLocaleString()}</div>
-                        <div className="nroh-stat-label">{i18n.catalog["text_b2127e3a35be"]}</div>
+                        <div className="nroh-stat-label">{i18n.catalog["common.general.remaining.alternative2"]}</div>
                     </div>
                 </div>
             </div>
 
             <div className="nroh-progress-container">
                 <div className="nroh-progress-head">
-                    <span className="nroh-progress-title">{i18n.catalog["text_ebfbb7a7eebe"]}{summary.overall_fullness}%)</span>
+                    <span className="nroh-progress-title">{i18n.catalog["numberRange.nrobjectheader.totalCapacityUtilization"]}{summary.overall_fullness}%)</span>
                     <div className="nroh-status-counters">
-                        <span className="nroh-counter healthy">{getIcon("check-circle")} {healthy} {i18n.catalog["text_970dd58a0500"]}</span>
-                        <span className="nroh-counter warning">{getIcon("alert-triangle")} {warning} {i18n.catalog["text_28d716788eac"]}</span>
-                        <span className="nroh-counter critical">{getIcon("alert-circle")} {critical} {i18n.catalog["text_4e275d7c60ec"]}</span>
+                        <span className="nroh-counter healthy">{getIcon("check-circle")} {healthy} {i18n.catalog["common.general.valid.alternative2"]}</span>
+                        <span className="nroh-counter warning">{getIcon("alert-triangle")} {warning} {i18n.catalog["common.general.warning"]}</span>
+                        <span className="nroh-counter critical">{getIcon("alert-circle")} {critical} {i18n.catalog["common.general.critical"]}</span>
                     </div>
                 </div>
                 <div className="nroh-progress-track">
@@ -137,36 +137,36 @@ export function NrSetupPrompt({ defaultConfig, onCreateObject }: NrSetupPromptPr
         <>
             <div className="nr-setup-prompt">
                 <div className="nr-setup-icon">{getIcon("hash")}</div>
-                <h3>{i18n.catalog["text_1fb2f7d0de99"]}</h3>
-                <p>{i18n.catalog["text_ddbd5f016a39"]}</p>
+                <h3>{i18n.catalog["common.general.numberingSystemSetup"]}</h3>
+                <p>{i18n.catalog["common.general.noNumberingSystemHasBeenConfiguredThisType"]}</p>
                 <Button variant="primary" onClick={() => setSetupDialog(true)} icon="plus">
-                    {i18n.catalog["text_1fb2f7d0de99"]}</Button>
+                    {i18n.catalog["common.general.numberingSystemSetup"]}</Button>
             </div>
 
             <Dialog
                 isOpen={setupDialog}
                 onClose={() => setSetupDialog(false)}
-                title={i18n.catalog["text_1fb2f7d0de99"]}
+                title={i18n.catalog["common.general.numberingSystemSetup"]}
                 maxWidth="520px"
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setSetupDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
-                        <Button variant="primary" onClick={handleCreate}>{i18n.catalog["text_a820f3590d36"]}</Button>
+                        <Button variant="secondary" onClick={() => setSetupDialog(false)}>{i18n.catalog["common.general.cancel"]}</Button>
+                        <Button variant="primary" onClick={handleCreate}>{i18n.catalog["common.general.create"]}</Button>
                     </>
                 }
             >
                 <form onSubmit={(e) => { e.preventDefault(); handleCreate(); }}>
                     <div className="nr-info-banner">
                         <span className="nr-info-icon">{getIcon("info")}</span>
-                        <span>{i18n.catalog["text_a2dd0448fcdc"]}</span>
+                        <span>{i18n.catalog["common.general.numberLengthSetsMaximumNumericRangeExampleLength"]}</span>
                     </div>
                     <div className="form-row">
-                        <TextInput label={i18n.catalog["text_b90b881d800d"]} id="nr-setup-name" value={setupName} onChange={(e) => setSetupName(e.target.value)} required className="flex-1" />
-                        <TextInput label={i18n.catalog["text_07450d9ff8ed"]} id="nr-setup-name-en" value={setupNameEn} onChange={(e) => setSetupNameEn(e.target.value)} className="flex-1" />
+                        <TextInput label={i18n.catalog["common.general.nameArabic"]} id="nr-setup-name" value={setupName} onChange={(e) => setSetupName(e.target.value)} required className="flex-1" />
+                        <TextInput label={i18n.catalog["common.general.nameEnglish"]} id="nr-setup-name-en" value={setupNameEn} onChange={(e) => setSetupNameEn(e.target.value)} className="flex-1" />
                     </div>
                     <div className="form-row">
-                        <NumberInput label={i18n.catalog["text_1cb26fb66890"]} id="nr-setup-length" value={setupLength} onChange={setSetupLength} min={1} max={20} className="flex-1" />
-                        <TextInput label={i18n.catalog["text_de683d06206e"]} id="nr-setup-prefix" value={setupPrefix} onChange={(e) => setSetupPrefix(e.target.value)} className="flex-1" placeholder={i18n.catalog["text_5be93de51cfb"]} />
+                        <NumberInput label={i18n.catalog["common.general.numberingLength"]} id="nr-setup-length" value={setupLength} onChange={setSetupLength} min={1} max={20} className="flex-1" />
+                        <TextInput label={i18n.catalog["common.general.prefixOptional"]} id="nr-setup-prefix" value={setupPrefix} onChange={(e) => setSetupPrefix(e.target.value)} className="flex-1" placeholder={i18n.catalog["common.general.emp"]} />
                     </div>
                 </form>
             </Dialog>
@@ -183,7 +183,7 @@ export function NrLoading() {
     return (
         <div className="nr-manager-loading">
             <div className="nr-spinner" />
-            <p>{i18n.catalog["text_fb5cce8aee1f"]}</p>
+            <p>{i18n.catalog["common.general.loadingNumberingSettings"]}</p>
         </div>
     );
 }

@@ -34,7 +34,7 @@ export function ReturnsTable({
     const [activeTab, setActiveTab] = useState("all");
 
     const tabs = [
-        { key: "all", label: catalogMessage("text_dd1712a2b1bc"), icon: "list" },
+        { key: "all", label: catalogMessage("common.general.allReturns"), icon: "list" },
     ];
 
     const filteredTransactions = transactions.filter((t) => {
@@ -44,8 +44,8 @@ export function ReturnsTable({
 
     const getPaymentTypeName = (paymentType: string) => {
         const types: Record<string, string> = {
-            cash: catalogMessage("text_1beb05a45173"),
-            credit: catalogMessage("text_70122ff036ec"),
+            cash: catalogMessage("common.general.cash"),
+            credit: catalogMessage("common.general.creditReceivables"),
         };
         return types[paymentType] || paymentType;
     };
@@ -63,8 +63,8 @@ export function ReturnsTable({
         },
         {
             key: "transaction_date",
-            header: catalogMessage("text_d90c384199ac"),
-            dataLabel: catalogMessage("text_d90c384199ac"),
+            header: catalogMessage("common.general.date.alternative7"),
+            dataLabel: catalogMessage("common.general.date.alternative7"),
             render: (item) => (
                 <span style={{ fontSize: "0.9em" }}>
                     {formatDateTime(item.transaction_date)}
@@ -73,8 +73,8 @@ export function ReturnsTable({
         },
         {
             key: "supplier_name" as any,
-            header: catalogMessage("text_4680c31a727f"),
-            dataLabel: catalogMessage("text_4680c31a727f"),
+            header: catalogMessage("common.general.supplier"),
+            dataLabel: catalogMessage("common.general.supplier"),
             render: (item) => {
                 // Determine supplier name from item or relationship
                 const sName = (item as any).supplier_name || (item as any).supplier?.name || "—";
@@ -87,8 +87,8 @@ export function ReturnsTable({
         },
         {
             key: "description",
-            header: catalogMessage("text_32d887d68e89"),
-            dataLabel: catalogMessage("text_32d887d68e89"),
+            header: catalogMessage("common.general.descriptionReason"),
+            dataLabel: catalogMessage("common.general.descriptionReason"),
             render: (item) => (
                 <div>
                     {item.description || "—"}
@@ -97,8 +97,8 @@ export function ReturnsTable({
         },
         {
             key: "related_invoice_number" as any,
-            header: catalogMessage("text_3a682728f828"),
-            dataLabel: catalogMessage("text_b6e71278be04"),
+            header: catalogMessage("common.general.originalInvoiceNumber"),
+            dataLabel: catalogMessage("common.general.invoiceNumber.alternative2"),
             render: (item) => (
                 <span style={{ color: "var(--primary-color)", fontWeight: "bold" }}>
                     {(item as any).reference_id || item.invoice_number || "—"}
@@ -107,8 +107,8 @@ export function ReturnsTable({
         },
         {
             key: "amount",
-            header: catalogMessage("text_eca3995791c5"),
-            dataLabel: catalogMessage("text_ad81c0b4e84a"),
+            header: catalogMessage("supplyChain.returnstable.returnedAmountDebit"),
+            dataLabel: catalogMessage("common.general.refundAmount"),
             render: (item) => (
                 <span className="text-success font-bold">
                     {formatCurrency(item.amount)}
@@ -117,8 +117,8 @@ export function ReturnsTable({
         },
         {
             key: "created_by",
-            header: catalogMessage("text_2fb01868740d"),
-            dataLabel: catalogMessage("text_2fb01868740d"),
+            header: catalogMessage("common.general.user"),
+            dataLabel: catalogMessage("common.general.user"),
             render: (item) => {
                 const uName = (item as any).created_by_name || (item as any).createdBy?.name || item.created_by || "—";
                 return uName;
@@ -145,20 +145,20 @@ export function ReturnsTable({
                 }}
             >
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ fontWeight: "bold" }}>{catalogMessage("text_18cabbb2affc")}</span>
+                    <span style={{ fontWeight: "bold" }}>{catalogMessage("common.general.returnInvoice")}</span>
                     <span style={{ color: "var(--primary-color)", fontWeight: "bold" }}>
                         {relatedInvoice || item.invoice_number || "—"}
                     </span>
                 </div>
                 {supplierName && (
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <span style={{ fontWeight: "bold" }}>{catalogMessage("text_a5fea82496b7")}</span>
+                        <span style={{ fontWeight: "bold" }}>{catalogMessage("supplyChain.returnstable.supplier")}</span>
                         <span>{supplierName}</span>
                     </div>
                 )}
                 {paymentType && (
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <span style={{ fontWeight: "bold" }}>{catalogMessage("text_5ec205a92a89")}</span>
+                        <span style={{ fontWeight: "bold" }}>{catalogMessage("supplyChain.returnstable.transactionType")}</span>
                         <span
                             className={`badge ${paymentType === "credit" ? "badge-warning" : "badge-success"}`}
                         >
@@ -167,7 +167,7 @@ export function ReturnsTable({
                     </div>
                 )}
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ fontWeight: "bold" }}>{catalogMessage("text_c50fb897b3c3")}</span>
+                    <span style={{ fontWeight: "bold" }}>{catalogMessage("common.general.refundAmount.alternative2")}</span>
                     <span style={{ color: "var(--success-color)", fontWeight: "bold", fontSize: "1.1em" }}>
                         {formatCurrency(item.amount)}
                     </span>
@@ -187,7 +187,7 @@ export function ReturnsTable({
                 onSearch={setSearch}
                 getInvoiceItems={getInvoiceItems}
                 renderCustomExpandedRow={renderReturnDetails}
-                emptyMessage={catalogMessage("text_249e9cbff310")}
+                emptyMessage={catalogMessage("common.general.noReturns")}
                 FilterTabNavigation={
                     <TabSubNavigation
                         tabs={tabs}

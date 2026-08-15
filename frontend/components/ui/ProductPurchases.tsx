@@ -179,7 +179,7 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                 setProducts(response.data as Product[]);
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_bf68e6f346c3"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.errorLoadingProducts"], "error");
         }
     }, []);
 
@@ -209,7 +209,7 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                 setCurrentPage(page);
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_7df68dc366ee"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.failedLoadRecord"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -251,7 +251,7 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
     const productOptions: SelectOption[] = products.map((p) => ({
         value: p.id,
         label: p.name,
-        subtitle: catalogText(i18n, "text_e4fa70d25c95", { value0: p.stock_quantity, value1: p.sub_unit_name || i18n.catalog["text_d400a30ad5f3"], value2: formatCurrency(p.purchase_price || p.unit_price || 0) }),
+        subtitle: catalogText(i18n, "ui.productpurchases.message", { value0: p.stock_quantity, value1: p.sub_unit_name || i18n.catalog["common.general.each"], value2: formatCurrency(p.purchase_price || p.unit_price || 0) }),
         original: p,
     }));
 
@@ -280,7 +280,7 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                 const prevItem: PurchaseItem = {
                     product_id: selectedProduct.id,
                     product_name: selectedProduct.name,
-                    display_name: catalogText(i18n, "text_eb6d330d21db", { value0: selectedProduct.name, value1: qty, value2: unitName || "" }),
+                    display_name: catalogText(i18n, "common.general.message.alternative9", { value0: selectedProduct.name, value1: qty, value2: unitName || "" }),
                     quantity: qty,
                     unit_type: unitType,
                     unit_name: unitName || undefined,
@@ -310,13 +310,13 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
 
     const addItemToPurchase = () => {
         if (!selectedProduct) {
-            showAlert("alert-container", i18n.catalog["text_b64fbda7786b"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.pleaseSelectProductFirst"], "error");
             return;
         }
         const qty = parseNumber(quantity);
         const price = parseNumber(unitPrice);
         if (qty <= 0 || price <= 0) {
-            showAlert("alert-container", i18n.catalog["text_b69b5b91e69f"], "error");
+            showAlert("alert-container", i18n.catalog["ui.productpurchases.quantityPriceMustBeGreaterThanZero"], "error");
             return;
         }
 
@@ -328,7 +328,7 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
         const newItem: PurchaseItem = {
             product_id: selectedProduct.id,
             product_name: selectedProduct.name,
-            display_name: catalogText(i18n, "text_eb6d330d21db", { value0: selectedProduct.name, value1: qty, value2: unitName || "" }),
+            display_name: catalogText(i18n, "common.general.message.alternative9", { value0: selectedProduct.name, value1: qty, value2: unitName || "" }),
             quantity: qty,
             unit_type: unitType,
             unit_name: unitName || undefined,
@@ -353,15 +353,15 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
 
     const finishPurchase = async () => {
         if (purchaseItems.length === 0) {
-            showAlert("alert-container", i18n.catalog["text_f8f3d3e7ffca"], "error");
+            showAlert("alert-container", i18n.catalog["ui.productpurchases.addLeastOneProductInvoice"], "error");
             return;
         }
         if (!readiness?.ready || !readiness.context?.warehouse_id) {
-            showAlert("alert-container", i18n.catalog["text_6a3c1690c86f"], "error");
+            showAlert("alert-container", i18n.catalog["ui.productpurchases.cannotPostPurchaseBeforeCompletingWarehouseSetup"], "error");
             return;
         }
         if (isCredit && !selectedSupplier) {
-            showAlert("alert-container", i18n.catalog["text_f88382859045"], "error");
+            showAlert("alert-container", i18n.catalog["ui.productpurchases.pleaseSelectSupplierDeferredPurchase"], "error");
             return;
         }
 
@@ -395,7 +395,7 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
             if (allSuccess) {
                 showAlert(
                     "alert-container",
-                    catalogText(i18n, "text_1710fa801096", { value0: purchaseItems.length, value1: formatCurrency(finalTotal) }),
+                    catalogText(i18n, "ui.productpurchases.productSAddedInventorySuccessfullyTotal", { value0: purchaseItems.length, value1: formatCurrency(finalTotal) }),
                     "success"
                 );
                 setPurchaseItems([]);
@@ -409,11 +409,11 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                 await loadProducts();
                 await loadPurchases();
             } else {
-                showAlert("alert-container", i18n.catalog["text_27c1cdabab4b"], "error");
+                showAlert("alert-container", i18n.catalog["ui.productpurchases.someProductsWereNotSavedReviewErrors"], "error");
             }
         } catch (error) {
-            const msg = error instanceof Error ? error.message : i18n.catalog["text_a80b88135eb4"];
-            showAlert("alert-container", i18n.catalog["text_4c4968aba347"] + msg, "error");
+            const msg = error instanceof Error ? error.message : i18n.catalog["common.general.unknownError"];
+            showAlert("alert-container", i18n.catalog["common.general.error"] + msg, "error");
         }
     };
 
@@ -440,18 +440,18 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
         if (!deletePurchaseId) return;
         try {
             const response = await fetchAPI(
-                catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.COMMERCIAL.PROCUREMENT.BASE, value1: deletePurchaseId }),
+                catalogText(i18n, "common.general.message", { value0: API_ENDPOINTS.COMMERCIAL.PROCUREMENT.BASE, value1: deletePurchaseId }),
                 { method: "DELETE" }
             );
             if (response.success) {
-                showAlert("alert-container", i18n.catalog["text_4ea5f2f0bfc7"], "success");
+                showAlert("alert-container", i18n.catalog["ui.productpurchases.deletedQuantityReturnedStock"], "success");
                 await loadPurchases();
                 await loadProducts();
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_f46bfc521612"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["common.general.deletionFailed"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_3bdb299872fb"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.deletionError"], "error");
         } finally {
             setConfirmDialog(false);
             setDeletePurchaseId(null);
@@ -498,7 +498,7 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
 
     const openReturnDialog = async () => {
         if (selectedReturnItems.length === 0) {
-            showToast(i18n.catalog["text_54f0b0947619"], "warning");
+            showToast(i18n.catalog["common.general.pleaseSelectItemsReturnFirst"], "warning");
             return;
         }
         const uniqueIds = Array.from(new Set(selectedReturnItems.map((i) => i.invoiceId)));
@@ -515,7 +515,7 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                 );
                 setPurchasesMap(newMap);
             } catch {
-                showToast(i18n.catalog["text_f154fa31b161"], "error");
+                showToast(i18n.catalog["common.general.failedLoadInvoiceData"], "error");
             } finally {
                 setIsLoadingPurchases(false);
             }
@@ -532,11 +532,11 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                     method: "POST",
                     body: JSON.stringify(payload),
                 });
-                if (!response.success) throw new Error(response.message || i18n.catalog["text_311143511f9e"]);
+                if (!response.success) throw new Error(response.message || i18n.catalog["common.general.failedRegisterReturn"]);
             }
-            showToast(i18n.catalog["text_11195848250a"], "success");
+            showToast(i18n.catalog["common.general.purchaseReturnRecordedSuccessfully"], "success");
         } catch (error: any) {
-            showToast(error.message || i18n.catalog["text_633a9d0a74cd"], "error");
+            showToast(error.message || i18n.catalog["common.general.errorRegisteringReturn"], "error");
             throw error;
         }
     };
@@ -546,58 +546,58 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
     const historyColumns: InvoiceTableColumn<PurchaseRecord>[] = [
         {
             key: "product_name",
-            header: i18n.catalog["text_a79e304d96a1"],
-            dataLabel: i18n.catalog["text_a79e304d96a1"],
+            header: i18n.catalog["common.general.product"],
+            dataLabel: i18n.catalog["common.general.product"],
             render: (item) => <strong>{item.product_name || "-"}</strong>,
         },
         {
             key: "quantity",
-            header: i18n.catalog["text_935e21853946"],
-            dataLabel: i18n.catalog["text_935e21853946"],
-            render: (item) => catalogText(i18n, "text_54ef3bb1085e", { value0: item.quantity, value1: item.unit_type === "main" ? i18n.catalog["text_cc7593424dc5"] : i18n.catalog["text_d400a30ad5f3"] }),
+            header: i18n.catalog["common.general.quantity.alternative3"],
+            dataLabel: i18n.catalog["common.general.quantity.alternative3"],
+            render: (item) => catalogText(i18n, "common.general.notAvailable.alternative3", { value0: item.quantity, value1: item.unit_type === "main" ? i18n.catalog["common.general.carton"] : i18n.catalog["common.general.each"] }),
         },
         {
             key: "unit_price",
-            header: i18n.catalog["text_c274e3ec351e"],
-            dataLabel: i18n.catalog["text_c274e3ec351e"],
+            header: i18n.catalog["common.general.unitPrice.alternative3"],
+            dataLabel: i18n.catalog["common.general.unitPrice.alternative3"],
             render: (item) => formatCurrency(item.unit_price),
         },
         {
             key: "total_price" as keyof PurchaseRecord,
-            header: i18n.catalog["text_baed6e999960"],
-            dataLabel: i18n.catalog["text_baed6e999960"],
+            header: i18n.catalog["common.general.total.alternative3"],
+            dataLabel: i18n.catalog["common.general.total.alternative3"],
             render: (item) => formatCurrency(item.invoice_price || item.total_price || 0),
         },
         {
             key: "supplier" as keyof PurchaseRecord,
-            header: i18n.catalog["text_4680c31a727f"],
-            dataLabel: i18n.catalog["text_4680c31a727f"],
+            header: i18n.catalog["common.general.supplier"],
+            dataLabel: i18n.catalog["common.general.supplier"],
             render: (item) => item.supplier_name || item.supplier || "-",
         },
         {
             key: "payment_type" as keyof PurchaseRecord,
-            header: i18n.catalog["text_82c34fe99a13"],
-            dataLabel: i18n.catalog["text_82c34fe99a13"],
+            header: i18n.catalog["common.general.payment"],
+            dataLabel: i18n.catalog["common.general.payment"],
             render: (item) => (
                 <span className={`badge ${item.payment_type === "cash" ? "badge-success" : "badge-warning"}`}>
-                    {item.payment_type === "cash" ? i18n.catalog["text_1beb05a45173"] : i18n.catalog["text_bf7775843f7c"]}
+                    {item.payment_type === "cash" ? i18n.catalog["common.general.cash"] : i18n.catalog["common.general.deferred"]}
                 </span>
             ),
         },
         {
             key: "created_at",
-            header: i18n.catalog["text_d90c384199ac"],
-            dataLabel: i18n.catalog["text_d90c384199ac"],
+            header: i18n.catalog["common.general.date.alternative7"],
+            dataLabel: i18n.catalog["common.general.date.alternative7"],
             render: (item) => formatDateTime(item.created_at || item.purchase_date || ""),
         },
         {
             key: "actions",
-            header: i18n.catalog["text_7797240d6caf"],
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (item) => (
                 <ActionButtons
                     actions={[
-                        { icon: "view", title: i18n.catalog["text_3824e18ca83b"], variant: "view", onClick: () => viewPurchaseDetail(item.id) },
+                        { icon: "view", title: i18n.catalog["common.general.view"], variant: "view", onClick: () => viewPurchaseDetail(item.id) },
                     ]}
                 />
             ),
@@ -605,32 +605,32 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
     ];
 
     const currentItemColumns: Column<PurchaseItem>[] = [
-        { key: "display_name", header: i18n.catalog["text_a79e304d96a1"], dataLabel: i18n.catalog["text_a79e304d96a1"] },
+        { key: "display_name", header: i18n.catalog["common.general.product"], dataLabel: i18n.catalog["common.general.product"] },
         {
             key: "quantity",
-            header: i18n.catalog["text_935e21853946"],
-            dataLabel: i18n.catalog["text_935e21853946"],
-            render: (item) => catalogText(i18n, "text_54ef3bb1085e", { value0: item.quantity, value1: item.unit_name || "" }),
+            header: i18n.catalog["common.general.quantity.alternative3"],
+            dataLabel: i18n.catalog["common.general.quantity.alternative3"],
+            render: (item) => catalogText(i18n, "common.general.notAvailable.alternative3", { value0: item.quantity, value1: item.unit_name || "" }),
         },
         {
             key: "unit_price",
-            header: i18n.catalog["text_2b080520c372"],
-            dataLabel: i18n.catalog["text_2b080520c372"],
+            header: i18n.catalog["common.general.purchasePrice"],
+            dataLabel: i18n.catalog["common.general.purchasePrice"],
             render: (item) => formatCurrency(item.unit_price),
         },
         {
             key: "subtotal",
-            header: i18n.catalog["text_9c33cdc71a89"],
-            dataLabel: i18n.catalog["text_9c33cdc71a89"],
+            header: i18n.catalog["common.general.total.alternative2"],
+            dataLabel: i18n.catalog["common.general.total.alternative2"],
             render: (item) => formatCurrency(item.subtotal),
         },
         {
             key: "actions",
             header: "",
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (_, index) => (
                 <ActionButtons
-                    actions={[{ icon: "trash", title: i18n.catalog["text_59ca629220a6"], variant: "delete", onClick: () => removeItem(index) }]}
+                    actions={[{ icon: "trash", title: i18n.catalog["common.general.delete"], variant: "delete", onClick: () => removeItem(index) }]}
                 />
             ),
         },
@@ -641,22 +641,22 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
     const InputPanelForm = (
         <div className="sales-card compact animate-slide">
             <div className="card-header-flex">
-                <h3>{isCredit ? i18n.catalog["text_1aed95c27420"] : i18n.catalog["text_e22e5364422c"]}</h3>
+                <h3>{isCredit ? i18n.catalog["ui.productpurchases.purchasesCredit"] : i18n.catalog["ui.productpurchases.addPurchases"]}</h3>
                 <div className="invoice-badge">
-                    <span className="stat-label">{i18n.catalog["text_2cd4e7c1b5fb"]}</span>
+                    <span className="stat-label">{i18n.catalog["common.general.invoiceNumber"]}</span>
                     <input type="text" id="purchase-number" value={invoiceNumber} readOnly className="minimal-input" />
                 </div>
             </div>
             <form id="purchase-form" onSubmit={(e) => { e.preventDefault(); addItemToPurchase(); }}>
                 <div className="form-group">
-                    <label htmlFor="purchase-product-select">{i18n.catalog["text_f823e0243f4f"]}</label>
+                    <label htmlFor="purchase-product-select">{i18n.catalog["common.general.selectProduct"]}</label>
                     <SearchableSelect
                         id="purchase-product-select"
                         inputRef={productSelectRef}
                         options={productOptions}
                         value={selectedProduct?.id || null}
                         onChange={handleProductSelect}
-                        placeholder={i18n.catalog["text_05b154cfc523"]}
+                        placeholder={i18n.catalog["common.general.searchProductBarcode"]}
                         required
                         autoFocus
                         onAutoSelect={() => quantityInputRef.current?.focus()}
@@ -669,28 +669,28 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
 
                 <div className="form-row">
                     <div className="form-group">
-                        <label htmlFor="purchase-unit-type">{i18n.catalog["text_0b7ee6a6a05b"]}</label>
+                        <label htmlFor="purchase-unit-type">{i18n.catalog["common.general.unitType"]}</label>
                         <select
                             id="purchase-unit-type"
                             value={unitType}
                             onChange={(e) => setUnitType(e.target.value as "sub" | "main")}
                             className="glass"
                         >
-                            <option className="option-name" value="sub">{selectedProduct?.sub_unit_name || i18n.catalog["text_d400a30ad5f3"]}</option>
+                            <option className="option-name" value="sub">{selectedProduct?.sub_unit_name || i18n.catalog["common.general.each"]}</option>
                             <option className="option-name" value="main">
-                                {selectedProduct?.unit_name || i18n.catalog["text_cc7593424dc5"]} (
+                                {selectedProduct?.unit_name || i18n.catalog["common.general.carton"]} (
                                 {selectedProduct?.items_per_unit || 1}{" "}
-                                {selectedProduct?.sub_unit_name || i18n.catalog["text_d400a30ad5f3"]})
+                                {selectedProduct?.sub_unit_name || i18n.catalog["common.general.each"]})
                             </option>
                         </select>
                     </div>
                     <div className="form-group">
-                        <label htmlFor="purchase-expiry">{i18n.catalog["text_ec3093bd6fd5"]}</label>
+                        <label htmlFor="purchase-expiry">{i18n.catalog["common.general.endDate.alternative2"]}</label>
                         <DatePicker
                             id="purchase-expiry"
                             value={itemExpiryDate}
                             onChange={(val) => setItemExpiryDate(val)}
-                            placeholder={i18n.catalog["text_45a51eec3729"]}
+                            placeholder={i18n.catalog["ui.productpurchases.selectEndDate"]}
                         />
                     </div>
                 </div>
@@ -699,7 +699,7 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                     <div className="form-group">
                         <NumberInput
                             id="purchase-quantity"
-                            label={i18n.catalog["text_82ed8e968688"]}
+                            label={i18n.catalog["common.general.quantity.alternative2"]}
                             min={1}
                             value={quantity}
                             onChange={(val) => setQuantity(val)}
@@ -710,7 +710,7 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                     <div className="form-group">
                         <NumberInput
                             id="purchase-unit-price"
-                            label={i18n.catalog["text_75270145b809"]}
+                            label={i18n.catalog["ui.productpurchases.unitPurchasePrice"]}
                             min={0}
                             step={1}
                             value={unitPrice}
@@ -722,11 +722,11 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
 
                 <div className="summary-stat-box">
                     <div className="stat-item">
-                        <span className="stat-label">{i18n.catalog["text_4793cceb7aa3"]}</span>
+                        <span className="stat-label">{i18n.catalog["common.general.subtotal"]}</span>
                         <span className="stat-value highlight">{formatCurrency(subtotal)}</span>
                     </div>
                     <button type="button" className="btn btn-primary btn-add" onClick={addItemToPurchase} data-icon="plus">
-                        {i18n.catalog["text_c40f2ef41888"]}</button>
+                        {i18n.catalog["common.general.addInvoice"]}</button>
                 </div>
             </form>
         </div>
@@ -734,11 +734,11 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
 
     const SupplierPanelForm = (
         <div className="sales-card compact animate-slide">
-            <h3>{isCredit ? i18n.catalog["text_23e239ec0b1c"] : i18n.catalog["text_cb3ec49ab437"]}</h3>
+            <h3>{isCredit ? i18n.catalog["ui.productpurchases.supplierDataRequired"] : i18n.catalog["ui.productpurchases.supplierPaymentData"]}</h3>
             <div className="form-row" style={{ marginTop: "1rem" }}>
                 <div className="form-group">
                     <label htmlFor="supplier-select">
-                        {i18n.catalog["text_4680c31a727f"]}{isCredit && <span style={{ color: "var(--color-danger)" }}>*</span>}
+                        {i18n.catalog["common.general.supplier"]}{isCredit && <span style={{ color: "var(--color-danger)" }}>*</span>}
                     </label>
                     <SearchableSelect
                         id="supplier-select"
@@ -746,15 +746,15 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                         value={selectedSupplier?.id || null}
                         onChange={handleSupplierSelect}
                         onSearch={(term) => setSupplierSearchTerm(term)}
-                        placeholder={i18n.catalog["text_2b38d4d9f340"]}
-                        noResultsText={supplierSearchTerm.length < 2 ? i18n.catalog["text_d34f5f1ea138"] : i18n.catalog["text_214e46dfe681"]}
+                        placeholder={i18n.catalog["ui.productpurchases.searchSupplier"]}
+                        noResultsText={supplierSearchTerm.length < 2 ? i18n.catalog["common.general.typeLeastTwoCharactersSearch"] : i18n.catalog["ui.productpurchases.noSuppliers"]}
                     />
                 </div>
                 {isCredit ? (
                     <div className="form-group">
                         <NumberInput
                             id="amount-paid-input"
-                            label={i18n.catalog["text_623e1883b3d2"]}
+                            label={i18n.catalog["common.general.amountPaidCash"]}
                             min={0}
                             step={1}
                             value={amountPaid}
@@ -764,12 +764,12 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                 ) : (
                     <div className="form-group">
                         <SegmentedToggle
-                            label={i18n.catalog["text_ae2d60052976"]}
+                            label={i18n.catalog["common.general.paymentMethod"]}
                             value={paymentType}
                             onChange={(val) => setPaymentType(val as "cash" | "credit")}
                             options={[
-                                { value: "cash", label: i18n.catalog["text_1beb05a45173"] },
-                                { value: "credit", label: i18n.catalog["text_bf7775843f7c"] },
+                                { value: "cash", label: i18n.catalog["common.general.cash"] },
+                                { value: "credit", label: i18n.catalog["common.general.deferred"] },
                             ]}
                         />
                     </div>
@@ -777,16 +777,16 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
             </div>
             {isCredit && (
                 <small style={{ color: "var(--text-light)", display: "block", marginBottom: "0.5rem" }}>
-                    {i18n.catalog["text_11163ee7d162"]}</small>
+                    {i18n.catalog["ui.productpurchases.amountCurrentlyPayableSupplierInvoice"]}</small>
             )}
             <div className="form-group" style={{ marginTop: "0.5rem" }}>
-                <label htmlFor="purchase-notes">{i18n.catalog["text_4e039afd0464"]}</label>
+                <label htmlFor="purchase-notes">{i18n.catalog["ui.productpurchases.invoiceNotes"]}</label>
                 <textarea
                     id="purchase-notes"
                     value={invoiceNotes}
                     onChange={(e) => setInvoiceNotes(e.target.value)}
                     rows={2}
-                    placeholder={i18n.catalog["text_4f42bf3f07ec"]}
+                    placeholder={i18n.catalog["ui.productpurchases.optionalNotes"]}
                     style={{ width: "100%" }}
                 />
             </div>
@@ -799,9 +799,9 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
             <div className="sales-layout">
                 <div className="sales-card" style={{ marginBottom: "1rem" }}>
                     {readiness?.ready && readiness.context?.warehouse ? (
-                        <span>{i18n.catalog["text_9189aa23a931"]}{readiness.context.warehouse.name}</span>
+                        <span>{i18n.catalog["common.general.executionContext"]}{readiness.context.warehouse.name}</span>
                     ) : (
-                        <span>{i18n.catalog["text_9f615da03340"]}</span>
+                        <span>{i18n.catalog["ui.productpurchases.storeSetupIsIncompleteCompleteWarehouseSetupOrganizational"]}</span>
                     )}
                 </div>
                 <div className="sales-top-grids">
@@ -813,13 +813,13 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                         {SupplierPanelForm}
 
                         <div className="sales-card animate-slide" style={{ animationDelay: "0.1s" }}>
-                            <h3>{i18n.catalog["text_0dd962e486c9"]}</h3>
+                            <h3>{i18n.catalog["common.general.currentInvoiceItems"]}</h3>
                             <div className="current-invoice-table" style={{ width: "100%", overflowX: "auto" }}>
                                 <Table
                                     columns={currentItemColumns}
                                     data={purchaseItems}
                                     keyExtractor={(_, index) => index}
-                                    emptyMessage={i18n.catalog["text_9172081b079d"]}
+                                    emptyMessage={i18n.catalog["common.general.noItemsAdded"]}
                                 />
                             </div>
 
@@ -828,26 +828,26 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                                     <div className="form-group" style={{ marginBottom: 0, flex: '1 1 200px', minWidth: '0' }}>
                                         <NumberInput
                                             id="purchase-discount"
-                                            label={i18n.catalog["text_9820f0061954"]}
+                                            label={i18n.catalog["common.general.discountAmount"]}
                                             value={discountValue}
                                             onChange={(val) => setDiscountValue(val)}
                                             min={0}
-                                            placeholder={i18n.catalog["text_561b2814d3c0"]}
+                                            placeholder={i18n.catalog["common.general.message000"]}
                                         />
                                     </div>
                                     <SegmentedToggle
-                                        label={i18n.catalog["text_3bf1c1fc67c1"]}
+                                        label={i18n.catalog["common.general.discountType"]}
                                         value={discountType}
                                         onChange={(val) => setDiscountType(val as "fixed" | "percent")}
                                         options={[
-                                            { value: "fixed", label: i18n.catalog["text_30de87b72026"] },
-                                            { value: "percent", label: i18n.catalog["text_d75c4c7090fc"] },
+                                            { value: "fixed", label: i18n.catalog["common.general.amount.alternative2"] },
+                                            { value: "percent", label: i18n.catalog["common.general.percentage.alternative2"] },
                                         ]}
                                     />
                                 </div>
                                 {calculatedDiscount() > 0 && (
                                     <div className="summary-stat animate-fade" style={{ marginRight: 'auto', borderRight: '1px solid var(--border-color)', paddingRight: '1.5rem' }}>
-                                        <span className="stat-label">{i18n.catalog["text_8b9ac0222699"]}</span>
+                                        <span className="stat-label">{i18n.catalog["common.general.totalDiscount"]}</span>
                                         <span className="stat-value text-danger" style={{ fontSize: '1.1rem' }}>
                                             -{formatCurrency(calculatedDiscount())}
                                         </span>
@@ -857,12 +857,12 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
 
                             <div className="sales-summary-bar">
                                 <div className="summary-stat">
-                                    <span className="stat-label">{i18n.catalog["text_a86ed2466035"]}</span>
+                                    <span className="stat-label">{i18n.catalog["common.general.totalProducts"]}</span>
                                     <span className="stat-value">{formatCurrency(purchaseTotal)}</span>
                                 </div>
 
                                 <div className="summary-stat">
-                                    <span className="stat-label">{isCredit ? i18n.catalog["text_1f4a626bcba2"] : i18n.catalog["text_50a90c019154"]}</span>
+                                    <span className="stat-label">{isCredit ? i18n.catalog["common.general.totalAmount"] : i18n.catalog["common.general.invoiceTotal"]}</span>
                                     <span id="purchase-total" className="stat-value highlight">
                                         {formatCurrency(finalTotal)}
                                     </span>
@@ -870,14 +870,14 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
 
                                 {paidAmountVal > 0 && (
                                     <div className="summary-stat">
-                                        <span className="stat-label">{i18n.catalog["text_0e34abaab7bf"]}</span>
+                                        <span className="stat-label">{i18n.catalog["ui.productpurchases.paidCash"]}</span>
                                         <span className="stat-value text-success">{formatCurrency(paidAmountVal)}</span>
                                     </div>
                                 )}
 
                                 {isCredit && (
                                     <div className="summary-stat">
-                                        <span className="stat-label">{i18n.catalog["text_7c1a4f4c5bd3"]}</span>
+                                        <span className="stat-label">{i18n.catalog["ui.productpurchases.remainingSupplier"]}</span>
                                         <span className="stat-value text-danger">{formatCurrency(remainingAmount)}</span>
                                     </div>
                                 )}
@@ -890,7 +890,7 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                                     data-icon="check"
                                     disabled={purchaseItems.length === 0 || !readiness?.ready}
                                 >
-                                    {isCredit ? i18n.catalog["text_06873ff74693"] : i18n.catalog["text_f663f7a034fa"]}
+                                    {isCredit ? i18n.catalog["common.general.saveInvoice"] : i18n.catalog["common.general.finalizeInvoice"]}
                                 </button>
                             </div>
                         </div>
@@ -899,14 +899,14 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
 
                 {/* ── Purchase History ── */}
                 <div className="sales-card animate-slide" style={{ animationDelay: "0.2s" }}>
-                    <h3>{i18n.catalog["text_686c4194fb34"]}</h3>
+                    <h3>{i18n.catalog["ui.productpurchases.previousPurchaseHistory"]}</h3>
                     <div className="table-container">
                         <div className="table-wrapper">
                             <SelectableInvoiceTable
                                 invoices={purchases as any[]}
                                 columns={historyColumns as any}
                                 keyExtractor={(item: any) => item.id}
-                                emptyMessage={i18n.catalog["text_6ae79ed76824"]}
+                                emptyMessage={i18n.catalog["common.general.noPreviousPurchases"]}
                                 isLoading={isLoading}
                                 pagination={{ currentPage, totalPages, onPageChange: loadPurchases }}
                                 getInvoiceItems={getPurchaseItemsForTable as any}
@@ -935,7 +935,7 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
             />
 
             {/* View Dialog */}
-            <Dialog isOpen={viewDialog} onClose={() => setViewDialog(false)} title={i18n.catalog["text_8f68e7eb79e2"]}>
+            <Dialog isOpen={viewDialog} onClose={() => setViewDialog(false)} title={i18n.catalog["common.general.buyerDetails"]}>
                 {selectedPurchase && (
                     <div id="purchase-view-dialog-body">
                         <div
@@ -944,21 +944,21 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                         >
                             <div className="form-row">
                                 <div className="summary-stat">
-                                    <span className="stat-label">{i18n.catalog["text_a79e304d96a1"]}</span>
+                                    <span className="stat-label">{i18n.catalog["common.general.product"]}</span>
                                     <span className="stat-value">{selectedPurchase.product_name || "-"}</span>
                                 </div>
                                 <div className="summary-stat">
-                                    <span className="stat-label">{i18n.catalog["text_935e21853946"]}</span>
+                                    <span className="stat-label">{i18n.catalog["common.general.quantity.alternative3"]}</span>
                                     <span className="stat-value">
                                         {selectedPurchase.quantity}{" "}
-                                        {selectedPurchase.unit_type === "main" ? i18n.catalog["text_cc7593424dc5"] : i18n.catalog["text_d400a30ad5f3"]}
+                                        {selectedPurchase.unit_type === "main" ? i18n.catalog["common.general.carton"] : i18n.catalog["common.general.each"]}
                                     </span>
                                 </div>
                                 <div className="summary-stat">
-                                    <span className="stat-label">{i18n.catalog["text_ae2d60052976"]}</span>
+                                    <span className="stat-label">{i18n.catalog["common.general.paymentMethod"]}</span>
                                     <span className="stat-value">
                                         <span className={`badge ${selectedPurchase.payment_type === "cash" ? "badge-success" : "badge-warning"}`}>
-                                            {selectedPurchase.payment_type === "cash" ? i18n.catalog["text_1beb05a45173"] : i18n.catalog["text_bf7775843f7c"]}
+                                            {selectedPurchase.payment_type === "cash" ? i18n.catalog["common.general.cash"] : i18n.catalog["common.general.deferred"]}
                                         </span>
                                     </span>
                                 </div>
@@ -968,13 +968,13 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                                 style={{ marginTop: "1rem", background: "var(--surface-hover)", padding: "1rem", borderRadius: "var(--radius-md)" }}
                             >
                                 <div className="summary-stat">
-                                    <span className="stat-label">{i18n.catalog["text_4680c31a727f"]}</span>
+                                    <span className="stat-label">{i18n.catalog["common.general.supplier"]}</span>
                                     <span className="stat-value">
                                         {selectedPurchase.supplier_name || selectedPurchase.supplier || "-"}
                                     </span>
                                 </div>
                                 <div className="summary-stat">
-                                    <span className="stat-label">{i18n.catalog["text_d90c384199ac"]}</span>
+                                    <span className="stat-label">{i18n.catalog["common.general.date.alternative7"]}</span>
                                     <span className="stat-value">
                                         {formatDate(selectedPurchase.purchase_date || selectedPurchase.created_at || "")}
                                     </span>
@@ -984,13 +984,13 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
 
                         <div className="sales-summary-bar" style={{ marginTop: "2rem", background: "var(--grad-primary)", color: "white" }}>
                             <div className="summary-stat">
-                                <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>{i18n.catalog["text_c274e3ec351e"]}</span>
+                                <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>{i18n.catalog["common.general.unitPrice.alternative3"]}</span>
                                 <span className="stat-value" style={{ color: "white", fontSize: "1.2rem" }}>
                                     {formatCurrency(selectedPurchase.unit_price)}
                                 </span>
                             </div>
                             <div className="summary-stat">
-                                <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>{i18n.catalog["text_baed6e999960"]}</span>
+                                <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>{i18n.catalog["common.general.total.alternative3"]}</span>
                                 <span className="stat-value highlight" style={{ color: "white" }}>
                                     {formatCurrency(selectedPurchase.invoice_price || selectedPurchase.total_price || 0)}
                                 </span>
@@ -999,7 +999,7 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
 
                         {selectedPurchase.notes && (
                             <div className="form-group" style={{ marginTop: "1rem" }}>
-                                <span className="stat-label">{i18n.catalog["text_d446d2dc6b81"]}</span>
+                                <span className="stat-label">{i18n.catalog["common.general.notes.alternative2"]}</span>
                                 <p style={{ marginTop: "0.25rem" }}>{selectedPurchase.notes}</p>
                             </div>
                         )}
@@ -1012,9 +1012,9 @@ export function ProductPurchases({ mode }: ProductPurchasesPageProps) {
                 isOpen={confirmDialog}
                 onClose={() => { setConfirmDialog(false); setDeletePurchaseId(null); }}
                 onConfirm={deletePurchase}
-                title={i18n.catalog["text_5f9cb54dc136"]}
-                message={i18n.catalog["text_f45bea5c16d3"]}
-                confirmText={i18n.catalog["text_f900e96c0235"]}
+                title={i18n.catalog["common.general.confirmDeletion"]}
+                message={i18n.catalog["ui.productpurchases.areYouSureYouWantDeleteThisPurchase"]}
+                confirmText={i18n.catalog["common.general.yesContinue"]}
                 confirmVariant="primary"
             />
         </MainLayout>

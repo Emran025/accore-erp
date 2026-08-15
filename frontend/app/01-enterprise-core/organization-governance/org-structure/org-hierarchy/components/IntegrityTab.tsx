@@ -25,12 +25,12 @@ interface IntegrityIssue {
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
-    missing_attribute: catalogMessage("text_e719e6a2c81f"),
-    orphan_node: catalogMessage("text_4a9ffe71a029"),
-    missing_parent: catalogMessage("text_5e762b2e16b2"),
-    cardinality_violation: catalogMessage("text_0f6473e6e5b3"),
-    expired_link: catalogMessage("text_36dab31263bb"),
-    inactive_with_links: catalogMessage("text_c6e14a399fc9"),
+    missing_attribute: catalogMessage("enterpriseCore.integrity.missingRequiredAttributes"),
+    orphan_node: catalogMessage("common.general.isolatedUnits"),
+    missing_parent: catalogMessage("enterpriseCore.integrity.requiredLinksMissing"),
+    cardinality_violation: catalogMessage("enterpriseCore.integrity.relationshipMultiplicityViolations"),
+    expired_link: catalogMessage("enterpriseCore.integrity.expiredLinks"),
+    inactive_with_links: catalogMessage("enterpriseCore.integrity.inactiveUnitsAssociations"),
 };
 
 export function IntegrityTab() {
@@ -56,10 +56,10 @@ export function IntegrityTab() {
                     warnings: res.warnings as number || 0,
                     info: res.info as number || 0,
                 });
-                showToast(catalogText(i18n, "text_089f02a23233", { value0: res.total }), "info");
+                showToast(catalogText(i18n, "enterpriseCore.integrity.inspectionCompletedNoteSFound", { value0: res.total }), "info");
             }
         } catch {
-            showToast(i18n.catalog["text_62407da805a9"], "error");
+            showToast(i18n.catalog["enterpriseCore.integrity.failedRunSafetyCheck"], "error");
         } finally {
             setIsScanning(false);
         }
@@ -86,12 +86,12 @@ export function IntegrityTab() {
             {/* Header */}
             <PageSubHeader
                 titleIcon="shield-check"
-                title={i18n.catalog["text_dd1e300a0e00"]}
-                subTitle={i18n.catalog["text_7f3e19a4a3e2"]}
+                title={i18n.catalog["enterpriseCore.integrity.organizationalStructureConsistencyCheckConsistencyCheck"]}
+                subTitle={i18n.catalog["enterpriseCore.integrity.comprehensiveVerificationAssignmentsAttributesRelationshipsEmulatingSapC"]}
                 actions={
                     <>
                         <Button variant="primary" onClick={runScan} disabled={isScanning}>
-                            {isScanning ? i18n.catalog["text_3e60e9968a72"] : i18n.catalog["text_89cec82a1b30"]}
+                            {isScanning ? i18n.catalog["enterpriseCore.integrity.checking"] : i18n.catalog["enterpriseCore.integrity.restartScan"]}
                         </Button>
                     </>
                 }
@@ -100,28 +100,28 @@ export function IntegrityTab() {
             {/* Stats Row */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginBottom: "1.5rem" }}>
                 <StatsCard
-                    title={i18n.catalog["text_c93844dd04a3"]}
+                    title={i18n.catalog["enterpriseCore.integrity.totalResults"]}
                     value={summary.total}
                     icon={getIcon("list")}
                     colorClass="total"
                     onClick={() => setFilterType("")}
                 />
                 <StatsCard
-                    title={i18n.catalog["text_aac2ad44108f"]}
+                    title={i18n.catalog["enterpriseCore.integrity.errorsBlockers"]}
                     value={summary.errors}
                     icon={getIcon("alert")}
                     colorClass="alert"
                     onClick={() => setFilterType(filterType === "ERROR" ? "" : "ERROR")}
                 />
                 <StatsCard
-                    title={i18n.catalog["text_c10e071b77c7"]}
+                    title={i18n.catalog["enterpriseCore.integrity.warnings"]}
                     value={summary.warnings}
                     icon={getIcon("alertTriangle")}
                     colorClass="default"
                     onClick={() => setFilterType(filterType === "WARNING" ? "" : "WARNING")}
                 />
                 <StatsCard
-                    title={i18n.catalog["text_0f029691ed6d"]}
+                    title={i18n.catalog["enterpriseCore.integrity.notifications"]}
                     value={summary.info}
                     icon={getIcon("eye")}
                     colorClass="sales"
@@ -132,7 +132,7 @@ export function IntegrityTab() {
             {/* Category Filter */}
             {categories.length > 0 && (
                 <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem", flexWrap: "wrap" }}>
-                    <FilterChip label={i18n.catalog["text_65f276da33cf"]} active={!filterCategory} onClick={() => setFilterCategory("")} />
+                    <FilterChip label={i18n.catalog["common.general.all"]} active={!filterCategory} onClick={() => setFilterCategory("")} />
                     {categories.map(cat => {
                         const count = issues.filter(i => i.category === cat && (!filterType || i.type === filterType)).length;
                         return (
@@ -152,20 +152,20 @@ export function IntegrityTab() {
             {issues.length === 0 && !isScanning ? (
                 <EmptyState
                     icon="check-circle"
-                    title={i18n.catalog["text_c1e8d631340d"]}
-                    description={i18n.catalog["text_5602b66cbe09"]}
+                    title={i18n.catalog["enterpriseCore.integrity.structureIntact100"]}
+                    description={i18n.catalog["enterpriseCore.integrity.thereAreNoConflictsMissingRequiredAttributesViolations"]}
                     iconColor="var(--success)"
                 >
-                    <CheckItem label={i18n.catalog["text_1ea0b2bbad92"]} />
-                    <CheckItem label={i18n.catalog["text_faeb848c82b1"]} />
-                    <CheckItem label={i18n.catalog["text_5cbd9c7fdb78"]} />
-                    <CheckItem label={i18n.catalog["text_a65e8c16aedf"]} />
-                    <CheckItem label={i18n.catalog["text_3ef644f85481"]} />
+                    <CheckItem label={i18n.catalog["enterpriseCore.integrity.mandatoryAttributes"]} />
+                    <CheckItem label={i18n.catalog["enterpriseCore.integrity.primaryLinks"]} />
+                    <CheckItem label={i18n.catalog["enterpriseCore.integrity.multiplicityRules"]} />
+                    <CheckItem label={i18n.catalog["enterpriseCore.integrity.linkValidity"]} />
+                    <CheckItem label={i18n.catalog["enterpriseCore.integrity.isolatedUnits"]} />
                 </EmptyState>
             ) : isScanning ? (
                 <div className="sales-card" style={{ textAlign: "center", padding: "3rem" }}>
                     <div className="loading-spinner" style={{ margin: "0 auto 1rem" }} />
-                    <p style={{ color: "var(--text-muted)" }}>{i18n.catalog["text_92fd51f8f513"]}</p>
+                    <p style={{ color: "var(--text-muted)" }}>{i18n.catalog["enterpriseCore.integrity.checkingOrganizationalUnitsLinksRules"]}</p>
                 </div>
             ) : (
                 <div style={{ display: "grid", gap: "1rem" }}>
@@ -185,12 +185,12 @@ export function IntegrityTab() {
                                         message={issue.message_ar || issue.message}
                                         meta={
                                             <>
-                                                {i18n.catalog["text_f94ffee01209"]}<strong>{issue.node_code}</strong>
+                                                {i18n.catalog["enterpriseCore.integrity.unit"]}<strong>{issue.node_code}</strong>
                                                 <span style={{ marginRight: "0.5rem", marginLeft: "0.5rem" }}>|</span>
-                                                {i18n.catalog["text_0e20d829bef2"]}<code style={{ fontSize: "0.75rem" }}>{issue.node_type}</code>
+                                                {i18n.catalog["common.general.type"]}<code style={{ fontSize: "0.75rem" }}>{issue.node_type}</code>
                                                 {issue.node_uuid && (
                                                     <span style={{ marginRight: "0.5rem", color: "var(--text-muted)", fontSize: "0.72rem" }}>
-                                                        {i18n.catalog["text_088d1d97164b"]}{issue.node_uuid.substring(0, 8)}...)
+                                                        {i18n.catalog["enterpriseCore.integrity.id"]}{issue.node_uuid.substring(0, 8)}...)
                                                     </span>
                                                 )}
                                             </>

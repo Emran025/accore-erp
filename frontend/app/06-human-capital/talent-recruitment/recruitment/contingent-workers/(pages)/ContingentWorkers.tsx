@@ -28,16 +28,16 @@ interface ContingentWorker {
 }
 
 const workerTypeLabels: Record<string, string> = {
-  contractor: catalogMessage("text_0ee686846368"),
-  consultant: catalogMessage("text_f1ca19d26268"),
-  freelancer: catalogMessage("text_7ff9277f8b10"),
-  temp_agency: catalogMessage("text_39dfc305dbcb"),
+  contractor: catalogMessage("humanCapital.contingentworkers.contractor"),
+  consultant: catalogMessage("humanCapital.contingentworkers.consultant"),
+  freelancer: catalogMessage("humanCapital.contingentworkers.independent"),
+  temp_agency: catalogMessage("humanCapital.contingentworkers.temporaryAgency"),
 };
 
 const statusLabels: Record<string, string> = {
-  active: catalogMessage("text_629e90b3af3d"),
-  inactive: catalogMessage("text_b719ac8add4e"),
-  terminated: catalogMessage("text_66d41b8c662e"),
+  active: catalogMessage("common.general.active"),
+  inactive: catalogMessage("common.general.inactive"),
+  terminated: catalogMessage("common.general.terminated"),
 };
 
 const statusBadges: Record<string, string> = {
@@ -73,7 +73,7 @@ export function ContingentWorkers() {
       setWorkers(res.data as ContingentWorker[] || []);
       setTotalPages(Number(res.last_page) || 1);
     } catch (error) {
-      console.error(i18n.catalog["text_acf34b7ad16d"], error);
+      console.error(i18n.catalog["humanCapital.contingentworkers.failedLoadContingentWorkers"], error);
     } finally {
       setIsLoading(false);
     }
@@ -82,42 +82,42 @@ export function ContingentWorkers() {
   const columns: Column<ContingentWorker>[] = [
     {
       key: "worker_code",
-      header: i18n.catalog["text_dc4bf01b8f11"],
-      dataLabel: i18n.catalog["text_dc4bf01b8f11"],
+      header: i18n.catalog["common.general.workerCode"],
+      dataLabel: i18n.catalog["common.general.workerCode"],
     },
     {
       key: "full_name",
-      header: i18n.catalog["text_6c2ab9bdeb2c"],
-      dataLabel: i18n.catalog["text_6c2ab9bdeb2c"],
+      header: i18n.catalog["common.general.fullName"],
+      dataLabel: i18n.catalog["common.general.fullName"],
     },
     {
       key: "worker_type",
-      header: i18n.catalog["text_caa3f2bb4a36"],
-      dataLabel: i18n.catalog["text_caa3f2bb4a36"],
+      header: i18n.catalog["common.general.type.alternative3"],
+      dataLabel: i18n.catalog["common.general.type.alternative3"],
       render: (item) => workerTypeLabels[item.worker_type] || item.worker_type,
     },
     {
       key: "company_name",
-      header: i18n.catalog["text_9ee7213d2258"],
-      dataLabel: i18n.catalog["text_9ee7213d2258"],
+      header: i18n.catalog["common.general.company"],
+      dataLabel: i18n.catalog["common.general.company"],
       render: (item) => item.company_name || '-',
     },
     {
       key: "start_date",
-      header: i18n.catalog["text_90f719b91522"],
-      dataLabel: i18n.catalog["text_90f719b91522"],
+      header: i18n.catalog["common.general.startDate.alternative2"],
+      dataLabel: i18n.catalog["common.general.startDate.alternative2"],
       render: (item) => formatDate(item.start_date),
     },
     {
       key: "end_date",
-      header: i18n.catalog["text_ec3093bd6fd5"],
-      dataLabel: i18n.catalog["text_ec3093bd6fd5"],
+      header: i18n.catalog["common.general.endDate.alternative2"],
+      dataLabel: i18n.catalog["common.general.endDate.alternative2"],
       render: (item) => item.end_date ? formatDate(item.end_date) : '-',
     },
     {
       key: "rate",
-      header: i18n.catalog["text_54b29abbf17d"],
-      dataLabel: i18n.catalog["text_54b29abbf17d"],
+      header: i18n.catalog["common.general.rate"],
+      dataLabel: i18n.catalog["common.general.rate"],
       render: (item) => {
         if (item.hourly_rate) return formatCurrency(item.hourly_rate) + '/ساعة';
         if (item.monthly_rate) return formatCurrency(item.monthly_rate) + '/شهر';
@@ -126,8 +126,8 @@ export function ContingentWorkers() {
     },
     {
       key: "status",
-      header: i18n.catalog["text_c3a4749caed4"],
-      dataLabel: i18n.catalog["text_c3a4749caed4"],
+      header: i18n.catalog["common.general.status.alternative2"],
+      dataLabel: i18n.catalog["common.general.status.alternative2"],
       render: (item) => (
         <span className={`badge ${statusBadges[item.status] || 'badge-secondary'}`}>
           {statusLabels[item.status] || item.status}
@@ -136,22 +136,22 @@ export function ContingentWorkers() {
     },
     {
       key: "id",
-      header: i18n.catalog["text_7797240d6caf"],
-      dataLabel: i18n.catalog["text_7797240d6caf"],
+      header: i18n.catalog["common.general.actions"],
+      dataLabel: i18n.catalog["common.general.actions"],
       render: (item) => (
         <ActionButtons
           actions={[
             {
               icon: "eye",
-              title: i18n.catalog["text_4b615d0e6dd2"],
+              title: i18n.catalog["common.general.viewDetails"],
               variant: "view",
-              onClick: () => alert(i18n.catalog["text_5ba17dbe5a91"])
+              onClick: () => alert(i18n.catalog["common.general.thisFeatureIsUnderDevelopmentWillBeAdded"])
             },
             ...(canAccess("contingent", "edit") ? [{
               icon: "edit" as const,
-              title: i18n.catalog["text_113d570d6555"],
+              title: i18n.catalog["common.general.edit"],
               variant: "edit" as const,
-              onClick: () => alert(i18n.catalog["text_5ba17dbe5a91"])
+              onClick: () => alert(i18n.catalog["common.general.thisFeatureIsUnderDevelopmentWillBeAdded"])
             }] : [])
           ]}
         />
@@ -162,7 +162,7 @@ export function ContingentWorkers() {
   return (
     <div className="sales-card animate-fade">
       <PageSubHeader
-        title={i18n.catalog["text_25f00fd24148"]}
+        title={i18n.catalog["common.general.temporaryLabor"]}
         titleIcon="briefcase"
         searchInput={
           <SearchableSelect
@@ -173,7 +173,7 @@ export function ContingentWorkers() {
               setSearchTerm(val);
               setCurrentPage(1);
             }}
-            placeholder={i18n.catalog["text_76b858f96489"]}
+            placeholder={i18n.catalog["common.general.search"]}
             className="search-input"
           />
         }
@@ -186,20 +186,20 @@ export function ContingentWorkers() {
                 setCurrentPage(1);
               }}
               style={{ minWidth: '150px' }}
-              placeholder={i18n.catalog["text_1ef213109d57"]}
+              placeholder={i18n.catalog["common.general.allStatuses"]}
               options={[
-                { value: 'active', label: i18n.catalog["text_629e90b3af3d"] },
-                { value: 'inactive', label: i18n.catalog["text_b719ac8add4e"] },
-                { value: 'terminated', label: i18n.catalog["text_66d41b8c662e"] }
+                { value: 'active', label: i18n.catalog["common.general.active"] },
+                { value: 'inactive', label: i18n.catalog["common.general.inactive"] },
+                { value: 'terminated', label: i18n.catalog["common.general.terminated"] }
               ]}
             />
             {canAccess("contingent", "create") && (
               <Button
-                onClick={() => alert(i18n.catalog["text_5ba17dbe5a91"])}
+                onClick={() => alert(i18n.catalog["common.general.thisFeatureIsUnderDevelopmentWillBeAdded"])}
                 variant="primary"
                 icon="plus"
               >
-                {i18n.catalog["text_daa47acf4f81"]}</Button>
+                {i18n.catalog["humanCapital.contingentworkers.addTemporaryWorker"]}</Button>
             )}
           </>
         }
@@ -209,7 +209,7 @@ export function ContingentWorkers() {
         columns={columns}
         data={workers}
         keyExtractor={(item) => item.id.toString()}
-        emptyMessage={i18n.catalog["text_dc4e7377a961"]}
+        emptyMessage={i18n.catalog["humanCapital.contingentworkers.noTemporaryWorkersRegistered"]}
         isLoading={isLoading}
         pagination={{
           currentPage,

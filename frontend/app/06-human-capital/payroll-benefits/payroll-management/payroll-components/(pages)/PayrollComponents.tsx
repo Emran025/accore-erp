@@ -45,7 +45,7 @@ export function PayrollComponents() {
       const data = res.data || (Array.isArray(res) ? res : []);
       setComponents(data);
     } catch (e) {
-      showToast(i18n.catalog["text_0c31da7eec0b"], "error");
+      showToast(i18n.catalog["humanCapital.payrollcomponents.failedLoadPayrollComponents"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -53,7 +53,7 @@ export function PayrollComponents() {
 
   const handleSave = async () => {
     if (!formData.component_code || !formData.component_name) {
-      showToast(i18n.catalog["text_0fd2f2ad0e62"], "error");
+      showToast(i18n.catalog["humanCapital.payrollcomponents.pleaseEnterAllRequiredFields"], "error");
       return;
     }
 
@@ -66,24 +66,24 @@ export function PayrollComponents() {
       };
 
       if (editingComponent) {
-        await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.HUMAN_CAPITAL.COMPONENTS, value1: editingComponent.id }), {
+        await fetchAPI(catalogText(i18n, "common.general.message", { value0: API_ENDPOINTS.HUMAN_CAPITAL.COMPONENTS, value1: editingComponent.id }), {
           method: 'PUT',
           body: JSON.stringify(payload)
         });
-        showToast(i18n.catalog["text_9a57c9379e4e"], "success");
+        showToast(i18n.catalog["humanCapital.payrollcomponents.componentUpdatedSuccessfully"], "success");
       } else {
         await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.COMPONENTS, {
           method: 'POST',
           body: JSON.stringify(payload)
         });
-        showToast(i18n.catalog["text_e2463a6b984d"], "success");
+        showToast(i18n.catalog["humanCapital.payrollcomponents.componentCreatedSuccessfully"], "success");
       }
 
       setShowDialog(false);
       resetForm();
       loadComponents();
     } catch (e: any) {
-      showToast(e.message || i18n.catalog["text_440f1443976d"], "error");
+      showToast(e.message || i18n.catalog["humanCapital.payrollcomponents.failedSaveComponent"], "error");
     }
   };
 
@@ -106,16 +106,16 @@ export function PayrollComponents() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm(i18n.catalog["text_db74b5ad3350"])) return;
+    if (!confirm(i18n.catalog["humanCapital.payrollcomponents.areYouSureYouWantDeleteThisComponent"])) return;
 
     try {
-      await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.HUMAN_CAPITAL.COMPONENTS, value1: id }), {
+      await fetchAPI(catalogText(i18n, "common.general.message", { value0: API_ENDPOINTS.HUMAN_CAPITAL.COMPONENTS, value1: id }), {
         method: 'DELETE'
       });
-      showToast(i18n.catalog["text_bc82e360828b"], "success");
+      showToast(i18n.catalog["humanCapital.payrollcomponents.componentDeletedSuccessfully"], "success");
       loadComponents();
     } catch (e: any) {
-      showToast(e.message || i18n.catalog["text_6031abf570a0"], "error");
+      showToast(e.message || i18n.catalog["humanCapital.payrollcomponents.failedDeleteComponent"], "error");
     }
   };
 
@@ -139,75 +139,75 @@ export function PayrollComponents() {
   const columns: Column<PayrollComponent>[] = [
     {
       key: "component_code",
-      header: i18n.catalog["text_eb40af592b1f"],
-      dataLabel: i18n.catalog["text_eb40af592b1f"]
+      header: i18n.catalog["common.general.componentCode"],
+      dataLabel: i18n.catalog["common.general.componentCode"]
     },
     {
       key: "component_name",
-      header: i18n.catalog["text_f782471424d8"],
-      dataLabel: i18n.catalog["text_f782471424d8"]
+      header: i18n.catalog["common.general.componentName"],
+      dataLabel: i18n.catalog["common.general.componentName"]
     },
     {
       key: "component_type",
-      header: i18n.catalog["text_caa3f2bb4a36"],
-      dataLabel: i18n.catalog["text_caa3f2bb4a36"],
+      header: i18n.catalog["common.general.type.alternative3"],
+      dataLabel: i18n.catalog["common.general.type.alternative3"],
       render: (comp) => {
         const types: Record<string, string> = {
-          allowance: i18n.catalog["text_83b35523b1bf"],
-          deduction: i18n.catalog["text_ec9ccd93320a"],
-          overtime: i18n.catalog["text_05751aac2a08"],
-          bonus: i18n.catalog["text_c396e6b8b30a"],
-          other: i18n.catalog["text_17a9f38e22b6"]
+          allowance: i18n.catalog["common.general.allowance"],
+          deduction: i18n.catalog["common.general.discount.alternative2"],
+          overtime: i18n.catalog["common.general.overtime"],
+          bonus: i18n.catalog["common.general.bonus"],
+          other: i18n.catalog["common.general.other"]
         };
         return types[comp.component_type] || comp.component_type;
       }
     },
     {
       key: "calculation_type",
-      header: i18n.catalog["text_89e7f9277213"],
-      dataLabel: i18n.catalog["text_89e7f9277213"],
+      header: i18n.catalog["common.general.accountType"],
+      dataLabel: i18n.catalog["common.general.accountType"],
       render: (comp) => {
         const types: Record<string, string> = {
-          fixed: i18n.catalog["text_61ff6797c5fc"],
-          percentage: i18n.catalog["text_3b43f75bb9b8"],
-          formula: i18n.catalog["text_7d692c8de501"],
-          attendance_based: i18n.catalog["text_274019a89d55"]
+          fixed: i18n.catalog["common.general.fixed"],
+          percentage: i18n.catalog["common.general.percentage"],
+          formula: i18n.catalog["common.general.format"],
+          attendance_based: i18n.catalog["common.general.basedAttendance"]
         };
         return types[comp.calculation_type] || comp.calculation_type;
       }
     },
     {
       key: "base_amount",
-      header: i18n.catalog["text_c550adb6fc12"],
-      dataLabel: i18n.catalog["text_c550adb6fc12"],
+      header: i18n.catalog["common.general.baseAmount"],
+      dataLabel: i18n.catalog["common.general.baseAmount"],
       render: (comp) => comp.base_amount ? formatCurrency(comp.base_amount) : "-"
     },
     {
       key: "is_active",
-      header: i18n.catalog["text_629e90b3af3d"],
-      dataLabel: i18n.catalog["text_629e90b3af3d"],
+      header: i18n.catalog["common.general.active"],
+      dataLabel: i18n.catalog["common.general.active"],
       render: (comp) => (
         <span className={comp.is_active ? "badge badge-success" : "badge badge-secondary"}>
-          {comp.is_active ? i18n.catalog["text_4b2d2c65d365"] : i18n.catalog["text_2bd073516a87"]}
+          {comp.is_active ? i18n.catalog["common.general.yes"] : i18n.catalog["common.general.no"]}
         </span>
       )
     },
     {
       key: "actions",
-      header: i18n.catalog["text_7797240d6caf"],
-      dataLabel: i18n.catalog["text_7797240d6caf"],
+      header: i18n.catalog["common.general.actions"],
+      dataLabel: i18n.catalog["common.general.actions"],
       render: (comp) => (
         <ActionButtons
           actions={[
             {
               icon: "edit",
-              title: i18n.catalog["text_113d570d6555"],
+              title: i18n.catalog["common.general.edit"],
               variant: "edit",
               onClick: () => handleEdit(comp)
             },
             {
               icon: "trash",
-              title: i18n.catalog["text_59ca629220a6"],
+              title: i18n.catalog["common.general.delete"],
               variant: "delete",
               onClick: () => handleDelete(comp.id)
             }
@@ -220,7 +220,7 @@ export function PayrollComponents() {
   return (
     <div className="sales-card animate-fade">
       <PageSubHeader
-        title={i18n.catalog["text_861283f6aed4"]}
+        title={i18n.catalog["common.general.payrollComponents"]}
         titleIcon="settings"
         actions={
           <Button
@@ -230,7 +230,7 @@ export function PayrollComponents() {
               setShowDialog(true);
             }}
             icon="plus">
-            {i18n.catalog["text_033da2167cd4"]}</Button>
+            {i18n.catalog["humanCapital.payrollcomponents.addNewComponent"]}</Button>
         }
       />
 
@@ -239,7 +239,7 @@ export function PayrollComponents() {
           data={components}
           columns={columns}
           isLoading={isLoading}
-          emptyMessage={i18n.catalog["text_14eae4806278"]}
+          emptyMessage={i18n.catalog["humanCapital.payrollcomponents.noPayrollComponents"]}
           keyExtractor={(item) => item.id.toString()}
         />
       </div>
@@ -250,13 +250,13 @@ export function PayrollComponents() {
           setShowDialog(false);
           resetForm();
         }}
-        title={editingComponent ? i18n.catalog["text_7d36a80d195c"] : i18n.catalog["text_989435c680fe"]}
+        title={editingComponent ? i18n.catalog["humanCapital.payrollcomponents.editSalaryComponent"] : i18n.catalog["humanCapital.payrollcomponents.addNewSalaryComponent"]}
         maxWidth="700px"
       >
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["text_2a74cb1b82d7"]}</Label>
+              <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["humanCapital.payrollcomponents.componentCode"]}</Label>
               <TextInput
                 value={formData.component_code}
                 onChange={(e) => setFormData({ ...formData, component_code: e.target.value })}
@@ -264,7 +264,7 @@ export function PayrollComponents() {
               />
             </div>
             <div>
-              <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["text_79250353322b"]}</Label>
+              <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["humanCapital.payrollcomponents.componentName"]}</Label>
               <TextInput
                 value={formData.component_name}
                 onChange={(e) => setFormData({ ...formData, component_name: e.target.value })}
@@ -274,29 +274,29 @@ export function PayrollComponents() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["text_a80adcb92431"]}</Label>
+              <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["humanCapital.payrollcomponents.componentType"]}</Label>
               <Select
                 value={formData.component_type}
                 onChange={(e) => setFormData({ ...formData, component_type: e.target.value as any })}
                 options={[
-                  { value: 'allowance', label: i18n.catalog["text_83b35523b1bf"] },
-                  { value: 'deduction', label: i18n.catalog["text_ec9ccd93320a"] },
-                  { value: 'overtime', label: i18n.catalog["text_05751aac2a08"] },
-                  { value: 'bonus', label: i18n.catalog["text_c396e6b8b30a"] },
-                  { value: 'other', label: i18n.catalog["text_17a9f38e22b6"] }
+                  { value: 'allowance', label: i18n.catalog["common.general.allowance"] },
+                  { value: 'deduction', label: i18n.catalog["common.general.discount.alternative2"] },
+                  { value: 'overtime', label: i18n.catalog["common.general.overtime"] },
+                  { value: 'bonus', label: i18n.catalog["common.general.bonus"] },
+                  { value: 'other', label: i18n.catalog["common.general.other"] }
                 ]}
               />
             </div>
             <div>
-              <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["text_56b6ffb058f7"]}</Label>
+              <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["humanCapital.payrollcomponents.accountType"]}</Label>
               <Select
                 value={formData.calculation_type}
                 onChange={(e) => setFormData({ ...formData, calculation_type: e.target.value as any })}
                 options={[
-                  { value: 'fixed', label: i18n.catalog["text_61ff6797c5fc"] },
-                  { value: 'percentage', label: i18n.catalog["text_3b43f75bb9b8"] },
-                  { value: 'formula', label: i18n.catalog["text_7d692c8de501"] },
-                  { value: 'attendance_based', label: i18n.catalog["text_274019a89d55"] }
+                  { value: 'fixed', label: i18n.catalog["common.general.fixed"] },
+                  { value: 'percentage', label: i18n.catalog["common.general.percentage"] },
+                  { value: 'formula', label: i18n.catalog["common.general.format"] },
+                  { value: 'attendance_based', label: i18n.catalog["common.general.basedAttendance"] }
                 ]}
               />
             </div>
@@ -304,7 +304,7 @@ export function PayrollComponents() {
 
           {formData.calculation_type === 'fixed' && (
             <div>
-              <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["text_af996fc14483"]}</Label>
+              <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["humanCapital.payrollcomponents.fixedAmount"]}</Label>
               <TextInput
                 type="number"
                 step="0.01"
@@ -317,7 +317,7 @@ export function PayrollComponents() {
           {formData.calculation_type === 'percentage' && (
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["text_7a12d25fe52a"]}</Label>
+                <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["humanCapital.payrollcomponents.baseAmount"]}</Label>
                 <TextInput
                   type="number"
                   step="0.01"
@@ -326,7 +326,7 @@ export function PayrollComponents() {
                 />
               </div>
               <div>
-                <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["text_1db347f0348c"]}</Label>
+                <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["humanCapital.payrollcomponents.percentage"]}</Label>
                 <TextInput
                   type="number"
                   step="0.01"
@@ -341,20 +341,20 @@ export function PayrollComponents() {
 
           {formData.calculation_type === 'formula' && (
             <div>
-              <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["text_55a2d2f4fdee"]}</Label>
+              <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["humanCapital.payrollcomponents.formula"]}</Label>
               <TextInput
                 value={formData.formula}
                 onChange={(e) => setFormData({ ...formData, formula: e.target.value })}
-                placeholder={i18n.catalog["text_72b6afd74b89"]}
+                placeholder={i18n.catalog["humanCapital.payrollcomponents.exampleHoursRate15"]}
               />
               <p className="text-xs" style={{ color: 'var(--text-light)', marginTop: '0.5rem' }}>
-                {i18n.catalog["text_3a5e4d38ea20"]}</p>
+                {i18n.catalog["humanCapital.payrollcomponents.availableVariablesHoursRateOvertimeHoursBaseSalary"]}</p>
             </div>
           )}
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["text_3fe4baa9ea9f"]}</Label>
+              <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["humanCapital.payrollcomponents.displayOrder"]}</Label>
               <TextInput
                 type="number"
                 value={formData.display_order}
@@ -367,20 +367,20 @@ export function PayrollComponents() {
                   checked={formData.is_taxable}
                   onChange={(e) => setFormData({ ...formData, is_taxable: e.target.checked })}
                 />
-                <span style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["text_8d1c87e5718b"]}</span>
+                <span style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["common.general.taxable"]}</span>
               </Label>
               <Label className="flex items-center gap-2" style={{ cursor: 'pointer' }}>
                 <Checkbox
                   checked={formData.is_active}
                   onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
                 />
-                <span style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["text_629e90b3af3d"]}</span>
+                <span style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["common.general.active"]}</span>
               </Label>
             </div>
           </div>
 
           <div>
-            <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["text_95023fc76e1b"]}</Label>
+            <Label className="block mb-1" style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["common.general.description.alternative2"]}</Label>
             <Textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -392,9 +392,9 @@ export function PayrollComponents() {
               setShowDialog(false);
               resetForm();
             }}>
-              {i18n.catalog["text_9a30dc2a96b8"]}</Button>
+              {i18n.catalog["common.general.cancel"]}</Button>
             <Button variant="primary" onClick={handleSave} icon="save">
-              {i18n.catalog["text_ddfcaf9d0144"]}</Button>
+              {i18n.catalog["common.general.save"]}</Button>
           </div>
         </div>
       </Dialog>

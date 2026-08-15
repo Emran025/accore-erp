@@ -73,7 +73,7 @@ export function LeaveRequests() {
       setLeaveRequests(data);
       setTotalPages(res.last_page || 1);
     } catch (e) {
-      showToast(i18n.catalog["text_8894208f0a4e"], "error");
+      showToast(i18n.catalog["common.general.failedLoadLeaveRequests"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -81,7 +81,7 @@ export function LeaveRequests() {
 
   const handleCreateRequest = async () => {
     if (!newRequest.employee_id) {
-      showToast(i18n.catalog["text_8c0019b7fcee"], "error");
+      showToast(i18n.catalog["common.general.pleaseSelectEmployee"], "error");
       return;
     }
 
@@ -90,7 +90,7 @@ export function LeaveRequests() {
         method: 'POST',
         body: JSON.stringify(newRequest)
       });
-      showToast(i18n.catalog["text_87f3dfc6d9a2"], "success");
+      showToast(i18n.catalog["common.general.leaveRequestCreatedSuccessfully"], "success");
       setShowRequestDialog(false);
       setNewRequest({
         employee_id: "",
@@ -101,7 +101,7 @@ export function LeaveRequests() {
       });
       loadLeaveRequests();
     } catch (e: any) {
-      showToast(e.message || i18n.catalog["text_9a10ac72a5c6"], "error");
+      showToast(e.message || i18n.catalog["common.general.failedCreateLeaveRequest"], "error");
     }
   };
 
@@ -109,7 +109,7 @@ export function LeaveRequests() {
     if (!selectedRequest) return;
 
     if (approvalData.action === 'rejected' && !approvalData.reason) {
-      showToast(i18n.catalog["text_e9132db276b3"], "error");
+      showToast(i18n.catalog["humanCapital.leaverequests.pleaseEnterReasonRejection"], "error");
       return;
     }
 
@@ -118,65 +118,65 @@ export function LeaveRequests() {
         method: 'POST',
         body: JSON.stringify(approvalData)
       });
-      showToast(catalogText(i18n, "text_ba597627384e", { value0: approvalData.action === 'approved' ? i18n.catalog["text_d8558e0cb29f"] : i18n.catalog["text_cd27ea1580bb"] }), "success");
+      showToast(catalogText(i18n, "humanCapital.leaverequests.successfullyLeaveRequest", { value0: approvalData.action === 'approved' ? i18n.catalog["humanCapital.leaverequests.approval"] : i18n.catalog["humanCapital.leaverequests.rejection"] }), "success");
       setShowApproveDialog(false);
       setSelectedRequest(null);
       loadLeaveRequests();
     } catch (e: any) {
-      showToast(e.message || i18n.catalog["text_a10d94a8bf8f"], "error");
+      showToast(e.message || i18n.catalog["humanCapital.leaverequests.failedProcessLeaveRequest"], "error");
     }
   };
 
   const columns: Column<LeaveRequest>[] = [
     {
       key: "employee",
-      header: i18n.catalog["text_b71a39c832a6"],
-      dataLabel: i18n.catalog["text_b71a39c832a6"],
+      header: i18n.catalog["common.general.employee.alternative3"],
+      dataLabel: i18n.catalog["common.general.employee.alternative3"],
       render: (record) => record.employee?.full_name || "-"
     },
     {
       key: "leave_type",
-      header: i18n.catalog["text_61fc59d28e6c"],
-      dataLabel: i18n.catalog["text_61fc59d28e6c"],
+      header: i18n.catalog["common.general.leaveType"],
+      dataLabel: i18n.catalog["common.general.leaveType"],
       render: (record) => {
         const types: Record<string, string> = {
-          vacation: i18n.catalog["text_91c6de93bb44"],
-          sick: i18n.catalog["text_fca09aac41d9"],
-          emergency: i18n.catalog["text_eb759e4e34a1"],
-          unpaid: i18n.catalog["text_5f83f571fe77"],
-          other: i18n.catalog["text_17a9f38e22b6"]
+          vacation: i18n.catalog["common.general.annualLeave"],
+          sick: i18n.catalog["common.general.sickLeave"],
+          emergency: i18n.catalog["common.general.emergencyLeave"],
+          unpaid: i18n.catalog["common.general.unpaidLeave"],
+          other: i18n.catalog["common.general.other"]
         };
         return types[record.leave_type] || record.leave_type;
       }
     },
     {
       key: "start_date",
-      header: i18n.catalog["text_996988dbc52e"],
-      dataLabel: i18n.catalog["text_996988dbc52e"],
+      header: i18n.catalog["common.general.date.alternative6"],
+      dataLabel: i18n.catalog["common.general.date.alternative6"],
       render: (record) => formatDate(record.start_date)
     },
     {
       key: "end_date",
-      header: i18n.catalog["text_217caed1c04f"],
-      dataLabel: i18n.catalog["text_217caed1c04f"],
+      header: i18n.catalog["common.general.date.alternative2"],
+      dataLabel: i18n.catalog["common.general.date.alternative2"],
       render: (record) => formatDate(record.end_date)
     },
     {
       key: "days_requested",
-      header: i18n.catalog["text_32266c44f2ee"],
-      dataLabel: i18n.catalog["text_32266c44f2ee"],
-      render: (record) => catalogText(i18n, "text_8f726399a049", { value0: record.days_requested })
+      header: i18n.catalog["common.general.numberDays"],
+      dataLabel: i18n.catalog["common.general.numberDays"],
+      render: (record) => catalogText(i18n, "common.general.dayS", { value0: record.days_requested })
     },
     {
       key: "status",
-      header: i18n.catalog["text_c3a4749caed4"],
-      dataLabel: i18n.catalog["text_c3a4749caed4"],
+      header: i18n.catalog["common.general.status.alternative2"],
+      dataLabel: i18n.catalog["common.general.status.alternative2"],
       render: (record) => {
         const statusMap: Record<string, { text: string; class: string }> = {
-          pending: { text: i18n.catalog["text_7d7913fdef74"], class: i18n.catalog["text_35cf88831e8b"] },
-          approved: { text: i18n.catalog["text_a98d8a418ba0"], class: i18n.catalog["text_59e14762e315"] },
-          rejected: { text: i18n.catalog["text_5d969a71dad3"], class: i18n.catalog["text_662a2d1d0a2d"] },
-          cancelled: { text: i18n.catalog["text_616d302cb016"], class: i18n.catalog["text_983fd0c81395"] }
+          pending: { text: i18n.catalog["common.general.pending.alternative2"], class: i18n.catalog["common.general.badgeBadgeWarning"] },
+          approved: { text: i18n.catalog["common.general.approved"], class: i18n.catalog["common.general.badgeBadgeSuccess"] },
+          rejected: { text: i18n.catalog["common.general.rejected"], class: i18n.catalog["common.general.badgeBadgeDanger"] },
+          cancelled: { text: i18n.catalog["common.general.canceled"], class: i18n.catalog["common.general.badgeBadgeSecondary"] }
         };
         const status = statusMap[record.status] || { text: record.status, class: "badge" };
         return <span className={status.class}>{status.text}</span>;
@@ -184,14 +184,14 @@ export function LeaveRequests() {
     },
     {
       key: "actions",
-      header: i18n.catalog["text_7797240d6caf"],
-      dataLabel: i18n.catalog["text_7797240d6caf"],
+      header: i18n.catalog["common.general.actions"],
+      dataLabel: i18n.catalog["common.general.actions"],
       render: (record) => (
         <ActionButtons
           actions={[
             ...(canAccess("leave", "edit") ? [{
               icon: "check" as const,
-              title: i18n.catalog["text_b3f295bd9c34"],
+              title: i18n.catalog["humanCapital.leaverequests.processingRequest"],
               variant: "edit" as const,
               onClick: () => {
                 setSelectedRequest(record);
@@ -209,7 +209,7 @@ export function LeaveRequests() {
   return (
     <div className="sales-card animate-fade">
       <PageSubHeader
-        title={i18n.catalog["text_f1240747d0a1"]}
+        title={i18n.catalog["common.general.leaveRequests"]}
         titleIcon="calendar"
         actions={
           canAccess("leave", "create") && (
@@ -217,7 +217,7 @@ export function LeaveRequests() {
               variant="primary"
               onClick={() => setShowRequestDialog(true)}
               icon="plus">
-              {i18n.catalog["text_5321087b563b"]}</Button>
+              {i18n.catalog["common.general.newLeaveRequest"]}</Button>
           )
         }
       />
@@ -225,27 +225,27 @@ export function LeaveRequests() {
       <div className="sales-card compact" style={{ marginBottom: '1.5rem' }}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="flex flex-col gap-1">
-            <Label className="text-secondary mb-1">{i18n.catalog["text_b71a39c832a6"]}</Label>
+            <Label className="text-secondary mb-1">{i18n.catalog["common.general.employee.alternative3"]}</Label>
             <SearchableSelect
               options={employees.map((emp: Employee) => ({ value: emp.id.toString(), label: emp.full_name }))}
               value={selectedEmployee?.toString() || ""}
               onChange={(value) => setSelectedEmployee(value ? Number(value) : null)}
-              placeholder={i18n.catalog["text_057d12d60ddf"]}
+              placeholder={i18n.catalog["humanCapital.leaverequests.allEmployees"]}
             />
           </div>
           <Select
-            label={i18n.catalog["text_c3a4749caed4"]}
+            label={i18n.catalog["common.general.status.alternative2"]}
             value={statusFilter}
             onChange={(e) => {
               setStatusFilter(e.target.value);
               setCurrentPage(1);
             }}
             options={[
-              { value: 'all', label: i18n.catalog["text_65f276da33cf"] },
-              { value: 'pending', label: i18n.catalog["text_7d7913fdef74"] },
-              { value: 'approved', label: i18n.catalog["text_a98d8a418ba0"] },
-              { value: 'rejected', label: i18n.catalog["text_5d969a71dad3"] },
-              { value: 'cancelled', label: i18n.catalog["text_616d302cb016"] }
+              { value: 'all', label: i18n.catalog["common.general.all"] },
+              { value: 'pending', label: i18n.catalog["common.general.pending.alternative2"] },
+              { value: 'approved', label: i18n.catalog["common.general.approved"] },
+              { value: 'rejected', label: i18n.catalog["common.general.rejected"] },
+              { value: 'cancelled', label: i18n.catalog["common.general.canceled"] }
             ]}
           />
           <div className="flex items-end">
@@ -254,7 +254,7 @@ export function LeaveRequests() {
               variant="primary"
               icon="search"
               style={{ width: '100%' }}>
-              {i18n.catalog["text_d0f6edcf6d65"]}</Button>
+              {i18n.catalog["common.general.search.alternative2"]}</Button>
           </div>
         </div>
       </div>
@@ -264,7 +264,7 @@ export function LeaveRequests() {
           data={leaveRequests}
           columns={columns}
           isLoading={isLoading}
-          emptyMessage={i18n.catalog["text_9c94b78094b3"]}
+          emptyMessage={i18n.catalog["common.general.noLeaveRequests"]}
           keyExtractor={(item) => item.id.toString()}
           pagination={{
             currentPage,
@@ -277,55 +277,55 @@ export function LeaveRequests() {
       <Dialog
         isOpen={showRequestDialog}
         onClose={() => setShowRequestDialog(false)}
-        title={i18n.catalog["text_5321087b563b"]}
+        title={i18n.catalog["common.general.newLeaveRequest"]}
         maxWidth="600px"
       >
         <div className="space-y-4">
           <div className="flex flex-col gap-1">
-            <Label className="text-secondary mb-1">{i18n.catalog["text_972803dc7d86"]}</Label>
+            <Label className="text-secondary mb-1">{i18n.catalog["common.general.employee"]}</Label>
             <SearchableSelect
               options={employees.map((emp: Employee) => ({ value: emp.id.toString(), label: emp.full_name }))}
               value={newRequest.employee_id}
               onChange={(value) => setNewRequest({ ...newRequest, employee_id: value ? String(value) : "" })}
-              placeholder={i18n.catalog["text_dee783929dea"]}
+              placeholder={i18n.catalog["common.general.selectEmployee"]}
             />
           </div>
           <Select
-            label={i18n.catalog["text_6dac3ee982cf"]}
+            label={i18n.catalog["common.general.leaveType.alternative2"]}
             value={newRequest.leave_type}
             onChange={(e) => setNewRequest({ ...newRequest, leave_type: e.target.value as any })}
             options={[
-              { value: 'vacation', label: i18n.catalog["text_91c6de93bb44"] },
-              { value: 'sick', label: i18n.catalog["text_fca09aac41d9"] },
-              { value: 'emergency', label: i18n.catalog["text_eb759e4e34a1"] },
-              { value: 'unpaid', label: i18n.catalog["text_5f83f571fe77"] },
-              { value: 'other', label: i18n.catalog["text_17a9f38e22b6"] }
+              { value: 'vacation', label: i18n.catalog["common.general.annualLeave"] },
+              { value: 'sick', label: i18n.catalog["common.general.sickLeave"] },
+              { value: 'emergency', label: i18n.catalog["common.general.emergencyLeave"] },
+              { value: 'unpaid', label: i18n.catalog["common.general.unpaidLeave"] },
+              { value: 'other', label: i18n.catalog["common.general.other"] }
             ]}
           />
           <div className="grid grid-cols-2 gap-4">
             <TextInput
-              label={i18n.catalog["text_2861a808b514"]}
+              label={i18n.catalog["common.general.date.alternative5"]}
               type="date"
               value={newRequest.start_date}
               onChange={(e) => setNewRequest({ ...newRequest, start_date: e.target.value })}
             />
             <TextInput
-              label={i18n.catalog["text_271f86cc7df0"]}
+              label={i18n.catalog["common.general.date.alternative4"]}
               type="date"
               value={newRequest.end_date}
               onChange={(e) => setNewRequest({ ...newRequest, end_date: e.target.value })}
             />
           </div>
           <Textarea
-            label={i18n.catalog["text_c3b023d78238"]}
+            label={i18n.catalog["common.general.reason"]}
             value={newRequest.reason}
             onChange={(e) => setNewRequest({ ...newRequest, reason: e.target.value })}
           />
           <div className="flex justify-end gap-2" style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
             <Button variant="secondary" onClick={() => setShowRequestDialog(false)}>
-              {i18n.catalog["text_9a30dc2a96b8"]}</Button>
+              {i18n.catalog["common.general.cancel"]}</Button>
             <Button variant="primary" onClick={handleCreateRequest} icon="save">
-              {i18n.catalog["text_ddfcaf9d0144"]}</Button>
+              {i18n.catalog["common.general.save"]}</Button>
           </div>
         </div>
       </Dialog>
@@ -333,22 +333,22 @@ export function LeaveRequests() {
       <Dialog
         isOpen={showApproveDialog}
         onClose={() => setShowApproveDialog(false)}
-        title={i18n.catalog["text_480cf00fcabc"]}
+        title={i18n.catalog["humanCapital.leaverequests.processingLeaveRequest"]}
         maxWidth="500px"
       >
         <div className="space-y-4">
           <Select
-            label={i18n.catalog["text_a087ea35cf5d"]}
+            label={i18n.catalog["humanCapital.leaverequests.action"]}
             value={approvalData.action}
             onChange={(e) => setApprovalData({ ...approvalData, action: e.target.value as any })}
             options={[
-              { value: 'approved', label: i18n.catalog["text_f4e17def8c1b"] },
-              { value: 'rejected', label: i18n.catalog["text_eb3b1bcc04e5"] }
+              { value: 'approved', label: i18n.catalog["common.general.approval"] },
+              { value: 'rejected', label: i18n.catalog["common.general.rejected.alternative2"] }
             ]}
           />
           {approvalData.action === 'rejected' && (
             <Textarea
-              label={i18n.catalog["text_16743d16fdf8"]}
+              label={i18n.catalog["humanCapital.leaverequests.reasonRejection"]}
               value={approvalData.reason}
               onChange={(e) => setApprovalData({ ...approvalData, reason: e.target.value })}
               required
@@ -356,12 +356,12 @@ export function LeaveRequests() {
           )}
           <div className="flex justify-end gap-2" style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
             <Button variant="secondary" onClick={() => setShowApproveDialog(false)}>
-              {i18n.catalog["text_9a30dc2a96b8"]}</Button>
+              {i18n.catalog["common.general.cancel"]}</Button>
             <Button
               variant="primary"
               onClick={handleApprove}
               icon={approvalData.action === 'approved' ? 'check' : 'x'}>
-              {approvalData.action === 'approved' ? i18n.catalog["text_f4e17def8c1b"] : i18n.catalog["text_eb3b1bcc04e5"]}
+              {approvalData.action === 'approved' ? i18n.catalog["common.general.approval"] : i18n.catalog["common.general.rejected.alternative2"]}
             </Button>
           </div>
         </div>

@@ -86,7 +86,7 @@ export function NavigationCard({ href, icon, label, description }: NavigationCar
     const { t: i18n } = useI18n();
   const gradient = iconGradients[icon] || iconGradients.home;
   const pattern = patterns[icon] || patterns.home;
-  const isComingSoon = description.includes(i18n.catalog["text_1f921420481d"]);
+  const isComingSoon = description.includes(i18n.catalog["common.general.comingSoon"]);
 
   return (
     <Link href={href} className="premium-nav-card">
@@ -103,7 +103,7 @@ export function NavigationCard({ href, icon, label, description }: NavigationCar
           {getIcon(icon)}
         </div>
         {isComingSoon && (
-          <span className="premium-nav-card-badge">{i18n.catalog["text_1f921420481d"]}</span>
+          <span className="premium-nav-card-badge">{i18n.catalog["common.general.comingSoon"]}</span>
         )}
       </div>
 
@@ -111,14 +111,14 @@ export function NavigationCard({ href, icon, label, description }: NavigationCar
       <div className="premium-nav-card-body">
         <h3 className="premium-nav-card-title">{label}</h3>
         <p className="premium-nav-card-description">
-          {description.replace(i18n.catalog["text_23f69d98da69"], "")}
+          {description.replace(i18n.catalog["components.navigationcard.comingSoon"], "")}
         </p>
       </div>
 
       {/* Footer with arrow */}
       <div className="premium-nav-card-footer">
         <span className="premium-nav-card-action">
-          {isComingSoon ? i18n.catalog["text_4b615d0e6dd2"] : i18n.catalog["text_1c595ed4ff81"]}
+          {isComingSoon ? i18n.catalog["common.general.viewDetails"] : i18n.catalog["components.navigationcard.transfer"]}
         </span>
         <div className="premium-nav-card-arrow">
           {getIcon("chevron-right")}

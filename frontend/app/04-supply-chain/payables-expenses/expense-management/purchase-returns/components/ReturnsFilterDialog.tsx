@@ -27,18 +27,18 @@ export function ReturnsFilterDialog({
         <Dialog
             isOpen={isOpen}
             onClose={onClose}
-            title={catalogMessage("text_05f2597cfac8")}
+            title={catalogMessage("common.general.filterReturns")}
             footer={
                 <FilterActions>
                     <Button variant="secondary" onClick={onClose}>
-                        {catalogMessage("text_9a30dc2a96b8")}</Button>
+                        {catalogMessage("common.general.cancel")}</Button>
                     <Button variant="primary" onClick={onApply}>
-                        {catalogMessage("text_268974da5082")}</Button>
+                        {catalogMessage("common.general.apply")}</Button>
                 </FilterActions>
             }
         >
             <div className="space-y-4">
-                <FilterGroup label={catalogMessage("text_0335edfeb5f3")}>
+                <FilterGroup label={catalogMessage("common.general.period")}>
                     <DateRangePicker
                         startDate={filters.date_from}
                         endDate={filters.date_to}

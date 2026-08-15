@@ -33,29 +33,29 @@ interface BenefitsEnrollment {
 }
 
 const planTypeLabels: Record<string, string> = {
-  health: catalogMessage("text_6605fc8d25fd"),
-  dental: catalogMessage("text_176501f881e9"),
-  vision: catalogMessage("text_07bfb4fefeae"),
-  life_insurance: catalogMessage("text_10e3b3f48ee7"),
-  disability: catalogMessage("text_10fd83f64d4c"),
-  retirement: catalogMessage("text_056f8089aa7f"),
+  health: catalogMessage("humanCapital.benefits.validity"),
+  dental: catalogMessage("humanCapital.benefits.teeth"),
+  vision: catalogMessage("humanCapital.benefits.vision"),
+  life_insurance: catalogMessage("humanCapital.benefits.lifeInsurance"),
+  disability: catalogMessage("humanCapital.benefits.disability"),
+  retirement: catalogMessage("humanCapital.benefits.retirement"),
   fsa: "FSA",
   hsa: "HSA",
-  other: catalogMessage("text_17a9f38e22b6"),
+  other: catalogMessage("common.general.other"),
 };
 
 const enrollmentTypeLabels: Record<string, string> = {
-  open_enrollment: catalogMessage("text_e2859040d031"),
-  new_hire: catalogMessage("text_dd2f6476b317"),
-  life_event: catalogMessage("text_0148d0a5b4d7"),
-  qualifying_event: catalogMessage("text_51440b17a183"),
+  open_enrollment: catalogMessage("humanCapital.benefits.openRegistration"),
+  new_hire: catalogMessage("humanCapital.benefits.newEmployee"),
+  life_event: catalogMessage("humanCapital.benefits.myLifeEvent"),
+  qualifying_event: catalogMessage("humanCapital.benefits.qualifiedEvent"),
 };
 
 const statusLabels: Record<string, string> = {
-  enrolled: catalogMessage("text_f6aee102d51b"),
-  active: catalogMessage("text_629e90b3af3d"),
-  terminated: catalogMessage("text_66d41b8c662e"),
-  cancelled: catalogMessage("text_616d302cb016"),
+  enrolled: catalogMessage("common.general.registered"),
+  active: catalogMessage("common.general.active"),
+  terminated: catalogMessage("common.general.terminated"),
+  cancelled: catalogMessage("common.general.canceled"),
 };
 
 const statusBadges: Record<string, string> = {
@@ -94,7 +94,7 @@ export function Benefits() {
       setPlans(res.data as BenefitsPlan[] || []);
       setTotalPages(Number(res.last_page) || 1);
     } catch (error) {
-      console.error(i18n.catalog["text_a37d4d9af6c0"], error);
+      console.error(i18n.catalog["common.general.failedLoadPlans"], error);
     } finally {
       setIsLoading(false);
     }
@@ -110,7 +110,7 @@ export function Benefits() {
       setEnrollments(res.data as BenefitsEnrollment[] || []);
       setTotalPages(Number(res.last_page) || 1);
     } catch (error) {
-      console.error(i18n.catalog["text_be2a3ff12491"], error);
+      console.error(i18n.catalog["humanCapital.benefits.failedLoadEnrollments"], error);
     } finally {
       setIsLoading(false);
     }
@@ -119,65 +119,65 @@ export function Benefits() {
   const planColumns: Column<BenefitsPlan>[] = [
     {
       key: "plan_code",
-      header: i18n.catalog["text_7fe92be3740d"],
-      dataLabel: i18n.catalog["text_7fe92be3740d"],
+      header: i18n.catalog["common.general.planCode"],
+      dataLabel: i18n.catalog["common.general.planCode"],
     },
     {
       key: "plan_name",
-      header: i18n.catalog["text_0dbb5c16476f"],
-      dataLabel: i18n.catalog["text_0dbb5c16476f"],
+      header: i18n.catalog["common.general.planName"],
+      dataLabel: i18n.catalog["common.general.planName"],
     },
     {
       key: "plan_type",
-      header: i18n.catalog["text_caa3f2bb4a36"],
-      dataLabel: i18n.catalog["text_caa3f2bb4a36"],
+      header: i18n.catalog["common.general.type.alternative3"],
+      dataLabel: i18n.catalog["common.general.type.alternative3"],
       render: (item) => planTypeLabels[item.plan_type] || item.plan_type,
     },
     {
       key: "contributions",
-      header: i18n.catalog["text_fc0b37d93fa0"],
-      dataLabel: i18n.catalog["text_fc0b37d93fa0"],
+      header: i18n.catalog["common.general.contributions"],
+      dataLabel: i18n.catalog["common.general.contributions"],
       render: (item) => (
         <div>
-          <div>{i18n.catalog["text_5a1127038136"]}{formatCurrency(item.employee_contribution)}</div>
-          <div>{i18n.catalog["text_883b0a9fde70"]}{formatCurrency(item.employer_contribution)}</div>
+          <div>{i18n.catalog["humanCapital.benefits.employee"]}{formatCurrency(item.employee_contribution)}</div>
+          <div>{i18n.catalog["humanCapital.benefits.employer"]}{formatCurrency(item.employer_contribution)}</div>
         </div>
       ),
     },
     {
       key: "enrollments",
-      header: i18n.catalog["text_373c407a58f4"],
-      dataLabel: i18n.catalog["text_373c407a58f4"],
+      header: i18n.catalog["common.general.numberRegistrants"],
+      dataLabel: i18n.catalog["common.general.numberRegistrants"],
       render: (item) => item.enrollments?.length || 0,
     },
     {
       key: "is_active",
-      header: i18n.catalog["text_c3a4749caed4"],
-      dataLabel: i18n.catalog["text_c3a4749caed4"],
+      header: i18n.catalog["common.general.status.alternative2"],
+      dataLabel: i18n.catalog["common.general.status.alternative2"],
       render: (item) => (
         <span className={`badge ${item.is_active ? 'badge-success' : 'badge-secondary'}`}>
-          {item.is_active ? i18n.catalog["text_629e90b3af3d"] : i18n.catalog["text_b719ac8add4e"]}
+          {item.is_active ? i18n.catalog["common.general.active"] : i18n.catalog["common.general.inactive"]}
         </span>
       ),
     },
     {
       key: "id",
-      header: i18n.catalog["text_7797240d6caf"],
-      dataLabel: i18n.catalog["text_7797240d6caf"],
+      header: i18n.catalog["common.general.actions"],
+      dataLabel: i18n.catalog["common.general.actions"],
       render: (item) => (
         <ActionButtons
           actions={[
             {
               icon: "eye",
-              title: i18n.catalog["text_4b615d0e6dd2"],
+              title: i18n.catalog["common.general.viewDetails"],
               variant: "view",
-              onClick: () => alert(i18n.catalog["text_5ba17dbe5a91"])
+              onClick: () => alert(i18n.catalog["common.general.thisFeatureIsUnderDevelopmentWillBeAdded"])
             },
             ...(canAccess("benefits", "edit") ? [{
               icon: "edit" as const,
-              title: i18n.catalog["text_113d570d6555"],
+              title: i18n.catalog["common.general.edit"],
               variant: "edit" as const,
-              onClick: () => alert(i18n.catalog["text_5ba17dbe5a91"])
+              onClick: () => alert(i18n.catalog["common.general.thisFeatureIsUnderDevelopmentWillBeAdded"])
             }] : [])
           ]}
         />
@@ -188,26 +188,26 @@ export function Benefits() {
   const enrollmentColumns: Column<BenefitsEnrollment>[] = [
     {
       key: "employee",
-      header: i18n.catalog["text_b71a39c832a6"],
-      dataLabel: i18n.catalog["text_b71a39c832a6"],
+      header: i18n.catalog["common.general.employee.alternative3"],
+      dataLabel: i18n.catalog["common.general.employee.alternative3"],
       render: (item) => item.employee?.full_name || '-',
     },
     {
       key: "plan",
-      header: i18n.catalog["text_c5e91a6961c4"],
-      dataLabel: i18n.catalog["text_c5e91a6961c4"],
+      header: i18n.catalog["common.general.plan"],
+      dataLabel: i18n.catalog["common.general.plan"],
       render: (item) => item.plan?.plan_name || '-',
     },
     {
       key: "enrollment_type",
-      header: i18n.catalog["text_2543e22c3294"],
-      dataLabel: i18n.catalog["text_2543e22c3294"],
+      header: i18n.catalog["common.general.registrationType"],
+      dataLabel: i18n.catalog["common.general.registrationType"],
       render: (item) => enrollmentTypeLabels[item.enrollment_type] || item.enrollment_type,
     },
     {
       key: "status",
-      header: i18n.catalog["text_c3a4749caed4"],
-      dataLabel: i18n.catalog["text_c3a4749caed4"],
+      header: i18n.catalog["common.general.status.alternative2"],
+      dataLabel: i18n.catalog["common.general.status.alternative2"],
       render: (item) => (
         <span className={`badge ${statusBadges[item.status] || 'badge-secondary'}`}>
           {statusLabels[item.status] || item.status}
@@ -216,34 +216,34 @@ export function Benefits() {
     },
     {
       key: "enrollment_date",
-      header: i18n.catalog["text_b8fcbb3f2d33"],
-      dataLabel: i18n.catalog["text_b8fcbb3f2d33"],
+      header: i18n.catalog["common.general.registrationDate"],
+      dataLabel: i18n.catalog["common.general.registrationDate"],
       render: (item) => formatDate(item.enrollment_date),
     },
     {
       key: "effective_date",
-      header: i18n.catalog["text_6f53e00bf25e"],
-      dataLabel: i18n.catalog["text_6f53e00bf25e"],
+      header: i18n.catalog["common.general.effectiveDate"],
+      dataLabel: i18n.catalog["common.general.effectiveDate"],
       render: (item) => formatDate(item.effective_date),
     },
     {
       key: "id",
-      header: i18n.catalog["text_7797240d6caf"],
-      dataLabel: i18n.catalog["text_7797240d6caf"],
+      header: i18n.catalog["common.general.actions"],
+      dataLabel: i18n.catalog["common.general.actions"],
       render: (item) => (
         <ActionButtons
           actions={[
             {
               icon: "eye",
-              title: i18n.catalog["text_4b615d0e6dd2"],
+              title: i18n.catalog["common.general.viewDetails"],
               variant: "view",
-              onClick: () => alert(i18n.catalog["text_5ba17dbe5a91"])
+              onClick: () => alert(i18n.catalog["common.general.thisFeatureIsUnderDevelopmentWillBeAdded"])
             },
             ...(canAccess("benefits", "edit") ? [{
               icon: "edit" as const,
-              title: i18n.catalog["text_113d570d6555"],
+              title: i18n.catalog["common.general.edit"],
               variant: "edit" as const,
-              onClick: () => alert(i18n.catalog["text_5ba17dbe5a91"])
+              onClick: () => alert(i18n.catalog["common.general.thisFeatureIsUnderDevelopmentWillBeAdded"])
             }] : [])
           ]}
         />
@@ -254,25 +254,25 @@ export function Benefits() {
   return (
     <div className="sales-card animate-fade">
       <PageSubHeader
-        title={i18n.catalog["text_800701b92996"]}
+        title={i18n.catalog["common.general.benefitsEntitlements"]}
         titleIcon="heart"
         actions={
           <>
             {activeTab === "plans" && canAccess("benefits", "create") && (
               <Button
-                onClick={() => alert(i18n.catalog["text_5ba17dbe5a91"])}
+                onClick={() => alert(i18n.catalog["common.general.thisFeatureIsUnderDevelopmentWillBeAdded"])}
                 variant="primary"
                 icon="plus"
               >
-                {i18n.catalog["text_4984727c03bb"]}</Button>
+                {i18n.catalog["humanCapital.benefits.newBenefitsPlan"]}</Button>
             )}
             {activeTab === "enrollments" && canAccess("benefits", "create") && (
               <Button
-                onClick={() => alert(i18n.catalog["text_5ba17dbe5a91"])}
+                onClick={() => alert(i18n.catalog["common.general.thisFeatureIsUnderDevelopmentWillBeAdded"])}
                 variant="primary"
                 icon="plus"
               >
-                {i18n.catalog["text_c2e3319378d7"]}</Button>
+                {i18n.catalog["common.general.newRegistration"]}</Button>
             )}
           </>
         }
@@ -280,8 +280,8 @@ export function Benefits() {
 
       <TabNavigation
         tabs={[
-          { key: "plans", label: i18n.catalog["text_2945976e0601"], icon: "file-alt" },
-          { key: "enrollments", label: i18n.catalog["text_7c32d489fa12"], icon: "user-check" },
+          { key: "plans", label: i18n.catalog["humanCapital.benefits.benefitPlans"], icon: "file-alt" },
+          { key: "enrollments", label: i18n.catalog["common.general.records.alternative2"], icon: "user-check" },
         ]}
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -292,7 +292,7 @@ export function Benefits() {
           columns={planColumns}
           data={plans}
           keyExtractor={(item) => item.id.toString()}
-          emptyMessage={i18n.catalog["text_1fdf4236adc6"]}
+          emptyMessage={i18n.catalog["humanCapital.benefits.noBenefitPlans"]}
           isLoading={isLoading}
           pagination={{
             currentPage,
@@ -305,7 +305,7 @@ export function Benefits() {
           columns={enrollmentColumns}
           data={enrollments}
           keyExtractor={(item) => item.id.toString()}
-          emptyMessage={i18n.catalog["text_9552c2d039cc"]}
+          emptyMessage={i18n.catalog["common.general.noRecords.alternative2"]}
           isLoading={isLoading}
           pagination={{
             currentPage,

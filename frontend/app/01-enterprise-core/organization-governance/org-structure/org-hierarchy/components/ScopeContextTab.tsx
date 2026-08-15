@@ -34,7 +34,7 @@ export function ScopeContextTab() {
             ]);
             setNodes((nodesRes.nodes as StructureNode[]) || []);
             setMetaTypes((metaRes.meta_types as MetaType[]) || []);
-        } catch { showToast(i18n.catalog["text_f10d2b4c7fe1"], "error"); }
+        } catch { showToast(i18n.catalog["common.general.errorLoadingData"], "error"); }
     }, []);
 
     useEffect(() => { loadNodes(); }, [loadNodes]);
@@ -43,22 +43,22 @@ export function ScopeContextTab() {
     const getTypeDomain = (id: string) => metaTypes.find((t) => t.id === id)?.level_domain || "";
 
     const resolveScope = async () => {
-        if (!selectedUuid) { showToast(i18n.catalog["text_d48fe42f3b09"], "error"); return; }
+        if (!selectedUuid) { showToast(i18n.catalog["enterpriseCore.scopecontext.pleaseSelectUnit"], "error"); return; }
         try {
             setIsLoading(true);
             const res = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.SCOPE_CONTEXT(selectedUuid));
             if (res.success) {
                 setResult(res as unknown as ScopeResult);
             }
-        } catch { showToast(i18n.catalog["text_6b8f0ef880dd"], "error"); }
+        } catch { showToast(i18n.catalog["enterpriseCore.scopecontext.errorParsingContext"], "error"); }
         finally { setIsLoading(false); }
     };
 
     return (
         <div className="sales-card animate-fade">
             <PageSubHeader
-                title={i18n.catalog["text_7a7074a05937"]}
-                subTitle={i18n.catalog["text_2b6469c00489"]}
+                title={i18n.catalog["enterpriseCore.scopecontext.organizationalContextAnalysisScopeContextResolution"]}
+                subTitle={i18n.catalog["enterpriseCore.scopecontext.ifYouAreSpecificUnitEGPlantWhat"]}
                 titleIcon="search"
                 actions={
                     <>
@@ -67,17 +67,17 @@ export function ScopeContextTab() {
                             onChange={(e) => setSelectedUuid(e.target.value)}
                             options={nodes.map((n) => ({
                                 value: n.node_uuid,
-                                label: catalogText(i18n, "text_41c48bf1510e", { value0: n.code, value1: getTypeLabel(n.node_type_id), value2: n.attributes_json?.name ? catalogText(i18n, "text_239f04bc2797", { value0: n.attributes_json.name }) : "" }),
+                                label: catalogText(i18n, "enterpriseCore.scopecontext.notAvailable", { value0: n.code, value1: getTypeLabel(n.node_type_id), value2: n.attributes_json?.name ? catalogText(i18n, "common.general.message.alternative2", { value0: n.attributes_json.name }) : "" }),
                             }))}
                             style={{
                                 maxWidth: "200px",
                                 fontSize: "1rem"
                             }}
                             className="form-control"
-                            placeholder={i18n.catalog["text_c9434c71d391"]}
+                            placeholder={i18n.catalog["common.general.selectUnit"]}
                         />
                         <Button variant="primary" icon="search" onClick={resolveScope} disabled={!selectedUuid || isLoading}>
-                            {isLoading ? i18n.catalog["text_f62d59acc1a2"] : i18n.catalog["text_3b013e306b33"]}
+                            {isLoading ? i18n.catalog["enterpriseCore.scopecontext.analyzing"] : i18n.catalog["common.general.contextAnalysis"]}
                         </Button>
                     </>
                 }
@@ -87,7 +87,7 @@ export function ScopeContextTab() {
                 <div style={{ display: "grid", gap: "1rem" }}>
                     {/* Anchor */}
                     <div style={{ padding: "1rem", borderRadius: "10px", background: "var(--primary)" + "12", border: "1px solid var(--primary)" + "40" }}>
-                        <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "4px" }}>{i18n.catalog["text_0305b43df92a"]}</div>
+                        <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "4px" }}>{i18n.catalog["enterpriseCore.scopecontext.referenceUnitAnchor"]}</div>
                         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                             <span style={{ fontSize: "1.2rem" }}>{getIcon("pin")}</span>
                             <strong style={{ fontSize: "1.1rem" }}>{result.anchor.code}</strong>
@@ -111,7 +111,7 @@ export function ScopeContextTab() {
                     {/* Resolved Chain */}
                     <div>
                         <h4 style={{ margin: "0 0 0.5rem", color: "var(--text-primary)" }}>
-                            {getIcon("tree")} {i18n.catalog["text_5e306b39b885"]}{Object.keys(result.resolved).length} {i18n.catalog["text_59561c1572ae"]}</h4>
+                            {getIcon("tree")} {i18n.catalog["enterpriseCore.scopecontext.derivedContext"]}{Object.keys(result.resolved).length} {i18n.catalog["enterpriseCore.scopecontext.unit"]}</h4>
                         <div style={{ display: "grid", gap: "0.5rem" }}>
                             {Object.entries(result.resolved).map(([typeId, data]) => {
                                 const domain = getTypeDomain(typeId);
@@ -146,7 +146,7 @@ export function ScopeContextTab() {
                                                 ))}
                                             </div>
                                         )}
-                                        {isAnchor && <span className="badge badge-primary" style={{ fontSize: "0.65rem" }}>{i18n.catalog["text_d6a838d92c8d"]}</span>}
+                                        {isAnchor && <span className="badge badge-primary" style={{ fontSize: "0.65rem" }}>{i18n.catalog["common.general.reference"]}</span>}
                                     </div>
                                 );
                             })}
@@ -158,8 +158,8 @@ export function ScopeContextTab() {
             {!result && !isLoading && (
                 <div style={{ textAlign: "center", padding: "3rem", color: "var(--text-muted)" }}>
                     <div style={{ fontSize: "3rem", marginBottom: "1rem", opacity: 0.3 }}>{getIcon("search")}</div>
-                    <p>{i18n.catalog["text_17dee965ea7b"]}</p>
-                    <p style={{ fontSize: "0.8rem" }}>{i18n.catalog["text_af5ded46f2f7"]}</p>
+                    <p>{i18n.catalog["enterpriseCore.scopecontext.selectOrganizationalUnitThenClickAnalyzeContextShow"]}</p>
+                    <p style={{ fontSize: "0.8rem" }}>{i18n.catalog["enterpriseCore.scopecontext.exampleSelectPlantViewItsCompanyCodeCurrency"]}</p>
                 </div>
             )}
         </div>

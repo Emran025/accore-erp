@@ -16,7 +16,7 @@ const emptyForm = {
     name: "",
     description: "",
     unit_price: "0",
-    unit_name: catalogMessage("text_11f4216e101b"),
+    unit_name: catalogMessage("common.general.service"),
     taxable: true,
 };
 
@@ -61,7 +61,7 @@ export default function ServicesManagementPage() {
             name: s.name,
             description: s.description ?? "",
             unit_price: String(s.selling_price || s.unit_price || 0),
-            unit_name: s.unit_name ?? i18n.catalog["text_11f4216e101b"],
+            unit_name: s.unit_name ?? i18n.catalog["common.general.service"],
             taxable: s.taxable,
         });
         setFormOpen(true);
@@ -69,7 +69,7 @@ export default function ServicesManagementPage() {
 
     const handleSave = async () => {
         if (!form.name.trim()) {
-            showToast(i18n.catalog["text_6d5b30bf0cc1"], "error");
+            showToast(i18n.catalog["commercial.servicesManagement.pleaseEnterServiceName"], "error");
             return;
         }
         setSaving(true);
@@ -107,43 +107,43 @@ export default function ServicesManagementPage() {
 
     const columns: Column<Service>[] = [
         { key: "id", header: "#" },
-        { key: "name", header: i18n.catalog["text_8999278851b9"] },
+        { key: "name", header: i18n.catalog["commercial.servicesManagement.serviceName.alternative2"] },
         {
             key: "selling_price",
-            header: i18n.catalog["text_259862e8b313"],
+            header: i18n.catalog["common.general.price"],
             render: (row) => formatCurrency(row.selling_price || row.unit_price || 0)
         },
-        { key: "unit_name", header: i18n.catalog["text_584f05614c76"] },
+        { key: "unit_name", header: i18n.catalog["common.general.unit"] },
         {
             key: "taxable",
-            header: i18n.catalog["text_8d1c87e5718b"],
+            header: i18n.catalog["common.general.taxable"],
             render: (row) => (
                 <span className={`badge badge-${row.taxable ? 'success' : 'secondary'}`}>
-                    {row.taxable ? i18n.catalog["text_4b2d2c65d365"] : i18n.catalog["text_2bd073516a87"]}
+                    {row.taxable ? i18n.catalog["common.general.yes"] : i18n.catalog["common.general.no"]}
                 </span>
             )
         },
         {
             key: "created_at",
-            header: i18n.catalog["text_dc08056fa4f2"],
+            header: i18n.catalog["common.general.creationDate"],
             render: (row) => row.created_at ? row.created_at.substring(0, 10) : "-"
         },
         {
             key: "actions",
-            header: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
             render: (row) => (
                 <ActionButtons
                     actions={
                         [
                             {
                                 icon: "edit",
-                                title: i18n.catalog["text_113d570d6555"],
+                                title: i18n.catalog["common.general.edit"],
                                 variant: "secondary",
                                 onClick: () => openEdit(row),
                             },
                             {
                                 icon: "trash",
-                                title: i18n.catalog["text_59ca629220a6"],
+                                title: i18n.catalog["common.general.delete"],
                                 variant: "delete",
                                 onClick: () => confirmDelete(row),
                             },
@@ -158,13 +158,13 @@ export default function ServicesManagementPage() {
         <MainLayout>
             <div className="sales-card animate-fade">
                 <PageSubHeader
-                    title={i18n.catalog["text_829bed999387"]}
+                    title={i18n.catalog["common.general.serviceManagement"]}
                     titleIcon="briefcase"
-                    actions={<Button variant="primary" icon="plus" onClick={openNew}>{i18n.catalog["text_61c45907c9d2"]}</Button>}
+                    actions={<Button variant="primary" icon="plus" onClick={openNew}>{i18n.catalog["commercial.servicesManagement.newService"]}</Button>}
                     searchInput={
                         <div style={{ display: "flex", gap: "0.5rem" }}>
                             <TextInput
-                                placeholder={i18n.catalog["text_22813b439fa6"]}
+                                placeholder={i18n.catalog["commercial.servicesManagement.searchService"]}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 style={{ width: "300px" }}
@@ -191,49 +191,49 @@ export default function ServicesManagementPage() {
             <Dialog
                 isOpen={formOpen}
                 onClose={() => setFormOpen(false)}
-                title={editingId ? i18n.catalog["text_e82b95030144"] : i18n.catalog["text_7198020eb56d"]}
+                title={editingId ? i18n.catalog["commercial.servicesManagement.editService"] : i18n.catalog["commercial.servicesManagement.addNewService"]}
                 maxWidth="600px"
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setFormOpen(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                        <Button variant="secondary" onClick={() => setFormOpen(false)}>{i18n.catalog["common.general.cancel"]}</Button>
                         <Button variant="primary" icon="check" onClick={handleSave} disabled={saving}>
-                            {saving ? i18n.catalog["text_dd81b078c15b"] : editingId ? i18n.catalog["text_00eab31f95b7"] : i18n.catalog["text_ddfcaf9d0144"]}
+                            {saving ? i18n.catalog["commercial.servicesManagement.saving"] : editingId ? i18n.catalog["common.general.update"] : i18n.catalog["common.general.save"]}
                         </Button>
                     </>
                 }
             >
                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                     <TextInput
-                        label={i18n.catalog["text_307322a4c247"]}
+                        label={i18n.catalog["commercial.servicesManagement.serviceName"]}
                         value={form.name}
                         onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))}
                         required
                     />
                     <Textarea
-                        label={i18n.catalog["text_95023fc76e1b"]}
+                        label={i18n.catalog["common.general.description.alternative2"]}
                         value={form.description}
                         onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
                         rows={3}
                     />
                     <div className="form-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                         <NumberInput
-                            label={i18n.catalog["text_8cb73887fa76"]}
+                            label={i18n.catalog["commercial.servicesManagement.price"]}
                             value={form.unit_price}
                             onChange={(v) => setForm(f => ({ ...f, unit_price: String(v) }))}
                             min={0}
                             required
                         />
                         <TextInput
-                            label={i18n.catalog["text_02e927a2fbf5"]}
+                            label={i18n.catalog["commercial.servicesManagement.unitMeasure"]}
                             value={form.unit_name}
                             onChange={(e) => setForm(f => ({ ...f, unit_name: e.target.value }))}
                         />
                     </div>
                     <Select
-                        label={i18n.catalog["text_8d1c87e5718b"]}
+                        label={i18n.catalog["common.general.taxable"]}
                         value={form.taxable ? "1" : "0"}
                         onChange={(e) => setForm(f => ({ ...f, taxable: e.target.value === "1" }))}
-                        options={[{ value: "1", label: i18n.catalog["text_4b2d2c65d365"] }, { value: "0", label: i18n.catalog["text_2bd073516a87"] }]}
+                        options={[{ value: "1", label: i18n.catalog["common.general.yes"] }, { value: "0", label: i18n.catalog["common.general.no"] }]}
                     />
                 </div>
             </Dialog>
@@ -242,9 +242,9 @@ export default function ServicesManagementPage() {
                 isOpen={deleteDialog}
                 onClose={() => setDeleteDialog(false)}
                 onConfirm={handleDelete}
-                title={i18n.catalog["text_5f9cb54dc136"]}
-                message={catalogText(i18n, "text_a247abff53d0", { value0: toDelete?.name })}
-                confirmText={i18n.catalog["text_59ca629220a6"]}
+                title={i18n.catalog["common.general.confirmDeletion"]}
+                message={catalogText(i18n, "commercial.servicesManagement.areYouSureYouWantDeleteService", { value0: toDelete?.name })}
+                confirmText={i18n.catalog["common.general.delete"]}
             />
         </MainLayout>
     );

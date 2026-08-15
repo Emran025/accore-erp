@@ -28,10 +28,10 @@ function EditContractPageContent() {
     const loadContract = async () => {
         setIsLoading(true);
         try {
-            const res: any = await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.HUMAN_CAPITAL.CONTRACTS.BASE, value1: id }));
+            const res: any = await fetchAPI(catalogText(i18n, "common.general.message", { value0: API_ENDPOINTS.HUMAN_CAPITAL.CONTRACTS.BASE, value1: id }));
             setContract(res.data || res);
         } catch (error) {
-            showToast(i18n.catalog["text_7d2b9645b54d"], "error");
+            showToast(i18n.catalog["common.general.failedLoadContractData"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -40,7 +40,7 @@ function EditContractPageContent() {
     return (
         <MainLayout >
             {isLoading ? (
-                <div className="text-center p-8">{i18n.catalog["text_ceac78d7f5d3"]}</div>
+                <div className="text-center p-8">{i18n.catalog["common.general.loading"]}</div>
             ) : (
                 contract && <ContractForm contract={contract} />
             )}
@@ -52,7 +52,7 @@ function EditContractPageContent() {
 export default function EditContractPage() {
     const { t: i18n } = useI18n();
     return (
-        <Suspense fallback={<div className="p-8 text-center">{i18n.catalog["text_ceac78d7f5d3"]}</div>}>
+        <Suspense fallback={<div className="p-8 text-center">{i18n.catalog["common.general.loading"]}</div>}>
             <EditContractPageContent />
         </Suspense>
     );

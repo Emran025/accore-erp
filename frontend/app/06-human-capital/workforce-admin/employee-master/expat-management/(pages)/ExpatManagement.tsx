@@ -36,7 +36,7 @@ export function ExpatManagement() {
       setRecords(res.data as ExpatRecord[] || []);
       setTotalPages(Number(res.last_page) || 1);
     } catch (error) {
-      console.error(i18n.catalog["text_495387c739cc"], error);
+      console.error(i18n.catalog["humanCapital.expatmanagement.failedLoadExpatRecords"], error);
     } finally {
       setIsLoading(false);
     }
@@ -48,17 +48,17 @@ export function ExpatManagement() {
     const today = new Date();
     const daysUntilExpiry = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
-    if (daysUntilExpiry < 0) return { class: "badge-danger", text: i18n.catalog["text_6217883aee8e"] };
-    if (daysUntilExpiry < 30) return { class: "badge-warning", text: i18n.catalog["text_1f921420481d"] };
-    if (daysUntilExpiry < 90) return { class: "badge-info", text: i18n.catalog["text_1f921420481d"] };
-    return { class: "badge-success", text: i18n.catalog["text_d106f86e1421"] };
+    if (daysUntilExpiry < 0) return { class: "badge-danger", text: i18n.catalog["common.general.expired"] };
+    if (daysUntilExpiry < 30) return { class: "badge-warning", text: i18n.catalog["common.general.comingSoon"] };
+    if (daysUntilExpiry < 90) return { class: "badge-info", text: i18n.catalog["common.general.comingSoon"] };
+    return { class: "badge-success", text: i18n.catalog["common.general.valid.alternative3"] };
   };
 
   const columns: Column<ExpatRecord>[] = [
     {
       key: "employee",
-      header: i18n.catalog["text_b71a39c832a6"],
-      dataLabel: i18n.catalog["text_b71a39c832a6"],
+      header: i18n.catalog["common.general.employee.alternative3"],
+      dataLabel: i18n.catalog["common.general.employee.alternative3"],
       render: (item) => (
         <div>
           <div>{item.employee?.full_name || '-'}</div>
@@ -68,8 +68,8 @@ export function ExpatManagement() {
     },
     {
       key: "passport_expiry",
-      header: i18n.catalog["text_021054c65a8b"],
-      dataLabel: i18n.catalog["text_021054c65a8b"],
+      header: i18n.catalog["common.general.passportExpiry"],
+      dataLabel: i18n.catalog["common.general.passportExpiry"],
       render: (item) => {
         const status = getExpiryStatus(item.passport_expiry);
         return (
@@ -84,8 +84,8 @@ export function ExpatManagement() {
     },
     {
       key: "visa_expiry",
-      header: i18n.catalog["text_d2b1879bbe43"],
-      dataLabel: i18n.catalog["text_d2b1879bbe43"],
+      header: i18n.catalog["common.general.visaExpiry"],
+      dataLabel: i18n.catalog["common.general.visaExpiry"],
       render: (item) => {
         const status = getExpiryStatus(item.visa_expiry);
         return (
@@ -100,38 +100,38 @@ export function ExpatManagement() {
     },
     {
       key: "host_country",
-      header: i18n.catalog["text_9c14be9c4c63"],
-      dataLabel: i18n.catalog["text_9c14be9c4c63"],
+      header: i18n.catalog["common.general.hostCountry"],
+      dataLabel: i18n.catalog["common.general.hostCountry"],
       render: (item) => item.host_country || '-'
     },
     {
       key: "cost_of_living_adjustment",
-      header: i18n.catalog["text_27c257483a26"],
-      dataLabel: i18n.catalog["text_27c257483a26"],
+      header: i18n.catalog["common.general.costLivingAllowance"],
+      dataLabel: i18n.catalog["common.general.costLivingAllowance"],
       render: (item) => formatCurrency(item.cost_of_living_adjustment || 0)
     },
     {
       key: "housing_allowance",
-      header: i18n.catalog["text_408c0f457672"],
-      dataLabel: i18n.catalog["text_408c0f457672"],
+      header: i18n.catalog["common.general.housingAllowance"],
+      dataLabel: i18n.catalog["common.general.housingAllowance"],
       render: (item) => formatCurrency(item.housing_allowance || 0)
     },
     {
       key: "id",
-      header: i18n.catalog["text_7797240d6caf"],
-      dataLabel: i18n.catalog["text_7797240d6caf"],
+      header: i18n.catalog["common.general.actions"],
+      dataLabel: i18n.catalog["common.general.actions"],
       render: (item) => (
         <ActionButtons
           actions={[
             {
               icon: "eye",
-              title: i18n.catalog["text_4b615d0e6dd2"],
+              title: i18n.catalog["common.general.viewDetails"],
               variant: "view",
               onClick: () => router.push(`/06-human-capital/workforce-admin/employee-master/expat-management/view/${item.id}`)
             },
             ...(canAccess("expat_management", "edit") ? [{
               icon: "edit" as const,
-              title: i18n.catalog["text_113d570d6555"],
+              title: i18n.catalog["common.general.edit"],
               variant: "edit" as const,
               onClick: () => router.push(`/06-human-capital/workforce-admin/employee-master/expat-management/edit/${item.id}`)
             }] : [])
@@ -144,7 +144,7 @@ export function ExpatManagement() {
   return (
     <div className="sales-card animate-fade">
       <PageSubHeader
-        title={i18n.catalog["text_d615f591967f"]}
+        title={i18n.catalog["common.general.foreignWorkforceManagement"]}
         titleIcon="globe"
         searchInput={
           <SearchableSelect
@@ -155,7 +155,7 @@ export function ExpatManagement() {
               setSearchTerm(val);
               setCurrentPage(1);
             }}
-            placeholder={i18n.catalog["text_76b858f96489"]}
+            placeholder={i18n.catalog["common.general.search"]}
             className="search-input"
           />
         }
@@ -166,7 +166,7 @@ export function ExpatManagement() {
               variant="primary"
               icon="plus"
             >
-              {i18n.catalog["text_3377170df665"]}</Button>
+              {i18n.catalog["common.general.addRecord"]}</Button>
           )
         }
       />
@@ -175,7 +175,7 @@ export function ExpatManagement() {
         columns={columns}
         data={records}
         keyExtractor={(item) => item.id.toString()}
-        emptyMessage={i18n.catalog["text_60dc956bda60"]}
+        emptyMessage={i18n.catalog["humanCapital.expatmanagement.noRecordsExpatriates"]}
         isLoading={isLoading}
         pagination={{
           currentPage,

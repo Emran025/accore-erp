@@ -60,7 +60,7 @@ export const useOperatingContextStore = create<OperatingContextState>()(
           );
           if (!response.success) {
             set({
-              error: response.message || catalogMessage("text_e7b5e0494505"),
+              error: response.message || catalogMessage("common.general.unableLoadOperatingReadiness"),
               isLoading: false,
             });
             return null;
@@ -69,8 +69,8 @@ export const useOperatingContextStore = create<OperatingContextState>()(
           set({ readiness, isLoading: false });
           return readiness;
         } catch (error) {
-          console.error(catalogMessage("text_e7b5e0494505"), error);
-          set({ error: catalogMessage("text_e7b5e0494505"), isLoading: false });
+          console.error(catalogMessage("common.general.unableLoadOperatingReadiness"), error);
+          set({ error: catalogMessage("common.general.unableLoadOperatingReadiness"), isLoading: false });
           return null;
         }
       },
@@ -86,7 +86,7 @@ export const useOperatingContextStore = create<OperatingContextState>()(
           await useOperatingContextStore.getState().loadReadiness();
           return true;
         } catch (error) {
-          console.error(catalogMessage("text_6ca363805854"), error);
+          console.error(catalogMessage("state.useoperatingcontextstore.unableSelectOperatingContext"), error);
           return false;
         }
       },

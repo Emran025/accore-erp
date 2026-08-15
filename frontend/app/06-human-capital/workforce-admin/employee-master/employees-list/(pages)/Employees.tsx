@@ -46,39 +46,39 @@ export function Employees() {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'active': return i18n.catalog["text_629e90b3af3d"];
-      case 'suspended': return i18n.catalog["text_701d5d7a86f9"];
-      case 'terminated': return i18n.catalog["text_ec0852e29a7e"];
+      case 'active': return i18n.catalog["common.general.active"];
+      case 'suspended': return i18n.catalog["common.general.pending"];
+      case 'terminated': return i18n.catalog["common.general.employmentTerminated"];
       default: return status;
     }
   };
 
   const columns: Column<Employee>[] = [
-    { key: "employee_code", header: i18n.catalog["text_ecd9a67932c9"], dataLabel: i18n.catalog["text_ecd9a67932c9"] },
-    { key: "full_name", header: i18n.catalog["text_6c2ab9bdeb2c"], dataLabel: i18n.catalog["text_6c2ab9bdeb2c"] },
-    { key: "role", header: i18n.catalog["text_f658e386df0d"], dataLabel: i18n.catalog["text_f658e386df0d"], render: (item) => item.position?.position_name_ar || item.role?.role_name_ar || '-' },
-    { key: "department", header: i18n.catalog["text_0771c3ff9336"], dataLabel: i18n.catalog["text_0771c3ff9336"], render: (item) => item.department?.name_ar || '-' },
-    { key: "base_salary", header: i18n.catalog["text_73ad6b20ceb7"], dataLabel: i18n.catalog["text_73ad6b20ceb7"], render: (item) => formatCurrency(item.base_salary) },
+    { key: "employee_code", header: i18n.catalog["common.general.employeeNumber.alternative2"], dataLabel: i18n.catalog["common.general.employeeNumber.alternative2"] },
+    { key: "full_name", header: i18n.catalog["common.general.fullName"], dataLabel: i18n.catalog["common.general.fullName"] },
+    { key: "role", header: i18n.catalog["common.general.positionTitle"], dataLabel: i18n.catalog["common.general.positionTitle"], render: (item) => item.position?.position_name_ar || item.role?.role_name_ar || '-' },
+    { key: "department", header: i18n.catalog["common.general.section"], dataLabel: i18n.catalog["common.general.section"], render: (item) => item.department?.name_ar || '-' },
+    { key: "base_salary", header: i18n.catalog["common.general.basicSalary"], dataLabel: i18n.catalog["common.general.basicSalary"], render: (item) => formatCurrency(item.base_salary) },
     {
-      key: "employment_status", header: i18n.catalog["text_c3a4749caed4"], dataLabel: i18n.catalog["text_c3a4749caed4"], render: (item) => (
+      key: "employment_status", header: i18n.catalog["common.general.status.alternative2"], dataLabel: i18n.catalog["common.general.status.alternative2"], render: (item) => (
         <span className={`badge ${getStatusBadgeClass(item.employment_status)}`}>
           {getStatusText(item.employment_status)}
         </span>
       )
     },
     {
-      key: "id", header: i18n.catalog["text_7797240d6caf"], dataLabel: i18n.catalog["text_7797240d6caf"], render: (item) => (
+      key: "id", header: i18n.catalog["common.general.actions"], dataLabel: i18n.catalog["common.general.actions"], render: (item) => (
         <ActionButtons
           actions={[
             {
               icon: "eye",
-              title: i18n.catalog["text_501439113157"],
+              title: i18n.catalog["humanCapital.employees.viewFile"],
               variant: "view",
               onClick: () => router.push(`/06-human-capital/workforce-admin/employee-master/employees-list/view/${item.id}`)
             },
             ...(canAccess("employees", "edit") ? [{
               icon: "edit" as const,
-              title: i18n.catalog["text_113d570d6555"],
+              title: i18n.catalog["common.general.edit"],
               variant: "edit" as const,
               onClick: () => router.push(`/06-human-capital/workforce-admin/employee-master/employees-list/edit/${item.id}`)
             }] : [])
@@ -91,7 +91,7 @@ export function Employees() {
   return (
     <div className="sales-card animate-fade">
       <PageSubHeader
-        title={i18n.catalog["text_bd3f73d63cba"]}
+        title={i18n.catalog["humanCapital.employees.employeeManagement"]}
         titleIcon="users"
         searchInput={
           <SearchableSelect
@@ -102,7 +102,7 @@ export function Employees() {
               setSearchTerm(val);
               loadEmployees(1, val, departmentFilter); // Reset to page 1 on search
             }}
-            placeholder={i18n.catalog["text_c0d15d40fd31"]}
+            placeholder={i18n.catalog["common.general.quickSearch"]}
             className="header-search-bar"
           />
         }
@@ -113,7 +113,7 @@ export function Employees() {
               onClick={() => router.push('/06-human-capital/workforce-admin/employee-master/employees-list/add')}
               icon="plus"
             >
-              {i18n.catalog["text_d4a371aa1bf4"]}</Button>
+              {i18n.catalog["humanCapital.employees.addEmployee"]}</Button>
           )
         }
       />
@@ -122,7 +122,7 @@ export function Employees() {
         columns={columns}
         data={employees}
         keyExtractor={(item) => item.id}
-        emptyMessage={i18n.catalog["text_c9202f059791"]}
+        emptyMessage={i18n.catalog["humanCapital.employees.noEmployees"]}
         isLoading={isLoading}
         pagination={{
           currentPage: currentPage,

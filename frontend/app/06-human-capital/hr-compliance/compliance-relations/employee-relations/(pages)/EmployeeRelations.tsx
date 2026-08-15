@@ -16,27 +16,27 @@ import { useEffect, useState } from "react";
 
 
 const caseTypeLabels: Record<string, string> = {
-  grievance: catalogMessage("text_ff1070efe4f8"),
-  complaint: catalogMessage("text_12506e99b6f7"),
-  misconduct: catalogMessage("text_74de946001aa"),
-  performance: catalogMessage("text_a7049a61fea1"),
-  harassment: catalogMessage("text_0a267f391766"),
-  other: catalogMessage("text_17a9f38e22b6"),
+  grievance: catalogMessage("common.general.appeal"),
+  complaint: catalogMessage("common.general.complaint"),
+  misconduct: catalogMessage("common.general.misconduct"),
+  performance: catalogMessage("common.general.performance"),
+  harassment: catalogMessage("common.general.harassment"),
+  other: catalogMessage("common.general.other"),
 };
 
 const confidentialityLabels: Record<string, string> = {
-  low: catalogMessage("text_5dddca7f4a48"),
-  medium: catalogMessage("text_42a5dadf6e45"),
-  high: catalogMessage("text_48acab16abdb"),
-  restricted: catalogMessage("text_1bfb3a580f87"),
+  low: catalogMessage("common.general.low"),
+  medium: catalogMessage("common.general.average"),
+  high: catalogMessage("common.general.high"),
+  restricted: catalogMessage("common.general.highlyConfidential"),
 };
 
 const statusLabels: Record<string, string> = {
-  open: catalogMessage("text_46ea59915eec"),
-  in_review: catalogMessage("text_8aac5fac1498"),
-  under_investigation: catalogMessage("text_8264d0f28e97"),
-  resolved: catalogMessage("text_917419892c64"),
-  closed: catalogMessage("text_e655261f9c96"),
+  open: catalogMessage("common.general.open"),
+  in_review: catalogMessage("common.general.underReview"),
+  under_investigation: catalogMessage("common.general.underInvestigation"),
+  resolved: catalogMessage("common.general.solution"),
+  closed: catalogMessage("common.general.closed.alternative2"),
 };
 
 const statusBadges: Record<string, string> = {
@@ -105,7 +105,7 @@ export function EmployeeRelations() {
       setTotalRecords(Number(res.total) || data.length);
     } catch (e) {
       console.error(e);
-      showToast(i18n.catalog["text_4e281ad19f55"], "error");
+      showToast(i18n.catalog["humanCapital.employeerelations.failedLoadEmployeeRelationsCases"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -127,7 +127,7 @@ export function EmployeeRelations() {
 
   const handleSaveCase = async () => {
     if (!caseForm.employee_id || !caseForm.description) {
-      showToast(i18n.catalog["text_4b74080ad8ab"], "error");
+      showToast(i18n.catalog["humanCapital.employeerelations.pleaseSelectEmployeeEnterCaseDescription"], "error");
       return;
     }
 
@@ -147,18 +147,18 @@ export function EmployeeRelations() {
           method: "PUT",
           body: JSON.stringify(payload),
         });
-        showToast(i18n.catalog["text_7acc288b5b7b"], "success");
+        showToast(i18n.catalog["humanCapital.employeerelations.caseUpdatedSuccessfully"], "success");
       } else {
         await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_RELATIONS.BASE, {
           method: "POST",
           body: JSON.stringify(payload),
         });
-        showToast(i18n.catalog["text_1939e6efdc98"], "success");
+        showToast(i18n.catalog["humanCapital.employeerelations.caseCreatedSuccessfully"], "success");
       }
       setShowCaseDialog(false);
       loadCases();
     } catch (e: any) {
-      showToast(e.message || i18n.catalog["text_2e0468bce1ea"], "error");
+      showToast(e.message || i18n.catalog["humanCapital.employeerelations.errorOccurredWhileSavingCase"], "error");
     }
   };
 
@@ -196,7 +196,7 @@ export function EmployeeRelations() {
   const handleSaveDisciplinary = async () => {
     if (!selectedCase) return;
     if (!disciplinaryForm.violation_description || !disciplinaryForm.action_taken) {
-      showToast(i18n.catalog["text_ae4bd7a48a26"], "error");
+      showToast(i18n.catalog["humanCapital.employeerelations.pleaseEnterViolationDetailsActionTaken"], "error");
       return;
     }
 
@@ -211,42 +211,42 @@ export function EmployeeRelations() {
           expiry_date: disciplinaryForm.expiry_date || undefined,
         }),
       });
-      showToast(i18n.catalog["text_9650956d2120"], "success");
+      showToast(i18n.catalog["humanCapital.employeerelations.disciplinaryActionRecordedSuccessfully"], "success");
       setShowDisciplinaryDialog(false);
       loadCases();
     } catch (e: any) {
-      showToast(e.message || i18n.catalog["text_459588aa493f"], "error");
+      showToast(e.message || i18n.catalog["humanCapital.employeerelations.failedSaveDisciplinaryAction"], "error");
     }
   };
 
   const columns: Column<EmployeeRelationsCase>[] = [
     {
       key: "case_number",
-      header: i18n.catalog["text_84042ce7357e"],
-      dataLabel: i18n.catalog["text_84042ce7357e"],
+      header: i18n.catalog["common.general.caseNumber"],
+      dataLabel: i18n.catalog["common.general.caseNumber"],
     },
     {
       key: "employee",
-      header: i18n.catalog["text_b71a39c832a6"],
-      dataLabel: i18n.catalog["text_b71a39c832a6"],
+      header: i18n.catalog["common.general.employee.alternative3"],
+      dataLabel: i18n.catalog["common.general.employee.alternative3"],
       render: (item) => item.employee?.full_name || "-",
     },
     {
       key: "case_type",
-      header: i18n.catalog["text_9e01e2dc5067"],
-      dataLabel: i18n.catalog["text_9e01e2dc5067"],
+      header: i18n.catalog["common.general.caseType"],
+      dataLabel: i18n.catalog["common.general.caseType"],
       render: (item) => caseTypeLabels[item.case_type] || item.case_type,
     },
     {
       key: "confidentiality_level",
-      header: i18n.catalog["text_284869a2be2a"],
-      dataLabel: i18n.catalog["text_284869a2be2a"],
+      header: i18n.catalog["common.general.confidential"],
+      dataLabel: i18n.catalog["common.general.confidential"],
       render: (item) => confidentialityLabels[item.confidentiality_level] || item.confidentiality_level,
     },
     {
       key: "status",
-      header: i18n.catalog["text_c3a4749caed4"],
-      dataLabel: i18n.catalog["text_c3a4749caed4"],
+      header: i18n.catalog["common.general.status.alternative2"],
+      dataLabel: i18n.catalog["common.general.status.alternative2"],
       render: (item) => (
         <span className={`badge ${statusBadges[item.status] || "badge-secondary"}`}>
           {statusLabels[item.status] || item.status}
@@ -255,38 +255,38 @@ export function EmployeeRelations() {
     },
     {
       key: "reported_date",
-      header: i18n.catalog["text_f406586dd55d"],
-      dataLabel: i18n.catalog["text_f406586dd55d"],
+      header: i18n.catalog["common.general.reportDate"],
+      dataLabel: i18n.catalog["common.general.reportDate"],
       render: (item) => formatDate(item.reported_date),
     },
     {
       key: "disciplinary_actions",
-      header: i18n.catalog["text_6b989a1e738d"],
-      dataLabel: i18n.catalog["text_6b989a1e738d"],
+      header: i18n.catalog["common.general.disciplinaryActions"],
+      dataLabel: i18n.catalog["common.general.disciplinaryActions"],
       render: (item) => item.disciplinary_actions?.length || 0,
     },
     {
       key: "id",
-      header: i18n.catalog["text_7797240d6caf"],
-      dataLabel: i18n.catalog["text_7797240d6caf"],
+      header: i18n.catalog["common.general.actions"],
+      dataLabel: i18n.catalog["common.general.actions"],
       render: (item) => (
         <ActionButtons
           actions={[
             {
               icon: "eye",
-              title: i18n.catalog["text_4b615d0e6dd2"],
+              title: i18n.catalog["common.general.viewDetails"],
               variant: "view",
               onClick: () => openCaseDetails(item)
             },
             ...(canAccess("relations", "edit") ? [{
               icon: "edit" as const,
-              title: i18n.catalog["text_7be9d526299e"],
+              title: i18n.catalog["common.general.editCase"],
               variant: "edit" as const,
               onClick: () => openEditCase(item)
             }] : []),
             ...(canAccess("relations", "edit") ? [{
               icon: "gavel" as const,
-              title: i18n.catalog["text_50d2a352dbd3"],
+              title: i18n.catalog["common.general.addDisciplinaryAction"],
               variant: "secondary" as const,
               onClick: () => openDisciplinaryDialog(item)
             }] : [])
@@ -306,7 +306,7 @@ export function EmployeeRelations() {
   return (
     <div className="sales-card animate-fade">
       <PageSubHeader
-        title={i18n.catalog["text_df02b37e3b72"]}
+        title={i18n.catalog["humanCapital.employeerelations.employeeRelationsCases"]}
         titleIcon="scale"
         actions={
           <>
@@ -318,13 +318,13 @@ export function EmployeeRelations() {
               }}
               className="form-select"
               style={{ minWidth: "160px", padding: '0.4rem 2rem 0.4rem 1rem' }}
-              placeholder={i18n.catalog["text_1ef213109d57"]}
+              placeholder={i18n.catalog["common.general.allStatuses"]}
               options={[
-                { value: 'open', label: i18n.catalog["text_46ea59915eec"] },
-                { value: 'in_review', label: i18n.catalog["text_8aac5fac1498"] },
-                { value: 'under_investigation', label: i18n.catalog["text_8264d0f28e97"] },
-                { value: 'resolved', label: i18n.catalog["text_917419892c64"] },
-                { value: 'closed', label: i18n.catalog["text_e655261f9c96"] }
+                { value: 'open', label: i18n.catalog["common.general.open"] },
+                { value: 'in_review', label: i18n.catalog["common.general.underReview"] },
+                { value: 'under_investigation', label: i18n.catalog["common.general.underInvestigation"] },
+                { value: 'resolved', label: i18n.catalog["common.general.solution"] },
+                { value: 'closed', label: i18n.catalog["common.general.closed.alternative2"] }
               ]}
             />
             {canAccess("relations", "create") && (
@@ -332,7 +332,7 @@ export function EmployeeRelations() {
                 variant="primary"
                 icon="plus"
               >
-                {i18n.catalog["text_892fb6705680"]}</Button>
+                {i18n.catalog["common.general.openNewCase"]}</Button>
             )}
           </>
         }
@@ -354,19 +354,19 @@ export function EmployeeRelations() {
           }}
         >
           <div className="stat-card">
-            <div className="stat-label">{i18n.catalog["text_3393e82b239e"]}</div>
+            <div className="stat-label">{i18n.catalog["humanCapital.employeerelations.totalCases"]}</div>
             <div className="stat-value">{stats.total}</div>
           </div>
           <div className="stat-card">
-            <div className="stat-label">{i18n.catalog["text_7c0267827a67"]}</div>
+            <div className="stat-label">{i18n.catalog["humanCapital.employeerelations.open"]}</div>
             <div className="stat-value text-warning">{stats.open}</div>
           </div>
           <div className="stat-card">
-            <div className="stat-label">{i18n.catalog["text_0cc6a7db6080"]}</div>
+            <div className="stat-label">{i18n.catalog["common.general.processing"]}</div>
             <div className="stat-value text-info">{stats.inProgress}</div>
           </div>
           <div className="stat-card">
-            <div className="stat-label">{i18n.catalog["text_164d93b187e4"]}</div>
+            <div className="stat-label">{i18n.catalog["humanCapital.employeerelations.closedResolved"]}</div>
             <div className="stat-value text-success">{stats.closed}</div>
           </div>
         </div>
@@ -376,7 +376,7 @@ export function EmployeeRelations() {
         columns={columns}
         data={cases}
         keyExtractor={(item) => item.id.toString()}
-        emptyMessage={i18n.catalog["text_f91a611b35e1"]}
+        emptyMessage={i18n.catalog["humanCapital.employeerelations.noIssuesRegistered"]}
         isLoading={isLoading}
         pagination={{
           currentPage,
@@ -389,32 +389,32 @@ export function EmployeeRelations() {
       <Dialog
         isOpen={showCaseDialog}
         onClose={() => setShowCaseDialog(false)}
-        title={editingCase ? i18n.catalog["text_7be9d526299e"] : i18n.catalog["text_892fb6705680"]}
+        title={editingCase ? i18n.catalog["common.general.editCase"] : i18n.catalog["common.general.openNewCase"]}
         maxWidth="700px"
       >
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-1">
-                <Label className="text-secondary mb-1">{i18n.catalog["text_972803dc7d86"]}</Label>
+                <Label className="text-secondary mb-1">{i18n.catalog["common.general.employee"]}</Label>
                 <SearchableSelect
                   options={employees.map((emp: Employee) => ({ value: emp.id.toString(), label: emp.full_name }))}
                   value={caseForm.employee_id}
                   onChange={(val) => setCaseForm(prev => ({ ...prev, employee_id: val?.toString() || "" }))}
-                  placeholder={i18n.catalog["text_dee783929dea"]}
+                  placeholder={i18n.catalog["common.general.selectEmployee"]}
                 />
               </div>
               <Select
-                label={i18n.catalog["text_9e01e2dc5067"]}
+                label={i18n.catalog["common.general.caseType"]}
                 value={caseForm.case_type}
                 onChange={(e) => setCaseForm({ ...caseForm, case_type: e.target.value })}
                 options={[
-                  { value: 'complaint', label: i18n.catalog["text_12506e99b6f7"] },
-                  { value: 'grievance', label: i18n.catalog["text_ff1070efe4f8"] },
-                  { value: 'misconduct', label: i18n.catalog["text_74de946001aa"] },
-                  { value: 'performance', label: i18n.catalog["text_a7049a61fea1"] },
-                  { value: 'harassment', label: i18n.catalog["text_0a267f391766"] },
-                  { value: 'other', label: i18n.catalog["text_17a9f38e22b6"] }
+                  { value: 'complaint', label: i18n.catalog["common.general.complaint"] },
+                  { value: 'grievance', label: i18n.catalog["common.general.appeal"] },
+                  { value: 'misconduct', label: i18n.catalog["common.general.misconduct"] },
+                  { value: 'performance', label: i18n.catalog["common.general.performance"] },
+                  { value: 'harassment', label: i18n.catalog["common.general.harassment"] },
+                  { value: 'other', label: i18n.catalog["common.general.other"] }
                 ]}
               />
             </div>
@@ -422,33 +422,33 @@ export function EmployeeRelations() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Select
-              label={i18n.catalog["text_df05ec94766b"]}
+              label={i18n.catalog["humanCapital.employeerelations.confidentialityLevel"]}
               value={caseForm.confidentiality_level}
               onChange={(e) => setCaseForm({ ...caseForm, confidentiality_level: e.target.value })}
               options={[
-                { value: 'low', label: i18n.catalog["text_5dddca7f4a48"] },
-                { value: 'medium', label: i18n.catalog["text_42a5dadf6e45"] },
-                { value: 'high', label: i18n.catalog["text_48acab16abdb"] },
-                { value: 'restricted', label: i18n.catalog["text_1bfb3a580f87"] }
+                { value: 'low', label: i18n.catalog["common.general.low"] },
+                { value: 'medium', label: i18n.catalog["common.general.average"] },
+                { value: 'high', label: i18n.catalog["common.general.high"] },
+                { value: 'restricted', label: i18n.catalog["common.general.highlyConfidential"] }
               ]}
             />
             <Select
-              label={i18n.catalog["text_c3a4749caed4"]}
+              label={i18n.catalog["common.general.status.alternative2"]}
               value={caseForm.status}
               onChange={(e) => setCaseForm({ ...caseForm, status: e.target.value })}
               options={[
-                { value: 'open', label: i18n.catalog["text_46ea59915eec"] },
-                { value: 'in_review', label: i18n.catalog["text_8aac5fac1498"] },
-                { value: 'under_investigation', label: i18n.catalog["text_8264d0f28e97"] },
-                { value: 'resolved', label: i18n.catalog["text_917419892c64"] },
-                { value: 'closed', label: i18n.catalog["text_e655261f9c96"] }
+                { value: 'open', label: i18n.catalog["common.general.open"] },
+                { value: 'in_review', label: i18n.catalog["common.general.underReview"] },
+                { value: 'under_investigation', label: i18n.catalog["common.general.underInvestigation"] },
+                { value: 'resolved', label: i18n.catalog["common.general.solution"] },
+                { value: 'closed', label: i18n.catalog["common.general.closed.alternative2"] }
               ]}
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <TextInput
-              label={i18n.catalog["text_f406586dd55d"]}
+              label={i18n.catalog["common.general.reportDate"]}
               type="date"
               value={caseForm.reported_date}
               onChange={(e) => setCaseForm({ ...caseForm, reported_date: e.target.value })}
@@ -456,14 +456,14 @@ export function EmployeeRelations() {
           </div>
 
           <Textarea
-            label={i18n.catalog["text_87553255bf4c"]}
+            label={i18n.catalog["humanCapital.employeerelations.caseDescription"]}
             value={caseForm.description}
             onChange={(e) => setCaseForm({ ...caseForm, description: e.target.value })}
             rows={4}
           />
 
           <Textarea
-            label={i18n.catalog["text_56857620a044"]}
+            label={i18n.catalog["humanCapital.employeerelations.solutionSummaryOptional"]}
             value={caseForm.resolution}
             onChange={(e) => setCaseForm({ ...caseForm, resolution: e.target.value })}
             rows={3}
@@ -474,9 +474,9 @@ export function EmployeeRelations() {
             style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}
           >
             <Button variant="secondary" onClick={() => setShowCaseDialog(false)}>
-              {i18n.catalog["text_9a30dc2a96b8"]}</Button>
+              {i18n.catalog["common.general.cancel"]}</Button>
             <Button variant="primary" onClick={handleSaveCase} icon="save">
-              {i18n.catalog["text_ddfcaf9d0144"]}</Button>
+              {i18n.catalog["common.general.save"]}</Button>
           </div>
         </div>
       </Dialog>
@@ -485,59 +485,59 @@ export function EmployeeRelations() {
       <Dialog
         isOpen={showDetailsDialog}
         onClose={() => setShowDetailsDialog(false)}
-        title={i18n.catalog["text_267d1cc066ef"]}
+        title={i18n.catalog["humanCapital.employeerelations.caseDetails"]}
         maxWidth="800px"
       >
         {selectedCase && (
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <strong>{i18n.catalog["text_462a2cd8696f"]}</strong> {selectedCase.case_number}
+                <strong>{i18n.catalog["humanCapital.employeerelations.caseNumber"]}</strong> {selectedCase.case_number}
               </div>
               <div>
-                <strong>{i18n.catalog["text_b6293eeef8b9"]}</strong> {selectedCase.employee?.full_name || "-"}
+                <strong>{i18n.catalog["common.general.employee.alternative2"]}</strong> {selectedCase.employee?.full_name || "-"}
               </div>
               <div>
-                <strong>{i18n.catalog["text_f0dbc23078b7"]}</strong> {caseTypeLabels[selectedCase.case_type] || selectedCase.case_type}
+                <strong>{i18n.catalog["humanCapital.employeerelations.caseType"]}</strong> {caseTypeLabels[selectedCase.case_type] || selectedCase.case_type}
               </div>
               <div>
-                <strong>{i18n.catalog["text_86913294ad08"]}</strong>{" "}
+                <strong>{i18n.catalog["humanCapital.employeerelations.confidentiality"]}</strong>{" "}
                 {confidentialityLabels[selectedCase.confidentiality_level] || selectedCase.confidentiality_level}
               </div>
               <div>
-                <strong>{i18n.catalog["text_02e196bdec60"]}</strong>{" "}
+                <strong>{i18n.catalog["common.general.status"]}</strong>{" "}
                 <span className={`badge ${statusBadges[selectedCase.status] || "badge-secondary"}`}>
                   {statusLabels[selectedCase.status] || selectedCase.status}
                 </span>
               </div>
               <div>
-                <strong>{i18n.catalog["text_635d2d8d5ead"]}</strong> {formatDate(selectedCase.reported_date)}
+                <strong>{i18n.catalog["humanCapital.employeerelations.reportDate"]}</strong> {formatDate(selectedCase.reported_date)}
               </div>
               {selectedCase.resolved_date && (
                 <div>
-                  <strong>{i18n.catalog["text_2b5e2ef23059"]}</strong> {formatDate(selectedCase.resolved_date)}
+                  <strong>{i18n.catalog["humanCapital.employeerelations.closingDate"]}</strong> {formatDate(selectedCase.resolved_date)}
                 </div>
               )}
             </div>
 
             <div>
-              <strong>{i18n.catalog["text_da8657a4db77"]}</strong>
+              <strong>{i18n.catalog["humanCapital.employeerelations.issueDescription"]}</strong>
               <p style={{ marginTop: "0.5rem" }}>{selectedCase.description}</p>
             </div>
 
             {selectedCase.resolution && (
               <div>
-                <strong>{i18n.catalog["text_a9951ad0bce9"]}</strong>
+                <strong>{i18n.catalog["humanCapital.employeerelations.solutionSummary"]}</strong>
                 <p style={{ marginTop: "0.5rem" }}>{selectedCase.resolution}</p>
               </div>
             )}
 
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                <strong>{i18n.catalog["text_a52ebb6e2692"]}</strong>
+                <strong>{i18n.catalog["humanCapital.employeerelations.disciplinaryActions"]}</strong>
                 {canAccess("relations", "edit") && (
                   <Button size="sm" onClick={() => openDisciplinaryDialog(selectedCase)} variant="secondary" icon="gavel">
-                    {i18n.catalog["text_f23986bf557d"]}</Button>
+                    {i18n.catalog["humanCapital.employeerelations.addAction"]}</Button>
                 )}
               </div>
               {selectedCase.disciplinary_actions && selectedCase.disciplinary_actions.length > 0 ? (
@@ -550,7 +550,7 @@ export function EmployeeRelations() {
                   ))}
                 </ul>
               ) : (
-                <p>{i18n.catalog["text_751ecb8ac408"]}</p>
+                <p>{i18n.catalog["humanCapital.employeerelations.noDisciplinaryActionsRecordedThisCase"]}</p>
               )}
             </div>
           </div>
@@ -561,25 +561,25 @@ export function EmployeeRelations() {
       <Dialog
         isOpen={showDisciplinaryDialog}
         onClose={() => setShowDisciplinaryDialog(false)}
-        title={i18n.catalog["text_50d2a352dbd3"]}
+        title={i18n.catalog["common.general.addDisciplinaryAction"]}
         maxWidth="600px"
       >
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Select
-                label={i18n.catalog["text_21e054481a76"]}
+                label={i18n.catalog["humanCapital.employeerelations.actionType"]}
                 value={disciplinaryForm.action_type}
                 onChange={(e) => setDisciplinaryForm({ ...disciplinaryForm, action_type: e.target.value })}
                 options={[
-                  { value: 'warning', label: i18n.catalog["text_9cd45fa1f22f"] },
-                  { value: 'suspension', label: i18n.catalog["text_87c89429ccaa"] },
-                  { value: 'deduction', label: i18n.catalog["text_ec9ccd93320a"] },
-                  { value: 'termination', label: i18n.catalog["text_2010c54f5a20"] }
+                  { value: 'warning', label: i18n.catalog["humanCapital.employeerelations.alert"] },
+                  { value: 'suspension', label: i18n.catalog["common.general.disable"] },
+                  { value: 'deduction', label: i18n.catalog["common.general.discount.alternative2"] },
+                  { value: 'termination', label: i18n.catalog["common.general.terminateService"] }
                 ]}
               />
               <TextInput
-                label={i18n.catalog["text_9b60316f41be"]}
+                label={i18n.catalog["humanCapital.employeerelations.actionDate"]}
                 type="date"
                 value={disciplinaryForm.action_date}
                 onChange={(e) => setDisciplinaryForm({ ...disciplinaryForm, action_date: e.target.value })}
@@ -588,21 +588,21 @@ export function EmployeeRelations() {
           </div>
 
           <Textarea
-            label={i18n.catalog["text_ef007dff9707"]}
+            label={i18n.catalog["humanCapital.employeerelations.violationDescription"]}
             value={disciplinaryForm.violation_description}
             onChange={(e) => setDisciplinaryForm({ ...disciplinaryForm, violation_description: e.target.value })}
             rows={3}
           />
 
           <Textarea
-            label={i18n.catalog["text_d09169996227"]}
+            label={i18n.catalog["humanCapital.employeerelations.actionTaken"]}
             value={disciplinaryForm.action_taken}
             onChange={(e) => setDisciplinaryForm({ ...disciplinaryForm, action_taken: e.target.value })}
             rows={3}
           />
 
           <TextInput
-            label={i18n.catalog["text_c09242e38dc6"]}
+            label={i18n.catalog["humanCapital.employeerelations.actionExpirationDateOptional"]}
             type="date"
             value={disciplinaryForm.expiry_date}
             onChange={(e) => setDisciplinaryForm({ ...disciplinaryForm, expiry_date: e.target.value })}
@@ -613,9 +613,9 @@ export function EmployeeRelations() {
             style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}
           >
             <Button variant="secondary" onClick={() => setShowDisciplinaryDialog(false)}>
-              {i18n.catalog["text_9a30dc2a96b8"]}</Button>
+              {i18n.catalog["common.general.cancel"]}</Button>
             <Button variant="primary" onClick={handleSaveDisciplinary} icon="save">
-              {i18n.catalog["text_ddfcaf9d0144"]}</Button>
+              {i18n.catalog["common.general.save"]}</Button>
           </div>
         </div>
       </Dialog>

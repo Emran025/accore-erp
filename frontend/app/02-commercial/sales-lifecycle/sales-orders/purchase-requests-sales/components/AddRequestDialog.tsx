@@ -28,17 +28,17 @@ export const AddRequestDialog: React.FC<AddRequestDialogProps> = ({
     const productOptions: SelectOption[] = products.map((p) => ({
         value: p.id,
         label: p.name,
-        subtitle: catalogMessage("text_12227f24f5ed", { value0: p.stock_quantity }),
+        subtitle: catalogMessage("commercial.addrequestdialog.inventory", { value0: p.stock_quantity }),
     }));
 
     const handleSubmit = async () => {
         if (!formData.quantity) {
-            showToast(catalogMessage("text_b0bce0a98e4a"), "error");
+            showToast(catalogMessage("commercial.addrequestdialog.pleaseEnterQuantity"), "error");
             return;
         }
 
         if (!formData.product_id && !formData.product_name) {
-            showToast(catalogMessage("text_a5045cefb9c9"), "error");
+            showToast(catalogMessage("commercial.addrequestdialog.pleaseSelectProductEnterItsName"), "error");
             return;
         }
 
@@ -59,19 +59,19 @@ export const AddRequestDialog: React.FC<AddRequestDialogProps> = ({
         <Dialog
             isOpen={isOpen}
             onClose={onClose}
-            title={catalogMessage("text_e68546925c8f")}
+            title={catalogMessage("commercial.addrequestdialog.newPurchaseRequest")}
             maxWidth="600px"
             footer={
                 <>
-                    <button className="btn btn-secondary" onClick={onClose} disabled={isSaving}>{catalogMessage("text_9a30dc2a96b8")}</button>
+                    <button className="btn btn-secondary" onClick={onClose} disabled={isSaving}>{catalogMessage("common.general.cancel")}</button>
                     <button className="btn btn-primary" onClick={handleSubmit} disabled={isSaving}>
-                        {isSaving ? catalogMessage("text_8688b0ff5f34") : catalogMessage("text_fb4a312e86ac")}
+                        {isSaving ? catalogMessage("common.general.saving") : catalogMessage("commercial.addrequestdialog.confirmOrder")}
                     </button>
                 </>
             }
         >
             <div className="form-group">
-                <label>{catalogMessage("text_9c4eaf1f344a")}</label>
+                <label>{catalogMessage("commercial.addrequestdialog.productIfAny")}</label>
                 <SearchableSelect
                     options={productOptions}
                     value={formData.product_id ? parseInt(formData.product_id) : null}
@@ -83,37 +83,37 @@ export const AddRequestDialog: React.FC<AddRequestDialogProps> = ({
                             product_name: prod ? prod.name : "",
                         });
                     }}
-                    placeholder={catalogMessage("text_157755d2bc65")}
+                    placeholder={catalogMessage("commercial.addrequestdialog.searchProduct")}
                 />
             </div>
             {!formData.product_id && (
                 <div className="form-group">
-                    <label>{catalogMessage("text_bf0829be70fc")}</label>
+                    <label>{catalogMessage("commercial.addrequestdialog.enterProductNameManually")}</label>
                     <input
                         type="text"
                         className="form-control"
-                        placeholder={catalogMessage("text_baa2ca8d4fd4")}
+                        placeholder={catalogMessage("commercial.addrequestdialog.itemProductName")}
                         value={formData.product_name}
                         onChange={(e) => setFormData({ ...formData, product_name: e.target.value })}
                     />
                 </div>
             )}
             <div className="form-group">
-                <label>{catalogMessage("text_13ab4244836f")}</label>
+                <label>{catalogMessage("common.general.quantityRequired")}</label>
                 <input
                     type="number"
                     className="form-control"
-                    placeholder={catalogMessage("text_935e21853946")}
+                    placeholder={catalogMessage("common.general.quantity.alternative3")}
                     value={formData.quantity}
                     onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
                     min="1"
                 />
             </div>
             <div className="form-group">
-                <label>{catalogMessage("text_d90508176b1a")}</label>
+                <label>{catalogMessage("commercial.addrequestdialog.additionalNotes")}</label>
                 <textarea
                     className="form-control"
-                    placeholder={catalogMessage("text_a7b0a7a6505b")}
+                    placeholder={catalogMessage("commercial.addrequestdialog.reasonRequestSpecificSpecificationsEtc")}
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                     rows={3}

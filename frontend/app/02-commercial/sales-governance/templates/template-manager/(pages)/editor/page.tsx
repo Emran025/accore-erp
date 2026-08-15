@@ -34,13 +34,13 @@ function DocumentEditorContent() {
             if (templateData && templateData.template_key) {
                 setTemplate(templateData);
             } else {
-                console.error(i18n.catalog["text_ecf3b9e34517"], res);
-                showToast(i18n.catalog["text_f98b35d32447"], "error");
+                console.error(i18n.catalog["common.general.invalidTemplateData"], res);
+                showToast(i18n.catalog["common.general.failedLoadTemplateData"], "error");
                 router.push("/02-commercial/sales-governance/templates/template-manager");
             }
         } catch (error) {
-            console.error(i18n.catalog["text_6bcb5b1100be"], error);
-            showToast(i18n.catalog["text_7c28fdce1a4e"], "error");
+            console.error(i18n.catalog["common.general.fetchError"], error);
+            showToast(i18n.catalog["common.general.errorOccurredWhileConnectingServer"], "error");
             router.push("/02-commercial/sales-governance/templates/template-manager");
         } finally {
             setIsLoading(false);
@@ -56,7 +56,7 @@ function DocumentEditorContent() {
                     body: JSON.stringify(data),
                 });
                 if ((res as any).success === false) throw new Error((res as any).message);
-                showToast(i18n.catalog["text_f43c40bfd0cc"], "success");
+                showToast(i18n.catalog["commercial.pages.templateUpdatedRecordLoggedSuccessfully"], "success");
             } else {
                 // Create
                 const body = data.body_html || "";
@@ -65,11 +65,11 @@ function DocumentEditorContent() {
                     body: JSON.stringify({ ...data, body_html: body }),
                 });
                 if ((res as any).success === false) throw new Error((res as any).message);
-                showToast(i18n.catalog["text_46676f04e406"], "success");
+                showToast(i18n.catalog["common.general.templateCreatedSuccessfully"], "success");
             }
             router.push("/02-commercial/sales-governance/templates/template-manager");
         } catch (error: any) {
-            showToast(error.message || i18n.catalog["text_4f9ddf3e39da"], "error");
+            showToast(error.message || i18n.catalog["common.general.errorOccurredWhileSavingTemplate"], "error");
             throw error;
         }
     };
@@ -91,7 +91,7 @@ function DocumentEditorContent() {
             <TemplateEditor
                 key={id ? `edit-${id}` : "create"}
                 template={template as any}
-                moduleName={i18n.catalog["text_d623d1d59eba"]}
+                moduleName={i18n.catalog["common.general.primarySystemTemplates"]}
                 templateTypeLabels={templateTypeLabels}
                 approvedKeys={SYSTEM_APPROVED_KEYS}
                 mockContext={SYSTEM_MOCK_CONTEXT}

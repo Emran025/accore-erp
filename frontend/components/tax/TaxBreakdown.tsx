@@ -33,11 +33,11 @@ interface TaxBreakdownProps {
 }
 
 const defaultLabels = {
-  taxBreakdown: catalogMessage("text_1c59f4c63c96"),
-  vat: catalogMessage("text_98dcf296111b"),
-  rate: catalogMessage("text_0b39fb8d555d"),
-  amount: catalogMessage("text_1cd480f91b24"),
-  authority: catalogMessage("text_aeea8d57eb69"),
+  taxBreakdown: catalogMessage("tax.taxbreakdown.taxDetails"),
+  vat: catalogMessage("tax.taxbreakdown.valueAddedTaxVat"),
+  rate: catalogMessage("tax.taxbreakdown.percentage"),
+  amount: catalogMessage("common.general.amount"),
+  authority: catalogMessage("tax.taxbreakdown.authority"),
 };
 
 /**
@@ -83,7 +83,7 @@ export function TaxBreakdown({
             }}
           >
             <span>
-              {line.tax_type_code} ({line.tax_authority_code}) {line.rate > 0 ? catalogText(i18n, "text_8b53b6db3826", { value0: (line.rate * 100).toFixed(1) }) : i18n.catalog["text_d48aaa3d66b7"]}
+              {line.tax_type_code} ({line.tax_authority_code}) {line.rate > 0 ? catalogText(i18n, "tax.taxbreakdown.message", { value0: (line.rate * 100).toFixed(1) }) : i18n.catalog["tax.taxbreakdown.lumpSum"]}
             </span>
             <span className="tax-amount">{formatCurrency(line.tax_amount)}</span>
           </div>

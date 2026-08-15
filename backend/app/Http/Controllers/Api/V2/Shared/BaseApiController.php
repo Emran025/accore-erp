@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Log;
 
 trait BaseApiController
 {
-    protected function successResponse($data = [], string $message = '', int $statusCode = 200): JsonResponse
+    protected function successResponse($data = [], string $message = '', int $statusCode = 200, ?string $messageKey = null): JsonResponse
     {
         $response = ['success' => true];
 
@@ -23,15 +23,35 @@ trait BaseApiController
             $response['message'] = $message;
         }
 
+        if ($messageKey !== null) {
+            $response['message_key'] = $messageKey;
+        }
+
         return response()->json($response, $statusCode);
     }
 
-    protected function errorResponse(string $message, int $statusCode = 400): JsonResponse
+    protected function localizedSuccessResponse($data, string $messageKey, array $replacements = [], int $statusCode = 200): JsonResponse
     {
-        return response()->json([
+        return $this->successResponse($data, __($messageKey, $replacements), $statusCode, $messageKey);
+    }
+
+    protected function errorResponse(string $message, int $statusCode = 400, ?string $messageKey = null): JsonResponse
+    {
+        $response = [
             'success' => false,
-            'message' => $message
-        ], $statusCode);
+            'message' => $message,
+        ];
+
+        if ($messageKey !== null) {
+            $response['message_key'] = $messageKey;
+        }
+
+        return response()->json($response, $statusCode);
+    }
+
+    protected function localizedErrorResponse(string $messageKey, array $replacements = [], int $statusCode = 400): JsonResponse
+    {
+        return $this->errorResponse(__($messageKey, $replacements), $statusCode, $messageKey);
     }
 
     protected function paginatedResponse($data, int $total, int $page, int $perPage): JsonResponse

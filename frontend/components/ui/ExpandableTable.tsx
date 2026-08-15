@@ -35,7 +35,7 @@ export function ExpandableTable<T>({
   expandedRowId: controlledExpandedId,
   onExpandedRowChange,
   isLoading = false,
-  emptyMessage = catalogMessage("text_d812e8bbc06f"),
+  emptyMessage = catalogMessage("common.general.noData"),
   expandable = true,
   isExpandable,
 }: ExpandableTableProps<T>) {
@@ -70,7 +70,7 @@ export function ExpandableTable<T>({
       <div className="table-container">
         <div className="empty-state" style={{ textAlign: "center", padding: "1rem" }}>
           <div className="loading-spinner"></div>
-          <div>{i18n.catalog["text_ceac78d7f5d3"]}</div>
+          <div>{i18n.catalog["common.general.loading"]}</div>
         </div>
       </div>
     );
@@ -114,7 +114,7 @@ export function ExpandableTable<T>({
                             <button
                               className="expand-btn"
                               onClick={() => toggleExpand(item)}
-                              title={isExpanded ? i18n.catalog["text_a8ea2b911a5a"] : i18n.catalog["text_e3f5bab05753"]}
+                              title={isExpanded ? i18n.catalog["ui.expandabletable.collapse"] : i18n.catalog["common.general.expand"]}
                             >
                                <Icon name={isExpanded ? "chevron-down" : "chevron-right"} size={16} />
                             </button>

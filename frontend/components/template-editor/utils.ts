@@ -96,19 +96,19 @@ export function validateTemplateKeys(html: string, approvedKeys: string[]): KeyV
 
 export function detectForbiddenElements(html: string): string[] {
     const issues: string[] = [];
-    if (/<script[\s>]/i.test(html)) issues.push(catalogMessage("text_e6a1d411e426"));
-    if (/\bon\w+\s*=/i.test(html)) issues.push(catalogMessage("text_62f6dacc9704"));
-    if (/<iframe[\s>]/i.test(html)) issues.push(catalogMessage("text_d91eee41f3aa"));
-    if (/<form[\s>]/i.test(html)) issues.push(catalogMessage("text_6c2e24268575"));
-    if (/javascript\s*:/i.test(html)) issues.push(catalogMessage("text_e7d009c82340"));
-    if (/<link.*rel\s*=\s*["']?import/i.test(html)) issues.push(catalogMessage("text_01437e131365"));
+    if (/<script[\s>]/i.test(html)) issues.push(catalogMessage("components.utils.elementIsNotAllowedTemplates"));
+    if (/\bon\w+\s*=/i.test(html)) issues.push(catalogMessage("components.utils.inlineJavascriptEventsOnclickOnloadAreProhibited"));
+    if (/<iframe[\s>]/i.test(html)) issues.push(catalogMessage("components.utils.elementIsNotAllowed"));
+    if (/<form[\s>]/i.test(html)) issues.push(catalogMessage("components.utils.elementIsProhibited"));
+    if (/javascript\s*:/i.test(html)) issues.push(catalogMessage("components.utils.javascriptProtocolIsNotAllowed"));
+    if (/<link.*rel\s*=\s*["']?import/i.test(html)) issues.push(catalogMessage("components.utils.importingExternalLinksIsProhibited"));
     return issues;
 }
 
 export function generatePreviewHtml(html: string, context: Record<string, string>): string {
     let result = html;
     for (const [key, value] of Object.entries(context)) {
-        result = result.replace(new RegExp(catalogMessage("text_daa107bb5a50", { value0: key }), "g"), value);
+        result = result.replace(new RegExp(catalogMessage("components.utils.message", { value0: key }), "g"), value);
     }
     // Mark remaining unresolved keys
     result = result.replace(
@@ -146,7 +146,7 @@ export function prettifyHTML(html: string): string {
     let placeholderIndex = 0;
     const keyRegex = /\{\{[\w.]+\}\}/g;
     const htmlWithPlaceholders = html.replace(keyRegex, (match) => {
-        const placeholder = catalogMessage("text_5dc538d8ba55", { value0: placeholderIndex++ });
+        const placeholder = catalogMessage("common.general.templateKey", { value0: placeholderIndex++ });
         keyPlaceholders.push(match);
         return placeholder;
     });
@@ -213,7 +213,7 @@ export function prettifyHTML(html: string): string {
     
     // Restore {{keys}}
     keyPlaceholders.forEach((key, index) => {
-        formatted = formatted.replace(catalogMessage("text_5dc538d8ba55", { value0: index }), key);
+        formatted = formatted.replace(catalogMessage("common.general.templateKey", { value0: index }), key);
     });
     
     // Clean up extra blank lines (max 2 consecutive)

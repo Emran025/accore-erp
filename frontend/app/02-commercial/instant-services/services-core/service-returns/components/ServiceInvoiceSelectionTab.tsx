@@ -47,9 +47,9 @@ export function ServiceInvoiceSelectionTab({
     const itemsPerPage = 20;
 
     const filterTabs = [
-        { key: "all", label: i18n.catalog["text_377c0cb35dea"], icon: "list" },
-        { key: "cash", label: i18n.catalog["text_d75568def1e5"], icon: "dollar" },
-        { key: "credit", label: i18n.catalog["text_0c7cb28e4ae8"], icon: "file-text" },
+        { key: "all", label: i18n.catalog["common.general.allInvoices"], icon: "list" },
+        { key: "cash", label: i18n.catalog["common.general.cashInvoices"], icon: "dollar" },
+        { key: "credit", label: i18n.catalog["common.general.deferredInvoices"], icon: "file-text" },
     ];
 
     const loadInvoices = useCallback(
@@ -74,7 +74,7 @@ export function ServiceInvoiceSelectionTab({
                     setCurrentPage(page);
                 }
             } catch (error) {
-                console.error(i18n.catalog["text_e3b7c4027270"], error);
+                console.error(i18n.catalog["commercial.serviceinvoiceselection.failedLoadServiceInvoices"], error);
             } finally {
                 setIsLoading(false);
             }
@@ -106,8 +106,8 @@ export function ServiceInvoiceSelectionTab({
     const columns: InvoiceTableColumn<ServiceInvoiceRow>[] = [
         {
             key: "invoice_number",
-            header: i18n.catalog["text_b6e71278be04"],
-            dataLabel: i18n.catalog["text_b6e71278be04"],
+            header: i18n.catalog["common.general.invoiceNumber.alternative2"],
+            dataLabel: i18n.catalog["common.general.invoiceNumber.alternative2"],
             render: (item) => (
                 <span style={{ color: "var(--primary-color)", fontWeight: "bold" }}>
                     {item.invoice_number}
@@ -116,8 +116,8 @@ export function ServiceInvoiceSelectionTab({
         },
         {
             key: "created_at",
-            header: i18n.catalog["text_d90c384199ac"],
-            dataLabel: i18n.catalog["text_d90c384199ac"],
+            header: i18n.catalog["common.general.date.alternative7"],
+            dataLabel: i18n.catalog["common.general.date.alternative7"],
             render: (item) => (
                 <span style={{ fontSize: "0.9em" }}>
                     {formatDateTime(item.created_at)}
@@ -126,8 +126,8 @@ export function ServiceInvoiceSelectionTab({
         },
         {
             key: "customer_name" as any,
-            header: i18n.catalog["text_a042411e90be"],
-            dataLabel: i18n.catalog["text_a042411e90be"],
+            header: i18n.catalog["common.general.customer"],
+            dataLabel: i18n.catalog["common.general.customer"],
             render: (item) => (
                 <span style={{ fontWeight: 500 }}>
                     {item.customer?.name || item.customer_name || "—"}
@@ -136,21 +136,21 @@ export function ServiceInvoiceSelectionTab({
         },
         {
             key: "payment_type",
-            header: i18n.catalog["text_7af05079bb45"],
-            dataLabel: i18n.catalog["text_7af05079bb45"],
+            header: i18n.catalog["common.general.saleType"],
+            dataLabel: i18n.catalog["common.general.saleType"],
             render: (item) => (
                 <span
                     className={`badge ${item.payment_type === "credit" ? "badge-warning" : "badge-success"
                         }`}
                 >
-                    {item.payment_type === "credit" ? i18n.catalog["text_70122ff036ec"] : i18n.catalog["text_1beb05a45173"]}
+                    {item.payment_type === "credit" ? i18n.catalog["common.general.creditReceivables"] : i18n.catalog["common.general.cash"]}
                 </span>
             ),
         },
         {
             key: "total_amount",
-            header: i18n.catalog["text_50a90c019154"],
-            dataLabel: i18n.catalog["text_baed6e999960"],
+            header: i18n.catalog["common.general.invoiceTotal"],
+            dataLabel: i18n.catalog["common.general.total.alternative3"],
             render: (item) => (
                 <span style={{ fontWeight: "bold" }}>
                     {formatCurrency(item.total_amount)}
@@ -169,12 +169,12 @@ export function ServiceInvoiceSelectionTab({
                 onSelectionChange={onSelectionChange}
                 onSearch={(query) => loadInvoices(1, query)}
                 getInvoiceItems={getInvoiceItems}
-                emptyMessage={i18n.catalog["text_fe14e1a0a226"]}
+                emptyMessage={i18n.catalog["commercial.serviceinvoiceselection.noServiceInvoices"]}
                 multiInvoiceSelection={true}
                 invoiceIdExtractor={(item) => item.id}
                 isExpandable={() => true}
                 openReturnDialog={openReturnDialog}
-                searchPlaceholder={i18n.catalog["text_e74be403f307"]}
+                searchPlaceholder={i18n.catalog["common.general.searchInvoiceNumberCustomerName"]}
                 pagination={{
                     currentPage,
                     totalPages,

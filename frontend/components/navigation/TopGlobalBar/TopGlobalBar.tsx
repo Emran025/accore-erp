@@ -94,9 +94,9 @@ export function TopGlobalBar({ onNavigate, titleOverride, mobileSidebarToggle }:
                     }}
                     paddingVertical={0.25}
                     onSearch={setQuery}
-                    placeholder={i18n.catalog["text_7c91c7f6b10d"]}
+                    placeholder={i18n.catalog["components.topglobalbar.searchLists"]}
                     className="w-full"
-                    noResultsText={i18n.catalog["text_2d8a461130e0"]}
+                    noResultsText={i18n.catalog["common.general.noResults"]}
                 />
             </div>
 

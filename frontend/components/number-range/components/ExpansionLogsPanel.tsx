@@ -40,8 +40,8 @@ export function ExpansionLogsPanel({ intervalId, isOpen, onClose }: ExpansionLog
     const columns: Column<NrExpansionLog>[] = [
         {
             key: "date",
-            header: i18n.catalog["text_d90c384199ac"],
-            dataLabel: i18n.catalog["text_d90c384199ac"],
+            header: i18n.catalog["common.general.date.alternative7"],
+            dataLabel: i18n.catalog["common.general.date.alternative7"],
             render: (item) => (
                 <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)" }}>
                     {new Date(item.created_at).toLocaleString("ar-SA")}
@@ -50,8 +50,8 @@ export function ExpansionLogsPanel({ intervalId, isOpen, onClose }: ExpansionLog
         },
         {
             key: "old_range",
-            header: i18n.catalog["text_e4b02636ba59"],
-            dataLabel: i18n.catalog["text_bd3bfd287e07"],
+            header: i18n.catalog["numberRange.expansionlogs.oldScope"],
+            dataLabel: i18n.catalog["numberRange.expansionlogs.previous"],
             render: (item) => (
                 <span style={{ fontFamily: "monospace", color: "var(--text-muted)" }}>
                     {item.old_from.toLocaleString()} → {item.old_to.toLocaleString()}
@@ -60,8 +60,8 @@ export function ExpansionLogsPanel({ intervalId, isOpen, onClose }: ExpansionLog
         },
         {
             key: "new_range",
-            header: i18n.catalog["text_e9666da3ca24"],
-            dataLabel: i18n.catalog["text_0074bb8697b4"],
+            header: i18n.catalog["numberRange.expansionlogs.newRange"],
+            dataLabel: i18n.catalog["numberRange.expansionlogs.new"],
             render: (item) => (
                 <span style={{ fontFamily: "monospace" }}>
                     {item.new_from.toLocaleString()} → <strong style={{ color: "#10b981" }}>{item.new_to.toLocaleString()}</strong>
@@ -70,8 +70,8 @@ export function ExpansionLogsPanel({ intervalId, isOpen, onClose }: ExpansionLog
         },
         {
             key: "change",
-            header: i18n.catalog["text_7d0abd7d46f9"],
-            dataLabel: i18n.catalog["text_d54210fa2fd2"],
+            header: i18n.catalog["numberRange.expansionlogs.expansionAmount"],
+            dataLabel: i18n.catalog["numberRange.expansionlogs.expansion"],
             render: (item) => (
                 <span className="badge badge-success" style={{ fontFamily: "monospace" }}>
                     +{(item.new_to - item.old_to).toLocaleString()}
@@ -80,14 +80,14 @@ export function ExpansionLogsPanel({ intervalId, isOpen, onClose }: ExpansionLog
         },
         {
             key: "reason",
-            header: i18n.catalog["text_c3b023d78238"],
-            dataLabel: i18n.catalog["text_c3b023d78238"],
+            header: i18n.catalog["common.general.reason"],
+            dataLabel: i18n.catalog["common.general.reason"],
             render: (item) => item.reason || <span style={{ color: "var(--text-muted)" }}>—</span>,
         },
         {
             key: "expanded_by",
-            header: i18n.catalog["text_a98b66bae2c9"],
-            dataLabel: i18n.catalog["text_a98b66bae2c9"],
+            header: i18n.catalog["common.general.notAvailable.alternative7"],
+            dataLabel: i18n.catalog["common.general.notAvailable.alternative7"],
             render: (item) => (
                 <span style={{ fontSize: "0.82rem" }}>
                     {(item.expanded_by && typeof item.expanded_by === "object") ? item.expanded_by.name : "—"}
@@ -100,24 +100,24 @@ export function ExpansionLogsPanel({ intervalId, isOpen, onClose }: ExpansionLog
         <Dialog
             isOpen={isOpen}
             onClose={onClose}
-            title={i18n.catalog["text_dce729302741"]}
+            title={i18n.catalog["numberRange.expansionlogs.scopeExpansionLog"]}
             maxWidth="900px"
         >
             <div className="nr-expansion-logs">
                 <div className="nr-info-banner" style={{ marginBottom: "1rem" }}>
                     <span className="nr-info-icon">{getIcon("info")}</span>
-                    <span>{i18n.catalog["text_a06512c16621"]}</span>
+                    <span>{i18n.catalog["numberRange.expansionlogs.logAllExtensionsThisScopeThisRecordIs"]}</span>
                 </div>
 
                 {loading ? (
                     <div style={{ textAlign: "center", padding: "2rem", color: "var(--text-muted)" }}>
-                        {i18n.catalog["text_57a7598634ef"]}</div>
+                        {i18n.catalog["numberRange.expansionlogs.loadingRecords"]}</div>
                 ) : (
                     <Table
                         columns={columns}
                         data={logs}
                         keyExtractor={(item) => item.id}
-                        emptyMessage={i18n.catalog["text_08c643ddae86"]}
+                        emptyMessage={i18n.catalog["numberRange.expansionlogs.noExpansionsRegisteredThisScope"]}
                     />
                 )}
             </div>

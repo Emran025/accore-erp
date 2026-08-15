@@ -42,9 +42,9 @@ const initialSetupForm: SetupForm = {
   cost_center_id: null,
   profit_center_id: null,
   warehouse_code: 'WH-MAIN',
-  warehouse_name: catalogMessage("text_3497061fb9a7"),
+  warehouse_name: catalogMessage("enterpriseCore.orgHierarchy.mainWarehouse"),
   pos_code: 'POS-MAIN',
-  pos_name: catalogMessage("text_f035e0f73fb5"),
+  pos_name: catalogMessage("enterpriseCore.orgHierarchy.mainPos"),
 };
 
 function listFromResponse(response: any): any[] {
@@ -95,7 +95,7 @@ export default function OrganizationalStructurePage() {
     () =>
       costCenters.map((center) => ({
         value: center.id,
-        label: catalogText(i18n, "text_ec39c7cc0c64", { value0: center.code, value1: center.name }),
+        label: catalogText(i18n, "common.general.notAvailable.alternative10", { value0: center.code, value1: center.name }),
         subtitle: center.name_en || '',
       })),
     [costCenters]
@@ -104,7 +104,7 @@ export default function OrganizationalStructurePage() {
     () =>
       profitCenters.map((center) => ({
         value: center.id,
-        label: catalogText(i18n, "text_ec39c7cc0c64", { value0: center.code, value1: center.name }),
+        label: catalogText(i18n, "common.general.notAvailable.alternative10", { value0: center.code, value1: center.name }),
         subtitle: center.name_en || '',
       })),
     [profitCenters]
@@ -125,7 +125,7 @@ export default function OrganizationalStructurePage() {
     ) {
       showAlert(
         'operating-context-alert',
-        i18n.catalog["text_41e0b9c215f1"],
+        i18n.catalog["enterpriseCore.orgHierarchy.pleaseCompleteRequiredOperatingConfigurationFields"],
         'error'
       );
       return;
@@ -152,17 +152,17 @@ export default function OrganizationalStructurePage() {
       if (!response.success) {
         showAlert(
           'operating-context-alert',
-          response.message || i18n.catalog["text_ee1eeb2ba209"],
+          response.message || i18n.catalog["common.general.unableConfigureOperatingContext"],
           'error'
         );
         return;
       }
       await loadReadiness();
       setSetupOpen(false);
-      showAlert('operating-context-alert', i18n.catalog["text_8471860d93ec"], 'success');
+      showAlert('operating-context-alert', i18n.catalog["enterpriseCore.orgHierarchy.operatingContextConfiguredSuccessfully"], 'success');
     } catch (error) {
-      console.error(i18n.catalog["text_ee1eeb2ba209"], error);
-      showAlert('operating-context-alert', i18n.catalog["text_ee1eeb2ba209"], 'error');
+      console.error(i18n.catalog["common.general.unableConfigureOperatingContext"], error);
+      showAlert('operating-context-alert', i18n.catalog["common.general.unableConfigureOperatingContext"], 'error');
     } finally {
       setIsSaving(false);
     }
@@ -175,13 +175,13 @@ export default function OrganizationalStructurePage() {
         <div className="sales-card" style={{ marginBottom: '1rem' }}>
           <div className="card-header-flex">
             <div>
-              <h3>{i18n.catalog["text_05a0ae2484b0"]}</h3>
+              <h3>{i18n.catalog["enterpriseCore.orgHierarchy.operationalStoreReadiness"]}</h3>
               {readiness?.ready ? (
-                <p>{i18n.catalog["text_f38a0409509f"]}</p>
+                <p>{i18n.catalog["enterpriseCore.orgHierarchy.readyWarehouseDrivenSalesPurchasing"]}</p>
               ) : (
                 <p>
                   {readiness?.missing?.[0]?.action ||
-                    i18n.catalog["text_6a743b237258"]}
+                    i18n.catalog["enterpriseCore.orgHierarchy.configureWarehouseFinancialCentersPosTerminalBeginOperations"]}
                 </p>
               )}
             </div>
@@ -189,7 +189,7 @@ export default function OrganizationalStructurePage() {
               variant={readiness?.ready ? 'secondary' : 'primary'}
               onClick={() => setSetupOpen(true)}
             >
-              {readiness?.ready ? i18n.catalog["text_08bd1001c073"] : i18n.catalog["text_b0c0f043423f"]}
+              {readiness?.ready ? i18n.catalog["enterpriseCore.orgHierarchy.reviewOperatingContext"] : i18n.catalog["enterpriseCore.orgHierarchy.configureStore"]}
             </Button>
           </div>
           {readiness?.checks?.length ? (
@@ -208,15 +208,15 @@ export default function OrganizationalStructurePage() {
 
         <TabNavigation
           tabs={[
-            { key: 'dashboard', label: i18n.catalog["text_336496c4f685"], icon: 'dashboard' },
-            { key: 'hierarchy', label: i18n.catalog["text_50f1b8f79175"], icon: 'tree' },
-            { key: 'nodes', label: i18n.catalog["text_4bf3b0d6ff37"], icon: 'sitemap' },
-            { key: 'links', label: i18n.catalog["text_32502d2e7cc4"], icon: 'link' },
-            { key: 'meta_types', label: i18n.catalog["text_ed5104e388c6"], icon: 'cube' },
-            { key: 'topology_rules', label: i18n.catalog["text_a168cb818790"], icon: 'route' },
-            { key: 'scope_context', label: i18n.catalog["text_3b013e306b33"], icon: 'search' },
-            { key: 'integrity', label: i18n.catalog["text_ea7b55e93f69"], icon: 'check-shield' },
-            { key: 'change_history', label: i18n.catalog["text_f31ea167293e"], icon: 'history' },
+            { key: 'dashboard', label: i18n.catalog["common.general.dashboard"], icon: 'dashboard' },
+            { key: 'hierarchy', label: i18n.catalog["common.general.organizationalChart"], icon: 'tree' },
+            { key: 'nodes', label: i18n.catalog["enterpriseCore.orgHierarchy.organizationalUnits"], icon: 'sitemap' },
+            { key: 'links', label: i18n.catalog["common.general.links"], icon: 'link' },
+            { key: 'meta_types', label: i18n.catalog["common.general.typesUnits"], icon: 'cube' },
+            { key: 'topology_rules', label: i18n.catalog["common.general.linkingRules"], icon: 'route' },
+            { key: 'scope_context', label: i18n.catalog["common.general.contextAnalysis"], icon: 'search' },
+            { key: 'integrity', label: i18n.catalog["enterpriseCore.orgHierarchy.structuralSafety"], icon: 'check-shield' },
+            { key: 'change_history', label: i18n.catalog["enterpriseCore.orgHierarchy.changeLog"], icon: 'history' },
           ]}
           activeTab={activeTab}
           onTabChange={(tab) => setActiveTab(tab as OrgTab)}
@@ -229,7 +229,7 @@ export default function OrganizationalStructurePage() {
       <Dialog
         isOpen={setupOpen}
         onClose={() => !isSaving && setSetupOpen(false)}
-        title={i18n.catalog["text_33ef86f7120c"]}
+        title={i18n.catalog["enterpriseCore.orgHierarchy.configureOperationalStore"]}
         maxWidth="760px"
         footer={
           <>
@@ -237,50 +237,50 @@ export default function OrganizationalStructurePage() {
               Cancel
             </Button>
             <Button onClick={configureStore} isLoading={isSaving}>
-              {i18n.catalog["text_26ba6cff541a"]}</Button>
+              {i18n.catalog["enterpriseCore.orgHierarchy.saveOperatingContext"]}</Button>
           </>
         }
       >
         <div className="form-row">
           <div className="form-group">
-            <label>{i18n.catalog["text_edf47e481b54"]}</label>
+            <label>{i18n.catalog["enterpriseCore.orgHierarchy.organizationalUnit"]}</label>
             <SearchableSelect
               options={nodeOptions}
               value={setupForm.org_node_uuid}
               onChange={(value) =>
                 updateSetupField('org_node_uuid', typeof value === 'string' ? value : null)
               }
-              placeholder={i18n.catalog["text_a8a492a91760"]}
+              placeholder={i18n.catalog["enterpriseCore.orgHierarchy.selectOperatingUnitOptional"]}
             />
           </div>
           <div className="form-group">
-            <label>{i18n.catalog["text_c012b22ae381"]}</label>
+            <label>{i18n.catalog["enterpriseCore.orgHierarchy.costCenter"]}</label>
             <SearchableSelect
               options={costCenterOptions}
               value={setupForm.cost_center_id}
               onChange={(value) =>
                 updateSetupField('cost_center_id', typeof value === 'number' ? value : null)
               }
-              placeholder={i18n.catalog["text_b3c47edd5cdf"]}
+              placeholder={i18n.catalog["enterpriseCore.orgHierarchy.selectActiveCostCenter"]}
               required
             />
           </div>
           <div className="form-group">
-            <label>{i18n.catalog["text_ee398ac2ba65"]}</label>
+            <label>{i18n.catalog["enterpriseCore.orgHierarchy.profitCenter"]}</label>
             <SearchableSelect
               options={profitCenterOptions}
               value={setupForm.profit_center_id}
               onChange={(value) =>
                 updateSetupField('profit_center_id', typeof value === 'number' ? value : null)
               }
-              placeholder={i18n.catalog["text_7821d35d9e91"]}
+              placeholder={i18n.catalog["enterpriseCore.orgHierarchy.selectActiveProfitCenter"]}
               required
             />
           </div>
         </div>
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="warehouse-code">{i18n.catalog["text_1a5f43b5c4d3"]}</label>
+            <label htmlFor="warehouse-code">{i18n.catalog["enterpriseCore.orgHierarchy.warehouseCode"]}</label>
             <input
               id="warehouse-code"
               className="form-control"
@@ -289,7 +289,7 @@ export default function OrganizationalStructurePage() {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="warehouse-name">{i18n.catalog["text_19fcc47c00a3"]}</label>
+            <label htmlFor="warehouse-name">{i18n.catalog["enterpriseCore.orgHierarchy.warehouseName"]}</label>
             <input
               id="warehouse-name"
               className="form-control"
@@ -300,7 +300,7 @@ export default function OrganizationalStructurePage() {
         </div>
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="pos-code">{i18n.catalog["text_60ea42dfe92b"]}</label>
+            <label htmlFor="pos-code">{i18n.catalog["enterpriseCore.orgHierarchy.posTerminalCode"]}</label>
             <input
               id="pos-code"
               className="form-control"
@@ -309,7 +309,7 @@ export default function OrganizationalStructurePage() {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="pos-name">{i18n.catalog["text_3fc59115662a"]}</label>
+            <label htmlFor="pos-name">{i18n.catalog["enterpriseCore.orgHierarchy.posTerminalName"]}</label>
             <input
               id="pos-name"
               className="form-control"

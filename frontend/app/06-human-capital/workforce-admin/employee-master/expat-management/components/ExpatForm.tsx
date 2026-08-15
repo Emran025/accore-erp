@@ -78,7 +78,7 @@ export function ExpatForm({ record }: ExpatFormProps) {
 
     const handleSubmit = async () => {
         if (!form.employee_id || !form.host_country) {
-            showToast(i18n.catalog["text_f45b610d7116"], "error");
+            showToast(i18n.catalog["humanCapital.expat.pleaseSelectEmployeeHostCountry"], "error");
             return;
         }
 
@@ -98,21 +98,21 @@ export function ExpatForm({ record }: ExpatFormProps) {
             };
 
             if (record) {
-                await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.HUMAN_CAPITAL.EXPAT_MANAGEMENT.BASE, value1: record.id }), {
+                await fetchAPI(catalogText(i18n, "common.general.message", { value0: API_ENDPOINTS.HUMAN_CAPITAL.EXPAT_MANAGEMENT.BASE, value1: record.id }), {
                     method: 'PUT',
                     body: JSON.stringify(payload)
                 });
-                showToast(i18n.catalog["text_eb17a78099a3"], "success");
+                showToast(i18n.catalog["humanCapital.expat.recordUpdatedSuccessfully"], "success");
             } else {
                 await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EXPAT_MANAGEMENT.BASE, {
                     method: 'POST',
                     body: JSON.stringify(payload)
                 });
-                showToast(i18n.catalog["text_a2667844c9e4"], "success");
+                showToast(i18n.catalog["humanCapital.expat.recordCreatedSuccessfully"], "success");
             }
             router.push('/06-human-capital/workforce-admin/employee-master/expat-management');
         } catch (error: any) {
-            showToast(error.message || i18n.catalog["text_76875fecd3ab"], "error");
+            showToast(error.message || i18n.catalog["humanCapital.expat.failedSaveRecord"], "error");
         } finally {
             setIsSubmitting(false);
         }
@@ -121,33 +121,33 @@ export function ExpatForm({ record }: ExpatFormProps) {
     return (
         <div className="sales-card animate-fade">
             <PageSubHeader
-                title={record ? i18n.catalog["text_1e02d763cfcb"] : i18n.catalog["text_94b579b3c7a7"]}
+                title={record ? i18n.catalog["humanCapital.expat.editExpatriateRecord"] : i18n.catalog["humanCapital.expat.addNewExpatRecord"]}
                 titleIcon="globe"
                 actions={
                     <Button variant="secondary" onClick={() => router.back()}>
-                        {i18n.catalog["text_0dfcbc2d5f2a"]}</Button>
+                        {i18n.catalog["common.general.back.alternative2"]}</Button>
                 }
             />
             <div className="space-y-6 p-4">
                 {/* Employee Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex flex-col gap-1">
-                        <Label className="text-secondary mb-1">{i18n.catalog["text_972803dc7d86"]}</Label>
+                        <Label className="text-secondary mb-1">{i18n.catalog["common.general.employee"]}</Label>
                         <SearchableSelect
                             options={employees.map((e: Employee) => ({ value: e.id.toString(), label: e.full_name }))}
                             value={form.employee_id}
                             onChange={(val) => setForm({ ...form, employee_id: val?.toString() || "" })}
-                            placeholder={i18n.catalog["text_dee783929dea"]}
+                            placeholder={i18n.catalog["common.general.selectEmployee"]}
                         />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <TextInput
-                            label={i18n.catalog["text_7260ce3227c3"]}
+                            label={i18n.catalog["humanCapital.expat.hostCountry"]}
                             value={form.host_country}
                             onChange={(e) => setForm({ ...form, host_country: e.target.value })}
                         />
                         <TextInput
-                            label={i18n.catalog["text_2a1a97ddb304"]}
+                            label={i18n.catalog["humanCapital.expat.countryOrigin"]}
                             value={form.home_country}
                             onChange={(e) => setForm({ ...form, home_country: e.target.value })}
                         />
@@ -155,18 +155,18 @@ export function ExpatForm({ record }: ExpatFormProps) {
                 </div>
 
                 <div className="border-t border-border my-4"></div>
-                <h3 className="font-semibold text-lg mb-4">{i18n.catalog["text_eaa06e081543"]}</h3>
+                <h3 className="font-semibold text-lg mb-4">{i18n.catalog["common.general.documentsResidencePermits"]}</h3>
 
                 {/* Docs */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="grid grid-cols-2 gap-2">
                         <TextInput
-                            label={i18n.catalog["text_ed25f13794a2"]}
+                            label={i18n.catalog["humanCapital.expat.passportNumber"]}
                             value={form.passport_number}
                             onChange={(e) => setForm({ ...form, passport_number: e.target.value })}
                         />
                         <TextInput
-                            label={i18n.catalog["text_ef2164e6707f"]}
+                            label={i18n.catalog["humanCapital.expat.passportExpiryDate"]}
                             type="date"
                             value={form.passport_expiry}
                             onChange={(e) => setForm({ ...form, passport_expiry: e.target.value })}
@@ -174,12 +174,12 @@ export function ExpatForm({ record }: ExpatFormProps) {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         <TextInput
-                            label={i18n.catalog["text_21075377a5cd"]}
+                            label={i18n.catalog["humanCapital.expat.residencePermitNumber"]}
                             value={form.residency_number}
                             onChange={(e) => setForm({ ...form, residency_number: e.target.value })}
                         />
                         <TextInput
-                            label={i18n.catalog["text_6448d33592ba"]}
+                            label={i18n.catalog["humanCapital.expat.residenceExpiryDate"]}
                             type="date"
                             value={form.residency_expiry}
                             onChange={(e) => setForm({ ...form, residency_expiry: e.target.value })}
@@ -190,12 +190,12 @@ export function ExpatForm({ record }: ExpatFormProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="grid grid-cols-2 gap-2">
                         <TextInput
-                            label={i18n.catalog["text_98b9cdf4788f"]}
+                            label={i18n.catalog["humanCapital.expat.visaNumber"]}
                             value={form.visa_number}
                             onChange={(e) => setForm({ ...form, visa_number: e.target.value })}
                         />
                         <TextInput
-                            label={i18n.catalog["text_ae0cb62e028d"]}
+                            label={i18n.catalog["humanCapital.expat.visaExpiryDate"]}
                             type="date"
                             value={form.visa_expiry}
                             onChange={(e) => setForm({ ...form, visa_expiry: e.target.value })}
@@ -203,12 +203,12 @@ export function ExpatForm({ record }: ExpatFormProps) {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         <TextInput
-                            label={i18n.catalog["text_d8a1ecad8f4c"]}
+                            label={i18n.catalog["humanCapital.expat.workPermitNumber"]}
                             value={form.work_permit_number}
                             onChange={(e) => setForm({ ...form, work_permit_number: e.target.value })}
                         />
                         <TextInput
-                            label={i18n.catalog["text_f4e8e7880006"]}
+                            label={i18n.catalog["humanCapital.expat.authorizationExpiryDate"]}
                             type="date"
                             value={form.work_permit_expiry}
                             onChange={(e) => setForm({ ...form, work_permit_expiry: e.target.value })}
@@ -217,23 +217,23 @@ export function ExpatForm({ record }: ExpatFormProps) {
                 </div>
 
                 <div className="border-t border-border my-4"></div>
-                <h3 className="font-semibold text-lg mb-4">{i18n.catalog["text_e5eff975c8ee"]}</h3>
+                <h3 className="font-semibold text-lg mb-4">{i18n.catalog["humanCapital.expat.allowancesFinancialInformation"]}</h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <TextInput
-                        label={i18n.catalog["text_e41b455b29a2"]}
+                        label={i18n.catalog["humanCapital.expat.costLivingAdjustment"]}
                         type="number"
                         value={form.cost_of_living_adjustment}
                         onChange={(e) => setForm({ ...form, cost_of_living_adjustment: e.target.value })}
                     />
                     <TextInput
-                        label={i18n.catalog["text_408c0f457672"]}
+                        label={i18n.catalog["common.general.housingAllowance"]}
                         type="number"
                         value={form.housing_allowance}
                         onChange={(e) => setForm({ ...form, housing_allowance: e.target.value })}
                     />
                     <TextInput
-                        label={i18n.catalog["text_91bbce9f47ae"]}
+                        label={i18n.catalog["humanCapital.expat.transitionPackage"]}
                         type="number"
                         value={form.relocation_package}
                         onChange={(e) => setForm({ ...form, relocation_package: e.target.value })}
@@ -242,7 +242,7 @@ export function ExpatForm({ record }: ExpatFormProps) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
                     <TextInput
-                        label={i18n.catalog["text_4f87a7ef5f90"]}
+                        label={i18n.catalog["humanCapital.expat.expectedReturnDate"]}
                         type="date"
                         value={form.repatriation_date}
                         onChange={(e) => setForm({ ...form, repatriation_date: e.target.value })}
@@ -255,21 +255,21 @@ export function ExpatForm({ record }: ExpatFormProps) {
                             onChange={(e) => setForm({ ...form, tax_equalization: e.target.checked })}
                             className="checkbox"
                         />
-                        <Label htmlFor="tax_equalization" style={{ marginBottom: 0 }}>{i18n.catalog["text_77df6807b75d"]}</Label>
+                        <Label htmlFor="tax_equalization" style={{ marginBottom: 0 }}>{i18n.catalog["humanCapital.expat.applyTaxEqualization"]}</Label>
                     </div>
                 </div>
 
                 <Textarea
-                    label={i18n.catalog["text_d446d2dc6b81"]}
+                    label={i18n.catalog["common.general.notes.alternative2"]}
                     value={form.notes}
                     onChange={(e) => setForm({ ...form, notes: e.target.value })}
                     rows={3}
                 />
 
                 <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-border">
-                    <Button variant="secondary" onClick={() => router.back()}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                    <Button variant="secondary" onClick={() => router.back()}>{i18n.catalog["common.general.cancel"]}</Button>
                     <Button variant="primary" onClick={handleSubmit} icon="save" disabled={isSubmitting}>
-                        {isSubmitting ? i18n.catalog["text_8688b0ff5f34"] : i18n.catalog["text_ddfcaf9d0144"]}
+                        {isSubmitting ? i18n.catalog["common.general.saving"] : i18n.catalog["common.general.save"]}
                     </Button>
                 </div>
             </div>

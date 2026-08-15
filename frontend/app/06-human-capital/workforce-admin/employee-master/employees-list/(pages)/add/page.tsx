@@ -80,7 +80,7 @@ export default function AddEmployeePage() {
             setEmployees(empsRes.data as any[] || (Array.isArray(empsRes) ? empsRes : []));
             setPositions(posRes.data as any[] || (Array.isArray(posRes) ? posRes : []));
         } catch (e) {
-            console.error(i18n.catalog["text_ff693ee1579c"], e);
+            console.error(i18n.catalog["humanCapital.pages.failedLoadOptions"], e);
         }
 
         try {
@@ -94,7 +94,7 @@ export default function AddEmployeePage() {
                 }
             }
         } catch (e) {
-            console.error(i18n.catalog["text_8863d50a501e"], e);
+            console.error(i18n.catalog["common.general.failedLoadNumberRangeGroups"], e);
         }
     };
 
@@ -112,7 +112,7 @@ export default function AddEmployeePage() {
                         setFormData(prev => ({ ...prev, employee_code: generatedNumber }));
                     }
                 } catch (error) {
-                    console.error(i18n.catalog["text_5c64142f4a76"], error);
+                    console.error(i18n.catalog["common.general.failedGenerateNumberingCode"], error);
                 }
             }
         };
@@ -157,7 +157,7 @@ export default function AddEmployeePage() {
             });
 
             if (!res.success && res.message) {
-                alert(i18n.catalog["text_4802a9cb43d5"] + res.message);
+                alert(i18n.catalog["humanCapital.pages.failedAddEmployee"] + res.message);
                 setIsLoading(false);
                 return;
             }
@@ -180,7 +180,7 @@ export default function AddEmployeePage() {
                     if (pf.expiration_date) fd.append("expiration_date", pf.expiration_date);
 
                     const envBase = process.env.NEXT_PUBLIC_API_BASE || "http://127.0.0.1:8000/api";
-                    const url = catalogText(i18n, "text_0907f4dfb304", { value0: envBase, value1: API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_FILES.UPLOAD(employeeId.toString()).replace(/^\//, "") });
+                    const url = catalogText(i18n, "common.general.message", { value0: envBase, value1: API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_FILES.UPLOAD(employeeId.toString()).replace(/^\//, "") });
 
                     return fetch(url, {
                         method: "POST",
@@ -192,11 +192,11 @@ export default function AddEmployeePage() {
                 await Promise.all(uploadPromises);
             }
 
-            alert(i18n.catalog["text_c191283fae13"]);
+            alert(i18n.catalog["humanCapital.pages.employeeAllDocumentsAddedSuccessfully"]);
             router.push(`/06-human-capital/workforce-admin/employee-master/employees-list/view/${employeeId}`);
         } catch (error) {
             console.error(error);
-            alert(i18n.catalog["text_cf2d1e6d077e"]);
+            alert(i18n.catalog["humanCapital.pages.unexpectedErrorOccurredDuringFinalSave"]);
         } finally {
             setIsLoading(false);
         }
@@ -204,13 +204,13 @@ export default function AddEmployeePage() {
 
     const steps: Step[] = [
         {
-            key: "general", label: i18n.catalog["text_a50e5beef8e3"], icon: "fa-user", description: i18n.catalog["text_e6dd6e0995d2"], isRequired: true,
+            key: "general", label: i18n.catalog["common.general.basicInformation.alternative2"], icon: "fa-user", description: i18n.catalog["humanCapital.pages.identityEmploymentInformation"], isRequired: true,
             checks: [
-                { id: "c1", label: i18n.catalog["text_aae49ad17873"], isCompleted: !!formData.full_name, isRequired: true }
+                { id: "c1", label: i18n.catalog["humanCapital.pages.enterBasicInformation"], isCompleted: !!formData.full_name, isRequired: true }
             ]
         },
         {
-            key: "documents", label: i18n.catalog["text_9d66d0084b75"], icon: "fa-folder-open", description: i18n.catalog["text_c1a1d1d79101"], isRequired: false,
+            key: "documents", label: i18n.catalog["common.general.documents"], icon: "fa-folder-open", description: i18n.catalog["humanCapital.pages.uploadFilesAttachments"], isRequired: false,
             checks: []
         },
     ];
@@ -236,24 +236,24 @@ export default function AddEmployeePage() {
                             <div className="section-card sales-card mb-4" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.5rem', gap: '0.5rem', color: 'var(--primary-color)' }}>
                                     <i className="fas fa-user-circle fa-lg"></i>
-                                    <h4 style={{ margin: 0 }}>{i18n.catalog["text_27a850003581"]}</h4>
+                                    <h4 style={{ margin: 0 }}>{i18n.catalog["common.general.personalInformation"]}</h4>
                                 </div>
                                 <div className="form-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
-                                    <TextInput label={i18n.catalog["text_6c2ab9bdeb2c"]} name="full_name" required value={formData.full_name} onChange={handleChange} placeholder={i18n.catalog["text_a85a3faf88d1"]} />
-                                    <TextInput label={i18n.catalog["text_216ef8eca6ac"]} name="national_id" value={formData.national_id} onChange={handleChange} placeholder={i18n.catalog["text_64ef4b2de271"]} />
-                                    <TextInput label={i18n.catalog["text_3364645354dd"]} type="date" name="date_of_birth" value={formData.date_of_birth} onChange={handleChange} />
+                                    <TextInput label={i18n.catalog["common.general.fullName"]} name="full_name" required value={formData.full_name} onChange={handleChange} placeholder={i18n.catalog["humanCapital.pages.fullName"]} />
+                                    <TextInput label={i18n.catalog["common.general.idResidenceNumber"]} name="national_id" value={formData.national_id} onChange={handleChange} placeholder={i18n.catalog["humanCapital.pages.message10xxxxxxxxx"]} />
+                                    <TextInput label={i18n.catalog["common.general.dateBirth"]} type="date" name="date_of_birth" value={formData.date_of_birth} onChange={handleChange} />
                                     <Select
-                                        label={i18n.catalog["text_a79dffdd2070"]}
+                                        label={i18n.catalog["common.general.gender"]}
                                         name="gender"
                                         value={formData.gender}
                                         onChange={handleChange}
                                         options={[
-                                            { value: 'male', label: i18n.catalog["text_2f13379bf81e"] },
-                                            { value: 'female', label: i18n.catalog["text_d2ee47ec7d05"] }
+                                            { value: 'male', label: i18n.catalog["common.general.male"] },
+                                            { value: 'female', label: i18n.catalog["common.general.female"] }
                                         ]}
                                     />
-                                    <TextInput label={i18n.catalog["text_42095a7a6c15"]} name="phone" value={formData.phone} onChange={handleChange} placeholder={i18n.catalog["text_149fd7bb26b1"]} />
-                                    <TextInput label={i18n.catalog["text_2d110e56d5f5"]} name="address" value={formData.address} onChange={handleChange} placeholder={i18n.catalog["text_a4dc90abb6f6"]} />
+                                    <TextInput label={i18n.catalog["common.general.phoneNumber"]} name="phone" value={formData.phone} onChange={handleChange} placeholder={i18n.catalog["humanCapital.pages.message05xxxxxxxx"]} />
+                                    <TextInput label={i18n.catalog["common.general.title"]} name="address" value={formData.address} onChange={handleChange} placeholder={i18n.catalog["humanCapital.pages.cityNeighborhoodStreet"]} />
                                 </div>
                             </div>
 
@@ -261,61 +261,61 @@ export default function AddEmployeePage() {
                             <div className="section-card sales-card mb-4" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.5rem', gap: '0.5rem', color: 'var(--primary-color)' }}>
                                     <i className="fas fa-briefcase fa-lg"></i>
-                                    <h4 style={{ margin: 0 }}>{i18n.catalog["text_374aa726c036"]}</h4>
+                                    <h4 style={{ margin: 0 }}>{i18n.catalog["common.general.employmentInformation"]}</h4>
                                 </div>
                                 <div className="form-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
                                     <TextInput
-                                        label={i18n.catalog["text_092f08fd75ac"]}
+                                        label={i18n.catalog["common.general.employeeNumber"]}
                                         name="employee_code"
                                         value={formData.employee_code}
                                         onChange={handleChange}
-                                        placeholder={nrGroups.length > 0 ? i18n.catalog["text_3bebb10295e4"] : i18n.catalog["text_d353b8b69191"]}
+                                        placeholder={nrGroups.length > 0 ? i18n.catalog["common.general.generatedAutomatically"] : i18n.catalog["common.general.enterNumber"]}
                                     />
                                     {nrGroups.length > 0 && (
                                         <div className="form-group" style={{ flex: 1 }}>
-                                            <Label>{i18n.catalog["text_30b23b8e5db8"]}</Label>
+                                            <Label>{i18n.catalog["common.general.numberingGroup"]}</Label>
                                             <SearchableSelect
                                                 options={nrGroups.map(grp => ({ value: grp.id.toString(), label: grp.name }))}
                                                 value={selectedGroup}
                                                 onChange={(val) => setSelectedGroup(val ? val.toString() : "")}
-                                                placeholder={i18n.catalog["text_3aa5f4fbc295"]}
+                                                placeholder={i18n.catalog["humanCapital.pages.selectNumberingSeries"]}
                                             />
                                         </div>
                                     )}
                                     <Select
-                                        label={i18n.catalog["text_c612bab8abc0"]}
+                                        label={i18n.catalog["common.general.jobTitle.alternative2"]}
                                         name="position_id"
                                         value={formData.position_id}
                                         onChange={handleChange}
                                         required
-                                        placeholder={i18n.catalog["text_69c8437589e7"]}
+                                        placeholder={i18n.catalog["humanCapital.pages.selectJobPosition"]}
                                         options={positions.map(pos => ({
                                             value: pos.id,
-                                            label: catalogText(i18n, "text_e11f55b693d8", { value0: pos.position_name_ar, value1: pos.job_title?.title_ar || i18n.catalog["text_1b8b7c9f8038"] })
+                                            label: catalogText(i18n, "common.general.message.alternative7", { value0: pos.position_name_ar, value1: pos.job_title?.title_ar || i18n.catalog["common.general.untitled"] })
                                         }))}
                                     />
-                                    <TextInput label={i18n.catalog["text_38f85d2e88af"]} type="date" name="hire_date" required value={formData.hire_date} onChange={handleChange} />
+                                    <TextInput label={i18n.catalog["humanCapital.pages.startDate"]} type="date" name="hire_date" required value={formData.hire_date} onChange={handleChange} />
                                     <Select
-                                        label={i18n.catalog["text_2b9fa3db572a"]}
+                                        label={i18n.catalog["common.general.contractType"]}
                                         name="contract_type"
                                         value={formData.contract_type}
                                         onChange={handleChange}
                                         options={[
-                                            { value: 'full_time', label: i18n.catalog["text_ae607c34c510"] },
-                                            { value: 'part_time', label: i18n.catalog["text_68b482db7711"] },
-                                            { value: 'contract', label: i18n.catalog["text_e2e8af908ce5"] },
-                                            { value: 'freelance', label: i18n.catalog["text_826a0eb2ee68"] }
+                                            { value: 'full_time', label: i18n.catalog["common.general.fullTime"] },
+                                            { value: 'part_time', label: i18n.catalog["common.general.partTime"] },
+                                            { value: 'contract', label: i18n.catalog["common.general.fixedTermContract"] },
+                                            { value: 'freelance', label: i18n.catalog["common.general.collaborationFreelance"] }
                                         ]}
                                     />
                                     <Select
-                                        label={i18n.catalog["text_b9fae6c6b12f"]}
+                                        label={i18n.catalog["common.general.employmentStatus"]}
                                         name="employment_status"
                                         value={formData.employment_status}
                                         onChange={handleChange}
                                         options={[
-                                            { value: 'active', label: i18n.catalog["text_629e90b3af3d"] },
-                                            { value: 'suspended', label: i18n.catalog["text_701d5d7a86f9"] },
-                                            { value: 'terminated', label: i18n.catalog["text_ec0852e29a7e"] }
+                                            { value: 'active', label: i18n.catalog["common.general.active"] },
+                                            { value: 'suspended', label: i18n.catalog["common.general.pending"] },
+                                            { value: 'terminated', label: i18n.catalog["common.general.employmentTerminated"] }
                                         ]}
                                     />
                                 </div>
@@ -325,24 +325,24 @@ export default function AddEmployeePage() {
                             <div className="section-card sales-card mb-4" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.5rem', gap: '0.5rem', color: 'var(--primary-color)' }}>
                                     <i className="fas fa-money-check-alt fa-lg"></i>
-                                    <h4 style={{ margin: 0 }}>{i18n.catalog["text_6b7790de11d3"]}</h4>
+                                    <h4 style={{ margin: 0 }}>{i18n.catalog["common.general.financialInformation"]}</h4>
                                 </div>
                                 <div className="form-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
-                                    <TextInput label={i18n.catalog["text_73ad6b20ceb7"]} type="number" name="base_salary" required value={formData.base_salary} onChange={handleChange} min="0" step="0.01" />
-                                    <TextInput label={i18n.catalog["text_9e2a0925b5c8"]} name="gosi_number" value={formData.gosi_number} onChange={handleChange} />
-                                    <TextInput label={i18n.catalog["text_c6d5a7b17fc0"]} name="bank_name" value={formData.bank_name} onChange={handleChange} />
-                                    <TextInput label={i18n.catalog["text_2f6a9a7e78ee"]} name="iban" value={formData.iban} onChange={handleChange} placeholder={i18n.catalog["text_1de06acdd5ec"]} />
-                                    <TextInput label={i18n.catalog["text_07429d01eb23"]} type="number" name="vacation_days_balance" value={formData.vacation_days_balance} onChange={handleChange} min="0" step="0.5" />
+                                    <TextInput label={i18n.catalog["common.general.basicSalary"]} type="number" name="base_salary" required value={formData.base_salary} onChange={handleChange} min="0" step="0.01" />
+                                    <TextInput label={i18n.catalog["humanCapital.pages.socialInsuranceNumberGosi"]} name="gosi_number" value={formData.gosi_number} onChange={handleChange} />
+                                    <TextInput label={i18n.catalog["common.general.bankName"]} name="bank_name" value={formData.bank_name} onChange={handleChange} />
+                                    <TextInput label={i18n.catalog["common.general.ibanNumber"]} name="iban" value={formData.iban} onChange={handleChange} placeholder={i18n.catalog["humanCapital.pages.saxxxxxxxxxxxxxxxxxxxxxx"]} />
+                                    <TextInput label={i18n.catalog["humanCapital.pages.openingLeaveBalanceDays"]} type="number" name="vacation_days_balance" value={formData.vacation_days_balance} onChange={handleChange} min="0" step="0.5" />
                                 </div>
 
                                 <div className="form-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
                                     <div className="form-group" style={{ flex: 1 }}>
-                                        <Label>{i18n.catalog["text_35a54fa24d99"]}</Label>
+                                        <Label>{i18n.catalog["common.general.directManager"]}</Label>
                                         <SearchableSelect
                                             options={employees.map(emp => ({ value: emp.id.toString(), label: emp.full_name }))}
                                             value={formData.manager_id}
                                             onChange={(val) => setFormData(prev => ({ ...prev, manager_id: val ? val.toString() : "" }))}
-                                            placeholder={i18n.catalog["text_ad1ac06a0018"]}
+                                            placeholder={i18n.catalog["humanCapital.pages.selectDirectManager"]}
                                         />
                                     </div>
                                 </div>
@@ -352,12 +352,12 @@ export default function AddEmployeePage() {
                             <div className="section-card sales-card mb-4" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.5rem', gap: '0.5rem', color: 'var(--primary-color)' }}>
                                     <i className="fas fa-lock fa-lg"></i>
-                                    <h4 style={{ margin: 0 }}>{i18n.catalog["text_750e8c3cb086"]}</h4>
+                                    <h4 style={{ margin: 0 }}>{i18n.catalog["humanCapital.pages.portalLoginCredentials"]}</h4>
                                 </div>
-                                <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '1rem' }}>{i18n.catalog["text_7386ec8c56ac"]}</p>
+                                <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '1rem' }}>{i18n.catalog["humanCapital.pages.theseCredentialsAreUsedEmployeeAccessSelfServicePortal"]}</p>
                                 <div className="form-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
-                                    <EmailInput label={i18n.catalog["text_ddf0fca39a4f"]} name="email" required value={formData.email} onChange={handleChange} />
-                                    <PasswordInput label={i18n.catalog["text_b05d306b5591"]} name="password" required value={formData.password} onChange={handleChange} minLength={6} placeholder={i18n.catalog["text_07ab59f4731b"]} />
+                                    <EmailInput label={i18n.catalog["common.general.email"]} name="email" required value={formData.email} onChange={handleChange} />
+                                    <PasswordInput label={i18n.catalog["common.general.password"]} name="password" required value={formData.password} onChange={handleChange} minLength={6} placeholder={i18n.catalog["humanCapital.pages.message"]} />
                                 </div>
                             </div>
 

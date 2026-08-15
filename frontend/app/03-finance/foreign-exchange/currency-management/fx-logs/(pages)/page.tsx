@@ -49,7 +49,7 @@ export default function FxLogsPage() {
       }
     } catch (e) {
       console.error(e);
-      showToast(i18n.catalog["text_0f3bf5f8f012"], "error");
+      showToast(i18n.catalog["common.general.errorLoadingCurrencies"], "error");
     }
   }, []);
 
@@ -67,11 +67,11 @@ export default function FxLogsPage() {
       if (res.success) {
         setHistory(res.data as ExchangeRateHistory[]);
       } else {
-        showToast(res.message || i18n.catalog["text_4d8acb11b239"], "error");
+        showToast(res.message || i18n.catalog["finance.fxLogs.failedLoadOperationsLog"], "error");
       }
     } catch (e) {
       console.error(e);
-      showToast(i18n.catalog["text_d5a8a4c98344"], "error");
+      showToast(i18n.catalog["finance.fxLogs.errorLoadingActivityLog"], "error");
     } finally {
       setLoading(false);
     }
@@ -88,7 +88,7 @@ export default function FxLogsPage() {
   const columns: Column<ExchangeRateHistory>[] = [
     {
       key: "currency",
-      header: i18n.catalog["text_a049cbb14f26"],
+      header: i18n.catalog["common.general.sourceCurrency.alternative2"],
       render: (row) => (
         <span>
           {row.currency?.name || "-"}{" "}
@@ -98,7 +98,7 @@ export default function FxLogsPage() {
     },
     {
       key: "target_currency",
-      header: i18n.catalog["text_a7af2ad5f979"],
+      header: i18n.catalog["common.general.targetCurrency"],
       render: (row) => (
         <span>
           {row.target_currency?.name || "-"}{" "}
@@ -108,7 +108,7 @@ export default function FxLogsPage() {
     },
     {
       key: "exchange_rate",
-      header: i18n.catalog["text_fbffb38f5bb4"],
+      header: i18n.catalog["common.general.exchangeRate"],
       render: (row) => (
         <strong style={{ fontFamily: "monospace", fontSize: "0.95rem" }}>
           {Number(row.exchange_rate).toFixed(6)}
@@ -117,12 +117,12 @@ export default function FxLogsPage() {
     },
     {
       key: "effective_date",
-      header: i18n.catalog["text_6f53e00bf25e"],
+      header: i18n.catalog["common.general.effectiveDate"],
       render: (row) => row.effective_date,
     },
     {
       key: "source",
-      header: i18n.catalog["text_64660bb87d89"],
+      header: i18n.catalog["common.general.source"],
       render: (row) => (
         <span
           className={`badge ${
@@ -134,21 +134,21 @@ export default function FxLogsPage() {
           }`}
         >
           {row.source === "MANUAL"
-            ? i18n.catalog["text_a62cb7790ba3"]
+            ? i18n.catalog["common.general.manual"]
             : row.source === "CENTRAL_BANK"
-            ? i18n.catalog["text_3442aeef4a07"]
+            ? i18n.catalog["common.general.centralBank"]
             : "API"}
         </span>
       ),
     },
     {
       key: "created_by",
-      header: i18n.catalog["text_a98b66bae2c9"],
+      header: i18n.catalog["common.general.notAvailable.alternative7"],
       render: (row) => row.created_by?.name || "-",
     },
     {
       key: "created_at",
-      header: i18n.catalog["text_b8fcbb3f2d33"],
+      header: i18n.catalog["common.general.registrationDate"],
       render: (row) =>
         new Date(row.created_at).toLocaleString("ar-SA", {
           year: "numeric",
@@ -173,12 +173,12 @@ export default function FxLogsPage() {
             }}
           >
             <div>
-              <h3 style={{ margin: 0 }}>{i18n.catalog["text_485270161657"]}</h3>
+              <h3 style={{ margin: 0 }}>{i18n.catalog["finance.fxLogs.foreignExchangeTransactionLog"]}</h3>
               <p
                 className="text-muted"
                 style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem" }}
               >
-                {i18n.catalog["text_1fcb7c297569"]}</p>
+                {i18n.catalog["finance.fxLogs.trackExchangeRateHistoryAllRecordUpdateActions"]}</p>
             </div>
           </div>
 
@@ -193,13 +193,13 @@ export default function FxLogsPage() {
             }}
           >
             <div className="form-group">
-              <label className="form-label">{i18n.catalog["text_30ce3a1dae2c"]}</label>
+              <label className="form-label">{i18n.catalog["common.general.currency"]}</label>
               <select
                 className="form-control"
                 value={filterCurrencyId}
                 onChange={(e) => setFilterCurrencyId(e.target.value)}
               >
-                <option value="">{i18n.catalog["text_65f276da33cf"]}</option>
+                <option value="">{i18n.catalog["common.general.all"]}</option>
                 {currencies.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name} ({c.code})
@@ -209,13 +209,13 @@ export default function FxLogsPage() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">{i18n.catalog["text_219c5815ace0"]}</label>
+              <label className="form-label">{i18n.catalog["common.general.againstCurrency"]}</label>
               <select
                 className="form-control"
                 value={filterTargetId}
                 onChange={(e) => setFilterTargetId(e.target.value)}
               >
-                <option value="">{i18n.catalog["text_65f276da33cf"]}</option>
+                <option value="">{i18n.catalog["common.general.all"]}</option>
                 {currencies.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name} ({c.code})
@@ -226,7 +226,7 @@ export default function FxLogsPage() {
 
             <div className="form-group">
               <TextInput
-                label={i18n.catalog["text_996988dbc52e"]}
+                label={i18n.catalog["common.general.date.alternative6"]}
                 type="date"
                 value={filterFromDate}
                 onChange={(e) => setFilterFromDate(e.target.value)}
@@ -235,7 +235,7 @@ export default function FxLogsPage() {
 
             <div className="form-group">
               <TextInput
-                label={i18n.catalog["text_217caed1c04f"]}
+                label={i18n.catalog["common.general.date.alternative2"]}
                 type="date"
                 value={filterToDate}
                 onChange={(e) => setFilterToDate(e.target.value)}
@@ -248,7 +248,7 @@ export default function FxLogsPage() {
             columns={columns}
             keyExtractor={(item) => item.id}
             isLoading={loading}
-            emptyMessage={i18n.catalog["text_9a16c6695a92"]}
+            emptyMessage={i18n.catalog["finance.fxLogs.noDisbursementRecordsYet"]}
           />
         </div>
       </div>

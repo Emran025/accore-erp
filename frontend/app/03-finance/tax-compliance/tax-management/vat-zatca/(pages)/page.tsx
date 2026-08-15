@@ -26,11 +26,11 @@ export default function VatZatcaPage() {
         <MainLayout requiredModule="dashboard">
             <div className="settings-wrapper animate-fade">
                 <TabMiniNavigation
-                    title={i18n.catalog["text_0c44701a357d"]}
+                    title={i18n.catalog["finance.vatZatca.taxVatSettingsZatcaIntegration"]}
                     icon="fa-shield-check"
                     tabs={[
-                        { key: "fees", label: i18n.catalog["text_fa2cb2ed9bf9"], icon: "fa-scale-balanced" },
-                        { key: "zatca", label: i18n.catalog["text_6abb8c13afc1"], icon: "fa-shield-check" },
+                        { key: "fees", label: i18n.catalog["finance.vatZatca.feesLiabilities"], icon: "fa-scale-balanced" },
+                        { key: "zatca", label: i18n.catalog["finance.vatZatca.zatcaSettingsZatca"], icon: "fa-shield-check" },
                     ]}
                     activeTab={activeTab}
                     onTabChange={setActiveTab}

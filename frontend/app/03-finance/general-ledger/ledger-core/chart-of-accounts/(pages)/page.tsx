@@ -26,11 +26,11 @@ interface Account {
 }
 
 const accountTypes = [
-  { value: "asset", label: catalogMessage("text_c34a65a599f4") },
-  { value: "liability", label: catalogMessage("text_75da4e1662cd") },
-  { value: "equity", label: catalogMessage("text_d40585c3e6d9") },
-  { value: "revenue", label: catalogMessage("text_1750c80bdcdd") },
-  { value: "expense", label: catalogMessage("text_f4ee61408b6e") },
+  { value: "asset", label: catalogMessage("finance.chartOfAccounts.assets") },
+  { value: "liability", label: catalogMessage("finance.chartOfAccounts.liabilities") },
+  { value: "equity", label: catalogMessage("finance.chartOfAccounts.ownershipRights") },
+  { value: "revenue", label: catalogMessage("finance.chartOfAccounts.revenue") },
+  { value: "expense", label: catalogMessage("finance.chartOfAccounts.expenses") },
 ];
 
 export default function ChartOfAccountsPage() {
@@ -76,7 +76,7 @@ export default function ChartOfAccountsPage() {
         description: typeof account.description === 'string' ? account.description : undefined,
       })));
     } catch {
-      showToast(i18n.catalog["text_f5ee53a0a302"], "error");
+      showToast(i18n.catalog["common.general.errorLoadingAccounts.alternative2"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -124,7 +124,7 @@ export default function ChartOfAccountsPage() {
 
   const handleSubmit = async () => {
     if (!formData.code.trim() || !formData.name.trim()) {
-      showToast(i18n.catalog["text_0a8eb85d0081"], "error");
+      showToast(i18n.catalog["common.general.pleaseFillAllRequiredFields"], "error");
       return;
     }
 
@@ -139,22 +139,22 @@ export default function ChartOfAccountsPage() {
 
     try {
       if (selectedAccount) {
-        await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.FINANCE.ACCOUNTS.BASE, value1: selectedAccount.id }), {
+        await fetchAPI(catalogText(i18n, "common.general.message", { value0: API_ENDPOINTS.FINANCE.ACCOUNTS.BASE, value1: selectedAccount.id }), {
           method: "PUT",
           body: JSON.stringify(payload),
         });
-        showToast(i18n.catalog["text_e11c67ce8466"], "success");
+        showToast(i18n.catalog["finance.chartOfAccounts.accountUpdatedSuccessfully"], "success");
       } else {
         await fetchAPI(API_ENDPOINTS.FINANCE.ACCOUNTS.BASE, {
           method: "POST",
           body: JSON.stringify(payload),
         });
-        showToast(i18n.catalog["text_a274447c6860"], "success");
+        showToast(i18n.catalog["finance.chartOfAccounts.accountAddedSuccessfully"], "success");
       }
       setFormDialog(false);
       loadAccounts(searchTerm);
     } catch {
-      showToast(i18n.catalog["text_b29eaf2a9aff"], "error");
+      showToast(i18n.catalog["finance.chartOfAccounts.errorSavingAccount"], "error");
     }
   };
 
@@ -167,11 +167,11 @@ export default function ChartOfAccountsPage() {
     if (!deleteId) return;
 
     try {
-      await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.FINANCE.ACCOUNTS.BASE, value1: deleteId }), { method: "DELETE" });
-      showToast(i18n.catalog["text_afad462d50b3"], "success");
+      await fetchAPI(catalogText(i18n, "common.general.message", { value0: API_ENDPOINTS.FINANCE.ACCOUNTS.BASE, value1: deleteId }), { method: "DELETE" });
+      showToast(i18n.catalog["finance.chartOfAccounts.accountDeleted"], "success");
       loadAccounts(searchTerm);
     } catch {
-      showToast(i18n.catalog["text_3dea9db07a0d"], "error");
+      showToast(i18n.catalog["finance.chartOfAccounts.failedDeleteAccount"], "error");
     }
   };
 
@@ -198,12 +198,12 @@ export default function ChartOfAccountsPage() {
   };
 
   const columns: Column<Account>[] = [
-    { key: "code", header: i18n.catalog["text_62a19661ff2e"], dataLabel: i18n.catalog["text_62a19661ff2e"] },
-    { key: "name", header: i18n.catalog["text_03cec4ee9ea4"], dataLabel: i18n.catalog["text_03cec4ee9ea4"] },
+    { key: "code", header: i18n.catalog["common.general.accountNumber"], dataLabel: i18n.catalog["common.general.accountNumber"] },
+    { key: "name", header: i18n.catalog["common.general.accountName"], dataLabel: i18n.catalog["common.general.accountName"] },
     {
       key: "type",
-      header: i18n.catalog["text_caa3f2bb4a36"],
-      dataLabel: i18n.catalog["text_caa3f2bb4a36"],
+      header: i18n.catalog["common.general.type.alternative3"],
+      dataLabel: i18n.catalog["common.general.type.alternative3"],
       render: (item) => (
         <span className={`badge ${getTypeBadgeClass(item.type)}`}>
           {getTypeLabel(item.type)}
@@ -212,14 +212,14 @@ export default function ChartOfAccountsPage() {
     },
     {
       key: "parent_name",
-      header: i18n.catalog["text_9418812573b6"],
-      dataLabel: i18n.catalog["text_9418812573b6"],
+      header: i18n.catalog["common.general.primaryAccount"],
+      dataLabel: i18n.catalog["common.general.primaryAccount"],
       render: (item) => item.parent_name || "-",
     },
     {
       key: "balance",
-      header: i18n.catalog["text_f311da916aa5"],
-      dataLabel: i18n.catalog["text_f311da916aa5"],
+      header: i18n.catalog["common.general.balance"],
+      dataLabel: i18n.catalog["common.general.balance"],
       render: (item) => (
         <span className={item.balance >= 0 ? "text-success" : "text-danger"}>
           {formatCurrency(Math.abs(item.balance))}
@@ -228,31 +228,31 @@ export default function ChartOfAccountsPage() {
     },
     {
       key: "is_active",
-      header: i18n.catalog["text_c3a4749caed4"],
-      dataLabel: i18n.catalog["text_c3a4749caed4"],
+      header: i18n.catalog["common.general.status.alternative2"],
+      dataLabel: i18n.catalog["common.general.status.alternative2"],
       render: (item) => (
         <span className={`badge ${item.is_active ? "badge-success" : "badge-secondary"}`}>
-          {item.is_active ? i18n.catalog["text_629e90b3af3d"] : i18n.catalog["text_b719ac8add4e"]}
+          {item.is_active ? i18n.catalog["common.general.active"] : i18n.catalog["common.general.inactive"]}
         </span>
       ),
     },
     {
       key: "actions",
-      header: i18n.catalog["text_7797240d6caf"],
-      dataLabel: i18n.catalog["text_7797240d6caf"],
+      header: i18n.catalog["common.general.actions"],
+      dataLabel: i18n.catalog["common.general.actions"],
       render: (item) => (
         <ActionButtons
           actions={[
             {
               icon: "edit",
-              title: i18n.catalog["text_113d570d6555"],
+              title: i18n.catalog["common.general.edit"],
               variant: "edit",
               onClick: () => openEditDialog(item),
               hidden: !canAccess(permissions, "chart_of_accounts", "edit")
             },
             {
               icon: "trash",
-              title: i18n.catalog["text_59ca629220a6"],
+              title: i18n.catalog["common.general.delete"],
               variant: "delete",
               onClick: () => confirmDelete(item.id),
               hidden: !canAccess(permissions, "chart_of_accounts", "delete")
@@ -279,7 +279,7 @@ export default function ChartOfAccountsPage() {
           title=""
           searchInput={
             <SearchableSelect
-              placeholder={i18n.catalog["text_b9426e9512a9"]}
+              placeholder={i18n.catalog["finance.chartOfAccounts.searchNumberName"]}
               value={searchTerm}
               onSearch={(term) => {
                 setSearchTerm(term);
@@ -290,14 +290,14 @@ export default function ChartOfAccountsPage() {
                 setSearchTerm(term);
                 loadAccounts(term);
               }}
-              options={accounts.map(acc => ({ value: acc.id, label: catalogText(i18n, "text_2a9059a3c52f", { value0: acc.code, value1: acc.name }) }))}
+              options={accounts.map(acc => ({ value: acc.id, label: catalogText(i18n, "common.general.notAvailable", { value0: acc.code, value1: acc.name }) }))}
               className="header-search-bar"
             />
           }
           actions={
             canAccess(permissions, "chart_of_accounts", "create") && (
               <Button variant="primary" icon="plus" onClick={openAddDialog}>
-                {i18n.catalog["text_d80c89f7e6f0"]}</Button>
+                {i18n.catalog["finance.chartOfAccounts.addAccount"]}</Button>
             )
           }
         />
@@ -305,7 +305,7 @@ export default function ChartOfAccountsPage() {
           columns={columns}
           data={accounts}
           keyExtractor={(item) => item.id}
-          emptyMessage={i18n.catalog["text_b3a2c70424fa"]}
+          emptyMessage={i18n.catalog["finance.chartOfAccounts.noAccounts"]}
           isLoading={isLoading}
         />
       </div>
@@ -314,13 +314,13 @@ export default function ChartOfAccountsPage() {
       <Dialog
         isOpen={formDialog}
         onClose={() => setFormDialog(false)}
-        title={selectedAccount ? i18n.catalog["text_4ea15ab9960c"] : i18n.catalog["text_082a4dd9ae43"]}
+        title={selectedAccount ? i18n.catalog["finance.chartOfAccounts.editAccount"] : i18n.catalog["finance.chartOfAccounts.addNewAccount"]}
         footer={
           <>
             <Button variant="secondary" onClick={() => setFormDialog(false)}>
-              {i18n.catalog["text_9a30dc2a96b8"]}</Button>
+              {i18n.catalog["common.general.cancel"]}</Button>
             <Button variant="primary" onClick={handleSubmit}>
-              {selectedAccount ? i18n.catalog["text_00eab31f95b7"] : i18n.catalog["text_d52453ac627d"]}
+              {selectedAccount ? i18n.catalog["common.general.update"] : i18n.catalog["common.general.add"]}
             </Button>
           </>
         }
@@ -328,7 +328,7 @@ export default function ChartOfAccountsPage() {
         <div className="form-row">
           <div className="form-group pb-0">
             <TextInput
-              label={i18n.catalog["text_1ec708c0dd36"]}
+              label={i18n.catalog["finance.chartOfAccounts.accountNumber"]}
               id="code"
               value={formData.code}
               onChange={(e) => setFormData({ ...formData, code: e.target.value })}
@@ -336,7 +336,7 @@ export default function ChartOfAccountsPage() {
           </div>
           <div className="form-group">
             <Select
-              label={i18n.catalog["text_fa91c2bc1f99"]}
+              label={i18n.catalog["finance.chartOfAccounts.type"]}
               id="type"
               value={formData.type}
               onChange={(e) => setFormData({ ...formData, type: e.target.value })}
@@ -352,7 +352,7 @@ export default function ChartOfAccountsPage() {
 
         <div className="form-group">
           <TextInput
-            label={i18n.catalog["text_38550c801dc7"]}
+            label={i18n.catalog["finance.chartOfAccounts.accountName"]}
             id="name"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -361,12 +361,12 @@ export default function ChartOfAccountsPage() {
 
         <div className="form-group">
           <Select
-            label={i18n.catalog["text_9418812573b6"]}
+            label={i18n.catalog["common.general.primaryAccount"]}
             id="parent_id"
             value={formData.parent_id}
             onChange={(e) => setFormData({ ...formData, parent_id: e.target.value })}
           >
-            <option value="">{i18n.catalog["text_3c6965ddd7ec"]}</option>
+            <option value="">{i18n.catalog["finance.chartOfAccounts.noMainAccount"]}</option>
             {accounts
               .filter((acc) => acc.id !== selectedAccount?.id)
               .map((acc) => (
@@ -379,7 +379,7 @@ export default function ChartOfAccountsPage() {
 
         <div className="form-group">
           <Textarea
-            label={i18n.catalog["text_95023fc76e1b"]}
+            label={i18n.catalog["common.general.description.alternative2"]}
             id="description"
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -389,7 +389,7 @@ export default function ChartOfAccountsPage() {
 
         <div className="form-group">
           <Checkbox
-            label={i18n.catalog["text_629e90b3af3d"]}
+            label={i18n.catalog["common.general.active"]}
             id="is_active"
             checked={formData.is_active}
             onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
@@ -402,9 +402,9 @@ export default function ChartOfAccountsPage() {
         isOpen={confirmDialog}
         onClose={() => setConfirmDialog(false)}
         onConfirm={handleDelete}
-        title={i18n.catalog["text_5f9cb54dc136"]}
-        message={i18n.catalog["text_35beaeefbfa8"]}
-        confirmText={i18n.catalog["text_59ca629220a6"]}
+        title={i18n.catalog["common.general.confirmDeletion"]}
+        message={i18n.catalog["finance.chartOfAccounts.areYouSureYouWantDeleteThisAccount"]}
+        confirmText={i18n.catalog["common.general.delete"]}
         confirmVariant="danger"
       />
     </MainLayout>

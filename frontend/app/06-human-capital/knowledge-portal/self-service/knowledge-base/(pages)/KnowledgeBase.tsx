@@ -29,8 +29,8 @@ interface Expertise {
   is_available_for_projects: boolean;
 }
 
-const categoryLabels: Record<string, string> = { policy: catalogMessage("text_56ccba3b51a7"), procedure: catalogMessage("text_8b2c85333b99"), best_practice: catalogMessage("text_e0af260f23ea"), faq: catalogMessage("text_10cfb406c4aa"), training: catalogMessage("text_473a0e92b97c"), other: catalogMessage("text_17a9f38e22b6") };
-const profLabels: Record<string, string> = { beginner: catalogMessage("text_5815d31a6692"), intermediate: catalogMessage("text_42a5dadf6e45"), advanced: catalogMessage("text_a3993b7fdc58"), expert: catalogMessage("text_bbb098674cde") };
+const categoryLabels: Record<string, string> = { policy: catalogMessage("common.general.policy"), procedure: catalogMessage("common.general.action"), best_practice: catalogMessage("common.general.bestPractice"), faq: catalogMessage("common.general.frequentlyAskedQuestions"), training: catalogMessage("common.general.training"), other: catalogMessage("common.general.other") };
+const profLabels: Record<string, string> = { beginner: catalogMessage("common.general.beginner"), intermediate: catalogMessage("common.general.average"), advanced: catalogMessage("common.general.advanced"), expert: catalogMessage("common.general.expert") };
 const profBadges: Record<string, string> = { beginner: "badge-secondary", intermediate: "badge-info", advanced: "badge-warning", expert: "badge-success" };
 
 export function KnowledgeBase() {
@@ -65,7 +65,7 @@ export function KnowledgeBase() {
       const q = new URLSearchParams({ page: currentPage.toString(), ...(searchTerm && { search: searchTerm }) });
       const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.KNOWLEDGE.BASE}?${q}`);
       setArticles(res.data || []); setTotalPages(Number(res.last_page) || 1);
-    } catch { showToast(i18n.catalog["text_32b5b623f8f5"], "error"); }
+    } catch { showToast(i18n.catalog["common.general.failedLoadArticles"], "error"); }
     finally { setIsLoading(false); }
   };
 
@@ -74,12 +74,12 @@ export function KnowledgeBase() {
     try {
       const res: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EXPERTISE.BASE}?page=${currentPage}`);
       setExpertise(res.data || []); setTotalPages(Number(res.last_page) || 1);
-    } catch { showToast(i18n.catalog["text_1d21692b8729"], "error"); }
+    } catch { showToast(i18n.catalog["common.general.failedLoadExperts"], "error"); }
     finally { setIsLoading(false); }
   };
 
   const handleSaveArticle = async () => {
-    if (!articleForm.title || !articleForm.content) { showToast(i18n.catalog["text_7b758312f829"], "error"); return; }
+    if (!articleForm.title || !articleForm.content) { showToast(i18n.catalog["common.general.pleaseFillRequiredFields.alternative2"], "error"); return; }
     try {
       await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.KNOWLEDGE.BASE, {
         method: "POST", body: JSON.stringify({
@@ -88,28 +88,28 @@ export function KnowledgeBase() {
           is_published: articleForm.is_published,
         })
       });
-      showToast(i18n.catalog["text_069f282692cd"], "success"); setShowArticleDialog(false); loadArticles();
-    } catch (e: any) { showToast(e.message || i18n.catalog["text_b0dbba00004b"], "error"); }
+      showToast(i18n.catalog["common.general.articleCreated"], "success"); setShowArticleDialog(false); loadArticles();
+    } catch (e: any) { showToast(e.message || i18n.catalog["common.general.failedSave"], "error"); }
   };
 
   const viewArticleDetail = async (id: number) => {
     try {
       const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.KNOWLEDGE.withId(id));
       setSelectedArticle(res.data || res); setShowArticleDetail(true);
-    } catch { showToast(i18n.catalog["text_6467762a8e34"], "error"); }
+    } catch { showToast(i18n.catalog["common.general.failedLoadDetails"], "error"); }
   };
 
   const handlePublishArticle = async (id: number, publish: boolean) => {
     try {
       await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.KNOWLEDGE.withId(id), { method: "PUT", body: JSON.stringify({ is_published: publish }) });
-      showToast(publish ? i18n.catalog["text_45391725043d"] : i18n.catalog["text_9330b63fea3e"], "success"); loadArticles();
-    } catch (e: any) { showToast(e.message || i18n.catalog["text_96c789857dbf"], "error"); }
+      showToast(publish ? i18n.catalog["common.general.articlePublished"] : i18n.catalog["common.general.unpublished"], "success"); loadArticles();
+    } catch (e: any) { showToast(e.message || i18n.catalog["common.general.updateFailed"], "error"); }
   };
 
   const handleMarkHelpful = async (id: number) => {
     try {
       await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.KNOWLEDGE.HELPFUL(id), { method: "POST" });
-      showToast(i18n.catalog["text_a282c8324134"], "success");
+      showToast(i18n.catalog["common.general.thankYouYourRating"], "success");
       if (selectedArticle && selectedArticle.id === id) {
         setSelectedArticle({ ...selectedArticle, helpful_count: selectedArticle.helpful_count + 1 });
       }
@@ -117,7 +117,7 @@ export function KnowledgeBase() {
   };
 
   const handleSaveExpert = async () => {
-    if (!expertForm.employee_id || !expertForm.skill_name) { showToast(i18n.catalog["text_7b758312f829"], "error"); return; }
+    if (!expertForm.employee_id || !expertForm.skill_name) { showToast(i18n.catalog["common.general.pleaseFillRequiredFields.alternative2"], "error"); return; }
     try {
       await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EXPERTISE.BASE, {
         method: "POST", body: JSON.stringify({
@@ -128,29 +128,29 @@ export function KnowledgeBase() {
           is_available_for_projects: expertForm.is_available_for_projects,
         })
       });
-      showToast(i18n.catalog["text_748ba1f205db"], "success"); setShowExpertDialog(false); loadExpertise();
-    } catch (e: any) { showToast(e.message || i18n.catalog["text_b0dbba00004b"], "error"); }
+      showToast(i18n.catalog["common.general.experienceAdded"], "success"); setShowExpertDialog(false); loadExpertise();
+    } catch (e: any) { showToast(e.message || i18n.catalog["common.general.failedSave"], "error"); }
   };
 
   const articleColumns: Column<KnowledgeArticle>[] = [
-    { key: "title", header: i18n.catalog["text_2d110e56d5f5"], dataLabel: i18n.catalog["text_2d110e56d5f5"] },
-    { key: "category", header: i18n.catalog["text_ff61fb213ffc"], dataLabel: i18n.catalog["text_ff61fb213ffc"], render: (i) => categoryLabels[i.category] || i.category },
-    { key: "view_count", header: i18n.catalog["text_51629c524d3c"], dataLabel: i18n.catalog["text_51629c524d3c"], render: (i) => <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>{getIcon("eye", "", 14)} {i.view_count}</span> },
-    { key: "helpful_count", header: i18n.catalog["text_55cf1e58e096"], dataLabel: i18n.catalog["text_55cf1e58e096"], render: (i) => <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>{getIcon("thumbs-up", "", 14)} {i.helpful_count}</span> },
-    { key: "is_published", header: i18n.catalog["text_c3a4749caed4"], dataLabel: i18n.catalog["text_c3a4749caed4"], render: (i) => <span className={`badge ${i.is_published ? "badge-success" : "badge-secondary"}`}>{i.is_published ? i18n.catalog["text_74f0d5710a99"] : i18n.catalog["text_552aec56f591"]}</span> },
+    { key: "title", header: i18n.catalog["common.general.title"], dataLabel: i18n.catalog["common.general.title"] },
+    { key: "category", header: i18n.catalog["common.general.category"], dataLabel: i18n.catalog["common.general.category"], render: (i) => categoryLabels[i.category] || i.category },
+    { key: "view_count", header: i18n.catalog["common.general.views"], dataLabel: i18n.catalog["common.general.views"], render: (i) => <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>{getIcon("eye", "", 14)} {i.view_count}</span> },
+    { key: "helpful_count", header: i18n.catalog["common.general.helpful"], dataLabel: i18n.catalog["common.general.helpful"], render: (i) => <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>{getIcon("thumbs-up", "", 14)} {i.helpful_count}</span> },
+    { key: "is_published", header: i18n.catalog["common.general.status.alternative2"], dataLabel: i18n.catalog["common.general.status.alternative2"], render: (i) => <span className={`badge ${i.is_published ? "badge-success" : "badge-secondary"}`}>{i.is_published ? i18n.catalog["common.general.published"] : i18n.catalog["common.general.draft"]}</span> },
     {
-      key: "id", header: i18n.catalog["text_9f0a0f722601"], dataLabel: i18n.catalog["text_9f0a0f722601"], render: (i) => (
+      key: "id", header: i18n.catalog["common.general.actions.alternative2"], dataLabel: i18n.catalog["common.general.actions.alternative2"], render: (i) => (
         <ActionButtons
           actions={[
             {
               icon: "eye",
-              title: i18n.catalog["text_3824e18ca83b"],
+              title: i18n.catalog["common.general.view"],
               variant: "view",
               onClick: () => viewArticleDetail(i.id)
             },
             ...(canAccess("knowledge", "edit") ? [{
               icon: (i.is_published ? "eye-off" : "upload") as any,
-              title: i.is_published ? i18n.catalog["text_391ee0811948"] : i18n.catalog["text_b19234315bac"],
+              title: i.is_published ? i18n.catalog["common.general.unpublish"] : i18n.catalog["common.general.publish"],
               variant: (i.is_published ? "secondary" : "success") as any,
               onClick: () => handlePublishArticle(i.id, !i.is_published)
             }] : [])
@@ -161,18 +161,18 @@ export function KnowledgeBase() {
   ];
 
   const expertColumns: Column<Expertise>[] = [
-    { key: "employee", header: i18n.catalog["text_b71a39c832a6"], dataLabel: i18n.catalog["text_b71a39c832a6"], render: (i) => i.employee?.full_name || "-" },
-    { key: "skill_name", header: i18n.catalog["text_19b43cba0b90"], dataLabel: i18n.catalog["text_19b43cba0b90"] },
-    { key: "proficiency_level", header: i18n.catalog["text_1256b3c2e7fc"], dataLabel: i18n.catalog["text_1256b3c2e7fc"], render: (i) => <span className={`badge ${profBadges[i.proficiency_level]}`}>{profLabels[i.proficiency_level] || i.proficiency_level}</span> },
-    { key: "years_of_experience", header: i18n.catalog["text_324bf1664245"], dataLabel: i18n.catalog["text_4d50c4c9262b"], render: (i) => catalogText(i18n, "text_f69616269742", { value0: i.years_of_experience }) },
-    { key: "is_available_for_projects", header: i18n.catalog["text_1f5830f563ab"], dataLabel: i18n.catalog["text_1f5830f563ab"], render: (i) => <span className={`badge ${i.is_available_for_projects ? "badge-success" : "badge-secondary"}`}>{i.is_available_for_projects ? i18n.catalog["text_4b2d2c65d365"] : i18n.catalog["text_2bd073516a87"]}</span> },
+    { key: "employee", header: i18n.catalog["common.general.employee.alternative3"], dataLabel: i18n.catalog["common.general.employee.alternative3"], render: (i) => i.employee?.full_name || "-" },
+    { key: "skill_name", header: i18n.catalog["common.general.skill"], dataLabel: i18n.catalog["common.general.skill"] },
+    { key: "proficiency_level", header: i18n.catalog["common.general.competency"], dataLabel: i18n.catalog["common.general.competency"], render: (i) => <span className={`badge ${profBadges[i.proficiency_level]}`}>{profLabels[i.proficiency_level] || i.proficiency_level}</span> },
+    { key: "years_of_experience", header: i18n.catalog["common.general.yearsExperience"], dataLabel: i18n.catalog["common.general.experience"], render: (i) => catalogText(i18n, "common.general.year.alternative2", { value0: i.years_of_experience }) },
+    { key: "is_available_for_projects", header: i18n.catalog["common.general.available"], dataLabel: i18n.catalog["common.general.available"], render: (i) => <span className={`badge ${i.is_available_for_projects ? "badge-success" : "badge-secondary"}`}>{i.is_available_for_projects ? i18n.catalog["common.general.yes"] : i18n.catalog["common.general.no"]}</span> },
     {
-      key: "id", header: i18n.catalog["text_9f0a0f722601"], dataLabel: i18n.catalog["text_9f0a0f722601"], render: (i) => (
+      key: "id", header: i18n.catalog["common.general.actions.alternative2"], dataLabel: i18n.catalog["common.general.actions.alternative2"], render: (i) => (
         <ActionButtons
           actions={[
             {
               icon: "eye",
-              title: i18n.catalog["text_29f382c73779"],
+              title: i18n.catalog["common.general.details"],
               variant: "view",
               onClick: () => { setSelectedExpert(i); setShowExpertDetail(true); }
             }
@@ -183,14 +183,14 @@ export function KnowledgeBase() {
   ];
 
   const tabs = [
-    ...(canAccess("knowledge", "view") ? [{ key: "knowledge", label: i18n.catalog["text_659aa2733c32"], icon: "book" }] : []),
-    ...(canAccess("expertise", "view") ? [{ key: "expertise", label: i18n.catalog["text_e688fc5a7084"], icon: "users-gear" }] : [])
+    ...(canAccess("knowledge", "view") ? [{ key: "knowledge", label: i18n.catalog["common.general.knowledgeBase"], icon: "book" }] : []),
+    ...(canAccess("expertise", "view") ? [{ key: "expertise", label: i18n.catalog["common.general.expertGuide"], icon: "users-gear" }] : [])
   ];
 
   return (
     <div className="sales-card animate-fade">
       <PageSubHeader
-        title={i18n.catalog["text_659aa2733c32"]}
+        title={i18n.catalog["common.general.knowledgeBase"]}
         titleIcon="book"
         searchInput={
           <SearchableSelect
@@ -200,7 +200,7 @@ export function KnowledgeBase() {
               setSearchTerm(val);
               setCurrentPage(1);
             }}
-            placeholder={i18n.catalog["text_76b858f96489"]}
+            placeholder={i18n.catalog["common.general.search"]}
             className="search-input"
           />
         }
@@ -212,7 +212,7 @@ export function KnowledgeBase() {
                 variant="primary"
                 icon="plus"
               >
-                {i18n.catalog["text_cca90b30125e"]}</Button>
+                {i18n.catalog["common.general.addArticle"]}</Button>
             </>}
             {activeTab === "expertise" && canAccess("expertise", "create") &&
               <Button
@@ -220,7 +220,7 @@ export function KnowledgeBase() {
                 variant="primary"
                 icon="plus"
               >
-                {i18n.catalog["text_f2a9dc2e107b"]}</Button>}
+                {i18n.catalog["common.general.addExperience"]}</Button>}
           </>
         }
       />
@@ -228,35 +228,35 @@ export function KnowledgeBase() {
       <TabNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
       {activeTab === "knowledge" ? (
-        <Table columns={articleColumns} data={articles} keyExtractor={(i) => i.id.toString()} emptyMessage={i18n.catalog["text_6c99c54f872e"]} isLoading={isLoading} pagination={{ currentPage, totalPages, onPageChange: setCurrentPage }} />
+        <Table columns={articleColumns} data={articles} keyExtractor={(i) => i.id.toString()} emptyMessage={i18n.catalog["common.general.noArticles"]} isLoading={isLoading} pagination={{ currentPage, totalPages, onPageChange: setCurrentPage }} />
       ) : (
-        <Table columns={expertColumns} data={expertise} keyExtractor={(i) => i.id.toString()} emptyMessage={i18n.catalog["text_ea52378c2cd1"]} isLoading={isLoading} pagination={{ currentPage, totalPages, onPageChange: setCurrentPage }} />
+        <Table columns={expertColumns} data={expertise} keyExtractor={(i) => i.id.toString()} emptyMessage={i18n.catalog["common.general.noExperts"]} isLoading={isLoading} pagination={{ currentPage, totalPages, onPageChange: setCurrentPage }} />
       )}
 
       {/* Create Article Dialog */}
-      <Dialog isOpen={showArticleDialog} onClose={() => setShowArticleDialog(false)} title={i18n.catalog["text_6c323640d3b8"]} maxWidth="700px">
+      <Dialog isOpen={showArticleDialog} onClose={() => setShowArticleDialog(false)} title={i18n.catalog["common.general.addNewArticle"]} maxWidth="700px">
         <div className="space-y-4">
-          <TextInput label={i18n.catalog["text_7bb7b5920521"]} value={articleForm.title} onChange={(e) => setArticleForm({ ...articleForm, title: e.target.value })} />
+          <TextInput label={i18n.catalog["common.general.address"]} value={articleForm.title} onChange={(e) => setArticleForm({ ...articleForm, title: e.target.value })} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Select
-              label={i18n.catalog["text_ff61fb213ffc"]}
+              label={i18n.catalog["common.general.category"]}
               value={articleForm.category}
               onChange={(e) => setArticleForm({ ...articleForm, category: e.target.value })}
               options={Object.entries(categoryLabels).map(([value, label]) => ({ value, label }))}
             />
-            <TextInput label={i18n.catalog["text_bdb46fd8fa2c"]} value={articleForm.tags} onChange={(e) => setArticleForm({ ...articleForm, tags: e.target.value })} placeholder={i18n.catalog["text_2743f00cdeb1"]} />
+            <TextInput label={i18n.catalog["common.general.tags"]} value={articleForm.tags} onChange={(e) => setArticleForm({ ...articleForm, tags: e.target.value })} placeholder={i18n.catalog["common.general.tag1Tag2"]} />
           </div>
-          <Textarea label={i18n.catalog["text_0d7abc9a6d74"]} value={articleForm.content} onChange={(e) => setArticleForm({ ...articleForm, content: e.target.value })} rows={8} />
+          <Textarea label={i18n.catalog["common.general.content"]} value={articleForm.content} onChange={(e) => setArticleForm({ ...articleForm, content: e.target.value })} rows={8} />
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <input type="checkbox" checked={articleForm.is_published} onChange={(e) => setArticleForm({ ...articleForm, is_published: e.target.checked })} id="is_published" />
-            <Label htmlFor="is_published" className="text-secondary">{i18n.catalog["text_1811127e0abb"]}</Label>
+            <Label htmlFor="is_published" className="text-secondary">{i18n.catalog["common.general.publishArticleImmediately"]}</Label>
           </div>
-          <div className="flex justify-end gap-2" style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}><Button variant="secondary" onClick={() => setShowArticleDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button><Button variant="primary" onClick={handleSaveArticle} icon="save">{i18n.catalog["text_ddfcaf9d0144"]}</Button></div>
+          <div className="flex justify-end gap-2" style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}><Button variant="secondary" onClick={() => setShowArticleDialog(false)}>{i18n.catalog["common.general.cancel"]}</Button><Button variant="primary" onClick={handleSaveArticle} icon="save">{i18n.catalog["common.general.save"]}</Button></div>
         </div>
       </Dialog>
 
       {/* Article Detail */}
-      <Dialog isOpen={showArticleDetail} onClose={() => setShowArticleDetail(false)} title={i18n.catalog["text_569916928c0a"]} maxWidth="700px">
+      <Dialog isOpen={showArticleDetail} onClose={() => setShowArticleDetail(false)} title={i18n.catalog["common.general.viewArticle"]} maxWidth="700px">
         {selectedArticle && <div className="space-y-4">
           <h3 style={{ margin: 0 }}>{selectedArticle.title}</h3>
           <div style={{ display: "flex", gap: "1rem", color: "var(--text-secondary)", fontSize: "0.85rem", alignItems: "center" }}>
@@ -264,60 +264,60 @@ export function KnowledgeBase() {
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>{getIcon("eye", "", 14)} {selectedArticle.view_count}</span>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>{getIcon("thumbs-up", "", 14)} {selectedArticle.helpful_count}</span>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>{getIcon("calendar", "", 14)} {formatDate(selectedArticle.created_at)}</span>
-            <span className={`badge ${selectedArticle.is_published ? "badge-success" : "badge-secondary"}`}>{selectedArticle.is_published ? i18n.catalog["text_74f0d5710a99"] : i18n.catalog["text_552aec56f591"]}</span>
+            <span className={`badge ${selectedArticle.is_published ? "badge-success" : "badge-secondary"}`}>{selectedArticle.is_published ? i18n.catalog["common.general.published"] : i18n.catalog["common.general.draft"]}</span>
           </div>
           {selectedArticle.tags && selectedArticle.tags.length > 0 && <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
             {selectedArticle.tags.map((t, i) => <span key={i} className="badge badge-info">{t}</span>)}
           </div>}
           <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.8, padding: "1rem", background: "var(--bg-secondary)", borderRadius: "8px" }}>{selectedArticle.content}</div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Button variant="secondary" onClick={() => handleMarkHelpful(selectedArticle.id)} icon="thumbs-up">{i18n.catalog["text_55cf1e58e096"]}</Button>
+            <Button variant="secondary" onClick={() => handleMarkHelpful(selectedArticle.id)} icon="thumbs-up">{i18n.catalog["common.general.helpful"]}</Button>
           </div>
         </div>}
       </Dialog>
 
       {/* Create Expertise Dialog */}
-      <Dialog isOpen={showExpertDialog} onClose={() => setShowExpertDialog(false)} title={i18n.catalog["text_fda68ae0af09"]} maxWidth="550px">
+      <Dialog isOpen={showExpertDialog} onClose={() => setShowExpertDialog(false)} title={i18n.catalog["common.general.addNewExperience"]} maxWidth="550px">
         <div className="space-y-4">
           <Select
-            label={i18n.catalog["text_972803dc7d86"]}
+            label={i18n.catalog["common.general.employee"]}
             value={expertForm.employee_id}
             onChange={(e) => setExpertForm({ ...expertForm, employee_id: e.target.value })}
-            placeholder={i18n.catalog["text_d6b8d3e4d508"]}
+            placeholder={i18n.catalog["common.general.select"]}
             options={employees.map((e: Employee) => ({ value: e.id.toString(), label: e.full_name }))}
           />
-          <TextInput label={i18n.catalog["text_4320d709076d"]} value={expertForm.skill_name} onChange={(e) => setExpertForm({ ...expertForm, skill_name: e.target.value })} />
+          <TextInput label={i18n.catalog["common.general.skill.alternative2"]} value={expertForm.skill_name} onChange={(e) => setExpertForm({ ...expertForm, skill_name: e.target.value })} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Select
-              label={i18n.catalog["text_eaa17fda7bfa"]}
+              label={i18n.catalog["common.general.competencyLevel"]}
               value={expertForm.proficiency_level}
               onChange={(e) => setExpertForm({ ...expertForm, proficiency_level: e.target.value })}
               options={Object.entries(profLabels).map(([value, label]) => ({ value, label }))}
             />
-            <TextInput label={i18n.catalog["text_324bf1664245"]} type="number" value={expertForm.years_of_experience} onChange={(e) => setExpertForm({ ...expertForm, years_of_experience: e.target.value })} />
+            <TextInput label={i18n.catalog["common.general.yearsExperience"]} type="number" value={expertForm.years_of_experience} onChange={(e) => setExpertForm({ ...expertForm, years_of_experience: e.target.value })} />
           </div>
-          <Textarea label={i18n.catalog["text_95023fc76e1b"]} value={expertForm.description} onChange={(e) => setExpertForm({ ...expertForm, description: e.target.value })} rows={3} />
+          <Textarea label={i18n.catalog["common.general.description.alternative2"]} value={expertForm.description} onChange={(e) => setExpertForm({ ...expertForm, description: e.target.value })} rows={3} />
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <input type="checkbox" checked={expertForm.is_available_for_projects} onChange={(e) => setExpertForm({ ...expertForm, is_available_for_projects: e.target.checked })} id="is_available_for_projects" />
-            <Label htmlFor="is_available_for_projects" className="text-secondary">{i18n.catalog["text_b0f6353ce55e"]}</Label>
+            <Label htmlFor="is_available_for_projects" className="text-secondary">{i18n.catalog["common.general.availableProjects"]}</Label>
           </div>
-          <div className="flex justify-end gap-2" style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}><Button variant="secondary" onClick={() => setShowExpertDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button><Button variant="primary" onClick={handleSaveExpert} icon="save">{i18n.catalog["text_ddfcaf9d0144"]}</Button></div>
+          <div className="flex justify-end gap-2" style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}><Button variant="secondary" onClick={() => setShowExpertDialog(false)}>{i18n.catalog["common.general.cancel"]}</Button><Button variant="primary" onClick={handleSaveExpert} icon="save">{i18n.catalog["common.general.save"]}</Button></div>
         </div>
       </Dialog>
 
       {/* Expertise Detail */}
-      <Dialog isOpen={showExpertDetail} onClose={() => setShowExpertDetail(false)} title={i18n.catalog["text_62465ff2bccb"]} maxWidth="550px">
+      <Dialog isOpen={showExpertDetail} onClose={() => setShowExpertDetail(false)} title={i18n.catalog["common.general.experienceDetails"]} maxWidth="550px">
         {selectedExpert && <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div><strong>{i18n.catalog["text_b6293eeef8b9"]}</strong> {selectedExpert.employee?.full_name}</div>
-            <div><strong>{i18n.catalog["text_5c529d2031d1"]}</strong> {selectedExpert.skill_name}</div>
-            <div><strong>{i18n.catalog["text_265474ed3570"]}</strong> <span className={`badge ${profBadges[selectedExpert.proficiency_level]}`}>{profLabels[selectedExpert.proficiency_level]}</span></div>
-            <div><strong>{i18n.catalog["text_fdd1ac4a04a2"]}</strong> {selectedExpert.years_of_experience} {i18n.catalog["text_2d54bea33ed4"]}</div>
-            <div><strong>{i18n.catalog["text_5da38d79a68c"]}</strong> <span className={`badge ${selectedExpert.is_available_for_projects ? "badge-success" : "badge-secondary"}`}>{selectedExpert.is_available_for_projects ? i18n.catalog["text_4b2d2c65d365"] : i18n.catalog["text_2bd073516a87"]}</span></div>
+            <div><strong>{i18n.catalog["common.general.employee.alternative2"]}</strong> {selectedExpert.employee?.full_name}</div>
+            <div><strong>{i18n.catalog["common.general.skill.alternative3"]}</strong> {selectedExpert.skill_name}</div>
+            <div><strong>{i18n.catalog["common.general.competency.alternative2"]}</strong> <span className={`badge ${profBadges[selectedExpert.proficiency_level]}`}>{profLabels[selectedExpert.proficiency_level]}</span></div>
+            <div><strong>{i18n.catalog["common.general.experience.alternative2"]}</strong> {selectedExpert.years_of_experience} {i18n.catalog["common.general.year"]}</div>
+            <div><strong>{i18n.catalog["common.general.available.alternative2"]}</strong> <span className={`badge ${selectedExpert.is_available_for_projects ? "badge-success" : "badge-secondary"}`}>{selectedExpert.is_available_for_projects ? i18n.catalog["common.general.yes"] : i18n.catalog["common.general.no"]}</span></div>
           </div>
-          {selectedExpert.description && <div><strong>{i18n.catalog["text_3ec7e12fb399"]}</strong><p>{selectedExpert.description}</p></div>}
+          {selectedExpert.description && <div><strong>{i18n.catalog["common.general.description"]}</strong><p>{selectedExpert.description}</p></div>}
           {selectedExpert.certifications && selectedExpert.certifications.length > 0 && <div>
-            <strong>{i18n.catalog["text_a05a497758d0"]}</strong>
+            <strong>{i18n.catalog["common.general.certificates"]}</strong>
             <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "0.25rem" }}>
               {selectedExpert.certifications.map((c, i) => <span key={i} className="badge badge-info">{c}</span>)}
             </div>

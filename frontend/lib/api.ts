@@ -1,4 +1,4 @@
-import { catalogMessage } from "@/lib/i18n";
+import { catalogMessage, getActiveLocale } from "@/lib/i18n";
 import { API_ENDPOINTS } from "./endpoints";
 export {
   formatDate,
@@ -19,9 +19,10 @@ const getApiBase = () => {
 };
 
 const API_BASE = getApiBase();
+const AUTH_ENDPOINT_SEGMENTS = ["v2/check", "v2/login", "v2/logout", "auth/check", "auth/login", "auth/logout"] as const;
 
 if (!process.env.NEXT_PUBLIC_API_BASE || process.env.NEXT_PUBLIC_API_BASE === 'undefined') {
-  console.warn(catalogMessage("text_65f60640bc8a") + API_BASE);
+  console.warn(catalogMessage("platform.api.nextPublicApiBaseIsNotDefinedIsUndefinedUsingFallback") + API_BASE);
 }
 
 /**
@@ -30,8 +31,12 @@ if (!process.env.NEXT_PUBLIC_API_BASE || process.env.NEXT_PUBLIC_API_BASE === 'u
 export interface APIResponse<T = any> {
   /** Indicates if the operation was successful */
   success?: boolean;
-  /** Human-readable message (often in Arabic) */
+  /** Localized human-readable message selected by the API request locale. */
   message?: string;
+  /** Stable semantic API message key, when the endpoint uses the shared localized response contract. */
+  message_key?: string;
+  /** Response metadata, including the resolved endpoint locale. */
+  meta?: { locale?: string; language_tag?: string; [key: string]: unknown };
   /** Primary record ID if applicable */
   id?: number | string;
   /** Additional data fields returned by the server */
@@ -42,7 +47,7 @@ export interface APIResponse<T = any> {
 /**
  * Options for the fetchAPI utility.
  */
-interface FetchOptions {
+export interface FetchOptions {
   /** HTTP method to use */
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   /** JSON string for the request body */
@@ -59,24 +64,30 @@ interface FetchOptions {
  * @param options Configuration for the fetch request
  * @returns A promise resolving to the standard APIResponse structure
  */
-export async function fetchAPI<T = unknown>(
-  action: string,
-  options?: FetchOptions
-): Promise<APIResponse<T>> 
-{
+export function createApiRequestHeaders(options?: FetchOptions): Record<string, string> {
+  const activeLocale = getActiveLocale();
   const headers: Record<string, string> = {
     'Content-Type': "application/json",
     'Accept': "application/json",
+    'Accept-Language': activeLocale,
+    'X-Accore-Locale': activeLocale,
     ...options?.headers,
   };
 
-  // Add session token to headers if it exists
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('sessionToken');
-    if (token) {
-      headers['X-Session-Token'] = token;
-    }
+    if (token) headers['X-Session-Token'] = token;
   }
+
+  return headers;
+}
+
+export async function fetchAPI<T = unknown>(
+  action: string,
+  options?: FetchOptions
+): Promise<APIResponse<T>>
+{
+  const headers = createApiRequestHeaders(options);
 
   const fetchOptions: RequestInit = {
     method: options?.method || 'GET',
@@ -94,14 +105,14 @@ export async function fetchAPI<T = unknown>(
       .replace(/^api\//, "") // Remove api/ prefix
       .replace(/^\?/, ""); // Remove leading ? if any
 
-    const isAuthEndpoint = cleanAction.includes(catalogMessage("text_975a0ada7b40")) || cleanAction.includes(catalogMessage("text_a0201c7e6498")) || cleanAction.includes(catalogMessage("text_aebd8f0f4a5e")) || cleanAction.includes(catalogMessage("text_0d5e0fdaf762")) || cleanAction.includes(catalogMessage("text_0d2f2671e84c")) || cleanAction.includes(catalogMessage("text_a3a49032ecd3"));
+    const isAuthEndpoint = AUTH_ENDPOINT_SEGMENTS.some((segment) => cleanAction.includes(segment));
 
     // --- Fast Fail block: Stop all network requests if session is already expired ---
     if (typeof window !== 'undefined') {
       try {
         const { useAuthStore } = await import("@/stores/useAuthStore");
         if (useAuthStore.getState().sessionExpired && !isAuthEndpoint) {
-          return { success: false, message: catalogMessage("text_c4741d7adbc9") };
+          return { success: false, message: catalogMessage("platform.api.unauthorizedSessionExpired") };
         }
       } catch (e) {
         // ignore dynamic import errors
@@ -110,7 +121,7 @@ export async function fetchAPI<T = unknown>(
 
     // Laravel uses RESTful paths.
     // Ensure we don't have double slashes if action is empty
-    const url = cleanAction ? catalogMessage("text_0907f4dfb304", { value0: API_BASE, value1: cleanAction }) : API_BASE;
+    const url = cleanAction ? `${API_BASE}/${cleanAction}` : API_BASE;
 
     const response = await fetch(url as string, fetchOptions);
 
@@ -129,7 +140,7 @@ export async function fetchAPI<T = unknown>(
           }
         }
       }
-      return { success: false, message: response.status === 403 ? catalogMessage("text_73056c6772bf") : catalogMessage("text_d089c8a9fc28") };
+      return { success: false, message: response.status === 403 ? catalogMessage("platform.api.accessDeniedPermissionsSynchronized") : catalogMessage("platform.api.unauthorized") };
     }
 
     if (!response.ok) {
@@ -137,18 +148,18 @@ export async function fetchAPI<T = unknown>(
         const errData = await response.json();
         return {
           success: false,
-          message: errData.message || catalogMessage("text_b8290576edf7", { value0: response.status }),
+          message: errData.message || catalogMessage("common.general.httpError", { value0: response.status }),
         };
       } catch {
-        return { success: false, message: catalogMessage("text_b8290576edf7", { value0: response.status }) };
+        return { success: false, message: catalogMessage("common.general.httpError", { value0: response.status }) };
       }
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error(catalogMessage("text_16e74a071ca9"), error);
-    return { success: false, message: catalogMessage("text_e7a68cd7868b") };
+    console.error(catalogMessage("platform.api.apiError"), error);
+    return { success: false, message: catalogMessage("platform.api.connectionErrorPleaseTryAgain") };
   }
 }
 

@@ -36,7 +36,7 @@ export function Contracts() {
             setContracts(res.data as EmployeeContract[] || []);
             setTotalPages(Number(res.last_page) || 1);
         } catch (error) {
-            console.error(i18n.catalog["text_2aa4050b1359"], error);
+            console.error(i18n.catalog["humanCapital.contracts.failedLoadContracts"], error);
         } finally {
             setIsLoading(false);
         }
@@ -44,10 +44,10 @@ export function Contracts() {
 
     const getContractTypeLabel = (type: string) => {
         switch (type) {
-            case 'full_time': return i18n.catalog["text_ae607c34c510"];
-            case 'part_time': return i18n.catalog["text_68b482db7711"];
-            case 'contract': return i18n.catalog["text_eef75f5b33a4"];
-            case 'freelance': return i18n.catalog["text_7d6bc53d4745"];
+            case 'full_time': return i18n.catalog["common.general.fullTime"];
+            case 'part_time': return i18n.catalog["common.general.partTime"];
+            case 'contract': return i18n.catalog["common.general.contract"];
+            case 'freelance': return i18n.catalog["common.general.freelance"];
             default: return type;
         }
     };
@@ -55,8 +55,8 @@ export function Contracts() {
     const columns: Column<EmployeeContract>[] = [
         {
             key: "employee",
-            header: i18n.catalog["text_b71a39c832a6"],
-            dataLabel: i18n.catalog["text_b71a39c832a6"],
+            header: i18n.catalog["common.general.employee.alternative3"],
+            dataLabel: i18n.catalog["common.general.employee.alternative3"],
             render: (item) => (
                 <div>
                     <div className="font-semibold">{item.employee?.full_name || '-'}</div>
@@ -66,32 +66,32 @@ export function Contracts() {
         },
         {
             key: "contract_number",
-            header: i18n.catalog["text_490c244f7546"],
-            dataLabel: i18n.catalog["text_490c244f7546"],
+            header: i18n.catalog["common.general.contractNumber"],
+            dataLabel: i18n.catalog["common.general.contractNumber"],
             render: (item) => <code className="text-primary">{item.contract_number}</code>
         },
         {
             key: "contract_start_date",
-            header: i18n.catalog["text_90f719b91522"],
-            dataLabel: i18n.catalog["text_90f719b91522"],
+            header: i18n.catalog["common.general.startDate.alternative2"],
+            dataLabel: i18n.catalog["common.general.startDate.alternative2"],
             render: (item) => formatDate(item.contract_start_date)
         },
         {
             key: "contract_end_date",
-            header: i18n.catalog["text_ec3093bd6fd5"],
-            dataLabel: i18n.catalog["text_ec3093bd6fd5"],
-            render: (item) => item.contract_end_date ? formatDate(item.contract_end_date) : i18n.catalog["text_5a0374f3ff5a"]
+            header: i18n.catalog["common.general.endDate.alternative2"],
+            dataLabel: i18n.catalog["common.general.endDate.alternative2"],
+            render: (item) => item.contract_end_date ? formatDate(item.contract_end_date) : i18n.catalog["common.general.unspecified"]
         },
         {
             key: "base_salary",
-            header: i18n.catalog["text_73ad6b20ceb7"],
-            dataLabel: i18n.catalog["text_73ad6b20ceb7"],
+            header: i18n.catalog["common.general.basicSalary"],
+            dataLabel: i18n.catalog["common.general.basicSalary"],
             render: (item) => formatCurrency(item.base_salary)
         },
         {
             key: "contract_type",
-            header: i18n.catalog["text_2b9fa3db572a"],
-            dataLabel: i18n.catalog["text_2b9fa3db572a"],
+            header: i18n.catalog["common.general.contractType"],
+            dataLabel: i18n.catalog["common.general.contractType"],
             render: (item) => (
                 <span className="badge badge-outline">
                     {getContractTypeLabel(item.contract_type)}
@@ -100,30 +100,30 @@ export function Contracts() {
         },
         {
             key: "is_current",
-            header: i18n.catalog["text_c3a4749caed4"],
-            dataLabel: i18n.catalog["text_c3a4749caed4"],
+            header: i18n.catalog["common.general.status.alternative2"],
+            dataLabel: i18n.catalog["common.general.status.alternative2"],
             render: (item) => (
                 <span className={`badge ${item.is_current ? 'badge-success' : 'badge-secondary'}`}>
-                    {item.is_current ? i18n.catalog["text_e7e4a3bf3fb7"] : i18n.catalog["text_8328def359a0"]}
+                    {item.is_current ? i18n.catalog["common.general.valid.alternative4"] : i18n.catalog["humanCapital.contracts.expiredPrevious"]}
                 </span>
             )
         },
         {
             key: "id",
-            header: i18n.catalog["text_7797240d6caf"],
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (item) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "eye",
-                            title: i18n.catalog["text_4b615d0e6dd2"],
+                            title: i18n.catalog["common.general.viewDetails"],
                             variant: "view",
                             onClick: () => router.push(`/06-human-capital/workforce-admin/employee-master/contracts/view/${item.id}`)
                         },
                         ...(canAccess("employees", "edit") ? [{
                             icon: "edit" as const,
-                            title: i18n.catalog["text_113d570d6555"],
+                            title: i18n.catalog["common.general.edit"],
                             variant: "edit" as const,
                             onClick: () => router.push(`/06-human-capital/workforce-admin/employee-master/contracts/edit/${item.id}`)
                         }] : [])
@@ -136,7 +136,7 @@ export function Contracts() {
     return (
         <div className="sales-card animate-fade">
             <PageSubHeader
-                title={i18n.catalog["text_97fe2c7ce722"]}
+                title={i18n.catalog["common.general.contractsAgreements"]}
                 titleIcon="file-contract"
                 searchInput={
                     <SearchableSelect
@@ -147,7 +147,7 @@ export function Contracts() {
                             setSearchTerm(val);
                             setCurrentPage(1);
                         }}
-                        placeholder={i18n.catalog["text_5b0c6ee40285"]}
+                        placeholder={i18n.catalog["humanCapital.contracts.searchContracts"]}
                         className="search-input"
                     />
                 }
@@ -158,7 +158,7 @@ export function Contracts() {
                             variant="primary"
                             icon="plus"
                         >
-                            {i18n.catalog["text_434bdd711ace"]}</Button>
+                            {i18n.catalog["humanCapital.contracts.addContract"]}</Button>
                     )
                 }
             />
@@ -167,7 +167,7 @@ export function Contracts() {
                 columns={columns}
                 data={contracts}
                 keyExtractor={(item) => item.id.toString()}
-                emptyMessage={i18n.catalog["text_f80b6f6a58b0"]}
+                emptyMessage={i18n.catalog["humanCapital.contracts.noContractsRegistered"]}
                 isLoading={isLoading}
                 pagination={{
                     currentPage,

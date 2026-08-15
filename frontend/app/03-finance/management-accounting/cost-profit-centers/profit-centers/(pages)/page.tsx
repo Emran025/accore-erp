@@ -76,17 +76,17 @@ interface Summary {
 
 // ── Type translations ────────────────────────────────────────────────
 const TYPE_MAP: Record<string, string> = {
-    business_unit: catalogMessage("text_1d2fe8db5b7f"),
-    product_line: catalogMessage("text_1fbe6f5eb4db"),
-    region: catalogMessage("text_052b85f7c655"),
-    branch: catalogMessage("text_28adde4ba2a8"),
+    business_unit: catalogMessage("common.general.businessUnit"),
+    product_line: catalogMessage("common.general.productLine"),
+    region: catalogMessage("common.general.area"),
+    branch: catalogMessage("common.general.branch"),
 };
 
 const TYPE_OPTIONS = [
-    { value: "business_unit", label: catalogMessage("text_1d2fe8db5b7f") },
-    { value: "product_line", label: catalogMessage("text_1fbe6f5eb4db") },
-    { value: "region", label: catalogMessage("text_052b85f7c655") },
-    { value: "branch", label: catalogMessage("text_28adde4ba2a8") },
+    { value: "business_unit", label: catalogMessage("common.general.businessUnit") },
+    { value: "product_line", label: catalogMessage("common.general.productLine") },
+    { value: "region", label: catalogMessage("common.general.area") },
+    { value: "branch", label: catalogMessage("common.general.branch") },
 ];
 
 const TYPE_COLORS: Record<string, string> = {
@@ -153,10 +153,10 @@ export default function ProfitCentersPage() {
                 setTotalPages(Math.ceil(total / itemsPerPage));
                 setCurrentPage(page);
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_6bdab06f5e5c"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["finance.profitCenters.failedLoadProfitCenters"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.errorConnectingServer"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -220,15 +220,15 @@ export default function ProfitCentersPage() {
             if (response.success) {
                 showAlert(
                     "alert-container",
-                    currentlyActive ? i18n.catalog["text_4b305b1d7000"] : i18n.catalog["text_e88ae5b85423"],
+                    currentlyActive ? i18n.catalog["common.general.positionClosedOrganizationalStructureUpdated"] : i18n.catalog["common.general.centerOpenedOrganizationalStructureUpdated"],
                     "success"
                 );
                 await Promise.all([loadCenters(currentPage, searchTerm, filterType), loadLookups()]);
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_6766d88b51c9"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["common.general.failedChangeCenterStatus"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_1ac65f6d78f4"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.connectionError"], "error");
         }
     };
 
@@ -255,7 +255,7 @@ export default function ProfitCentersPage() {
             const num = parseInt(c.code.replace(/\D/g, "")) || 0;
             return num > max ? num : max;
         }, 0);
-        setFormCode(catalogText(i18n, "text_a5e5fd08d2c6", { value0: String(maxNum + 1).padStart(3, "0") }));
+        setFormCode(catalogText(i18n, "finance.profitCenters.pc", { value0: String(maxNum + 1).padStart(3, "0") }));
         setFormDialog(true);
     };
 
@@ -280,7 +280,7 @@ export default function ProfitCentersPage() {
 
     const saveCenter = async () => {
         if (!formCode || !formName) {
-            showAlert("alert-container", i18n.catalog["text_9bb430444d33"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.pleaseFillRequiredFieldsCodeName"], "error");
             return;
         }
 
@@ -311,15 +311,15 @@ export default function ProfitCentersPage() {
             });
 
             if (response.success) {
-                showAlert("alert-container", editId ? i18n.catalog["text_b2ea5e32ca3f"] : i18n.catalog["text_529a7b46d289"], "success");
+                showAlert("alert-container", editId ? i18n.catalog["finance.profitCenters.profitCenterUpdated"] : i18n.catalog["finance.profitCenters.profitCenterCreated"], "success");
                 setFormDialog(false);
                 resetForm();
                 await Promise.all([loadCenters(currentPage, searchTerm, filterType), loadLookups()]);
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_b0dbba00004b"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["common.general.failedSave"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.errorConnectingServer"], "error");
         }
     };
 
@@ -333,15 +333,15 @@ export default function ProfitCentersPage() {
         try {
             const response = await fetchAPI(API_ENDPOINTS.FINANCE.PROFIT_CENTERS.withId(deleteId), { method: "DELETE" });
             if (response.success) {
-                showAlert("alert-container", i18n.catalog["text_af3d76f80abe"], "success");
+                showAlert("alert-container", i18n.catalog["finance.profitCenters.profitCenterDeleted"], "success");
                 setConfirmDialog(false);
                 setDeleteId(null);
                 await Promise.all([loadCenters(currentPage, searchTerm, filterType), loadLookups()]);
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_f46bfc521612"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["common.general.deletionFailed"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_3bdb299872fb"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.deletionError"], "error");
         }
     };
 
@@ -349,8 +349,8 @@ export default function ProfitCentersPage() {
     const columns: Column<ProfitCenter>[] = [
         {
             key: "code",
-            header: i18n.catalog["text_e28ef005ab68"],
-            dataLabel: i18n.catalog["text_e28ef005ab68"],
+            header: i18n.catalog["common.general.code.alternative4"],
+            dataLabel: i18n.catalog["common.general.code.alternative4"],
             render: (item) => (
                 <span style={{ fontFamily: "monospace", fontWeight: 700, color: "var(--accent-primary)" }}>
                     {item.code}
@@ -359,8 +359,8 @@ export default function ProfitCentersPage() {
         },
         {
             key: "name",
-            header: i18n.catalog["text_52ab09847cf8"],
-            dataLabel: i18n.catalog["text_52ab09847cf8"],
+            header: i18n.catalog["common.general.name"],
+            dataLabel: i18n.catalog["common.general.name"],
             render: (item) => (
                 <div>
                     <strong>{item.name}</strong>
@@ -370,8 +370,8 @@ export default function ProfitCentersPage() {
         },
         {
             key: "type",
-            header: i18n.catalog["text_caa3f2bb4a36"],
-            dataLabel: i18n.catalog["text_caa3f2bb4a36"],
+            header: i18n.catalog["common.general.type.alternative3"],
+            dataLabel: i18n.catalog["common.general.type.alternative3"],
             render: (item) => (
                 <span className={`badge ${TYPE_COLORS[item.type] || "badge-secondary"}`}>
                     {TYPE_MAP[item.type] || item.type}
@@ -380,18 +380,18 @@ export default function ProfitCentersPage() {
         },
         {
             key: "parent_name",
-            header: i18n.catalog["text_737f847aa339"],
-            dataLabel: i18n.catalog["text_737f847aa339"],
+            header: i18n.catalog["common.general.parentCenter"],
+            dataLabel: i18n.catalog["common.general.parentCenter"],
             render: (item) => item.parent_name ? (
                 <span className="badge badge-secondary">{item.parent_name}</span>
             ) : (
-                <span style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>{i18n.catalog["text_48edee59831b"]}</span>
+                <span style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>{i18n.catalog["common.general.primary"]}</span>
             ),
         },
         {
             key: "actual_revenue",
-            header: i18n.catalog["text_8188deffd656"],
-            dataLabel: i18n.catalog["text_8188deffd656"],
+            header: i18n.catalog["common.general.revenue"],
+            dataLabel: i18n.catalog["common.general.revenue"],
             render: (item) => (
                 <span style={{ color: "#10b981", fontWeight: 600 }}>
                     {formatCurrency(item.actual_revenue)}
@@ -400,8 +400,8 @@ export default function ProfitCentersPage() {
         },
         {
             key: "actual_expense",
-            header: i18n.catalog["text_4d514b65a483"],
-            dataLabel: i18n.catalog["text_4d514b65a483"],
+            header: i18n.catalog["common.general.expenses"],
+            dataLabel: i18n.catalog["common.general.expenses"],
             render: (item) => (
                 <span style={{ color: "#ef4444", fontWeight: 600 }}>
                     {formatCurrency(item.actual_expense)}
@@ -410,8 +410,8 @@ export default function ProfitCentersPage() {
         },
         {
             key: "net_profit",
-            header: i18n.catalog["text_cceeb6ff14e3"],
-            dataLabel: i18n.catalog["text_cceeb6ff14e3"],
+            header: i18n.catalog["common.general.netProfit"],
+            dataLabel: i18n.catalog["common.general.netProfit"],
             render: (item) => (
                 <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                     <span style={{
@@ -434,8 +434,8 @@ export default function ProfitCentersPage() {
         },
         {
             key: "revenue_achievement",
-            header: i18n.catalog["text_cc5f3d22d8b8"],
-            dataLabel: i18n.catalog["text_cc5f3d22d8b8"],
+            header: i18n.catalog["common.general.investigation"],
+            dataLabel: i18n.catalog["common.general.investigation"],
             render: (item) => {
                 if (!item.revenue_target) return <span style={{ color: "var(--text-muted)" }}>—</span>;
                 const pct = item.revenue_achievement;
@@ -469,16 +469,16 @@ export default function ProfitCentersPage() {
         },
         {
             key: "is_active",
-            header: i18n.catalog["text_c3a4749caed4"],
-            dataLabel: i18n.catalog["text_c3a4749caed4"],
+            header: i18n.catalog["common.general.status.alternative2"],
+            dataLabel: i18n.catalog["common.general.status.alternative2"],
             render: (item) => (
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                     <span className={`badge ${item.is_active ? "badge-success" : "badge-danger"}`}>
-                        {item.is_active ? i18n.catalog["text_46ea59915eec"] : i18n.catalog["text_e655261f9c96"]}
+                        {item.is_active ? i18n.catalog["common.general.open"] : i18n.catalog["common.general.closed.alternative2"]}
                     </span>
                     {item.structure_node_uuid && (
                         <span
-                            title={i18n.catalog["text_47d45034947d"]}
+                            title={i18n.catalog["common.general.linkedOrganizationalStructure"]}
                             style={{
                                 display: "inline-flex",
                                 alignItems: "center",
@@ -499,28 +499,28 @@ export default function ProfitCentersPage() {
         },
         {
             key: "actions",
-            header: i18n.catalog["text_7797240d6caf"],
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (item) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: item.is_active ? "x-octagon" : "check-circle",
-                            title: item.is_active ? i18n.catalog["text_ffe852986bcb"] : i18n.catalog["text_7faca43b0eea"],
+                            title: item.is_active ? i18n.catalog["common.general.closeCenter"] : i18n.catalog["common.general.openCenter"],
                             variant: item.is_active ? "warning" : "success",
                             onClick: () => toggleCenterStatus(item.id, item.is_active),
                             hidden: !canAccess(permissions, "chart_of_accounts", "edit"),
                         },
                         {
                             icon: "edit",
-                            title: i18n.catalog["text_113d570d6555"],
+                            title: i18n.catalog["common.general.edit"],
                             variant: "edit",
                             onClick: () => openEditDialog(item.id),
                             hidden: !canAccess(permissions, "chart_of_accounts", "edit"),
                         },
                         {
                             icon: "trash",
-                            title: i18n.catalog["text_59ca629220a6"],
+                            title: i18n.catalog["common.general.delete"],
                             variant: "delete",
                             onClick: () => confirmDelete(item.id),
                             hidden: !canAccess(permissions, "chart_of_accounts", "delete"),
@@ -542,28 +542,28 @@ export default function ProfitCentersPage() {
                     KPICards={[
                         {
                             icon: "trending-up",
-                            label: i18n.catalog["text_edc532b68ce9"],
+                            label: i18n.catalog["finance.profitCenters.activeProfitCenters"],
                             value: summary.profit_centers_count,
                             color: "#3b82f6",
-                            subtitle: i18n.catalog["text_b07d41d5c211"],
+                            subtitle: i18n.catalog["finance.profitCenters.profitCenter"],
                         },
                         {
                             icon: "coins",
-                            label: i18n.catalog["text_5f8d135d6d92"],
+                            label: i18n.catalog["common.general.totalRevenue"],
                             value: summary.total_revenue,
                             color: "#10b981",
                             subtitle: formatCurrency(summary.total_revenue),
                         },
                         {
                             icon: "credit-card",
-                            label: i18n.catalog["text_03a4c3145ccb"],
+                            label: i18n.catalog["common.general.totalExpenses"],
                             value: summary.total_expense,
                             color: "#ef4444",
                             subtitle: formatCurrency(summary.total_expense),
                         },
                         {
                             icon: "pie-chart",
-                            label: i18n.catalog["text_cceeb6ff14e3"],
+                            label: i18n.catalog["common.general.netProfit"],
                             value: summary.net_profit,
                             color: getProfitColor(summary.net_profit),
                             subtitle: formatCurrency(summary.net_profit),
@@ -577,9 +577,9 @@ export default function ProfitCentersPage() {
                     user={user}
                     searchInput={
                         <SearchableSelect
-                            placeholder={i18n.catalog["text_eda980b83daa"]}
+                            placeholder={i18n.catalog["common.general.searchCodeName"]}
                             value={searchTerm}
-                            options={centers.map((c) => ({ value: c.name, label: catalogText(i18n, "text_2a9059a3c52f", { value0: c.code, value1: c.name }) }))}
+                            options={centers.map((c) => ({ value: c.name, label: catalogText(i18n, "common.general.notAvailable", { value0: c.code, value1: c.name }) }))}
                             onChange={(val) => setSearchTerm(val?.toString() || "")}
                             onSearch={(term) => setSearchTerm(term)}
                             className="header-search-bar"
@@ -590,7 +590,7 @@ export default function ProfitCentersPage() {
                         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
                             <SegmentedToggle
                                 options={[
-                                    { value: "all", label: i18n.catalog["text_65f276da33cf"] },
+                                    { value: "all", label: i18n.catalog["common.general.all"] },
                                     ...TYPE_OPTIONS,
                                 ]}
                                 value={filterType}
@@ -598,7 +598,7 @@ export default function ProfitCentersPage() {
                             />
                             {canAccess(permissions, "chart_of_accounts", "create") && (
                                 <Button variant="primary" onClick={openAddDialog} icon="plus">
-                                    {i18n.catalog["text_42e7fa6997d6"]}</Button>
+                                    {i18n.catalog["finance.profitCenters.newProfitCenter"]}</Button>
                             )}
                         </div>
                     }
@@ -608,7 +608,7 @@ export default function ProfitCentersPage() {
                     columns={columns}
                     data={centers}
                     keyExtractor={(item) => item.id}
-                    emptyMessage={i18n.catalog["text_b9404ab5f99a"]}
+                    emptyMessage={i18n.catalog["finance.profitCenters.noProfitCentersRegistered"]}
                     isLoading={isLoading}
                     pagination={{
                         currentPage,
@@ -622,27 +622,27 @@ export default function ProfitCentersPage() {
             <Dialog
                 isOpen={formDialog}
                 onClose={() => setFormDialog(false)}
-                title={editId ? i18n.catalog["text_f180666de215"] : i18n.catalog["text_3830b0c11107"]}
+                title={editId ? i18n.catalog["finance.profitCenters.editProfitCenter"] : i18n.catalog["finance.profitCenters.addNewProfitCenter"]}
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setFormDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
-                        <Button variant="primary" onClick={saveCenter}>{i18n.catalog["text_ddfcaf9d0144"]}</Button>
+                        <Button variant="secondary" onClick={() => setFormDialog(false)}>{i18n.catalog["common.general.cancel"]}</Button>
+                        <Button variant="primary" onClick={saveCenter}>{i18n.catalog["common.general.save"]}</Button>
                     </>
                 }
             >
                 <form onSubmit={(e) => { e.preventDefault(); saveCenter(); }}>
                     <div className="form-row">
                         <TextInput
-                            label={i18n.catalog["text_d7e401b615ba"]}
+                            label={i18n.catalog["common.general.code.alternative3"]}
                             id="pc-code"
                             value={formCode}
                             onChange={(e) => setFormCode(e.target.value)}
                             required
                             className="flex-1"
-                            placeholder={i18n.catalog["text_f082ecc021f2"]}
+                            placeholder={i18n.catalog["finance.profitCenters.pc001"]}
                         />
                         <Select
-                            label={i18n.catalog["text_caa3f2bb4a36"]}
+                            label={i18n.catalog["common.general.type.alternative3"]}
                             id="pc-type"
                             value={formType}
                             onChange={(e) => setFormType(e.target.value)}
@@ -653,7 +653,7 @@ export default function ProfitCentersPage() {
 
                     <div className="form-row">
                         <TextInput
-                            label={i18n.catalog["text_b90b881d800d"]}
+                            label={i18n.catalog["common.general.nameArabic"]}
                             id="pc-name"
                             value={formName}
                             onChange={(e) => setFormName(e.target.value)}
@@ -661,7 +661,7 @@ export default function ProfitCentersPage() {
                             className="flex-1"
                         />
                         <TextInput
-                            label={i18n.catalog["text_07450d9ff8ed"]}
+                            label={i18n.catalog["common.general.nameEnglish"]}
                             id="pc-name-en"
                             value={formNameEn}
                             onChange={(e) => setFormNameEn(e.target.value)}
@@ -671,26 +671,26 @@ export default function ProfitCentersPage() {
 
                     <div className="form-row">
                         <Select
-                            label={i18n.catalog["text_737f847aa339"]}
+                            label={i18n.catalog["common.general.parentCenter"]}
                             id="pc-parent"
                             value={formParentId}
                             onChange={(e) => setFormParentId(e.target.value)}
                             className="flex-1"
                             options={[
-                                { value: "", label: i18n.catalog["text_16f6e8e85cf0"] },
+                                { value: "", label: i18n.catalog["common.general.noneHeadOffice"] },
                                 ...centers
                                     .filter((c) => c.id !== editId)
-                                    .map((c) => ({ value: String(c.id), label: catalogText(i18n, "text_2a9059a3c52f", { value0: c.code, value1: c.name }) })),
+                                    .map((c) => ({ value: String(c.id), label: catalogText(i18n, "common.general.notAvailable", { value0: c.code, value1: c.name }) })),
                             ]}
                         />
                         <Select
-                            label={i18n.catalog["text_98ea1b1cf854"]}
+                            label={i18n.catalog["common.general.responsibleManager"]}
                             id="pc-manager"
                             value={formManagerId}
                             onChange={(e) => setFormManagerId(e.target.value)}
                             className="flex-1"
                             options={[
-                                { value: "", label: i18n.catalog["text_d61e2f352ee3"] },
+                                { value: "", label: i18n.catalog["common.general.unassigned"] },
                                 ...employees.map((emp) => ({ value: String(emp.id), label: emp.name })),
                             ]}
                         />
@@ -698,32 +698,32 @@ export default function ProfitCentersPage() {
 
                     <div className="form-row">
                         <Select
-                            label={i18n.catalog["text_655ae4e5b345"]}
+                            label={i18n.catalog["finance.profitCenters.revenueAccount"]}
                             id="pc-revenue-account"
                             value={formRevenueAccountId}
                             onChange={(e) => setFormRevenueAccountId(e.target.value)}
                             className="flex-1"
                             options={[
-                                { value: "", label: i18n.catalog["text_10d55a2623de"] },
-                                ...accounts.map((a) => ({ value: String(a.id), label: catalogText(i18n, "text_2a9059a3c52f", { value0: a.account_code, value1: a.account_name }) })),
+                                { value: "", label: i18n.catalog["common.general.unlinked"] },
+                                ...accounts.map((a) => ({ value: String(a.id), label: catalogText(i18n, "common.general.notAvailable", { value0: a.account_code, value1: a.account_name }) })),
                             ]}
                         />
                         <Select
-                            label={i18n.catalog["text_9d4aed28b0af"]}
+                            label={i18n.catalog["finance.profitCenters.expenseAccount"]}
                             id="pc-expense-account"
                             value={formExpenseAccountId}
                             onChange={(e) => setFormExpenseAccountId(e.target.value)}
                             className="flex-1"
                             options={[
-                                { value: "", label: i18n.catalog["text_10d55a2623de"] },
-                                ...accounts.map((a) => ({ value: String(a.id), label: catalogText(i18n, "text_2a9059a3c52f", { value0: a.account_code, value1: a.account_name }) })),
+                                { value: "", label: i18n.catalog["common.general.unlinked"] },
+                                ...accounts.map((a) => ({ value: String(a.id), label: catalogText(i18n, "common.general.notAvailable", { value0: a.account_code, value1: a.account_name }) })),
                             ]}
                         />
                     </div>
 
                     <div className="form-row">
                         <NumberInput
-                            label={i18n.catalog["text_41e6fca5d7c3"]}
+                            label={i18n.catalog["finance.profitCenters.revenueTarget"]}
                             id="pc-revenue-target"
                             value={formRevenueTarget}
                             onChange={(val) => setFormRevenueTarget(val)}
@@ -732,7 +732,7 @@ export default function ProfitCentersPage() {
                             className="flex-1"
                         />
                         <NumberInput
-                            label={i18n.catalog["text_c3a08fcbbcb9"]}
+                            label={i18n.catalog["finance.profitCenters.expenseBudget"]}
                             id="pc-expense-budget"
                             value={formExpenseBudget}
                             onChange={(val) => setFormExpenseBudget(val)}
@@ -744,20 +744,20 @@ export default function ProfitCentersPage() {
 
                     <div className="form-row">
                         <Select
-                            label={i18n.catalog["text_c3a4749caed4"]}
+                            label={i18n.catalog["common.general.status.alternative2"]}
                             id="pc-status"
                             value={formIsActive}
                             onChange={(e) => setFormIsActive(e.target.value)}
                             className="flex-1"
                             options={[
-                                { value: "true", label: i18n.catalog["text_629e90b3af3d"] },
-                                { value: "false", label: i18n.catalog["text_b719ac8add4e"] },
+                                { value: "true", label: i18n.catalog["common.general.active"] },
+                                { value: "false", label: i18n.catalog["common.general.inactive"] },
                             ]}
                         />
                     </div>
 
                     <Textarea
-                        label={i18n.catalog["text_95023fc76e1b"]}
+                        label={i18n.catalog["common.general.description.alternative2"]}
                         id="pc-description"
                         value={formDescription}
                         onChange={(e) => setFormDescription(e.target.value)}
@@ -771,9 +771,9 @@ export default function ProfitCentersPage() {
                 isOpen={confirmDialog}
                 onClose={() => setConfirmDialog(false)}
                 onConfirm={deleteCenter}
-                title={i18n.catalog["text_5f9cb54dc136"]}
-                message={i18n.catalog["text_ac30c4a27ed7"]}
-                confirmText={i18n.catalog["text_59ca629220a6"]}
+                title={i18n.catalog["common.general.confirmDeletion"]}
+                message={i18n.catalog["finance.profitCenters.areYouSureYouWantDeleteThisProfit"]}
+                confirmText={i18n.catalog["common.general.delete"]}
                 confirmVariant="danger"
             />
         </MainLayout>

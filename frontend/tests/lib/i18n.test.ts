@@ -36,6 +36,13 @@ describe("typed locale runtime", () => {
         expect(Object.keys(enUS.catalog)).toEqual(Object.keys(arSA.catalog));
     });
 
+    it("uses descriptive English semantic labels instead of opaque generated catalog keys", () => {
+        const semanticKey = /^[a-z][A-Za-z0-9]*(?:\.[a-z][A-Za-z0-9]*){2,}(?:\.alternative\d+)?$/;
+        const keys = Object.keys(arSA.catalog);
+        expect(keys.every((key) => semanticKey.test(key))).toBe(true);
+        expect(keys.some((key) => key.startsWith("text_"))).toBe(false);
+    });
+
     it("exposes direction and formatting metadata through the locale registry", () => {
         expect(getLocaleMetadata("ar-SA")).toMatchObject({ direction: "rtl", formattingLocale: "ar-SA" });
         expect(getLocaleMetadata("en-US")).toMatchObject({ direction: "ltr", formattingLocale: "en-US" });

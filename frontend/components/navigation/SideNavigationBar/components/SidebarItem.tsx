@@ -47,7 +47,7 @@ export function SidebarItem({
                     {getIcon(icon)}
                 </span>
                 <span className="sidenav-item-label">{label}</span>
-                {badgeSoon && <BadgeLabel label={catalogMessage("text_cf0ee3547a4e")} />}
+                {badgeSoon && <BadgeLabel label={catalogMessage("components.sidebaritem.soon")} />}
                 {hasStar && !onActionClick && <span className="sidenav-item-star">★</span>}
             </Link>
             {onActionClick && (

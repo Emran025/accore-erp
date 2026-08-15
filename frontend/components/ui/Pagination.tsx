@@ -65,7 +65,7 @@ export function Pagination({
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
-          {i18n.catalog["text_a9e9d067101a"]}</button>
+          {i18n.catalog["common.general.previous"]}</button>
 
         {showPageNumbers &&
           getPageNumbers().map((page, index) =>
@@ -89,7 +89,7 @@ export function Pagination({
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
-          {i18n.catalog["text_5cf7af74fd3a"]}</button>
+          {i18n.catalog["common.general.next"]}</button>
       </div>
     </div>
   );

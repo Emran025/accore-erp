@@ -114,7 +114,7 @@ export function FilterChip({ label, active, onClick, count }: FilterChipProps) {
                 transition: "all 0.15s",
             }}
         >
-            {label}{count !== undefined ? catalogText(i18n, "text_239f04bc2797", { value0: count }) : ""}
+            {label}{count !== undefined ? catalogText(i18n, "common.general.message.alternative2", { value0: count }) : ""}
         </button>
     );
 }

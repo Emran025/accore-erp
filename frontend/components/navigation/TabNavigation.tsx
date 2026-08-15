@@ -130,7 +130,7 @@ export function TabNavigation({ tabs, activeTab, onTabChange, className = "" }: 
         <button
           className={`scroll-btn right ${showRightArrow ? "visible" : "hidden"}`}
           onClick={() => scroll("right")}
-          aria-label={i18n.catalog["text_366bd578350a"]}
+          aria-label={i18n.catalog["components.tabnavigation.scrollRight"]}
           type="button"
         >
           <i className="fas fa-chevron-right"></i>
@@ -155,7 +155,7 @@ export function TabNavigation({ tabs, activeTab, onTabChange, className = "" }: 
         <button
           className={`scroll-btn left ${showLeftArrow ? "visible" : "hidden"}`}
           onClick={() => scroll("left")}
-          aria-label={i18n.catalog["text_35dfa1045cb2"]}
+          aria-label={i18n.catalog["components.tabnavigation.scrollLeft"]}
           type="button"
         >
           <i className="fas fa-chevron-left"></i>

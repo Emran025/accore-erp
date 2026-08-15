@@ -99,7 +99,7 @@ export function NavigationSidebar({
       <button
         className={`sidebar-toggle-btn ${isMobileOpen ? "mobile-open" : ""}`}
         onClick={handleToggle}
-        aria-label={isCollapsed ? i18n.catalog["text_5b3695df20ea"] : i18n.catalog["text_202fb152d810"]}
+        aria-label={isCollapsed ? i18n.catalog["components.navigationsidebar.expandList"] : i18n.catalog["components.navigationsidebar.collapseMenu"]}
       >
         {getIcon("chevron-right")}
       </button>

@@ -50,7 +50,7 @@ export function EmployeePortal() {
       const data = res.data || (Array.isArray(res) ? res : []);
       setPayslips(data);
     } catch (e) {
-      showToast(i18n.catalog["text_6a4f2dcc33a3"], "error");
+      showToast(i18n.catalog["humanCapital.employeeportal.failedLoadPayrolls"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +63,7 @@ export function EmployeePortal() {
       const data = res.data || (Array.isArray(res) ? res : []);
       setLeaveRequests(data);
     } catch (e) {
-      showToast(i18n.catalog["text_8894208f0a4e"], "error");
+      showToast(i18n.catalog["common.general.failedLoadLeaveRequests"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -82,7 +82,7 @@ export function EmployeePortal() {
         if (res?.error) showToast(res.error, "error");
       }
     } catch (e) {
-      showToast(i18n.catalog["text_f0a8c393be98"], "error");
+      showToast(i18n.catalog["common.general.failedLoadAttendanceRecords"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -94,7 +94,7 @@ export function EmployeePortal() {
         method: 'POST',
         body: JSON.stringify(newLeaveRequest)
       });
-      showToast(i18n.catalog["text_87f3dfc6d9a2"], "success");
+      showToast(i18n.catalog["common.general.leaveRequestCreatedSuccessfully"], "success");
       setShowLeaveDialog(false);
       setNewLeaveRequest({
         leave_type: "vacation",
@@ -104,21 +104,21 @@ export function EmployeePortal() {
       });
       loadLeaveRequests();
     } catch (e: any) {
-      showToast(e.message || i18n.catalog["text_9a10ac72a5c6"], "error");
+      showToast(e.message || i18n.catalog["common.general.failedCreateLeaveRequest"], "error");
     }
   };
 
   const payslipColumns: Column<PayrollItem>[] = [
     {
       key: "payroll_cycle",
-      header: i18n.catalog["text_0335edfeb5f3"],
-      dataLabel: i18n.catalog["text_0335edfeb5f3"],
+      header: i18n.catalog["common.general.period"],
+      dataLabel: i18n.catalog["common.general.period"],
       render: (item) => item.payroll_cycle?.cycle_name || "-"
     },
     {
       key: "period",
-      header: i18n.catalog["text_d96f3935192c"],
-      dataLabel: i18n.catalog["text_d96f3935192c"],
+      header: i18n.catalog["common.general.timePeriod"],
+      dataLabel: i18n.catalog["common.general.timePeriod"],
       render: (item) => {
         if (!item.payroll_cycle) return "-";
         return `${formatDate(item.payroll_cycle.period_start)} - ${formatDate(item.payroll_cycle.period_end)}`;
@@ -126,44 +126,44 @@ export function EmployeePortal() {
     },
     {
       key: "base_salary",
-      header: i18n.catalog["text_73ad6b20ceb7"],
-      dataLabel: i18n.catalog["text_73ad6b20ceb7"],
+      header: i18n.catalog["common.general.basicSalary"],
+      dataLabel: i18n.catalog["common.general.basicSalary"],
       render: (item) => formatCurrency(item.base_salary)
     },
     {
       key: "total_allowances",
-      header: i18n.catalog["text_47ad42ce3bd0"],
-      dataLabel: i18n.catalog["text_47ad42ce3bd0"],
+      header: i18n.catalog["common.general.allowances"],
+      dataLabel: i18n.catalog["common.general.allowances"],
       render: (item) => formatCurrency(item.total_allowances)
     },
     {
       key: "total_deductions",
-      header: i18n.catalog["text_d2c0940a5a2d"],
-      dataLabel: i18n.catalog["text_d2c0940a5a2d"],
+      header: i18n.catalog["common.general.discounts"],
+      dataLabel: i18n.catalog["common.general.discounts"],
       render: (item) => formatCurrency(item.total_deductions)
     },
     {
       key: "net_salary",
-      header: i18n.catalog["text_c7d44dba6d26"],
-      dataLabel: i18n.catalog["text_c7d44dba6d26"],
+      header: i18n.catalog["common.general.netSalary"],
+      dataLabel: i18n.catalog["common.general.netSalary"],
       render: (item) => <span style={{ fontWeight: 700, color: 'var(--primary-color)' }}>{formatCurrency(item.net_salary)}</span>
     },
     {
       key: "paid_amount",
-      header: i18n.catalog["text_bcfc50ef7c18"],
-      dataLabel: i18n.catalog["text_bcfc50ef7c18"],
+      header: i18n.catalog["common.general.paid.alternative3"],
+      dataLabel: i18n.catalog["common.general.paid.alternative3"],
       render: (item) => formatCurrency(item.paid_amount || 0)
     },
     {
       key: "remaining_balance",
-      header: i18n.catalog["text_b2127e3a35be"],
-      dataLabel: i18n.catalog["text_b2127e3a35be"],
+      header: i18n.catalog["common.general.remaining.alternative2"],
+      dataLabel: i18n.catalog["common.general.remaining.alternative2"],
       render: (item) => {
         const remaining = item.remaining_balance || item.net_salary;
         return remaining > 0 ? (
           <span className="badge badge-warning">{formatCurrency(remaining)}</span>
         ) : (
-          <span className="badge badge-success">{i18n.catalog["text_973ac5807247"]}</span>
+          <span className="badge badge-success">{i18n.catalog["humanCapital.employeeportal.paidFull"]}</span>
         );
       }
     }
@@ -172,47 +172,47 @@ export function EmployeePortal() {
   const leaveColumns: Column<LeaveRequest>[] = [
     {
       key: "leave_type",
-      header: i18n.catalog["text_61fc59d28e6c"],
-      dataLabel: i18n.catalog["text_61fc59d28e6c"],
+      header: i18n.catalog["common.general.leaveType"],
+      dataLabel: i18n.catalog["common.general.leaveType"],
       render: (record) => {
         const types: Record<string, string> = {
-          vacation: i18n.catalog["text_91c6de93bb44"],
-          sick: i18n.catalog["text_fca09aac41d9"],
-          emergency: i18n.catalog["text_eb759e4e34a1"],
-          unpaid: i18n.catalog["text_5f83f571fe77"],
-          other: i18n.catalog["text_17a9f38e22b6"]
+          vacation: i18n.catalog["common.general.annualLeave"],
+          sick: i18n.catalog["common.general.sickLeave"],
+          emergency: i18n.catalog["common.general.emergencyLeave"],
+          unpaid: i18n.catalog["common.general.unpaidLeave"],
+          other: i18n.catalog["common.general.other"]
         };
         return types[record.leave_type] || record.leave_type;
       }
     },
     {
       key: "start_date",
-      header: i18n.catalog["text_996988dbc52e"],
-      dataLabel: i18n.catalog["text_996988dbc52e"],
+      header: i18n.catalog["common.general.date.alternative6"],
+      dataLabel: i18n.catalog["common.general.date.alternative6"],
       render: (record) => formatDate(record.start_date)
     },
     {
       key: "end_date",
-      header: i18n.catalog["text_217caed1c04f"],
-      dataLabel: i18n.catalog["text_217caed1c04f"],
+      header: i18n.catalog["common.general.date.alternative2"],
+      dataLabel: i18n.catalog["common.general.date.alternative2"],
       render: (record) => formatDate(record.end_date)
     },
     {
       key: "days_requested",
-      header: i18n.catalog["text_32266c44f2ee"],
-      dataLabel: i18n.catalog["text_32266c44f2ee"],
-      render: (record) => catalogText(i18n, "text_8f726399a049", { value0: record.days_requested })
+      header: i18n.catalog["common.general.numberDays"],
+      dataLabel: i18n.catalog["common.general.numberDays"],
+      render: (record) => catalogText(i18n, "common.general.dayS", { value0: record.days_requested })
     },
     {
       key: "status",
-      header: i18n.catalog["text_c3a4749caed4"],
-      dataLabel: i18n.catalog["text_c3a4749caed4"],
+      header: i18n.catalog["common.general.status.alternative2"],
+      dataLabel: i18n.catalog["common.general.status.alternative2"],
       render: (record) => {
         const statusMap: Record<string, { text: string; class: string }> = {
-          pending: { text: i18n.catalog["text_7d7913fdef74"], class: i18n.catalog["text_35cf88831e8b"] },
-          approved: { text: i18n.catalog["text_a98d8a418ba0"], class: i18n.catalog["text_59e14762e315"] },
-          rejected: { text: i18n.catalog["text_5d969a71dad3"], class: i18n.catalog["text_662a2d1d0a2d"] },
-          cancelled: { text: i18n.catalog["text_616d302cb016"], class: i18n.catalog["text_983fd0c81395"] }
+          pending: { text: i18n.catalog["common.general.pending.alternative2"], class: i18n.catalog["common.general.badgeBadgeWarning"] },
+          approved: { text: i18n.catalog["common.general.approved"], class: i18n.catalog["common.general.badgeBadgeSuccess"] },
+          rejected: { text: i18n.catalog["common.general.rejected"], class: i18n.catalog["common.general.badgeBadgeDanger"] },
+          cancelled: { text: i18n.catalog["common.general.canceled"], class: i18n.catalog["common.general.badgeBadgeSecondary"] }
         };
         const status = statusMap[record.status] || { text: record.status, class: "badge" };
         return <span className={status.class}>{status.text}</span>;
@@ -223,33 +223,33 @@ export function EmployeePortal() {
   const attendanceColumns: Column<AttendanceRecord>[] = [
     {
       key: "attendance_date",
-      header: i18n.catalog["text_d90c384199ac"],
-      dataLabel: i18n.catalog["text_d90c384199ac"],
+      header: i18n.catalog["common.general.date.alternative7"],
+      dataLabel: i18n.catalog["common.general.date.alternative7"],
       render: (record) => formatDate(record.attendance_date)
     },
     {
       key: "check_in",
-      header: i18n.catalog["text_9f3c0b8bfe50"],
-      dataLabel: i18n.catalog["text_9f3c0b8bfe50"],
+      header: i18n.catalog["common.general.loginTime"],
+      dataLabel: i18n.catalog["common.general.loginTime"],
       render: (record) => record.check_in || "-"
     },
     {
       key: "check_out",
-      header: i18n.catalog["text_d15b689176c8"],
-      dataLabel: i18n.catalog["text_d15b689176c8"],
+      header: i18n.catalog["common.general.checkOutTime"],
+      dataLabel: i18n.catalog["common.general.checkOutTime"],
       render: (record) => record.check_out || "-"
     },
     {
       key: "status",
-      header: i18n.catalog["text_c3a4749caed4"],
-      dataLabel: i18n.catalog["text_c3a4749caed4"],
+      header: i18n.catalog["common.general.status.alternative2"],
+      dataLabel: i18n.catalog["common.general.status.alternative2"],
       render: (record) => {
         const statusMap: Record<string, { text: string; class: string }> = {
-          present: { text: i18n.catalog["text_40284b78e717"], class: i18n.catalog["text_59e14762e315"] },
-          absent: { text: i18n.catalog["text_3799f9c5cbe6"], class: i18n.catalog["text_662a2d1d0a2d"] },
-          leave: { text: i18n.catalog["text_caad22be276b"], class: i18n.catalog["text_99340b150df6"] },
-          holiday: { text: i18n.catalog["text_1b2ee5b8ba2c"], class: i18n.catalog["text_983fd0c81395"] },
-          weekend: { text: i18n.catalog["text_80d62c077b65"], class: i18n.catalog["text_983fd0c81395"] }
+          present: { text: i18n.catalog["common.general.present"], class: i18n.catalog["common.general.badgeBadgeSuccess"] },
+          absent: { text: i18n.catalog["common.general.absent"], class: i18n.catalog["common.general.badgeBadgeDanger"] },
+          leave: { text: i18n.catalog["common.general.leave"], class: i18n.catalog["common.general.badgeBadgeInfo"] },
+          holiday: { text: i18n.catalog["common.general.holiday"], class: i18n.catalog["common.general.badgeBadgeSecondary"] },
+          weekend: { text: i18n.catalog["common.general.weekend"], class: i18n.catalog["common.general.badgeBadgeSecondary"] }
         };
         const status = statusMap[record.status] || { text: record.status, class: "badge" };
         return <span className={status.class}>{status.text}</span>;
@@ -257,25 +257,25 @@ export function EmployeePortal() {
     },
     {
       key: "hours_worked",
-      header: i18n.catalog["text_62ad30c3923e"],
-      dataLabel: i18n.catalog["text_62ad30c3923e"],
-      render: (record) => catalogText(i18n, "text_555f401b505c", { value0: (record.hours_worked || 0).toFixed(2) })
+      header: i18n.catalog["common.general.workingHours"],
+      dataLabel: i18n.catalog["common.general.workingHours"],
+      render: (record) => catalogText(i18n, "common.general.hour.alternative2", { value0: (record.hours_worked || 0).toFixed(2) })
     }
   ];
 
   return (
     <div className="sales-card animate-fade">
       <PageSubHeader
-        title={i18n.catalog["text_9c570f9f1332"]}
+        title={i18n.catalog["humanCapital.employeeportal.employeeSelfServicePortal"]}
         titleIcon="user-circle"
       />
 
       <div className="settings-wrapper">
         <TabNavigation
           tabs={[
-            { key: "payslips", label: i18n.catalog["text_254d737b29c3"], icon: "fa-file-invoice-dollar" },
-            { key: "leave", label: i18n.catalog["text_f1240747d0a1"], icon: "fa-calendar-alt" },
-            { key: "attendance", label: i18n.catalog["text_d162cfaed3e2"], icon: "fa-clock" }
+            { key: "payslips", label: i18n.catalog["humanCapital.employeeportal.payroll"], icon: "fa-file-invoice-dollar" },
+            { key: "leave", label: i18n.catalog["common.general.leaveRequests"], icon: "fa-calendar-alt" },
+            { key: "attendance", label: i18n.catalog["humanCapital.employeeportal.attendanceRecords"], icon: "fa-clock" }
           ]}
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -288,7 +288,7 @@ export function EmployeePortal() {
                 data={payslips}
                 columns={payslipColumns}
                 isLoading={isLoading}
-                emptyMessage={i18n.catalog["text_6c6e6ccf5938"]}
+                emptyMessage={i18n.catalog["humanCapital.employeeportal.noPayrolls"]}
                 keyExtractor={(item) => item.id.toString()}
               />
             </div>
@@ -299,18 +299,18 @@ export function EmployeePortal() {
           <div className="tab-content active" style={{ marginTop: '1.5rem' }}>
             <div className="sales-card">
               <div className="card-header-flex" style={{ marginBottom: '1rem' }}>
-                <h4 style={{ margin: 0 }}>{i18n.catalog["text_f1240747d0a1"]}</h4>
+                <h4 style={{ margin: 0 }}>{i18n.catalog["common.general.leaveRequests"]}</h4>
                 <Button
                   variant="primary"
                   onClick={() => setShowLeaveDialog(true)}
                   icon="plus">
-                  {i18n.catalog["text_5321087b563b"]}</Button>
+                  {i18n.catalog["common.general.newLeaveRequest"]}</Button>
               </div>
               <Table
                 data={leaveRequests}
                 columns={leaveColumns}
                 isLoading={isLoading}
-                emptyMessage={i18n.catalog["text_9c94b78094b3"]}
+                emptyMessage={i18n.catalog["common.general.noLeaveRequests"]}
                 keyExtractor={(item) => item.id.toString()}
               />
             </div>
@@ -322,13 +322,13 @@ export function EmployeePortal() {
             <div className="sales-card compact" style={{ marginBottom: '1.5rem' }}>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <TextInput
-                  label={i18n.catalog["text_996988dbc52e"]}
+                  label={i18n.catalog["common.general.date.alternative6"]}
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
                 />
                 <TextInput
-                  label={i18n.catalog["text_217caed1c04f"]}
+                  label={i18n.catalog["common.general.date.alternative2"]}
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
@@ -339,7 +339,7 @@ export function EmployeePortal() {
                     variant="primary"
                     icon="search"
                     style={{ width: '100%' }}>
-                    {i18n.catalog["text_d0f6edcf6d65"]}</Button>
+                    {i18n.catalog["common.general.search.alternative2"]}</Button>
                 </div>
               </div>
             </div>
@@ -348,20 +348,20 @@ export function EmployeePortal() {
               <div className="sales-card compact" style={{ marginBottom: '1.5rem', background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', border: '1px solid #bfdbfe' }}>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div className="stat-item">
-                    <span className="stat-label">{i18n.catalog["text_9aba92a6587e"]}</span>
-                    <span className="stat-value">{attendance.summary.total_hours?.toFixed(2) || 0} {i18n.catalog["text_44c3abfb7720"]}</span>
+                    <span className="stat-label">{i18n.catalog["common.general.totalHours"]}</span>
+                    <span className="stat-value">{attendance.summary.total_hours?.toFixed(2) || 0} {i18n.catalog["common.general.hour"]}</span>
                   </div>
                   <div className="stat-item">
-                    <span className="stat-label">{i18n.catalog["text_05751aac2a08"]}</span>
-                    <span className="stat-value highlight">{attendance.summary.total_overtime?.toFixed(2) || 0} {i18n.catalog["text_44c3abfb7720"]}</span>
+                    <span className="stat-label">{i18n.catalog["common.general.overtime"]}</span>
+                    <span className="stat-value highlight">{attendance.summary.total_overtime?.toFixed(2) || 0} {i18n.catalog["common.general.hour"]}</span>
                   </div>
                   <div className="stat-item">
-                    <span className="stat-label">{i18n.catalog["text_2ebc83ed3d26"]}</span>
-                    <span className="stat-value">{attendance.summary.total_days_present || 0} {i18n.catalog["text_eb07f635d883"]}</span>
+                    <span className="stat-label">{i18n.catalog["common.general.attendanceDays"]}</span>
+                    <span className="stat-value">{attendance.summary.total_days_present || 0} {i18n.catalog["common.general.day"]}</span>
                   </div>
                   <div className="stat-item">
-                    <span className="stat-label">{i18n.catalog["text_520784683ed3"]}</span>
-                    <span className="stat-value">{attendance.summary.total_days_absent || 0} {i18n.catalog["text_eb07f635d883"]}</span>
+                    <span className="stat-label">{i18n.catalog["common.general.daysAbsent"]}</span>
+                    <span className="stat-value">{attendance.summary.total_days_absent || 0} {i18n.catalog["common.general.day"]}</span>
                   </div>
                 </div>
               </div>
@@ -372,7 +372,7 @@ export function EmployeePortal() {
                 data={attendance?.records || []}
                 columns={attendanceColumns}
                 isLoading={isLoading}
-                emptyMessage={i18n.catalog["text_6d7d7b7ab049"]}
+                emptyMessage={i18n.catalog["common.general.noAttendanceRecords"]}
                 keyExtractor={(item) => item.id.toString()}
               />
             </div>
@@ -383,46 +383,46 @@ export function EmployeePortal() {
       <Dialog
         isOpen={showLeaveDialog}
         onClose={() => setShowLeaveDialog(false)}
-        title={i18n.catalog["text_5321087b563b"]}
+        title={i18n.catalog["common.general.newLeaveRequest"]}
         maxWidth="600px"
       >
         <div className="space-y-4">
           <Select
-            label={i18n.catalog["text_6dac3ee982cf"]}
+            label={i18n.catalog["common.general.leaveType.alternative2"]}
             value={newLeaveRequest.leave_type}
             onChange={(e) => setNewLeaveRequest({ ...newLeaveRequest, leave_type: e.target.value as any })}
             options={[
-              { value: "vacation", label: i18n.catalog["text_91c6de93bb44"] },
-              { value: "sick", label: i18n.catalog["text_fca09aac41d9"] },
-              { value: "emergency", label: i18n.catalog["text_eb759e4e34a1"] },
-              { value: "unpaid", label: i18n.catalog["text_5f83f571fe77"] },
-              { value: "other", label: i18n.catalog["text_17a9f38e22b6"] }
+              { value: "vacation", label: i18n.catalog["common.general.annualLeave"] },
+              { value: "sick", label: i18n.catalog["common.general.sickLeave"] },
+              { value: "emergency", label: i18n.catalog["common.general.emergencyLeave"] },
+              { value: "unpaid", label: i18n.catalog["common.general.unpaidLeave"] },
+              { value: "other", label: i18n.catalog["common.general.other"] }
             ]}
           />
           <div className="grid grid-cols-2 gap-4">
             <TextInput
-              label={i18n.catalog["text_2861a808b514"]}
+              label={i18n.catalog["common.general.date.alternative5"]}
               type="date"
               value={newLeaveRequest.start_date}
               onChange={(e) => setNewLeaveRequest({ ...newLeaveRequest, start_date: e.target.value })}
             />
             <TextInput
-              label={i18n.catalog["text_271f86cc7df0"]}
+              label={i18n.catalog["common.general.date.alternative4"]}
               type="date"
               value={newLeaveRequest.end_date}
               onChange={(e) => setNewLeaveRequest({ ...newLeaveRequest, end_date: e.target.value })}
             />
           </div>
           <Textarea
-            label={i18n.catalog["text_c3b023d78238"]}
+            label={i18n.catalog["common.general.reason"]}
             value={newLeaveRequest.reason}
             onChange={(e) => setNewLeaveRequest({ ...newLeaveRequest, reason: e.target.value })}
           />
           <div className="flex justify-end gap-2" style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
             <Button variant="secondary" onClick={() => setShowLeaveDialog(false)}>
-              {i18n.catalog["text_9a30dc2a96b8"]}</Button>
+              {i18n.catalog["common.general.cancel"]}</Button>
             <Button variant="primary" onClick={handleCreateLeaveRequest} icon="save">
-              {i18n.catalog["text_ddfcaf9d0144"]}</Button>
+              {i18n.catalog["common.general.save"]}</Button>
           </div>
         </div>
       </Dialog>

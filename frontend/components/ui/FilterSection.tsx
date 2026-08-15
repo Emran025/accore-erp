@@ -62,7 +62,7 @@ export function DateRangePicker({
                 value={startDate}
                 onChange={(e) => onStartDateChange(e.target.value)}
             />
-            <span>{i18n.catalog["text_97fe3fe5b063"]}</span>
+            <span>{i18n.catalog["common.general.notAvailable.alternative6"]}</span>
             <input
                 type="date"
                 value={endDate}

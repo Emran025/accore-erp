@@ -40,16 +40,16 @@ export default function ReportsPage() {
                             onClick={handleExport}
                             icon="download"
                         >
-                            {i18n.catalog["text_d0f6eb9dc8fd"]}</Button>
+                            {i18n.catalog["finance.financialReports.printExport"]}</Button>
                     }
                 />
                 {/* Tabs */}
                 <TabNavigation
                     tabs={[
-                        { key: "balance_sheet", label: i18n.catalog["text_ad62a7b84f05"], icon: "fa-balance-scale" },
-                        { key: "profit_loss", label: i18n.catalog["text_c011361fc78e"], icon: "fa-chart-line" },
-                        { key: "cash_flow", label: i18n.catalog["text_c6ca36f70684"], icon: "fa-money-bill-wave" },
-                        { key: "comparative", label: i18n.catalog["text_28e104b46abb"], icon: "fa-chart-bar" }
+                        { key: "balance_sheet", label: i18n.catalog["common.general.balanceSheet"], icon: "fa-balance-scale" },
+                        { key: "profit_loss", label: i18n.catalog["common.general.incomeStatement"], icon: "fa-chart-line" },
+                        { key: "cash_flow", label: i18n.catalog["finance.financialReports.cashFlows"], icon: "fa-money-bill-wave" },
+                        { key: "comparative", label: i18n.catalog["common.general.financialComparison"], icon: "fa-chart-bar" }
                     ]}
                     activeTab={activeTab}
                     onTabChange={(tab) => setActiveTab(tab as typeof activeTab)}

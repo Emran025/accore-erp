@@ -39,19 +39,19 @@ export function LedgerTable({
     const [activeTab, setActiveTab] = useState("all");
 
     const tabs = [
-        { key: "all", label: catalogMessage("text_b8080d923b38"), icon: "list" },
-        { key: "invoice", label: catalogMessage("text_5009f3495500"), icon: "file-text" },
-        { key: "receipt", label: catalogMessage("text_e35f68619fd8"), icon: "receipt" },
-        { key: "return", label: catalogMessage("text_239156a671f5"), icon: "repeat" },
+        { key: "all", label: catalogMessage("common.general.allOperations"), icon: "list" },
+        { key: "invoice", label: catalogMessage("common.general.salesInvoices"), icon: "file-text" },
+        { key: "receipt", label: catalogMessage("commercial.ledgertable.receiptVouchers"), icon: "receipt" },
+        { key: "return", label: catalogMessage("common.general.returns"), icon: "repeat" },
     ];
 
     const filteredTransactions = transactions.filter(t => activeTab === 'all' || t.type === activeTab);
 
     const getTypeName = (type: string) => {
         const types: Record<string, string> = {
-            invoice: catalogMessage("text_88b1dd50dc91"),
-            receipt: catalogMessage("text_3412df9cc7ec"),
-            return: catalogMessage("text_f996c544ba6c"),
+            invoice: catalogMessage("common.general.salesInvoice"),
+            receipt: catalogMessage("common.general.receiptVoucher"),
+            return: catalogMessage("common.general.return"),
         };
         return types[type] || type;
     };
@@ -82,8 +82,8 @@ export function LedgerTable({
         },
         {
             key: "transaction_date",
-            header: catalogMessage("text_d90c384199ac"),
-            dataLabel: catalogMessage("text_d90c384199ac"),
+            header: catalogMessage("common.general.date.alternative7"),
+            dataLabel: catalogMessage("common.general.date.alternative7"),
             render: (item) => (
                 <span style={{ fontSize: "0.9em" }}>
                     {formatDateTime(item.transaction_date)}
@@ -92,8 +92,8 @@ export function LedgerTable({
         },
         {
             key: "type",
-            header: catalogMessage("text_4567eb273df3"),
-            dataLabel: catalogMessage("text_4567eb273df3"),
+            header: catalogMessage("common.general.transactionType"),
+            dataLabel: catalogMessage("common.general.transactionType"),
             render: (item) => (
                 <span
                     className={`badge ${item.type === "invoice" ? "badge-primary" : "badge-success"
@@ -105,22 +105,22 @@ export function LedgerTable({
         },
         {
             key: "description",
-            header: catalogMessage("text_95023fc76e1b"),
-            dataLabel: catalogMessage("text_95023fc76e1b"),
+            header: catalogMessage("common.general.description.alternative2"),
+            dataLabel: catalogMessage("common.general.description.alternative2"),
             render: (item) => (
                 <div
                     className={item.reference_type === "invoices" ? "clickable-desc" : ""}
                     onClick={() => item.reference_type === "invoices" && onViewInvoice(item.reference_id!)}
                     style={{ cursor: item.reference_type === "invoices" ? "pointer" : "default" }}
                 >
-                    {item.description || "-"} {item.is_deleted && catalogMessage("text_13a743673003")}
+                    {item.description || "-"} {item.is_deleted && catalogMessage("common.general.deleted")}
                 </div>
             ),
         },
         {
             key: "debit",
-            header: catalogMessage("text_53f3a581a089"),
-            dataLabel: catalogMessage("text_53f3a581a089"),
+            header: catalogMessage("common.general.debitYouOwe"),
+            dataLabel: catalogMessage("common.general.debitYouOwe"),
             render: (item) => (
                 <span className="text-danger font-bold">
                     {item.type === "invoice" ? formatCurrency(item.amount) : "-"}
@@ -129,8 +129,8 @@ export function LedgerTable({
         },
         {
             key: "credit",
-            header: catalogMessage("text_2f39da3fdd88"),
-            dataLabel: catalogMessage("text_2f39da3fdd88"),
+            header: catalogMessage("common.general.creditYou"),
+            dataLabel: catalogMessage("common.general.creditYou"),
             render: (item) => (
                 <span className="text-success font-bold">
                     {item.type !== "invoice" ? formatCurrency(item.amount) : "-"}
@@ -139,41 +139,41 @@ export function LedgerTable({
         },
         {
             key: "created_by",
-            header: catalogMessage("text_2fb01868740d"),
-            dataLabel: catalogMessage("text_2fb01868740d"),
+            header: catalogMessage("common.general.user"),
+            dataLabel: catalogMessage("common.general.user"),
             render: (item) => item.created_by || "-",
         },
         {
             key: "actions",
-            header: catalogMessage("text_7797240d6caf"),
-            dataLabel: catalogMessage("text_7797240d6caf"),
+            header: catalogMessage("common.general.actions"),
+            dataLabel: catalogMessage("common.general.actions"),
             render: (item) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "check",
-                            title: catalogMessage("text_56f1dce3e781"),
+                            title: catalogMessage("common.general.restore"),
                             variant: "edit",
                             onClick: () => onRestoreTransaction(item.id),
                             hidden: !item.is_deleted
                         },
                         {
                             icon: "edit",
-                            title: catalogMessage("text_113d570d6555"),
+                            title: catalogMessage("common.general.edit"),
                             variant: "edit",
                             onClick: () => onEditTransaction(item),
                             hidden: item.is_deleted || !canEdit(item)
                         },
                         {
                             icon: "trash",
-                            title: catalogMessage("text_59ca629220a6"),
+                            title: catalogMessage("common.general.delete"),
                             variant: "delete",
                             onClick: () => onDeleteTransaction(item.id),
                             hidden: item.is_deleted || item.type === "invoice"
                         },
                         {
                             icon: "eye",
-                            title: catalogMessage("text_64fb0d77cd4e"),
+                            title: catalogMessage("common.general.viewInvoice"),
                             variant: "view",
                             onClick: () => onViewInvoice(item.reference_id!),
                             hidden: item.is_deleted || item.reference_type !== "invoices"
@@ -190,7 +190,7 @@ export function LedgerTable({
         return (
             <div style={{ padding: "1.5rem", background: "var(--surface-hover)", borderRadius: "var(--radius-md)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ fontWeight: "bold" }}>{catalogMessage("text_7d67b98ad6f6")}</span>
+                    <span style={{ fontWeight: "bold" }}>{catalogMessage("common.general.paymentInvoice")}</span>
                     <span
                         style={{ color: "var(--primary-color)", cursor: "pointer", fontWeight: "bold", textDecoration: "underline" }}
                         onClick={() => onViewInvoice(item.reference_id!)}
@@ -199,7 +199,7 @@ export function LedgerTable({
                     </span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ fontWeight: "bold" }}>{catalogMessage("text_254f4472bdb8")}</span>
+                    <span style={{ fontWeight: "bold" }}>{catalogMessage("common.general.amountPaid")}</span>
                     <span style={{ color: "var(--success-color)", fontWeight: "bold", fontSize: "1.1em" }}>
                         {formatCurrency(item.amount)}
                     </span>
@@ -209,7 +209,7 @@ export function LedgerTable({
                     icon="eye"
                     onClick={() => onViewInvoice(item.reference_id!)}
                 >
-                    {catalogMessage("text_43c2a09fb9e4")}</Button>
+                    {catalogMessage("common.general.viewPaidInvoice")}</Button>
             </div>
         );
     };
@@ -225,7 +225,7 @@ export function LedgerTable({
                 onSearch={setSearch}
                 getInvoiceItems={getInvoiceItems}
                 renderCustomExpandedRow={renderPaymentDetails}
-                emptyMessage={catalogMessage("text_96dede8eb705")}
+                emptyMessage={catalogMessage("common.general.noOperations")}
                 FilterTabNavigation={
                     <TabSubNavigation
                         tabs={tabs}

@@ -39,10 +39,10 @@ export function ProfitLossTab() {
                     net_profit: Number(apiData.net_income || 0)
                 });
             } else {
-                showToast(response.message || catalogMessage("text_a87b2e177247"), "error");
+                showToast(response.message || catalogMessage("finance.profitloss.failedLoadIncomeStatement"), "error");
             }
         } catch {
-            showToast(catalogMessage("text_22fa79f17c32"), "error");
+            showToast(catalogMessage("common.general.errorConnectingServer"), "error");
         } finally {
             setIsLoading(false);
         }
@@ -51,7 +51,7 @@ export function ProfitLossTab() {
     return (
         <div className="sales-card">
             <PageSubHeader
-                title={catalogMessage("text_c011361fc78e")}
+                title={catalogMessage("common.general.incomeStatement")}
                 titleIcon="chart-line"
                 actions={
                     <>
@@ -64,7 +64,7 @@ export function ProfitLossTab() {
                         />
                         <FilterActions>
                             <Button onClick={loadProfitLoss} icon="search">
-                                {catalogMessage("text_92ad0d774e56")}</Button>
+                                {catalogMessage("common.general.viewReport")}</Button>
                         </FilterActions>
                     </>
                 } />
@@ -75,18 +75,18 @@ export function ProfitLossTab() {
             ) : profitLoss ? (
                 <div className="report-section animate-fade" style={{ marginTop: "1.5rem" }}>
                     <h2 style={{ marginBottom: "1.5rem" }}>
-                        <i className="fas fa-chart-line"></i> {catalogMessage("text_1b6b3c54940b")}{startDate} {catalogMessage("text_97fe3fe5b063")}{endDate})
+                        <i className="fas fa-chart-line"></i> {catalogMessage("finance.profitloss.incomeStatement")}{startDate} {catalogMessage("common.general.notAvailable.alternative6")}{endDate})
                     </h2>
                     <div className="financial-row">
-                        <span className="report-label">{catalogMessage("text_5f8d135d6d92")}</span>
+                        <span className="report-label">{catalogMessage("common.general.totalRevenue")}</span>
                         <span className="report-value text-success">{formatCurrency(profitLoss.total_revenue || 0)}</span>
                     </div>
                     <div className="financial-row">
-                        <span className="report-label">{catalogMessage("text_4d514b65a483")}</span>
+                        <span className="report-label">{catalogMessage("common.general.expenses")}</span>
                         <span className="report-value text-danger">-{formatCurrency(profitLoss.total_expenses || 0)}</span>
                     </div>
                     <div className="financial-row">
-                        <span className="report-label">{catalogMessage("text_91c35116f261")}</span>
+                        <span className="report-label">{catalogMessage("finance.profitloss.netProfitLoss")}</span>
                         <span className={`report-value ${(profitLoss.net_profit || 0) >= 0 ? "profit" : "loss"}`}>
                             {formatCurrency(profitLoss.net_profit || 0)}
                         </span>
@@ -94,7 +94,7 @@ export function ProfitLossTab() {
                 </div>
             ) : (
                 <p style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)" }}>
-                    {catalogMessage("text_1c49fa1be4b0")}</p>
+                    {catalogMessage("common.general.selectTimePeriodClickShowReport")}</p>
             )}
         </div>
     );

@@ -387,7 +387,7 @@
 | `components/template-editor/types.ts` | 6 | 0 | 6 | Yes |
 | `components/template-editor/utils.ts` | 60 | 0 | 60 | Yes |
 | `components/ui/ActionButtons.tsx` | 15 | 0 | 15 | Yes |
-| `components/ui/Alert.tsx` | 44 | 0 | 44 | Yes |
+| `components/ui/Alert.tsx` | 43 | 0 | 43 | Yes |
 | `components/ui/BadgeLabel.tsx` | 18 | 0 | 18 | Yes |
 | `components/ui/Button.tsx` | 38 | 0 | 38 | Yes |
 | `components/ui/checkbox.tsx` | 5 | 0 | 5 | Yes |
@@ -425,7 +425,7 @@
 | `components/ui/ServiceSales.tsx` | 433 | 0 | 433 | Yes |
 | `components/ui/SessionExpiredModal.tsx` | 25 | 0 | 25 | Yes |
 | `components/ui/StatsCard.tsx` | 20 | 0 | 20 | Yes |
-| `components/ui/switch.tsx` | 41 | 0 | 41 | Yes |
+| `components/ui/switch.tsx` | 40 | 0 | 40 | Yes |
 | `components/ui/Table.tsx` | 19 | 0 | 19 | Yes |
 | `components/ui/Textarea.tsx` | 48 | 0 | 48 | Yes |
 | `components/ui/TextInput.tsx` | 8 | 0 | 8 | Yes |
@@ -433,7 +433,7 @@
 | `components/ui/Toggle.tsx` | 23 | 0 | 23 | Yes |
 | `components/ui/ToggleGroup.tsx` | 23 | 0 | 23 | Yes |
 | `components/ui/Tooltip.tsx` | 13 | 0 | 13 | Yes |
-| `lib/api.ts` | 40 | 0 | 40 | Yes |
+| `lib/api.ts` | 42 | 0 | 42 | Yes |
 | `lib/auth.ts` | 62 | 0 | 62 | Yes |
 | `lib/endpoints.ts` | 2 | 0 | 2 | Yes |
 | `lib/endpoints/assets.ts` | 1 | 0 | 1 | Yes |

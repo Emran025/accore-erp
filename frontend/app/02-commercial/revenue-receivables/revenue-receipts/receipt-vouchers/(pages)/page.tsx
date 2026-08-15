@@ -67,7 +67,7 @@ export default function ReceiptsPage() {
                 }
             }
         } catch {
-            showToast(i18n.catalog["text_e1e1dc7023c4"], "error");
+            showToast(i18n.catalog["common.general.errorLoadingVouchers"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -80,7 +80,7 @@ export default function ReceiptsPage() {
                 setCustomers((response.data as Customer[]) || []);
             }
         } catch (error) {
-            console.error(i18n.catalog["text_5150589fdbe0"], error);
+            console.error(i18n.catalog["commercial.receiptVouchers.failedLoadCustomers"], error);
         }
     }, []);
 
@@ -105,13 +105,13 @@ export default function ReceiptsPage() {
         e.preventDefault();
 
         if (!selectedCustomer) {
-            showAlert("alert-container", i18n.catalog["text_8596f1b18e53"], "error");
+            showAlert("alert-container", i18n.catalog["commercial.receiptVouchers.pleaseSelectCustomer"], "error");
             return;
         }
 
         const numAmount = parseFloat(amount);
         if (isNaN(numAmount) || numAmount <= 0) {
-            showAlert("alert-container", i18n.catalog["text_457ff7bc7182"], "error");
+            showAlert("alert-container", i18n.catalog["commercial.receiptVouchers.invalidAmount"], "error");
             return;
         }
 
@@ -129,7 +129,7 @@ export default function ReceiptsPage() {
             });
 
             if (response.success) {
-                showAlert("alert-container", i18n.catalog["text_2c33a1e8602b"], "success");
+                showAlert("alert-container", i18n.catalog["commercial.receiptVouchers.voucherAddedSuccessfully"], "success");
 
                 // Reset form
                 setSelectedCustomer(null);
@@ -140,10 +140,10 @@ export default function ReceiptsPage() {
                 // Reload data
                 await Promise.all([loadCustomers(), loadReceipts(1, searchTerm)]);
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_bceefd20567c"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["commercial.receiptVouchers.failedSaveVoucher"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_9709a87f3bfe"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.errorSavingVoucher"], "error");
         } finally {
             setIsSubmitting(false);
         }
@@ -162,13 +162,13 @@ export default function ReceiptsPage() {
                 method: "DELETE"
             });
             if (response.success) {
-                showToast(i18n.catalog["text_62b245330ed1"], "success");
+                showToast(i18n.catalog["commercial.receiptVouchers.voucherDeletedSuccessfully"], "success");
                 loadReceipts(currentPage, searchTerm);
             } else {
-                showToast(response.message || i18n.catalog["text_f46bfc521612"], "error");
+                showToast(response.message || i18n.catalog["common.general.deletionFailed"], "error");
             }
         } catch {
-            showToast(i18n.catalog["text_efa19ed994b9"], "error");
+            showToast(i18n.catalog["common.general.errorDeletingVoucher"], "error");
         } finally {
             setConfirmDialog(false);
             setDeleteId(null);
@@ -178,42 +178,42 @@ export default function ReceiptsPage() {
     const customerOptions: SelectOption[] = customers.map((c) => ({
         value: c.id,
         label: c.name,
-        subtitle: catalogText(i18n, "text_4b3672e910cf", { value0: formatCurrency(c.current_balance) }),
+        subtitle: catalogText(i18n, "commercial.receiptVouchers.balance", { value0: formatCurrency(c.current_balance) }),
         original: c,
     }));
 
     const columns: Column<Receipt>[] = [
         {
             key: "customer_name",
-            header: i18n.catalog["text_a042411e90be"],
-            dataLabel: i18n.catalog["text_a042411e90be"],
-            render: (item) => item.customer?.name || i18n.catalog["text_d44d443520df"],
+            header: i18n.catalog["common.general.customer"],
+            dataLabel: i18n.catalog["common.general.customer"],
+            render: (item) => item.customer?.name || i18n.catalog["common.general.unknown"],
         },
         {
             key: "amount",
-            header: i18n.catalog["text_1cd480f91b24"],
-            dataLabel: i18n.catalog["text_1cd480f91b24"],
+            header: i18n.catalog["common.general.amount"],
+            dataLabel: i18n.catalog["common.general.amount"],
             render: (item) => <span className="text-success fw-bold">{formatCurrency(item.amount)}</span>,
         },
         {
             key: "transaction_date",
-            header: i18n.catalog["text_d90c384199ac"],
-            dataLabel: i18n.catalog["text_d90c384199ac"],
+            header: i18n.catalog["common.general.date.alternative7"],
+            dataLabel: i18n.catalog["common.general.date.alternative7"],
             render: (item) => formatDate(item.transaction_date),
         },
         {
             key: "description",
-            header: i18n.catalog["text_263b62fdd71b"],
-            dataLabel: i18n.catalog["text_263b62fdd71b"],
+            header: i18n.catalog["common.general.statementDescription"],
+            dataLabel: i18n.catalog["common.general.statementDescription"],
             render: (item) => item.description || "-",
         },
         {
             key: "actions",
-            header: i18n.catalog["text_7797240d6caf"],
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (item) => (
                 <div className="action-buttons">
-                    <button className="icon-btn delete" onClick={() => confirmDelete(item.id)} title={i18n.catalog["text_59ca629220a6"]}>
+                    <button className="icon-btn delete" onClick={() => confirmDelete(item.id)} title={i18n.catalog["common.general.delete"]}>
                         {getIcon("trash")}
                     </button>
                 </div>
@@ -230,27 +230,27 @@ export default function ReceiptsPage() {
                 {/* Form Card (Match Sales / Sales structure) */}
                 <div className="sales-card compact animate-slide">
                     <div className="card-header-flex">
-                        <h3>{i18n.catalog["text_75b3aeabab5e"]}</h3>
+                        <h3>{i18n.catalog["commercial.receiptVouchers.registerNewReceiptVoucher"]}</h3>
                     </div>
 
                     <form onSubmit={handleSubmit} className="sales-form-grid">
                         <div className="form-group">
-                            <label>{i18n.catalog["text_8fb18f581806"]}</label>
+                            <label>{i18n.catalog["commercial.receiptVouchers.customer"]}</label>
                             <SearchableSelect
                                 options={customerOptions}
                                 value={selectedCustomer ? selectedCustomer.id : null}
                                 onChange={(val, opt) => setSelectedCustomer(opt ? (opt.original as Customer) : null)}
-                                placeholder={i18n.catalog["text_96b809b02ccc"]}
+                                placeholder={i18n.catalog["common.general.searchClient"]}
                             />
                             {selectedCustomer && (
                                 <small className="text-muted mt-1 d-block">
-                                    {i18n.catalog["text_73a95ba2ae3d"]}<span dir="ltr">{formatCurrency(selectedCustomer.current_balance)}</span>
+                                    {i18n.catalog["commercial.receiptVouchers.currentBalance"]}<span dir="ltr">{formatCurrency(selectedCustomer.current_balance)}</span>
                                 </small>
                             )}
                         </div>
 
                         <div className="form-group">
-                            <label>{i18n.catalog["text_3cfbd3350215"]}</label>
+                            <label>{i18n.catalog["common.general.amount.alternative3"]}</label>
                             <input
                                 type="number"
                                 step="0.01"
@@ -258,13 +258,13 @@ export default function ReceiptsPage() {
                                 className="styled-input"
                                 value={amount}
                                 onChange={(e) => setAmount(e.target.value)}
-                                placeholder={i18n.catalog["text_561b2814d3c0"]}
+                                placeholder={i18n.catalog["common.general.message000"]}
                                 required
                             />
                         </div>
 
                         <div className="form-group">
-                            <label>{i18n.catalog["text_24ab9ad4f30d"]}</label>
+                            <label>{i18n.catalog["common.general.date.alternative3"]}</label>
                             <input
                                 type="date"
                                 className="styled-input"
@@ -275,13 +275,13 @@ export default function ReceiptsPage() {
                         </div>
 
                         <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                            <label>{i18n.catalog["text_263b62fdd71b"]}</label>
+                            <label>{i18n.catalog["common.general.statementDescription"]}</label>
                             <input
                                 type="text"
                                 className="styled-input"
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                placeholder={i18n.catalog["text_5181ae2bdcaa"]}
+                                placeholder={i18n.catalog["commercial.receiptVouchers.examplePaymentAccount"]}
                             />
                         </div>
 
@@ -292,7 +292,7 @@ export default function ReceiptsPage() {
                                 type="submit"
                                 disabled={isSubmitting || !selectedCustomer || !amount}
                             >
-                                {isSubmitting ? i18n.catalog["text_8688b0ff5f34"] : i18n.catalog["text_f95b81cb1ce4"]}
+                                {isSubmitting ? i18n.catalog["common.general.saving"] : i18n.catalog["commercial.receiptVouchers.saveVoucher"]}
                             </Button>
                         </div>
                     </form>
@@ -301,11 +301,11 @@ export default function ReceiptsPage() {
                 {/* Table Card */}
                 <div className="sales-card animate-fade">
                     <div className="card-header-flex" style={{ marginBottom: '15px' }}>
-                        <h3>{i18n.catalog["text_09217dd85277"]}</h3>
+                        <h3>{i18n.catalog["commercial.receiptVouchers.receiptsRegister"]}</h3>
                         <div className="search-bar">
                             <input
                                 type="text"
-                                placeholder={i18n.catalog["text_afb84f951136"]}
+                                placeholder={i18n.catalog["commercial.receiptVouchers.searchVoucher"]}
                                 value={searchTerm}
                                 onChange={handleSearch}
                                 className="styled-input"
@@ -318,7 +318,7 @@ export default function ReceiptsPage() {
                         columns={columns}
                         data={receipts}
                         keyExtractor={(item) => item.id}
-                        emptyMessage={i18n.catalog["text_99676bba6584"]}
+                        emptyMessage={i18n.catalog["commercial.receiptVouchers.noReceiptVouchers"]}
                         isLoading={isLoading}
                         pagination={{
                             currentPage,
@@ -333,9 +333,9 @@ export default function ReceiptsPage() {
                 isOpen={confirmDialog}
                 onClose={() => setConfirmDialog(false)}
                 onConfirm={handleDelete}
-                title={i18n.catalog["text_5f9cb54dc136"]}
-                message={i18n.catalog["text_7d9b904f0f1b"]}
-                confirmText={i18n.catalog["text_45ce3d5e8a57"]}
+                title={i18n.catalog["common.general.confirmDeletion"]}
+                message={i18n.catalog["commercial.receiptVouchers.areYouSureYouWantDeleteThisVoucher"]}
+                confirmText={i18n.catalog["commercial.receiptVouchers.deleteVoucher"]}
                 confirmVariant="danger"
             />
         </MainLayout>

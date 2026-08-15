@@ -60,7 +60,7 @@ export function CurrencyListTab() {
             }
         } catch (e) {
             console.error(e);
-            showToast(i18n.catalog["text_f10d2b4c7fe1"], "error");
+            showToast(i18n.catalog["common.general.errorLoadingData"], "error");
         } finally {
             setLoading(false);
         }
@@ -84,14 +84,14 @@ export function CurrencyListTab() {
             });
 
             if (res.success) {
-                showToast(editingCurrency ? i18n.catalog["text_a84d53a49643"] : i18n.catalog["text_ac8ba9fa1df3"], "success");
+                showToast(editingCurrency ? i18n.catalog["finance.currencylist.currencyUpdated"] : i18n.catalog["finance.currencylist.currencyAdded"], "success");
                 setIsModalOpen(false);
                 loadData();
             } else {
-                showToast(res.message || i18n.catalog["text_83d3d40014f9"], "error");
+                showToast(res.message || i18n.catalog["common.general.errorOccurred"], "error");
             }
         } catch (e) {
-            showToast(i18n.catalog["text_c574313242be"], "error");
+            showToast(i18n.catalog["common.general.errorSaving"], "error");
         }
     };
 
@@ -111,20 +111,20 @@ export function CurrencyListTab() {
     const handleDelete = (id: number) => {
         setConfirmDialog({
             isOpen: true,
-            title: i18n.catalog["text_5f9cb54dc136"],
-            message: i18n.catalog["text_7a4da5d8f42f"],
+            title: i18n.catalog["common.general.confirmDeletion"],
+            message: i18n.catalog["finance.currencylist.areYouSureYouWantDeleteThisCurrency"],
             variant: "danger",
             onConfirm: async () => {
                 try {
                     const res = await fetchAPI(API_ENDPOINTS.FINANCE.FOREIGN_EXCHANGE.CURRENCIES.withId(id), { method: "DELETE" });
                     if (res.success) {
-                        showToast(i18n.catalog["text_12b6e3813b40"], "success");
+                        showToast(i18n.catalog["common.general.deletedSuccessfully"], "success");
                         loadData();
                     } else {
-                        showToast(res.message || i18n.catalog["text_f46bfc521612"], "error");
+                        showToast(res.message || i18n.catalog["common.general.deletionFailed"], "error");
                     }
                 } catch {
-                    showToast(i18n.catalog["text_3bdb299872fb"], "error");
+                    showToast(i18n.catalog["common.general.deletionError"], "error");
                 }
             }
         });
@@ -135,12 +135,12 @@ export function CurrencyListTab() {
             const res = await fetchAPI(API_ENDPOINTS.FINANCE.FOREIGN_EXCHANGE.CURRENCIES.TOGGLE(curr.id), { method: "POST" });
             if (res.success) {
                 loadData();
-                showToast(i18n.catalog["text_5b8139e25125"], "success");
+                showToast(i18n.catalog["common.general.statusUpdated"], "success");
             } else {
-                showToast(res.message || i18n.catalog["text_96c789857dbf"], "error");
+                showToast(res.message || i18n.catalog["common.general.updateFailed"], "error");
             }
         } catch {
-            showToast(i18n.catalog["text_133019abccaa"], "error");
+            showToast(i18n.catalog["common.general.updateError"], "error");
         }
     }
 
@@ -165,23 +165,23 @@ export function CurrencyListTab() {
     const columns: Column<Currency>[] = [
         {
             key: "name",
-            header: i18n.catalog["text_30ce3a1dae2c"],
+            header: i18n.catalog["common.general.currency"],
             render: (curr) => (
                 <>
                     {curr.name} <span className="text-muted">({curr.code})</span>
-                    {curr.is_primary && <span className="badge badge-success-light mr-2">{i18n.catalog["text_bfcf48307970"]}</span>}
+                    {curr.is_primary && <span className="badge badge-success-light mr-2">{i18n.catalog["common.general.home"]}</span>}
                 </>
             )
         },
-        { key: "symbol", header: i18n.catalog["text_589c6420ea10"] },
+        { key: "symbol", header: i18n.catalog["common.general.code"] },
         {
             key: "exchange_rate",
-            header: i18n.catalog["text_fbffb38f5bb4"],
+            header: i18n.catalog["common.general.exchangeRate"],
             render: (curr) => Number(curr.exchange_rate).toFixed(4)
         },
         {
             key: "is_active",
-            header: i18n.catalog["text_c3a4749caed4"],
+            header: i18n.catalog["common.general.status.alternative2"],
             render: (curr) => (
                 <Switch
                     checked={curr.is_active}
@@ -192,20 +192,20 @@ export function CurrencyListTab() {
         },
         {
             key: "actions",
-            header: i18n.catalog["text_7797240d6caf"],
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (curr) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "edit",
-                            title: i18n.catalog["text_113d570d6555"],
+                            title: i18n.catalog["common.general.edit"],
                             variant: "edit",
                             onClick: () => handleEdit(curr),
                         },
                         {
                             icon: "trash",
-                            title: i18n.catalog["text_59ca629220a6"],
+                            title: i18n.catalog["common.general.delete"],
                             variant: "delete",
                             onClick: () => handleDelete(curr.id),
                         }
@@ -218,7 +218,7 @@ export function CurrencyListTab() {
     const denominationColumns: Column<CurrencyDenomination>[] = [
         {
             key: "value",
-            header: i18n.catalog["text_4c49efecd6cb"],
+            header: i18n.catalog["common.general.value"],
             render: (denom, idx) => (
                 <Input
                     type="number"
@@ -230,14 +230,14 @@ export function CurrencyListTab() {
         },
         {
             key: "label",
-            header: i18n.catalog["text_942501f12b14"],
+            header: i18n.catalog["finance.currencylist.titleOptional"],
             render: (denom, idx) => (
                 <Input
                     type="text"
                     className="form-control form-control-sm"
                     value={denom.label}
                     onChange={e => updateDenomination(idx, 'label', e.target.value)}
-                    placeholder={catalogText(i18n, "text_54ef3bb1085e", { value0: denom.value, value1: formData.name || '' })}
+                    placeholder={catalogText(i18n, "common.general.notAvailable.alternative3", { value0: denom.value, value1: formData.name || '' })}
                 />
             )
         },
@@ -255,13 +255,13 @@ export function CurrencyListTab() {
     return (
         <div className="sales-card animate-fade">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-                <h3>{i18n.catalog["text_1c3c2b1221e4"]}</h3>
+                <h3>{i18n.catalog["finance.currencylist.currencySettings"]}</h3>
                 <button className="btn btn-primary" onClick={() => {
                     setEditingCurrency(null);
                     setFormData({ code: "", name: "", symbol: "", exchange_rate: 1, is_active: true, denominations: [] });
                     setIsModalOpen(true);
                 }}>
-                    <i className="fas fa-plus"></i> {i18n.catalog["text_663cc92bc783"]}</button>
+                    <i className="fas fa-plus"></i> {i18n.catalog["finance.currencylist.addCurrency"]}</button>
             </div>
 
             <Table
@@ -274,26 +274,26 @@ export function CurrencyListTab() {
             <Dialog
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                title={editingCurrency ? i18n.catalog["text_f4022a731cd2"] : i18n.catalog["text_45a6ce1b7588"]}
+                title={editingCurrency ? i18n.catalog["finance.currencylist.editCurrency"] : i18n.catalog["finance.currencylist.addNewCurrency"]}
                 maxWidth="800px"
                 footer={
                     <>
-                        <button className="btn btn-secondary" onClick={() => setIsModalOpen(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</button>
-                        <button className="btn btn-primary" onClick={handleSave}>{i18n.catalog["text_ddfcaf9d0144"]}</button>
+                        <button className="btn btn-secondary" onClick={() => setIsModalOpen(false)}>{i18n.catalog["common.general.cancel"]}</button>
+                        <button className="btn btn-primary" onClick={handleSave}>{i18n.catalog["common.general.save"]}</button>
                     </>
                 }
             >
                 <div className="settings-form-grid">
                     <div className="form-group">
                         <TextInput
-                            label={i18n.catalog["text_d1b89062a819"]}
+                            label={i18n.catalog["finance.currencylist.currencyName"]}
                             value={formData.name || ""}
                             onChange={e => setFormData({ ...formData, name: e.target.value })}
                         />
                     </div>
                     <div className="form-group">
                         <TextInput
-                            label={i18n.catalog["text_ee23bfa5cb5f"]}
+                            label={i18n.catalog["finance.currencylist.codeIso"]}
                             value={formData.code || ""}
                             maxLength={3}
                             onChange={e => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
@@ -301,7 +301,7 @@ export function CurrencyListTab() {
                     </div>
                     <div className="form-group">
                         <TextInput
-                            label={i18n.catalog["text_589c6420ea10"]}
+                            label={i18n.catalog["common.general.code"]}
                             value={formData.symbol || ""}
                             onChange={e => setFormData({ ...formData, symbol: e.target.value })}
                         />
@@ -309,7 +309,7 @@ export function CurrencyListTab() {
                     <div className="form-group">
                         <div>
                             <TextInput
-                                label={i18n.catalog["text_74724ff99675"]}
+                                label={i18n.catalog["finance.currencylist.exchangeRateVsBaseCurrency"]}
                                 type="number"
                                 step="0.0001"
                                 value={formData.exchange_rate}
@@ -318,8 +318,8 @@ export function CurrencyListTab() {
                             />
                             <p className="text-xs text-gray-500 mt-1">
                                 {editingCurrency?.is_primary
-                                    ? i18n.catalog["text_91075dbdfae7"]
-                                    : `1 ${formData.code || i18n.catalog["text_584f05614c76"]} = ${formData.exchange_rate} ${policyStatus?.reference_currency?.code || i18n.catalog["text_43bf18235b78"]}`
+                                    ? i18n.catalog["finance.currencylist.baseCurrencyExchangeRateCannotBeChanged"]
+                                    : `1 ${formData.code || i18n.catalog["common.general.unit"]} = ${formData.exchange_rate} ${policyStatus?.reference_currency?.code || i18n.catalog["finance.currencylist.baseCurrency"]}`
                                 }
                             </p>
                         </div>
@@ -328,9 +328,9 @@ export function CurrencyListTab() {
 
                 <hr />
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                    <h4>{i18n.catalog["text_9c18558f1c94"]}</h4>
+                    <h4>{i18n.catalog["finance.currencylist.currencyDenominationsBanknotes"]}</h4>
                     <button className="btn btn-sm btn-secondary" onClick={addDenomination}>
-                        <i className="fas fa-plus"></i> {i18n.catalog["text_2653523db0f9"]}</button>
+                        <i className="fas fa-plus"></i> {i18n.catalog["finance.currencylist.addCategory"]}</button>
                 </div>
 
                 <div className="denominations-table">
@@ -338,7 +338,7 @@ export function CurrencyListTab() {
                         columns={denominationColumns}
                         data={formData.denominations || []}
                         keyExtractor={(_, idx) => idx}
-                        emptyMessage={i18n.catalog["text_c7b5d4fa221f"]}
+                        emptyMessage={i18n.catalog["finance.currencylist.noCashCategoriesAdded"]}
                     />
                 </div>
             </Dialog>
@@ -350,8 +350,8 @@ export function CurrencyListTab() {
                 title={confirmDialog.title}
                 message={confirmDialog.message}
                 confirmVariant={confirmDialog.variant}
-                confirmText={i18n.catalog["text_8f7d74ac0eac"]}
-                cancelText={i18n.catalog["text_9a30dc2a96b8"]}
+                confirmText={i18n.catalog["common.general.confirm"]}
+                cancelText={i18n.catalog["common.general.cancel"]}
             />
         </div>
     );

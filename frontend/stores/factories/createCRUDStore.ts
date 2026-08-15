@@ -129,7 +129,7 @@ export function createCRUDStore<T extends { id: number }>(config: CRUDConfig<T>)
                             });
                         }
                     } catch {
-                        showToast(messages.loadError || catalogMessage("text_f10d2b4c7fe1"), 'error');
+                        showToast(messages.loadError || catalogMessage("common.general.errorLoadingData"), 'error');
                     } finally {
                         set({ isLoading: false });
                     }
@@ -137,7 +137,7 @@ export function createCRUDStore<T extends { id: number }>(config: CRUDConfig<T>)
 
                 save: async (data, id?) => {
                     try {
-                        const url = id ? catalogMessage("text_0907f4dfb304", { value0: endpoint, value1: id }) : endpoint;
+                        const url = id ? catalogMessage("common.general.message", { value0: endpoint, value1: id }) : endpoint;
                         const res = await fetchAPI(url, {
                             method: id ? 'PUT' : 'POST',
                             body: JSON.stringify(data),
@@ -145,35 +145,35 @@ export function createCRUDStore<T extends { id: number }>(config: CRUDConfig<T>)
                         if (res.success) {
                             showToast(
                                 id
-                                    ? (messages.updateSuccess || catalogMessage("text_e1d61adfff9f"))
-                                    : (messages.saveSuccess || catalogMessage("text_3355250a8d54")),
+                                    ? (messages.updateSuccess || catalogMessage("common.general.updatedSuccessfully"))
+                                    : (messages.saveSuccess || catalogMessage("state.createcrudstore.addedSuccessfully")),
                                 'success'
                             );
                             // Invalidate cache so next load is fresh
                             get().invalidate();
                             return true;
                         }
-                        showToast(res.message || messages.saveError || catalogMessage("text_b0dbba00004b"), 'error');
+                        showToast(res.message || messages.saveError || catalogMessage("common.general.failedSave"), 'error');
                         return false;
                     } catch {
-                        showToast(messages.saveError || catalogMessage("text_c574313242be"), 'error');
+                        showToast(messages.saveError || catalogMessage("common.general.errorSaving"), 'error');
                         return false;
                     }
                 },
 
                 remove: async (id) => {
                     try {
-                        const res = await fetchAPI(catalogMessage("text_0907f4dfb304", { value0: endpoint, value1: id }), { method: 'DELETE' });
+                        const res = await fetchAPI(catalogMessage("common.general.message", { value0: endpoint, value1: id }), { method: 'DELETE' });
                         if (res.success) {
-                            showToast(messages.deleteSuccess || catalogMessage("text_3e8ae8d6a62c"), 'success');
+                            showToast(messages.deleteSuccess || catalogMessage("state.createcrudstore.deleted"), 'success');
                             // Optimistic removal from local items
                             set(state => ({ items: state.items.filter(item => item.id !== id) }));
                             return true;
                         }
-                        showToast(res.message || messages.deleteError || catalogMessage("text_f46bfc521612"), 'error');
+                        showToast(res.message || messages.deleteError || catalogMessage("common.general.deletionFailed"), 'error');
                         return false;
                     } catch {
-                        showToast(messages.deleteError || catalogMessage("text_3bdb299872fb"), 'error');
+                        showToast(messages.deleteError || catalogMessage("common.general.deletionError"), 'error');
                         return false;
                     }
                 },

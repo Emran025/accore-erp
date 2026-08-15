@@ -10,8 +10,8 @@ export default function ViewEmployeesGroupsPage() {
         <MainLayout>
             <NumberRangeManager
                 objectType="employees"
-                title={i18n.catalog["text_7e3d0336f972"]}
-                defaultConfig={{ name: i18n.catalog["text_b72b314e8bfe"], name_en: "Employees", number_length: 8, prefix: "EMP-" }}
+                title={i18n.catalog["common.general.employeeNumberingSettings"]}
+                defaultConfig={{ name: i18n.catalog["common.general.employees"], name_en: "Employees", number_length: 8, prefix: "EMP-" }}
             />
         </MainLayout>
     );

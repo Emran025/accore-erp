@@ -62,10 +62,10 @@ export default function AssetsPage() {
                 setTotalPages(pagination?.total_pages ?? Math.max(1, Math.ceil(assets.length / itemsPerPage)));
                 setCurrentPage(page);
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_259c51fe072b"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["assets.fixedAssetsRegistry.failedLoadAssets"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.errorConnectingServer"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -95,9 +95,9 @@ export default function AssetsPage() {
 
     const translateStatus = (status: string) => {
         const statuses: Record<string, string> = {
-            active: i18n.catalog["text_629e90b3af3d"],
-            maintenance: i18n.catalog["text_99a308b7c785"],
-            disposed: i18n.catalog["text_eb0bd9ba362a"],
+            active: i18n.catalog["common.general.active"],
+            maintenance: i18n.catalog["common.general.underMaintenance"],
+            disposed: i18n.catalog["common.general.excluded"],
         };
         return statuses[status] || status;
     };
@@ -138,7 +138,7 @@ export default function AssetsPage() {
 
     const saveAsset = async () => {
         if (!assetName || !assetValue || !assetDate) {
-            showAlert("alert-container", i18n.catalog["text_0a8eb85d0081"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.pleaseFillAllRequiredFields"], "error");
             return;
         }
 
@@ -153,7 +153,7 @@ export default function AssetsPage() {
                 description: assetDescription,
             };
             const url = currentAssetId 
-                ? catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.ASSETS.FIXED_ASSETS, value1: currentAssetId })
+                ? catalogText(i18n, "common.general.message", { value0: API_ENDPOINTS.ASSETS.FIXED_ASSETS, value1: currentAssetId })
                 : API_ENDPOINTS.ASSETS.FIXED_ASSETS;
 
             const response = await fetchAPI(url, {
@@ -162,14 +162,14 @@ export default function AssetsPage() {
             });
 
             if (response.success) {
-                showAlert("alert-container", i18n.catalog["text_ff783ee2826d"], "success");
+                showAlert("alert-container", i18n.catalog["common.general.savedSuccessfully"], "success");
                 setAssetDialog(false);
                 await loadAssets(currentPage, searchTerm);
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_b0dbba00004b"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["common.general.failedSave"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.errorConnectingServer"], "error");
         }
     };
 
@@ -182,17 +182,17 @@ export default function AssetsPage() {
         if (!deleteAssetId) return;
 
         try {
-            const response = await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.ASSETS.FIXED_ASSETS, value1: deleteAssetId }), { method: "DELETE" });
+            const response = await fetchAPI(catalogText(i18n, "common.general.message", { value0: API_ENDPOINTS.ASSETS.FIXED_ASSETS, value1: deleteAssetId }), { method: "DELETE" });
             if (response.success) {
-                showAlert("alert-container", i18n.catalog["text_12b6e3813b40"], "success");
+                showAlert("alert-container", i18n.catalog["common.general.deletedSuccessfully"], "success");
                 setConfirmDialog(false);
                 setDeleteAssetId(null);
                 await loadAssets(currentPage, searchTerm);
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_f46bfc521612"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["common.general.deletionFailed"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_3bdb299872fb"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.deletionError"], "error");
         }
     };
 
@@ -205,32 +205,32 @@ export default function AssetsPage() {
         },
         {
             key: "name",
-            header: i18n.catalog["text_52ab09847cf8"],
-            dataLabel: i18n.catalog["text_52ab09847cf8"],
+            header: i18n.catalog["common.general.name"],
+            dataLabel: i18n.catalog["common.general.name"],
             render: (item) => <strong>{item.name}</strong>,
         },
         {
             key: "purchase_value",
-            header: i18n.catalog["text_4c49efecd6cb"],
-            dataLabel: i18n.catalog["text_4c49efecd6cb"],
+            header: i18n.catalog["common.general.value"],
+            dataLabel: i18n.catalog["common.general.value"],
             render: (item) => formatCurrency(item.purchase_value),
         },
         {
             key: "purchase_date",
-            header: i18n.catalog["text_dc24afda1b22"],
-            dataLabel: i18n.catalog["text_dc24afda1b22"],
+            header: i18n.catalog["common.general.purchaseDate"],
+            dataLabel: i18n.catalog["common.general.purchaseDate"],
             render: (item) => formatDate(item.purchase_date),
         },
         {
             key: "depreciation_rate",
-            header: i18n.catalog["text_104ab9ffd0a7"],
-            dataLabel: i18n.catalog["text_104ab9ffd0a7"],
-            render: (item) => catalogText(i18n, "text_518ef1823474", { value0: item.depreciation_rate || 0 }),
+            header: i18n.catalog["common.general.depreciationRate"],
+            dataLabel: i18n.catalog["common.general.depreciationRate"],
+            render: (item) => catalogText(i18n, "common.general.message.alternative4", { value0: item.depreciation_rate || 0 }),
         },
         {
             key: "status",
-            header: i18n.catalog["text_c3a4749caed4"],
-            dataLabel: i18n.catalog["text_c3a4749caed4"],
+            header: i18n.catalog["common.general.status.alternative2"],
+            dataLabel: i18n.catalog["common.general.status.alternative2"],
             render: (item) => (
                 <span className={`badge ${getStatusClass(item.status)}`}>
                     {translateStatus(item.status)}
@@ -239,29 +239,29 @@ export default function AssetsPage() {
         },
         {
             key: "recorder_name",
-            header: i18n.catalog["text_a98b66bae2c9"],
-            dataLabel: i18n.catalog["text_a98b66bae2c9"],
+            header: i18n.catalog["common.general.notAvailable.alternative7"],
+            dataLabel: i18n.catalog["common.general.notAvailable.alternative7"],
             render: (item) => (
-                <span className="badge badge-secondary">{item.recorder_name || i18n.catalog["text_df8d4a3bd114"]}</span>
+                <span className="badge badge-secondary">{item.recorder_name || i18n.catalog["common.general.system"]}</span>
             ),
         },
         {
             key: "actions",
-            header: i18n.catalog["text_7797240d6caf"],
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (item) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "edit",
-                            title: i18n.catalog["text_113d570d6555"],
+                            title: i18n.catalog["common.general.edit"],
                             variant: "edit",
                             onClick: () => editAsset(item.id),
                             hidden: !canAccess(permissions, "assets", "edit")
                         },
                         {
                             icon: "trash",
-                            title: i18n.catalog["text_59ca629220a6"],
+                            title: i18n.catalog["common.general.delete"],
                             variant: "delete",
                             onClick: () => confirmDeleteAsset(item.id),
                             hidden: !canAccess(permissions, "assets", "delete")
@@ -283,7 +283,7 @@ export default function AssetsPage() {
                     user={user}
                     searchInput={
                         <SearchableSelect
-                            placeholder={i18n.catalog["text_91203668fa54"]}
+                            placeholder={i18n.catalog["assets.fixedAssetsRegistry.searchNameDescription"]}
                             value={searchTerm}
                             options={assets.map((asset) => ({ value: asset.name, label: asset.name }))}
                             onChange={(val) => setSearchTerm(val?.toString() || "")}
@@ -299,7 +299,7 @@ export default function AssetsPage() {
                                 onClick={openAddDialog}
                                 icon="plus"
                             >
-                                {i18n.catalog["text_acb7acbececf"]}</Button>
+                                {i18n.catalog["assets.fixedAssetsRegistry.newAsset"]}</Button>
                         )
                     }
                 />
@@ -307,7 +307,7 @@ export default function AssetsPage() {
                     columns={columns}
                     data={assets}
                     keyExtractor={(item) => item.id}
-                    emptyMessage={i18n.catalog["text_af5031abf842"]}
+                    emptyMessage={i18n.catalog["common.general.noRegisteredAssets"]}
                     isLoading={isLoading}
                     pagination={{
                         currentPage,
@@ -321,13 +321,13 @@ export default function AssetsPage() {
             <Dialog
                 isOpen={assetDialog}
                 onClose={() => setAssetDialog(false)}
-                title={currentAssetId ? i18n.catalog["text_582db3fdd97e"] : i18n.catalog["text_7e430444cd59"]}
+                title={currentAssetId ? i18n.catalog["assets.fixedAssetsRegistry.editAssetDetails"] : i18n.catalog["common.general.addNewAsset"]}
                 footer={
                     <>
                         <Button variant="secondary" onClick={() => setAssetDialog(false)}>
-                            {i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                            {i18n.catalog["common.general.cancel"]}</Button>
                         <Button variant="primary" onClick={saveAsset}>
-                            {i18n.catalog["text_ddfcaf9d0144"]}</Button>
+                            {i18n.catalog["common.general.save"]}</Button>
                     </>
                 }
             >
@@ -338,7 +338,7 @@ export default function AssetsPage() {
                     }}
                 >
                     <TextInput
-                        label={i18n.catalog["text_1f7f12d037c9"]}
+                        label={i18n.catalog["common.general.assetName"]}
                         id="asset-name"
                         value={assetName}
                         onChange={(e) => setAssetName(e.target.value)}
@@ -347,7 +347,7 @@ export default function AssetsPage() {
 
                     <div className="form-row">
                         <NumberInput
-                            label={i18n.catalog["text_30e32320ab69"]}
+                            label={i18n.catalog["assets.fixedAssetsRegistry.value"]}
                             id="asset-value"
                             value={assetValue}
                             onChange={(val) => setAssetValue(val)}
@@ -358,7 +358,7 @@ export default function AssetsPage() {
                         />
                         <TextInput
                             type="date"
-                            label={i18n.catalog["text_394b2119824c"]}
+                            label={i18n.catalog["assets.fixedAssetsRegistry.purchaseDate"]}
                             id="asset-date"
                             value={assetDate}
                             onChange={(e) => setAssetDate(e.target.value)}
@@ -369,7 +369,7 @@ export default function AssetsPage() {
 
                     <div className="form-row">
                         <NumberInput
-                            label={i18n.catalog["text_31c92663521d"]}
+                            label={i18n.catalog["assets.fixedAssetsRegistry.depreciationRate"]}
                             id="asset-depreciation"
                             value={assetDepreciation}
                             onChange={(val) => setAssetDepreciation(val)}
@@ -379,21 +379,21 @@ export default function AssetsPage() {
                             className="flex-1"
                         />
                         <Select
-                            label={i18n.catalog["text_c3a4749caed4"]}
+                            label={i18n.catalog["common.general.status.alternative2"]}
                             id="asset-status"
                             value={assetStatus}
                             onChange={(e) => setAssetStatus(e.target.value as typeof assetStatus)}
                             className="flex-1"
                             options={[
-                                { value: "active", label: i18n.catalog["text_629e90b3af3d"] },
-                                { value: "maintenance", label: i18n.catalog["text_99a308b7c785"] },
-                                { value: "disposed", label: i18n.catalog["text_eb0bd9ba362a"] }
+                                { value: "active", label: i18n.catalog["common.general.active"] },
+                                { value: "maintenance", label: i18n.catalog["common.general.underMaintenance"] },
+                                { value: "disposed", label: i18n.catalog["common.general.excluded"] }
                             ]}
                         />
                     </div>
 
                     <Textarea
-                        label={i18n.catalog["text_95023fc76e1b"]}
+                        label={i18n.catalog["common.general.description.alternative2"]}
                         id="asset-description"
                         value={assetDescription}
                         onChange={(e) => setAssetDescription(e.target.value)}
@@ -407,9 +407,9 @@ export default function AssetsPage() {
                 isOpen={confirmDialog}
                 onClose={() => setConfirmDialog(false)}
                 onConfirm={deleteAsset}
-                title={i18n.catalog["text_5f9cb54dc136"]}
-                message={i18n.catalog["text_bb7c9c094a6c"]}
-                confirmText={i18n.catalog["text_59ca629220a6"]}
+                title={i18n.catalog["common.general.confirmDeletion"]}
+                message={i18n.catalog["assets.fixedAssetsRegistry.areYouSureYouWantDeleteThisAsset"]}
+                confirmText={i18n.catalog["common.general.delete"]}
                 confirmVariant="danger"
             />
         </MainLayout>

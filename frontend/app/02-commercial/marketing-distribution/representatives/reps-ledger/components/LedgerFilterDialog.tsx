@@ -28,18 +28,18 @@ export function LedgerFilterDialog({
         <Dialog
             isOpen={isOpen}
             onClose={onClose}
-            title={catalogMessage("text_4e7a6c70bd5c")}
+            title={catalogMessage("common.general.filterOperations")}
             footer={
                 <FilterActions>
                     <Button variant="secondary" onClick={onClose}>
-                        {catalogMessage("text_9a30dc2a96b8")}</Button>
+                        {catalogMessage("common.general.cancel")}</Button>
                     <Button variant="primary" onClick={onApply}>
-                        {catalogMessage("text_268974da5082")}</Button>
+                        {catalogMessage("common.general.apply")}</Button>
                 </FilterActions>
             }
         >
             <div className="space-y-4">
-                <FilterGroup label={catalogMessage("text_0335edfeb5f3")}>
+                <FilterGroup label={catalogMessage("common.general.period")}>
                     <DateRangePicker
                         startDate={filters.date_from}
                         endDate={filters.date_to}
@@ -48,16 +48,16 @@ export function LedgerFilterDialog({
                     />
                 </FilterGroup>
                 <Select
-                    label={catalogMessage("text_4567eb273df3")}
+                    label={catalogMessage("common.general.transactionType")}
                     id="filter-type"
                     value={filters.type}
                     onChange={(e) => setFilters({ ...filters, type: e.target.value })}
                     options={[
-                        { value: "", label: catalogMessage("text_65f276da33cf") },
-                        { value: "commission", label: catalogMessage("text_5c7f63974760") },
-                        { value: "payment", label: catalogMessage("text_89fef1e7d7d5") },
-                        { value: "return", label: catalogMessage("text_9a49731f4a00") },
-                        { value: "adjustment", label: catalogMessage("text_794a751a4992") },
+                        { value: "", label: catalogMessage("common.general.all") },
+                        { value: "commission", label: catalogMessage("common.general.commissions") },
+                        { value: "payment", label: catalogMessage("common.general.paymentsRepresentative") },
+                        { value: "return", label: catalogMessage("commercial.ledgerfilterdialog.salesReturns") },
+                        { value: "adjustment", label: catalogMessage("commercial.ledgerfilterdialog.financialSettlements") },
                     ]}
                 />
             </div>

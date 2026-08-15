@@ -50,7 +50,7 @@ export function ContextMenuPortal({
                         onClick={() => { onAddFavorite(); onClose(); }}
                     >
                         {getIcon("star")}
-                        <span>{catalogMessage("text_2461cfb0ed43")}</span>
+                        <span>{catalogMessage("components.contextmenuportal.addFavorites")}</span>
                     </button>
                 ) : (
                     <button
@@ -58,7 +58,7 @@ export function ContextMenuPortal({
                         onClick={() => { onRemoveFavorite(); onClose(); }}
                     >
                         {getIcon("x")}
-                        <span>{catalogMessage("text_33fb0dd35e91")}</span>
+                        <span>{catalogMessage("components.contextmenuportal.removeFavorites")}</span>
                     </button>
                 )
             )}
@@ -68,7 +68,7 @@ export function ContextMenuPortal({
                     onClick={() => { onRemoveRecent(); onClose(); }}
                 >
                     {getIcon("x")}
-                    <span>{catalogMessage("text_944f0b11f94a")}</span>
+                    <span>{catalogMessage("components.contextmenuportal.removeRecent")}</span>
                 </button>
             )}
         </div>

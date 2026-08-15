@@ -15,8 +15,8 @@ import { useEffect, useState } from "react";
 
 import type { Employee, WellnessParticipation, WellnessProgram } from "@/types";
 
-const programTypeLabels: Record<string, string> = { steps_challenge: catalogMessage("text_e437d1b71188"), health_challenge: catalogMessage("text_3d68e9f3cab9"), fitness: catalogMessage("text_443246e8e481"), nutrition: catalogMessage("text_8e1bc2fc6aaf"), mental_health: catalogMessage("text_a503a9308bfd"), other: catalogMessage("text_17a9f38e22b6") };
-const participationStatusLabels: Record<string, string> = { enrolled: catalogMessage("text_f6aee102d51b"), active: catalogMessage("text_629e90b3af3d"), completed: catalogMessage("text_c2da5684d63b"), dropped: catalogMessage("text_5723c07daa9e") };
+const programTypeLabels: Record<string, string> = { steps_challenge: catalogMessage("humanCapital.wellness.stepChallenge"), health_challenge: catalogMessage("humanCapital.wellness.healthChallenge"), fitness: catalogMessage("humanCapital.wellness.fitness"), nutrition: catalogMessage("humanCapital.wellness.feed"), mental_health: catalogMessage("humanCapital.wellness.mentalHealth"), other: catalogMessage("common.general.other") };
+const participationStatusLabels: Record<string, string> = { enrolled: catalogMessage("common.general.registered"), active: catalogMessage("common.general.active"), completed: catalogMessage("common.general.completed"), dropped: catalogMessage("common.general.withdraw") };
 const participationStatusBadges: Record<string, string> = { enrolled: "badge-info", active: "badge-success", completed: "badge-secondary", dropped: "badge-danger" };
 
 export function WellnessModule() {
@@ -47,52 +47,52 @@ export function WellnessModule() {
     const loadPrograms = async () => {
         setProgLoading(true);
         try { const r: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.WELLNESS.PROGRAMS.BASE}?page=${progPage}`); const d = r.data || (Array.isArray(r) ? r : []); setPrograms(d); setProgTotal(Number(r.last_page) || 1); }
-        catch { showToast(i18n.catalog["text_9e40277e80ae"], "error"); } finally { setProgLoading(false); }
+        catch { showToast(i18n.catalog["humanCapital.wellness.failedLoadPrograms"], "error"); } finally { setProgLoading(false); }
     };
 
     const loadParticipations = async () => {
         setPartLoading(true);
         try { const r: any = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.WELLNESS.PARTICIPATIONS.BASE}?page=${partPage}`); const d = r.data || (Array.isArray(r) ? r : []); setParticipations(d); setPartTotal(Number(r.last_page) || 1); }
-        catch { showToast(i18n.catalog["text_7dbae24b0212"], "error"); } finally { setPartLoading(false); }
+        catch { showToast(i18n.catalog["humanCapital.wellness.failedLoadPosts"], "error"); } finally { setPartLoading(false); }
     };
 
     const handleSaveProgram = async () => {
-        if (!progForm.program_name || !progForm.end_date) { showToast(i18n.catalog["text_7b758312f829"], "error"); return; }
+        if (!progForm.program_name || !progForm.end_date) { showToast(i18n.catalog["common.general.pleaseFillRequiredFields.alternative2"], "error"); return; }
         try {
             await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.WELLNESS.PROGRAMS.BASE, { method: "POST", body: JSON.stringify(progForm) });
-            showToast(i18n.catalog["text_9cb689946ea7"], "success"); setShowProgDialog(false); loadPrograms();
-        } catch (e: any) { showToast(e.message || i18n.catalog["text_b0dbba00004b"], "error"); }
+            showToast(i18n.catalog["humanCapital.wellness.programCreated"], "success"); setShowProgDialog(false); loadPrograms();
+        } catch (e: any) { showToast(e.message || i18n.catalog["common.general.failedSave"], "error"); }
     };
 
     const handleEnroll = async () => {
-        if (!partForm.program_id || !partForm.employee_id) { showToast(i18n.catalog["text_f86de97a15c7"], "error"); return; }
+        if (!partForm.program_id || !partForm.employee_id) { showToast(i18n.catalog["humanCapital.wellness.pleaseSelectProgramEmployee"], "error"); return; }
         try {
             await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.WELLNESS.PARTICIPATIONS.BASE, { method: "POST", body: JSON.stringify({ program_id: Number(partForm.program_id), employee_id: Number(partForm.employee_id), notes: partForm.notes || undefined }) });
-            showToast(i18n.catalog["text_64a61c30b1a6"], "success"); setShowPartDialog(false); loadParticipations();
-        } catch (e: any) { showToast(e.message || i18n.catalog["text_860b088d3a72"], "error"); }
+            showToast(i18n.catalog["humanCapital.wellness.registeredSuccessfully"], "success"); setShowPartDialog(false); loadParticipations();
+        } catch (e: any) { showToast(e.message || i18n.catalog["common.general.registrationFailed"], "error"); }
     };
 
     const handleUpdateParticipation = async (id: number, status: string) => {
         try {
             await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.WELLNESS.PARTICIPATIONS.withId(id), { method: "PUT", body: JSON.stringify({ status }) });
-            showToast(i18n.catalog["text_1ef1739d24e2"], "success"); loadParticipations();
-        } catch (e: any) { showToast(e.message || i18n.catalog["text_96c789857dbf"], "error"); }
+            showToast(i18n.catalog["common.general.updated"], "success"); loadParticipations();
+        } catch (e: any) { showToast(e.message || i18n.catalog["common.general.updateFailed"], "error"); }
     };
 
     const progColumns: Column<WellnessProgram>[] = [
-        { key: "program_name", header: i18n.catalog["text_7c1a6f124eb1"], dataLabel: i18n.catalog["text_52ab09847cf8"] },
-        { key: "program_type", header: i18n.catalog["text_caa3f2bb4a36"], dataLabel: i18n.catalog["text_caa3f2bb4a36"], render: (i) => programTypeLabels[i.program_type] || i.program_type },
-        { key: "start_date", header: i18n.catalog["text_c9364e4fe281"], dataLabel: i18n.catalog["text_c9364e4fe281"], render: (i) => formatDate(i.start_date) },
-        { key: "end_date", header: i18n.catalog["text_43a6b0417696"], dataLabel: i18n.catalog["text_43a6b0417696"], render: (i) => formatDate(i.end_date) },
-        { key: "is_active", header: i18n.catalog["text_629e90b3af3d"], dataLabel: i18n.catalog["text_629e90b3af3d"], render: (i) => <span className={`badge ${i.is_active ? "badge-success" : "badge-secondary"}`}>{i.is_active ? i18n.catalog["text_4b2d2c65d365"] : i18n.catalog["text_2bd073516a87"]}</span> },
-        { key: "participations", header: i18n.catalog["text_364bc0534cb7"], dataLabel: i18n.catalog["text_364bc0534cb7"], render: (i) => i.participations?.length || 0 },
+        { key: "program_name", header: i18n.catalog["humanCapital.wellness.programName"], dataLabel: i18n.catalog["common.general.name"] },
+        { key: "program_type", header: i18n.catalog["common.general.type.alternative3"], dataLabel: i18n.catalog["common.general.type.alternative3"], render: (i) => programTypeLabels[i.program_type] || i.program_type },
+        { key: "start_date", header: i18n.catalog["common.general.start.alternative3"], dataLabel: i18n.catalog["common.general.start.alternative3"], render: (i) => formatDate(i.start_date) },
+        { key: "end_date", header: i18n.catalog["common.general.end.alternative3"], dataLabel: i18n.catalog["common.general.end.alternative3"], render: (i) => formatDate(i.end_date) },
+        { key: "is_active", header: i18n.catalog["common.general.active"], dataLabel: i18n.catalog["common.general.active"], render: (i) => <span className={`badge ${i.is_active ? "badge-success" : "badge-secondary"}`}>{i.is_active ? i18n.catalog["common.general.yes"] : i18n.catalog["common.general.no"]}</span> },
+        { key: "participations", header: i18n.catalog["common.general.participants"], dataLabel: i18n.catalog["common.general.participants"], render: (i) => i.participations?.length || 0 },
         {
-            key: "id", header: i18n.catalog["text_9f0a0f722601"], dataLabel: i18n.catalog["text_9f0a0f722601"], render: (i) => (
+            key: "id", header: i18n.catalog["common.general.actions.alternative2"], dataLabel: i18n.catalog["common.general.actions.alternative2"], render: (i) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "eye",
-                            title: i18n.catalog["text_29f382c73779"],
+                            title: i18n.catalog["common.general.details"],
                             variant: "view",
                             onClick: () => { setSelectedProgram(i); setShowProgDetails(true); }
                         }
@@ -103,25 +103,25 @@ export function WellnessModule() {
     ];
 
     const partColumns: Column<WellnessParticipation>[] = [
-        { key: "employee", header: i18n.catalog["text_b71a39c832a6"], dataLabel: i18n.catalog["text_b71a39c832a6"], render: (i) => i.employee?.full_name || "-" },
-        { key: "program", header: i18n.catalog["text_907a3d449735"], dataLabel: i18n.catalog["text_907a3d449735"], render: (i) => i.program?.program_name || "-" },
-        { key: "enrollment_date", header: i18n.catalog["text_b8fcbb3f2d33"], dataLabel: i18n.catalog["text_7dd297215d19"], render: (i) => formatDate(i.enrollment_date) },
-        { key: "points", header: i18n.catalog["text_4cf48886fd0e"], dataLabel: i18n.catalog["text_4cf48886fd0e"] },
-        { key: "status", header: i18n.catalog["text_c3a4749caed4"], dataLabel: i18n.catalog["text_c3a4749caed4"], render: (i) => <span className={`badge ${participationStatusBadges[i.status]}`}>{participationStatusLabels[i.status]}</span> },
+        { key: "employee", header: i18n.catalog["common.general.employee.alternative3"], dataLabel: i18n.catalog["common.general.employee.alternative3"], render: (i) => i.employee?.full_name || "-" },
+        { key: "program", header: i18n.catalog["common.general.program"], dataLabel: i18n.catalog["common.general.program"], render: (i) => i.program?.program_name || "-" },
+        { key: "enrollment_date", header: i18n.catalog["common.general.registrationDate"], dataLabel: i18n.catalog["humanCapital.wellness.registration"], render: (i) => formatDate(i.enrollment_date) },
+        { key: "points", header: i18n.catalog["common.general.points"], dataLabel: i18n.catalog["common.general.points"] },
+        { key: "status", header: i18n.catalog["common.general.status.alternative2"], dataLabel: i18n.catalog["common.general.status.alternative2"], render: (i) => <span className={`badge ${participationStatusBadges[i.status]}`}>{participationStatusLabels[i.status]}</span> },
         {
-            key: "id", header: i18n.catalog["text_9f0a0f722601"], dataLabel: i18n.catalog["text_9f0a0f722601"], render: (i) => (
+            key: "id", header: i18n.catalog["common.general.actions.alternative2"], dataLabel: i18n.catalog["common.general.actions.alternative2"], render: (i) => (
                 <ActionButtons
                     actions={[
                         ...(canAccess("wellness", "edit") ? [{
                             icon: "play" as const,
-                            title: i18n.catalog["text_c3c09fe13363"],
+                            title: i18n.catalog["common.general.activate"],
                             variant: "success" as const,
                             onClick: () => handleUpdateParticipation(i.id, "active"),
                             hidden: i.status !== "enrolled"
                         }] : []),
                         ...(canAccess("wellness", "edit") ? [{
                             icon: "check" as const,
-                            title: i18n.catalog["text_54536a96c6fc"],
+                            title: i18n.catalog["common.general.complete"],
                             variant: "view" as const,
                             onClick: () => handleUpdateParticipation(i.id, "completed"),
                             hidden: i.status !== "active"
@@ -132,12 +132,12 @@ export function WellnessModule() {
         },
     ];
 
-    const tabs = [{ key: "programs", label: i18n.catalog["text_aa779d2f84ad"], icon: "heartbeat" }, { key: "participations", label: i18n.catalog["text_67ddeb0f0dc3"], icon: "users" }];
+    const tabs = [{ key: "programs", label: i18n.catalog["humanCapital.wellness.programs"], icon: "heartbeat" }, { key: "participations", label: i18n.catalog["humanCapital.wellness.posts"], icon: "users" }];
 
     return (
         <div className="sales-card animate-fade">
             <PageSubHeader
-                title={i18n.catalog["text_d6c742e832a0"]}
+                title={i18n.catalog["humanCapital.wellness.wellnessPrograms"]}
                 titleIcon="heart"
             />
             <TabNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
@@ -150,10 +150,10 @@ export function WellnessModule() {
                             variant="primary"
                             icon="plus"
                         >
-                            {i18n.catalog["text_0ce33d628575"]}</Button>
+                            {i18n.catalog["humanCapital.wellness.newProgram"]}</Button>
                     )}
                 </div>
-                <Table columns={progColumns} data={programs} keyExtractor={(i) => i.id.toString()} emptyMessage={i18n.catalog["text_128ddb4db829"]} isLoading={progLoading} pagination={{ currentPage: progPage, totalPages: progTotal, onPageChange: setProgPage }} />
+                <Table columns={progColumns} data={programs} keyExtractor={(i) => i.id.toString()} emptyMessage={i18n.catalog["humanCapital.wellness.noPrograms"]} isLoading={progLoading} pagination={{ currentPage: progPage, totalPages: progTotal, onPageChange: setProgPage }} />
             </>}
 
             {activeTab === "participations" && <>
@@ -164,51 +164,51 @@ export function WellnessModule() {
                             variant="primary"
                             icon="plus"
                         >
-                            {i18n.catalog["text_0dda4d6cde08"]}</Button>
+                            {i18n.catalog["common.general.registerParticipant"]}</Button>
                     )}
                 </div>
-                <Table columns={partColumns} data={participations} keyExtractor={(i) => i.id.toString()} emptyMessage={i18n.catalog["text_bd8b80b0617b"]} isLoading={partLoading} pagination={{ currentPage: partPage, totalPages: partTotal, onPageChange: setPartPage }} />
+                <Table columns={partColumns} data={participations} keyExtractor={(i) => i.id.toString()} emptyMessage={i18n.catalog["humanCapital.wellness.noEntries"]} isLoading={partLoading} pagination={{ currentPage: partPage, totalPages: partTotal, onPageChange: setPartPage }} />
             </>}
 
             {/* Create Program Dialog */}
-            <Dialog isOpen={showProgDialog} onClose={() => setShowProgDialog(false)} title={i18n.catalog["text_b20b9390d455"]} maxWidth="600px">
+            <Dialog isOpen={showProgDialog} onClose={() => setShowProgDialog(false)} title={i18n.catalog["humanCapital.wellness.newAfiaProgram"]} maxWidth="600px">
                 <div className="space-y-4">
-                    <TextInput label={i18n.catalog["text_99ae024920fb"]} value={progForm.program_name} onChange={(e) => setProgForm({ ...progForm, program_name: e.target.value })} />
+                    <TextInput label={i18n.catalog["humanCapital.wellness.programName.alternative2"]} value={progForm.program_name} onChange={(e) => setProgForm({ ...progForm, program_name: e.target.value })} />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Select label={i18n.catalog["text_caa3f2bb4a36"]} value={progForm.program_type} onChange={(e) => setProgForm({ ...progForm, program_type: e.target.value })} options={Object.entries(programTypeLabels).map(([value, label]) => ({ value, label }))} />
-                        <TextInput label={i18n.catalog["text_c9364e4fe281"]} type="date" value={progForm.start_date} onChange={(e) => setProgForm({ ...progForm, start_date: e.target.value })} />
+                        <Select label={i18n.catalog["common.general.type.alternative3"]} value={progForm.program_type} onChange={(e) => setProgForm({ ...progForm, program_type: e.target.value })} options={Object.entries(programTypeLabels).map(([value, label]) => ({ value, label }))} />
+                        <TextInput label={i18n.catalog["common.general.start.alternative3"]} type="date" value={progForm.start_date} onChange={(e) => setProgForm({ ...progForm, start_date: e.target.value })} />
                     </div>
-                    <TextInput label={i18n.catalog["text_004e50125d66"]} type="date" value={progForm.end_date} onChange={(e) => setProgForm({ ...progForm, end_date: e.target.value })} />
-                    <Textarea label={i18n.catalog["text_95023fc76e1b"]} value={progForm.description} onChange={(e) => setProgForm({ ...progForm, description: e.target.value })} rows={3} />
-                    <div className="flex justify-end gap-2" style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}><Button variant="secondary" onClick={() => setShowProgDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button><Button variant="primary" onClick={handleSaveProgram} icon="save">{i18n.catalog["text_ddfcaf9d0144"]}</Button></div>
+                    <TextInput label={i18n.catalog["common.general.end"]} type="date" value={progForm.end_date} onChange={(e) => setProgForm({ ...progForm, end_date: e.target.value })} />
+                    <Textarea label={i18n.catalog["common.general.description.alternative2"]} value={progForm.description} onChange={(e) => setProgForm({ ...progForm, description: e.target.value })} rows={3} />
+                    <div className="flex justify-end gap-2" style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}><Button variant="secondary" onClick={() => setShowProgDialog(false)}>{i18n.catalog["common.general.cancel"]}</Button><Button variant="primary" onClick={handleSaveProgram} icon="save">{i18n.catalog["common.general.save"]}</Button></div>
                 </div>
             </Dialog>
 
             {/* Program Details */}
-            <Dialog isOpen={showProgDetails} onClose={() => setShowProgDetails(false)} title={i18n.catalog["text_f2539a2bcf79"]} maxWidth="700px">
+            <Dialog isOpen={showProgDetails} onClose={() => setShowProgDetails(false)} title={i18n.catalog["humanCapital.wellness.programDetails"]} maxWidth="700px">
                 {selectedProgram && <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><strong>{i18n.catalog["text_b0ae3c0ca9a8"]}</strong> {selectedProgram.program_name}</div>
-                        <div><strong>{i18n.catalog["text_0e20d829bef2"]}</strong> {programTypeLabels[selectedProgram.program_type]}</div>
-                        <div><strong>{i18n.catalog["text_389190a30041"]}</strong> {formatDate(selectedProgram.start_date)}</div>
-                        <div><strong>{i18n.catalog["text_defe7b237e9d"]}</strong> {formatDate(selectedProgram.end_date)}</div>
-                        <div><strong>{i18n.catalog["text_e51dbd6a615c"]}</strong> {selectedProgram.is_active ? i18n.catalog["text_4b2d2c65d365"] : i18n.catalog["text_2bd073516a87"]}</div>
-                        <div><strong>{i18n.catalog["text_ada2d86c8dc1"]}</strong> {selectedProgram.participations?.length || 0}</div>
+                        <div><strong>{i18n.catalog["common.general.name.alternative2"]}</strong> {selectedProgram.program_name}</div>
+                        <div><strong>{i18n.catalog["common.general.type"]}</strong> {programTypeLabels[selectedProgram.program_type]}</div>
+                        <div><strong>{i18n.catalog["common.general.start"]}</strong> {formatDate(selectedProgram.start_date)}</div>
+                        <div><strong>{i18n.catalog["common.general.end.alternative5"]}</strong> {formatDate(selectedProgram.end_date)}</div>
+                        <div><strong>{i18n.catalog["common.general.active.alternative5"]}</strong> {selectedProgram.is_active ? i18n.catalog["common.general.yes"] : i18n.catalog["common.general.no"]}</div>
+                        <div><strong>{i18n.catalog["humanCapital.wellness.participants"]}</strong> {selectedProgram.participations?.length || 0}</div>
                     </div>
-                    {selectedProgram.description && <div><strong>{i18n.catalog["text_3ec7e12fb399"]}</strong><p>{selectedProgram.description}</p></div>}
+                    {selectedProgram.description && <div><strong>{i18n.catalog["common.general.description"]}</strong><p>{selectedProgram.description}</p></div>}
                 </div>}
             </Dialog>
 
             {/* Enroll Dialog */}
-            <Dialog isOpen={showPartDialog} onClose={() => setShowPartDialog(false)} title={i18n.catalog["text_0dda4d6cde08"]} maxWidth="500px">
+            <Dialog isOpen={showPartDialog} onClose={() => setShowPartDialog(false)} title={i18n.catalog["common.general.registerParticipant"]} maxWidth="500px">
                 <div className="space-y-4">
-                    <Select label={i18n.catalog["text_ba071c8abb4f"]} value={partForm.program_id} onChange={(e) => setPartForm({ ...partForm, program_id: e.target.value })} placeholder={i18n.catalog["text_95a8de6cb083"]} options={programs.filter(p => p.is_active).map(p => ({ value: p.id.toString(), label: p.program_name }))} />
+                    <Select label={i18n.catalog["humanCapital.wellness.program"]} value={partForm.program_id} onChange={(e) => setPartForm({ ...partForm, program_id: e.target.value })} placeholder={i18n.catalog["humanCapital.wellness.selectProgram"]} options={programs.filter(p => p.is_active).map(p => ({ value: p.id.toString(), label: p.program_name }))} />
                     <div className="flex flex-col gap-1">
-                        <Label className="text-secondary mb-1">{i18n.catalog["text_972803dc7d86"]}</Label>
-                        <SearchableSelect options={employees.map((e: Employee) => ({ value: e.id.toString(), label: e.full_name }))} value={partForm.employee_id} onChange={(v) => setPartForm(p => ({ ...p, employee_id: v?.toString() || "" }))} placeholder={i18n.catalog["text_dee783929dea"]} />
+                        <Label className="text-secondary mb-1">{i18n.catalog["common.general.employee"]}</Label>
+                        <SearchableSelect options={employees.map((e: Employee) => ({ value: e.id.toString(), label: e.full_name }))} value={partForm.employee_id} onChange={(v) => setPartForm(p => ({ ...p, employee_id: v?.toString() || "" }))} placeholder={i18n.catalog["common.general.selectEmployee"]} />
                     </div>
-                    <Textarea label={i18n.catalog["text_d446d2dc6b81"]} value={partForm.notes} onChange={(e) => setPartForm({ ...partForm, notes: e.target.value })} rows={2} />
-                    <div className="flex justify-end gap-2" style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}><Button variant="secondary" onClick={() => setShowPartDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button><Button variant="primary" onClick={handleEnroll} icon="save">{i18n.catalog["text_dcf52d4105c1"]}</Button></div>
+                    <Textarea label={i18n.catalog["common.general.notes.alternative2"]} value={partForm.notes} onChange={(e) => setPartForm({ ...partForm, notes: e.target.value })} rows={2} />
+                    <div className="flex justify-end gap-2" style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}><Button variant="secondary" onClick={() => setShowPartDialog(false)}>{i18n.catalog["common.general.cancel"]}</Button><Button variant="primary" onClick={handleEnroll} icon="save">{i18n.catalog["common.general.register"]}</Button></div>
                 </div>
             </Dialog>
         </div>

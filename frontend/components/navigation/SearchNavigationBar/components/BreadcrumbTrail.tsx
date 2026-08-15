@@ -155,7 +155,7 @@ export function BreadcrumbTrail({
                                 value={editValue}
                                 onChange={(e) => handleInputChange(e.target.value)}
                                 onKeyDown={handleKeyDown}
-                                placeholder={i18n.catalog["text_1dd691e5571f"]}
+                                placeholder={i18n.catalog["components.breadcrumbtrail.enterPagePathName"]}
                                 dir="ltr"
                                 spellCheck={false}
                                 autoComplete="off"
@@ -163,7 +163,7 @@ export function BreadcrumbTrail({
                             <button
                                 type="button"
                                 className="address-bar-go-btn"
-                                aria-label={i18n.catalog["text_5ea5fbe811db"]}
+                                aria-label={i18n.catalog["components.breadcrumbtrail.navigate"]}
                                 onClick={() => {
                                     if (editValue.startsWith("/")) {
                                         onNavigate(editValue);
@@ -197,7 +197,7 @@ export function BreadcrumbTrail({
                     /* ─── Display Mode: Breadcrumb segments ──── */
                     <nav
                         className="address-bar-breadcrumb"
-                        aria-label={i18n.catalog["text_2bd873d6c734"]}
+                        aria-label={i18n.catalog["components.breadcrumbtrail.breadcrumb"]}
                         onClick={(e) => {
                             // Click on the empty space (not on a crumb) to edit
                             if (e.target === e.currentTarget) {
@@ -229,8 +229,8 @@ export function BreadcrumbTrail({
                             type="button"
                             className="address-bar-edit-trigger"
                             onClick={enterEditMode}
-                            aria-label={i18n.catalog["text_d61a509d22ec"]}
-                            title={i18n.catalog["text_75194e9c3b6a"]}
+                            aria-label={i18n.catalog["components.breadcrumbtrail.editPath"]}
+                            title={i18n.catalog["components.breadcrumbtrail.clickEditPath"]}
                         />
                     </nav>
                 )}

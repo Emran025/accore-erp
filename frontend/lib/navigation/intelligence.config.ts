@@ -18,29 +18,29 @@ import { Domain } from "../../types/navigation";
 export const IntelligenceDomain: Domain = {
     id: "intelligence",
     order: 9,
-    title: catalogMessage("text_f4afb544f31a"),
+    title: catalogMessage("navigation.intelligenceConfig.dataAi"),
     icon: "chart-bar",
-    description: catalogMessage("text_590255b97124"),
+    description: catalogMessage("navigation.intelligenceConfig.businessIntelligenceDataWarehousingAdvancedAnalytics"),
     capabilities: [
         // ─────────────────────────────────────────────────────────────
         // Capability: Business Intelligence
         // ─────────────────────────────────────────────────────────────
         {
             id: "business-intelligence",
-            title: catalogMessage("text_0858111e63f8"),
+            title: catalogMessage("navigation.intelligenceConfig.businessIntelligence"),
             icon: "chart-bar",
-            description: catalogMessage("text_71940e486270"),
+            description: catalogMessage("navigation.intelligenceConfig.executiveDashboardsReports"),
             groups: [
                 {
                     id: "executive-dashboards",
-                    title: catalogMessage("text_28ac3b7cbd4c"),
-                    description: catalogMessage("text_75397a979c56"),
+                    title: catalogMessage("navigation.intelligenceConfig.dashboards"),
+                    description: catalogMessage("navigation.intelligenceConfig.executiveAnalyticsDashboards"),
                     screens: [
                         {
                             id: "bi-dashboard",
-                            title: catalogMessage("text_8cb5a1d139fe"),
+                            title: catalogMessage("navigation.intelligenceConfig.executiveDashboards"),
                             icon: "chart-bar",
-                            description: catalogMessage("text_4d47eb8bb85f"),
+                            description: catalogMessage("navigation.intelligenceConfig.comprehensiveAnalyticsExecutiveManagementComingSoon"),
                             href: "/09-intelligence/business-intelligence/executive-dashboards/bi-dashboard",
                             permissions: [],
                             module: "intelligence",
@@ -48,9 +48,9 @@ export const IntelligenceDomain: Domain = {
                         },
                         {
                             id: "drill-down-reports",
-                            title: catalogMessage("text_7cf79c6042fa"),
+                            title: catalogMessage("navigation.intelligenceConfig.detailedReports"),
                             icon: "pie-chart",
-                            description: catalogMessage("text_7fcacb1619ce"),
+                            description: catalogMessage("navigation.intelligenceConfig.drillDownReportsComingSoon"),
                             href: "/09-intelligence/business-intelligence/executive-dashboards/drill-down-reports",
                             permissions: [],
                             module: "intelligence",
@@ -66,20 +66,20 @@ export const IntelligenceDomain: Domain = {
         // ─────────────────────────────────────────────────────────────
         {
             id: "advanced-analytics",
-            title: catalogMessage("text_01be5134dc1f"),
+            title: catalogMessage("navigation.intelligenceConfig.advancedAnalytics"),
             icon: "chart-line",
-            description: catalogMessage("text_5b5c31059a84"),
+            description: catalogMessage("navigation.intelligenceConfig.predictiveAnalyticsTrendAnalysis"),
             groups: [
                 {
                     id: "predictive",
-                    title: catalogMessage("text_55ae485eb500"),
-                    description: catalogMessage("text_07807018aa9e"),
+                    title: catalogMessage("navigation.intelligenceConfig.predictiveAnalytics"),
+                    description: catalogMessage("navigation.intelligenceConfig.aiBasedForecasts"),
                     screens: [
                         {
                             id: "predictive-analytics",
-                            title: catalogMessage("text_953fe6ff7425"),
+                            title: catalogMessage("navigation.intelligenceConfig.predictiveAnalyticsAi"),
                             icon: "chart-line",
-                            description: catalogMessage("text_294541841438"),
+                            description: catalogMessage("navigation.intelligenceConfig.smartBusinessForecastsComingSoon"),
                             href: "/09-intelligence/advanced-analytics/predictive/predictive-analytics",
                             permissions: [],
                             module: "intelligence",

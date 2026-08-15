@@ -5,8 +5,8 @@ import { SessionExpiredModal } from "@/components/ui/SessionExpiredModal";
 import { LocaleProvider, catalogMessage } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: catalogMessage("text_b00cf16ad1e4"),
-  description: catalogMessage("text_67e139f06046"),
+  title: catalogMessage("shared.layout.acorSystem"),
+  description: catalogMessage("shared.layout.akorManagementAccountingSystem"),
 };
 
 export default function RootLayout({

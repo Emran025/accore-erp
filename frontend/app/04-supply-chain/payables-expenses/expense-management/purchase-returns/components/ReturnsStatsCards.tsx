@@ -23,14 +23,14 @@ export function ReturnsStatsCards({ stats }: ReturnsStatsCardsProps) {
     return (
         <div className="dashboard-stats animate-fade" style={{ marginBottom: "2rem" }}>
             <StatsCard
-                title={catalogMessage("text_ccab0fda414e")}
+                title={catalogMessage("common.general.totalReturns")}
                 value={formatCurrency(stats.total_returns)}
                 icon={getIcon("repeat")}
                 colorClass="alert"
             />
             {stats.total_cash_returns !== undefined && (
                 <StatsCard
-                    title={catalogMessage("text_eb286e2d1542")}
+                    title={catalogMessage("common.general.cashRefunds")}
                     value={formatCurrency(stats.total_cash_returns)}
                     icon={getIcon("dollar")}
                     colorClass="products"
@@ -38,14 +38,14 @@ export function ReturnsStatsCards({ stats }: ReturnsStatsCardsProps) {
             )}
             {stats.total_credit_returns !== undefined && (
                 <StatsCard
-                    title={catalogMessage("text_4023c844d5c1")}
+                    title={catalogMessage("common.general.receivablesReturnsCredit")}
                     value={formatCurrency(stats.total_credit_returns)}
                     icon={getIcon("dollar")}
                     colorClass="total"
                 />
             )}
             <StatsCard
-                title={catalogMessage("text_e802230d56e6")}
+                title={catalogMessage("common.general.numberReturns")}
                 value={stats.transaction_count}
                 icon={getIcon("eye")}
                 colorClass="sales"

@@ -28,7 +28,8 @@ class ApiAuth
         if (!$sessionToken) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized'
+                'message' => __('api.error.unauthorized'),
+                'message_key' => 'api.error.unauthorized',
             ], 401);
         }
 
@@ -37,7 +38,8 @@ class ApiAuth
         if (!$user) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized'
+                'message' => __('api.error.unauthorized'),
+                'message_key' => 'api.error.unauthorized',
             ], 401);
         }
 

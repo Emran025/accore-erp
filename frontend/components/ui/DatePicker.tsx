@@ -19,11 +19,11 @@ export interface DatePickerProps {
 }
 
 const ARABIC_MONTHS = [
-    catalogMessage("text_bc40bf9bf5db"), catalogMessage("text_4c9195d55893"), catalogMessage("text_121f3712ae7c"), catalogMessage("text_b5021be42c23"), catalogMessage("text_e490a80977c5"), catalogMessage("text_f6c57592aa1d"),
-    catalogMessage("text_7f5c6765af36"), catalogMessage("text_47bea73f4ca8"), catalogMessage("text_339eb2be7171"), catalogMessage("text_128ed0f7c924"), catalogMessage("text_0b699e61fe99"), catalogMessage("text_c22ea1f7f156")
+    catalogMessage("common.general.january"), catalogMessage("common.general.february"), catalogMessage("common.general.march"), catalogMessage("common.general.april"), catalogMessage("common.general.may"), catalogMessage("common.general.june"),
+    catalogMessage("common.general.july"), catalogMessage("common.general.august"), catalogMessage("common.general.september"), catalogMessage("common.general.october"), catalogMessage("common.general.november"), catalogMessage("common.general.december")
 ];
 
-const ARABIC_DAYS = [catalogMessage("text_8e5e32496bda"), catalogMessage("text_28c1ccb528c6"), catalogMessage("text_a00e80404853"), catalogMessage("text_3864a806f044"), catalogMessage("text_e9b5a180ed40"), catalogMessage("text_368ad191a55a"), catalogMessage("text_d69a3814a7db")];
+const ARABIC_DAYS = [catalogMessage("ui.datepicker.ah"), catalogMessage("ui.datepicker.mon"), catalogMessage("ui.datepicker.thu"), catalogMessage("ui.datepicker.ar"), catalogMessage("ui.datepicker.khm"), catalogMessage("ui.datepicker.egp"), catalogMessage("ui.datepicker.sat")];
 
 export function DatePicker({
     value,
@@ -31,7 +31,7 @@ export function DatePicker({
     id,
     name,
     label,
-    placeholder = catalogMessage("text_bb6fff05dcfd"),
+    placeholder = catalogMessage("ui.datepicker.selectDate"),
     required = false,
     disabled = false,
     className = "",
@@ -205,7 +205,7 @@ export function DatePicker({
                             e.stopPropagation();
                             onChange("");
                         }}
-                        title={i18n.catalog["text_308cf07fa826"]}
+                        title={i18n.catalog["common.general.clear"]}
                     >
                         <Icon name="x" size={16} />
                     </button>
@@ -218,7 +218,7 @@ export function DatePicker({
                                 type="button"
                                 className="calendar-nav-btn"
                                 onClick={prevMonth}
-                                title={i18n.catalog["text_d957f5d519c5"]}
+                                title={i18n.catalog["ui.datepicker.previousMonth"]}
                             >
                                 <Icon name="chevron-right" size={16} />
                             </button>
@@ -229,7 +229,7 @@ export function DatePicker({
                                 type="button"
                                 className="calendar-nav-btn"
                                 onClick={nextMonth}
-                                title={i18n.catalog["text_f74bf8c633df"]}
+                                title={i18n.catalog["ui.datepicker.nextMonth"]}
                             >
                                 <Icon name="chevronLeft" size={16} />
                             </button>
@@ -273,25 +273,25 @@ export function DatePicker({
                                 className="calendar-preset-btn"
                                 onClick={() => handlePreset("today")}
                             >
-                                {i18n.catalog["text_2422f71e7f4e"]}</button>
+                                {i18n.catalog["ui.datepicker.today"]}</button>
                             <button
                                 type="button"
                                 className="calendar-preset-btn"
                                 onClick={() => handlePreset("6m")}
                             >
-                                {i18n.catalog["text_7d3a954422ce"]}</button>
+                                {i18n.catalog["ui.datepicker.message6Months"]}</button>
                             <button
                                 type="button"
                                 className="calendar-preset-btn"
                                 onClick={() => handlePreset("1y")}
                             >
-                                {i18n.catalog["text_02f617588d93"]}</button>
+                                {i18n.catalog["ui.datepicker.year"]}</button>
                             <button
                                 type="button"
                                 className="calendar-preset-btn danger"
                                 onClick={() => handlePreset("clear")}
                             >
-                                {i18n.catalog["text_308cf07fa826"]}</button>
+                                {i18n.catalog["common.general.clear"]}</button>
                         </div>
                     </div>
                 )}

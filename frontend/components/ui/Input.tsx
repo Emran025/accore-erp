@@ -79,7 +79,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
                         onClear();
                     }}
                     className="clear-btn"
-                    title={catalogMessage("text_308cf07fa826")}
+                    title={catalogMessage("common.general.clear")}
                     style={{
                         position: "absolute",
                         right: "10px", // Clear button on right?

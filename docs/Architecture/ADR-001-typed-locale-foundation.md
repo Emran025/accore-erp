@@ -1,6 +1,6 @@
 # ADR-001: Typed Locale Foundation
 
-**Status:** Accepted
+**Status:** Superseded in part by ADR-002
 **Date:** 2026-08-15
 **Decision owner:** Frontend architecture
 
@@ -14,7 +14,7 @@ The application now has a single typed locale foundation under `frontend/lib/i18
 
 | Concern | Decision |
 |---|---|
-| Canonical contract | `AppDictionary` is the source of truth for all UI text. Locale dictionaries use `satisfies AppDictionary`, so TypeScript rejects missing keys, incompatible nested structure, and parameter mismatch. |
+| Canonical contract | `AppDictionary` is the source of truth for all UI text. Locale dictionaries use `satisfies AppDictionary`, so TypeScript rejects missing keys, incompatible nested structure, and parameter mismatch. Generated catalog entries use descriptive semantic labels under ADR-002. |
 | Locale metadata | Each supported locale defines an IETF language tag, direction, formatting locale, approved font stack, display name, and explicit fallback relation. |
 | UI consumption | New components access `useI18n().t.namespace.property`; they must not import a language-specific dictionary or call a string-key helper. |
 | Parameterized messages | Parameterized content is expressed as typed functions in the dictionary. This keeps required values explicit and prevents runtime placeholder errors. |
@@ -32,4 +32,4 @@ A domain team owns its corresponding business namespace. Shared application prim
 
 ## Consequences
 
-The foundation provides a compile-time safe bilingual contract without changing existing feature copy in-place. Domain migration, device/profile locale resolution, typed navigation text, validation/error contracts, and automated literal guardrails are intentionally sequenced in issues #28 through #36.
+The foundation provides a compile-time safe bilingual contract. ADR-002 supersedes its earlier opaque generated-key strategy and defines language-aware endpoint responses and persisted localized-data boundaries. Device/profile locale resolution, broader validation contracts, and automated literal guardrails remain incremental follow-up work.

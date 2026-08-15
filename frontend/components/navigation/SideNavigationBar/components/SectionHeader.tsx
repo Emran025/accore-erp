@@ -107,7 +107,7 @@ export function SectionHeader({
             style.flex = 1;
             style.height = 'auto';
         } else {
-            style.height = catalogMessage("text_412663ecb075", { value0: sectionHeight });
+            style.height = catalogMessage("common.general.px", { value0: sectionHeight });
             style.flexShrink = 0;
         }
 

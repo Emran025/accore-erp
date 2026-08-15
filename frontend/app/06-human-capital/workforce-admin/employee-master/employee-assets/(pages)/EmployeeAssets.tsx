@@ -12,20 +12,20 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const assetTypeLabels: Record<string, string> = {
-  laptop: catalogMessage("text_fe1966fd0299"),
-  phone: catalogMessage("text_c2e72da6dba5"),
-  vehicle: catalogMessage("text_1a83da3f0239"),
-  key: catalogMessage("text_8a9d0e6c56ec"),
-  equipment: catalogMessage("text_441296311989"),
-  other: catalogMessage("text_17a9f38e22b6"),
+  laptop: catalogMessage("common.general.laptop"),
+  phone: catalogMessage("common.general.phone.alternative2"),
+  vehicle: catalogMessage("common.general.vehicle"),
+  key: catalogMessage("common.general.key"),
+  equipment: catalogMessage("common.general.equipment"),
+  other: catalogMessage("common.general.other"),
 };
 
 const statusLabels: Record<string, string> = {
-  allocated: catalogMessage("text_17c28aaaa777"),
-  returned: catalogMessage("text_75fbb16d08be"),
-  maintenance: catalogMessage("text_9c499d210797"),
-  lost: catalogMessage("text_b4e5ae7ca0e7"),
-  damaged: catalogMessage("text_c4c3267f2898"),
+  allocated: catalogMessage("common.general.custom"),
+  returned: catalogMessage("common.general.refunded"),
+  maintenance: catalogMessage("common.general.maintenance"),
+  lost: catalogMessage("common.general.missing"),
+  damaged: catalogMessage("common.general.damaged"),
 };
 
 const statusBadges: Record<string, string> = {
@@ -63,7 +63,7 @@ export function EmployeeAssets() {
       setAssets(res.data as EmployeeAsset[] || []);
       setTotalPages(Number(res.last_page) || 1);
     } catch (error) {
-      console.error(i18n.catalog["text_5f046588fd1c"], error);
+      console.error(i18n.catalog["humanCapital.employeeassets.failedLoadAssets"], error);
     } finally {
       setIsLoading(false);
     }
@@ -72,24 +72,24 @@ export function EmployeeAssets() {
   const columns: Column<EmployeeAsset>[] = [
     {
       key: "asset_code",
-      header: i18n.catalog["text_24f79f111ae7"],
-      dataLabel: i18n.catalog["text_24f79f111ae7"],
+      header: i18n.catalog["common.general.originCode"],
+      dataLabel: i18n.catalog["common.general.originCode"],
     },
     {
       key: "asset_name",
-      header: i18n.catalog["text_5812d0b5e210"],
-      dataLabel: i18n.catalog["text_5812d0b5e210"],
+      header: i18n.catalog["common.general.assetName.alternative2"],
+      dataLabel: i18n.catalog["common.general.assetName.alternative2"],
     },
     {
       key: "asset_type",
-      header: i18n.catalog["text_caa3f2bb4a36"],
-      dataLabel: i18n.catalog["text_caa3f2bb4a36"],
+      header: i18n.catalog["common.general.type.alternative3"],
+      dataLabel: i18n.catalog["common.general.type.alternative3"],
       render: (item) => assetTypeLabels[item.asset_type] || item.asset_type,
     },
     {
       key: "employee",
-      header: i18n.catalog["text_b71a39c832a6"],
-      dataLabel: i18n.catalog["text_b71a39c832a6"],
+      header: i18n.catalog["common.general.employee.alternative3"],
+      dataLabel: i18n.catalog["common.general.employee.alternative3"],
       render: (item) => (
         <div>
           <div>{item.employee?.full_name || '-'}</div>
@@ -99,14 +99,14 @@ export function EmployeeAssets() {
     },
     {
       key: "allocation_date",
-      header: i18n.catalog["text_b7dad2d69588"],
-      dataLabel: i18n.catalog["text_b7dad2d69588"],
+      header: i18n.catalog["common.general.allocationDate"],
+      dataLabel: i18n.catalog["common.general.allocationDate"],
       render: (item) => formatDate(item.allocation_date),
     },
     {
       key: "status",
-      header: i18n.catalog["text_c3a4749caed4"],
-      dataLabel: i18n.catalog["text_c3a4749caed4"],
+      header: i18n.catalog["common.general.status.alternative2"],
+      dataLabel: i18n.catalog["common.general.status.alternative2"],
       render: (item) => (
         <span className={`badge ${statusBadges[item.status] || 'badge-secondary'}`}>
           {statusLabels[item.status] || item.status}
@@ -115,26 +115,26 @@ export function EmployeeAssets() {
     },
     {
       key: "next_maintenance_date",
-      header: i18n.catalog["text_cdd3ae723397"],
-      dataLabel: i18n.catalog["text_cdd3ae723397"],
+      header: i18n.catalog["common.general.upcomingMaintenance"],
+      dataLabel: i18n.catalog["common.general.upcomingMaintenance"],
       render: (item) => item.next_maintenance_date ? formatDate(item.next_maintenance_date) : '-',
     },
     {
       key: "id",
-      header: i18n.catalog["text_7797240d6caf"],
-      dataLabel: i18n.catalog["text_9f0a0f722601"],
+      header: i18n.catalog["common.general.actions"],
+      dataLabel: i18n.catalog["common.general.actions.alternative2"],
       render: (item) => (
         <ActionButtons
           actions={[
             {
               icon: "eye",
-              title: i18n.catalog["text_4b615d0e6dd2"],
+              title: i18n.catalog["common.general.viewDetails"],
               variant: "view",
               onClick: () => router.push(`/06-human-capital/workforce-admin/employee-master/employee-assets/view/${item.id}`)
             },
             ...(canAccess("employees", "edit") ? [{
               icon: "edit" as const,
-              title: i18n.catalog["text_113d570d6555"],
+              title: i18n.catalog["common.general.edit"],
               variant: "edit" as const,
               onClick: () => router.push(`/06-human-capital/workforce-admin/employee-master/employee-assets/edit/${item.id}`)
             }] : [])
@@ -147,7 +147,7 @@ export function EmployeeAssets() {
   return (
     <div className="sales-card animate-fade">
       <PageSubHeader
-        title={i18n.catalog["text_dae7bb2736a6"]}
+        title={i18n.catalog["common.general.employeeAssets"]}
         titleIcon="laptop"
         searchInput={
           <SearchableSelect
@@ -158,7 +158,7 @@ export function EmployeeAssets() {
               setSearchTerm(val);
               setCurrentPage(1);
             }}
-            placeholder={i18n.catalog["text_76b858f96489"]}
+            placeholder={i18n.catalog["common.general.search"]}
             className="search-input"
           />
         }
@@ -171,7 +171,7 @@ export function EmployeeAssets() {
                 setCurrentPage(1);
               }}
               style={{ minWidth: '150px' }}
-              placeholder={i18n.catalog["text_1ef213109d57"]}
+              placeholder={i18n.catalog["common.general.allStatuses"]}
               options={Object.entries(statusLabels).map(([value, label]) => ({ value, label }))}
             />
             {canAccess("employees", "create") && (
@@ -180,7 +180,7 @@ export function EmployeeAssets() {
                 variant="primary"
                 icon="plus"
               >
-                {i18n.catalog["text_5952c2632b5f"]}</Button>
+                {i18n.catalog["humanCapital.employeeassets.addAsset"]}</Button>
             )}
           </>
         }
@@ -190,7 +190,7 @@ export function EmployeeAssets() {
         columns={columns}
         data={assets}
         keyExtractor={(item) => item.id.toString()}
-        emptyMessage={i18n.catalog["text_af5031abf842"]}
+        emptyMessage={i18n.catalog["common.general.noRegisteredAssets"]}
         isLoading={isLoading}
         pagination={{
           currentPage,

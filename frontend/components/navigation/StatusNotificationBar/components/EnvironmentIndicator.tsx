@@ -7,7 +7,7 @@ interface EnvironmentIndicatorProps {
 }
 
 export function EnvironmentIndicator({
-    env = catalogMessage("text_cb060950e735"),
+    env = catalogMessage("components.environmentindicator.testEnvironment"),
 }: EnvironmentIndicatorProps) {
     return (
         <div className="status-notification-right">

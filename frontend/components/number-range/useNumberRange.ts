@@ -62,14 +62,14 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
                 }),
             });
             if (res.success) {
-                alert(catalogMessage("text_85eabbc05825"), "success");
+                alert(catalogMessage("common.general.numberingSettingsCreatedSuccessfully"), "success");
                 await loadData();
                 return true;
             }
-            alert(res.message || catalogMessage("text_33807b6d3510"), "error");
+            alert(res.message || catalogMessage("common.general.creationFailed"), "error");
             return false;
         } catch {
-            alert(catalogMessage("text_1ac65f6d78f4"), "error");
+            alert(catalogMessage("common.general.connectionError"), "error");
             return false;
         }
     };
@@ -94,14 +94,14 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
                 body: JSON.stringify(data),
             });
             if (res.success) {
-                alert(isEdit ? catalogMessage("text_9b163de55441") : catalogMessage("text_882db2502743"), "success");
+                alert(isEdit ? catalogMessage("common.general.groupUpdated") : catalogMessage("common.general.groupCreated"), "success");
                 await loadData();
                 return true;
             }
-            alert(res.message || catalogMessage("text_b0dbba00004b"), "error");
+            alert(res.message || catalogMessage("common.general.failedSave"), "error");
             return false;
         } catch {
-            alert(catalogMessage("text_1ac65f6d78f4"), "error");
+            alert(catalogMessage("common.general.connectionError"), "error");
             return false;
         }
     };
@@ -110,14 +110,14 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
         try {
             const res = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.GROUPS.delete(id), { method: "DELETE" });
             if (res.success) {
-                alert(catalogMessage("text_5b9541617085"), "success");
+                alert(catalogMessage("numberRange.usenumberrange.groupDeleted"), "success");
                 await loadData();
                 return true;
             }
-            alert(res.message || catalogMessage("text_f46bfc521612"), "error");
+            alert(res.message || catalogMessage("common.general.deletionFailed"), "error");
             return false;
         } catch {
-            alert(catalogMessage("text_1ac65f6d78f4"), "error");
+            alert(catalogMessage("common.general.connectionError"), "error");
             return false;
         }
     };
@@ -143,14 +143,14 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
                 body: JSON.stringify(data),
             });
             if (res.success) {
-                alert(isEdit ? catalogMessage("text_753fa01bea3d") : catalogMessage("text_87d7138539e4"), "success");
+                alert(isEdit ? catalogMessage("common.general.rangeUpdated") : catalogMessage("common.general.rangeCreated"), "success");
                 await loadData();
                 return true;
             }
-            alert(res.message || catalogMessage("text_b0dbba00004b"), "error");
+            alert(res.message || catalogMessage("common.general.failedSave"), "error");
             return false;
         } catch {
-            alert(catalogMessage("text_1ac65f6d78f4"), "error");
+            alert(catalogMessage("common.general.connectionError"), "error");
             return false;
         }
     };
@@ -159,14 +159,14 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
         try {
             const res = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.INTERVALS.delete(id), { method: "DELETE" });
             if (res.success) {
-                alert(catalogMessage("text_c10ce32a7208"), "success");
+                alert(catalogMessage("numberRange.usenumberrange.scopeDeleted"), "success");
                 await loadData();
                 return true;
             }
-            alert(res.message || catalogMessage("text_f46bfc521612"), "error");
+            alert(res.message || catalogMessage("common.general.deletionFailed"), "error");
             return false;
         } catch {
-            alert(catalogMessage("text_1ac65f6d78f4"), "error");
+            alert(catalogMessage("common.general.connectionError"), "error");
             return false;
         }
     };
@@ -178,14 +178,14 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
                 body: JSON.stringify({ new_to: newTo, reason: reason || null }),
             });
             if (res.success) {
-                alert(catalogMessage("text_107f5ee706f8"), "success");
+                alert(catalogMessage("common.general.scopeExpandedSuccessfully"), "success");
                 await loadData();
                 return true;
             }
-            alert(res.message || catalogMessage("text_7875cc0d732c"), "error");
+            alert(res.message || catalogMessage("common.general.failedExpand"), "error");
             return false;
         } catch {
-            alert(catalogMessage("text_1ac65f6d78f4"), "error");
+            alert(catalogMessage("common.general.connectionError"), "error");
             return false;
         }
     };
@@ -202,14 +202,14 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
                 }),
             });
             if (res.success) {
-                alert(catalogMessage("text_7abf4fcd9dd0"), "success");
+                alert(catalogMessage("common.general.linkedSuccessfully"), "success");
                 await loadData();
                 return true;
             }
-            alert(res.message || catalogMessage("text_71819ae001d1"), "error");
+            alert(res.message || catalogMessage("common.general.linkFailed"), "error");
             return false;
         } catch {
-            alert(catalogMessage("text_1ac65f6d78f4"), "error");
+            alert(catalogMessage("common.general.connectionError"), "error");
             return false;
         }
     };
@@ -218,14 +218,14 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
         try {
             const res = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.ASSIGNMENTS.delete(id), { method: "DELETE" });
             if (res.success) {
-                alert(catalogMessage("text_9a5c62f88123"), "success");
+                alert(catalogMessage("numberRange.usenumberrange.linkDeleted"), "success");
                 await loadData();
                 return true;
             }
-            alert(res.message || catalogMessage("text_f46bfc521612"), "error");
+            alert(res.message || catalogMessage("common.general.deletionFailed"), "error");
             return false;
         } catch {
-            alert(catalogMessage("text_1ac65f6d78f4"), "error");
+            alert(catalogMessage("common.general.connectionError"), "error");
             return false;
         }
     };

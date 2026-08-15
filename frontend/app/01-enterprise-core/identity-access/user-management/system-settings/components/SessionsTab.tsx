@@ -23,7 +23,7 @@ export function SessionsTab() {
       setSessionsTotalPages(Math.ceil(total / 10));
       setSessionsPage(page);
     } catch {
-      console.error(catalogMessage("text_3900d19bf171"));
+      console.error(catalogMessage("enterpriseCore.sessions.errorLoadingSessions"));
     } finally {
       setIsLoading(false);
     }
@@ -36,54 +36,54 @@ export function SessionsTab() {
   const terminateSession = async (sessionId: number) => {
     try {
       await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.IAM.USERS.SESSIONS_WITH_ID(sessionId), { method: "DELETE" });
-      showToast(catalogMessage("text_23680a3711fb"), "success");
+      showToast(catalogMessage("enterpriseCore.sessions.sessionEnded"), "success");
       loadSessions(sessionsPage);
     } catch {
-      showToast(catalogMessage("text_d9e59d574328"), "error");
+      showToast(catalogMessage("enterpriseCore.sessions.errorEndingSession"), "error");
     }
   };
 
   const sessionColumns: Column<Session>[] = [
-    { key: "device", header: catalogMessage("text_bd3ee8aa6cb7"), dataLabel: catalogMessage("text_bd3ee8aa6cb7") },
-    { key: "ip_address", header: catalogMessage("text_662315283697"), dataLabel: catalogMessage("text_662315283697") },
+    { key: "device", header: catalogMessage("common.general.device"), dataLabel: catalogMessage("common.general.device") },
+    { key: "ip_address", header: catalogMessage("common.general.ipAddress"), dataLabel: catalogMessage("common.general.ipAddress") },
     {
       key: "last_activity",
-      header: catalogMessage("text_aceab161a5e6"),
-      dataLabel: catalogMessage("text_aceab161a5e6"),
+      header: catalogMessage("common.general.lastActivity"),
+      dataLabel: catalogMessage("common.general.lastActivity"),
       render: (item) => formatDateTime(item.last_activity),
     },
     {
       key: "is_current",
-      header: catalogMessage("text_c3a4749caed4"),
-      dataLabel: catalogMessage("text_c3a4749caed4"),
+      header: catalogMessage("common.general.status.alternative2"),
+      dataLabel: catalogMessage("common.general.status.alternative2"),
       render: (item) =>
         item.is_current ? (
-          <span className="badge badge-success">{catalogMessage("text_74ae3d1fa584")}</span>
+          <span className="badge badge-success">{catalogMessage("enterpriseCore.sessions.currentSession")}</span>
         ) : null,
     },
     {
       key: "actions",
-      header: catalogMessage("text_7797240d6caf"),
-      dataLabel: catalogMessage("text_7797240d6caf"),
+      header: catalogMessage("common.general.actions"),
+      dataLabel: catalogMessage("common.general.actions"),
       render: (item) =>
         !item.is_current && (
           <button
             className="btn btn-sm btn-danger"
             onClick={() => terminateSession(item.id)}
           >
-            {catalogMessage("text_3d21a7889032")}</button>
+            {catalogMessage("enterpriseCore.sessions.finish")}</button>
         ),
     },
   ];
 
   return (
     <div className="sales-card">
-      <h3>{catalogMessage("text_49726b3d3b3c")}</h3>
+      <h3>{catalogMessage("common.general.activeSessions")}</h3>
       <Table
         columns={sessionColumns}
         data={sessions}
         keyExtractor={(item) => item.id}
-        emptyMessage={catalogMessage("text_21433179b809")}
+        emptyMessage={catalogMessage("enterpriseCore.sessions.noSessions")}
         isLoading={isLoading}
         pagination={{
           currentPage: sessionsPage,

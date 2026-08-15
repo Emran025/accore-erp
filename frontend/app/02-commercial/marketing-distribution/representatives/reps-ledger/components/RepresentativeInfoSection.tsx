@@ -21,7 +21,7 @@ export function RepresentativeInfoSection({ representative, showDeleted, onShowD
                 <div>
                     <h3 style={{ margin: 0 }}>{representative.name}</h3>
                     <p className="text-muted" style={{ margin: 0, fontSize: "0.85rem" }}>
-                        {representative.phone || catalogMessage("text_04cf43a4d120")} | {representative.email || catalogMessage("text_9952acd0ca96")}
+                        {representative.phone || catalogMessage("common.general.noPhone")} | {representative.email || catalogMessage("commercial.representativeinfosection.noEmail")}
                     </p>
                 </div>
             </div>
@@ -34,7 +34,7 @@ export function RepresentativeInfoSection({ representative, showDeleted, onShowD
                     onChange={(e) => onShowDeletedChange(e.target.checked)}
                 />
                 <label htmlFor="show-deleted-toggle" style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: 0, cursor: "pointer" }}>
-                    {catalogMessage("text_8860744ad348")}</label>
+                    {catalogMessage("common.general.viewDeletedItems")}</label>
             </FilterGroup>
         </FilterSection>
     );

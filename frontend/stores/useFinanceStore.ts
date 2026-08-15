@@ -111,7 +111,7 @@ export const useFinanceStore = create<FinanceState>()(
                         set({ accounts, accountsLastFetched: Date.now() });
                     }
                 } catch {
-                    showToast(catalogMessage("text_f5ee53a0a302"), 'error');
+                    showToast(catalogMessage("common.general.errorLoadingAccounts.alternative2"), 'error');
                 } finally {
                     set({ accountsLoading: false });
                 }
@@ -137,7 +137,7 @@ export const useFinanceStore = create<FinanceState>()(
                         set({ fiscalPeriods, fiscalPeriodsLastFetched: Date.now() });
                     }
                 } catch {
-                    showToast(catalogMessage("text_f9d4b011a9ce"), 'error');
+                    showToast(catalogMessage("state.usefinancestore.errorLoadingFinancialPeriods"), 'error');
                 } finally {
                     set({ fiscalPeriodsLoading: false });
                 }
@@ -174,7 +174,7 @@ export const useFinanceStore = create<FinanceState>()(
                         });
                     }
                 } catch {
-                    showToast(catalogMessage("text_9d43b75e43dc"), 'error');
+                    showToast(catalogMessage("state.usefinancestore.errorLoadingJournalEntries"), 'error');
                 } finally {
                     set({ jvLoading: false });
                 }

@@ -101,8 +101,8 @@ export default function DashboardPage() {
                 setRecentSales(Array.isArray(d.recent_sales) ? d.recent_sales : []);
             }
         } catch (error) {
-            console.error(i18n.catalog["text_01f39e8b7f3e"], error);
-            showToast(i18n.catalog["text_f10d2b4c7fe1"], "error");
+            console.error(i18n.catalog["enterpriseCore.globalDashboard.errorLoadingDashboard"], error);
+            showToast(i18n.catalog["common.general.errorLoadingData"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -122,7 +122,7 @@ export default function DashboardPage() {
             setLowStockProducts((response.data as LowStockProduct[]) || []);
             setLowStockDialog(true);
         } catch {
-            showToast(i18n.catalog["text_bf68e6f346c3"], "error");
+            showToast(i18n.catalog["common.general.errorLoadingProducts"], "error");
         }
     };
 
@@ -132,7 +132,7 @@ export default function DashboardPage() {
             setExpiringProducts((response.data as ExpiringProduct[]) || []);
             setExpiringDialog(true);
         } catch {
-            showToast(i18n.catalog["text_bf68e6f346c3"], "error");
+            showToast(i18n.catalog["common.general.errorLoadingProducts"], "error");
         }
     };
 
@@ -143,19 +143,19 @@ export default function DashboardPage() {
                 body: JSON.stringify({
                     product_name: productName,
                     quantity: 10,
-                    notes: i18n.catalog["text_2e5f747de70f"],
+                    notes: i18n.catalog["enterpriseCore.globalDashboard.automaticRestockRequest"],
                     type: "restock",
                 }),
             });
-            showToast(i18n.catalog["text_af782a33f787"], "success");
+            showToast(i18n.catalog["enterpriseCore.globalDashboard.restockRequestCreated"], "success");
         } catch {
-            showToast(i18n.catalog["text_772deed3f951"], "error");
+            showToast(i18n.catalog["enterpriseCore.globalDashboard.errorCreatingOrder"], "error");
         }
     };
 
     const submitNewRequest = async () => {
         if (!requestProduct.trim() || !requestQuantity.trim()) {
-            showToast(i18n.catalog["text_0a8eb85d0081"], "error");
+            showToast(i18n.catalog["common.general.pleaseFillAllRequiredFields"], "error");
             return;
         }
 
@@ -169,55 +169,55 @@ export default function DashboardPage() {
                     type: "new",
                 }),
             });
-            showToast(i18n.catalog["text_fe9286911506"], "success");
+            showToast(i18n.catalog["enterpriseCore.globalDashboard.requestSentSuccessfully"], "success");
             setRequestDialog(false);
             setRequestProduct("");
             setRequestQuantity("");
             setRequestNotes("");
         } catch {
-            showToast(i18n.catalog["text_fe2e1743f437"], "error");
+            showToast(i18n.catalog["enterpriseCore.globalDashboard.failedSendRequest"], "error");
         }
     };
 
     const recentSalesColumns: Column<RecentSale>[] = [
-        { key: "invoice_number", header: i18n.catalog["text_b6e71278be04"], dataLabel: i18n.catalog["text_b6e71278be04"] },
+        { key: "invoice_number", header: i18n.catalog["common.general.invoiceNumber.alternative2"], dataLabel: i18n.catalog["common.general.invoiceNumber.alternative2"] },
         {
             key: "total_amount",
-            header: i18n.catalog["text_1cd480f91b24"],
-            dataLabel: i18n.catalog["text_1cd480f91b24"],
+            header: i18n.catalog["common.general.amount"],
+            dataLabel: i18n.catalog["common.general.amount"],
             render: (item) => formatCurrency(item.total_amount),
         },
         {
             key: "payment_type",
-            header: i18n.catalog["text_d31f653fcdaf"],
-            dataLabel: i18n.catalog["text_d31f653fcdaf"],
+            header: i18n.catalog["common.general.paymentType.alternative2"],
+            dataLabel: i18n.catalog["common.general.paymentType.alternative2"],
             render: (item) => (
                 <span className={`badge ${item.payment_type === "cash" ? "badge-success" : "badge-warning"}`}>
-                    {item.payment_type === "cash" ? i18n.catalog["text_1beb05a45173"] : i18n.catalog["text_bf7775843f7c"]}
+                    {item.payment_type === "cash" ? i18n.catalog["common.general.cash"] : i18n.catalog["common.general.deferred"]}
                 </span>
             ),
         },
         {
             key: "created_at",
-            header: i18n.catalog["text_d90c384199ac"],
-            dataLabel: i18n.catalog["text_d90c384199ac"],
+            header: i18n.catalog["common.general.date.alternative7"],
+            dataLabel: i18n.catalog["common.general.date.alternative7"],
             render: (item) => formatDate(item.created_at),
         },
     ];
 
     const lowStockColumns: Column<LowStockProduct>[] = [
-        { key: "name", header: i18n.catalog["text_a79e304d96a1"], dataLabel: i18n.catalog["text_a79e304d96a1"] },
+        { key: "name", header: i18n.catalog["common.general.product"], dataLabel: i18n.catalog["common.general.product"] },
         {
             key: "stock",
-            header: i18n.catalog["text_eabfe10ecac0"],
-            dataLabel: i18n.catalog["text_eabfe10ecac0"],
+            header: i18n.catalog["common.general.currentInventory"],
+            dataLabel: i18n.catalog["common.general.currentInventory"],
             render: (item) => <span className="text-danger">{item.stock}</span>,
         },
-        { key: "min_stock", header: i18n.catalog["text_a3e1e1424079"], dataLabel: i18n.catalog["text_a3e1e1424079"] },
+        { key: "min_stock", header: i18n.catalog["common.general.minimum"], dataLabel: i18n.catalog["common.general.minimum"] },
         {
             key: "actions",
-            header: i18n.catalog["text_7797240d6caf"],
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (item) => (
                 <Button
                     size="sm"
@@ -225,20 +225,20 @@ export default function DashboardPage() {
                     onClick={() => initiateRestock(item.id, item.name)}
                     icon="plus"
                 >
-                    {i18n.catalog["text_211f962973b9"]}</Button>
+                    {i18n.catalog["enterpriseCore.globalDashboard.storageRequest"]}</Button>
             ),
         },
     ];
 
     const expiringColumns: Column<ExpiringProduct>[] = [
-        { key: "name", header: i18n.catalog["text_a79e304d96a1"], dataLabel: i18n.catalog["text_a79e304d96a1"] },
+        { key: "name", header: i18n.catalog["common.general.product"], dataLabel: i18n.catalog["common.general.product"] },
         {
             key: "expiry_date",
-            header: i18n.catalog["text_ec3093bd6fd5"],
-            dataLabel: i18n.catalog["text_ec3093bd6fd5"],
+            header: i18n.catalog["common.general.endDate.alternative2"],
+            dataLabel: i18n.catalog["common.general.endDate.alternative2"],
             render: (item) => <span className="text-warning">{formatDate(item.expiry_date)}</span>,
         },
-        { key: "stock", header: i18n.catalog["text_935e21853946"], dataLabel: i18n.catalog["text_935e21853946"] },
+        { key: "stock", header: i18n.catalog["common.general.quantity.alternative3"], dataLabel: i18n.catalog["common.general.quantity.alternative3"] },
     ];
 
     return (
@@ -248,7 +248,7 @@ export default function DashboardPage() {
             {/* Stats Grid */}
             <div className="dashboard-stats animate-fade">
                 <StatsCard
-                    title={i18n.catalog["text_766a25692700"]}
+                    title={i18n.catalog["enterpriseCore.globalDashboard.todaySSales"]}
                     value={formatCurrency(stats?.daily_sales || 0)}
                     icon={getIcon("cart")}
                     colorClass="sales"
@@ -275,7 +275,7 @@ export default function DashboardPage() {
                 />
 
                 <StatsCard
-                    title={i18n.catalog["text_f3c1686f2b59"]}
+                    title={i18n.catalog["enterpriseCore.globalDashboard.totalProducts"]}
                     value={stats?.total_products || 0}
                     icon={getIcon("box")}
                     colorClass="products"
@@ -283,7 +283,7 @@ export default function DashboardPage() {
                 />
 
                 <StatsCard
-                    title={i18n.catalog["text_0691e8ba3ebd"]}
+                    title={i18n.catalog["enterpriseCore.globalDashboard.lowStock"]}
                     value={stats?.low_stock_count || 0}
                     icon={getIcon("alert")}
                     colorClass="alert"
@@ -292,7 +292,7 @@ export default function DashboardPage() {
                 />
 
                 <StatsCard
-                    title={i18n.catalog["text_7bbf0af6d0ab"]}
+                    title={i18n.catalog["enterpriseCore.globalDashboard.expiringSoon"]}
                     value={stats?.expiring_soon_count || 0}
                     icon={getIcon("clock")}
                     colorClass="total" // Original was 'total', keeps it but maybe 'warning' is better? preserving 'total' class mapping for now.
@@ -301,7 +301,7 @@ export default function DashboardPage() {
                 />
 
                 <StatsCard
-                    title={i18n.catalog["text_52f1fcac3509"]}
+                    title={i18n.catalog["enterpriseCore.globalDashboard.totalSales"]}
                     value={formatCurrency(stats?.total_sales || 0)}
                     icon={getIcon("chart-line")}
                     colorClass="sales"
@@ -309,7 +309,7 @@ export default function DashboardPage() {
                 />
 
                 <StatsCard
-                    title={i18n.catalog["text_567976f78679"]}
+                    title={i18n.catalog["enterpriseCore.globalDashboard.todaySExpenses"]}
                     value={formatCurrency(stats?.today_expenses || 0)}
                     icon={getIcon("dollar")}
                     colorClass="alert"
@@ -317,7 +317,7 @@ export default function DashboardPage() {
                 />
 
                 <StatsCard
-                    title={i18n.catalog["text_03a4c3145ccb"]}
+                    title={i18n.catalog["common.general.totalExpenses"]}
                     value={formatCurrency(stats?.total_expenses || 0)}
                     icon={getIcon("wallet")}
                     colorClass="total"
@@ -325,7 +325,7 @@ export default function DashboardPage() {
                 />
 
                 <StatsCard
-                    title={i18n.catalog["text_c9a7860d2170"]}
+                    title={i18n.catalog["enterpriseCore.globalDashboard.todaySRevenue"]}
                     value={formatCurrency(stats?.today_revenues || 0)}
                     icon={getIcon("coins")}
                     colorClass="products"
@@ -333,7 +333,7 @@ export default function DashboardPage() {
                 />
 
                 <StatsCard
-                    title={i18n.catalog["text_5f8d135d6d92"]}
+                    title={i18n.catalog["common.general.totalRevenue"]}
                     value={formatCurrency(stats?.total_revenues || 0)}
                     icon={getIcon("hand-holding")}
                     colorClass="sales"
@@ -341,7 +341,7 @@ export default function DashboardPage() {
                 />
 
                 <StatsCard
-                    title={i18n.catalog["text_37252061e51e"]}
+                    title={i18n.catalog["common.general.totalAssets"]}
                     value={formatCurrency(stats?.total_assets || 0)}
                     icon={getIcon("building")}
                     colorClass="products"
@@ -354,17 +354,17 @@ export default function DashboardPage() {
                 {/* Recent Sales */}
                 <div className="section-card">
                     <div className="section-header">
-                        <h3>{i18n.catalog["text_dda35ef04abb"]}</h3>
+                        <h3>{i18n.catalog["enterpriseCore.globalDashboard.recentSales"]}</h3>
                         {canAccess(permissions, "sales", "view") && (
                             <Button href="/sales/sales" variant="secondary">
-                                {i18n.catalog["text_cc52200ebc71"]}</Button>
+                                {i18n.catalog["enterpriseCore.globalDashboard.viewAll"]}</Button>
                         )}
                     </div>
                     <Table
                         columns={recentSalesColumns}
                         data={recentSales.slice(0, 5)}
                         keyExtractor={(item) => item.id}
-                        emptyMessage={i18n.catalog["text_4a978be6c1e0"]}
+                        emptyMessage={i18n.catalog["enterpriseCore.globalDashboard.noRecentSales"]}
                         isLoading={isLoading}
                     />
                 </div>
@@ -372,16 +372,16 @@ export default function DashboardPage() {
                 {/* Quick Actions */}
                 <div className="section-card quick-actions">
                     <div className="section-header">
-                        <h3>{i18n.catalog["text_8294d68c589e"]}</h3>
+                        <h3>{i18n.catalog["enterpriseCore.globalDashboard.quickActions"]}</h3>
                     </div>
                     <div className="action-buttons">
                         {canAccess(permissions, "sales", "create") && (
                             <Button href="/sales/sales" variant="primary" icon="plus">
-                                {i18n.catalog["text_9be3735662ff"]}</Button>
+                                {i18n.catalog["enterpriseCore.globalDashboard.newSale"]}</Button>
                         )}
                         {canAccess(permissions, "products", "create") && (
                             <Button href="/inventory/products" variant="secondary" icon="box">
-                                {i18n.catalog["text_515506c4eaa6"]}</Button>
+                                {i18n.catalog["common.general.addProduct"]}</Button>
                         )}
                         {canAccess(permissions, "purchases", "create") && (
                             <Button
@@ -389,11 +389,11 @@ export default function DashboardPage() {
                                 onClick={() => setRequestDialog(true)}
                                 icon="clipboard-list"
                             >
-                                {i18n.catalog["text_6d43782b2c9f"]}</Button>
+                                {i18n.catalog["common.general.newRequest"]}</Button>
                         )}
                         {canAccess(permissions, "reports", "view") && (
                             <Button href="/system/reports" variant="secondary" icon="chart-bar">
-                                {i18n.catalog["text_f0a3fa7976bd"]}</Button>
+                                {i18n.catalog["enterpriseCore.globalDashboard.viewReports"]}</Button>
                         )}
                     </div>
                 </div>
@@ -403,14 +403,14 @@ export default function DashboardPage() {
             <Dialog
                 isOpen={lowStockDialog}
                 onClose={() => setLowStockDialog(false)}
-                title={i18n.catalog["text_f404f8ea7662"]}
+                title={i18n.catalog["enterpriseCore.globalDashboard.lowStockAlerts"]}
                 maxWidth="700px"
             >
                 <Table
                     columns={lowStockColumns}
                     data={lowStockProducts}
                     keyExtractor={(item) => item.id}
-                    emptyMessage={i18n.catalog["text_abd809c068c5"]}
+                    emptyMessage={i18n.catalog["enterpriseCore.globalDashboard.noProductsLowStock"]}
                 />
             </Dialog>
 
@@ -418,14 +418,14 @@ export default function DashboardPage() {
             <Dialog
                 isOpen={expiringDialog}
                 onClose={() => setExpiringDialog(false)}
-                title={i18n.catalog["text_2830e1a6248c"]}
+                title={i18n.catalog["enterpriseCore.globalDashboard.expiringSoonAlerts"]}
                 maxWidth="700px"
             >
                 <Table
                     columns={expiringColumns}
                     data={expiringProducts}
                     keyExtractor={(item) => item.id}
-                    emptyMessage={i18n.catalog["text_cc162c0da0f0"]}
+                    emptyMessage={i18n.catalog["enterpriseCore.globalDashboard.noProductsNearingExpiration"]}
                 />
             </Dialog>
 
@@ -433,47 +433,47 @@ export default function DashboardPage() {
             <Dialog
                 isOpen={requestDialog}
                 onClose={() => setRequestDialog(false)}
-                title={i18n.catalog["text_6d43782b2c9f"]}
+                title={i18n.catalog["common.general.newRequest"]}
                 footer={
                     <>
                         <Button
                             variant="secondary"
                             onClick={() => setRequestDialog(false)}
                         >
-                            {i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                            {i18n.catalog["common.general.cancel"]}</Button>
                         <Button variant="primary" onClick={submitNewRequest}>
-                            {i18n.catalog["text_ecf594c47513"]}</Button>
+                            {i18n.catalog["enterpriseCore.globalDashboard.submitRequest"]}</Button>
                     </>
                 }
             >
                 <div className="form-group">
-                    <label htmlFor="requestProduct">{i18n.catalog["text_f1f73a577b94"]}</label>
+                    <label htmlFor="requestProduct">{i18n.catalog["common.general.productName.alternative2"]}</label>
                     <input
                         type="text"
                         id="requestProduct"
                         value={requestProduct}
                         onChange={(e) => setRequestProduct(e.target.value)}
-                        placeholder={i18n.catalog["text_c833a0d05983"]}
+                        placeholder={i18n.catalog["enterpriseCore.globalDashboard.enterProductName"]}
                     />
                 </div>
                 <div className="form-group">
-                    <label htmlFor="requestQuantity">{i18n.catalog["text_13ab4244836f"]}</label>
+                    <label htmlFor="requestQuantity">{i18n.catalog["common.general.quantityRequired"]}</label>
                     <input
                         type="number"
                         id="requestQuantity"
                         value={requestQuantity}
                         onChange={(e) => setRequestQuantity(e.target.value)}
-                        placeholder={i18n.catalog["text_5e6abc56a59b"]}
+                        placeholder={i18n.catalog["enterpriseCore.globalDashboard.enterQuantity"]}
                         min="1"
                     />
                 </div>
                 <div className="form-group">
-                    <label htmlFor="requestNotes">{i18n.catalog["text_d446d2dc6b81"]}</label>
+                    <label htmlFor="requestNotes">{i18n.catalog["common.general.notes.alternative2"]}</label>
                     <textarea
                         id="requestNotes"
                         value={requestNotes}
                         onChange={(e) => setRequestNotes(e.target.value)}
-                        placeholder={i18n.catalog["text_c5c400581f5b"]}
+                        placeholder={i18n.catalog["enterpriseCore.globalDashboard.enterAnyAdditionalNotes"]}
                         rows={3}
                     />
                 </div>

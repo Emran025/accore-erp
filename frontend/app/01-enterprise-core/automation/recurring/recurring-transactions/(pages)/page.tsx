@@ -78,10 +78,10 @@ export default function RecurringTransactionsPage() {
                 setTotalPages(Math.ceil(total / itemsPerPage));
                 setCurrentPage(page);
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_c539e2a5f32a"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["enterpriseCore.recurringTransactions.failedLoadTemplates"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.errorConnectingServer"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -122,12 +122,12 @@ export default function RecurringTransactionsPage() {
                 const template = Array.isArray(response.data) ? response.data[0] : response.data;
                 if (template) {
                     alert(
-                        catalogText(i18n, "text_c78b1d1d8ffc", { value0: template.name, value1: template.type, value2: template.frequency, value3: formatDate(template.next_due_date) })
+                        catalogText(i18n, "enterpriseCore.recurringTransactions.nameTypeFrequencyDueDate", { value0: template.name, value1: template.type, value2: template.frequency, value3: formatDate(template.next_due_date) })
                     );
                 }
             }
         } catch {
-            showToast(i18n.catalog["text_cc09051b0fd8"], "error");
+            showToast(i18n.catalog["common.general.errorLoadingTemplate"], "error");
         }
     };
 
@@ -137,7 +137,7 @@ export default function RecurringTransactionsPage() {
             if (response.success && response.data) {
                 const template = Array.isArray(response.data) ? response.data[0] : response.data;
                 if (!template) {
-                    showAlert("alert-container", i18n.catalog["text_995c081379d1"], "error");
+                    showAlert("alert-container", i18n.catalog["enterpriseCore.recurringTransactions.templateNotFound"], "error");
                     return;
                 }
 
@@ -163,20 +163,20 @@ export default function RecurringTransactionsPage() {
                 setTemplateDialog(true);
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_cc09051b0fd8"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.errorLoadingTemplate"], "error");
         }
     };
 
     const saveTemplate = async () => {
         if (!templateName || !nextDueDate) {
-            showAlert("alert-container", i18n.catalog["text_0a8eb85d0081"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.pleaseFillAllRequiredFields"], "error");
             return;
         }
 
         let templateData: RecurringTemplateData = {};
         if (templateType === "expense") {
             if (!expenseAccount || !expenseAmount) {
-                showAlert("alert-container", i18n.catalog["text_1038ba0763b8"], "error");
+                showAlert("alert-container", i18n.catalog["enterpriseCore.recurringTransactions.pleaseFillExpenseAccountAmount"], "error");
                 return;
             }
             templateData = {
@@ -186,7 +186,7 @@ export default function RecurringTransactionsPage() {
             };
         } else if (templateType === "revenue") {
             if (!revenueAccount || !revenueAmount) {
-                showAlert("alert-container", i18n.catalog["text_c2ac07f5b030"], "error");
+                showAlert("alert-container", i18n.catalog["enterpriseCore.recurringTransactions.pleaseFillRevenueAccountAmount"], "error");
                 return;
             }
             templateData = {
@@ -196,13 +196,13 @@ export default function RecurringTransactionsPage() {
             };
         } else if (templateType === "journal_voucher") {
             if (!journalEntries) {
-                showAlert("alert-container", i18n.catalog["text_62a8a98682e4"], "error");
+                showAlert("alert-container", i18n.catalog["enterpriseCore.recurringTransactions.pleaseEnterEntries"], "error");
                 return;
             }
             try {
                 templateData = { entries: JSON.parse(journalEntries) };
             } catch {
-                showAlert("alert-container", i18n.catalog["text_b2104c294dee"], "error");
+                showAlert("alert-container", i18n.catalog["enterpriseCore.recurringTransactions.invalidJsonFormat"], "error");
                 return;
             }
         }
@@ -232,14 +232,14 @@ export default function RecurringTransactionsPage() {
             });
 
             if (response.success) {
-                showAlert("alert-container", i18n.catalog["text_ff783ee2826d"], "success");
+                showAlert("alert-container", i18n.catalog["common.general.savedSuccessfully"], "success");
                 setTemplateDialog(false);
                 await loadTemplates(currentPage);
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_b0dbba00004b"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["common.general.failedSave"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_c574313242be"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.errorSaving"], "error");
         }
     };
 
@@ -256,15 +256,15 @@ export default function RecurringTransactionsPage() {
                 method: "DELETE",
             });
             if (response.success) {
-                showAlert("alert-container", i18n.catalog["text_a2bc69a3fce3"], "success");
+                showAlert("alert-container", i18n.catalog["common.general.templateDeletedSuccessfully"], "success");
                 setConfirmDialog(false);
                 setDeleteTemplateId(null);
                 await loadTemplates(currentPage);
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_3ce4224c7569"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["common.general.failedDeleteTemplate"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_20725a2c07a7"], "error");
+            showAlert("alert-container", i18n.catalog["enterpriseCore.recurringTransactions.errorDeletingTemplate"], "error");
         }
     };
 
@@ -288,36 +288,36 @@ export default function RecurringTransactionsPage() {
             if (response.success && response.data) {
                 showAlert(
                     "alert-container",
-                    i18n.catalog["text_be5e0e5fe181"],
+                    i18n.catalog["enterpriseCore.recurringTransactions.transactionWasCompletedSuccessfully"],
                     "success"
                 );
                 setConfirmDialog(false);
                 setGenerateTemplateId(null);
                 await loadTemplates(currentPage);
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_402ecb1be854"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["enterpriseCore.recurringTransactions.failedExecuteTransaction"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_e18b2694dfd0"], "error");
+            showAlert("alert-container", i18n.catalog["enterpriseCore.recurringTransactions.errorExecutingTransaction"], "error");
         }
     };
 
     const getTypeText = (type: string) => {
         const types: Record<string, string> = {
-            expense: i18n.catalog["text_29816a44fdcd"],
-            revenue: i18n.catalog["text_cc886aa7a813"],
-            journal_voucher: i18n.catalog["text_a3e1bc51284d"],
+            expense: i18n.catalog["common.general.expense"],
+            revenue: i18n.catalog["common.general.revenue.alternative2"],
+            journal_voucher: i18n.catalog["common.general.journalVoucher"],
         };
         return types[type] || type;
     };
 
     const getFrequencyText = (frequency: string) => {
         const frequencies: Record<string, string> = {
-            daily: i18n.catalog["text_2a73df3ec9ae"],
-            weekly: i18n.catalog["text_e16e5870ecd8"],
-            monthly: i18n.catalog["text_9c677bb93912"],
-            quarterly: i18n.catalog["text_eb380eddf1ec"],
-            annually: i18n.catalog["text_1beeff0b0fec"],
+            daily: i18n.catalog["common.general.daily"],
+            weekly: i18n.catalog["common.general.weekly"],
+            monthly: i18n.catalog["common.general.monthly"],
+            quarterly: i18n.catalog["common.general.quarterly"],
+            annually: i18n.catalog["common.general.annual"],
         };
         return frequencies[frequency] || frequency;
     };
@@ -327,7 +327,7 @@ export default function RecurringTransactionsPage() {
             template.next_due_date && new Date(template.next_due_date) <= new Date();
         return (
             <span className={`badge ${isDue ? "badge-warning" : "badge-success"}`}>
-                {isDue ? i18n.catalog["text_710cab8f8610"] : i18n.catalog["text_629e90b3af3d"]}
+                {isDue ? i18n.catalog["enterpriseCore.recurringTransactions.due"] : i18n.catalog["common.general.active"]}
             </span>
         );
     };
@@ -343,64 +343,64 @@ export default function RecurringTransactionsPage() {
     const columns: Column<RecurringTemplate>[] = [
         {
             key: "name",
-            header: i18n.catalog["text_52ab09847cf8"],
-            dataLabel: i18n.catalog["text_52ab09847cf8"],
+            header: i18n.catalog["common.general.name"],
+            dataLabel: i18n.catalog["common.general.name"],
             render: (item) => <strong>{item.name}</strong>,
         },
         {
             key: "type",
-            header: i18n.catalog["text_caa3f2bb4a36"],
-            dataLabel: i18n.catalog["text_caa3f2bb4a36"],
+            header: i18n.catalog["common.general.type.alternative3"],
+            dataLabel: i18n.catalog["common.general.type.alternative3"],
             render: (item) => getTypeText(item.type),
         },
         {
             key: "frequency",
-            header: i18n.catalog["text_b308d640bc25"],
-            dataLabel: i18n.catalog["text_b308d640bc25"],
+            header: i18n.catalog["common.general.recurrence"],
+            dataLabel: i18n.catalog["common.general.recurrence"],
             render: (item) => getFrequencyText(item.frequency),
         },
         {
             key: "next_due_date",
-            header: i18n.catalog["text_7559f4d2c81a"],
-            dataLabel: i18n.catalog["text_7559f4d2c81a"],
+            header: i18n.catalog["common.general.nextDueDate"],
+            dataLabel: i18n.catalog["common.general.nextDueDate"],
             render: (item) => (item.next_due_date ? formatDate(item.next_due_date) : "-"),
         },
         {
             key: "last_generated_date",
-            header: i18n.catalog["text_2b830eee21e3"],
-            dataLabel: i18n.catalog["text_2b830eee21e3"],
+            header: i18n.catalog["common.general.lastExecution"],
+            dataLabel: i18n.catalog["common.general.lastExecution"],
             render: (item) =>
-                item.last_generated_date ? formatDate(item.last_generated_date) : i18n.catalog["text_0a3453886430"],
+                item.last_generated_date ? formatDate(item.last_generated_date) : i18n.catalog["enterpriseCore.recurringTransactions.notExecuted"],
         },
         {
             key: "status",
-            header: i18n.catalog["text_c3a4749caed4"],
-            dataLabel: i18n.catalog["text_c3a4749caed4"],
+            header: i18n.catalog["common.general.status.alternative2"],
+            dataLabel: i18n.catalog["common.general.status.alternative2"],
             render: (item) => getStatusBadge(item),
         },
         {
             key: "actions",
-            header: i18n.catalog["text_7797240d6caf"],
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (item) => (
                 <div className="action-buttons">
-                    <button className="icon-btn view" onClick={() => viewTemplate(item.id)} title={i18n.catalog["text_3824e18ca83b"]}>
+                    <button className="icon-btn view" onClick={() => viewTemplate(item.id)} title={i18n.catalog["common.general.view"]}>
                         {getIcon("eye")}
                     </button>
-                    <button className="icon-btn edit" onClick={() => editTemplate(item.id)} title={i18n.catalog["text_113d570d6555"]}>
+                    <button className="icon-btn edit" onClick={() => editTemplate(item.id)} title={i18n.catalog["common.general.edit"]}>
                         {getIcon("edit")}
                     </button>
                     <button
                         className="icon-btn delete"
                         onClick={() => confirmDeleteTemplate(item.id)}
-                        title={i18n.catalog["text_59ca629220a6"]}
+                        title={i18n.catalog["common.general.delete"]}
                     >
                         {getIcon("trash")}
                     </button>
                     <button
                         className="icon-btn"
                         onClick={() => confirmGenerateTransaction(item.id)}
-                        title={i18n.catalog["text_6fd1e0fe3b75"]}
+                        title={i18n.catalog["enterpriseCore.recurringTransactions.executeNow"]}
                         style={{ background: "var(--success-color)", color: "white" }}
                     >
                         {getIcon("check")}
@@ -422,14 +422,14 @@ export default function RecurringTransactionsPage() {
                             onClick={openCreateDialog}
                             icon="plus"
                         >
-                            {i18n.catalog["text_6e812691a69b"]}</Button>
+                            {i18n.catalog["enterpriseCore.recurringTransactions.newTemplate"]}</Button>
                     }
                 />
                 <Table
                     columns={columns}
                     data={templates}
                     keyExtractor={(item) => item.id.toString()}
-                    emptyMessage={i18n.catalog["text_310f442b0ebe"]}
+                    emptyMessage={i18n.catalog["enterpriseCore.recurringTransactions.noTemplates"]}
                     isLoading={isLoading}
                     pagination={{
                         currentPage,
@@ -443,13 +443,13 @@ export default function RecurringTransactionsPage() {
             <Dialog
                 isOpen={templateDialog}
                 onClose={() => setTemplateDialog(false)}
-                title={currentTemplateId ? i18n.catalog["text_11f6eab416bf"] : i18n.catalog["text_d0fdc218719c"]}
+                title={currentTemplateId ? i18n.catalog["enterpriseCore.recurringTransactions.editTemplate"] : i18n.catalog["enterpriseCore.recurringTransactions.newRecurringTransactionTemplate"]}
                 footer={
                     <>
                         <button className="btn btn-secondary" onClick={() => setTemplateDialog(false)}>
-                            {i18n.catalog["text_9a30dc2a96b8"]}</button>
+                            {i18n.catalog["common.general.cancel"]}</button>
                         <button className="btn btn-primary" onClick={saveTemplate}>
-                            {i18n.catalog["text_ddfcaf9d0144"]}</button>
+                            {i18n.catalog["common.general.save"]}</button>
                     </>
                 }
             >
@@ -460,7 +460,7 @@ export default function RecurringTransactionsPage() {
                     }}
                 >
                     <div className="form-group">
-                        <label htmlFor="template-name">{i18n.catalog["text_83ceb0871dd5"]}</label>
+                        <label htmlFor="template-name">{i18n.catalog["enterpriseCore.recurringTransactions.templateName"]}</label>
                         <input
                             type="text"
                             id="template-name"
@@ -472,7 +472,7 @@ export default function RecurringTransactionsPage() {
 
                     <div className="form-row">
                         <div className="form-group">
-                            <label htmlFor="template-type">{i18n.catalog["text_27a8ac990d70"]}</label>
+                            <label htmlFor="template-type">{i18n.catalog["enterpriseCore.recurringTransactions.transactionType"]}</label>
                             <select
                                 id="template-type"
                                 value={templateType}
@@ -481,13 +481,13 @@ export default function RecurringTransactionsPage() {
                                 }
                                 required
                             >
-                                <option value="expense">{i18n.catalog["text_29816a44fdcd"]}</option>
-                                <option value="revenue">{i18n.catalog["text_cc886aa7a813"]}</option>
-                                <option value="journal_voucher">{i18n.catalog["text_a3e1bc51284d"]}</option>
+                                <option value="expense">{i18n.catalog["common.general.expense"]}</option>
+                                <option value="revenue">{i18n.catalog["common.general.revenue.alternative2"]}</option>
+                                <option value="journal_voucher">{i18n.catalog["common.general.journalVoucher"]}</option>
                             </select>
                         </div>
                         <div className="form-group">
-                            <label htmlFor="template-frequency">{i18n.catalog["text_8ad1fa46519a"]}</label>
+                            <label htmlFor="template-frequency">{i18n.catalog["enterpriseCore.recurringTransactions.frequency"]}</label>
                             <select
                                 id="template-frequency"
                                 value={templateFrequency}
@@ -496,17 +496,17 @@ export default function RecurringTransactionsPage() {
                                 }
                                 required
                             >
-                                <option value="daily">{i18n.catalog["text_2a73df3ec9ae"]}</option>
-                                <option value="weekly">{i18n.catalog["text_e16e5870ecd8"]}</option>
-                                <option value="monthly">{i18n.catalog["text_9c677bb93912"]}</option>
-                                <option value="quarterly">{i18n.catalog["text_eb380eddf1ec"]}</option>
-                                <option value="annually">{i18n.catalog["text_1beeff0b0fec"]}</option>
+                                <option value="daily">{i18n.catalog["common.general.daily"]}</option>
+                                <option value="weekly">{i18n.catalog["common.general.weekly"]}</option>
+                                <option value="monthly">{i18n.catalog["common.general.monthly"]}</option>
+                                <option value="quarterly">{i18n.catalog["common.general.quarterly"]}</option>
+                                <option value="annually">{i18n.catalog["common.general.annual"]}</option>
                             </select>
                         </div>
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="next-due-date">{i18n.catalog["text_b58668e9c6ed"]}</label>
+                        <label htmlFor="next-due-date">{i18n.catalog["enterpriseCore.recurringTransactions.nextDueDate"]}</label>
                         <input
                             type="date"
                             id="next-due-date"
@@ -520,18 +520,18 @@ export default function RecurringTransactionsPage() {
                     {templateType === "expense" && (
                         <div>
                             <div className="form-group">
-                                <label htmlFor="expense-account">{i18n.catalog["text_7c51fad1363e"]}</label>
+                                <label htmlFor="expense-account">{i18n.catalog["enterpriseCore.recurringTransactions.expenseAccount"]}</label>
                                 <input
                                     type="text"
                                     id="expense-account"
                                     value={expenseAccount}
                                     onChange={(e) => setExpenseAccount(e.target.value)}
-                                    placeholder={i18n.catalog["text_0c3e1588c25f"]}
+                                    placeholder={i18n.catalog["common.general.accountCode"]}
                                     required
                                 />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="expense-amount">{i18n.catalog["text_3cfbd3350215"]}</label>
+                                <label htmlFor="expense-amount">{i18n.catalog["common.general.amount.alternative3"]}</label>
                                 <input
                                     type="number"
                                     id="expense-amount"
@@ -543,7 +543,7 @@ export default function RecurringTransactionsPage() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="expense-description">{i18n.catalog["text_95023fc76e1b"]}</label>
+                                <label htmlFor="expense-description">{i18n.catalog["common.general.description.alternative2"]}</label>
                                 <textarea
                                     id="expense-description"
                                     value={expenseDescription}
@@ -558,18 +558,18 @@ export default function RecurringTransactionsPage() {
                     {templateType === "revenue" && (
                         <div>
                             <div className="form-group">
-                                <label htmlFor="revenue-account">{i18n.catalog["text_9939ed06499b"]}</label>
+                                <label htmlFor="revenue-account">{i18n.catalog["enterpriseCore.recurringTransactions.revenueAccount"]}</label>
                                 <input
                                     type="text"
                                     id="revenue-account"
                                     value={revenueAccount}
                                     onChange={(e) => setRevenueAccount(e.target.value)}
-                                    placeholder={i18n.catalog["text_0c3e1588c25f"]}
+                                    placeholder={i18n.catalog["common.general.accountCode"]}
                                     required
                                 />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="revenue-amount">{i18n.catalog["text_3cfbd3350215"]}</label>
+                                <label htmlFor="revenue-amount">{i18n.catalog["common.general.amount.alternative3"]}</label>
                                 <input
                                     type="number"
                                     id="revenue-amount"
@@ -581,7 +581,7 @@ export default function RecurringTransactionsPage() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="revenue-description">{i18n.catalog["text_95023fc76e1b"]}</label>
+                                <label htmlFor="revenue-description">{i18n.catalog["common.general.description.alternative2"]}</label>
                                 <textarea
                                     id="revenue-description"
                                     value={revenueDescription}
@@ -596,17 +596,17 @@ export default function RecurringTransactionsPage() {
                     {templateType === "journal_voucher" && (
                         <div>
                             <div className="form-group">
-                                <label htmlFor="journal-entries">{i18n.catalog["text_9bb920c68658"]}</label>
+                                <label htmlFor="journal-entries">{i18n.catalog["enterpriseCore.recurringTransactions.constraintsJson"]}</label>
                                 <textarea
                                     id="journal-entries"
                                     value={journalEntries}
                                     onChange={(e) => setJournalEntries(e.target.value)}
                                     rows={6}
-                                    placeholder={i18n.catalog["text_a2012a8416cf"]}
+                                    placeholder={i18n.catalog["enterpriseCore.recurringTransactions.accountCode1110EntryTypeDebitAmount1000DescriptionAccountCode5200EntryTy"]}
                                     required
                                 />
                                 <small style={{ color: "var(--text-secondary)" }}>
-                                    {i18n.catalog["text_dd7f6ec25fa4"]}</small>
+                                    {i18n.catalog["enterpriseCore.recurringTransactions.totalDebitsMustEqualTotalCredits"]}</small>
                             </div>
                         </div>
                     )}
@@ -622,13 +622,13 @@ export default function RecurringTransactionsPage() {
                     setGenerateTemplateId(null);
                 }}
                 onConfirm={handleConfirm}
-                title={i18n.catalog["text_8f7d74ac0eac"]}
+                title={i18n.catalog["common.general.confirm"]}
                 message={
                     deleteTemplateId
-                        ? i18n.catalog["text_25afc8d1f0a9"]
-                        : i18n.catalog["text_017896388246"]
+                        ? i18n.catalog["common.general.areYouSureYouWantDeleteThisTemplate"]
+                        : i18n.catalog["enterpriseCore.recurringTransactions.doYouWantExecuteThisTransactionNow"]
                 }
-                confirmText={i18n.catalog["text_8f7d74ac0eac"]}
+                confirmText={i18n.catalog["common.general.confirm"]}
                 confirmVariant={deleteTemplateId ? "danger" : "primary"}
             />
         </MainLayout>

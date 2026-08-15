@@ -121,8 +121,8 @@ export const useEmployeeStore = create<EmployeeState>()(
                         set({ isLoading: false });
                     }
                 } catch (error) {
-                    console.error(catalogMessage("text_0210c2dc9e03"), error);
-                    showToast(catalogMessage("text_fd6df210c4d3"), 'error');
+                    console.error(catalogMessage("state.useemployeestore.failedLoadEmployees"), error);
+                    showToast(catalogMessage("state.useemployeestore.errorLoadingEmployees"), 'error');
                     set({ isLoading: false });
                 }
             },
@@ -148,7 +148,7 @@ export const useEmployeeStore = create<EmployeeState>()(
                         set({ allEmployees, lastFetchedAll: Date.now() });
                     }
                 } catch (error) {
-                    console.error(catalogMessage("text_c9317aa6affd"), error);
+                    console.error(catalogMessage("state.useemployeestore.failedLoadAllEmployees"), error);
                 }
             },
 
@@ -164,9 +164,9 @@ export const useEmployeeStore = create<EmployeeState>()(
             deleteEmployee: async (id) => {
                 set({ isLoading: true });
                 try {
-                    const res = await fetchAPI(catalogMessage("text_0907f4dfb304", { value0: API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEES.BASE, value1: id }), { method: 'DELETE' });
+                    const res = await fetchAPI(catalogMessage("common.general.message", { value0: API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEES.BASE, value1: id }), { method: 'DELETE' });
                     if (res.success) {
-                        showToast(catalogMessage("text_ba02c75de4ce"), 'success');
+                        showToast(catalogMessage("state.useemployeestore.employeeDeletedSuccessfully"), 'success');
                         // Optimistic update
                         set(state => ({
                             employees: state.employees.filter(e => e.id !== id),
@@ -177,10 +177,10 @@ export const useEmployeeStore = create<EmployeeState>()(
                         get().invalidateCache();
                         return true;
                     } else {
-                        showToast(res.message || catalogMessage("text_eed0549f9aba"), 'error');
+                        showToast(res.message || catalogMessage("state.useemployeestore.failedDeleteEmployee"), 'error');
                     }
                 } catch (error) {
-                    showToast(catalogMessage("text_fb7b963d7c03"), 'error');
+                    showToast(catalogMessage("common.general.errorOccurredDuringDeletion"), 'error');
                 } finally {
                     set({ isLoading: false });
                 }

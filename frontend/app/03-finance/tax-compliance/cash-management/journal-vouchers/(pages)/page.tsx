@@ -84,14 +84,14 @@ export default function JournalVouchersPage() {
       setIsLoading(true);
       const response = await fetchAPI(`${API_ENDPOINTS.FINANCE.TREASURY.VOUCHERS.BASE}?page=${page}&limit=${itemsPerPage}`);
       if (!response.success || !Array.isArray(response.data)) {
-        throw new Error(response.message || i18n.catalog["text_aa47a6dab24d"]);
+        throw new Error(response.message || i18n.catalog["common.general.failedLoadVouchers"]);
       }
       setVouchers(response.data as Voucher[]);
       const pagination = response.pagination as { total_pages?: number } | undefined;
       setTotalPages(pagination?.total_pages ?? 1);
       setCurrentPage(page);
     } catch {
-      showToast(i18n.catalog["text_e1e1dc7023c4"], "error");
+      showToast(i18n.catalog["common.general.errorLoadingVouchers"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -113,7 +113,7 @@ export default function JournalVouchersPage() {
       if (ccRes.success && ccRes.data) setCostCenters(ccRes.data as CenterOption[]);
       if (pcRes.success && pcRes.data) setProfitCenters(pcRes.data as CenterOption[]);
     } catch {
-      console.error(i18n.catalog["text_6cbd94092239"]);
+      console.error(i18n.catalog["common.general.errorLoadingLookups"]);
     }
   }, []);
 
@@ -145,7 +145,7 @@ export default function JournalVouchersPage() {
       setSelectedVoucher(response.voucher as Voucher || voucher);
       setViewDialog(true);
     } catch {
-      showToast(i18n.catalog["text_01e0ae615b5b"], "error");
+      showToast(i18n.catalog["common.general.errorLoadingVoucherDetails"], "error");
     }
   };
 
@@ -158,7 +158,7 @@ export default function JournalVouchersPage() {
 
   const removeLine = (index: number) => {
     if (formData.lines.length <= 2) {
-      showToast(i18n.catalog["text_2e8cc203a4be"], "error");
+      showToast(i18n.catalog["common.general.voucherMustContainLeastTwoLines"], "error");
       return;
     }
     setFormData({
@@ -187,7 +187,7 @@ export default function JournalVouchersPage() {
 
   const handleSubmit = async () => {
     if (!formData.description.trim()) {
-      showToast(i18n.catalog["text_bb2eed2ae1f8"], "error");
+      showToast(i18n.catalog["common.general.pleaseEnterVoucherDescription"], "error");
       return;
     }
 
@@ -196,12 +196,12 @@ export default function JournalVouchersPage() {
     );
 
     if (validLines.length < 2) {
-      showToast(i18n.catalog["text_f6278da2140e"], "error");
+      showToast(i18n.catalog["common.general.leastTwoLinesRequired"], "error");
       return;
     }
 
     if (!isBalanced()) {
-      showToast(i18n.catalog["text_2f2d8c1a6e59"], "error");
+      showToast(i18n.catalog["common.general.unbalancedVoucherDebitDoesNotEqualCredit"], "error");
       return;
     }
 
@@ -223,21 +223,21 @@ export default function JournalVouchersPage() {
         method: "POST",
         body: JSON.stringify(payload),
       });
-      showToast(i18n.catalog["text_1da89a2b2c05"], "success");
+      showToast(i18n.catalog["common.general.voucherCreatedSuccessfully"], "success");
       setFormDialog(false);
       loadVouchers(currentPage);
     } catch {
-      showToast(i18n.catalog["text_9709a87f3bfe"], "error");
+      showToast(i18n.catalog["common.general.errorSavingVoucher"], "error");
     }
   };
 
   const postVoucher = async (id: number) => {
     try {
       await fetchAPI(API_ENDPOINTS.FINANCE.TREASURY.VOUCHERS.POST(id), { method: "POST" });
-      showToast(i18n.catalog["text_c205f0fe3ac7"], "success");
+      showToast(i18n.catalog["common.general.voucherPosted"], "success");
       loadVouchers(currentPage);
     } catch {
-      showToast(i18n.catalog["text_6f4e9e60605a"], "error");
+      showToast(i18n.catalog["common.general.errorPostingVoucher"], "error");
     }
   };
 
@@ -251,67 +251,67 @@ export default function JournalVouchersPage() {
 
     try {
       await fetchAPI(API_ENDPOINTS.FINANCE.TREASURY.VOUCHERS.withId(deleteId), { method: "DELETE" });
-      showToast(i18n.catalog["text_67fb2a1bd795"], "success");
+      showToast(i18n.catalog["common.general.voucherDeleted"], "success");
       loadVouchers(currentPage);
     } catch {
-      showToast(i18n.catalog["text_efa19ed994b9"], "error");
+      showToast(i18n.catalog["common.general.errorDeletingVoucher"], "error");
     }
   };
 
   const columns: Column<Voucher>[] = [
-    { key: "voucher_number", header: i18n.catalog["text_b1f955190176"], dataLabel: i18n.catalog["text_b1f955190176"] },
+    { key: "voucher_number", header: i18n.catalog["common.general.voucherNumber"], dataLabel: i18n.catalog["common.general.voucherNumber"] },
     {
       key: "voucher_date",
-      header: i18n.catalog["text_d90c384199ac"],
-      dataLabel: i18n.catalog["text_d90c384199ac"],
+      header: i18n.catalog["common.general.date.alternative7"],
+      dataLabel: i18n.catalog["common.general.date.alternative7"],
       render: (item) => formatDate(item.voucher_date),
     },
-    { key: "description", header: i18n.catalog["text_95023fc76e1b"], dataLabel: i18n.catalog["text_95023fc76e1b"] },
+    { key: "description", header: i18n.catalog["common.general.description.alternative2"], dataLabel: i18n.catalog["common.general.description.alternative2"] },
     {
       key: "total_debit",
-      header: i18n.catalog["text_761dab1874ad"],
-      dataLabel: i18n.catalog["text_761dab1874ad"],
+      header: i18n.catalog["common.general.debtor"],
+      dataLabel: i18n.catalog["common.general.debtor"],
       render: (item) => formatCurrency(item.total_debit),
     },
     {
       key: "total_credit",
-      header: i18n.catalog["text_bb186ac310b7"],
-      dataLabel: i18n.catalog["text_bb186ac310b7"],
+      header: i18n.catalog["common.general.creditor"],
+      dataLabel: i18n.catalog["common.general.creditor"],
       render: (item) => formatCurrency(item.total_credit),
     },
     {
       key: "status",
-      header: i18n.catalog["text_c3a4749caed4"],
-      dataLabel: i18n.catalog["text_c3a4749caed4"],
+      header: i18n.catalog["common.general.status.alternative2"],
+      dataLabel: i18n.catalog["common.general.status.alternative2"],
       render: (item) => (
         <span className={`badge ${item.status === "posted" ? "badge-success" : "badge-warning"}`}>
-          {item.status === "posted" ? i18n.catalog["text_a88bc9f2d813"] : i18n.catalog["text_552aec56f591"]}
+          {item.status === "posted" ? i18n.catalog["common.general.posted"] : i18n.catalog["common.general.draft"]}
         </span>
       ),
     },
     {
       key: "actions",
-      header: i18n.catalog["text_7797240d6caf"],
-      dataLabel: i18n.catalog["text_7797240d6caf"],
+      header: i18n.catalog["common.general.actions"],
+      dataLabel: i18n.catalog["common.general.actions"],
       render: (item) => (
         <ActionButtons
           actions={[
             {
               icon: "eye",
-              title: i18n.catalog["text_3824e18ca83b"],
+              title: i18n.catalog["common.general.view"],
               variant: "view",
               onClick: () => openViewDialog(item)
             },
             {
               icon: "check",
-              title: i18n.catalog["text_64a11fadf742"],
+              title: i18n.catalog["common.general.migrate"],
               variant: "edit",
               onClick: () => postVoucher(item.id),
               hidden: item.status !== "draft" || !canAccess(permissions, "journal_vouchers", "edit")
             },
             {
               icon: "trash",
-              title: i18n.catalog["text_59ca629220a6"],
+              title: i18n.catalog["common.general.delete"],
               variant: "delete",
               onClick: () => confirmDelete(item.id),
               hidden: item.status !== "draft" || !canAccess(permissions, "journal_vouchers", "delete")
@@ -325,22 +325,22 @@ export default function JournalVouchersPage() {
   const voucherLineColumns: Column<any>[] = [
     {
       key: "account_id",
-      header: i18n.catalog["text_66dcee1f4616"],
+      header: i18n.catalog["common.general.account"],
       render: (line, index) => (
         <Select
           value={line.account_id}
           onChange={(e) => updateLine(index, "account_id", e.target.value)}
           className="w-full"
           options={[
-            { value: "", label: i18n.catalog["text_b2e1c053ebe5"] },
-            ...accounts.map(acc => ({ value: acc.id, label: catalogText(i18n, "text_2a9059a3c52f", { value0: acc.code, value1: acc.name }) }))
+            { value: "", label: i18n.catalog["common.general.selectAccount"] },
+            ...accounts.map(acc => ({ value: acc.id, label: catalogText(i18n, "common.general.notAvailable", { value0: acc.code, value1: acc.name }) }))
           ]}
         />
       ),
     },
     {
       key: "debit",
-      header: i18n.catalog["text_b19917a31039"],
+      header: i18n.catalog["common.general.debit"],
       render: (line, index) => (
         <NumberInput
           value={line.debit}
@@ -353,7 +353,7 @@ export default function JournalVouchersPage() {
     },
     {
       key: "credit",
-      header: i18n.catalog["text_a91798231743"],
+      header: i18n.catalog["common.general.credit"],
       render: (line, index) => (
         <NumberInput
           value={line.credit}
@@ -366,42 +366,42 @@ export default function JournalVouchersPage() {
     },
     {
       key: "description",
-      header: i18n.catalog["text_15391f77cefa"],
+      header: i18n.catalog["common.general.statement"],
       render: (line, index) => (
         <TextInput
           value={line.description}
           onChange={(e) => updateLine(index, "description", e.target.value)}
-          placeholder={i18n.catalog["text_f02fcac93ed1"]}
+          placeholder={i18n.catalog["common.general.optionalStatement"]}
           className="w-full"
         />
       ),
     },
     {
       key: "cost_center_id",
-      header: i18n.catalog["text_3d8ab274b4d9"],
+      header: i18n.catalog["common.general.costCenter"],
       render: (line, index) => (
         <Select
           value={line.cost_center_id}
           onChange={(e) => updateLine(index, "cost_center_id", e.target.value)}
           className="w-full"
           options={[
-            { value: "", label: i18n.catalog["text_bda050585a00"] },
-            ...costCenters.map(cc => ({ value: cc.id, label: catalogText(i18n, "text_2a9059a3c52f", { value0: cc.code, value1: cc.name }) }))
+            { value: "", label: i18n.catalog["common.general.notAvailable.alternative8"] },
+            ...costCenters.map(cc => ({ value: cc.id, label: catalogText(i18n, "common.general.notAvailable", { value0: cc.code, value1: cc.name }) }))
           ]}
         />
       ),
     },
     {
       key: "profit_center_id",
-      header: i18n.catalog["text_22f515c45510"],
+      header: i18n.catalog["common.general.profitCenter"],
       render: (line, index) => (
         <Select
           value={line.profit_center_id}
           onChange={(e) => updateLine(index, "profit_center_id", e.target.value)}
           className="w-full"
           options={[
-            { value: "", label: i18n.catalog["text_bda050585a00"] },
-            ...profitCenters.map(pc => ({ value: pc.id, label: catalogText(i18n, "text_2a9059a3c52f", { value0: pc.code, value1: pc.name }) }))
+            { value: "", label: i18n.catalog["common.general.notAvailable.alternative8"] },
+            ...profitCenters.map(pc => ({ value: pc.id, label: catalogText(i18n, "common.general.notAvailable", { value0: pc.code, value1: pc.name }) }))
           ]}
         />
       ),
@@ -423,39 +423,39 @@ export default function JournalVouchersPage() {
   ];
 
   const viewVoucherColumns: Column<VoucherLine>[] = [
-    { key: "account_name", header: i18n.catalog["text_66dcee1f4616"], dataLabel: i18n.catalog["text_66dcee1f4616"] },
+    { key: "account_name", header: i18n.catalog["common.general.account"], dataLabel: i18n.catalog["common.general.account"] },
     {
       key: "debit",
-      header: i18n.catalog["text_b19917a31039"],
-      dataLabel: i18n.catalog["text_b19917a31039"],
+      header: i18n.catalog["common.general.debit"],
+      dataLabel: i18n.catalog["common.general.debit"],
       render: (item) => (item.debit > 0 ? formatCurrency(item.debit) : "-"),
     },
     {
       key: "credit",
-      header: i18n.catalog["text_a91798231743"],
-      dataLabel: i18n.catalog["text_a91798231743"],
+      header: i18n.catalog["common.general.credit"],
+      dataLabel: i18n.catalog["common.general.credit"],
       render: (item) => (item.credit > 0 ? formatCurrency(item.credit) : "-"),
     },
     {
       key: "cost_center_name",
-      header: i18n.catalog["text_d7a5a7f126af"],
-      dataLabel: i18n.catalog["text_d7a5a7f126af"],
+      header: i18n.catalog["common.general.costCtr"],
+      dataLabel: i18n.catalog["common.general.costCtr"],
       render: (item) => item.cost_center_name ? (
         <span className="badge badge-secondary">{item.cost_center_name}</span>
       ) : "-",
     },
     {
       key: "profit_center_name",
-      header: i18n.catalog["text_83da58551a6f"],
-      dataLabel: i18n.catalog["text_83da58551a6f"],
+      header: i18n.catalog["common.general.profitMargin"],
+      dataLabel: i18n.catalog["common.general.profitMargin"],
       render: (item) => item.profit_center_name ? (
         <span className="badge badge-secondary">{item.profit_center_name}</span>
       ) : "-",
     },
     {
       key: "description",
-      header: i18n.catalog["text_15391f77cefa"],
-      dataLabel: i18n.catalog["text_15391f77cefa"],
+      header: i18n.catalog["common.general.statement"],
+      dataLabel: i18n.catalog["common.general.statement"],
       render: (item) => item.description || "-",
     },
   ];
@@ -470,7 +470,7 @@ export default function JournalVouchersPage() {
           actions={
             canAccess(permissions, "journal_vouchers", "create") && (
               <Button icon="plus" onClick={openAddDialog}>
-                {i18n.catalog["text_30e1d586ec9b"]}</Button>
+                {i18n.catalog["common.general.createVoucher"]}</Button>
             )
           }
         />
@@ -478,7 +478,7 @@ export default function JournalVouchersPage() {
           columns={columns}
           data={vouchers}
           keyExtractor={(item) => item.id}
-          emptyMessage={i18n.catalog["text_2719caa043d5"]}
+          emptyMessage={i18n.catalog["common.general.noVouchers"]}
           isLoading={isLoading}
           pagination={{
             currentPage,
@@ -492,28 +492,28 @@ export default function JournalVouchersPage() {
       <Dialog
         isOpen={formDialog}
         onClose={() => setFormDialog(false)}
-        title={i18n.catalog["text_d02cec3de121"]}
+        title={i18n.catalog["common.general.createJournalEntry"]}
         maxWidth="800px"
         footer={
           <>
             <Button variant="secondary" onClick={() => setFormDialog(false)}>
-              {i18n.catalog["text_9a30dc2a96b8"]}</Button>
+              {i18n.catalog["common.general.cancel"]}</Button>
             <Button variant="primary" onClick={handleSubmit}>
-              {i18n.catalog["text_ddfcaf9d0144"]}</Button>
+              {i18n.catalog["common.general.save"]}</Button>
           </>
         }
       >
         <div className="form-row">
           <TextInput
             type="date"
-            label={i18n.catalog["text_24ab9ad4f30d"]}
+            label={i18n.catalog["common.general.date.alternative3"]}
             id="voucher_date"
             value={formData.voucher_date}
             onChange={(e) => setFormData({ ...formData, voucher_date: e.target.value })}
             className="flex-1"
           />
           <TextInput
-            label={i18n.catalog["text_c5293e340faa"]}
+            label={i18n.catalog["common.general.description.alternative3"]}
             id="description"
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -521,13 +521,13 @@ export default function JournalVouchersPage() {
           />
         </div>
 
-        <h4 style={{ marginTop: "1.5rem", marginBottom: "1rem" }}>{i18n.catalog["text_e6aef3285b6f"]}</h4>
+        <h4 style={{ marginTop: "1.5rem", marginBottom: "1rem" }}>{i18n.catalog["common.general.voucherItems"]}</h4>
 
         <Table
           columns={voucherLineColumns}
           data={formData.lines}
           keyExtractor={(_, index) => index}
-          emptyMessage={i18n.catalog["text_69685693e77f"]}
+          emptyMessage={i18n.catalog["common.general.noItems"]}
         />
 
         <Button
@@ -536,19 +536,19 @@ export default function JournalVouchersPage() {
           icon="plus"
           style={{ marginTop: "1rem" }}
         >
-          {i18n.catalog["text_cbba06a9c34c"]}</Button>
+          {i18n.catalog["common.general.addLine"]}</Button>
 
         <div className="summary-stat-box" style={{ marginTop: "1.5rem" }}>
           <div className="stat-item">
-            <span className="stat-label">{i18n.catalog["text_9b3ffc60129b"]}</span>
+            <span className="stat-label">{i18n.catalog["common.general.totalDebit"]}</span>
             <span className="stat-value">{formatCurrency(getTotalDebit())}</span>
           </div>
           <div className="stat-item">
-            <span className="stat-label">{i18n.catalog["text_ccfe7f015017"]}</span>
+            <span className="stat-label">{i18n.catalog["common.general.totalCredit"]}</span>
             <span className="stat-value">{formatCurrency(getTotalCredit())}</span>
           </div>
           <div className="stat-item">
-            <span className="stat-label">{i18n.catalog["text_0b5254487af9"]}</span>
+            <span className="stat-label">{i18n.catalog["common.general.teams"]}</span>
             <span className={`stat-value ${isBalanced() ? "text-success" : "text-danger"}`}>
               {formatCurrency(Math.abs(getTotalDebit() - getTotalCredit()))}
               {isBalanced() && " ✓"}
@@ -561,18 +561,18 @@ export default function JournalVouchersPage() {
       <Dialog
         isOpen={viewDialog}
         onClose={() => setViewDialog(false)}
-        title={catalogText(i18n, "text_07bdd6199c9b", { value0: selectedVoucher?.voucher_number || "" })}
+        title={catalogText(i18n, "common.general.journalEntryNo", { value0: selectedVoucher?.voucher_number || "" })}
         maxWidth="700px"
       >
         {selectedVoucher && (
           <div>
             <div style={{ marginBottom: "1.5rem" }}>
-              <p><strong>{i18n.catalog["text_174200101521"]}</strong> {formatDate(selectedVoucher.voucher_date)}</p>
-              <p><strong>{i18n.catalog["text_3ec7e12fb399"]}</strong> {selectedVoucher.description}</p>
+              <p><strong>{i18n.catalog["common.general.date"]}</strong> {formatDate(selectedVoucher.voucher_date)}</p>
+              <p><strong>{i18n.catalog["common.general.description"]}</strong> {selectedVoucher.description}</p>
               <p>
-                <strong>{i18n.catalog["text_02e196bdec60"]}</strong>{" "}
+                <strong>{i18n.catalog["common.general.status"]}</strong>{" "}
                 <span className={`badge ${selectedVoucher.status === "posted" ? "badge-success" : "badge-warning"}`}>
-                  {selectedVoucher.status === "posted" ? i18n.catalog["text_a88bc9f2d813"] : i18n.catalog["text_552aec56f591"]}
+                  {selectedVoucher.status === "posted" ? i18n.catalog["common.general.posted"] : i18n.catalog["common.general.draft"]}
                 </span>
               </p>
             </div>
@@ -585,11 +585,11 @@ export default function JournalVouchersPage() {
 
             <div className="summary-stat-box" style={{ marginTop: "1.5rem" }}>
               <div className="stat-item">
-                <span className="stat-label">{i18n.catalog["text_9b3ffc60129b"]}</span>
+                <span className="stat-label">{i18n.catalog["common.general.totalDebit"]}</span>
                 <span className="stat-value">{formatCurrency(selectedVoucher.total_debit)}</span>
               </div>
               <div className="stat-item">
-                <span className="stat-label">{i18n.catalog["text_ccfe7f015017"]}</span>
+                <span className="stat-label">{i18n.catalog["common.general.totalCredit"]}</span>
                 <span className="stat-value">{formatCurrency(selectedVoucher.total_credit)}</span>
               </div>
             </div>
@@ -602,9 +602,9 @@ export default function JournalVouchersPage() {
         isOpen={confirmDialog}
         onClose={() => setConfirmDialog(false)}
         onConfirm={handleDelete}
-        title={i18n.catalog["text_5f9cb54dc136"]}
-        message={i18n.catalog["text_7ffa0cbbb78d"]}
-        confirmText={i18n.catalog["text_59ca629220a6"]}
+        title={i18n.catalog["common.general.confirmDeletion"]}
+        message={i18n.catalog["common.general.areYouSureYouWantDeleteThisVoucher"]}
+        confirmText={i18n.catalog["common.general.delete"]}
         confirmVariant="danger"
       />
     </MainLayout>

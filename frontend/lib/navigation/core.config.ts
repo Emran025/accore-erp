@@ -16,38 +16,38 @@ import { Domain } from "@/types/navigation";
 export const CoreDomain: Domain = {
     id: "core",
     order: 1,
-    title: catalogMessage("text_2ca078b68a8c"),
+    title: catalogMessage("navigation.coreConfig.institutionalBasis"),
     icon: "dashboard",
-    description: catalogMessage("text_78cc0c9fd775"),
+    description: catalogMessage("navigation.coreConfig.systemAdministrationCorporateGovernanceDashboardOrganizationalStructure"),
     capabilities: [
         // ─────────────────────────────────────────────────────────────
         // Capability: System Overview
         // ─────────────────────────────────────────────────────────────
         {
             id: "system-overview",
-            title: catalogMessage("text_5fa5004504e7"),
+            title: catalogMessage("navigation.coreConfig.systemOverview"),
             icon: "dashboard",
-            description: catalogMessage("text_7c591963c167"),
+            description: catalogMessage("navigation.coreConfig.generalDashboardSystemModulesStatus"),
             groups: [
                 {
                     id: "dashboard",
-                    title: catalogMessage("text_336496c4f685"),
-                    description: catalogMessage("text_0232b698e0e7"),
+                    title: catalogMessage("common.general.dashboard"),
+                    description: catalogMessage("navigation.coreConfig.mainCommandCenter"),
                     screens: [
                         {
                             id: "global-dashboard",
-                            title: catalogMessage("text_336496c4f685"),
+                            title: catalogMessage("common.general.dashboard"),
                             icon: "dashboard",
-                            description: catalogMessage("text_10ecffe69f50"),
+                            description: catalogMessage("navigation.coreConfig.comprehensiveSystemOverview"),
                             href: "/01-enterprise-core/system-overview/dashboard/global-dashboard",
                             permissions: [],
                             module: "dashboard",
                         },
                         {
                             id: "modules-status",
-                            title: catalogMessage("text_7d555bc68c1a"),
+                            title: catalogMessage("common.general.unitsStatus"),
                             icon: "check-circle",
-                            description: catalogMessage("text_23d73f9f29cd"),
+                            description: catalogMessage("navigation.coreConfig.statusAllSystemUnits"),
                             href: "/01-enterprise-core/system-overview/dashboard/modules-status",
                             permissions: [],
                             module: "dashboard",
@@ -62,20 +62,20 @@ export const CoreDomain: Domain = {
         // ─────────────────────────────────────────────────────────────
         {
             id: "organization-governance",
-            title: catalogMessage("text_fe913fccfb07"),
+            title: catalogMessage("navigation.coreConfig.governanceOrganizationalStructure"),
             icon: "tree",
-            description: catalogMessage("text_4deb515cb49b"),
+            description: catalogMessage("navigation.coreConfig.organizationalStructureLegalEntitiesBusinessUnits"),
             groups: [
                 {
                     id: "org-structure",
-                    title: catalogMessage("text_46d466c3c97d"),
-                    description: catalogMessage("text_02f1b741dcb6"),
+                    title: catalogMessage("common.general.organizationalStructure"),
+                    description: catalogMessage("navigation.coreConfig.organizationalStructurePlanningManagement"),
                     screens: [
                         {
                             id: "org-hierarchy",
-                            title: catalogMessage("text_46d466c3c97d"),
+                            title: catalogMessage("common.general.organizationalStructure"),
                             icon: "tree",
-                            description: catalogMessage("text_e20a5042865e"),
+                            description: catalogMessage("navigation.coreConfig.organizationalStructurePlanningConfiguration"),
                             href: "/01-enterprise-core/organization-governance/org-structure/org-hierarchy",
                             permissions: [],
                             module: "org_structure",
@@ -90,29 +90,29 @@ export const CoreDomain: Domain = {
         // ─────────────────────────────────────────────────────────────
         {
             id: "automation",
-            title: catalogMessage("text_dbd7084a11a8"),
+            title: catalogMessage("navigation.coreConfig.automationProcessing"),
             icon: "repeat",
-            description: catalogMessage("text_db985cdb2766"),
+            description: catalogMessage("navigation.coreConfig.recurringTransactionsBatchProcessingScheduling"),
             groups: [
                 {
                     id: "recurring",
-                    title: catalogMessage("text_8565024fff29"),
-                    description: catalogMessage("text_e5dcb2add95b"),
+                    title: catalogMessage("common.general.recurringTransactions"),
+                    description: catalogMessage("common.general.automatedOperationsScheduling"),
                     screens: [
                         {
                             id: "recurring-transactions",
-                            title: catalogMessage("text_8565024fff29"),
+                            title: catalogMessage("common.general.recurringTransactions"),
                             icon: "repeat",
-                            description: catalogMessage("text_e5dcb2add95b"),
+                            description: catalogMessage("common.general.automatedOperationsScheduling"),
                             href: "/01-enterprise-core/automation/recurring/recurring-transactions",
                             permissions: [],
                             module: "recurring_transactions",
                         },
                         {
                             id: "batch-processing",
-                            title: catalogMessage("text_3ac01d4f851b"),
+                            title: catalogMessage("navigation.coreConfig.paymentProcessing"),
                             icon: "layers",
-                            description: catalogMessage("text_9b9dd17b5675"),
+                            description: catalogMessage("navigation.coreConfig.processDataBatches"),
                             href: "/01-enterprise-core/automation/recurring/batch-processing",
                             permissions: [],
                             module: "batch_processing",
@@ -127,20 +127,20 @@ export const CoreDomain: Domain = {
         // ─────────────────────────────────────────────────────────────
         {
             id: "identity-access",
-            title: catalogMessage("text_842e67e0c8f6"),
+            title: catalogMessage("navigation.coreConfig.identityAccess"),
             icon: "user-cog",
-            description: catalogMessage("text_eabcf1847259"),
+            description: catalogMessage("navigation.coreConfig.usersRolesPermissionsSecurityManagement"),
             groups: [
                 {
                     id: "user-management",
-                    title: catalogMessage("text_9d0befe3acd3"),
-                    description: catalogMessage("text_250b06dc4cad"),
+                    title: catalogMessage("common.general.userManagement"),
+                    description: catalogMessage("navigation.coreConfig.usersPermissions"),
                     screens: [
                         {
                             id: "users",
-                            title: catalogMessage("text_9d0befe3acd3"),
+                            title: catalogMessage("common.general.userManagement"),
                             icon: "user-cog",
-                            description: catalogMessage("text_6480df0337f1"),
+                            description: catalogMessage("navigation.coreConfig.usersPermissionsComingSoon"),
                             href: "/01-enterprise-core/identity-access/user-management/users",
                             permissions: [],
                             module: "users",
@@ -148,9 +148,9 @@ export const CoreDomain: Domain = {
                         },
                         {
                             id: "system-settings",
-                            title: catalogMessage("text_0f46db2a8846"),
+                            title: catalogMessage("navigation.coreConfig.systemSettings"),
                             icon: "settings",
-                            description: catalogMessage("text_2585a1f9f71e"),
+                            description: catalogMessage("navigation.coreConfig.systemConfigurationPreferences"),
                             href: "/01-enterprise-core/identity-access/user-management/system-settings",
                             permissions: [],
                             module: "settings",
@@ -166,20 +166,20 @@ export const CoreDomain: Domain = {
         // ─────────────────────────────────────────────────────────────
         {
             id: "monitoring-compliance",
-            title: catalogMessage("text_f049ac7235e4"),
+            title: catalogMessage("navigation.coreConfig.monitoringCompliance"),
             icon: "activity",
-            description: catalogMessage("text_a9480681b028"),
+            description: catalogMessage("navigation.coreConfig.auditLogNotificationsSystemLogs"),
             groups: [
                 {
                     id: "audit-notifications",
-                    title: catalogMessage("text_d55d0d631b8a"),
-                    description: catalogMessage("text_595dd0763517"),
+                    title: catalogMessage("navigation.coreConfig.auditNotifications"),
+                    description: catalogMessage("navigation.coreConfig.comprehensiveMonitoringCenter"),
                     screens: [
                         {
                             id: "notifications",
-                            title: catalogMessage("text_8ce3e0cc0601"),
+                            title: catalogMessage("navigation.coreConfig.notifications"),
                             icon: "bell",
-                            description: catalogMessage("text_af0043c913f0"),
+                            description: catalogMessage("navigation.coreConfig.notificationCenterComingSoon"),
                             href: "/01-enterprise-core/monitoring-compliance/audit-notifications/notifications",
                             permissions: [],
                             module: "notifications",
@@ -187,9 +187,9 @@ export const CoreDomain: Domain = {
                         },
                         {
                             id: "system-logs",
-                            title: catalogMessage("text_f3e357bd876b"),
+                            title: catalogMessage("navigation.coreConfig.systemLogs"),
                             icon: "file-search",
-                            description: catalogMessage("text_fadac13eecb8"),
+                            description: catalogMessage("navigation.coreConfig.errorEventLogsComingSoon"),
                             href: "/01-enterprise-core/monitoring-compliance/audit-notifications/system-logs",
                             permissions: [],
                             module: "system_logs",

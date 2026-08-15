@@ -190,7 +190,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                 setGovernmentFees(activeFees);
             }
         } catch (e) {
-            console.error(i18n.catalog["text_08041689c0be"], e);
+            console.error(i18n.catalog["common.general.failedLoadTaxEngineLogic"], e);
         }
     }, []);
 
@@ -202,7 +202,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                 setProducts(filtered);
             }
         } catch (error) {
-            showAlert("alert-container", i18n.catalog["text_bf68e6f346c3"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.errorLoadingProducts"], "error");
         }
     }, []);
 
@@ -240,7 +240,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                 setCurrentPage(page);
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_7df68dc366ee"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.failedLoadRecord"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -333,7 +333,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
     const productOptions: SelectOption[] = products.map((p) => ({
         value: p.id,
         label: p.name,
-        subtitle: catalogText(i18n, "text_54ef3bb1085e", { value0: p.stock_quantity, value1: p.sub_unit_name || i18n.catalog["text_d400a30ad5f3"] }),
+        subtitle: catalogText(i18n, "common.general.notAvailable.alternative3", { value0: p.stock_quantity, value1: p.sub_unit_name || i18n.catalog["common.general.each"] }),
         original: p,
     }));
 
@@ -386,7 +386,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
 
     const addItemToInvoice = () => {
         if (!selectedProduct) {
-            showAlert("alert-container", i18n.catalog["text_b64fbda7786b"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.pleaseSelectProductFirst"], "error");
             return;
         }
 
@@ -402,7 +402,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
         if (qty <= 0 || totalQtyInSubUnits > selectedProduct.stock_quantity) {
             showAlert(
                 "alert-container",
-                catalogText(i18n, "text_65e67ac77b59", { value0: selectedProduct.stock_quantity - cartQtyInSubUnits }),
+                catalogText(i18n, "ui.productsales.invalidQuantityStockAvailableZ", { value0: selectedProduct.stock_quantity - cartQtyInSubUnits }),
                 "error"
             );
             return;
@@ -414,7 +414,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
         const newItem: InvoiceItem = {
             product_id: selectedProduct.id,
             product_name: selectedProduct.name,
-            display_name: catalogText(i18n, "text_eb6d330d21db", { value0: selectedProduct.name, value1: qty, value2: unitName }),
+            display_name: catalogText(i18n, "common.general.message.alternative9", { value0: selectedProduct.name, value1: qty, value2: unitName }),
             quantity: qty,
             unit_type: unitType,
             unit_name: unitName || undefined,
@@ -461,17 +461,17 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
 
     const finishInvoice = async () => {
         if (invoiceItems.length === 0) {
-            showAlert("alert-container", i18n.catalog["text_8e74806a7149"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.invoiceIsEmpty"], "error");
             return;
         }
 
         if (!readiness?.ready || !readiness.context?.warehouse_id) {
-            showAlert("alert-container", i18n.catalog["text_7617a3aad966"], "error");
+            showAlert("alert-container", i18n.catalog["ui.productsales.cannotPostSaleBeforeCompletingWarehousePointSale"], "error");
             return;
         }
 
         if (!isCash && !selectedCustomer) {
-            showAlert("alert-container", i18n.catalog["text_252e91e07703"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.pleaseSelectCustomerDeferredInvoice"], "error");
             return;
         }
 
@@ -520,13 +520,13 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
             });
 
             if (response.success) {
-                showAlert("alert-container", i18n.catalog["text_efaeb567f0ff"] + formatCurrency(finalTotal) + i18n.catalog["text_ba5ec51d07a4"], "success");
+                showAlert("alert-container", i18n.catalog["ui.productsales.operationCompletedSuccessfullyPrintingTotal"] + formatCurrency(finalTotal) + i18n.catalog["ui.productsales.message"], "success");
 
                 if (response.id && isCash) {
                     try {
                         const zatcaRes = await fetchAPI(API_ENDPOINTS.COMMERCIAL.SALES.ZATCA.SUBMIT(response.id as number), { method: "POST" });
                         if (!zatcaRes.success && zatcaRes.status !== 'skipped') {
-                            showToast(i18n.catalog["text_86832fd25f78"], "warning");
+                            showToast(i18n.catalog["ui.productsales.warningInvoiceNotSentZakatAuthority"], "warning");
                         }
                     } catch { }
                 }
@@ -548,15 +548,15 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                 await loadProducts();
                 await loadInvoices();
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_ab1f43db92fa"], "error");
-                if (response.message?.includes("UNIQUE") || response.message?.includes("exists") || response.message?.includes(i18n.catalog["text_8d8ddd2defe0"])) {
+                showAlert("alert-container", response.message || i18n.catalog["common.general.failedSaveInvoice"], "error");
+                if (response.message?.includes("UNIQUE") || response.message?.includes("exists") || response.message?.includes(i18n.catalog["common.general.available.alternative3"])) {
                     generateInvoiceNumber();
                 }
             }
         } catch (error) {
-            const msg = error instanceof Error ? error.message : i18n.catalog["text_a80b88135eb4"];
-            showAlert("alert-container", i18n.catalog["text_4c4968aba347"] + msg, "error");
-            if (msg.includes("UNIQUE") || msg.includes("exists") || msg.includes(i18n.catalog["text_8d8ddd2defe0"])) {
+            const msg = error instanceof Error ? error.message : i18n.catalog["common.general.unknownError"];
+            showAlert("alert-container", i18n.catalog["common.general.error"] + msg, "error");
+            if (msg.includes("UNIQUE") || msg.includes("exists") || msg.includes(i18n.catalog["common.general.available.alternative3"])) {
                 generateInvoiceNumber();
             }
         }
@@ -570,7 +570,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                 setViewDialog(true);
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_740c5c55bbc3"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.errorFetchingDetails"], "error");
         }
     };
 
@@ -587,14 +587,14 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                 method: "DELETE",
             });
             if (response.success) {
-                showAlert("alert-container", i18n.catalog["text_12b6e3813b40"], "success");
+                showAlert("alert-container", i18n.catalog["common.general.deletedSuccessfully"], "success");
                 await loadInvoices();
                 await loadProducts();
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_f46bfc521612"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["common.general.deletionFailed"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_3bdb299872fb"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.deletionError"], "error");
         } finally {
             setConfirmDialog(false);
             setDeleteInvoiceId(null);
@@ -628,7 +628,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
 
     const openReturnDialog = async () => {
         if (selectedReturnItems.length === 0) {
-            showToast(i18n.catalog["text_54f0b0947619"], "warning");
+            showToast(i18n.catalog["common.general.pleaseSelectItemsReturnFirst"], "warning");
             return;
         }
 
@@ -647,7 +647,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                 }));
                 setInvoicesMap(newMap);
             } catch {
-                showToast(i18n.catalog["text_f154fa31b161"], "error");
+                showToast(i18n.catalog["common.general.failedLoadInvoiceData"], "error");
             } finally {
                 setIsLoadingInvoices(false);
             }
@@ -663,11 +663,11 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                     method: "POST",
                     body: JSON.stringify(returnData),
                 });
-                if (!response.success) throw new Error(response.message || i18n.catalog["text_311143511f9e"]);
+                if (!response.success) throw new Error(response.message || i18n.catalog["common.general.failedRegisterReturn"]);
             }
-            showToast(i18n.catalog["text_23e6f8991b99"], "success");
+            showToast(i18n.catalog["common.general.returnRecordedSuccessfully"], "success");
         } catch (error: any) {
-            showToast(error.message || i18n.catalog["text_633a9d0a74cd"], "error");
+            showToast(error.message || i18n.catalog["common.general.errorRegisteringReturn"], "error");
             throw error;
         }
     };
@@ -675,25 +675,25 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
     const invoiceColumns: InvoiceTableColumn<Invoice>[] = [
         {
             key: "invoice_number",
-            header: i18n.catalog["text_b6e71278be04"],
-            dataLabel: i18n.catalog["text_b6e71278be04"],
+            header: i18n.catalog["common.general.invoiceNumber.alternative2"],
+            dataLabel: i18n.catalog["common.general.invoiceNumber.alternative2"],
             render: (item) => <strong>{item.invoice_number}</strong>,
         },
         {
             key: "total_amount",
-            header: i18n.catalog["text_1f4a626bcba2"],
-            dataLabel: i18n.catalog["text_1f4a626bcba2"],
+            header: i18n.catalog["common.general.totalAmount"],
+            dataLabel: i18n.catalog["common.general.totalAmount"],
             render: (item) => formatCurrency(item.total_amount),
         },
         ...(isCash ? [{
             key: "item_count" as keyof Invoice,
-            header: i18n.catalog["text_ea45bc23f2a5"],
-            dataLabel: i18n.catalog["text_ea45bc23f2a5"],
+            header: i18n.catalog["common.general.numberItems"],
+            dataLabel: i18n.catalog["common.general.numberItems"],
             render: (item: Invoice) => item.item_count || 0,
         } as InvoiceTableColumn<Invoice>] : [{
             key: "amount_paid" as keyof Invoice,
-            header: i18n.catalog["text_904a5d3af9fd"],
-            dataLabel: i18n.catalog["text_904a5d3af9fd"],
+            header: i18n.catalog["common.general.paidRemaining"],
+            dataLabel: i18n.catalog["common.general.paidRemaining"],
             render: (item: Invoice) => (
                 <div style={{ fontSize: "0.85rem" }}>
                     <span className="text-success">{formatCurrency(item.amount_paid || 0)}</span> /{" "}
@@ -704,44 +704,44 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
             ),
         } as InvoiceTableColumn<Invoice>, {
             key: "customer_name" as keyof Invoice,
-            header: i18n.catalog["text_a042411e90be"],
+            header: i18n.catalog["common.general.customer"],
             render: (item: Invoice) => item.customer_name || "-",
         } as InvoiceTableColumn<Invoice>]),
         {
             key: "created_at",
-            header: i18n.catalog["text_78e9c561195c"],
-            dataLabel: i18n.catalog["text_78e9c561195c"],
+            header: i18n.catalog["common.general.dateTime"],
+            dataLabel: i18n.catalog["common.general.dateTime"],
             render: (item) => formatDateTime(item.created_at),
         },
         ...(isCash ? [{
             key: "salesperson_name" as keyof Invoice,
-            header: i18n.catalog["text_4e1dc1ab7024"],
-            dataLabel: i18n.catalog["text_4e1dc1ab7024"],
+            header: i18n.catalog["common.general.seller"],
+            dataLabel: i18n.catalog["common.general.seller"],
             render: (item: Invoice) => (
-                <span className="badge badge-secondary">{item.salesperson_name || i18n.catalog["text_df8d4a3bd114"]}</span>
+                <span className="badge badge-secondary">{item.salesperson_name || i18n.catalog["common.general.system"]}</span>
             ),
         } as InvoiceTableColumn<Invoice>] : []),
         {
             key: "actions",
-            header: i18n.catalog["text_7797240d6caf"],
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (item) => (
-                <ActionButtons actions={[{ icon: "view", title: i18n.catalog["text_3824e18ca83b"], variant: "view", onClick: () => viewInvoice(item.id) }]} />
+                <ActionButtons actions={[{ icon: "view", title: i18n.catalog["common.general.view"], variant: "view", onClick: () => viewInvoice(item.id) }]} />
             ),
         },
     ];
 
     const currentInvoiceColumns: Column<InvoiceItem>[] = [
-        { key: "display_name", header: i18n.catalog["text_a79e304d96a1"], dataLabel: i18n.catalog["text_a79e304d96a1"] },
-        { key: "quantity", header: i18n.catalog["text_935e21853946"], dataLabel: i18n.catalog["text_935e21853946"], render: (item) => catalogText(i18n, "text_54ef3bb1085e", { value0: item.quantity, value1: item.unit_name }) },
-        { key: "unit_price", header: i18n.catalog["text_259862e8b313"], dataLabel: i18n.catalog["text_259862e8b313"], render: (item) => formatCurrency(item.unit_price) },
-        { key: "subtotal", header: i18n.catalog["text_9c33cdc71a89"], dataLabel: i18n.catalog["text_9c33cdc71a89"], render: (item) => formatCurrency(item.subtotal) },
+        { key: "display_name", header: i18n.catalog["common.general.product"], dataLabel: i18n.catalog["common.general.product"] },
+        { key: "quantity", header: i18n.catalog["common.general.quantity.alternative3"], dataLabel: i18n.catalog["common.general.quantity.alternative3"], render: (item) => catalogText(i18n, "common.general.notAvailable.alternative3", { value0: item.quantity, value1: item.unit_name }) },
+        { key: "unit_price", header: i18n.catalog["common.general.price"], dataLabel: i18n.catalog["common.general.price"], render: (item) => formatCurrency(item.unit_price) },
+        { key: "subtotal", header: i18n.catalog["common.general.total.alternative2"], dataLabel: i18n.catalog["common.general.total.alternative2"], render: (item) => formatCurrency(item.subtotal) },
         {
             key: "actions",
             header: "",
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (_, index) => (
-                <ActionButtons actions={[{ icon: "trash", title: i18n.catalog["text_59ca629220a6"], variant: "delete", onClick: () => removeInvoiceItem(index) }]} />
+                <ActionButtons actions={[{ icon: "trash", title: i18n.catalog["common.general.delete"], variant: "delete", onClick: () => removeInvoiceItem(index) }]} />
             ),
         },
     ];
@@ -749,22 +749,22 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
     const InputPanelForm = (
         <div className="sales-card compact animate-slide">
             <div className="card-header-flex">
-                <h3>{i18n.catalog["text_2e23ca5513a5"]}</h3>
+                <h3>{i18n.catalog["ui.productsales.addProducts"]}</h3>
                 <div className="invoice-badge">
-                    <span className="stat-label">{i18n.catalog["text_2cd4e7c1b5fb"]}</span>
+                    <span className="stat-label">{i18n.catalog["common.general.invoiceNumber"]}</span>
                     <input type="text" id="invoice-number" value={invoiceNumber} readOnly className="minimal-input" />
                 </div>
             </div>
             <form id="invoice-form" onSubmit={(e) => { e.preventDefault(); addItemToInvoice(); }}>
                 <div className="form-group">
-                    <label htmlFor="product-select">{i18n.catalog["text_f823e0243f4f"]}</label>
+                    <label htmlFor="product-select">{i18n.catalog["common.general.selectProduct"]}</label>
                     <SearchableSelect
                         id="product-select"
                         inputRef={productSelectRef}
                         options={productOptions}
                         value={selectedProduct?.id || null}
                         onChange={handleProductSelect}
-                        placeholder={i18n.catalog["text_05b154cfc523"]}
+                        placeholder={i18n.catalog["common.general.searchProductBarcode"]}
                         required
                         autoFocus
                         onAutoSelect={() => quantityInputRef.current?.focus()}
@@ -773,31 +773,31 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                 </div>
                 <div className="form-row">
                     <div className="form-group">
-                        <label htmlFor="item-unit-type">{i18n.catalog["text_0b7ee6a6a05b"]}</label>
+                        <label htmlFor="item-unit-type">{i18n.catalog["common.general.unitType"]}</label>
                         <select id="item-unit-type" value={unitType} onChange={(e) => { setUnitType(e.target.value as "sub" | "main"); calculateSubtotal(); }} className="glass">
-                            <option className="option-name" value="sub">{selectedProduct?.sub_unit_name || i18n.catalog["text_d400a30ad5f3"]}</option>
-                            <option className="option-name"value="main">{selectedProduct?.unit_name || i18n.catalog["text_cc7593424dc5"]} ({selectedProduct?.items_per_unit || 1} {selectedProduct?.sub_unit_name || i18n.catalog["text_d400a30ad5f3"]})</option>
+                            <option className="option-name" value="sub">{selectedProduct?.sub_unit_name || i18n.catalog["common.general.each"]}</option>
+                            <option className="option-name"value="main">{selectedProduct?.unit_name || i18n.catalog["common.general.carton"]} ({selectedProduct?.items_per_unit || 1} {selectedProduct?.sub_unit_name || i18n.catalog["common.general.each"]})</option>
                         </select>
                     </div>
                     <div className="form-group">
-                        <label htmlFor="item-stock">{i18n.catalog["text_1b9034bf25d5"]}</label>
-                        <input type="text" id="item-stock" value={itemStock} readOnly className="glass highlight-input" placeholder={i18n.catalog["text_5feceb66ffc8"]} />
+                        <label htmlFor="item-stock">{i18n.catalog["ui.productsales.availableStock"]}</label>
+                        <input type="text" id="item-stock" value={itemStock} readOnly className="glass highlight-input" placeholder={i18n.catalog["ui.productsales.message0"]} />
                     </div>
                 </div>
                 <div className="form-row">
                     <div className="form-group">
-                        <NumberInput id="item-quantity" label={i18n.catalog["text_82ed8e968688"]} min={1} value={quantity} onChange={(val) => setQuantity(val)} required inputRef={quantityInputRef} />
+                        <NumberInput id="item-quantity" label={i18n.catalog["common.general.quantity.alternative2"]} min={1} value={quantity} onChange={(val) => setQuantity(val)} required inputRef={quantityInputRef} />
                     </div>
                     <div className="form-group">
-                        <NumberInput id="item-unit-price" label={i18n.catalog["text_871fb89bb7f4"]} min={0} step={0.01} value={unitPrice} onChange={(val) => setUnitPrice(val)} required />
+                        <NumberInput id="item-unit-price" label={i18n.catalog["ui.productsales.unitSalePrice"]} min={0} step={0.01} value={unitPrice} onChange={(val) => setUnitPrice(val)} required />
                     </div>
                 </div>
                 <div className="summary-stat-box">
                     <div className="stat-item">
-                        <span className="stat-label">{i18n.catalog["text_4793cceb7aa3"]}</span>
+                        <span className="stat-label">{i18n.catalog["common.general.subtotal"]}</span>
                         <span id="item-subtotal" className="stat-value highlight">{formatCurrency(subtotal)}</span>
                     </div>
-                    <button type="button" className="btn btn-primary btn-add" onClick={addItemToInvoice} data-icon="plus">{i18n.catalog["text_d52453ac627d"]}{isCash ? i18n.catalog["text_f12f97018a1e"] : ''}</button>
+                    <button type="button" className="btn btn-primary btn-add" onClick={addItemToInvoice} data-icon="plus">{i18n.catalog["common.general.add"]}{isCash ? i18n.catalog["ui.productsales.invoice"] : ''}</button>
                 </div>
             </form>
         </div>
@@ -805,25 +805,25 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
 
     const CustomerPanelForm = (
         <div className="sales-card compact animate-slide">
-            <h3>{i18n.catalog["text_8d098aea9a44"]}</h3>
+            <h3>{i18n.catalog["common.general.customerData"]}</h3>
             <div className="form-row" style={{ marginTop: "1rem" }}>
                 <div className="form-group">
-                    <label htmlFor="customer-select">{i18n.catalog["text_9f9599729768"]}</label>
+                    <label htmlFor="customer-select">{i18n.catalog["common.general.selectCustomer"]}</label>
                     <SearchableSelect
                         id="customer-select"
                         options={customerOptions}
                         value={selectedCustomer?.id || null}
                         onChange={handleCustomerSelect}
                         onSearch={(term) => setCustomerSearchTerm(term)}
-                        placeholder={i18n.catalog["text_96b809b02ccc"]}
+                        placeholder={i18n.catalog["common.general.searchClient"]}
                         required
-                        noResultsText={customerSearchTerm.length < 2 ? i18n.catalog["text_d34f5f1ea138"] : i18n.catalog["text_1027871af7c9"]}
+                        noResultsText={customerSearchTerm.length < 2 ? i18n.catalog["common.general.typeLeastTwoCharactersSearch"] : i18n.catalog["common.general.noCustomers"]}
                     />
                 </div>
                 <div className="form-group">
                     <NumberInput
                         id="item-unit-price"
-                        label={i18n.catalog["text_623e1883b3d2"]}
+                        label={i18n.catalog["common.general.amountPaidCash"]}
                         min={0}
                         step={0.01}
                         value={amountPaid}
@@ -832,7 +832,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                     />
                 </div>
             </div>
-            <small style={{ color: "var(--text-light)", display: "block" }}>{i18n.catalog["text_528b8f309bc0"]}</small>
+            <small style={{ color: "var(--text-light)", display: "block" }}>{i18n.catalog["common.general.amountCustomerWillPayNowTowardInvoice"]}</small>
         </div>
     );
 
@@ -843,11 +843,11 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                 <div className="sales-card" style={{ marginBottom: "1rem" }}>
                     {readiness?.ready && readiness.context?.warehouse ? (
                         <span>
-                            {i18n.catalog["text_9189aa23a931"]}{readiness.context.warehouse.name}
-                            {readiness.context.pos_terminal ? catalogText(i18n, "text_217c7b7df6be", { value0: readiness.context.pos_terminal.name }) : ""}
+                            {i18n.catalog["common.general.executionContext"]}{readiness.context.warehouse.name}
+                            {readiness.context.pos_terminal ? catalogText(i18n, "ui.productsales.notAvailable", { value0: readiness.context.pos_terminal.name }) : ""}
                         </span>
                     ) : (
-                        <span>{i18n.catalog["text_2e486fe4ce9d"]}</span>
+                        <span>{i18n.catalog["ui.productsales.storeSetupIsIncompleteCompleteWarehousePointSale"]}</span>
                     )}
                 </div>
                 <div className="sales-top-grids">
@@ -863,32 +863,32 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                         {!isCash && CustomerPanelForm}
 
                         <div className="sales-card animate-slide" style={!isCash ? { animationDelay: "0.1s" } : {}}>
-                            <h3>{i18n.catalog["text_0dd962e486c9"]}</h3>
+                            <h3>{i18n.catalog["common.general.currentInvoiceItems"]}</h3>
                             <div className="current-invoice-table" style={{ width: '100%', overflowX: 'auto' }}>
-                                <Table columns={currentInvoiceColumns} data={invoiceItems} keyExtractor={(_, index) => index} emptyMessage={i18n.catalog["text_9172081b079d"]} />
+                                <Table columns={currentInvoiceColumns} data={invoiceItems} keyExtractor={(_, index) => index} emptyMessage={i18n.catalog["common.general.noItemsAdded"]} />
                             </div>
 
                             <div className="invoice-adjustments">
                                 <div className="discount-section">
                                     <div className="form-group" style={{ marginBottom: 0, flex: '1 1 200px', minWidth: '0' }}>
-                                        <NumberInput id="invoice-discount" label={i18n.catalog["text_9820f0061954"]} value={discountValue} onChange={(val) => setDiscountValue(val)} min={0} placeholder={i18n.catalog["text_561b2814d3c0"]} />
+                                        <NumberInput id="invoice-discount" label={i18n.catalog["common.general.discountAmount"]} value={discountValue} onChange={(val) => setDiscountValue(val)} min={0} placeholder={i18n.catalog["common.general.message000"]} />
                                     </div>
-                                    <SegmentedToggle label={i18n.catalog["text_3bf1c1fc67c1"]} value={discountType} onChange={(val) => setDiscountType(val as "fixed" | "percent")} options={[{ value: "fixed", label: i18n.catalog["text_30de87b72026"] }, { value: "percent", label: i18n.catalog["text_d75c4c7090fc"] }]} />
+                                    <SegmentedToggle label={i18n.catalog["common.general.discountType"]} value={discountType} onChange={(val) => setDiscountType(val as "fixed" | "percent")} options={[{ value: "fixed", label: i18n.catalog["common.general.amount.alternative2"] }, { value: "percent", label: i18n.catalog["common.general.percentage.alternative2"] }]} />
                                     {isCash && (
                                         <div className="form-group" style={{ marginBottom: 0, flex: '1 1 250px', minWidth: '0' }}>
-                                            <Label title={i18n.catalog["text_d515aa094721"]} />
+                                            <Label title={i18n.catalog["ui.productsales.representativeOptional"]} />
                                             <SearchableSelect
-                                                options={salesRepresentatives.map((r) => ({ value: r.id, label: r.name, subtitle: r.phone || i18n.catalog["text_04cf43a4d120"] }))}
+                                                options={salesRepresentatives.map((r) => ({ value: r.id, label: r.name, subtitle: r.phone || i18n.catalog["common.general.noPhone"] }))}
                                                 value={selectedRepresentative?.id || ""}
                                                 onChange={(val, opt) => { setSelectedRepresentative(opt ? { id: Number(opt.value), name: opt.label } : null); }}
-                                                placeholder={i18n.catalog["text_ea873af5d191"]}
+                                                placeholder={i18n.catalog["ui.productsales.selectRepresentative"]}
                                             />
                                         </div>
                                     )}
                                 </div>
                                 {calculatedDiscount() > 0 && (
                                     <div className="summary-stat animate-fade" style={{ marginRight: 'auto', borderRight: '1px solid var(--border-color)', paddingRight: '1.5rem' }}>
-                                        <span className="stat-label">{i18n.catalog["text_8b9ac0222699"]}</span>
+                                        <span className="stat-label">{i18n.catalog["common.general.totalDiscount"]}</span>
                                         <span className="stat-value text-danger" style={{ fontSize: '1.1rem' }}>-{formatCurrency(calculatedDiscount())}</span>
                                     </div>
                                 )}
@@ -896,7 +896,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
 
                             <div className="sales-summary-bar">
                                 <div className="summary-stat">
-                                    <span className="stat-label">{i18n.catalog["text_a86ed2466035"]}</span>
+                                    <span className="stat-label">{i18n.catalog["common.general.totalProducts"]}</span>
                                     <span className="stat-value">{formatCurrency(baseItemsTotal)}</span>
                                 </div>
                                 {governmentFees.map((fee) => {
@@ -909,23 +909,23 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                                     if (feeAmount <= 0) return null;
                                     return (
                                         <div className="summary-stat" key={fee.id}>
-                                            <span className="stat-label">{fee.name} {i18n.catalog["text_fe22a7c4900c"]}</span>
+                                            <span className="stat-label">{fee.name} {i18n.catalog["common.general.liability"]}</span>
                                             <span className="stat-value">{formatCurrency(feeAmount)}</span>
                                         </div>
                                     );
                                 })}
                                 {totalVAT > 0 && (
                                     <div className="summary-stat">
-                                        <span className="stat-label">{i18n.catalog["text_f254555f1f08"]}{(vatRate * 100).toFixed(0)}%)</span>
+                                        <span className="stat-label">{i18n.catalog["common.general.valueAddedTax"]}{(vatRate * 100).toFixed(0)}%)</span>
                                         <span className="stat-value">{formatCurrency(totalVAT)}</span>
                                     </div>
                                 )}
                                 <div className="summary-stat">
-                                    <span className="stat-label">{isCash ? i18n.catalog["text_50a90c019154"] : i18n.catalog["text_1f4a626bcba2"]}</span>
+                                    <span className="stat-label">{isCash ? i18n.catalog["common.general.invoiceTotal"] : i18n.catalog["common.general.totalAmount"]}</span>
                                     <span id="total-amount" className="stat-value highlight">{formatCurrency(finalTotal)}</span>
                                 </div>
                                 <button type="button" className="btn btn-primary btn-add" onClick={finishInvoice} id="finish-btn" data-icon="check" disabled={invoiceItems.length === 0 || !readiness?.ready}>
-                                    {isCash ? i18n.catalog["text_f663f7a034fa"] : i18n.catalog["text_06873ff74693"]}
+                                    {isCash ? i18n.catalog["common.general.finalizeInvoice"] : i18n.catalog["common.general.saveInvoice"]}
                                 </button>
                             </div>
                         </div>
@@ -933,14 +933,14 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                 </div>
 
                 <div className="sales-card animate-slide" style={{ animationDelay: "0.2s" }}>
-                    <h3>{i18n.catalog["text_d4b083328f95"]}</h3>
+                    <h3>{i18n.catalog["common.general.previousInvoiceRecords"]}</h3>
                     <div className="table-container">
                         <div className="table-wrapper">
                             <SelectableInvoiceTable
                                 invoices={invoices}
                                 columns={invoiceColumns}
                                 keyExtractor={(item) => item.id}
-                                emptyMessage={i18n.catalog["text_b20f10f0038b"]}
+                                emptyMessage={i18n.catalog["common.general.noPreviousInvoices"]}
                                 isLoading={isLoading}
                                 pagination={{ currentPage, totalPages, onPageChange: loadInvoices }}
                                 getInvoiceItems={getInvoiceItemsForTable}
@@ -967,41 +967,41 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                 }}
             />
 
-            <Dialog isOpen={viewDialog} onClose={() => setViewDialog(false)} title={i18n.catalog["text_e603e7637507"]}>
+            <Dialog isOpen={viewDialog} onClose={() => setViewDialog(false)} title={i18n.catalog["common.general.invoiceDetails"]}>
                 {selectedInvoice && (
                     <div id="view-dialog-body">
                         <div className="invoice-details-header" style={{ marginBottom: "2rem", borderBottom: "2px solid var(--border-color)", paddingBottom: "1rem" }}>
                             <div className="form-row">
                                 <div className="summary-stat">
-                                    <span className="stat-label">{i18n.catalog["text_b6e71278be04"]}</span>
+                                    <span className="stat-label">{i18n.catalog["common.general.invoiceNumber.alternative2"]}</span>
                                     <span className="stat-value">{selectedInvoice.invoice_number}</span>
                                 </div>
                                 <div className="summary-stat">
-                                    <span className="stat-label">{i18n.catalog["text_d90c384199ac"]}</span>
+                                    <span className="stat-label">{i18n.catalog["common.general.date.alternative7"]}</span>
                                     <span className="stat-value">{formatDateTime(selectedInvoice.created_at)}</span>
                                 </div>
                                 <div className="summary-stat">
-                                    <span className="stat-label">{i18n.catalog["text_d31f653fcdaf"]}</span>
+                                    <span className="stat-label">{i18n.catalog["common.general.paymentType.alternative2"]}</span>
                                     <span className="stat-value">
-                                        <span className={`badge ${isCash ? 'badge-success' : 'badge-warning'}`}>{isCash ? i18n.catalog["text_1beb05a45173"] : i18n.catalog["text_70122ff036ec"]}</span>
+                                        <span className={`badge ${isCash ? 'badge-success' : 'badge-warning'}`}>{isCash ? i18n.catalog["common.general.cash"] : i18n.catalog["common.general.creditReceivables"]}</span>
                                     </span>
                                 </div>
                             </div>
                             {!isCash && selectedInvoice.customer_name && (
                                 <div className="form-row" style={{ marginTop: "1rem", background: "var(--surface-hover)", padding: "1rem", borderRadius: "var(--radius-md)" }}>
                                     <div className="summary-stat">
-                                        <span className="stat-label">{i18n.catalog["text_a042411e90be"]}</span>
+                                        <span className="stat-label">{i18n.catalog["common.general.customer"]}</span>
                                         <span className="stat-value">{selectedInvoice.customer_name}</span>
                                     </div>
                                     {selectedInvoice.customer_phone && (
                                         <div className="summary-stat">
-                                            <span className="stat-label">{i18n.catalog["text_94b59a5125fb"]}</span>
+                                            <span className="stat-label">{i18n.catalog["common.general.phone"]}</span>
                                             <span className="stat-value">{selectedInvoice.customer_phone}</span>
                                         </div>
                                     )}
                                     {selectedInvoice.customer_tax && (
                                         <div className="summary-stat">
-                                            <span className="stat-label">{i18n.catalog["text_74b3eeb4b88d"]}</span>
+                                            <span className="stat-label">{i18n.catalog["common.general.taxNumber"]}</span>
                                             <span className="stat-value">{selectedInvoice.customer_tax}</span>
                                         </div>
                                     )}
@@ -1010,11 +1010,11 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                             {!isCash && (
                                 <div className="form-row" style={{ marginTop: "1rem" }}>
                                     <div className="summary-stat">
-                                        <span className="stat-label">{i18n.catalog["text_558ab4456b6f"]}</span>
+                                        <span className="stat-label">{i18n.catalog["common.general.amountPaid.alternative2"]}</span>
                                         <span className="stat-value" style={{ color: "var(--success-color)" }}>{formatCurrency(selectedInvoice.amount_paid || 0)}</span>
                                     </div>
                                     <div className="summary-stat">
-                                        <span className="stat-label">{i18n.catalog["text_a707de32d885"]}</span>
+                                        <span className="stat-label">{i18n.catalog["common.general.remainingAmount"]}</span>
                                         <span className="stat-value" style={{ color: "var(--danger-color)", fontWeight: 700 }}>{formatCurrency(selectedInvoice.total_amount - (selectedInvoice.amount_paid || 0))}</span>
                                     </div>
                                 </div>
@@ -1022,16 +1022,16 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                         </div>
 
                         <div className="invoice-items-minimal">
-                            <h4 style={{ marginBottom: "1rem" }}>{i18n.catalog["text_1cc454c94b3b"]}</h4>
+                            <h4 style={{ marginBottom: "1rem" }}>{i18n.catalog["common.general.productsSold"]}</h4>
                             {selectedInvoice.items?.map((item: InvoiceItem, index: number) => (
                                 <div key={index} className="item-row-minimal" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.75rem", borderBottom: "1px solid var(--border-color)", opacity: item.quantity === 0 ? 0.6 : 1 }}>
                                     <div className="item-info-pkg">
                                         <span className="item-name-pkg" style={{ display: "block", fontWeight: "600", textDecoration: item.quantity === 0 ? 'line-through' : 'none' }}>{item.product_name}</span>
                                         <span className="item-meta-pkg" style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                                            {i18n.catalog["text_91f3a71d4d14"]}{formatCurrency(item.unit_price)}
+                                            {i18n.catalog["common.general.unitPrice"]}{formatCurrency(item.unit_price)}
                                             {item.returned_quantity && item.returned_quantity > 0 && (
                                                 <span style={{ color: item.quantity === 0 ? 'var(--danger-color)' : 'var(--warning-color)', marginRight: '8px' }}>
-                                                    {item.quantity === 0 ? i18n.catalog["text_4af7488d2163"] : catalogText(i18n, "text_1d6328b75bfd", { value0: item.returned_quantity })}
+                                                    {item.quantity === 0 ? i18n.catalog["common.general.fullyRefunded"] : catalogText(i18n, "common.general.returned", { value0: item.returned_quantity })}
                                                 </span>
                                             )}
                                         </span>
@@ -1039,7 +1039,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                                     <div className="item-info-pkg" style={{ textAlign: "left" }}>
                                         <span className="item-name-pkg" style={{ display: "block", fontWeight: "600" }}>{formatCurrency(item.unit_price * item.quantity)}</span>
                                         <span className="item-meta-pkg" style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                                            {item.quantity} {item.quantity !== item.original_quantity && catalogText(i18n, "text_2d9ad16d909d", { value0: item.original_quantity })}
+                                            {item.quantity} {item.quantity !== item.original_quantity && catalogText(i18n, "common.general.message.alternative3", { value0: item.original_quantity })}
                                         </span>
                                     </div>
                                 </div>
@@ -1048,21 +1048,21 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
 
                         <div className="sales-summary-bar" style={{ marginTop: "2rem", background: "var(--grad-primary)", color: "white" }}>
                             <div className="summary-stat">
-                                <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>{i18n.catalog["text_f6f66d9545bc"]}</span>
+                                <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>{i18n.catalog["common.general.numberItems.alternative2"]}</span>
                                 <span className="stat-value" style={{ color: "white", fontSize: "1.2rem" }}>{selectedInvoice.item_count || 0}</span>
                             </div>
                             <div className="summary-stat">
-                                <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>{i18n.catalog["text_4793cceb7aa3"]}</span>
+                                <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>{i18n.catalog["common.general.subtotal"]}</span>
                                 <span className="stat-value" style={{ color: "white", fontSize: "1.2rem" }}>{formatCurrency(selectedInvoice.subtotal || 0)}</span>
                             </div>
                             {selectedInvoice.discount_amount && selectedInvoice.discount_amount > 0 && (
                                 <div className="summary-stat">
-                                    <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>{i18n.catalog["text_b593a6457673"]}</span>
+                                    <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>{i18n.catalog["common.general.discount"]}</span>
                                     <span className="stat-value" style={{ color: "#ffccd5", fontSize: "1.2rem" }}>-{formatCurrency(selectedInvoice.discount_amount)}</span>
                                 </div>
                             )}
                             <div className="summary-stat">
-                                <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>{i18n.catalog["text_baed6e999960"]}</span>
+                                <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>{i18n.catalog["common.general.total.alternative3"]}</span>
                                 <span className="stat-value highlight" style={{ color: "white" }}>{formatCurrency(selectedInvoice.total_amount)}</span>
                             </div>
                             <button type="button" className="btn" style={{ background: "white", color: "var(--primary-color)" }} onClick={async () => {
@@ -1072,7 +1072,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                                     } catch (error) { }
                                 }
                             }}>
-                                <Icon name="print" /> {i18n.catalog["text_afcc0ea144e9"]}</button>
+                                <Icon name="print" /> {i18n.catalog["ui.productsales.printCopy"]}</button>
                         </div>
                     </div>
                 )}
@@ -1082,9 +1082,9 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                 isOpen={confirmDialog}
                 onClose={() => { setConfirmDialog(false); setDeleteInvoiceId(null); }}
                 onConfirm={deleteInvoice}
-                title={i18n.catalog["text_5f9cb54dc136"]}
-                message={i18n.catalog["text_1e34d70e40c1"]}
-                confirmText={i18n.catalog["text_f900e96c0235"]}
+                title={i18n.catalog["common.general.confirmDeletion"]}
+                message={i18n.catalog["ui.productsales.areYouSureYouWantDeleteThisInvoice"]}
+                confirmText={i18n.catalog["common.general.yesContinue"]}
                 confirmVariant="primary"
             />
 
@@ -1092,9 +1092,9 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
                 isOpen={marginConfirm}
                 onClose={() => { setMarginConfirm(false); setPendingItem(null); }}
                 onConfirm={confirmAddItem}
-                title={i18n.catalog["text_fa12593eede5"]}
-                message={i18n.catalog["text_3952d48a9508"]}
-                confirmText={i18n.catalog["text_b4a5f4395f7c"]}
+                title={i18n.catalog["ui.productsales.warningProfitMarginIsLow"]}
+                message={i18n.catalog["ui.productsales.specifiedPriceIsBelowAllowedMinimumDoYou"]}
+                confirmText={i18n.catalog["ui.productsales.yesAddProduct"]}
                 confirmVariant="danger"
             />
         </MainLayout>

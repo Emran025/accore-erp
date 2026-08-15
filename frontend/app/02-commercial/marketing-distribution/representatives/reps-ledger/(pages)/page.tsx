@@ -93,10 +93,10 @@ function LedgerPageContent() {
                 if (dataObj.pagination) setTotalPages(dataObj.pagination.total_pages);
                 setCurrentPage(page);
             } else {
-                showAlert("alert-container", response.message || i18n.catalog["text_40b69645bd46"], "error");
+                showAlert("alert-container", response.message || i18n.catalog["common.general.failedLoadOperations"], "error");
             }
         } catch {
-            showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
+            showAlert("alert-container", i18n.catalog["common.general.errorConnectingServer"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -123,7 +123,7 @@ function LedgerPageContent() {
 
     const editTransaction = (transaction: LedgerTransaction) => {
         if (transaction.type !== "payment" && transaction.type !== "adjustment") {
-            showToast(i18n.catalog["text_5371cd7fbbe5"], "error");
+            showToast(i18n.catalog["commercial.repsLedger.thisTypeOperationCannotBeModified"], "error");
             return;
         }
 
@@ -137,7 +137,7 @@ function LedgerPageContent() {
 
     const saveTransaction = async () => {
         if (!transactionAmount || parseNumber(transactionAmount) <= 0) {
-            showToast(i18n.catalog["text_133a7ff54dff"], "error");
+            showToast(i18n.catalog["commercial.repsLedger.amountIsRequiredMustBeGreaterThanZero"], "error");
             return;
         }
 
@@ -155,7 +155,7 @@ function LedgerPageContent() {
             let response;
             if (editingTransactionId) {
                 data.id = editingTransactionId;
-                response = await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.COMMERCIAL.SALES.REPRESENTATIVES.TRANSACTIONS, value1: editingTransactionId }), {
+                response = await fetchAPI(catalogText(i18n, "common.general.message", { value0: API_ENDPOINTS.COMMERCIAL.SALES.REPRESENTATIVES.TRANSACTIONS, value1: editingTransactionId }), {
                     method: "PUT",
                     body: JSON.stringify(data),
                 });
@@ -167,14 +167,14 @@ function LedgerPageContent() {
             }
 
             if (response.success) {
-                showToast(i18n.catalog["text_ff783ee2826d"], "success");
+                showToast(i18n.catalog["common.general.savedSuccessfully"], "success");
                 setTransactionDialog(false);
                 await loadLedger(currentPage);
             } else {
-                showToast(response.message || i18n.catalog["text_acc74dcf4c2f"], "error");
+                showToast(response.message || i18n.catalog["common.general.error.alternative2"], "error");
             }
         } catch {
-            showToast(i18n.catalog["text_c574313242be"], "error");
+            showToast(i18n.catalog["common.general.errorSaving"], "error");
         }
     };
 
@@ -193,47 +193,47 @@ function LedgerPageContent() {
             });
 
             if (response.success) {
-                showToast(i18n.catalog["text_12b6e3813b40"], "success");
+                showToast(i18n.catalog["common.general.deletedSuccessfully"], "success");
                 setConfirmDialog(false);
                 setDeleteTransactionId(null);
                 await loadLedger(currentPage);
             } else {
-                showToast(response.message || i18n.catalog["text_acc74dcf4c2f"], "error");
+                showToast(response.message || i18n.catalog["common.general.error.alternative2"], "error");
             }
         } catch {
-            showToast(i18n.catalog["text_3bdb299872fb"], "error");
+            showToast(i18n.catalog["common.general.deletionError"], "error");
         }
     };
 
     const restoreTransaction = async (id: number) => {
         try {
-            const response = await fetchAPI(catalogText(i18n, "text_d9cbe9889e23", { value0: API_ENDPOINTS.COMMERCIAL.SALES.REPRESENTATIVES.TRANSACTIONS, value1: id }), {
+            const response = await fetchAPI(catalogText(i18n, "commercial.repsLedger.restore", { value0: API_ENDPOINTS.COMMERCIAL.SALES.REPRESENTATIVES.TRANSACTIONS, value1: id }), {
                 method: "POST",
             });
 
             if (response.success) {
-                showToast(i18n.catalog["text_aa78a43df0d6"], "success");
+                showToast(i18n.catalog["common.general.restoredSuccessfully"], "success");
                 await loadLedger(currentPage);
             } else {
-                showToast(response.message || i18n.catalog["text_acc74dcf4c2f"], "error");
+                showToast(response.message || i18n.catalog["common.general.error.alternative2"], "error");
             }
         } catch {
-            showToast(i18n.catalog["text_f456a605d85c"], "error");
+            showToast(i18n.catalog["common.general.errorRestoring"], "error");
         }
     };
 
     const viewInvoice = async (id: number) => {
         try {
-            const response = await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.COMMERCIAL.SALES.INVOICES, value1: id }));
+            const response = await fetchAPI(catalogText(i18n, "common.general.message", { value0: API_ENDPOINTS.COMMERCIAL.SALES.INVOICES, value1: id }));
             if (response.success && response.data) {
                 setSelectedInvoice(response.data as DetailedInvoiceRepresentatives);
                 setViewInvoiceDialog(true);
             } else {
-                showToast(i18n.catalog["text_e9aa689cdb35"], "error");
+                showToast(i18n.catalog["commercial.repsLedger.errorFetchingInvoiceDetails"], "error");
             }
         } catch (error) {
             console.error(error);
-            showToast(i18n.catalog["text_b8c14ea4b319"], "error");
+            showToast(i18n.catalog["commercial.repsLedger.connectionErrorOccurred"], "error");
         }
     };
 
@@ -242,7 +242,7 @@ function LedgerPageContent() {
             return [];
         }
         try {
-            const res = await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.COMMERCIAL.SALES.INVOICES, value1: transaction.reference_id }));
+            const res = await fetchAPI(catalogText(i18n, "common.general.message", { value0: API_ENDPOINTS.COMMERCIAL.SALES.INVOICES, value1: transaction.reference_id }));
             if (res.success && res.data) {
                 return (res.data as any).items.map((item: any) => ({
                     id: item.id || Math.random(),
@@ -256,7 +256,7 @@ function LedgerPageContent() {
             }
             return [];
         } catch (error) {
-            console.error(i18n.catalog["text_148759ded034"], error);
+            console.error(i18n.catalog["commercial.repsLedger.failedFetchingInvoiceItems"], error);
             return [];
         }
     };
@@ -271,9 +271,9 @@ function LedgerPageContent() {
                 actions={
                     <>
                         <Button variant="secondary" icon="filter" onClick={() => setFilterDialog(true)}>
-                            {i18n.catalog["text_a826a913e567"]}</Button>
+                            {i18n.catalog["common.general.filter"]}</Button>
                         <Button variant="primary" icon="plus" onClick={openAddTransactionDialog}>
-                            {i18n.catalog["text_15db20a15bbe"]}</Button>
+                            {i18n.catalog["commercial.repsLedger.receiptSettlement"]}</Button>
                     </>
                 }
             />
@@ -291,7 +291,7 @@ function LedgerPageContent() {
             <div className="table-controls mb-4 flex gap-4">
                 <input
                     type="text"
-                    placeholder={i18n.catalog["text_f6d32ad7b4a9"]}
+                    placeholder={i18n.catalog["commercial.repsLedger.searchReferenceNumberDescription"]}
                     value={filters.search}
                     onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                     onBlur={() => loadLedger(1)}
@@ -369,8 +369,8 @@ function LedgerPageContent() {
                 isOpen={confirmDialog}
                 onClose={() => setConfirmDialog(false)}
                 onConfirm={deleteTransaction}
-                title={i18n.catalog["text_5f9cb54dc136"]}
-                message={i18n.catalog["text_28988ea29267"]}
+                title={i18n.catalog["common.general.confirmDeletion"]}
+                message={i18n.catalog["commercial.repsLedger.areYouSureYouWantDeleteThisTransaction"]}
                 confirmVariant="danger"
             />
         </MainLayout>
@@ -380,7 +380,7 @@ function LedgerPageContent() {
 export default function LedgerPage() {
     const { t: i18n } = useI18n();
     return (
-        <Suspense fallback={<div className="p-4 text-center">{i18n.catalog["text_ceac78d7f5d3"]}</div>}>
+        <Suspense fallback={<div className="p-4 text-center">{i18n.catalog["common.general.loading"]}</div>}>
             <LedgerPageContent />
         </Suspense>
     );

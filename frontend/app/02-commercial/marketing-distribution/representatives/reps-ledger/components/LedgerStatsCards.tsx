@@ -12,25 +12,25 @@ export function LedgerStatsCards({ stats }: LedgerStatsCardsProps) {
     return (
         <div className="dashboard-stats animate-fade" style={{ marginBottom: "2rem", display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <StatsCard
-                title={catalogMessage("text_666f5dd27fb1")}
+                title={catalogMessage("common.general.totalCommissions")}
                 value={formatCurrency(stats.total_commissions)}
                 icon={getIcon("dollar")}
                 colorClass="alert"
             />
             <StatsCard
-                title={catalogMessage("text_db4a944c89e8")}
+                title={catalogMessage("commercial.ledgerstatscards.paymentsRefunds")}
                 value={formatCurrency(stats.total_payments + stats.total_returns)}
                 icon={getIcon("check")}
                 colorClass="products"
             />
             <StatsCard
-                title={catalogMessage("text_b0f981453405")}
+                title={catalogMessage("common.general.payableAgent")}
                 value={formatCurrency(stats.balance)}
                 icon={getIcon("building")}
                 colorClass="total"
             />
             <StatsCard
-                title={catalogMessage("text_1efbe75bbc4d")}
+                title={catalogMessage("common.general.numberOperations")}
                 value={stats.transaction_count}
                 icon={getIcon("eye")}
                 colorClass="sales"

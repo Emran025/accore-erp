@@ -59,7 +59,7 @@ export function GlobalMeta() {
                 <button
                     type="button"
                     className="top-global-icon-btn"
-                    aria-label={i18n.catalog["text_74a883a037bc"]}
+                    aria-label={i18n.catalog["components.globalmeta.settings"]}
                 >
                     {getIcon("settings")}
                 </button>

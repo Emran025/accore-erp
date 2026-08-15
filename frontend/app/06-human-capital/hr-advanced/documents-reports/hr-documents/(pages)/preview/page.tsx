@@ -48,8 +48,8 @@ function DocumentPreviewContent() {
 
             setRenderedHtml(finalHtml);
         } catch (error) {
-            console.error(i18n.catalog["text_910266324d35"], error);
-            showToast(i18n.catalog["text_cafcc71591f3"], "error");
+            console.error(i18n.catalog["common.general.renderError"], error);
+            showToast(i18n.catalog["common.general.failedLoadPreview"], "error");
             router.push("/06-human-capital/hr-advanced/documents-reports/hr-documents");
         } finally {
             setIsLoading(false);
@@ -60,7 +60,7 @@ function DocumentPreviewContent() {
         const printWindow = window.open("", "_blank");
         if (printWindow) {
             printWindow.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head>
-<meta charset="UTF-8"><title>${templateName || i18n.catalog["text_76a8d471e3b9"]}</title>
+<meta charset="UTF-8"><title>${templateName || i18n.catalog["common.general.document"]}</title>
 </head><body><style>
 @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
 @page { size: A4; margin: 15mm 12mm; }
@@ -82,14 +82,14 @@ function DocumentPreviewContent() {
     return (
         <div className="sales-card animate-fade">
             <PageSubHeader
-                title={catalogText(i18n, "text_e03a1bb9de48", { value0: templateName })}
+                title={catalogText(i18n, "common.general.preview.alternative2", { value0: templateName })}
                 titleIcon="file-signature"
                 actions={
                     <>
                         <Button variant="secondary" onClick={() => router.push("/06-human-capital/hr-advanced/documents-reports/hr-documents")}>
-                            {i18n.catalog["text_cb822418a29d"]}</Button>
+                            {i18n.catalog["common.general.back.alternative3"]}</Button>
                         <Button variant="primary" icon="printer" onClick={handlePrint}>
-                            {i18n.catalog["text_2e00e00acffe"]}</Button>
+                            {i18n.catalog["common.general.print"]}</Button>
                     </>
                 }
             />

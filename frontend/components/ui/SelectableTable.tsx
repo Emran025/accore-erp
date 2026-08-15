@@ -40,7 +40,7 @@ export function SelectableTable<T>({
   onRowLongPress,
   onRowClick,
   isLoading = false,
-  emptyMessage = catalogMessage("text_d812e8bbc06f"),
+  emptyMessage = catalogMessage("common.general.noData"),
   isRowSelectable,
 }: SelectableTableProps<T>) {
     const { t: i18n } = useI18n();
@@ -117,7 +117,7 @@ export function SelectableTable<T>({
       <div className="table-container">
         <div className="empty-state" style={{ textAlign: "center", padding: "1rem" }}>
           <div className="loading-spinner"></div>
-          <div>{i18n.catalog["text_ceac78d7f5d3"]}</div>
+          <div>{i18n.catalog["common.general.loading"]}</div>
         </div>
       </div>
     );

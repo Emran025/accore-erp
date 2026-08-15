@@ -84,7 +84,7 @@ interface ActionListProps {
  * />
  * ```
  */
-export function ActionList({ items, title, gap = catalogMessage("text_558b9f364b59") }: ActionListProps) {
+export function ActionList({ items, title, gap = catalogMessage("enterpriseCore.action.message05rem") }: ActionListProps) {
     return (
         <div>
             {title && (

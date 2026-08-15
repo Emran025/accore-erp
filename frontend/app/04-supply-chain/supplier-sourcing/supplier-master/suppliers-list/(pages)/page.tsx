@@ -72,7 +72,7 @@ export default function SuppliersPage() {
                     }
                 }
             } catch (e) {
-                console.error(i18n.catalog["text_8863d50a501e"], e);
+                console.error(i18n.catalog["common.general.failedLoadNumberRangeGroups"], e);
             }
         };
         init();
@@ -92,7 +92,7 @@ export default function SuppliersPage() {
                         setFormData(prev => ({ ...prev, supplier_code: generatedNumber }));
                     }
                 } catch (error) {
-                    console.error(i18n.catalog["text_5c64142f4a76"], error);
+                    console.error(i18n.catalog["common.general.failedGenerateNumberingCode"], error);
                 }
             }
         };
@@ -122,7 +122,7 @@ export default function SuppliersPage() {
 
     const handleSubmit = async () => {
         if (!formData.name.trim()) {
-            showToast(i18n.catalog["text_bea88ca35e28"], "error");
+            showToast(i18n.catalog["supplyChain.suppliersList.pleaseEnterSupplierName"], "error");
             return;
         }
 
@@ -152,49 +152,49 @@ export default function SuppliersPage() {
     };
 
     const columns: Column<Supplier>[] = [
-        { key: "supplier_code", header: i18n.catalog["text_e28ef005ab68"], dataLabel: i18n.catalog["text_e28ef005ab68"] },
-        { key: "name", header: i18n.catalog["text_63df5e485ac7"], dataLabel: i18n.catalog["text_63df5e485ac7"] },
-        { key: "phone", header: i18n.catalog["text_94b59a5125fb"], dataLabel: i18n.catalog["text_94b59a5125fb"] },
+        { key: "supplier_code", header: i18n.catalog["common.general.code.alternative4"], dataLabel: i18n.catalog["common.general.code.alternative4"] },
+        { key: "name", header: i18n.catalog["common.general.supplierName"], dataLabel: i18n.catalog["common.general.supplierName"] },
+        { key: "phone", header: i18n.catalog["common.general.phone"], dataLabel: i18n.catalog["common.general.phone"] },
         {
             key: "current_balance",
-            header: i18n.catalog["text_fada69965d9d"],
-            dataLabel: i18n.catalog["text_fada69965d9d"],
+            header: i18n.catalog["common.general.outstandingBalance"],
+            dataLabel: i18n.catalog["common.general.outstandingBalance"],
             render: (it) => (
                 <span className={it.current_balance > 0 ? "text-danger strong" : "text-success"}>
                     {formatCurrency(it.current_balance)}
                 </span>
             )
         },
-        { key: "payment_terms", header: i18n.catalog["text_40f5f25136ed"], dataLabel: i18n.catalog["text_a97195003727"] },
+        { key: "payment_terms", header: i18n.catalog["common.general.paymentTermsDays"], dataLabel: i18n.catalog["common.general.paymentTerms"] },
         {
             key: "actions",
-            header: i18n.catalog["text_7797240d6caf"],
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (it) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "view",
-                            title: i18n.catalog["text_7c9977c2a35b"],
+                            title: i18n.catalog["common.general.accountStatement"],
                             variant: "view",
                             onClick: () => { router.push(`/04-supply-chain/supplier-sourcing/supplier-master/supplier-ledger?supplier_id=${it.id}`) },
                         },
                         {
                             icon: "view",
-                            title: i18n.catalog["text_29f382c73779"],
+                            title: i18n.catalog["common.general.details"],
                             variant: "view",
                             onClick: () => { setSelectedSupplier(it); setViewDialog(true); },
                         },
                         {
                             icon: "edit",
-                            title: i18n.catalog["text_113d570d6555"],
+                            title: i18n.catalog["common.general.edit"],
                             variant: "edit",
                             onClick: () => { openEditDialog(it) },
                             hidden: !canAccess(permissions, "ap_suppliers", "edit")
                         },
                         {
                             icon: "trash",
-                            title: i18n.catalog["text_59ca629220a6"],
+                            title: i18n.catalog["common.general.delete"],
                             variant: "delete",
                             onClick: () => { setDeleteId(it.id); setConfirmDialog(true); },
                             hidden: !canAccess(permissions, "ap_suppliers", "delete")
@@ -221,7 +221,7 @@ export default function SuppliersPage() {
                                 setSearchTerm(val);
                                 loadSuppliers(1, val);
                             }}
-                            placeholder={i18n.catalog["text_a271bcbebe07"]}
+                            placeholder={i18n.catalog["common.general.searchNamePhone"]}
                             className="header-search-bar"
                         />
                     }
@@ -232,7 +232,7 @@ export default function SuppliersPage() {
                                 icon="plus"
                                 onClick={openAddDialog}
                             >
-                                {i18n.catalog["text_ca6613fedacd"]}</Button>
+                                {i18n.catalog["supplyChain.suppliersList.addSupplier"]}</Button>
                         )
                     }
                 />
@@ -253,7 +253,7 @@ export default function SuppliersPage() {
             <Dialog
                 isOpen={formDialog}
                 onClose={() => setFormDialog(false)}
-                title={selectedSupplier ? i18n.catalog["text_491a2b55387d"] : i18n.catalog["text_87842dcb677b"]}
+                title={selectedSupplier ? i18n.catalog["supplyChain.suppliersList.editSupplier"] : i18n.catalog["supplyChain.suppliersList.addNewSupplier"]}
                 maxWidth="600px"
                 footer={
                     <>
@@ -261,111 +261,111 @@ export default function SuppliersPage() {
                             variant="secondary"
                             onClick={() => setFormDialog(false)}
                         >
-                            {i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                            {i18n.catalog["common.general.cancel"]}</Button>
                         <Button
                             variant="primary"
                             onClick={handleSubmit}
                         >
-                            {selectedSupplier ? i18n.catalog["text_00eab31f95b7"] : i18n.catalog["text_d52453ac627d"]}
+                            {selectedSupplier ? i18n.catalog["common.general.update"] : i18n.catalog["common.general.add"]}
                         </Button>
                     </>
                 }
             >
                 <div className="form-row">
                     <div className="form-group">
-                        <label>{i18n.catalog["text_2a090a9210da"]}</label>
+                        <label>{i18n.catalog["supplyChain.suppliersList.supplierCode"]}</label>
                         <input
                             type="text"
                             value={formData.supplier_code}
                             onChange={(e) => setFormData({ ...formData, supplier_code: e.target.value })}
-                            placeholder={selectedSupplier ? "" : (nrGroups.length > 0 ? i18n.catalog["text_3bebb10295e4"] : i18n.catalog["text_dcbab81a1fa8"])}
+                            placeholder={selectedSupplier ? "" : (nrGroups.length > 0 ? i18n.catalog["common.general.generatedAutomatically"] : i18n.catalog["common.general.enterCode"])}
                         />
                     </div>
                     {(!selectedSupplier && nrGroups.length > 0) && (
                         <div className="form-group" style={{ flex: 1 }}>
-                            <label>{i18n.catalog["text_30b23b8e5db8"]}</label>
+                            <label>{i18n.catalog["common.general.numberingGroup"]}</label>
                             <SearchableSelect
                                 options={nrGroups.map(grp => ({ value: grp.id.toString(), label: grp.name }))}
                                 value={selectedGroup}
                                 onChange={(val) => setSelectedGroup(val ? val.toString() : "")}
-                                placeholder={i18n.catalog["text_cceb790da419"]}
+                                placeholder={i18n.catalog["common.general.searchSelectNumberingGroup"]}
                             />
                         </div>
                     )}
                 </div>
 
                 <div className="form-group">
-                    <label>{i18n.catalog["text_f4fb488f0b95"]}</label>
+                    <label>{i18n.catalog["supplyChain.suppliersList.supplierName"]}</label>
                     <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
                 </div>
 
                 <div className="form-row">
                     <div className="form-group">
-                        <label>{i18n.catalog["text_42095a7a6c15"]}</label>
+                        <label>{i18n.catalog["common.general.phoneNumber"]}</label>
                         <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
                     </div>
                     <div className="form-group">
-                        <label>{i18n.catalog["text_ddf0fca39a4f"]}</label>
+                        <label>{i18n.catalog["common.general.email"]}</label>
                         <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                     </div>
                 </div>
 
                 <div className="form-row">
                     <div className="form-group">
-                        <label>{i18n.catalog["text_0305ad1923a5"]}</label>
+                        <label>{i18n.catalog["common.general.creditLimit"]}</label>
                         <input type="number" value={formData.credit_limit} onChange={(e) => setFormData({ ...formData, credit_limit: e.target.value })} />
                     </div>
                     <div className="form-group">
-                        <label>{i18n.catalog["text_40f5f25136ed"]}</label>
+                        <label>{i18n.catalog["common.general.paymentTermsDays"]}</label>
                         <input type="number" value={formData.payment_terms} onChange={(e) => setFormData({ ...formData, payment_terms: e.target.value })} />
                     </div>
                 </div>
 
                 <div className="form-group">
-                    <label>{i18n.catalog["text_74b3eeb4b88d"]}</label>
+                    <label>{i18n.catalog["common.general.taxNumber"]}</label>
                     <input type="text" value={formData.tax_number} onChange={(e) => setFormData({ ...formData, tax_number: e.target.value })} />
                 </div>
 
                 <div className="form-group">
-                    <label>{i18n.catalog["text_2d110e56d5f5"]}</label>
+                    <label>{i18n.catalog["common.general.title"]}</label>
                     <textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} rows={2} />
                 </div>
             </Dialog>
 
             {/* View Dialog */}
-            <Dialog isOpen={viewDialog} onClose={() => setViewDialog(false)} title={i18n.catalog["text_a3e561a4a6ba"]} maxWidth="600px">
+            <Dialog isOpen={viewDialog} onClose={() => setViewDialog(false)} title={i18n.catalog["supplyChain.suppliersList.supplierDetails"]} maxWidth="600px">
                 {selectedSupplier && (
                     <div className="supplier-details">
                         <div className="details-grid">
                             <div className="detail-item">
-                                <span className="label">{i18n.catalog["text_63df5e485ac7"]}</span>
+                                <span className="label">{i18n.catalog["common.general.supplierName"]}</span>
                                 <span className="value strong">{selectedSupplier.name}</span>
                             </div>
                             <div className="detail-item">
-                                <span className="label">{i18n.catalog["text_94b59a5125fb"]}</span>
+                                <span className="label">{i18n.catalog["common.general.phone"]}</span>
                                 <span className="value">{selectedSupplier.phone || "-"}</span>
                             </div>
                             <div className="detail-item">
-                                <span className="label">{i18n.catalog["text_ddf0fca39a4f"]}</span>
+                                <span className="label">{i18n.catalog["common.general.email"]}</span>
                                 <span className="value">{selectedSupplier.email || "-"}</span>
                             </div>
                             <div className="detail-item">
-                                <span className="label">{i18n.catalog["text_74b3eeb4b88d"]}</span>
+                                <span className="label">{i18n.catalog["common.general.taxNumber"]}</span>
                                 <span className="value">{selectedSupplier.tax_number || "-"}</span>
                             </div>
                             <div className="detail-item">
-                                <span className="label">{i18n.catalog["text_0305ad1923a5"]}</span>
+                                <span className="label">{i18n.catalog["common.general.creditLimit"]}</span>
                                 <span className="value">{formatCurrency(selectedSupplier.credit_limit)}</span>
                             </div>
                             <div className="detail-item">
-                                <span className="label">{i18n.catalog["text_a97195003727"]}</span>
-                                <span className="value">{selectedSupplier.payment_terms} {i18n.catalog["text_eb07f635d883"]}</span>
+                                <span className="label">{i18n.catalog["common.general.paymentTerms"]}</span>
+                                <span className="value">{selectedSupplier.payment_terms} {i18n.catalog["common.general.day"]}</span>
                             </div>
                         </div>
 
                         <div className="balance-cards">
                             <div className="balance-card highlighted">
-                                <span className="label">{i18n.catalog["text_337dc0628570"]}</span>
+                                <span className="label">{i18n.catalog["supplyChain.suppliersList.currentOutstandingBalance"]}</span>
                                 <span className={`value ${selectedSupplier.current_balance > 0 ? "danger" : "success"}`}>
                                     {formatCurrency(selectedSupplier.current_balance)}
                                 </span>
@@ -378,7 +378,7 @@ export default function SuppliersPage() {
                                 icon="list"
                                 onClick={() => router.push(`/04-supply-chain/supplier-sourcing/supplier-master/supplier-ledger?supplier_id=${selectedSupplier.id}`)}
                             >
-                                {i18n.catalog["text_7818712a19ae"]}</Button>
+                                {i18n.catalog["supplyChain.suppliersList.viewAccountStatement"]}</Button>
                         </div>
                     </div>
                 )}
@@ -388,8 +388,8 @@ export default function SuppliersPage() {
                 isOpen={confirmDialog}
                 onClose={() => setConfirmDialog(false)}
                 onConfirm={handleDelete}
-                title={i18n.catalog["text_5f9cb54dc136"]}
-                message={i18n.catalog["text_d2119a4b2910"]}
+                title={i18n.catalog["common.general.confirmDeletion"]}
+                message={i18n.catalog["supplyChain.suppliersList.areYouSureYouWantDeleteThisResource"]}
             />
         </MainLayout>
     );

@@ -143,7 +143,7 @@ export function PurchaseReturnDialog({
             if (onSuccess) onSuccess();
             onClose();
         } catch (error) {
-            console.error(i18n.catalog["text_cee28ef68af9"], error);
+            console.error(i18n.catalog["common.general.returnSubmissionError"], error);
         } finally {
             setIsSubmitting(false);
         }
@@ -158,7 +158,7 @@ export function PurchaseReturnDialog({
     const returnColumns: Column<SelectedItem>[] = [
         {
             key: "product",
-            header: i18n.catalog["text_a79e304d96a1"],
+            header: i18n.catalog["common.general.product"],
             render: (item) => (
                 <div className="item-info">
                     <span className="font-bold">{item.productName}</span>
@@ -170,12 +170,12 @@ export function PurchaseReturnDialog({
         },
         {
             key: "unitPrice",
-            header: i18n.catalog["text_c274e3ec351e"],
+            header: i18n.catalog["common.general.unitPrice.alternative3"],
             render: (item) => formatCurrency(item.unitPrice)
         },
         {
             key: "quantity",
-            header: i18n.catalog["text_935e21853946"],
+            header: i18n.catalog["common.general.quantity.alternative3"],
             render: (item) => {
                 const qty = quantities[item.invoiceItemId] ?? item.quantity;
                 return (
@@ -196,7 +196,7 @@ export function PurchaseReturnDialog({
                         <span className="max-qty">/ {item.maxQuantity}</span>
                         {item.originalQuantity !== undefined && item.originalQuantity !== item.maxQuantity && (
                             <span style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'block', width: '100%', textAlign: 'center' }}>
-                                {i18n.catalog["text_ec51d78c34b5"]}{item.originalQuantity})
+                                {i18n.catalog["common.general.out"]}{item.originalQuantity})
                             </span>
                         )}
                     </div>
@@ -205,7 +205,7 @@ export function PurchaseReturnDialog({
         },
         {
             key: "total",
-            header: i18n.catalog["text_baed6e999960"],
+            header: i18n.catalog["common.general.total.alternative3"],
             render: (item) => {
                 const qty = quantities[item.invoiceItemId] ?? item.quantity;
                 return <span className="font-bold">{formatCurrency(item.unitPrice * qty)}</span>;
@@ -217,7 +217,7 @@ export function PurchaseReturnDialog({
         <Dialog
             isOpen={isOpen}
             onClose={handleClose}
-            title={step === i18n.catalog["text_c97ace4c8fef"] ? i18n.catalog["text_6a3266a57720"] : i18n.catalog["text_e07345d716bc"]}
+            title={step === i18n.catalog["common.general.review"] ? i18n.catalog["ui.purchasereturndialog.purchaseReturn"] : i18n.catalog["common.general.confirmReturn"]}
             maxWidth="800px"
             footer={
                 <div className="dialog-actions">
@@ -226,14 +226,14 @@ export function PurchaseReturnDialog({
                         onClick={step === "confirm" ? () => setStep("review") : handleClose}
                         disabled={isSubmitting}
                     >
-                        {step === "confirm" ? i18n.catalog["text_cb822418a29d"] : i18n.catalog["text_9a30dc2a96b8"]}
+                        {step === "confirm" ? i18n.catalog["common.general.back.alternative3"] : i18n.catalog["common.general.cancel"]}
                     </button>
                     <button
                         className="btn btn-primary"
                         onClick={handleSubmit}
                         disabled={isSubmitting || !calculations}
                     >
-                        {isSubmitting ? i18n.catalog["text_8688b0ff5f34"] : step === "review" ? i18n.catalog["text_322b7b613468"] : i18n.catalog["text_c22f88546b55"]}
+                        {isSubmitting ? i18n.catalog["common.general.saving"] : step === "review" ? i18n.catalog["common.general.continue"] : i18n.catalog["common.general.confirmRegisterReturn"]}
                     </button>
                 </div>
             }
@@ -242,7 +242,7 @@ export function PurchaseReturnDialog({
                 {!calculations ? (
                     <div className="p-8 text-center text-secondary">
                         <div className="loading-spinner"></div>
-                        <div>{i18n.catalog["text_8874e03b6599"]}</div>
+                        <div>{i18n.catalog["common.general.loadingProcessingData"]}</div>
                     </div>
                 ) : (
                     <>
@@ -250,14 +250,14 @@ export function PurchaseReturnDialog({
                             <div className="stat-card minimal">
                                 <Icon name="receipt" size={20} />
                                 <div className="stat-details">
-                                    <span className="label">{i18n.catalog["text_1ca19993c4e4"]}</span>
+                                    <span className="label">{i18n.catalog["common.general.numberInvoices"]}</span>
                                     <span className="value">{uniqueInvoicesCount}</span>
                                 </div>
                             </div>
                             <div className="stat-card minimal">
                                 <Icon name="box" size={20} />
                                 <div className="stat-details">
-                                    <span className="label">{i18n.catalog["text_f4c6988aa2ef"]}</span>
+                                    <span className="label">{i18n.catalog["common.general.productCount"]}</span>
                                     <span className="value">{selectedItems.length}</span>
                                 </div>
                             </div>
@@ -268,32 +268,32 @@ export function PurchaseReturnDialog({
                                 columns={returnColumns}
                                 data={selectedItems}
                                 keyExtractor={(item) => item.invoiceItemId}
-                                emptyMessage={i18n.catalog["text_b70c32b2b7f5"]}
+                                emptyMessage={i18n.catalog["common.general.noItemsSelected"]}
                             />
                         </div>
 
                         <div className="return-calculations-card">
                             <div className="calc-row">
-                                <span>{i18n.catalog["text_56383a3fa965"]}</span>
+                                <span>{i18n.catalog["common.general.totalBeforeTax"]}</span>
                                 <span className="amount">{formatCurrency(calculations.subtotal)}</span>
                             </div>
                             <div className="calc-row">
-                                <span>{i18n.catalog["text_34d56561d8c8"]}</span>
+                                <span>{i18n.catalog["common.general.totalTaxRefundable"]}</span>
                                 <span className="amount">{formatCurrency(calculations.vat)}</span>
                             </div>
                             <div className="calc-row total">
-                                <span>{i18n.catalog["text_fb6e170df4d0"]}</span>
+                                <span>{i18n.catalog["common.general.finalReturnValue"]}</span>
                                 <span className="amount highlight">{formatCurrency(calculations.total)}</span>
                             </div>
                         </div>
 
                         {step === "review" ? (
                             <div className="form-group mb-0">
-                                <label>{i18n.catalog["text_1bf8ff80648f"]}</label>
+                                <label>{i18n.catalog["common.general.returnReasonOptional"]}</label>
                                 <textarea
                                     value={reason}
                                     onChange={(e) => setReason(e.target.value)}
-                                    placeholder={i18n.catalog["text_43db9d8a3fbe"]}
+                                    placeholder={i18n.catalog["common.general.exampleProductDamageExchangeDifferentSizeEtc"]}
                                     rows={3}
                                 />
                             </div>
@@ -302,10 +302,10 @@ export function PurchaseReturnDialog({
                                 <div className="warning-content">
                                     <Icon name="alert" size={24} />
                                     <div>
-                                        <strong>{i18n.catalog["text_44abead69382"]}</strong>
+                                        <strong>{i18n.catalog["common.general.followingOperationsWillBePerformed"]}</strong>
                                         <ul>
-                                            <li>{i18n.catalog["text_673a3157a060"]}</li>
-                                            <li>{i18n.catalog["text_9450832271e2"]}</li>
+                                            <li>{i18n.catalog["ui.purchasereturndialog.createPurchaseReturnJournalEntrySpecifiedAmount"]}</li>
+                                            <li>{i18n.catalog["ui.purchasereturndialog.updateSupplierBalanceIfAnyDeductQuantitiesInventory"]}</li>
                                         </ul>
                                     </div>
                                 </div>

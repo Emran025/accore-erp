@@ -141,9 +141,9 @@ export const useAuthStore = create<AuthState>()(
 
                             return { success: true };
                         }
-                        return { success: false, error: response.message || catalogMessage("text_48aee85d50a3") };
+                        return { success: false, error: response.message || catalogMessage("common.general.loginFailed") };
                     } catch (e) {
-                        return { success: false, error: e instanceof Error ? e.message : catalogMessage("text_42ac6f8ab88c") };
+                        return { success: false, error: e instanceof Error ? e.message : catalogMessage("state.useauthstore.connectionErrorOccurred") };
                     }
                 },
 

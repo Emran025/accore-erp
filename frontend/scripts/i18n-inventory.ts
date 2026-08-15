@@ -56,13 +56,16 @@ function isTechnicalValue(value: string): boolean {
         || value.includes("@keyframes")
         || value.includes("fa-")
         || value.includes("api/")
-        || (!hasArabic && (value.includes("/v2/") || value.includes("?") || value.includes("&") || value.includes("=")))
+        || (!hasArabic && (value.includes("/v2/") || /^(?:v2|auth)\//.test(value) || value.includes("?") || value.includes("&") || value.includes("=")))
         || (!hasArabic && /(?:rgba\(|linear-gradient\(|\d+(?:\.\d+)?px\s+solid|class=|<\/?(?:div|span|th|td|section|header|footer)\b)/i.test(value))
         || (!hasArabic && /^(?:TRX|INV|PO|SO|SRV)-/i.test(value))
         || (!hasArabic && /^(?:[A-Z]{2,}\d+,\d{4}-\d{2}-\d{2},\d{2}:\d{2}:\d{2}\s*)+$/u.test(value))
         || (!hasArabic && /^(?:application\/[a-z0-9.+-]+|mailto:|tel:|noopener noreferrer)$/i.test(value))
         || (!hasArabic && /(?:^|\s)(?:inline-flex|items-center|justify-center|rounded(?:-[a-z0-9]+)?|text-[a-z0-9-]+|bg-[a-z0-9-]+|border(?:-[a-z0-9-]+)?|hover:bg-[a-z0-9-]+|focus(?:-visible)?:[a-z0-9-]+|h-\d+|w-\d+|px-\d+(?:\.\d+)?|py-\d+(?:\.\d+)?)(?:\s|$)/i.test(value))
+        || (!hasArabic && /(?:translate[XYZ]?\(|scale[XYZ]?\(|rotate\(|skew[XY]?\(|matrix\(|calc\()/i.test(value))
+        || (!hasArabic && /^(?:(?:\d+(?:\.\d+)?(?:rem|px|em|%))(?:\s+(?:0|\d+(?:\.\d+)?(?:rem|px|em|%)))*|opacity\s+\d+(?:\.\d+)?s\s+ease|alert\s+alert-\{value\d+\}\s+animate-[\w-]+)$/i.test(value))
         || (!hasArabic && /^(?:btn(?:\s|-)\S+|btn-\{value\d+\}|border-radius-\{value\d+\}|\{value\d+\}(?:\s+\{value\d+\})+)$/u.test(value))
+        || (!hasArabic && /^\{value\d+\}\/\{value\d+\}$/u.test(value))
         || (!hasArabic && /^\{value\d+\}(?:\s*[()|—:-]\s*\{value\d+\})*$/u.test(value));
 }
 
@@ -95,7 +98,8 @@ function getCallName(node: Node): string | undefined {
 }
 
 function classify(node: Node, value: string): { kind: CandidateKind; classification: CandidateClassification; context: string } | null {
-    if (value === "use client" || /^text_[a-f0-9]{12}$/i.test(value)) {
+    const isSemanticLocaleKey = /^[a-z][A-Za-z0-9]*(?:\.[a-z][A-Za-z0-9]*){2,}(?:\.alternative\d+)?$/.test(value);
+    if (value === "use client" || /^text_[a-f0-9]{12}$/i.test(value) || isSemanticLocaleKey) {
         return { kind: "string-literal", classification: "technical", context: "Localization runtime syntax" };
     }
     const binary = nearestAncestor(node, Node.isBinaryExpression);

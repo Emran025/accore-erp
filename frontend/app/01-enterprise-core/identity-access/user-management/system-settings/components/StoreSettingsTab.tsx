@@ -34,7 +34,7 @@ export function StoreSettingsTab() {
         setStoreSettings(response.settings as StoreSettings);
       }
     } catch {
-      console.error(catalogMessage("text_79878ac752cf"));
+      console.error(catalogMessage("enterpriseCore.storesettings.errorLoadingStoreSettings"));
     }
   }, []);
 
@@ -48,19 +48,19 @@ export function StoreSettingsTab() {
         method: "PUT",
         body: JSON.stringify(storeSettings),
       });
-      showToast(catalogMessage("text_a0ba28b2b84e"), "success");
+      showToast(catalogMessage("enterpriseCore.storesettings.storeSettingsSaved"), "success");
     } catch {
-      showToast(catalogMessage("text_fc7bf4aa6124"), "error");
+      showToast(catalogMessage("common.general.errorSavingSettings"), "error");
     }
   };
 
   return (
     <div className="sales-card">
-      <h3>{catalogMessage("text_e11ec54f7103")}</h3>
+      <h3>{catalogMessage("common.general.storeInformation")}</h3>
       <div className="settings-form-grid">
         <div className="form-group pb-0">
           <TextInput
-            label={catalogMessage("text_a9ac0e475f40")}
+            label={catalogMessage("enterpriseCore.storesettings.storeName")}
             id="store_name"
             value={storeSettings.store_name}
             onChange={(e) => setStoreSettings({ ...storeSettings, store_name: e.target.value })}
@@ -68,7 +68,7 @@ export function StoreSettingsTab() {
         </div>
         <div className="form-group pb-0">
           <TextInput
-            label={catalogMessage("text_42095a7a6c15")}
+            label={catalogMessage("common.general.phoneNumber")}
             type="tel"
             id="store_phone"
             value={storeSettings.store_phone}
@@ -77,7 +77,7 @@ export function StoreSettingsTab() {
         </div>
         <div className="form-group pb-0">
           <TextInput
-            label={catalogMessage("text_ddf0fca39a4f")}
+            label={catalogMessage("common.general.email")}
             type="email"
             id="store_email"
             value={storeSettings.store_email}
@@ -86,7 +86,7 @@ export function StoreSettingsTab() {
         </div>
         <div className="form-group pb-0">
           <TextInput
-            label={catalogMessage("text_74b3eeb4b88d")}
+            label={catalogMessage("common.general.taxNumber")}
             id="tax_number"
             value={storeSettings.tax_number}
             onChange={(e) => setStoreSettings({ ...storeSettings, tax_number: e.target.value })}
@@ -94,7 +94,7 @@ export function StoreSettingsTab() {
         </div>
         <div className="form-group pb-0">
           <TextInput
-            label={catalogMessage("text_5f7b0c338fde")}
+            label={catalogMessage("enterpriseCore.storesettings.commercialRegistration")}
             id="cr_number"
             value={storeSettings.cr_number}
             onChange={(e) => setStoreSettings({ ...storeSettings, cr_number: e.target.value })}
@@ -102,7 +102,7 @@ export function StoreSettingsTab() {
         </div>
         <div className="form-group full-width pb-0">
           <Textarea
-            label={catalogMessage("text_2d110e56d5f5")}
+            label={catalogMessage("common.general.title")}
             id="store_address"
             value={storeSettings.store_address}
             onChange={(e) => setStoreSettings({ ...storeSettings, store_address: e.target.value })}
@@ -111,7 +111,7 @@ export function StoreSettingsTab() {
         </div>
       </div>
       <button className="btn btn-primary" onClick={saveStoreSettings}>
-        {catalogMessage("text_9b70c9af5cbd")}</button>
+        {catalogMessage("common.general.saveChanges.alternative2")}</button>
     </div>
   );
 }

@@ -50,7 +50,7 @@ export function InvoiceSelectionTab({
     const itemsPerPage = 20;
 
     const filterTabs = [
-        { key: "all", label: i18n.catalog["text_377c0cb35dea"], icon: "list" },
+        { key: "all", label: i18n.catalog["common.general.allInvoices"], icon: "list" },
     ];
 
     const loadInvoices = useCallback(
@@ -80,7 +80,7 @@ export function InvoiceSelectionTab({
                     setCurrentPage(page);
                 }
             } catch (error) {
-                console.error(i18n.catalog["text_0b0cb3f74801"], error);
+                console.error(i18n.catalog["common.general.failedLoadInvoices"], error);
             } finally {
                 setIsLoading(false);
             }
@@ -112,8 +112,8 @@ export function InvoiceSelectionTab({
     const columns: InvoiceTableColumn<InvoiceRow>[] = [
         {
             key: "invoice_number",
-            header: i18n.catalog["text_b6e71278be04"],
-            dataLabel: i18n.catalog["text_b6e71278be04"],
+            header: i18n.catalog["common.general.invoiceNumber.alternative2"],
+            dataLabel: i18n.catalog["common.general.invoiceNumber.alternative2"],
             render: (item) => (
                 <span style={{ color: "var(--primary-color)", fontWeight: "bold" }}>
                     {item.invoice_number}
@@ -122,8 +122,8 @@ export function InvoiceSelectionTab({
         },
         {
             key: "created_at",
-            header: i18n.catalog["text_d90c384199ac"],
-            dataLabel: i18n.catalog["text_d90c384199ac"],
+            header: i18n.catalog["common.general.date.alternative7"],
+            dataLabel: i18n.catalog["common.general.date.alternative7"],
             render: (item) => (
                 <span style={{ fontSize: "0.9em" }}>
                     {formatDateTime(item.created_at)}
@@ -132,8 +132,8 @@ export function InvoiceSelectionTab({
         },
         {
             key: "supplier_name" as any,
-            header: i18n.catalog["text_4680c31a727f"],
-            dataLabel: i18n.catalog["text_4680c31a727f"],
+            header: i18n.catalog["common.general.supplier"],
+            dataLabel: i18n.catalog["common.general.supplier"],
             render: (item) => (
                 <span style={{ fontWeight: 500 }}>
                     {item.supplier?.name || (item as any).supplier_name || "—"}
@@ -142,8 +142,8 @@ export function InvoiceSelectionTab({
         },
         {
             key: "total_amount",
-            header: i18n.catalog["text_50a90c019154"],
-            dataLabel: i18n.catalog["text_baed6e999960"],
+            header: i18n.catalog["common.general.invoiceTotal"],
+            dataLabel: i18n.catalog["common.general.total.alternative3"],
             render: (item) => (
                 <span style={{ fontWeight: "bold" }}>
                     {formatCurrency(item.total_amount)}
@@ -162,12 +162,12 @@ export function InvoiceSelectionTab({
                 onSelectionChange={onSelectionChange}
                 onSearch={(query) => loadInvoices(1, query)}
                 getInvoiceItems={getInvoiceItems}
-                emptyMessage={i18n.catalog["text_e954a549b77f"]}
+                emptyMessage={i18n.catalog["common.general.noInvoices"]}
                 multiInvoiceSelection={true}
                 invoiceIdExtractor={(item) => item.id}
                 isExpandable={() => true}
                 openReturnDialog={openReturnDialog}
-                searchPlaceholder={i18n.catalog["text_79a7f01ad21d"]}
+                searchPlaceholder={i18n.catalog["supplyChain.invoiceselection.searchInvoiceNumberSupplierName"]}
                 pagination={{
                     currentPage,
                     totalPages,

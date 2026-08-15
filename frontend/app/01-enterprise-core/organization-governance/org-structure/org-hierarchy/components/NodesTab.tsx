@@ -75,7 +75,7 @@ export function NodesTab() {
             const response = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES}?${params}`);
             setNodes((response.nodes as StructureNode[]) || []);
             setInitialDataLoaded(true);
-        } catch { showToast(i18n.catalog["text_19001cfc2cbf"], "error"); }
+        } catch { showToast(i18n.catalog["enterpriseCore.nodes.errorLoadingOrganizationalUnits"], "error"); }
         finally { setIsLoading(false); }
     }, [searchTerm, filterType, filterStatus, filterDomain]);
 
@@ -83,7 +83,7 @@ export function NodesTab() {
         try {
             const response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.META_TYPES);
             setMetaTypes((response.meta_types as MetaType[]) || []);
-        } catch { showToast(i18n.catalog["text_e1fa4693db09"], "error"); }
+        } catch { showToast(i18n.catalog["common.general.errorLoadingUnitTypes"], "error"); }
     }, []);
 
     const loadTopologyRules = useCallback(async () => {
@@ -126,7 +126,7 @@ export function NodesTab() {
 
     const handleSubmit = async () => {
         if (!formData.node_type_id.trim() || !formData.code.trim()) {
-            showToast(i18n.catalog["text_c9e5868f314d"], "error"); return;
+            showToast(i18n.catalog["enterpriseCore.nodes.pleaseEnterTypeCode"], "error"); return;
         }
         setIsSubmitting(true);
         const attrs: Record<string, string> = { ...dynamicAttrs };
@@ -146,15 +146,15 @@ export function NodesTab() {
                         valid_from: formData.valid_from || null, valid_to: formData.valid_to || null,
                     }),
                 });
-                showToast(i18n.catalog["text_4cd959b04c70"], "success");
+                showToast(i18n.catalog["enterpriseCore.nodes.unitUpdatedSuccessfully"], "success");
             } else {
                 await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES, { method: "POST", body: JSON.stringify(payload) });
-                showToast(i18n.catalog["text_ae038721ee27"], "success");
+                showToast(i18n.catalog["enterpriseCore.nodes.unitAddedSuccessfully"], "success");
             }
             setFormDialog(false); loadNodes();
         } catch (e: unknown) {
             const err = e as { message?: string };
-            showToast(err?.message || i18n.catalog["text_c574313242be"], "error");
+            showToast(err?.message || i18n.catalog["common.general.errorSaving"], "error");
         } finally {
             setIsSubmitting(false);
         }
@@ -166,10 +166,10 @@ export function NodesTab() {
         if (!deleteUuid) return;
         try {
             await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODE(deleteUuid), { method: "DELETE" });
-            showToast(i18n.catalog["text_2292d78ed5cb"], "success"); loadNodes();
+            showToast(i18n.catalog["enterpriseCore.nodes.unitDeleted"], "success"); loadNodes();
         } catch (e: unknown) {
             const err = e as { message?: string };
-            showToast(err?.message || i18n.catalog["text_3bdb299872fb"], "error");
+            showToast(err?.message || i18n.catalog["common.general.deletionError"], "error");
         }
         setConfirmDialog(false); setDeleteUuid(null);
     };
@@ -197,12 +197,12 @@ export function NodesTab() {
                 method: "POST",
                 body: JSON.stringify({ node_uuids: Array.from(selectedUuids), status: bulkStatus }),
             });
-            showToast(catalogText(i18n, "text_63b4a5d68b48", { value0: selectedUuids.size }), "success");
+            showToast(catalogText(i18n, "enterpriseCore.nodes.moduleUpdated", { value0: selectedUuids.size }), "success");
             setSelectedUuids(new Set());
             setBulkDialog(false);
             loadNodes();
         } catch (e: unknown) {
-            showToast((e as { message?: string })?.message || i18n.catalog["text_598f8b7818df"], "error");
+            showToast((e as { message?: string })?.message || i18n.catalog["enterpriseCore.nodes.bulkUpdateError"], "error");
         }
     };
 
@@ -222,9 +222,9 @@ export function NodesTab() {
                 />
             ),
         },
-        { key: "code", header: i18n.catalog["text_589c6420ea10"], dataLabel: i18n.catalog["text_589c6420ea10"] },
+        { key: "code", header: i18n.catalog["common.general.code"], dataLabel: i18n.catalog["common.general.code"] },
         {
-            key: "node_type_id", header: i18n.catalog["text_caa3f2bb4a36"], dataLabel: i18n.catalog["text_caa3f2bb4a36"],
+            key: "node_type_id", header: i18n.catalog["common.general.type.alternative3"], dataLabel: i18n.catalog["common.general.type.alternative3"],
             render: (item) => {
                 const domain = getTypeDomain(item.node_type_id);
                 const color = DOMAIN_COLORS[domain] || "#6b7280";
@@ -232,31 +232,31 @@ export function NodesTab() {
             },
         },
         {
-            key: "domain", header: i18n.catalog["text_d197ebe8e67a"], dataLabel: i18n.catalog["text_d197ebe8e67a"],
+            key: "domain", header: i18n.catalog["common.general.domain"], dataLabel: i18n.catalog["common.general.domain"],
             render: (item) => {
                 const domain = getTypeDomain(item.node_type_id);
                 return <span style={{ color: DOMAIN_COLORS[domain] || "#6b7280", fontWeight: 500, fontSize: "0.8rem" }}>{domain}</span>;
             },
         },
         {
-            key: "name", header: i18n.catalog["text_52ab09847cf8"], dataLabel: i18n.catalog["text_52ab09847cf8"],
+            key: "name", header: i18n.catalog["common.general.name"], dataLabel: i18n.catalog["common.general.name"],
             render: (item) => (item.attributes_json as Record<string, unknown>)?.name as string || "-",
         },
         {
-            key: "links", header: i18n.catalog["text_d814da6b7a05"], dataLabel: i18n.catalog["text_d814da6b7a05"],
+            key: "links", header: i18n.catalog["common.general.links.alternative2"], dataLabel: i18n.catalog["common.general.links.alternative2"],
             render: (item) => {
                 const out = item.outgoing_links?.length ?? 0;
                 const inc = item.incoming_links?.length ?? 0;
                 return (
                     <div style={{ display: "flex", gap: "4px", fontSize: "0.75rem" }}>
-                        <span title={i18n.catalog["text_0bbca6cfeedf"]} style={{ color: "#3b82f6" }}>↑{out}</span>
-                        <span title={i18n.catalog["text_32a6b085ca6d"]} style={{ color: "#10b981" }}>↓{inc}</span>
+                        <span title={i18n.catalog["enterpriseCore.nodes.issued"]} style={{ color: "#3b82f6" }}>↑{out}</span>
+                        <span title={i18n.catalog["enterpriseCore.nodes.incoming"]} style={{ color: "#10b981" }}>↓{inc}</span>
                     </div>
                 );
             },
         },
         {
-            key: "validity", header: i18n.catalog["text_9f9b2c7c5fa3"], dataLabel: i18n.catalog["text_9f9b2c7c5fa3"],
+            key: "validity", header: i18n.catalog["common.general.permission"], dataLabel: i18n.catalog["common.general.permission"],
             render: (item) => {
                 if (!item.valid_from && !item.valid_to) return <span style={{ color: "var(--text-muted)", fontSize: "0.75rem" }}>—</span>;
                 return (
@@ -267,20 +267,20 @@ export function NodesTab() {
             },
         },
         {
-            key: "status", header: i18n.catalog["text_c3a4749caed4"], dataLabel: i18n.catalog["text_c3a4749caed4"],
+            key: "status", header: i18n.catalog["common.general.status.alternative2"], dataLabel: i18n.catalog["common.general.status.alternative2"],
             render: (item) => (
                 <span className={`badge ${item.status === "active" ? "badge-success" : item.status === "inactive" ? "badge-warning" : "badge-secondary"}`}>
-                    {item.status === "active" ? i18n.catalog["text_629e90b3af3d"] : item.status === "inactive" ? i18n.catalog["text_b719ac8add4e"] : i18n.catalog["text_9d1b78e3b949"]}
+                    {item.status === "active" ? i18n.catalog["common.general.active"] : item.status === "inactive" ? i18n.catalog["common.general.inactive"] : i18n.catalog["common.general.archived"]}
                 </span>
             ),
         },
         {
-            key: "actions", header: i18n.catalog["text_7797240d6caf"], dataLabel: i18n.catalog["text_7797240d6caf"],
+            key: "actions", header: i18n.catalog["common.general.actions"], dataLabel: i18n.catalog["common.general.actions"],
             render: (item) => (
                 <ActionButtons
                     actions={[
-                        { icon: "edit", title: i18n.catalog["text_113d570d6555"], variant: "edit", onClick: () => openEditDialog(item) },
-                        { icon: "trash", title: i18n.catalog["text_59ca629220a6"], variant: "delete", onClick: () => confirmDelete(item.node_uuid) },
+                        { icon: "edit", title: i18n.catalog["common.general.edit"], variant: "edit", onClick: () => openEditDialog(item) },
+                        { icon: "trash", title: i18n.catalog["common.general.delete"], variant: "delete", onClick: () => confirmDelete(item.node_uuid) },
                     ]}
                 />
             ),
@@ -309,15 +309,15 @@ export function NodesTab() {
             <div className="sales-card animate-fade">
 
                 <PageSubHeader
-                    title={i18n.catalog["text_c677033cfd4c"]}
-                    subTitle={i18n.catalog["text_8eec5d845d11"]}
+                    title={i18n.catalog["enterpriseCore.nodes.organizationalUnitsManagement"]}
+                    subTitle={i18n.catalog["enterpriseCore.nodes.viewManageAllOrganizationalUnitsStructure"]}
                     titleIcon="sitemap"
                     searchInput={
                         <SearchableSelect
                             value={null}
                             options={nodes.map(n => ({
                                 value: n.node_uuid,
-                                label: catalogText(i18n, "text_2a9059a3c52f", { value0: n.code, value1: (n.attributes_json as any)?.name || '' }),
+                                label: catalogText(i18n, "common.general.notAvailable", { value0: n.code, value1: (n.attributes_json as any)?.name || '' }),
                                 subtitle: getTypeLabel(n.node_type_id)
                             }))}
                             onChange={(val) => {
@@ -327,7 +327,7 @@ export function NodesTab() {
                                 }
                             }}
                             onSearch={(term) => setSearchTerm(term)}
-                            placeholder={i18n.catalog["text_5707c58f40d2"]}
+                            placeholder={i18n.catalog["enterpriseCore.nodes.searchCodeName"]}
                         />
                     }
                     actions={
@@ -335,10 +335,10 @@ export function NodesTab() {
                             <div style={{ display: "flex", gap: "0.5rem" }}>
                                 {selectedUuids.size > 0 && (
                                     <Button variant="secondary" icon="edit" onClick={() => setBulkDialog(true)}>
-                                        {i18n.catalog["text_8786c463ec42"]}{selectedUuids.size})
+                                        {i18n.catalog["enterpriseCore.nodes.bulkEdit"]}{selectedUuids.size})
                                     </Button>
                                 )}
-                                <Button variant="primary" icon="plus" onClick={openAddDialog}>{i18n.catalog["text_8b7ffe548e72"]}</Button>
+                                <Button variant="primary" icon="plus" onClick={openAddDialog}>{i18n.catalog["enterpriseCore.nodes.addUnit"]}</Button>
                             </div>
                         </>
                     }
@@ -350,7 +350,7 @@ export function NodesTab() {
                                 <Checkbox
                                     checked={selectedUuids.size === nodes.length && nodes.length > 0}
                                     onChange={toggleSelectAll}
-                                    label={catalogText(i18n, "text_34cf14a4fe2b", { value0: nodes.length })}
+                                    label={catalogText(i18n, "enterpriseCore.nodes.selectAll", { value0: nodes.length })}
                                 />
                             </div>
                         ) : (<Select
@@ -358,7 +358,7 @@ export function NodesTab() {
                             onChange={(e) => { setFilterDomain(e.target.value); setFilterType(""); }}
                             style={{ maxWidth: "220px" }}
                             options={[
-                                { value: "", label: i18n.catalog["text_89a4eea1bc00"] },
+                                { value: "", label: i18n.catalog["common.general.allFields"] },
                                 ...domains.map((d) => ({ value: d, label: d }))
                             ]}
                         />)
@@ -370,7 +370,7 @@ export function NodesTab() {
                                 onChange={(e) => { setFilterDomain(e.target.value); setFilterType(""); }}
                                 style={{ maxWidth: "220px" }}
                                 options={[
-                                    { value: "", label: i18n.catalog["text_89a4eea1bc00"] },
+                                    { value: "", label: i18n.catalog["common.general.allFields"] },
                                     ...domains.map((d) => ({ value: d, label: d }))
                                 ]}
                             />)}
@@ -380,7 +380,7 @@ export function NodesTab() {
                                 onChange={(e) => setFilterType(e.target.value)}
                                 style={{ maxWidth: "220px" }}
                                 options={[
-                                    { value: "", label: i18n.catalog["text_76b1679edecf"] },
+                                    { value: "", label: i18n.catalog["common.general.allTypes"] },
                                     ...filteredMetaTypes.map((t) => ({ value: t.id, label: t.display_name_ar || t.display_name })),
                                 ]}
                             />
@@ -390,22 +390,22 @@ export function NodesTab() {
                                 style={{ maxWidth: "220px" }}
                                 options={
                                     [
-                                        { value: "", label: i18n.catalog["text_1ef213109d57"] },
-                                        { value: "active", label: i18n.catalog["text_629e90b3af3d"] },
-                                        { value: "inactive", label: i18n.catalog["text_b719ac8add4e"] },
-                                        { value: "archived", label: i18n.catalog["text_9d1b78e3b949"] },
+                                        { value: "", label: i18n.catalog["common.general.allStatuses"] },
+                                        { value: "active", label: i18n.catalog["common.general.active"] },
+                                        { value: "inactive", label: i18n.catalog["common.general.inactive"] },
+                                        { value: "archived", label: i18n.catalog["common.general.archived"] },
                                     ]
                                 }
 
                             />
-                            <Button variant="secondary" onClick={loadNodes}>{i18n.catalog["text_d0f6edcf6d65"]}</Button>
+                            <Button variant="secondary" onClick={loadNodes}>{i18n.catalog["common.general.search.alternative2"]}</Button>
                         </>
                     }
                 />
 
-                <Table columns={nodeColumns} data={nodes} keyExtractor={(item) => item.node_uuid} emptyMessage={i18n.catalog["text_0ed477f32881"]} isLoading={isLoading} />
+                <Table columns={nodeColumns} data={nodes} keyExtractor={(item) => item.node_uuid} emptyMessage={i18n.catalog["enterpriseCore.nodes.noOrganizationalUnits"]} isLoading={isLoading} />
                 <div style={{ marginTop: "0.5rem", fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                    {i18n.catalog["text_97bd2075da0f"]}{nodes.length} {i18n.catalog["text_584f05614c76"]}</div>
+                    {i18n.catalog["common.general.total"]}{nodes.length} {i18n.catalog["common.general.unit"]}</div>
             </div >
 
             {/* Add/Edit Dialog */}
@@ -420,29 +420,29 @@ export function NodesTab() {
             <Dialog
                 isOpen={bulkDialog}
                 onClose={() => setBulkDialog(false)}
-                title={catalogText(i18n, "text_7e5bd2fed66a", { value0: selectedUuids.size })}
+                title={catalogText(i18n, "enterpriseCore.nodes.bulkEditUnit", { value0: selectedUuids.size })}
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setBulkDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
-                        <Button variant="primary" onClick={handleBulkStatus}>{i18n.catalog["text_dcf45bf69058"]}</Button>
+                        <Button variant="secondary" onClick={() => setBulkDialog(false)}>{i18n.catalog["common.general.cancel"]}</Button>
+                        <Button variant="primary" onClick={handleBulkStatus}>{i18n.catalog["enterpriseCore.nodes.updateStatus"]}</Button>
                     </>
                 }
             >
                 <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
-                    {i18n.catalog["text_07ce1eb3380c"]}{selectedUuids.size} {i18n.catalog["text_cb5510a0ad97"]}</p>
-                <Select label={i18n.catalog["text_9c0468e01fbb"]} value={bulkStatus} onChange={(e) => setBulkStatus(e.target.value)}
+                    {i18n.catalog["enterpriseCore.nodes.statusWillBeUpdated"]}{selectedUuids.size} {i18n.catalog["enterpriseCore.nodes.unitSSimulatingMassChangeProcessSap"]}</p>
+                <Select label={i18n.catalog["enterpriseCore.nodes.newStatus"]} value={bulkStatus} onChange={(e) => setBulkStatus(e.target.value)}
                     options={
                         [
-                            { value: "active", label: i18n.catalog["text_45bde9fdafc3"] },
-                            { value: "inactive", label: i18n.catalog["text_ad16cd513d7f"] },
-                            { value: "archived", label: i18n.catalog["text_a1251f0700cd"] },
+                            { value: "active", label: i18n.catalog["common.general.activeActive"] },
+                            { value: "inactive", label: i18n.catalog["common.general.inactiveInactive"] },
+                            { value: "archived", label: i18n.catalog["common.general.archivedArchived"] },
                         ]
                     }
                 />
             </Dialog>
 
             <ConfirmDialog isOpen={confirmDialog} onClose={() => setConfirmDialog(false)} onConfirm={handleDelete}
-                title={i18n.catalog["text_5f9cb54dc136"]} message={i18n.catalog["text_5a31ec6592a8"]} confirmText={i18n.catalog["text_59ca629220a6"]} confirmVariant="danger" />
+                title={i18n.catalog["common.general.confirmDeletion"]} message={i18n.catalog["enterpriseCore.nodes.areYouSureYouWantDeleteThisUnit"]} confirmText={i18n.catalog["common.general.delete"]} confirmVariant="danger" />
         </>
     );
 }

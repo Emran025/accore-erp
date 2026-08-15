@@ -107,13 +107,13 @@ export function FormatEditor({
         let insertText = "";
         switch (format) {
             case "json":
-                insertText = catalogText(i18n, "text_d52b614d9797", { value0: entityKey, value1: key });
+                insertText = catalogText(i18n, "tax.formateditor.message", { value0: entityKey, value1: key });
                 break;
             case "xml":
-                insertText = catalogText(i18n, "text_da3c16e9b14c", { value0: entityKey, value1: key, value2: entityKey });
+                insertText = catalogText(i18n, "common.general.message.alternative6", { value0: entityKey, value1: key, value2: entityKey });
                 break;
             case "yml":
-                insertText = catalogText(i18n, "text_e6f80a7fa9db", { value0: entityKey, value1: key });
+                insertText = catalogText(i18n, "common.general.message.alternative8", { value0: entityKey, value1: key });
                 break;
         }
 
@@ -168,7 +168,7 @@ export function FormatEditor({
             e.preventDefault();
             const formatted = prettifyCode(structureTemplate, format);
             updateStructure(formatted);
-            showToast(i18n.catalog["text_8eeb7a1279fd"], "success");
+            showToast(i18n.catalog["common.general.codeFormatted"], "success");
             return;
         }
     }, [structureTemplate, format, handleUndo, handleRedo, updateStructure]);
@@ -176,12 +176,12 @@ export function FormatEditor({
     // ── Generate default template from current mappings ──
     const handleGenerateTemplate = useCallback(() => {
         if (Object.keys(keyMapping).length === 0) {
-            showToast(i18n.catalog["text_2e31d6f5bad7"], "warning");
+            showToast(i18n.catalog["tax.formateditor.pleaseAssignKeysFirst"], "warning");
             return;
         }
         const template = generateDefaultTemplate(keyMapping, format);
         updateStructure(template);
-        showToast(i18n.catalog["text_d222977d9fc5"], "success");
+        showToast(i18n.catalog["tax.formateditor.templateCreatedAssignedKeys"], "success");
     }, [keyMapping, format, updateStructure]);
 
     // ── Filtered keys ──
@@ -196,7 +196,7 @@ export function FormatEditor({
     // ── Format placeholders ──
     const getPlaceholder = (): string => {
         switch (format) {
-            case "json": return i18n.catalog["text_c901933a3b27"];
+            case "json": return i18n.catalog["tax.formateditor.entityKeySystemKey"];
             case "xml": return '<?xml version="1.0" encoding="UTF-8"?>\n<report>\n    <entity_key>{{system_key}}</entity_key>\n</report>';
             case "yml": return '# Report Structure\nreport:\n  entity_key: "{{system_key}}"';
             default: return "";
@@ -210,11 +210,11 @@ export function FormatEditor({
             {showKeysPanel && (
                 <div className="ce-keys-panel">
                     <div className="ce-keys-header">
-                        <h3><i className="fas fa-database" /> {i18n.catalog["text_a9f5b50a0a0f"]}</h3>
+                        <h3><i className="fas fa-database" /> {i18n.catalog["tax.formateditor.systemKeys"]}</h3>
                         <button
                             className="ce-keys-close"
                             onClick={() => setShowKeysPanel(false)}
-                            title={i18n.catalog["text_80b44ac83814"]}
+                            title={i18n.catalog["common.general.hide"]}
                         >
                             <i className="fas fa-chevron-left" />
                         </button>
@@ -225,14 +225,14 @@ export function FormatEditor({
                             type="text"
                             value={keysSearchQuery}
                             onChange={(e) => setKeysSearchQuery(e.target.value)}
-                            placeholder={i18n.catalog["text_c5a78186337b"]}
+                            placeholder={i18n.catalog["tax.formateditor.searchKeys"]}
                         />
                     </div>
                     <div className="ce-keys-list">
                         {filteredKeys.length === 0 ? (
                             <div style={{ padding: "40px 20px", textAlign: "center", color: "#8890a4" }}>
                                 <i className="fas fa-search" style={{ fontSize: 32, opacity: 0.5, display: "block", marginBottom: 12 }} />
-                                <span style={{ fontSize: 12 }}>{i18n.catalog["text_2d8a461130e0"]}</span>
+                                <span style={{ fontSize: 12 }}>{i18n.catalog["common.general.noResults"]}</span>
                             </div>
                         ) : (
                             filteredKeys.map((k) => {
@@ -257,7 +257,7 @@ export function FormatEditor({
                                                 value={keyMapping[k.key] || ""}
                                                 onChange={(e) => handleMappingChange(k.key, e.target.value)}
                                                 placeholder={k.key}
-                                                title={catalogText(i18n, "text_4af8c292969e", { value0: k.key })}
+                                                title={catalogText(i18n, "tax.formateditor.alternateEntityKey", { value0: k.key })}
                                             />
                                             <button
                                                 onClick={() => insertSystemKey(k.key)}
@@ -271,7 +271,7 @@ export function FormatEditor({
                                                     fontSize: 10,
                                                     transition: "all 0.2s",
                                                 }}
-                                                title={i18n.catalog["text_f446827b0662"]}
+                                                title={i18n.catalog["tax.formateditor.insertIntoEditor"]}
                                             >
                                                 <i className="fas fa-plus" />
                                             </button>
@@ -290,14 +290,14 @@ export function FormatEditor({
                 <div className="ce-editor-tabs">
                     <div className="ce-editor-tabs-left">
                         <div className="ce-tab active" style={{ cursor: "default", borderBottom: "none" }}>
-                            <i className="fas fa-code" /> {i18n.catalog["text_0c5036a42e40"]}{format.toUpperCase()})
+                            <i className="fas fa-code" /> {i18n.catalog["tax.formateditor.structureEditor"]}{format.toUpperCase()})
                         </div>
                     </div>
                     <div className="ce-editor-tabs-right">
                         <button
                             className="ce-toolbar-btn"
                             onClick={handleGenerateTemplate}
-                            title={i18n.catalog["text_952c3682e282"]}
+                            title={i18n.catalog["tax.formateditor.createTemplateAssignedKeys"]}
                         >
                             <i className="fas fa-magic" />
                         </button>
@@ -305,7 +305,7 @@ export function FormatEditor({
                             className="ce-toolbar-btn"
                             onClick={handleUndo}
                             disabled={historyIndex <= 0}
-                            title={i18n.catalog["text_c621088f0b70"]}
+                            title={i18n.catalog["tax.formateditor.undoCtrlZ"]}
                         >
                             <i className="fas fa-undo" />
                         </button>
@@ -313,7 +313,7 @@ export function FormatEditor({
                             className="ce-toolbar-btn"
                             onClick={handleRedo}
                             disabled={historyIndex >= history.length - 1}
-                            title={i18n.catalog["text_324a96d6f14d"]}
+                            title={i18n.catalog["tax.formateditor.redoCtrlY"]}
                         >
                             <i className="fas fa-redo" />
                         </button>
@@ -322,9 +322,9 @@ export function FormatEditor({
                             onClick={() => {
                                 const formatted = prettifyCode(structureTemplate, format);
                                 updateStructure(formatted);
-                                showToast(i18n.catalog["text_8eeb7a1279fd"], "success");
+                                showToast(i18n.catalog["common.general.codeFormatted"], "success");
                             }}
-                            title={i18n.catalog["text_7ffe5c5c09fd"]}
+                            title={i18n.catalog["common.general.formatCodeCtrlK"]}
                         >
                             <i className="fas fa-indent" />
                         </button>
@@ -332,7 +332,7 @@ export function FormatEditor({
                             <button
                                 className="ce-keys-toggle"
                                 onClick={() => setShowKeysPanel(true)}
-                                title={i18n.catalog["text_0d602c58c5f8"]}
+                                title={i18n.catalog["common.general.showKeys"]}
                             >
                                 <i className="fas fa-database" />
                             </button>
@@ -379,7 +379,7 @@ export function FormatEditor({
                     <div className="ce-validation-panel">
                         <div className="ce-validation-header">
                             <i className="fas fa-exclamation-circle" />
-                            <span>{i18n.catalog["text_d9dd306377ce"]}</span>
+                            <span>{i18n.catalog["tax.formateditor.draftingErrors"]}</span>
                         </div>
                         <div className="ce-validation-items">
                             {validationResult.errors.map((err, i) => (

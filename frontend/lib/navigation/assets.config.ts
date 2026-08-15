@@ -18,29 +18,29 @@ import { Domain } from "../../types/navigation";
 export const AssetsDomain: Domain = {
     id: "assets",
     order: 8,
-    title: catalogMessage("text_9f5c91187073"),
+    title: catalogMessage("navigation.assetsConfig.assetsInfrastructureManagement"),
     icon: "building-2",
-    description: catalogMessage("text_773b32944617"),
+    description: catalogMessage("navigation.assetsConfig.fixedAssetsRegisterDepreciationDisposalMaintenance"),
     capabilities: [
         // ─────────────────────────────────────────────────────────────
         // Capability: Asset Lifecycle
         // ─────────────────────────────────────────────────────────────
         {
             id: "asset-lifecycle",
-            title: catalogMessage("text_68d9eeb339ca"),
+            title: catalogMessage("navigation.assetsConfig.assetLifecycle"),
             icon: "building-2",
-            description: catalogMessage("text_8bbd8384fd9b"),
+            description: catalogMessage("navigation.assetsConfig.fixedAssetRegisterDepreciationEngine"),
             groups: [
                 {
                     id: "fixed-assets",
-                    title: catalogMessage("text_e42df7c724bd"),
-                    description: catalogMessage("text_5a3795736d92"),
+                    title: catalogMessage("common.general.fixedAssets"),
+                    description: catalogMessage("common.general.assetDepreciationManagement"),
                     screens: [
                         {
                             id: "fixed-assets-registry",
-                            title: catalogMessage("text_e42df7c724bd"),
+                            title: catalogMessage("common.general.fixedAssets"),
                             icon: "building-2",
-                            description: catalogMessage("text_5a3795736d92"),
+                            description: catalogMessage("common.general.assetDepreciationManagement"),
                             href: "/08-assets/asset-lifecycle/fixed-assets/fixed-assets-registry",
                             permissions: [],
                             module: "assets",
@@ -55,20 +55,20 @@ export const AssetsDomain: Domain = {
         // ─────────────────────────────────────────────────────────────
         {
             id: "investments",
-            title: catalogMessage("text_92461b409406"),
+            title: catalogMessage("common.general.investmentAssets"),
             icon: "briefcase",
-            description: catalogMessage("text_72da7263d8f5"),
+            description: catalogMessage("navigation.assetsConfig.investmentPortfolioManagement"),
             groups: [
                 {
                     id: "investment-portfolio",
-                    title: catalogMessage("text_2b3ca3c70fbb"),
-                    description: catalogMessage("text_280c7ac1a60c"),
+                    title: catalogMessage("navigation.assetsConfig.investmentPortfolio"),
+                    description: catalogMessage("navigation.assetsConfig.investmentBudgets"),
                     screens: [
                         {
                             id: "investment-assets",
-                            title: catalogMessage("text_92461b409406"),
+                            title: catalogMessage("common.general.investmentAssets"),
                             icon: "briefcase",
-                            description: catalogMessage("text_6cba459d25a8"),
+                            description: catalogMessage("navigation.assetsConfig.investmentBudgetsComingSoon"),
                             href: "/08-assets/investments/investment-portfolio/investment-assets",
                             permissions: [],
                             module: "investments",

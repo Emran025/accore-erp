@@ -14,17 +14,17 @@ export function SecurityTab() {
 
   const changePassword = async () => {
     if (!passwordData.current_password || !passwordData.new_password) {
-      showToast(catalogMessage("text_ee5bf2016153"), "error");
+      showToast(catalogMessage("common.general.pleaseFillAllFields"), "error");
       return;
     }
 
     if (passwordData.new_password !== passwordData.confirm_password) {
-      showToast(catalogMessage("text_7b9a263c5b94"), "error");
+      showToast(catalogMessage("enterpriseCore.security.newPasswordDoesNotMatch"), "error");
       return;
     }
 
     if (passwordData.new_password.length < 6) {
-      showToast(catalogMessage("text_ae978b4b01fd"), "error");
+      showToast(catalogMessage("enterpriseCore.security.passwordMustBeLeast6Characters"), "error");
       return;
     }
 
@@ -36,20 +36,20 @@ export function SecurityTab() {
           new_password: passwordData.new_password,
         }),
       });
-      showToast(catalogMessage("text_650866f7dbd3"), "success");
+      showToast(catalogMessage("enterpriseCore.security.passwordChangedSuccessfully"), "success");
       setPasswordData({ current_password: "", new_password: "", confirm_password: "" });
     } catch {
-      showToast(catalogMessage("text_b6e296a55e3f"), "error");
+      showToast(catalogMessage("enterpriseCore.security.errorChangingPassword"), "error");
     }
   };
 
   return (
     <div className="sales-card">
-      <h3>{catalogMessage("text_473bcc4e9b46")}</h3>
+      <h3>{catalogMessage("common.general.changePassword")}</h3>
       <div className="settings-form-narrow">
         <div className="form-group pb-0">
           <PasswordInput
-            label={catalogMessage("text_e4f0784fe844")}
+            label={catalogMessage("enterpriseCore.security.currentPassword")}
             id="current_password"
             value={passwordData.current_password}
             onChange={(e) => setPasswordData({ ...passwordData, current_password: e.target.value })}
@@ -57,7 +57,7 @@ export function SecurityTab() {
         </div>
         <div className="form-group pb-0">
           <PasswordInput
-            label={catalogMessage("text_202b9814ea8b")}
+            label={catalogMessage("common.general.newPassword")}
             id="new_password"
             value={passwordData.new_password}
             onChange={(e) => setPasswordData({ ...passwordData, new_password: e.target.value })}
@@ -65,14 +65,14 @@ export function SecurityTab() {
         </div>
         <div className="form-group pb-0">
           <PasswordInput
-            label={catalogMessage("text_57e87f00ead1")}
+            label={catalogMessage("common.general.confirmPassword")}
             id="confirm_password"
             value={passwordData.confirm_password}
             onChange={(e) => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
           />
         </div>
         <button className="btn btn-primary" onClick={changePassword}>
-          {catalogMessage("text_473bcc4e9b46")}</button>
+          {catalogMessage("common.general.changePassword")}</button>
       </div>
     </div>
   );

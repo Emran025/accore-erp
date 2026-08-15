@@ -358,7 +358,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
     /* ── Computed sidebar width style ── */
     const sidebarWidth = sideNavCollapsed ? 64 : sideNavWidth;
     const sidebarStyle = {
-        width: catalogText(i18n, "text_412663ecb075", { value0: sidebarWidth }),
+        width: catalogText(i18n, "common.general.px", { value0: sidebarWidth }),
         minWidth: sideNavCollapsed ? "64px" : "200px",
     };
 
@@ -387,7 +387,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                     {/* ═══ Section 1: Opened (Recently Accessed) ═══ */}
                     {!sideNavCollapsed && (
                         <SectionHeader
-                            title={i18n.catalog["text_7ac022114d0a"]}
+                            title={i18n.catalog["components.sidenavigationbar.latest"]}
                             icon="clock"
                             collapsed={openedSectionCollapsed}
                             onToggle={() => toggleSection("opened")}
@@ -399,7 +399,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                         >
                             <div className="sidenav-section-content">
                                 {recentScreens.length === 0 ? (
-                                    <div className="sidenav-empty">{i18n.catalog["text_3ba3cbbca012"]}</div>
+                                    <div className="sidenav-empty">{i18n.catalog["components.sidenavigationbar.noRecentScreens"]}</div>
                                 ) : (
                                     recentScreens.map((path) => {
                                         const link = findLink(path);
@@ -430,7 +430,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                     {/* ═══ Section 2: System Menu (Full Tree) ═══ */}
                     {!sideNavCollapsed && (
                         <SectionHeader
-                            title={i18n.catalog["text_cbc7b12e6748"]}
+                            title={i18n.catalog["components.sidenavigationbar.mainMenu"]}
                             icon="sitemap"
                             collapsed={systemMenuSectionCollapsed}
                             onToggle={() => toggleSection("systemMenu")}
@@ -482,7 +482,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                                                                 color={moduleColor}
                                                                 isActive={pathname === link.href}
                                                                 isChild={true}
-                                                                badgeSoon={link.description.includes(i18n.catalog["text_1f921420481d"])}
+                                                                badgeSoon={link.description.includes(i18n.catalog["common.general.comingSoon"])}
                                                                 title={link.description}
                                                                 onClick={() => handleScreenClick(link.href)}
                                                                 onContextMenu={handleContextMenu}
@@ -517,7 +517,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                             <>
                                 {!sideNavCollapsed && (
                                     <SectionHeader
-                                        title={i18n.catalog["text_9f2908941570"]}
+                                        title={i18n.catalog["components.sidenavigationbar.favorites"]}
                                         icon="star"
                                         collapsed={favoritesSectionCollapsed}
                                         onToggle={() => toggleSection("favorites")}
@@ -530,7 +530,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                                         <div className="sidenav-section-content">
                                             {resolvedFavorites.length === 0 ? (
                                                 <div className="sidenav-empty">
-                                                    {i18n.catalog["text_0decf2464b25"]}</div>
+                                                    {i18n.catalog["components.sidenavigationbar.rightClickAnyScreenAddItFavorites"]}</div>
                                             ) : (
                                                 resolvedFavorites.map(({ path, link, group }) => (
                                                     <SidebarItem

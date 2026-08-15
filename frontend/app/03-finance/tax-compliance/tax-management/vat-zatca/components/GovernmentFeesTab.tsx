@@ -61,7 +61,7 @@ export function GovernmentFeesTab() {
             }
         } catch (e) {
             console.error(e);
-            showToast(i18n.catalog["text_e3571b919fa7"], "error");
+            showToast(i18n.catalog["finance.governmentfees.errorLoadingTaxEngineSettings"], "error");
         }
     }, []);
 
@@ -76,7 +76,7 @@ export function GovernmentFeesTab() {
                 }
             }
         } catch (e) {
-            console.error(i18n.catalog["text_a8ded9e0e1f3"], e);
+            console.error(i18n.catalog["common.general.errorLoadingAccounts"], e);
         }
     }, []);
 
@@ -120,7 +120,7 @@ export function GovernmentFeesTab() {
             setFormData({
                 tax_authority_id: authorities.length > 0 ? authorities[0].id : "",
                 name: "",
-                code: catalogText(i18n, "text_b0a552ae24e7", { value0: Date.now().toString().slice(-4) }),
+                code: catalogText(i18n, "finance.governmentfees.fee", { value0: Date.now().toString().slice(-4) }),
                 calculation_type: "percentage",
                 rate: 0,
                 fixed_amount: 0,
@@ -143,7 +143,7 @@ export function GovernmentFeesTab() {
 
     const handleSave = async () => {
         if (!formData.name || !formData.code || !formData.tax_authority_id) {
-            showToast(i18n.catalog["text_536a6319bbe4"], "error");
+            showToast(i18n.catalog["finance.governmentfees.pleaseEnterRequiredFieldsNameCodeEntity"], "error");
             return;
         }
 
@@ -159,19 +159,19 @@ export function GovernmentFeesTab() {
                     method: "PUT",
                     body: JSON.stringify(payload)
                 });
-                showToast(i18n.catalog["text_319dedfa47a6"], "success");
+                showToast(i18n.catalog["finance.governmentfees.taxCategoryObligationUpdatedSuccessfully"], "success");
             } else {
                 await fetchAPI(API_ENDPOINTS.FINANCE.TAX_ENGINE.TYPES.BASE, {
                     method: "POST",
                     body: JSON.stringify(payload)
                 });
-                showToast(i18n.catalog["text_557a7cfcf2eb"], "success");
+                showToast(i18n.catalog["finance.governmentfees.taxCategoryObligationAddedSuccessfully"], "success");
             }
             setDialogOpen(false);
             loadSetup();
         } catch (e) {
             console.error(e);
-            showToast(i18n.catalog["text_1357fc9e2935"], "error");
+            showToast(i18n.catalog["finance.governmentfees.errorOccurredWhileSaving"], "error");
         }
     };
 
@@ -184,10 +184,10 @@ export function GovernmentFeesTab() {
         if (!deleteId) return;
         try {
             await fetchAPI(API_ENDPOINTS.FINANCE.TAX_ENGINE.TYPES.withId(deleteId), { method: "DELETE" });
-            showToast(i18n.catalog["text_12b6e3813b40"], "success");
+            showToast(i18n.catalog["common.general.deletedSuccessfully"], "success");
             loadSetup();
         } catch (e) {
-            showToast(i18n.catalog["text_308649cd381d"], "error");
+            showToast(i18n.catalog["finance.governmentfees.errorOccurredDuringDeleteCommitUsedOperations"], "error");
         } finally {
             setConfirmDialogOpen(false);
         }
@@ -201,37 +201,37 @@ export function GovernmentFeesTab() {
     const columns: Column<TaxType>[] = [
         {
             key: "code",
-            header: i18n.catalog["text_589c6420ea10"],
+            header: i18n.catalog["common.general.code"],
             render: (fee) => <span className="text-muted">{fee.code}</span>
         },
         {
             key: "name",
-            header: i18n.catalog["text_52ab09847cf8"],
+            header: i18n.catalog["common.general.name"],
         },
         {
             key: "calculation_type",
-            header: i18n.catalog["text_caa3f2bb4a36"],
-            render: (fee) => fee.calculation_type === 'percentage' ? i18n.catalog["text_d75c4c7090fc"] : i18n.catalog["text_25162762270b"],
+            header: i18n.catalog["common.general.type.alternative3"],
+            render: (fee) => fee.calculation_type === 'percentage' ? i18n.catalog["common.general.percentage.alternative2"] : i18n.catalog["finance.governmentfees.fixedAmount"],
         },
         {
             key: "gl_account_code",
-            header: i18n.catalog["text_8aa51c1c6ee3"],
-            render: (fee: any) => <span className="badge badge-info">{fee.tax_authority_name || i18n.catalog["text_5f4b44eb6311"]}</span>
+            header: i18n.catalog["finance.governmentfees.entityAuthority"],
+            render: (fee: any) => <span className="badge badge-info">{fee.tax_authority_name || i18n.catalog["finance.governmentfees.unspecifiedEntity"]}</span>
         },
         {
             key: "gl_account_code", // Just to render something different
-            header: i18n.catalog["text_4c49efecd6cb"],
+            header: i18n.catalog["common.general.value"],
             render: (fee) => {
                 const defRate = fee.tax_rates?.find(r => r.is_default) || fee.tax_rates?.[0];
                 if (!defRate) return '-';
                 return fee.calculation_type === 'percentage'
-                    ? catalogText(i18n, "text_518ef1823474", { value0: Number(defRate.rate * 100).toFixed(2) })
-                    : catalogText(i18n, "text_239530228355", { value0: defRate.fixed_amount });
+                    ? catalogText(i18n, "common.general.message.alternative4", { value0: Number(defRate.rate * 100).toFixed(2) })
+                    : catalogText(i18n, "finance.governmentfees.sar", { value0: defRate.fixed_amount });
             },
         },
         {
             key: "tax_authority_id",
-            header: i18n.catalog["text_bc2fd164652d"],
+            header: i18n.catalog["finance.governmentfees.applicationScope"],
             render: (fee) => {
                 let areas: string[] = [];
                 try {
@@ -248,36 +248,36 @@ export function GovernmentFeesTab() {
 
                 return areas.map((a: string) => (
                     <span key={a} className="badge badge-secondary me-1 ms-1">
-                        {a === 'sales' ? i18n.catalog["text_7bf1b13416bc"] : a === 'purchases' ? i18n.catalog["text_2a14f93caa32"] : a === 'payroll' ? i18n.catalog["text_8da58f1c866a"] : a}
+                        {a === 'sales' ? i18n.catalog["common.general.sales"] : a === 'purchases' ? i18n.catalog["common.general.purchases"] : a === 'payroll' ? i18n.catalog["common.general.payroll.alternative2"] : a}
                     </span>
                 ));
             }
         },
         {
             key: "is_active",
-            header: i18n.catalog["text_c3a4749caed4"],
+            header: i18n.catalog["common.general.status.alternative2"],
             render: (fee) => (
                 <span className={`badge ${fee.is_active ? 'badge-success' : 'badge-danger'}`}>
-                    {fee.is_active ? i18n.catalog["text_629e90b3af3d"] : i18n.catalog["text_b719ac8add4e"]}
+                    {fee.is_active ? i18n.catalog["common.general.active"] : i18n.catalog["common.general.inactive"]}
                 </span>
             ),
         },
         {
             key: "id",
-            header: i18n.catalog["text_7797240d6caf"],
-            dataLabel: i18n.catalog["text_7797240d6caf"],
+            header: i18n.catalog["common.general.actions"],
+            dataLabel: i18n.catalog["common.general.actions"],
             render: (item) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "edit",
-                            title: i18n.catalog["text_113d570d6555"],
+                            title: i18n.catalog["common.general.edit"],
                             variant: "edit",
                             onClick: () => handleOpenDialog(item)
                         },
                         ...(canAccess("settings", "delete") ? [{
                             icon: "trash" as const,
-                            title: i18n.catalog["text_59ca629220a6"],
+                            title: i18n.catalog["common.general.delete"],
                             variant: "delete" as const,
                             onClick: () => handleDeleteClick(item.id)
                         }] : [])
@@ -290,7 +290,7 @@ export function GovernmentFeesTab() {
     return (
         <div className="sales-card animate-fade">
             <PageSubHeader
-                title={i18n.catalog["text_7f9b9f257d00"]}
+                title={i18n.catalog["finance.governmentfees.unifiedTaxesGovernmentLiabilities"]}
                 titleIcon="box"
                 actions={
                     <Button
@@ -298,12 +298,12 @@ export function GovernmentFeesTab() {
                         variant="primary"
                         icon="plus"
                     >
-                        {i18n.catalog["text_b157eddeae9a"]}</Button>
+                        {i18n.catalog["finance.governmentfees.addNewTaxFeeCondition"]}</Button>
                 }
             />
             {authorities.length === 0 && !isLoading && (
                 <div className="alert alert-warning">
-                    {i18n.catalog["text_a49de283e4c7"]}</div>
+                    {i18n.catalog["finance.governmentfees.pleaseFirstEnsureTaxAuthorityIsEnabledConfigured"]}</div>
             )}
 
             <Table
@@ -311,33 +311,33 @@ export function GovernmentFeesTab() {
                 data={taxTypes}
                 keyExtractor={(fee) => fee.id}
                 isLoading={isLoading}
-                emptyMessage={i18n.catalog["text_a1799fb742b3"]}
+                emptyMessage={i18n.catalog["finance.governmentfees.noDeductionsLiabilitiesRecorded"]}
             />
 
             <Dialog
                 isOpen={dialogOpen}
                 onClose={() => setDialogOpen(false)}
-                title={editingFeeId ? i18n.catalog["text_813118d1d14c"] : i18n.catalog["text_9b886d65d0d8"]}
+                title={editingFeeId ? i18n.catalog["finance.governmentfees.editConditionCommitment"] : i18n.catalog["finance.governmentfees.addNewTaxConditionObligation"]}
                 footer={
                     <>
-                        <button className="btn btn-secondary" onClick={() => setDialogOpen(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</button>
-                        <button className="btn btn-primary" onClick={handleSave}>{i18n.catalog["text_fa167122a793"]}</button>
+                        <button className="btn btn-secondary" onClick={() => setDialogOpen(false)}>{i18n.catalog["common.general.cancel"]}</button>
+                        <button className="btn btn-primary" onClick={handleSave}>{i18n.catalog["finance.governmentfees.saveSendTaxEngine"]}</button>
                     </>
                 }
             >
                 <div className="alert alert-info py-2">
                     <i className="fa-solid fa-server me-2 ms-2 text-primary"></i>
-                    {i18n.catalog["text_9ab8ac005fd7"]}</div>
+                    {i18n.catalog["finance.governmentfees.thisPanelIsDirectlyConnectedTaxEngineAll"]}</div>
 
                 <div className="row">
                     <div className="col-md-6 form-group">
                         <Select
-                            label={i18n.catalog["text_2b5ea51d140f"]}
+                            label={i18n.catalog["finance.governmentfees.authorityTaxAuthority"]}
                             value={formData.tax_authority_id}
                             onChange={(e) => setFormData({ ...formData, tax_authority_id: e.target.value })}
                             disabled={!!editingFeeId}
                         >
-                            <option value="">{i18n.catalog["text_0969a8197763"]}</option>
+                            <option value="">{i18n.catalog["finance.governmentfees.select"]}</option>
                             {authorities.map(auth => (
                                 <option key={auth.id} value={auth.id}>{auth.name} ({auth.code})</option>
                             ))}
@@ -345,10 +345,10 @@ export function GovernmentFeesTab() {
                     </div>
                     <div className="col-md-6 form-group">
                         <TextInput
-                            label={i18n.catalog["text_4c44c2f6d96c"]}
+                            label={i18n.catalog["finance.governmentfees.systemCodeCode"]}
                             value={formData.code}
                             onChange={e => setFormData({ ...formData, code: e.target.value })}
-                            placeholder={i18n.catalog["text_6255dc6b0d5a"]}
+                            placeholder={i18n.catalog["finance.governmentfees.eGVatSaMunicipalFee"]}
                             disabled={!!editingFeeId}
                         />
                     </div>
@@ -356,30 +356,30 @@ export function GovernmentFeesTab() {
 
                 <div className="form-group">
                     <TextInput
-                        label={i18n.catalog["text_d4b9fadaaeb8"]}
+                        label={i18n.catalog["finance.governmentfees.identifier"]}
                         value={formData.name}
                         onChange={e => setFormData({ ...formData, name: e.target.value })}
-                        placeholder={i18n.catalog["text_d3647115774c"]}
+                        placeholder={i18n.catalog["finance.governmentfees.enterFeeTaxNameEGVatKharaj"]}
                     />
                 </div>
 
                 <div className="row mt-3">
                     <div className="col-12 form-group">
-                        <label className="form-label fw-bold"><i className="fa-solid fa-calculator me-2 ms-2"></i>{i18n.catalog["text_8a2a3bb6840f"]}</label>
+                        <label className="form-label fw-bold"><i className="fa-solid fa-calculator me-2 ms-2"></i>{i18n.catalog["finance.governmentfees.accountFormulas"]}</label>
                         <div className="d-flex gap-4">
                             <div className="form-check">
                                 <input className="form-check-input" type="radio" name="calc_type"
                                     checked={formData.calculation_type === 'percentage'}
                                     onChange={() => setFormData({ ...formData, calculation_type: 'percentage' })}
                                 />
-                                <label className="form-check-label">{i18n.catalog["text_9b4974321a50"]}</label>
+                                <label className="form-check-label">{i18n.catalog["finance.governmentfees.percentageTaxableTotal"]}</label>
                             </div>
                             <div className="form-check">
                                 <input className="form-check-input" type="radio" name="calc_type"
                                     checked={formData.calculation_type === 'fixed_amount'}
                                     onChange={() => setFormData({ ...formData, calculation_type: 'fixed_amount' })}
                                 />
-                                <label className="form-check-label">{i18n.catalog["text_bbc4d2fb8ec6"]}</label>
+                                <label className="form-check-label">{i18n.catalog["finance.governmentfees.fixedLumpSumAmountPerTransaction"]}</label>
                             </div>
                         </div>
                     </div>
@@ -389,56 +389,56 @@ export function GovernmentFeesTab() {
                     {formData.calculation_type === 'percentage' ? (
                         <div className="col-md-12 form-group">
                             <TextInput
-                                label={i18n.catalog["text_4eca62da9b5e"]}
+                                label={i18n.catalog["finance.governmentfees.defaultPercentageValue"]}
                                 type="number"
                                 step="0.01"
                                 value={formData.rate}
                                 onChange={e => setFormData({ ...formData, rate: parseFloat(e.target.value) })}
                             />
-                            <small className="text-muted">{i18n.catalog["text_cbce18b6619c"]}</small>
+                            <small className="text-muted">{i18n.catalog["finance.governmentfees.enterPercentageEG15Apply15"]}</small>
                         </div>
                     ) : (
                         <div className="col-md-12 form-group">
                             <TextInput
-                                label={i18n.catalog["text_46a70c68447f"]}
+                                label={i18n.catalog["finance.governmentfees.defaultFixedAmount"]}
                                 type="number"
                                 step="0.01"
                                 value={formData.fixed_amount}
                                 onChange={e => setFormData({ ...formData, fixed_amount: parseFloat(e.target.value) })}
                             />
-                            <small className="text-muted">{i18n.catalog["text_9b2632ff358c"]}</small>
+                            <small className="text-muted">{i18n.catalog["finance.governmentfees.additionalAmountAddedAsAbsoluteValueEGFixed"]}</small>
                         </div>
                     )}
                 </div>
 
                 <div className="form-group mt-3">
                     <Select
-                        label={i18n.catalog["text_131568c66394"]}
+                        label={i18n.catalog["finance.governmentfees.linkChartAccountsAccountGlMappingAccount"]}
                         value={formData.gl_account_code || ""}
                         onChange={e => setFormData({ ...formData, gl_account_code: e.target.value })}
                     >
-                        <option value="">{i18n.catalog["text_b4685a3ce36a"]}</option>
+                        <option value="">{i18n.catalog["finance.governmentfees.noAutomaticLinkingSystemDefault"]}</option>
                         {accounts.map(acc => (
                             <option key={acc.id} value={acc.account_code}>
                                 {acc.account_code} - {acc.account_name}
                             </option>
                         ))}
                     </Select>
-                    <small className="text-muted">{i18n.catalog["text_9e0148908205"]}</small>
+                    <small className="text-muted">{i18n.catalog["finance.governmentfees.mandatorySystemWillPostValuesThisAccountWhen"]}</small>
                 </div>
 
                 <div className="form-group mt-3">
-                    <label className="form-label fw-bold">{i18n.catalog["text_b34512b79b13"]}</label>
+                    <label className="form-label fw-bold">{i18n.catalog["finance.governmentfees.applyDeductionCommitmentUnitsApplicableAreas"]}</label>
                     <div className="d-flex gap-3 flex-wrap mt-2">
-                        <Checkbox label={i18n.catalog["text_d60ee97fdd55"]} checked={formData.applicable_areas.includes("sales")} onChange={() => toggleArea("sales")} />
-                        <Checkbox label={i18n.catalog["text_fe751a4822c8"]} checked={formData.applicable_areas.includes("purchases")} onChange={() => toggleArea("purchases")} />
-                        <Checkbox label={i18n.catalog["text_456da660292f"]} checked={formData.applicable_areas.includes("payroll")} onChange={() => toggleArea("payroll")} />
+                        <Checkbox label={i18n.catalog["finance.governmentfees.salesInvoicingSales"]} checked={formData.applicable_areas.includes("sales")} onChange={() => toggleArea("sales")} />
+                        <Checkbox label={i18n.catalog["finance.governmentfees.purchasesSuppliersPurchases"]} checked={formData.applicable_areas.includes("purchases")} onChange={() => toggleArea("purchases")} />
+                        <Checkbox label={i18n.catalog["finance.governmentfees.salariesHrSystemPayroll"]} checked={formData.applicable_areas.includes("payroll")} onChange={() => toggleArea("payroll")} />
                     </div>
                 </div>
 
                 <div className="form-group checkbox-group mt-4">
                     <Checkbox
-                        label={i18n.catalog["text_ab233f36e977"]}
+                        label={i18n.catalog["finance.governmentfees.enableThisAuthorityLocallyClaimCompliance"]}
                         checked={formData.is_active}
                         onChange={e => setFormData({ ...formData, is_active: e.target.checked })}
                     />
@@ -450,9 +450,9 @@ export function GovernmentFeesTab() {
                 isOpen={confirmDialogOpen}
                 onClose={() => setConfirmDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                title={i18n.catalog["text_0958cf4c59b2"]}
-                message={i18n.catalog["text_25cfca5886a9"]}
-                confirmText={i18n.catalog["text_cd6f896cc0ee"]}
+                title={i18n.catalog["finance.governmentfees.confirmDeletionTaxRegister"]}
+                message={i18n.catalog["finance.governmentfees.areYouSureYouWantDeleteThisTaxGovernment"]}
+                confirmText={i18n.catalog["finance.governmentfees.deletePermanently"]}
                 confirmVariant="danger"
             />
         </div>

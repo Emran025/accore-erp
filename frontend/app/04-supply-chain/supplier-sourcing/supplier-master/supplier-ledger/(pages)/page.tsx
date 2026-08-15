@@ -96,7 +96,7 @@ function APLedgerPageContent() {
         setSupplier(supplierData as Supplier);
       }
     } catch {
-      showToast(i18n.catalog["text_121ea766a4f9"], "error");
+      showToast(i18n.catalog["supplyChain.supplierLedger.errorLoadingSupplierData"], "error");
     }
   }, [supplierId]);
 
@@ -119,7 +119,7 @@ function APLedgerPageContent() {
           const mappedTransactions: LedgerTransaction[] = rawTransactions.map((item) => ({
             ...item,
             type: item.type,
-            invoice_number: item.reference_id ? catalogText(i18n, "text_c8a143a2ca2b", { value0: item.reference_id }) : `TRX-${item.id}`,
+            invoice_number: item.reference_id ? catalogText(i18n, "common.general.ref", { value0: item.reference_id }) : `TRX-${item.id}`,
             total_amount: item.amount,
             subtotal: item.amount,
             vat_amount: 0,
@@ -140,10 +140,10 @@ function APLedgerPageContent() {
           setTotalPages(Math.ceil(total / itemsPerPage));
           setCurrentPage(page);
         } else {
-          showAlert("alert-container", response.message || i18n.catalog["text_40b69645bd46"], "error");
+          showAlert("alert-container", response.message || i18n.catalog["common.general.failedLoadOperations"], "error");
         }
       } catch {
-        showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
+        showAlert("alert-container", i18n.catalog["common.general.errorConnectingServer"], "error");
       } finally {
         setIsLoading(false);
       }
@@ -188,7 +188,7 @@ function APLedgerPageContent() {
 
   const saveTransaction = async () => {
     if (!transactionAmount || parseNumber(transactionAmount) <= 0) {
-      showToast(i18n.catalog["text_222e5860f0be"], "error");
+      showToast(i18n.catalog["common.general.amountRequired"], "error");
       return;
     }
 
@@ -209,15 +209,15 @@ function APLedgerPageContent() {
       });
 
       if (response.success) {
-        showToast(i18n.catalog["text_ff783ee2826d"], "success");
+        showToast(i18n.catalog["common.general.savedSuccessfully"], "success");
         setTransactionDialog(false);
         await loadLedger(currentPage);
         await loadSupplierDetails();
       } else {
-        showToast(response.message || i18n.catalog["text_acc74dcf4c2f"], "error");
+        showToast(response.message || i18n.catalog["common.general.error.alternative2"], "error");
       }
     } catch {
-      showToast(i18n.catalog["text_c574313242be"], "error");
+      showToast(i18n.catalog["common.general.errorSaving"], "error");
     }
   };
 
@@ -229,7 +229,7 @@ function APLedgerPageContent() {
         setViewDialog(true);
       }
     } catch {
-      showAlert("alert-container", i18n.catalog["text_740c5c55bbc3"], "error");
+      showAlert("alert-container", i18n.catalog["common.general.errorFetchingDetails"], "error");
     }
   };
 
@@ -249,7 +249,7 @@ function APLedgerPageContent() {
       }
       return [];
     } catch (error) {
-      console.error(i18n.catalog["text_c0637151ed4f"], error);
+      console.error(i18n.catalog["common.general.failedFetchItems"], error);
       return [];
     }
   };
@@ -260,7 +260,7 @@ function APLedgerPageContent() {
 
   const openReturnDialog = async () => {
     if (selectedReturnItems.length === 0) {
-      showToast(i18n.catalog["text_54f0b0947619"], "warning");
+      showToast(i18n.catalog["common.general.pleaseSelectItemsReturnFirst"], "warning");
       return;
     }
 
@@ -279,8 +279,8 @@ function APLedgerPageContent() {
         }));
         setInvoicesMap(newMap);
       } catch (error) {
-        console.error(i18n.catalog["text_d9ef03bc9e49"], error);
-        showToast(i18n.catalog["text_f154fa31b161"], "error");
+        console.error(i18n.catalog["common.general.failedLoadInvoiceDetails.alternative2"], error);
+        showToast(i18n.catalog["common.general.failedLoadInvoiceData"], "error");
       } finally {
         setIsLoadingInvoices(false);
       }
@@ -300,13 +300,13 @@ function APLedgerPageContent() {
         });
 
         if (!response.success) {
-          throw new Error(response.message || i18n.catalog["text_311143511f9e"]);
+          throw new Error(response.message || i18n.catalog["common.general.failedRegisterReturn"]);
         }
       }
 
-      showToast(i18n.catalog["text_23e6f8991b99"], "success");
+      showToast(i18n.catalog["common.general.returnRecordedSuccessfully"], "success");
     } catch (error: any) {
-      showToast(error.message || i18n.catalog["text_633a9d0a74cd"], "error");
+      showToast(error.message || i18n.catalog["common.general.errorRegisteringReturn"], "error");
       throw error;
     }
   };
@@ -324,15 +324,15 @@ function APLedgerPageContent() {
         method: "DELETE",
       });
       if (response.success) {
-        showToast(i18n.catalog["text_12b6e3813b40"], "success");
+        showToast(i18n.catalog["common.general.deletedSuccessfully"], "success");
         setConfirmDialog(false);
         setDeleteTransactionId(null);
         await loadLedger(currentPage);
       } else {
-        showToast(response.message || i18n.catalog["text_acc74dcf4c2f"], "error");
+        showToast(response.message || i18n.catalog["common.general.error.alternative2"], "error");
       }
     } catch {
-      showToast(i18n.catalog["text_3bdb299872fb"], "error");
+      showToast(i18n.catalog["common.general.deletionError"], "error");
     }
   };
 
@@ -350,15 +350,15 @@ function APLedgerPageContent() {
         body: JSON.stringify({ id: restoreTransactionId, restore: true }),
       });
       if (response.success) {
-        showToast(i18n.catalog["text_aa78a43df0d6"], "success");
+        showToast(i18n.catalog["common.general.restoredSuccessfully"], "success");
         setConfirmDialog(false);
         setRestoreTransactionId(null);
         await loadLedger(currentPage);
       } else {
-        showToast(response.message || i18n.catalog["text_acc74dcf4c2f"], "error");
+        showToast(response.message || i18n.catalog["common.general.error.alternative2"], "error");
       }
     } catch {
-      showToast(i18n.catalog["text_f456a605d85c"], "error");
+      showToast(i18n.catalog["common.general.errorRestoring"], "error");
     }
   };
 
@@ -390,13 +390,13 @@ function APLedgerPageContent() {
               icon="search"
               onClick={() => setFilterDialog(true)}
             >
-              {i18n.catalog["text_a826a913e567"]}</Button>
+              {i18n.catalog["common.general.filter"]}</Button>
             <Button
               variant="primary"
               icon="plus"
               onClick={openAddTransactionDialog}
             >
-              {i18n.catalog["text_20b69585a955"]}</Button>
+              {i18n.catalog["common.general.newOperation"]}</Button>
           </>
         }
       />
@@ -468,13 +468,13 @@ function APLedgerPageContent() {
           setRestoreTransactionId(null);
         }}
         onConfirm={handleConfirm}
-        title={i18n.catalog["text_e289ca4b7f4a"]}
+        title={i18n.catalog["common.general.confirmAction"]}
         message={
           deleteTransactionId
-            ? i18n.catalog["text_40656861c0bd"]
-            : i18n.catalog["text_2e51779fcc9a"]
+            ? i18n.catalog["common.general.areYouSureYouWantDeleteThisOperation"]
+            : i18n.catalog["common.general.areYouSureYouWantRestoreThisOperation"]
         }
-        confirmText={i18n.catalog["text_8f7d74ac0eac"]}
+        confirmText={i18n.catalog["common.general.confirm"]}
         confirmVariant={deleteTransactionId ? "danger" : "primary"}
       />
 
@@ -499,7 +499,7 @@ function APLedgerPageContent() {
 export default function APLedgerPage() {
     const { t: i18n } = useI18n();
   return (
-    <Suspense fallback={<div className="p-4 text-center">{i18n.catalog["text_ceac78d7f5d3"]}</div>}>
+    <Suspense fallback={<div className="p-4 text-center">{i18n.catalog["common.general.loading"]}</div>}>
       <APLedgerPageContent />
     </Suspense>
   );

@@ -39,7 +39,7 @@ export function GlobalTitle({ titleOverride }: GlobalTitleProps) {
         titleOverride ||
         currentLink?.label ||
         currentGroupLabel ||
-        i18n.catalog["text_336496c4f685"];
+        i18n.catalog["common.general.dashboard"];
 
     return (
         <div className="top-global-title" aria-live="polite">
