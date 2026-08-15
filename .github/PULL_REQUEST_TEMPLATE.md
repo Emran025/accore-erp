@@ -7,17 +7,16 @@
 
 
 
-## Related Issues
+## Canonical Task Record
 
-<!-- Link every issue that this pull request addresses. Use GitHub closing keywords
-     so that issues are automatically closed upon merge.
+<!-- Link the versioned task record that governs this pull request. The record must
+     live under .github/agent-workflow/tasks/ and its immutable ID must appear in
+     the branch and pull-request title. Do not use GitHub Issues or issue-closing
+     keywords to manage team work. -->
 
-     Examples:
-       Closes #42
-       Fixes #108, #109
-       Resolves #215
+**Task record:**
 
-     If no issue exists, explain why this change was initiated without one. -->
+**Task ID:**
 
 
 
@@ -138,7 +137,7 @@
 - [ ] I have run `./vendor/bin/pint` to format backend code.
 - [ ] I have run `npm run format` and `npm run lint` to format and lint frontend code.
 - [ ] I have added comments only where the code is non-obvious. Self-documenting code is preferred.
-- [ ] I have not introduced any TODO, FIXME, or HACK comments without an associated issue number.
+- [ ] I have not introduced any TODO, FIXME, or HACK comments without an associated task ID or documented maintenance rationale.
 
 ### Architecture
 
@@ -221,8 +220,7 @@ Standard deployment procedure applies.
 
 ## Additional Context
 
-<!-- Any other information that would help the reviewer understand this change.
-     This may include links to external documentation, design documents, related
-     pull requests in other repositories, or technical constraints that influenced
-     the implementation. -->
+<!-- Include direct links to the canonical task record, both independent review
+     records, and any external documentation or technical constraints that help
+     reviewers evaluate the change. Do not use an issue number as task evidence. -->
 

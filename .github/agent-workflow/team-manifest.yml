@@ -1,0 +1,85 @@
+version: 1
+coordination_model: versioned-task-records
+issue_tracking_for_team_tasks: prohibited
+
+team_members:
+  - member_id: planner
+    display_name: Intake and Planning Agent
+    assistant_file: .github/agents/intake-and-planning-agent.agent.md
+    authority: creates-and-refines-backlog-task-contracts
+    can_modify_production_code: false
+    can_make_final_decision: false
+
+  - member_id: implementer
+    display_name: Implementation Agent
+    assistant_file: .github/agents/implementation-agent.agent.md
+    authority: implements-one-approved-task-contract
+    can_modify_production_code: true
+    can_make_final_decision: false
+
+  - member_id: architecture_reviewer
+    display_name: Architecture and Code Review Agent
+    assistant_file: .github/agents/architecture-and-code-review-agent.agent.md
+    authority: independent-architecture-and-code-review
+    independent_from: interface_reviewer
+    can_modify_production_code: false
+    can_make_final_decision: false
+
+  - member_id: interface_reviewer
+    display_name: Interface and Data Review Agent
+    assistant_file: .github/agents/interface-and-data-review-agent.agent.md
+    authority: independent-interface-and-data-review
+    independent_from: architecture_reviewer
+    can_modify_production_code: false
+    can_make_final_decision: false
+
+  - member_id: revision_validator
+    display_name: Revision and Validation Agent
+    assistant_file: .github/agents/revision-and-validation-agent.agent.md
+    authority: applies-approved-corrections-and-revalidates
+    can_modify_production_code: true
+    can_make_final_decision: false
+
+  - member_id: final_decider
+    display_name: Final Decision Agent
+    assistant_file: .github/agents/final-decision-agent.agent.md
+    authority: accepts-or-terminally-closes-task-records
+    can_modify_production_code: false
+    can_make_final_decision: true
+
+handoffs:
+  - from: planner
+    to: implementer
+    trigger: valid-backlog-task-record
+  - from: implementer
+    to: architecture_reviewer
+    trigger: review-ready-submission
+  - from: implementer
+    to: interface_reviewer
+    trigger: review-ready-submission
+  - from: architecture_reviewer
+    to: revision_validator
+    trigger: blocker-or-required-finding
+  - from: interface_reviewer
+    to: revision_validator
+    trigger: blocker-or-required-finding
+  - from: revision_validator
+    to: architecture_reviewer
+    trigger: corrected-task-resubmitted-for-review
+  - from: revision_validator
+    to: interface_reviewer
+    trigger: corrected-task-resubmitted-for-review
+  - from: architecture_reviewer
+    to: final_decider
+    trigger: independent-approval-and-interface-review-approval
+  - from: interface_reviewer
+    to: final_decider
+    trigger: independent-approval-and-architecture-review-approval
+
+state_ownership:
+  backlog: planner
+  active: implementer
+  review: implementer
+  revision: revision_validator
+  accepted: final_decider
+  rejected: final_decider
