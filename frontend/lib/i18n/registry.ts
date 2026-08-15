@@ -1,5 +1,7 @@
 import { arSA } from "./dictionaries/ar-SA";
 import { enUS } from "./dictionaries/en-US";
+import { catalogText } from "./interpolate";
+import type { CatalogKey } from "./catalog";
 import type { AppDictionary, LocaleMetadata, SupportedLocale } from "./types";
 
 export const DEFAULT_LOCALE: SupportedLocale = "ar-SA";
@@ -55,6 +57,20 @@ export function getLocaleMetadata(locale?: string | null): LocaleMetadata {
 
 export function getDictionary(locale?: string | null): Readonly<AppDictionary> {
     return dictionaries[resolveSupportedLocale(locale)];
+}
+
+function getRuntimeLocale(): SupportedLocale {
+    if (typeof window === "undefined") return DEFAULT_LOCALE;
+    try {
+        return resolveSupportedLocale(window.localStorage.getItem("accore.locale") ?? document.documentElement.lang);
+    } catch {
+        return resolveSupportedLocale(document.documentElement.lang);
+    }
+}
+
+/** Safe non-hook lookup for server output, module configuration, and store messages. */
+export function catalogMessage(key: CatalogKey, values?: Record<string, unknown>): string {
+    return catalogText(getDictionary(getRuntimeLocale()), key, values);
 }
 
 export async function loadDictionary(locale?: string | null): Promise<Readonly<AppDictionary>> {

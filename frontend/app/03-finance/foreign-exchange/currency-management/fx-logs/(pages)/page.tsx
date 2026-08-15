@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { MainLayout } from "@/components/layout";
 import { Table, Column, showToast } from "@/components/ui";
 import { TextInput } from "@/components/ui/TextInput";
@@ -30,6 +31,7 @@ interface Currency {
 }
 
 export default function FxLogsPage() {
+    const { t: i18n } = useI18n();
   const [history, setHistory] = useState<ExchangeRateHistory[]>([]);
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,7 +49,7 @@ export default function FxLogsPage() {
       }
     } catch (e) {
       console.error(e);
-      showToast("خطأ في تحميل العملات", "error");
+      showToast(i18n.catalog["text_0f3bf5f8f012"], "error");
     }
   }, []);
 
@@ -65,11 +67,11 @@ export default function FxLogsPage() {
       if (res.success) {
         setHistory(res.data as ExchangeRateHistory[]);
       } else {
-        showToast(res.message || "فشل تحميل سجل العمليات", "error");
+        showToast(res.message || i18n.catalog["text_4d8acb11b239"], "error");
       }
     } catch (e) {
       console.error(e);
-      showToast("خطأ في تحميل سجل العمليات", "error");
+      showToast(i18n.catalog["text_d5a8a4c98344"], "error");
     } finally {
       setLoading(false);
     }
@@ -86,7 +88,7 @@ export default function FxLogsPage() {
   const columns: Column<ExchangeRateHistory>[] = [
     {
       key: "currency",
-      header: "العملة المصدر",
+      header: i18n.catalog["text_a049cbb14f26"],
       render: (row) => (
         <span>
           {row.currency?.name || "-"}{" "}
@@ -96,7 +98,7 @@ export default function FxLogsPage() {
     },
     {
       key: "target_currency",
-      header: "العملة الهدف",
+      header: i18n.catalog["text_a7af2ad5f979"],
       render: (row) => (
         <span>
           {row.target_currency?.name || "-"}{" "}
@@ -106,7 +108,7 @@ export default function FxLogsPage() {
     },
     {
       key: "exchange_rate",
-      header: "سعر الصرف",
+      header: i18n.catalog["text_fbffb38f5bb4"],
       render: (row) => (
         <strong style={{ fontFamily: "monospace", fontSize: "0.95rem" }}>
           {Number(row.exchange_rate).toFixed(6)}
@@ -115,12 +117,12 @@ export default function FxLogsPage() {
     },
     {
       key: "effective_date",
-      header: "تاريخ السريان",
+      header: i18n.catalog["text_6f53e00bf25e"],
       render: (row) => row.effective_date,
     },
     {
       key: "source",
-      header: "المصدر",
+      header: i18n.catalog["text_64660bb87d89"],
       render: (row) => (
         <span
           className={`badge ${
@@ -132,21 +134,21 @@ export default function FxLogsPage() {
           }`}
         >
           {row.source === "MANUAL"
-            ? "يدوي"
+            ? i18n.catalog["text_a62cb7790ba3"]
             : row.source === "CENTRAL_BANK"
-            ? "بنك مركزي"
+            ? i18n.catalog["text_3442aeef4a07"]
             : "API"}
         </span>
       ),
     },
     {
       key: "created_by",
-      header: "بواسطة",
+      header: i18n.catalog["text_a98b66bae2c9"],
       render: (row) => row.created_by?.name || "-",
     },
     {
       key: "created_at",
-      header: "تاريخ التسجيل",
+      header: i18n.catalog["text_b8fcbb3f2d33"],
       render: (row) =>
         new Date(row.created_at).toLocaleString("ar-SA", {
           year: "numeric",
@@ -171,13 +173,12 @@ export default function FxLogsPage() {
             }}
           >
             <div>
-              <h3 style={{ margin: 0 }}>سجل عمليات الصرف الأجنبي</h3>
+              <h3 style={{ margin: 0 }}>{i18n.catalog["text_485270161657"]}</h3>
               <p
                 className="text-muted"
                 style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem" }}
               >
-                تتبع تاريخ أسعار الصرف وجميع عمليات التسجيل والتحديث
-              </p>
+                {i18n.catalog["text_1fcb7c297569"]}</p>
             </div>
           </div>
 
@@ -192,13 +193,13 @@ export default function FxLogsPage() {
             }}
           >
             <div className="form-group">
-              <label className="form-label">العملة</label>
+              <label className="form-label">{i18n.catalog["text_30ce3a1dae2c"]}</label>
               <select
                 className="form-control"
                 value={filterCurrencyId}
                 onChange={(e) => setFilterCurrencyId(e.target.value)}
               >
-                <option value="">الكل</option>
+                <option value="">{i18n.catalog["text_65f276da33cf"]}</option>
                 {currencies.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name} ({c.code})
@@ -208,13 +209,13 @@ export default function FxLogsPage() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">مقابل العملة</label>
+              <label className="form-label">{i18n.catalog["text_219c5815ace0"]}</label>
               <select
                 className="form-control"
                 value={filterTargetId}
                 onChange={(e) => setFilterTargetId(e.target.value)}
               >
-                <option value="">الكل</option>
+                <option value="">{i18n.catalog["text_65f276da33cf"]}</option>
                 {currencies.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name} ({c.code})
@@ -225,7 +226,7 @@ export default function FxLogsPage() {
 
             <div className="form-group">
               <TextInput
-                label="من تاريخ"
+                label={i18n.catalog["text_996988dbc52e"]}
                 type="date"
                 value={filterFromDate}
                 onChange={(e) => setFilterFromDate(e.target.value)}
@@ -234,7 +235,7 @@ export default function FxLogsPage() {
 
             <div className="form-group">
               <TextInput
-                label="إلى تاريخ"
+                label={i18n.catalog["text_217caed1c04f"]}
                 type="date"
                 value={filterToDate}
                 onChange={(e) => setFilterToDate(e.target.value)}
@@ -247,7 +248,7 @@ export default function FxLogsPage() {
             columns={columns}
             keyExtractor={(item) => item.id}
             isLoading={loading}
-            emptyMessage="لا توجد سجلات عمليات صرف حتى الآن"
+            emptyMessage={i18n.catalog["text_9a16c6695a92"]}
           />
         </div>
       </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { catalogMessage } from "@/lib/i18n";
 import { getIcon } from "@/lib/icons";
 import { showToast } from "./Toast";
 
@@ -49,8 +50,8 @@ export function showAlert(containerId: string, message: string, type: AlertType 
   }
 
   const alertDiv = document.createElement("div");
-  alertDiv.className = `alert alert-${type} animate-fade`;
-  alertDiv.style.margin = "1rem 0";
+  alertDiv.className = catalogMessage("text_cd73268c32af", { value0: type });
+  alertDiv.style.margin = catalogMessage("text_5a83ff108d25");
   alertDiv.style.padding = "1rem";
   alertDiv.style.borderRadius = "var(--radius-md)";
   alertDiv.style.backgroundColor = type === "error" ? "#fee2e2" : type === "warning" ? "#fef3c7" : "#dcfce7";
@@ -65,7 +66,7 @@ export function showAlert(containerId: string, message: string, type: AlertType 
   if (type !== "error") {
     setTimeout(() => {
       alertDiv.style.opacity = "0";
-      alertDiv.style.transition = "opacity 0.5s ease";
+      alertDiv.style.transition = catalogMessage("text_5c3b301f38e6");
       setTimeout(() => alertDiv.remove(), 500);
     }, 5000);
   }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { useMemo } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { navigationGroups, NavigationLink, getAllNavigationLinks, getNavigationGroup } from "@/lib/navigation";
@@ -9,6 +10,7 @@ interface GlobalTitleProps {
 }
 
 export function GlobalTitle({ titleOverride }: GlobalTitleProps) {
+    const { t: i18n } = useI18n();
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
@@ -37,7 +39,7 @@ export function GlobalTitle({ titleOverride }: GlobalTitleProps) {
         titleOverride ||
         currentLink?.label ||
         currentGroupLabel ||
-        "لوحة التحكم";
+        i18n.catalog["text_336496c4f685"];
 
     return (
         <div className="top-global-title" aria-live="polite">

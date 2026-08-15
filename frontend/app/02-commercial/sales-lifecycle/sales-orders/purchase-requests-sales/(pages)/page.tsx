@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { Button, ConfirmDialog, showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -11,6 +12,7 @@ import { RequestsTable } from "../components/RequestsTable";
 import { Product, PurchaseRequest } from "@/types";
 
 export default function PurchaseRequestsPage() {
+    const { t: i18n } = useI18n();
     const [user, setUser] = useState<User | null>(null);
     const [permissions, setPermissions] = useState<Permission[]>([]);
     const [requests, setRequests] = useState<PurchaseRequest[]>([]);
@@ -32,8 +34,8 @@ export default function PurchaseRequestsPage() {
             setRequests((reqRes.data as PurchaseRequest[]) || []);
             setProducts((prodRes.data as Product[]) || []);
         } catch (error) {
-            console.error("Failed to load requests", error);
-            showToast("خطأ في تحميل الطلبات", "error");
+            console.error(i18n.catalog["text_e9e02927e5e3"], error);
+            showToast(i18n.catalog["text_af0f2422c455"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -56,11 +58,11 @@ export default function PurchaseRequestsPage() {
                 method: "POST",
                 body: JSON.stringify(data),
             });
-            showToast("تم إنشاء الطلب بنجاح", "success");
+            showToast(i18n.catalog["text_d22999c3f617"], "success");
             loadData();
         } catch (error) {
-            console.error("Failed to create request", error);
-            showToast("حدث خطأ أثناء الإنشاء", "error");
+            console.error(i18n.catalog["text_19f271dd547d"], error);
+            showToast(i18n.catalog["text_d06feffda539"], "error");
         }
     };
 
@@ -70,11 +72,11 @@ export default function PurchaseRequestsPage() {
                 method: "PUT",
                 body: JSON.stringify({ id: request.id, status: newStatus }),
             });
-            showToast("تم تحديث الحالة بنجاح", "success");
+            showToast(i18n.catalog["text_5ef9a2cd787f"], "success");
             loadData();
         } catch (error) {
-            console.error("Failed to update status", error);
-            showToast("حدث خطأ أثناء التحديث", "error");
+            console.error(i18n.catalog["text_9e93be01c172"], error);
+            showToast(i18n.catalog["text_7863dda1b923"], "error");
         }
     };
 
@@ -86,7 +88,7 @@ export default function PurchaseRequestsPage() {
             });
 
             // The backend merges the response object if it's associative
-            const message = (response.message as string) || "تمت العملية بنجاح";
+            const message = (response.message as string) || i18n.catalog["text_4d6cab40cfc6"];
             const generatedCount = (response.generated_count as number) || 0;
 
             showToast(message, "success");
@@ -95,8 +97,8 @@ export default function PurchaseRequestsPage() {
                 await loadData();
             }
         } catch (error) {
-            console.error("Failed to auto-generate requests", error);
-            showToast("حدث خطأ أثناء التوليد التلقائي", "error");
+            console.error(i18n.catalog["text_d2bd02e1ed53"], error);
+            showToast(i18n.catalog["text_eaed314f8aba"], "error");
         } finally {
             setIsAutoGenerating(false);
         }
@@ -116,8 +118,7 @@ export default function PurchaseRequestsPage() {
                                     icon="refresh"
                                     onClick={() => setIsAutoOpen(true)}
                                 >
-                                    توليد طلبات للنواقص
-                                </Button>
+                                    {i18n.catalog["text_028151e4e83b"]}</Button>
                             )}
                             {canAccess(permissions, "purchases", "create") && (
                                 <Button
@@ -125,8 +126,7 @@ export default function PurchaseRequestsPage() {
                                     icon="plus"
                                     onClick={() => setIsAddOpen(true)}
                                 >
-                                    طلب جديد
-                                </Button>
+                                    {i18n.catalog["text_6d43782b2c9f"]}</Button>
                             )}
                         </>
                     }
@@ -149,10 +149,10 @@ export default function PurchaseRequestsPage() {
             <ConfirmDialog
                 isOpen={isAutoOpen}
                 onClose={() => setIsAutoOpen(false)}
-                title="توليد تلقائي للطلبات"
-                message="هل أنت متأكد من مراجعة النواقص في المخزون وتوليد طلبات شراء آلية لها؟ سيتم طلب المنتجات التي نفدت من المخزون أو التي قل رصيدها عن الحد الأدنى."
-                confirmText={isAutoGenerating ? "جاري التوليد..." : "نعم، توليد"}
-                cancelText="إلغاء"
+                title={i18n.catalog["text_ee5ba976cd58"]}
+                message={i18n.catalog["text_a65240ba0920"]}
+                confirmText={isAutoGenerating ? i18n.catalog["text_925f385326f2"] : i18n.catalog["text_086458c38f16"]}
+                cancelText={i18n.catalog["text_9a30dc2a96b8"]}
                 onConfirm={handleAutoGenerate}
             />
         </MainLayout>

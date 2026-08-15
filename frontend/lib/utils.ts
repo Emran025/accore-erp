@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 /**
  * @fileoverview Utility functions for the accore ERP frontend.
  * Provides formatting, validation, and helper utilities used across all modules.
@@ -15,7 +16,7 @@ import QRCode from "qrcode";
  */
 export function formatCurrency(amount: number | string | null | undefined): string {
   const num = typeof amount === 'number' ? amount : parseFloat(String(amount || 0)) || 0;
-  const symbol = getSetting('currency_symbol', 'ر.س');
+  const symbol = getSetting('currency_symbol', catalogMessage("text_feafe34f5add"));
 
   return new Intl.NumberFormat('ar-SA', {
     minimumFractionDigits: 2,
@@ -137,13 +138,13 @@ export function getCurrentDateTime(): string {
  */
 export function getRoleBadgeText(role: string): string {
   const roleMap: Record<string, string> = {
-    admin: "مدير النظام",
-    manager: "مشرف",
-    cashier: "كاشير",
-    accountant: "محاسب",
-    viewer: "مشاهد",
+    admin: catalogMessage("text_bcae65b4e374"),
+    manager: catalogMessage("text_3230534eabd8"),
+    cashier: catalogMessage("text_28b71c206337"),
+    accountant: catalogMessage("text_16e323f5d2ee"),
+    viewer: catalogMessage("text_d616c0043458"),
   };
-  return roleMap[role?.toLowerCase()] || role || "غير محدد";
+  return roleMap[role?.toLowerCase()] || role || catalogMessage("text_5a0374f3ff5a");
 }
 
 /**
@@ -165,16 +166,16 @@ export function getRoleBadgeClass(role: string): string {
  */
 export function translateExpenseCategory(category: string): string {
   const categoryMap: Record<string, string> = {
-    rent: "إيجار",
-    utilities: "مرافق",
-    salaries: "رواتب",
-    maintenance: "صيانة",
-    supplies: "مستلزمات",
-    marketing: "تسويق",
-    transport: "نقل",
-    other: "أخرى",
+    rent: catalogMessage("text_b73ae0125ca9"),
+    utilities: catalogMessage("text_1882ff95c23d"),
+    salaries: catalogMessage("text_881e172ec666"),
+    maintenance: catalogMessage("text_9c499d210797"),
+    supplies: catalogMessage("text_817f32c5668f"),
+    marketing: catalogMessage("text_268f5c83d4f1"),
+    transport: catalogMessage("text_4dc3b4bfcd18"),
+    other: catalogMessage("text_17a9f38e22b6"),
   };
-  return categoryMap[category?.toLowerCase()] || category || "أخرى";
+  return categoryMap[category?.toLowerCase()] || category || catalogMessage("text_17a9f38e22b6");
 }
 
 
@@ -244,10 +245,10 @@ export function parseNumber(value: string | number | null | undefined): number {
  */
 export function getArabicDate(): string {
   const now = new Date();
-  const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+  const days = [catalogMessage("text_b74290ce11de"), catalogMessage("text_452434da4762"), catalogMessage("text_3e1154b18e8a"), catalogMessage("text_05ae1ca23dcb"), catalogMessage("text_74c564a4b5a6"), catalogMessage("text_fa35e221b844"), catalogMessage("text_a49412504fd0")];
   const months = [
-    'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-    'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+    catalogMessage("text_bc40bf9bf5db"), catalogMessage("text_4c9195d55893"), catalogMessage("text_121f3712ae7c"), catalogMessage("text_b5021be42c23"), catalogMessage("text_e490a80977c5"), catalogMessage("text_f6c57592aa1d"),
+    catalogMessage("text_7f5c6765af36"), catalogMessage("text_47bea73f4ca8"), catalogMessage("text_339eb2be7171"), catalogMessage("text_128ed0f7c924"), catalogMessage("text_0b699e61fe99"), catalogMessage("text_c22ea1f7f156")
   ];
 
   const dayName = days[now.getDay()];
@@ -257,7 +258,7 @@ export function getArabicDate(): string {
   const hours = String(now.getHours()).padStart(2, '0');
   const minutes = String(now.getMinutes()).padStart(2, '0');
 
-  return `${dayName}، ${day} ${monthName} , ${year} - ${hours}:${minutes}`;
+  return catalogMessage("text_54aa4e7acde3", { value0: dayName, value1: day, value2: monthName, value3: year, value4: hours, value5: minutes });
 }
 
 /**
@@ -320,7 +321,7 @@ export function generateBarcode(text: string, padding = 20): string {
 
     return canvas.toDataURL();
   } catch (e) {
-    console.error('Barcode generation error', e);
+    console.error(catalogMessage("text_d3da90754f57"), e);
     return '';
   }
 }
@@ -342,7 +343,7 @@ export async function generateQRCode(text: string): Promise<string> {
       },
     });
   } catch (err) {
-    console.error('QR Code generation error', err);
+    console.error(catalogMessage("text_61909dac7aaa"), err);
     return '';
   }
 }

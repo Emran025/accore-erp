@@ -59,6 +59,10 @@ jobs:
         working-directory: ./frontend
         run: npm run test
 
+      - name: Verify Localized Interface Text
+        working-directory: ./frontend
+        run: npm run i18n:check
+
       - name: Build Frontend
         working-directory: ./frontend
         run: npm run build

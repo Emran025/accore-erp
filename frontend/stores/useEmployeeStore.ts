@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { fetchAPI } from '@/lib/api';
@@ -120,8 +121,8 @@ export const useEmployeeStore = create<EmployeeState>()(
                         set({ isLoading: false });
                     }
                 } catch (error) {
-                    console.error('Failed to load employees', error);
-                    showToast('خطأ في تحميل الموظفين', 'error');
+                    console.error(catalogMessage("text_0210c2dc9e03"), error);
+                    showToast(catalogMessage("text_fd6df210c4d3"), 'error');
                     set({ isLoading: false });
                 }
             },
@@ -147,7 +148,7 @@ export const useEmployeeStore = create<EmployeeState>()(
                         set({ allEmployees, lastFetchedAll: Date.now() });
                     }
                 } catch (error) {
-                    console.error('Failed to load all employees', error);
+                    console.error(catalogMessage("text_c9317aa6affd"), error);
                 }
             },
 
@@ -163,9 +164,9 @@ export const useEmployeeStore = create<EmployeeState>()(
             deleteEmployee: async (id) => {
                 set({ isLoading: true });
                 try {
-                    const res = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEES.BASE}/${id}`, { method: 'DELETE' });
+                    const res = await fetchAPI(catalogMessage("text_0907f4dfb304", { value0: API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEES.BASE, value1: id }), { method: 'DELETE' });
                     if (res.success) {
-                        showToast('تم حذف الموظف بنجاح', 'success');
+                        showToast(catalogMessage("text_ba02c75de4ce"), 'success');
                         // Optimistic update
                         set(state => ({
                             employees: state.employees.filter(e => e.id !== id),
@@ -176,10 +177,10 @@ export const useEmployeeStore = create<EmployeeState>()(
                         get().invalidateCache();
                         return true;
                     } else {
-                        showToast(res.message || 'فشل حذف الموظف', 'error');
+                        showToast(res.message || catalogMessage("text_eed0549f9aba"), 'error');
                     }
                 } catch (error) {
-                    showToast('حدث خطأ أثناء الحذف', 'error');
+                    showToast(catalogMessage("text_fb7b963d7c03"), 'error');
                 } finally {
                     set({ isLoading: false });
                 }

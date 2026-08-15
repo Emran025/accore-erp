@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogMessage } from "@/lib/i18n";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Icon } from "@/lib/icons";
 import { isArabic as checkIsArabic } from "@/lib/utils";
@@ -40,13 +41,13 @@ export function SearchableSelect({
     value,
     onChange,
     onSearch,
-    placeholder = "بحث...",
+    placeholder = catalogMessage("text_76b858f96489"),
     disabled = false,
     id,
     name,
     required = false,
     className = "",
-    noResultsText = "لا توجد نتائج",
+    noResultsText = catalogMessage("text_2d8a461130e0"),
     renderOption,
     paddingVertical,
     filterOption,
@@ -54,6 +55,7 @@ export function SearchableSelect({
     onAutoSelect,
     inputRef: externalRef,
 }: SearchableSelectProps) {
+    const { t: i18n } = useI18n();
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [inputValue, setInputValue] = useState("");
@@ -225,7 +227,7 @@ export function SearchableSelect({
                     type="button"
                     onClick={handleClear}
                     className="clear-btn"
-                    title="مسح"
+                    title={i18n.catalog["text_308cf07fa826"]}
                 >
                     <Icon name="x" size={16} />
                 </button>

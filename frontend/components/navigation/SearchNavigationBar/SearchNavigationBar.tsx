@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
@@ -30,6 +31,7 @@ interface SearchResultItem {
 }
 
 export function SearchNavigationBar({ onNavigate, titleOverride }: SearchNavigationBarProps) {
+    const { t: i18n } = useI18n();
     const pathname = usePathname();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -63,7 +65,7 @@ export function SearchNavigationBar({ onNavigate, titleOverride }: SearchNavigat
     }, [allLinks, pathname]);
 
     const crumbs = useMemo(() => {
-        const base = [{ label: "الرئيسية", href: "/navigation" }];
+        const base = [{ label: i18n.catalog["text_bfcf48307970"], href: "/navigation" }];
 
         if (!currentGroup && !currentLink) {
             return base;

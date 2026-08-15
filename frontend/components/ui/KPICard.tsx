@@ -1,5 +1,6 @@
 "use client";
 
+import { catalogMessage } from "@/lib/i18n";
 import { getIcon, IconName } from "@/lib/icons";
 
 interface KPICardProps {
@@ -105,7 +106,7 @@ export function KPICardRow({ KPICards }: { KPICards: KPICardProps[] }) {
 
 
 const addOpacity = (color: string, opacity: number): string => {
-    if (color.startsWith('var(')) {
+    if (color.startsWith(catalogMessage("text_a7201280f898"))) {
         const matches = color.match(/var\((.+?)\)/);
         if (matches && matches[1]) {
             const varName = matches[1];

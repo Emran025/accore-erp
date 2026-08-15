@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { FilterGroup, FilterSection } from "@/components/ui";
 import { getIcon } from "@/lib/icons";
 import { Supplier } from "@/types";
@@ -20,7 +21,7 @@ export function SupplierInfoSection({ supplier, showDeleted, onShowDeletedChange
                 <div>
                     <h3 style={{ margin: 0 }}>{supplier.name}</h3>
                     <p className="text-muted" style={{ margin: 0, fontSize: "0.85rem" }}>
-                        {supplier.phone || "بدون هاتف"} | {supplier.tax_number || "بدون رقم ضريبي"}
+                        {supplier.phone || catalogMessage("text_04cf43a4d120")} | {supplier.tax_number || catalogMessage("text_6ae0f7c2b614")}
                     </p>
                 </div>
             </div>
@@ -33,8 +34,7 @@ export function SupplierInfoSection({ supplier, showDeleted, onShowDeletedChange
                     onChange={(e) => onShowDeletedChange(e.target.checked)}
                 />
                 <label htmlFor="show-deleted-toggle" style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: 0, cursor: "pointer" }}>
-                    عرض المحذوفات
-                </label>
+                    {catalogMessage("text_8860744ad348")}</label>
             </FilterGroup>
         </FilterSection>
     );

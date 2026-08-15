@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 /**
  * ═══════════════════════════════════════════════════════════════════════════
  * Domain 9: Data & Intelligence (البيانات والذكاء الاصطناعي)
@@ -17,29 +18,29 @@ import { Domain } from "../../types/navigation";
 export const IntelligenceDomain: Domain = {
     id: "intelligence",
     order: 9,
-    title: "البيانات والذكاء الاصطناعي",
+    title: catalogMessage("text_f4afb544f31a"),
     icon: "chart-bar",
-    description: "ذكاء الأعمال، مستودع البيانات، والتحليلات المتقدمة",
+    description: catalogMessage("text_590255b97124"),
     capabilities: [
         // ─────────────────────────────────────────────────────────────
         // Capability: Business Intelligence
         // ─────────────────────────────────────────────────────────────
         {
             id: "business-intelligence",
-            title: "ذكاء الأعمال",
+            title: catalogMessage("text_0858111e63f8"),
             icon: "chart-bar",
-            description: "لوحات القيادة التنفيذية والتقارير",
+            description: catalogMessage("text_71940e486270"),
             groups: [
                 {
                     id: "executive-dashboards",
-                    title: "لوحات القيادة",
-                    description: "لوحات تحليلية للإدارة العليا",
+                    title: catalogMessage("text_28ac3b7cbd4c"),
+                    description: catalogMessage("text_75397a979c56"),
                     screens: [
                         {
                             id: "bi-dashboard",
-                            title: "لوحات القيادة التنفيذية",
+                            title: catalogMessage("text_8cb5a1d139fe"),
                             icon: "chart-bar",
-                            description: "تحليلات شاملة للإدارة التنفيذية (قريباً)",
+                            description: catalogMessage("text_4d47eb8bb85f"),
                             href: "/09-intelligence/business-intelligence/executive-dashboards/bi-dashboard",
                             permissions: [],
                             module: "intelligence",
@@ -47,9 +48,9 @@ export const IntelligenceDomain: Domain = {
                         },
                         {
                             id: "drill-down-reports",
-                            title: "التقارير التفصيلية",
+                            title: catalogMessage("text_7cf79c6042fa"),
                             icon: "pie-chart",
-                            description: "تقارير قابلة للتعمق (قريباً)",
+                            description: catalogMessage("text_7fcacb1619ce"),
                             href: "/09-intelligence/business-intelligence/executive-dashboards/drill-down-reports",
                             permissions: [],
                             module: "intelligence",
@@ -65,20 +66,20 @@ export const IntelligenceDomain: Domain = {
         // ─────────────────────────────────────────────────────────────
         {
             id: "advanced-analytics",
-            title: "التحليلات المتقدمة",
+            title: catalogMessage("text_01be5134dc1f"),
             icon: "chart-line",
-            description: "التحليلات التنبؤية وتحليل الاتجاهات",
+            description: catalogMessage("text_5b5c31059a84"),
             groups: [
                 {
                     id: "predictive",
-                    title: "التحليلات التنبؤية",
-                    description: "توقعات مبنية على الذكاء الاصطناعي",
+                    title: catalogMessage("text_55ae485eb500"),
+                    description: catalogMessage("text_07807018aa9e"),
                     screens: [
                         {
                             id: "predictive-analytics",
-                            title: "التحليلات التنبؤية (AI)",
+                            title: catalogMessage("text_953fe6ff7425"),
                             icon: "chart-line",
-                            description: "توقعات ذكية للأعمال (قريباً)",
+                            description: catalogMessage("text_294541841438"),
                             href: "/09-intelligence/advanced-analytics/predictive/predictive-analytics",
                             permissions: [],
                             module: "intelligence",

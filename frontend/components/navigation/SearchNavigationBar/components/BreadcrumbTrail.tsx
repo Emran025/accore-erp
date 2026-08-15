@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { getIcon } from "@/lib/icons";
 
@@ -34,6 +35,7 @@ export function BreadcrumbTrail({
     onNavigate,
     allLinks = [],
 }: BreadcrumbTrailProps) {
+    const { t: i18n } = useI18n();
 
     /* ── Editable mode state ─────────────────────────────────── */
     const [isEditing, setIsEditing] = useState(false);
@@ -153,7 +155,7 @@ export function BreadcrumbTrail({
                                 value={editValue}
                                 onChange={(e) => handleInputChange(e.target.value)}
                                 onKeyDown={handleKeyDown}
-                                placeholder="اكتب مسار الصفحة أو اسمها..."
+                                placeholder={i18n.catalog["text_1dd691e5571f"]}
                                 dir="ltr"
                                 spellCheck={false}
                                 autoComplete="off"
@@ -161,7 +163,7 @@ export function BreadcrumbTrail({
                             <button
                                 type="button"
                                 className="address-bar-go-btn"
-                                aria-label="Navigate"
+                                aria-label={i18n.catalog["text_5ea5fbe811db"]}
                                 onClick={() => {
                                     if (editValue.startsWith("/")) {
                                         onNavigate(editValue);
@@ -195,7 +197,7 @@ export function BreadcrumbTrail({
                     /* ─── Display Mode: Breadcrumb segments ──── */
                     <nav
                         className="address-bar-breadcrumb"
-                        aria-label="Breadcrumb"
+                        aria-label={i18n.catalog["text_2bd873d6c734"]}
                         onClick={(e) => {
                             // Click on the empty space (not on a crumb) to edit
                             if (e.target === e.currentTarget) {
@@ -227,8 +229,8 @@ export function BreadcrumbTrail({
                             type="button"
                             className="address-bar-edit-trigger"
                             onClick={enterEditMode}
-                            aria-label="Edit path"
-                            title="انقر لتعديل المسار"
+                            aria-label={i18n.catalog["text_d61a509d22ec"]}
+                            title={i18n.catalog["text_75194e9c3b6a"]}
                         />
                     </nav>
                 )}

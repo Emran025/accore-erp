@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { PageSubHeader } from "@/components/layout";
 import { Button, showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -8,6 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
 function TemplatePreviewContent() {
+    const { t: i18n } = useI18n();
     const router = useRouter();
     const searchParams = useSearchParams();
     const id = searchParams.get("id");
@@ -42,9 +44,9 @@ function TemplatePreviewContent() {
                 const targetHistory = histData.find((h: any) => h.id.toString() === hId);
                 if (targetHistory) {
                     setRenderedHtml(targetHistory.body_html || "");
-                    setTemplateName((prev) => `${prev} (نسخة قديمة)`);
+                    setTemplateName((prev) => catalogText(i18n, "text_19229ce696c9", { value0: prev }));
                 } else {
-                    showToast("لم يتم العثور على النسخة", "error");
+                    showToast(i18n.catalog["text_45841de07af3"], "error");
                     router.push("/02-commercial/sales-governance/templates/template-manager");
                 }
             } else {
@@ -54,8 +56,8 @@ function TemplatePreviewContent() {
                 setRenderedHtml(resData?.rendered_html || templateData?.body_html || "");
             }
         } catch (error) {
-            console.error("Render error:", error);
-            showToast("فشل في تحميل المعاينة", "error");
+            console.error(i18n.catalog["text_910266324d35"], error);
+            showToast(i18n.catalog["text_cafcc71591f3"], "error");
             router.push("/02-commercial/sales-governance/templates/template-manager");
         } finally {
             setIsLoading(false);
@@ -66,7 +68,7 @@ function TemplatePreviewContent() {
         const printWindow = window.open("", "_blank");
         if (printWindow) {
             printWindow.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head>
-<meta charset="UTF-8"><title>${templateName || 'مستند'}</title>
+<meta charset="UTF-8"><title>${templateName || i18n.catalog["text_76a8d471e3b9"]}</title>
 </head><body><style>
 @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
 @page { size: A4; margin: 15mm 12mm; }
@@ -88,16 +90,14 @@ function TemplatePreviewContent() {
     return (
         <div className="sales-card animate-fade">
             <PageSubHeader
-                title={`معاينة: ${templateName}`}
+                title={catalogText(i18n, "text_e03a1bb9de48", { value0: templateName })}
                 titleIcon="file-contract"
                 actions={
                     <>
                         <Button variant="secondary" onClick={() => router.push("/02-commercial/sales-governance/templates/template-manager")}>
-                            رجوع
-                        </Button>
+                            {i18n.catalog["text_cb822418a29d"]}</Button>
                         <Button variant="primary" icon="printer" onClick={handlePrint}>
-                            طباعة
-                        </Button>
+                            {i18n.catalog["text_2e00e00acffe"]}</Button>
                     </>
                 }
             />

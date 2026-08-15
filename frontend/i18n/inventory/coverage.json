@@ -1,0 +1,4203 @@
+{
+  "generatedAt": "2026-08-15T18:36:04.719Z",
+  "filesScanned": 466,
+  "candidatesScanned": 27492,
+  "filesPassing": 466,
+  "filesFailing": 0,
+  "files": [
+    {
+      "file": "app/[...virtual]/page.tsx",
+      "candidates": 2,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 2,
+      "passed": true
+    },
+    {
+      "file": "app/[...virtual]/VirtualNavigationClient.tsx",
+      "candidates": 40,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 40,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/automation/recurring/batch-processing/(pages)/page.tsx",
+      "candidates": 191,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 191,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/automation/recurring/batch-processing/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/automation/recurring/recurring-transactions/(pages)/page.tsx",
+      "candidates": 265,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 265,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/automation/recurring/recurring-transactions/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/identity-access/user-management/system-settings/(pages)/page.tsx",
+      "candidates": 29,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 29,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/identity-access/user-management/system-settings/(pages)/types.ts",
+      "candidates": 2,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 2,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/identity-access/user-management/system-settings/components/InvoiceSettingsTab.tsx",
+      "candidates": 109,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 109,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/identity-access/user-management/system-settings/components/SecurityTab.tsx",
+      "candidates": 31,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 31,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/identity-access/user-management/system-settings/components/SessionsTab.tsx",
+      "candidates": 36,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 36,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/identity-access/user-management/system-settings/components/StoreSettingsTab.tsx",
+      "candidates": 39,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 39,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/identity-access/user-management/system-settings/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/OrganizationalStructure.tsx",
+      "candidates": 28,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 28,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx",
+      "candidates": 133,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 133,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/ui/ActionList.tsx",
+      "candidates": 27,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 27,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/ui/index.ts",
+      "candidates": 18,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 18,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/ui/MetaItem.tsx",
+      "candidates": 15,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 15,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/ui/SharedWidgets.tsx",
+      "candidates": 64,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 64,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/ui/StatusWidgets.tsx",
+      "candidates": 35,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 35,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/ChangeHistoryTab.tsx",
+      "candidates": 230,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 230,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/DashboardTab.tsx",
+      "candidates": 122,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 122,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/HierarchyTab.tsx",
+      "candidates": 173,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 173,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/IntegrityTab.tsx",
+      "candidates": 96,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 96,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/LinksTab.tsx",
+      "candidates": 218,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 218,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/MetaTypesTab.tsx",
+      "candidates": 88,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 88,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/NodeFormPanel.tsx",
+      "candidates": 316,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 316,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/NodesTab.tsx",
+      "candidates": 168,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 168,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/ScopeContextTab.tsx",
+      "candidates": 108,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 108,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/TopologyRulesTab.tsx",
+      "candidates": 81,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 81,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/system-overview/dashboard/global-dashboard/(pages)/page.tsx",
+      "candidates": 180,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 180,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/system-overview/dashboard/global-dashboard/components/ExchangeRatesWidget.tsx",
+      "candidates": 40,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 40,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/system-overview/dashboard/global-dashboard/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/ModulesStatus.tsx",
+      "candidates": 207,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 207,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/page.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/01-enterprise-core/system-overview/dashboard/modules-status/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/crm/customer-groups-nr/add-customer-group/(pages)/page.tsx",
+      "candidates": 9,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 9,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/crm/customer-groups-nr/add-customer-group/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/crm/customer-groups-nr/add-customer-nr/(pages)/page.tsx",
+      "candidates": 9,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 9,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/crm/customer-groups-nr/add-customer-nr/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/crm/customer-groups-nr/customer-nr-assignment/(pages)/page.tsx",
+      "candidates": 9,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 9,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/crm/customer-groups-nr/customer-nr-assignment/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/crm/customer-groups-nr/view-customer-groups/(pages)/page.tsx",
+      "candidates": 9,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 9,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/crm/customer-groups-nr/view-customer-groups/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/crm/customer-groups-nr/view-customer-nr/(pages)/page.tsx",
+      "candidates": 9,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 9,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/crm/customer-groups-nr/view-customer-nr/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/crm/customer-master/customer-ledger/(pages)/page.tsx",
+      "candidates": 112,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 112,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/crm/customer-master/customer-ledger/components/CustomerInfoSection.tsx",
+      "candidates": 28,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 28,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/crm/customer-master/customer-ledger/components/LedgerFilterDialog.tsx",
+      "candidates": 19,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 19,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/crm/customer-master/customer-ledger/components/LedgerStatsCards.tsx",
+      "candidates": 22,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 22,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/crm/customer-master/customer-ledger/components/LedgerTable.tsx",
+      "candidates": 124,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 124,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/crm/customer-master/customer-ledger/components/TransactionFormDialog.tsx",
+      "candidates": 33,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 33,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/crm/customer-master/customer-ledger/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/crm/customer-master/customers-list/(pages)/page.tsx",
+      "candidates": 163,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 163,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/crm/customer-master/customers-list/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/instant-services/instnt-srvcs-ctlg/services-management/(pages)/page.tsx",
+      "candidates": 89,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 89,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/instant-services/instnt-srvcs-ctlg/services-management/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/instant-services/services-core/cash-services/(pages)/page.tsx",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/instant-services/services-core/cash-services/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/instant-services/services-core/credit-services/(pages)/page.tsx",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/instant-services/services-core/credit-services/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/instant-services/services-core/service-returns/(pages)/page.tsx",
+      "candidates": 64,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 64,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/instant-services/services-core/service-returns/components/ServiceInvoiceSelectionTab.tsx",
+      "candidates": 54,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 54,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/instant-services/services-core/service-returns/components/ServiceReturnsFilterDialog.tsx",
+      "candidates": 17,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 17,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/instant-services/services-core/service-returns/components/ServiceReturnsStatsCards.tsx",
+      "candidates": 18,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 18,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/instant-services/services-core/service-returns/components/ServiceReturnsTable.tsx",
+      "candidates": 91,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 91,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/instant-services/services-core/service-returns/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/marketing-distribution/representatives/reps-ledger/(pages)/page.tsx",
+      "candidates": 97,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 97,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/marketing-distribution/representatives/reps-ledger/components/InvoiceDetailsDialog.tsx",
+      "candidates": 54,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 54,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/marketing-distribution/representatives/reps-ledger/components/LedgerFilterDialog.tsx",
+      "candidates": 21,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 21,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/marketing-distribution/representatives/reps-ledger/components/LedgerStatsCards.tsx",
+      "candidates": 22,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 22,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/marketing-distribution/representatives/reps-ledger/components/LedgerTable.tsx",
+      "candidates": 108,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 108,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/marketing-distribution/representatives/reps-ledger/components/RepresentativeInfoSection.tsx",
+      "candidates": 28,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 28,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/marketing-distribution/representatives/reps-ledger/components/TransactionFormDialog.tsx",
+      "candidates": 35,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 35,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/marketing-distribution/representatives/reps-ledger/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/marketing-distribution/representatives/reps-list/(pages)/page.tsx",
+      "candidates": 142,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 142,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/marketing-distribution/representatives/reps-list/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/revenue-receivables/revenue-receipts/receipt-vouchers/(pages)/page.tsx",
+      "candidates": 122,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 122,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/revenue-receivables/revenue-receipts/receipt-vouchers/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/revenue-receivables/revenue-receipts/revenues/(pages)/page.tsx",
+      "candidates": 119,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 119,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/revenue-receivables/revenue-receipts/revenues/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-governance/templates/template-manager/(pages)/editor/page.tsx",
+      "candidates": 38,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 38,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-governance/templates/template-manager/(pages)/page.tsx",
+      "candidates": 4,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 4,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-governance/templates/template-manager/(pages)/preview/page.tsx",
+      "candidates": 38,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 38,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-governance/templates/template-manager/(pages)/SystemTemplates.tsx",
+      "candidates": 101,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 101,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-governance/templates/template-manager/(pages)/templates-data.ts",
+      "candidates": 175,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 175,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-governance/templates/template-manager/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-lifecycle/direct-sales/deferred-sales/(pages)/page.tsx",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-lifecycle/direct-sales/deferred-sales/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-lifecycle/direct-sales/reports/(pages)/page.tsx",
+      "candidates": 2,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 2,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-lifecycle/direct-sales/sales-invoices/(pages)/page.tsx",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-lifecycle/direct-sales/sales-invoices/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-lifecycle/direct-sales/sales-returns/(pages)/page.tsx",
+      "candidates": 64,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 64,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-lifecycle/direct-sales/sales-returns/components/InvoiceSelectionTab.tsx",
+      "candidates": 54,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 54,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-lifecycle/direct-sales/sales-returns/components/ReturnsFilterDialog.tsx",
+      "candidates": 17,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 17,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-lifecycle/direct-sales/sales-returns/components/ReturnsStatsCards.tsx",
+      "candidates": 18,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 18,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-lifecycle/direct-sales/sales-returns/components/ReturnsTable.tsx",
+      "candidates": 91,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 91,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-lifecycle/direct-sales/sales-returns/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-lifecycle/sales-orders/purchase-requests-sales/(pages)/page.tsx",
+      "candidates": 50,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 50,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-lifecycle/sales-orders/purchase-requests-sales/components/AddRequestDialog.tsx",
+      "candidates": 34,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 34,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-lifecycle/sales-orders/purchase-requests-sales/components/RequestsTable.tsx",
+      "candidates": 68,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 68,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-lifecycle/sales-orders/purchase-requests-sales/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/02-commercial/sales-lifecycle/sales-orders/quotations/(pages)/page.tsx",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/audit-compliance/audit-trail/audit-log/(pages)/page.tsx",
+      "candidates": 99,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 99,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/audit-compliance/audit-trail/audit-log/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/foreign-exchange/currency-management/currencies/(pages)/page.tsx",
+      "candidates": 7,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 7,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/foreign-exchange/currency-management/currencies/components/CurrencyListTab.tsx",
+      "candidates": 121,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 121,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/foreign-exchange/currency-management/currencies/components/CurrencyPolicyTab.tsx",
+      "candidates": 140,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 140,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/foreign-exchange/currency-management/currencies/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/foreign-exchange/currency-management/currency-positions/(pages)/page.tsx",
+      "candidates": 101,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 101,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/foreign-exchange/currency-management/currency-positions/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/foreign-exchange/currency-management/exchange-rates/(pages)/page.tsx",
+      "candidates": 134,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 134,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/foreign-exchange/currency-management/exchange-rates/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/foreign-exchange/currency-management/fx-logs/(pages)/page.tsx",
+      "candidates": 92,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 92,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/foreign-exchange/currency-management/fx-logs/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/foreign-exchange/currency-management/fx-operations/(pages)/page.tsx",
+      "candidates": 123,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 123,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/foreign-exchange/currency-management/fx-operations/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/foreign-exchange/currency-management/monetary-policy/(pages)/page.tsx",
+      "candidates": 160,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 160,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/foreign-exchange/currency-management/monetary-policy/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/general-ledger/ledger-core/chart-of-accounts/(pages)/page.tsx",
+      "candidates": 140,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 140,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/general-ledger/ledger-core/chart-of-accounts/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/general-ledger/ledger-core/financial-reports/(pages)/page.tsx",
+      "candidates": 37,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 37,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/general-ledger/ledger-core/financial-reports/components/BalanceSheetTab.tsx",
+      "candidates": 259,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 259,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/general-ledger/ledger-core/financial-reports/components/CashFlowTab.tsx",
+      "candidates": 66,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 66,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/general-ledger/ledger-core/financial-reports/components/ComparativeTab.tsx",
+      "candidates": 56,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 56,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/general-ledger/ledger-core/financial-reports/components/ProfitLossTab.tsx",
+      "candidates": 48,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 48,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/general-ledger/ledger-core/financial-reports/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/general-ledger/ledger-core/fiscal-periods/(pages)/page.tsx",
+      "candidates": 145,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 145,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/general-ledger/ledger-core/fiscal-periods/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/general-ledger/ledger-core/general-ledger-book/(pages)/page.tsx",
+      "candidates": 161,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 161,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/general-ledger/ledger-core/general-ledger-book/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/management-accounting/cost-profit-centers/cost-centers/(pages)/page.tsx",
+      "candidates": 264,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 264,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/management-accounting/cost-profit-centers/cost-centers/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/management-accounting/cost-profit-centers/profit-centers/(pages)/page.tsx",
+      "candidates": 283,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 283,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/management-accounting/cost-profit-centers/profit-centers/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/tax-compliance/cash-management/bank-reconciliation/(pages)/page.tsx",
+      "candidates": 120,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 120,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/tax-compliance/cash-management/bank-reconciliation/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/tax-compliance/cash-management/journal-vouchers/(pages)/page.tsx",
+      "candidates": 223,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 223,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/tax-compliance/cash-management/journal-vouchers/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/tax-compliance/tax-management/vat-zatca/(pages)/page.tsx",
+      "candidates": 21,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 21,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/tax-compliance/tax-management/vat-zatca/(pages)/types.ts",
+      "candidates": 8,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 8,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/tax-compliance/tax-management/vat-zatca/components/GovernmentFeesTab.tsx",
+      "candidates": 179,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 179,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/tax-compliance/tax-management/vat-zatca/components/ZatcaSettingsTab.tsx",
+      "candidates": 143,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 143,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/tax-compliance/tax-management/vat-zatca/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/treasury/cash-management/bank-reconciliation/(pages)/page.tsx",
+      "candidates": 120,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 120,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/treasury/cash-management/bank-reconciliation/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/treasury/cash-management/journal-vouchers/(pages)/page.tsx",
+      "candidates": 223,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 223,
+      "passed": true
+    },
+    {
+      "file": "app/03-finance/treasury/cash-management/journal-vouchers/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/inventory/products-inventory/inventory-reports/(pages)/page.tsx",
+      "candidates": 2,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 2,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/inventory/products-inventory/products/(pages)/page.tsx",
+      "candidates": 226,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 226,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/inventory/products-inventory/products/(pages)/types.ts",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/inventory/products-inventory/products/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/payables-expenses/expense-management/expenses/(pages)/page.tsx",
+      "candidates": 161,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 161,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/payables-expenses/expense-management/expenses/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/payables-expenses/expense-management/purchase-returns/(pages)/page.tsx",
+      "candidates": 66,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 66,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/payables-expenses/expense-management/purchase-returns/components/InvoiceSelectionTab.tsx",
+      "candidates": 38,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 38,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/payables-expenses/expense-management/purchase-returns/components/ReturnsFilterDialog.tsx",
+      "candidates": 9,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 9,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/payables-expenses/expense-management/purchase-returns/components/ReturnsStatsCards.tsx",
+      "candidates": 18,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 18,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/payables-expenses/expense-management/purchase-returns/components/ReturnsTable.tsx",
+      "candidates": 78,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 78,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/payables-expenses/expense-management/purchase-returns/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/procurement/purchase-invoices/deferred-invoices/(pages)/page.tsx",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/procurement/purchase-invoices/deferred-invoices/(pages)/types.ts",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/procurement/purchase-invoices/deferred-invoices/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/procurement/purchase-invoices/purchase-invoices/(pages)/page.tsx",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/procurement/purchase-invoices/purchase-invoices/(pages)/types.ts",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/procurement/purchase-invoices/purchase-invoices/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/procurement/purchase-invoices/purchase-returns/(pages)/page.tsx",
+      "candidates": 114,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 114,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/procurement/purchase-invoices/purchase-returns/(pages)/types.ts",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/procurement/purchase-invoices/purchase-returns/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/supplier-sourcing/supplier-groups-nr/add-supplier-group/(pages)/page.tsx",
+      "candidates": 9,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 9,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/supplier-sourcing/supplier-groups-nr/add-supplier-group/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/supplier-sourcing/supplier-groups-nr/add-supplier-nr/(pages)/page.tsx",
+      "candidates": 9,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 9,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/supplier-sourcing/supplier-groups-nr/add-supplier-nr/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/supplier-sourcing/supplier-groups-nr/supplier-nr-assignment/(pages)/page.tsx",
+      "candidates": 9,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 9,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/supplier-sourcing/supplier-groups-nr/supplier-nr-assignment/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/supplier-sourcing/supplier-groups-nr/view-supplier-groups/(pages)/page.tsx",
+      "candidates": 9,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 9,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/supplier-sourcing/supplier-groups-nr/view-supplier-groups/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/supplier-sourcing/supplier-groups-nr/view-supplier-nr/(pages)/page.tsx",
+      "candidates": 9,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 9,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/supplier-sourcing/supplier-groups-nr/view-supplier-nr/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/supplier-sourcing/supplier-master/supplier-ledger/(pages)/page.tsx",
+      "candidates": 113,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 113,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/supplier-sourcing/supplier-master/supplier-ledger/components/LedgerFilterDialog.tsx",
+      "candidates": 19,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 19,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/supplier-sourcing/supplier-master/supplier-ledger/components/LedgerStatsCards.tsx",
+      "candidates": 22,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 22,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/supplier-sourcing/supplier-master/supplier-ledger/components/LedgerTable.tsx",
+      "candidates": 124,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 124,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/supplier-sourcing/supplier-master/supplier-ledger/components/SupplierInfoSection.tsx",
+      "candidates": 28,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 28,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/supplier-sourcing/supplier-master/supplier-ledger/components/TransactionFormDialog.tsx",
+      "candidates": 33,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 33,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/supplier-sourcing/supplier-master/supplier-ledger/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/supplier-sourcing/supplier-master/suppliers-list/(pages)/page.tsx",
+      "candidates": 153,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 153,
+      "passed": true
+    },
+    {
+      "file": "app/04-supply-chain/supplier-sourcing/supplier-master/suppliers-list/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/hr-advanced/documents-reports/hr-documents/(pages)/DocumentGeneration.tsx",
+      "candidates": 73,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 73,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/hr-advanced/documents-reports/hr-documents/(pages)/editor/page.tsx",
+      "candidates": 38,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 38,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/hr-advanced/documents-reports/hr-documents/(pages)/page.tsx",
+      "candidates": 4,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 4,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/hr-advanced/documents-reports/hr-documents/(pages)/preview/page.tsx",
+      "candidates": 34,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 34,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/hr-advanced/documents-reports/hr-documents/(pages)/templates-data.ts",
+      "candidates": 153,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 153,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/hr-advanced/documents-reports/hr-documents/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/hr-compliance/compliance-relations/communications/(pages)/CorporateCommunications.tsx",
+      "candidates": 262,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 262,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/hr-compliance/compliance-relations/communications/(pages)/page.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/hr-compliance/compliance-relations/communications/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/hr-compliance/compliance-relations/employee-relations/(pages)/EmployeeRelations.tsx",
+      "candidates": 280,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 280,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/hr-compliance/compliance-relations/employee-relations/(pages)/page.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/hr-compliance/compliance-relations/employee-relations/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/hr-compliance/compliance-relations/qa-compliance/(pages)/page.tsx",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/hr-compliance/compliance-relations/qa-compliance/(pages)/QaCompliance.tsx",
+      "candidates": 69,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 69,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/hr-compliance/compliance-relations/qa-compliance/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/knowledge-portal/self-service/employee-portal/(pages)/EmployeePortal.tsx",
+      "candidates": 227,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 227,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/knowledge-portal/self-service/employee-portal/(pages)/page.tsx",
+      "candidates": 4,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 4,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/knowledge-portal/self-service/employee-portal/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/knowledge-portal/self-service/eosb/(pages)/EOSBCalculator.tsx",
+      "candidates": 151,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 151,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/knowledge-portal/self-service/eosb/(pages)/page.tsx",
+      "candidates": 4,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 4,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/knowledge-portal/self-service/eosb/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/knowledge-portal/self-service/expertise/(pages)/KnowledgeBase.tsx",
+      "candidates": 288,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 288,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/knowledge-portal/self-service/expertise/(pages)/page.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/knowledge-portal/self-service/expertise/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/knowledge-portal/self-service/knowledge-base/(pages)/KnowledgeBase.tsx",
+      "candidates": 288,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 288,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/knowledge-portal/self-service/knowledge-base/(pages)/page.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/knowledge-portal/self-service/knowledge-base/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/payroll-benefits/payroll-management/benefits/(pages)/Benefits.tsx",
+      "candidates": 136,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 136,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/payroll-benefits/payroll-management/benefits/(pages)/page.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/payroll-benefits/payroll-management/benefits/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/payroll-benefits/payroll-management/compensation/(pages)/Compensation.tsx",
+      "candidates": 137,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 137,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/payroll-benefits/payroll-management/compensation/(pages)/page.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/payroll-benefits/payroll-management/compensation/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/payroll-benefits/payroll-management/payroll-components/(pages)/page.tsx",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/payroll-benefits/payroll-management/payroll-components/(pages)/PayrollComponents.tsx",
+      "candidates": 181,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 181,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/payroll-benefits/payroll-management/payroll-components/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/payroll-benefits/payroll-management/payroll-integrations/(pages)/page.tsx",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/payroll-benefits/payroll-management/payroll-integrations/(pages)/PostPayrollIntegrations.tsx",
+      "candidates": 182,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 182,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/payroll-benefits/payroll-management/payroll-integrations/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/payroll-benefits/payroll-management/payroll/(pages)/page.tsx",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/payroll-benefits/payroll-management/payroll/(pages)/Payroll.tsx",
+      "candidates": 443,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 443,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/payroll-benefits/payroll-management/payroll/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/performance-development/performance/learning/(pages)/Learning.tsx",
+      "candidates": 318,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 318,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/performance-development/performance/learning/(pages)/page.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/performance-development/performance/learning/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/performance-development/performance/performance-kpi/(pages)/page.tsx",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/performance-development/performance/performance-kpi/(pages)/Performance.tsx",
+      "candidates": 328,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 328,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/performance-development/performance/performance-kpi/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/performance-development/performance/succession/(pages)/page.tsx",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/performance-development/performance/succession/(pages)/Succession.tsx",
+      "candidates": 219,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 219,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/performance-development/performance/succession/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/services-wellness/employee-services/ehs/(pages)/EhsModule.tsx",
+      "candidates": 328,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 328,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/services-wellness/employee-services/ehs/(pages)/page.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/services-wellness/employee-services/ehs/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/services-wellness/employee-services/loans/(pages)/EmployeeLoans.tsx",
+      "candidates": 247,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 247,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/services-wellness/employee-services/loans/(pages)/page.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/services-wellness/employee-services/loans/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/services-wellness/employee-services/travel-expenses/(pages)/page.tsx",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/services-wellness/employee-services/travel-expenses/(pages)/TravelExpenses.tsx",
+      "candidates": 382,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 382,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/services-wellness/employee-services/travel-expenses/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/services-wellness/employee-services/wellness/(pages)/page.tsx",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/services-wellness/employee-services/wellness/(pages)/WellnessModule.tsx",
+      "candidates": 203,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 203,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/services-wellness/employee-services/wellness/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/talent-recruitment/recruitment/administration/(pages)/HrAdministration.tsx",
+      "candidates": 40,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 40,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/talent-recruitment/recruitment/administration/(pages)/page.tsx",
+      "candidates": 4,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 4,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/talent-recruitment/recruitment/administration/components/CapacityPlanningTab.tsx",
+      "candidates": 88,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 88,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/talent-recruitment/recruitment/administration/components/EmployeePositionTab.tsx",
+      "candidates": 171,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 171,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/talent-recruitment/recruitment/administration/components/PermissionTemplatesTab.tsx",
+      "candidates": 56,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 56,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/talent-recruitment/recruitment/administration/components/PositionsTab.tsx",
+      "candidates": 228,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 228,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/talent-recruitment/recruitment/administration/components/RolesTab.tsx",
+      "candidates": 136,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 136,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/talent-recruitment/recruitment/administration/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/talent-recruitment/recruitment/ats/(pages)/page.tsx",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/talent-recruitment/recruitment/ats/(pages)/Recruitment.tsx",
+      "candidates": 371,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 371,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/talent-recruitment/recruitment/ats/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/talent-recruitment/recruitment/contingent-workers/(pages)/ContingentWorkers.tsx",
+      "candidates": 86,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 86,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/talent-recruitment/recruitment/contingent-workers/(pages)/page.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/talent-recruitment/recruitment/contingent-workers/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/talent-recruitment/recruitment/onboarding/(pages)/Onboarding.tsx",
+      "candidates": 182,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 182,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/talent-recruitment/recruitment/onboarding/(pages)/page.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/talent-recruitment/recruitment/onboarding/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/time-productivity/attendance-scheduling/attendance/(pages)/Attendance.tsx",
+      "candidates": 158,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 158,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/time-productivity/attendance-scheduling/attendance/(pages)/page.tsx",
+      "candidates": 4,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 4,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/time-productivity/attendance-scheduling/attendance/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/time-productivity/attendance-scheduling/biometric/(pages)/BiometricControl.tsx",
+      "candidates": 213,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 213,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/time-productivity/attendance-scheduling/biometric/(pages)/page.tsx",
+      "candidates": 4,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 4,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/time-productivity/attendance-scheduling/biometric/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/time-productivity/attendance-scheduling/leave/(pages)/LeaveRequests.tsx",
+      "candidates": 181,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 181,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/time-productivity/attendance-scheduling/leave/(pages)/page.tsx",
+      "candidates": 4,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 4,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/time-productivity/attendance-scheduling/leave/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/time-productivity/attendance-scheduling/scheduling/(pages)/page.tsx",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/time-productivity/attendance-scheduling/scheduling/(pages)/WorkforceScheduling.tsx",
+      "candidates": 60,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 60,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/time-productivity/attendance-scheduling/scheduling/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-groups-nr/add-employee-group/(pages)/page.tsx",
+      "candidates": 9,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 9,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-groups-nr/add-employee-group/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-groups-nr/add-employee-nr/(pages)/page.tsx",
+      "candidates": 9,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 9,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-groups-nr/add-employee-nr/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-groups-nr/employee-nr-assignment/(pages)/page.tsx",
+      "candidates": 9,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 9,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-groups-nr/employee-nr-assignment/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-groups-nr/view-employee-groups/(pages)/page.tsx",
+      "candidates": 9,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 9,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-groups-nr/view-employee-groups/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-groups-nr/view-employee-nr/(pages)/page.tsx",
+      "candidates": 9,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 9,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-groups-nr/view-employee-nr/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/contracts/(pages)/add/page.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/contracts/(pages)/Contracts.tsx",
+      "candidates": 78,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 78,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/contracts/(pages)/edit/page.tsx",
+      "candidates": 19,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 19,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/contracts/(pages)/page.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/contracts/(pages)/view/page.tsx",
+      "candidates": 95,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 95,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/contracts/components/ContractForm.tsx",
+      "candidates": 73,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 73,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/contracts/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/employee-assets/(pages)/add/page.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/employee-assets/(pages)/edit/page.tsx",
+      "candidates": 19,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 19,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/employee-assets/(pages)/EmployeeAssets.tsx",
+      "candidates": 82,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 82,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/employee-assets/(pages)/page.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/employee-assets/(pages)/view/page.tsx",
+      "candidates": 103,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 103,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/employee-assets/components/AssetForm.tsx",
+      "candidates": 87,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 87,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/employee-assets/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/add/page.tsx",
+      "candidates": 214,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 214,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/edit/page.tsx",
+      "candidates": 202,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 202,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/Employees.tsx",
+      "candidates": 69,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 69,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/page.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/view/components/BasicInfoTab.tsx",
+      "candidates": 131,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 131,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/view/components/FinancialTab.tsx",
+      "candidates": 126,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 126,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/view/page.tsx",
+      "candidates": 85,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 85,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/employees-list/components/DocumentsTab.tsx",
+      "candidates": 282,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 282,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/employees-list/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/expat-management/(pages)/add/page.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/expat-management/(pages)/edit/page.tsx",
+      "candidates": 19,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 19,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/expat-management/(pages)/ExpatManagement.tsx",
+      "candidates": 72,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 72,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/expat-management/(pages)/page.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/expat-management/(pages)/view/page.tsx",
+      "candidates": 138,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 138,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/expat-management/components/ExpatForm.tsx",
+      "candidates": 87,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 87,
+      "passed": true
+    },
+    {
+      "file": "app/06-human-capital/workforce-admin/employee-master/expat-management/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/08-assets/asset-lifecycle/fixed-assets/fixed-assets-registry/(pages)/page.tsx",
+      "candidates": 149,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 149,
+      "passed": true
+    },
+    {
+      "file": "app/08-assets/asset-lifecycle/fixed-assets/fixed-assets-registry/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/auth/login/(pages)/page.tsx",
+      "candidates": 9,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 9,
+      "passed": true
+    },
+    {
+      "file": "app/auth/login/components/LoginForm.tsx",
+      "candidates": 32,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 32,
+      "passed": true
+    },
+    {
+      "file": "app/auth/login/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/layout.tsx",
+      "candidates": 23,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 23,
+      "passed": true
+    },
+    {
+      "file": "app/navigation/(pages)/page.tsx",
+      "candidates": 8,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 8,
+      "passed": true
+    },
+    {
+      "file": "app/navigation/components/NavigationGridContent.tsx",
+      "candidates": 26,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 26,
+      "passed": true
+    },
+    {
+      "file": "app/navigation/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "app/page.tsx",
+      "candidates": 2,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 2,
+      "passed": true
+    },
+    {
+      "file": "components/layout/index.ts",
+      "candidates": 2,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 2,
+      "passed": true
+    },
+    {
+      "file": "components/layout/MainLayout.tsx",
+      "candidates": 44,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 44,
+      "passed": true
+    },
+    {
+      "file": "components/layout/PageHeader.tsx",
+      "candidates": 29,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 29,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/index.ts",
+      "candidates": 7,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 7,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/NavigationCard.tsx",
+      "candidates": 99,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 99,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/NavigationGrid.tsx",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/NavigationSidebar.tsx",
+      "candidates": 34,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 34,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/SearchNavigationBar/components/BreadcrumbTrail.tsx",
+      "candidates": 45,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 45,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/SearchNavigationBar/components/GlobalTitle.tsx",
+      "candidates": 10,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 10,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/SearchNavigationBar/components/NavigationControls.tsx",
+      "candidates": 22,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 22,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/SearchNavigationBar/SearchNavigationBar.tsx",
+      "candidates": 18,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 18,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/SideNavigationBar/components/ContextMenuPortal.tsx",
+      "candidates": 20,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 20,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/SideNavigationBar/components/SectionHeader.tsx",
+      "candidates": 23,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 23,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/SideNavigationBar/components/SidebarFolder.tsx",
+      "candidates": 23,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 23,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/SideNavigationBar/components/SidebarItem.tsx",
+      "candidates": 16,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 16,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/SideNavigationBar/index.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/SideNavigationBar/SideNavigationBar.tsx",
+      "candidates": 103,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 103,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/StatusNotificationBar/components/EnvironmentIndicator.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/StatusNotificationBar/components/StatusIndicator.tsx",
+      "candidates": 6,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 6,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/StatusNotificationBar/StatusNotificationBar.tsx",
+      "candidates": 7,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 7,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/StatusNotificationBar/utils.ts",
+      "candidates": 16,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 16,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/StepNavigation.tsx",
+      "candidates": 53,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 53,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/TabNavigation.tsx",
+      "candidates": 65,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 65,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/TopGlobalBar/components/GlobalMenus.tsx",
+      "candidates": 24,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 24,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/TopGlobalBar/components/GlobalMeta.tsx",
+      "candidates": 36,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 36,
+      "passed": true
+    },
+    {
+      "file": "components/navigation/TopGlobalBar/TopGlobalBar.tsx",
+      "candidates": 16,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 16,
+      "passed": true
+    },
+    {
+      "file": "components/number-range/components/DomainFullnessPanel.tsx",
+      "candidates": 84,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 84,
+      "passed": true
+    },
+    {
+      "file": "components/number-range/components/ExpansionLogsPanel.tsx",
+      "candidates": 51,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 51,
+      "passed": true
+    },
+    {
+      "file": "components/number-range/components/NrObjectHeader.tsx",
+      "candidates": 110,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 110,
+      "passed": true
+    },
+    {
+      "file": "components/number-range/index.ts",
+      "candidates": 6,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 6,
+      "passed": true
+    },
+    {
+      "file": "components/number-range/NumberRangeManager.tsx",
+      "candidates": 409,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 409,
+      "passed": true
+    },
+    {
+      "file": "components/number-range/types.ts",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "components/number-range/useNumberRange.ts",
+      "candidates": 72,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 72,
+      "passed": true
+    },
+    {
+      "file": "components/tax/compliance-editor/ComplianceProfileEditor.tsx",
+      "candidates": 422,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 422,
+      "passed": true
+    },
+    {
+      "file": "components/tax/compliance-editor/FormatEditor.tsx",
+      "candidates": 114,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 114,
+      "passed": true
+    },
+    {
+      "file": "components/tax/compliance-editor/index.ts",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "components/tax/compliance-editor/types.ts",
+      "candidates": 25,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 25,
+      "passed": true
+    },
+    {
+      "file": "components/tax/compliance-editor/utils.ts",
+      "candidates": 67,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 67,
+      "passed": true
+    },
+    {
+      "file": "components/tax/index.ts",
+      "candidates": 4,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 4,
+      "passed": true
+    },
+    {
+      "file": "components/tax/TaxBreakdown.tsx",
+      "candidates": 34,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 34,
+      "passed": true
+    },
+    {
+      "file": "components/template-editor/index.ts",
+      "candidates": 4,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 4,
+      "passed": true
+    },
+    {
+      "file": "components/template-editor/TemplateEditor.tsx",
+      "candidates": 248,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 248,
+      "passed": true
+    },
+    {
+      "file": "components/template-editor/types.ts",
+      "candidates": 6,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 6,
+      "passed": true
+    },
+    {
+      "file": "components/template-editor/utils.ts",
+      "candidates": 60,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 60,
+      "passed": true
+    },
+    {
+      "file": "components/ui/ActionButtons.tsx",
+      "candidates": 15,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 15,
+      "passed": true
+    },
+    {
+      "file": "components/ui/Alert.tsx",
+      "candidates": 44,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 44,
+      "passed": true
+    },
+    {
+      "file": "components/ui/BadgeLabel.tsx",
+      "candidates": 18,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 18,
+      "passed": true
+    },
+    {
+      "file": "components/ui/Button.tsx",
+      "candidates": 39,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 39,
+      "passed": true
+    },
+    {
+      "file": "components/ui/checkbox.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "components/ui/DatePicker.tsx",
+      "candidates": 83,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 83,
+      "passed": true
+    },
+    {
+      "file": "components/ui/Dialog.tsx",
+      "candidates": 31,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 31,
+      "passed": true
+    },
+    {
+      "file": "components/ui/DocumentPreview.tsx",
+      "candidates": 24,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 24,
+      "passed": true
+    },
+    {
+      "file": "components/ui/DomainCard.tsx",
+      "candidates": 49,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 49,
+      "passed": true
+    },
+    {
+      "file": "components/ui/EmailInput.tsx",
+      "candidates": 7,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 7,
+      "passed": true
+    },
+    {
+      "file": "components/ui/ExpandableTable.tsx",
+      "candidates": 23,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 23,
+      "passed": true
+    },
+    {
+      "file": "components/ui/FilterSection.tsx",
+      "candidates": 10,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 10,
+      "passed": true
+    },
+    {
+      "file": "components/ui/FloatingActionBar.tsx",
+      "candidates": 16,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 16,
+      "passed": true
+    },
+    {
+      "file": "components/ui/GroupPassword.tsx",
+      "candidates": 11,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 11,
+      "passed": true
+    },
+    {
+      "file": "components/ui/index.ts",
+      "candidates": 52,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 52,
+      "passed": true
+    },
+    {
+      "file": "components/ui/input-error.tsx",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "components/ui/Input.tsx",
+      "candidates": 39,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 39,
+      "passed": true
+    },
+    {
+      "file": "components/ui/InvoiceDetailsDialog.tsx",
+      "candidates": 86,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 86,
+      "passed": true
+    },
+    {
+      "file": "components/ui/KPICard.tsx",
+      "candidates": 45,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 45,
+      "passed": true
+    },
+    {
+      "file": "components/ui/Label.tsx",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "components/ui/Logo.tsx",
+      "candidates": 30,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 30,
+      "passed": true
+    },
+    {
+      "file": "components/ui/NumberInput.tsx",
+      "candidates": 16,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 16,
+      "passed": true
+    },
+    {
+      "file": "components/ui/OperationalReportsWorkspace.tsx",
+      "candidates": 261,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 261,
+      "passed": true
+    },
+    {
+      "file": "components/ui/Pagination.tsx",
+      "candidates": 15,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 15,
+      "passed": true
+    },
+    {
+      "file": "components/ui/PasswordInput.tsx",
+      "candidates": 37,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 37,
+      "passed": true
+    },
+    {
+      "file": "components/ui/ProductPurchases.tsx",
+      "candidates": 393,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 393,
+      "passed": true
+    },
+    {
+      "file": "components/ui/ProductSales.tsx",
+      "candidates": 459,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 459,
+      "passed": true
+    },
+    {
+      "file": "components/ui/PurchaseReturnDialog.tsx",
+      "candidates": 97,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 97,
+      "passed": true
+    },
+    {
+      "file": "components/ui/QuotationWorkspace.tsx",
+      "candidates": 218,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 218,
+      "passed": true
+    },
+    {
+      "file": "components/ui/RadioGroup.tsx",
+      "candidates": 13,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 13,
+      "passed": true
+    },
+    {
+      "file": "components/ui/SalesReturnDialog.tsx",
+      "candidates": 97,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 97,
+      "passed": true
+    },
+    {
+      "file": "components/ui/SearchableSelect.tsx",
+      "candidates": 36,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 36,
+      "passed": true
+    },
+    {
+      "file": "components/ui/SegmentedToggle.tsx",
+      "candidates": 10,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 10,
+      "passed": true
+    },
+    {
+      "file": "components/ui/select.tsx",
+      "candidates": 18,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 18,
+      "passed": true
+    },
+    {
+      "file": "components/ui/SelectableInvoiceTable.tsx",
+      "candidates": 62,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 62,
+      "passed": true
+    },
+    {
+      "file": "components/ui/SelectableTable.tsx",
+      "candidates": 30,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 30,
+      "passed": true
+    },
+    {
+      "file": "components/ui/ServiceSales.tsx",
+      "candidates": 433,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 433,
+      "passed": true
+    },
+    {
+      "file": "components/ui/SessionExpiredModal.tsx",
+      "candidates": 25,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 25,
+      "passed": true
+    },
+    {
+      "file": "components/ui/StatsCard.tsx",
+      "candidates": 20,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 20,
+      "passed": true
+    },
+    {
+      "file": "components/ui/switch.tsx",
+      "candidates": 41,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 41,
+      "passed": true
+    },
+    {
+      "file": "components/ui/Table.tsx",
+      "candidates": 19,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 19,
+      "passed": true
+    },
+    {
+      "file": "components/ui/Textarea.tsx",
+      "candidates": 48,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 48,
+      "passed": true
+    },
+    {
+      "file": "components/ui/TextInput.tsx",
+      "candidates": 8,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 8,
+      "passed": true
+    },
+    {
+      "file": "components/ui/Toast.tsx",
+      "candidates": 11,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 11,
+      "passed": true
+    },
+    {
+      "file": "components/ui/Toggle.tsx",
+      "candidates": 23,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 23,
+      "passed": true
+    },
+    {
+      "file": "components/ui/ToggleGroup.tsx",
+      "candidates": 23,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 23,
+      "passed": true
+    },
+    {
+      "file": "components/ui/Tooltip.tsx",
+      "candidates": 13,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 13,
+      "passed": true
+    },
+    {
+      "file": "lib/api.ts",
+      "candidates": 40,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 40,
+      "passed": true
+    },
+    {
+      "file": "lib/auth.ts",
+      "candidates": 62,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 62,
+      "passed": true
+    },
+    {
+      "file": "lib/endpoints.ts",
+      "candidates": 2,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 2,
+      "passed": true
+    },
+    {
+      "file": "lib/endpoints/assets.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "lib/endpoints/auth.ts",
+      "candidates": 3,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 3,
+      "passed": true
+    },
+    {
+      "file": "lib/endpoints/commercial.ts",
+      "candidates": 41,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 41,
+      "passed": true
+    },
+    {
+      "file": "lib/endpoints/enterprise-core.ts",
+      "candidates": 54,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 54,
+      "passed": true
+    },
+    {
+      "file": "lib/endpoints/finance.ts",
+      "candidates": 51,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 51,
+      "passed": true
+    },
+    {
+      "file": "lib/endpoints/human-capital.ts",
+      "candidates": 128,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 128,
+      "passed": true
+    },
+    {
+      "file": "lib/endpoints/index.ts",
+      "candidates": 20,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 20,
+      "passed": true
+    },
+    {
+      "file": "lib/endpoints/intelligence.ts",
+      "candidates": 7,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 7,
+      "passed": true
+    },
+    {
+      "file": "lib/endpoints/platform.ts",
+      "candidates": 27,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 27,
+      "passed": true
+    },
+    {
+      "file": "lib/endpoints/supply-chain.ts",
+      "candidates": 6,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 6,
+      "passed": true
+    },
+    {
+      "file": "lib/icons.tsx",
+      "candidates": 184,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 184,
+      "passed": true
+    },
+    {
+      "file": "lib/invoice-utils.ts",
+      "candidates": 44,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 44,
+      "passed": true
+    },
+    {
+      "file": "lib/navigation/assets.config.ts",
+      "candidates": 33,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 33,
+      "passed": true
+    },
+    {
+      "file": "lib/navigation/commercial.config.ts",
+      "candidates": 210,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 210,
+      "passed": true
+    },
+    {
+      "file": "lib/navigation/core.config.ts",
+      "candidates": 99,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 99,
+      "passed": true
+    },
+    {
+      "file": "lib/navigation/finance.config.ts",
+      "candidates": 161,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 161,
+      "passed": true
+    },
+    {
+      "file": "lib/navigation/human-capital.config.ts",
+      "candidates": 295,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 295,
+      "passed": true
+    },
+    {
+      "file": "lib/navigation/index.ts",
+      "candidates": 17,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 17,
+      "passed": true
+    },
+    {
+      "file": "lib/navigation/intelligence.config.ts",
+      "candidates": 40,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 40,
+      "passed": true
+    },
+    {
+      "file": "lib/navigation/manufacturing.config.ts",
+      "candidates": 54,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 54,
+      "passed": true
+    },
+    {
+      "file": "lib/navigation/platform.config.ts",
+      "candidates": 48,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 48,
+      "passed": true
+    },
+    {
+      "file": "lib/navigation/projects.config.ts",
+      "candidates": 55,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 55,
+      "passed": true
+    },
+    {
+      "file": "lib/navigation/supply-chain.config.ts",
+      "candidates": 193,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 193,
+      "passed": true
+    },
+    {
+      "file": "lib/settings.ts",
+      "candidates": 1,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 1,
+      "passed": true
+    },
+    {
+      "file": "lib/utils.ts",
+      "candidates": 96,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 96,
+      "passed": true
+    },
+    {
+      "file": "stores/factories/createCRUDStore.ts",
+      "candidates": 28,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 28,
+      "passed": true
+    },
+    {
+      "file": "stores/index.ts",
+      "candidates": 13,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 13,
+      "passed": true
+    },
+    {
+      "file": "stores/useAuthStore.ts",
+      "candidates": 40,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 40,
+      "passed": true
+    },
+    {
+      "file": "stores/useCustomerStore.ts",
+      "candidates": 11,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 11,
+      "passed": true
+    },
+    {
+      "file": "stores/useEmployeeStore.ts",
+      "candidates": 30,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 30,
+      "passed": true
+    },
+    {
+      "file": "stores/useErrorStore.ts",
+      "candidates": 12,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 12,
+      "passed": true
+    },
+    {
+      "file": "stores/useFinanceStore.ts",
+      "candidates": 19,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 19,
+      "passed": true
+    },
+    {
+      "file": "stores/useOperatingContextStore.ts",
+      "candidates": 16,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 16,
+      "passed": true
+    },
+    {
+      "file": "stores/usePayrollStore.ts",
+      "candidates": 61,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 61,
+      "passed": true
+    },
+    {
+      "file": "stores/useProductStore.ts",
+      "candidates": 16,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 16,
+      "passed": true
+    },
+    {
+      "file": "stores/usePurchaseStore.ts",
+      "candidates": 11,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 11,
+      "passed": true
+    },
+    {
+      "file": "stores/useSalesRepresentativeStore.ts",
+      "candidates": 11,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 11,
+      "passed": true
+    },
+    {
+      "file": "stores/useServiceStore.ts",
+      "candidates": 13,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 13,
+      "passed": true
+    },
+    {
+      "file": "stores/useSettingsStore.ts",
+      "candidates": 10,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 10,
+      "passed": true
+    },
+    {
+      "file": "stores/useSupplierStore.ts",
+      "candidates": 11,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 11,
+      "passed": true
+    },
+    {
+      "file": "stores/useUIStore.ts",
+      "candidates": 21,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 21,
+      "passed": true
+    }
+  ]
+}

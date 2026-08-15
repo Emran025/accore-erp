@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import React from "react";
 import { Button } from "./Button";
 import { PageSubHeader } from "@/components/layout";
@@ -21,6 +22,7 @@ export function DocumentPreview({
     titleIcon = "file-signature",
     onExportCsv,
 }: DocumentPreviewProps) {
+    const { t: i18n } = useI18n();
     const handlePrint = () => {
         const printWindow = window.open("", "_blank");
         if (printWindow) {
@@ -28,7 +30,7 @@ export function DocumentPreview({
                 .map((node) => node.outerHTML)
                 .join("\n");
             printWindow.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head>
-<meta charset="UTF-8"><title>${title || "مستند"}</title>${documentStyles}
+<meta charset="UTF-8"><title>${title || i18n.catalog["text_76a8d471e3b9"]}</title>${documentStyles}
 <style>
 @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
 @page { size: A4; margin: 12mm; }
@@ -42,21 +44,18 @@ export function DocumentPreview({
     return (
         <div className="sales-card animate-fade">
             <PageSubHeader
-                title={`معاينة: ${title}`}
+                title={catalogText(i18n, "text_e03a1bb9de48", { value0: title })}
                 titleIcon={titleIcon}
                 actions={
                     <>
                         <Button variant="secondary" onClick={onBack}>
-                            رجوع
-                        </Button>
+                            {i18n.catalog["text_cb822418a29d"]}</Button>
                         {onExportCsv && (
                             <Button variant="secondary" icon="download" onClick={onExportCsv} disabled={isLoading}>
-                                تصدير CSV
-                            </Button>
+                                {i18n.catalog["text_e2b4a3247ac2"]}</Button>
                         )}
                         <Button variant="primary" icon="printer" onClick={handlePrint} disabled={isLoading}>
-                            طباعة / حفظ PDF
-                        </Button>
+                            {i18n.catalog["text_c9dc22189457"]}</Button>
                     </>
                 }
             />

@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import React from "react";
 import Link from "next/link";
 import { Icon, IconName } from "@/lib/icons";
@@ -28,11 +29,12 @@ export function Button({
     border_radius,
     ...props
 }: ButtonProps) {
-    const baseClasses = "btn whitespace-nowrap";
-    const variantClasses = `btn-${variant}`;
+    const { t: i18n } = useI18n();
+    const baseClasses = i18n.catalog["text_ce502c0bc809"];
+    const variantClasses = catalogText(i18n, "text_0ecc07d5b5c8", { value0: variant });
     const sizeClasses = size === "sm" ? "btn-sm" : size === "lg" ? "btn-lg" : "";
-    const borderRadiusClass = border_radius ? `border-radius-${border_radius}` : "";
-    const combinedClasses = `${baseClasses} ${variantClasses} ${sizeClasses} ${className} ${borderRadiusClass}`.trim();
+    const borderRadiusClass = border_radius ? catalogText(i18n, "text_544530a20001", { value0: border_radius }) : "";
+    const combinedClasses = catalogText(i18n, "text_145848a06881", { value0: baseClasses, value1: variantClasses, value2: sizeClasses, value3: className, value4: borderRadiusClass }).trim();
 
     const iconElement = typeof icon === "string" ? <Icon name={icon as IconName} /> : icon;
 
@@ -48,11 +50,11 @@ export function Button({
     if (href) {
         // If it's an external link or a specific case where we want <a>, 
         // but for app routing we use Link.
-        const isExternal = href.startsWith("http") || href.startsWith("mailto:") || href.startsWith("tel:");
+        const isExternal = href.startsWith("http") || href.startsWith(i18n.catalog["text_de1eaa596f93"]) || href.startsWith(i18n.catalog["text_2f9c7bb827d7"]);
 
         if (isExternal) {
             return (
-                <a href={href} className={combinedClasses} target="_blank" rel="noopener noreferrer">
+                <a href={href} className={combinedClasses} target="_blank" rel={i18n.catalog["text_ec0f84cc9ffe"]}>
                     {content}
                 </a>
             );

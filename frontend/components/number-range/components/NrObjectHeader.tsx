@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { useState } from "react";
 import { getIcon } from "@/lib/icons";
 import { Dialog, Button } from "@/components/ui";
@@ -17,6 +18,7 @@ interface NrObjectHeaderProps {
 }
 
 export function NrObjectHeader({ objectData, title }: NrObjectHeaderProps) {
+    const { t: i18n } = useI18n();
     const { summary, number_length, prefix } = objectData;
     const maxBound = Number("9".repeat(number_length)).toLocaleString();
 
@@ -37,9 +39,9 @@ export function NrObjectHeader({ objectData, title }: NrObjectHeaderProps) {
                         <h2>{title || objectData.name}</h2>
                         <div className="nroh-badges">
                             {objectData.name_en && <span className="nroh-badge">{objectData.name_en}</span>}
-                            <span className="nroh-badge">{getIcon("ruler")} طول: {number_length}</span>
-                            {prefix && <span className="nroh-badge">{getIcon("tag")} بادئة: {prefix}</span>}
-                            <span className="nroh-badge solid">الحد الأقصى: {maxBound}</span>
+                            <span className="nroh-badge">{getIcon("ruler")} {i18n.catalog["text_3f44a9d8a4fb"]}{number_length}</span>
+                            {prefix && <span className="nroh-badge">{getIcon("tag")} {i18n.catalog["text_770bb81dc641"]}{prefix}</span>}
+                            <span className="nroh-badge solid">{i18n.catalog["text_6242ff9df7be"]}{maxBound}</span>
                         </div>
                     </div>
                 </div>
@@ -47,39 +49,39 @@ export function NrObjectHeader({ objectData, title }: NrObjectHeaderProps) {
                 <div className="nroh-stats-grid">
                     <div className="nroh-stat">
                         <div className="nroh-stat-value">{summary.total_groups.toLocaleString()}</div>
-                        <div className="nroh-stat-label">مجموعة</div>
+                        <div className="nroh-stat-label">{i18n.catalog["text_d013065850a1"]}</div>
                     </div>
                     <div className="nroh-stat">
                         <div className="nroh-stat-value">{summary.total_intervals.toLocaleString()}</div>
-                        <div className="nroh-stat-label">نطاق</div>
+                        <div className="nroh-stat-label">{i18n.catalog["text_0ba4aff8070f"]}</div>
                     </div>
                     <div className="nroh-stat">
                         <div className="nroh-stat-value">{summary.total_assignments.toLocaleString()}</div>
-                        <div className="nroh-stat-label">ربط</div>
+                        <div className="nroh-stat-label">{i18n.catalog["text_8840978a5919"]}</div>
                     </div>
                     <div className="nroh-divider" />
                     <div className="nroh-stat cap">
                         <div className="nroh-stat-value blue">{summary.total_capacity.toLocaleString()}</div>
-                        <div className="nroh-stat-label">إجمالي السعة</div>
+                        <div className="nroh-stat-label">{i18n.catalog["text_c3a23882bf48"]}</div>
                     </div>
                     <div className="nroh-stat cap">
                         <div className="nroh-stat-value purple">{summary.total_used.toLocaleString()}</div>
-                        <div className="nroh-stat-label">المستخدم</div>
+                        <div className="nroh-stat-label">{i18n.catalog["text_2fb01868740d"]}</div>
                     </div>
                     <div className="nroh-stat cap">
                         <div className="nroh-stat-value green">{summary.total_remaining.toLocaleString()}</div>
-                        <div className="nroh-stat-label">المتبقي</div>
+                        <div className="nroh-stat-label">{i18n.catalog["text_b2127e3a35be"]}</div>
                     </div>
                 </div>
             </div>
 
             <div className="nroh-progress-container">
                 <div className="nroh-progress-head">
-                    <span className="nroh-progress-title">الامتلاء الكلي للقدرة الاستيعابية ({summary.overall_fullness}%)</span>
+                    <span className="nroh-progress-title">{i18n.catalog["text_ebfbb7a7eebe"]}{summary.overall_fullness}%)</span>
                     <div className="nroh-status-counters">
-                        <span className="nroh-counter healthy">{getIcon("check-circle")} {healthy} سليم</span>
-                        <span className="nroh-counter warning">{getIcon("alert-triangle")} {warning} تحذير</span>
-                        <span className="nroh-counter critical">{getIcon("alert-circle")} {critical} حرج</span>
+                        <span className="nroh-counter healthy">{getIcon("check-circle")} {healthy} {i18n.catalog["text_970dd58a0500"]}</span>
+                        <span className="nroh-counter warning">{getIcon("alert-triangle")} {warning} {i18n.catalog["text_28d716788eac"]}</span>
+                        <span className="nroh-counter critical">{getIcon("alert-circle")} {critical} {i18n.catalog["text_4e275d7c60ec"]}</span>
                     </div>
                 </div>
                 <div className="nroh-progress-track">
@@ -113,6 +115,7 @@ interface NrSetupPromptProps {
 }
 
 export function NrSetupPrompt({ defaultConfig, onCreateObject }: NrSetupPromptProps) {
+    const { t: i18n } = useI18n();
     const [setupDialog, setSetupDialog] = useState(false);
     const [setupName, setSetupName] = useState(defaultConfig?.name || "");
     const [setupNameEn, setSetupNameEn] = useState(defaultConfig?.name_en || "");
@@ -134,37 +137,36 @@ export function NrSetupPrompt({ defaultConfig, onCreateObject }: NrSetupPromptPr
         <>
             <div className="nr-setup-prompt">
                 <div className="nr-setup-icon">{getIcon("hash")}</div>
-                <h3>إعداد نظام الترقيم</h3>
-                <p>لم يتم تكوين نظام ترقيم لهذا النوع بعد. قم بتحديد طول الترقيم والإعدادات الأولية للبدء.</p>
+                <h3>{i18n.catalog["text_1fb2f7d0de99"]}</h3>
+                <p>{i18n.catalog["text_ddbd5f016a39"]}</p>
                 <Button variant="primary" onClick={() => setSetupDialog(true)} icon="plus">
-                    إعداد نظام الترقيم
-                </Button>
+                    {i18n.catalog["text_1fb2f7d0de99"]}</Button>
             </div>
 
             <Dialog
                 isOpen={setupDialog}
                 onClose={() => setSetupDialog(false)}
-                title="إعداد نظام الترقيم"
+                title={i18n.catalog["text_1fb2f7d0de99"]}
                 maxWidth="520px"
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setSetupDialog(false)}>إلغاء</Button>
-                        <Button variant="primary" onClick={handleCreate}>إنشاء</Button>
+                        <Button variant="secondary" onClick={() => setSetupDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                        <Button variant="primary" onClick={handleCreate}>{i18n.catalog["text_a820f3590d36"]}</Button>
                     </>
                 }
             >
                 <form onSubmit={(e) => { e.preventDefault(); handleCreate(); }}>
                     <div className="nr-info-banner">
                         <span className="nr-info-icon">{getIcon("info")}</span>
-                        <span>طول الترقيم يحدد الحد الأقصى لنطاقات الأرقام المتاحة. مثال: طول 8 أرقام يسمح بنطاقات حتى 99,999,999</span>
+                        <span>{i18n.catalog["text_a2dd0448fcdc"]}</span>
                     </div>
                     <div className="form-row">
-                        <TextInput label="الاسم بالعربية *" id="nr-setup-name" value={setupName} onChange={(e) => setSetupName(e.target.value)} required className="flex-1" />
-                        <TextInput label="الاسم بالإنجليزية" id="nr-setup-name-en" value={setupNameEn} onChange={(e) => setSetupNameEn(e.target.value)} className="flex-1" />
+                        <TextInput label={i18n.catalog["text_b90b881d800d"]} id="nr-setup-name" value={setupName} onChange={(e) => setSetupName(e.target.value)} required className="flex-1" />
+                        <TextInput label={i18n.catalog["text_07450d9ff8ed"]} id="nr-setup-name-en" value={setupNameEn} onChange={(e) => setSetupNameEn(e.target.value)} className="flex-1" />
                     </div>
                     <div className="form-row">
-                        <NumberInput label="طول الترقيم *" id="nr-setup-length" value={setupLength} onChange={setSetupLength} min={1} max={20} className="flex-1" />
-                        <TextInput label="البادئة (اختياري)" id="nr-setup-prefix" value={setupPrefix} onChange={(e) => setSetupPrefix(e.target.value)} className="flex-1" placeholder="EMP-" />
+                        <NumberInput label={i18n.catalog["text_1cb26fb66890"]} id="nr-setup-length" value={setupLength} onChange={setSetupLength} min={1} max={20} className="flex-1" />
+                        <TextInput label={i18n.catalog["text_de683d06206e"]} id="nr-setup-prefix" value={setupPrefix} onChange={(e) => setSetupPrefix(e.target.value)} className="flex-1" placeholder={i18n.catalog["text_5be93de51cfb"]} />
                     </div>
                 </form>
             </Dialog>
@@ -177,10 +179,11 @@ export function NrSetupPrompt({ defaultConfig, onCreateObject }: NrSetupPromptPr
 // ══════════════════════════════════════════════════════════════
 
 export function NrLoading() {
+    const { t: i18n } = useI18n();
     return (
         <div className="nr-manager-loading">
             <div className="nr-spinner" />
-            <p>جارِ تحميل إعدادات الترقيم...</p>
+            <p>{i18n.catalog["text_fb5cce8aee1f"]}</p>
         </div>
     );
 }

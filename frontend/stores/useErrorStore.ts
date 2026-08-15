@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
@@ -39,7 +40,7 @@ let errorCounter = 0;
 
 function generateErrorId(): string {
     errorCounter += 1;
-    return `err_${Date.now()}_${errorCounter}`;
+    return catalogMessage("text_1ff2e1ed9274", { value0: Date.now(), value1: errorCounter });
 }
 
 // ─── Store ──────────────────────────────────────────────────────

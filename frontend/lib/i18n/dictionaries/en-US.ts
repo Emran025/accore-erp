@@ -1,6 +1,8 @@
+import { enCatalog } from "../catalog";
 import type { AppDictionary } from "../types";
 
 export const enUS = {
+    catalog: enCatalog,
     common: { loading: "Loading...", save: "Save", cancel: "Cancel", delete: "Delete", edit: "Edit", add: "Add", search: "Search", actions: "Actions", yes: "Yes", no: "No", confirm: "Confirm", close: "Close", view: "View", print: "Print", back: "Back", retry: "Try again" },
     auth: { login: "Sign in", logout: "Sign out", username: "Username", password: "Password", loginTitle: "Sign in to the system", loginError: "The username or password is incorrect.", sessionExpired: "Your session has expired. Please sign in again." },
     dashboard: { title: "Dashboard", dailySales: "Today's sales", totalProducts: "Total products", lowStock: "Low stock", expiringSoon: "Expiring soon", recentSales: "Recent sales", quickActions: "Quick actions", newSale: "New sale", addProduct: "Add product", viewReports: "View reports" },

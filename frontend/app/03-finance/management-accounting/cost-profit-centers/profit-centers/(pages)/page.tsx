@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText, catalogMessage } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import {
     ActionButtons,
@@ -75,17 +76,17 @@ interface Summary {
 
 // ── Type translations ────────────────────────────────────────────────
 const TYPE_MAP: Record<string, string> = {
-    business_unit: "وحدة أعمال",
-    product_line: "خط إنتاج",
-    region: "منطقة",
-    branch: "فرع",
+    business_unit: catalogMessage("text_1d2fe8db5b7f"),
+    product_line: catalogMessage("text_1fbe6f5eb4db"),
+    region: catalogMessage("text_052b85f7c655"),
+    branch: catalogMessage("text_28adde4ba2a8"),
 };
 
 const TYPE_OPTIONS = [
-    { value: "business_unit", label: "وحدة أعمال" },
-    { value: "product_line", label: "خط إنتاج" },
-    { value: "region", label: "منطقة" },
-    { value: "branch", label: "فرع" },
+    { value: "business_unit", label: catalogMessage("text_1d2fe8db5b7f") },
+    { value: "product_line", label: catalogMessage("text_1fbe6f5eb4db") },
+    { value: "region", label: catalogMessage("text_052b85f7c655") },
+    { value: "branch", label: catalogMessage("text_28adde4ba2a8") },
 ];
 
 const TYPE_COLORS: Record<string, string> = {
@@ -97,6 +98,7 @@ const TYPE_COLORS: Record<string, string> = {
 
 // ═══════════════════════════════════════════════════════════════════════
 export default function ProfitCentersPage() {
+    const { t: i18n } = useI18n();
     // ── Auth ──────────────────────────────────────────────────
     const [user, setUser] = useState<User | null>(null);
     const [permissions, setPermissions] = useState<Permission[]>([]);
@@ -151,10 +153,10 @@ export default function ProfitCentersPage() {
                 setTotalPages(Math.ceil(total / itemsPerPage));
                 setCurrentPage(page);
             } else {
-                showAlert("alert-container", response.message || "فشل تحميل مراكز الربح", "error");
+                showAlert("alert-container", response.message || i18n.catalog["text_6bdab06f5e5c"], "error");
             }
         } catch {
-            showAlert("alert-container", "خطأ في الاتصال بالسيرفر", "error");
+            showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -218,15 +220,15 @@ export default function ProfitCentersPage() {
             if (response.success) {
                 showAlert(
                     "alert-container",
-                    currentlyActive ? "تم إغلاق المركز وتحديث الهيكل التنظيمي" : "تم فتح المركز وتحديث الهيكل التنظيمي",
+                    currentlyActive ? i18n.catalog["text_4b305b1d7000"] : i18n.catalog["text_e88ae5b85423"],
                     "success"
                 );
                 await Promise.all([loadCenters(currentPage, searchTerm, filterType), loadLookups()]);
             } else {
-                showAlert("alert-container", response.message || "فشل تغيير حالة المركز", "error");
+                showAlert("alert-container", response.message || i18n.catalog["text_6766d88b51c9"], "error");
             }
         } catch {
-            showAlert("alert-container", "خطأ في الاتصال", "error");
+            showAlert("alert-container", i18n.catalog["text_1ac65f6d78f4"], "error");
         }
     };
 
@@ -253,7 +255,7 @@ export default function ProfitCentersPage() {
             const num = parseInt(c.code.replace(/\D/g, "")) || 0;
             return num > max ? num : max;
         }, 0);
-        setFormCode(`PC-${String(maxNum + 1).padStart(3, "0")}`);
+        setFormCode(catalogText(i18n, "text_a5e5fd08d2c6", { value0: String(maxNum + 1).padStart(3, "0") }));
         setFormDialog(true);
     };
 
@@ -278,7 +280,7 @@ export default function ProfitCentersPage() {
 
     const saveCenter = async () => {
         if (!formCode || !formName) {
-            showAlert("alert-container", "يرجى ملء الحقول المطلوبة (الكود والاسم)", "error");
+            showAlert("alert-container", i18n.catalog["text_9bb430444d33"], "error");
             return;
         }
 
@@ -309,15 +311,15 @@ export default function ProfitCentersPage() {
             });
 
             if (response.success) {
-                showAlert("alert-container", editId ? "تم تحديث مركز الربح" : "تم إنشاء مركز الربح", "success");
+                showAlert("alert-container", editId ? i18n.catalog["text_b2ea5e32ca3f"] : i18n.catalog["text_529a7b46d289"], "success");
                 setFormDialog(false);
                 resetForm();
                 await Promise.all([loadCenters(currentPage, searchTerm, filterType), loadLookups()]);
             } else {
-                showAlert("alert-container", response.message || "فشل الحفظ", "error");
+                showAlert("alert-container", response.message || i18n.catalog["text_b0dbba00004b"], "error");
             }
         } catch {
-            showAlert("alert-container", "خطأ في الاتصال بالسيرفر", "error");
+            showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
         }
     };
 
@@ -331,15 +333,15 @@ export default function ProfitCentersPage() {
         try {
             const response = await fetchAPI(API_ENDPOINTS.FINANCE.PROFIT_CENTERS.withId(deleteId), { method: "DELETE" });
             if (response.success) {
-                showAlert("alert-container", "تم حذف مركز الربح", "success");
+                showAlert("alert-container", i18n.catalog["text_af3d76f80abe"], "success");
                 setConfirmDialog(false);
                 setDeleteId(null);
                 await Promise.all([loadCenters(currentPage, searchTerm, filterType), loadLookups()]);
             } else {
-                showAlert("alert-container", response.message || "فشل الحذف", "error");
+                showAlert("alert-container", response.message || i18n.catalog["text_f46bfc521612"], "error");
             }
         } catch {
-            showAlert("alert-container", "خطأ في الحذف", "error");
+            showAlert("alert-container", i18n.catalog["text_3bdb299872fb"], "error");
         }
     };
 
@@ -347,8 +349,8 @@ export default function ProfitCentersPage() {
     const columns: Column<ProfitCenter>[] = [
         {
             key: "code",
-            header: "الكود",
-            dataLabel: "الكود",
+            header: i18n.catalog["text_e28ef005ab68"],
+            dataLabel: i18n.catalog["text_e28ef005ab68"],
             render: (item) => (
                 <span style={{ fontFamily: "monospace", fontWeight: 700, color: "var(--accent-primary)" }}>
                     {item.code}
@@ -357,8 +359,8 @@ export default function ProfitCentersPage() {
         },
         {
             key: "name",
-            header: "الاسم",
-            dataLabel: "الاسم",
+            header: i18n.catalog["text_52ab09847cf8"],
+            dataLabel: i18n.catalog["text_52ab09847cf8"],
             render: (item) => (
                 <div>
                     <strong>{item.name}</strong>
@@ -368,8 +370,8 @@ export default function ProfitCentersPage() {
         },
         {
             key: "type",
-            header: "النوع",
-            dataLabel: "النوع",
+            header: i18n.catalog["text_caa3f2bb4a36"],
+            dataLabel: i18n.catalog["text_caa3f2bb4a36"],
             render: (item) => (
                 <span className={`badge ${TYPE_COLORS[item.type] || "badge-secondary"}`}>
                     {TYPE_MAP[item.type] || item.type}
@@ -378,18 +380,18 @@ export default function ProfitCentersPage() {
         },
         {
             key: "parent_name",
-            header: "المركز الأب",
-            dataLabel: "المركز الأب",
+            header: i18n.catalog["text_737f847aa339"],
+            dataLabel: i18n.catalog["text_737f847aa339"],
             render: (item) => item.parent_name ? (
                 <span className="badge badge-secondary">{item.parent_name}</span>
             ) : (
-                <span style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>— رئيسي</span>
+                <span style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>{i18n.catalog["text_48edee59831b"]}</span>
             ),
         },
         {
             key: "actual_revenue",
-            header: "الإيرادات",
-            dataLabel: "الإيرادات",
+            header: i18n.catalog["text_8188deffd656"],
+            dataLabel: i18n.catalog["text_8188deffd656"],
             render: (item) => (
                 <span style={{ color: "#10b981", fontWeight: 600 }}>
                     {formatCurrency(item.actual_revenue)}
@@ -398,8 +400,8 @@ export default function ProfitCentersPage() {
         },
         {
             key: "actual_expense",
-            header: "المصروفات",
-            dataLabel: "المصروفات",
+            header: i18n.catalog["text_4d514b65a483"],
+            dataLabel: i18n.catalog["text_4d514b65a483"],
             render: (item) => (
                 <span style={{ color: "#ef4444", fontWeight: 600 }}>
                     {formatCurrency(item.actual_expense)}
@@ -408,8 +410,8 @@ export default function ProfitCentersPage() {
         },
         {
             key: "net_profit",
-            header: "صافي الربح",
-            dataLabel: "صافي الربح",
+            header: i18n.catalog["text_cceeb6ff14e3"],
+            dataLabel: i18n.catalog["text_cceeb6ff14e3"],
             render: (item) => (
                 <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                     <span style={{
@@ -432,8 +434,8 @@ export default function ProfitCentersPage() {
         },
         {
             key: "revenue_achievement",
-            header: "التحقيق",
-            dataLabel: "التحقيق",
+            header: i18n.catalog["text_cc5f3d22d8b8"],
+            dataLabel: i18n.catalog["text_cc5f3d22d8b8"],
             render: (item) => {
                 if (!item.revenue_target) return <span style={{ color: "var(--text-muted)" }}>—</span>;
                 const pct = item.revenue_achievement;
@@ -467,16 +469,16 @@ export default function ProfitCentersPage() {
         },
         {
             key: "is_active",
-            header: "الحالة",
-            dataLabel: "الحالة",
+            header: i18n.catalog["text_c3a4749caed4"],
+            dataLabel: i18n.catalog["text_c3a4749caed4"],
             render: (item) => (
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                     <span className={`badge ${item.is_active ? "badge-success" : "badge-danger"}`}>
-                        {item.is_active ? "مفتوح" : "مغلق"}
+                        {item.is_active ? i18n.catalog["text_46ea59915eec"] : i18n.catalog["text_e655261f9c96"]}
                     </span>
                     {item.structure_node_uuid && (
                         <span
-                            title="مرتبط بالهيكل التنظيمي"
+                            title={i18n.catalog["text_47d45034947d"]}
                             style={{
                                 display: "inline-flex",
                                 alignItems: "center",
@@ -497,28 +499,28 @@ export default function ProfitCentersPage() {
         },
         {
             key: "actions",
-            header: "الإجراءات",
-            dataLabel: "الإجراءات",
+            header: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (item) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: item.is_active ? "x-octagon" : "check-circle",
-                            title: item.is_active ? "إغلاق المركز" : "فتح المركز",
+                            title: item.is_active ? i18n.catalog["text_ffe852986bcb"] : i18n.catalog["text_7faca43b0eea"],
                             variant: item.is_active ? "warning" : "success",
                             onClick: () => toggleCenterStatus(item.id, item.is_active),
                             hidden: !canAccess(permissions, "chart_of_accounts", "edit"),
                         },
                         {
                             icon: "edit",
-                            title: "تعديل",
+                            title: i18n.catalog["text_113d570d6555"],
                             variant: "edit",
                             onClick: () => openEditDialog(item.id),
                             hidden: !canAccess(permissions, "chart_of_accounts", "edit"),
                         },
                         {
                             icon: "trash",
-                            title: "حذف",
+                            title: i18n.catalog["text_59ca629220a6"],
                             variant: "delete",
                             onClick: () => confirmDelete(item.id),
                             hidden: !canAccess(permissions, "chart_of_accounts", "delete"),
@@ -540,28 +542,28 @@ export default function ProfitCentersPage() {
                     KPICards={[
                         {
                             icon: "trending-up",
-                            label: "مراكز الربح النشطة",
+                            label: i18n.catalog["text_edc532b68ce9"],
                             value: summary.profit_centers_count,
                             color: "#3b82f6",
-                            subtitle: "مركز ربح",
+                            subtitle: i18n.catalog["text_b07d41d5c211"],
                         },
                         {
                             icon: "coins",
-                            label: "إجمالي الإيرادات",
+                            label: i18n.catalog["text_5f8d135d6d92"],
                             value: summary.total_revenue,
                             color: "#10b981",
                             subtitle: formatCurrency(summary.total_revenue),
                         },
                         {
                             icon: "credit-card",
-                            label: "إجمالي المصروفات",
+                            label: i18n.catalog["text_03a4c3145ccb"],
                             value: summary.total_expense,
                             color: "#ef4444",
                             subtitle: formatCurrency(summary.total_expense),
                         },
                         {
                             icon: "pie-chart",
-                            label: "صافي الربح",
+                            label: i18n.catalog["text_cceeb6ff14e3"],
                             value: summary.net_profit,
                             color: getProfitColor(summary.net_profit),
                             subtitle: formatCurrency(summary.net_profit),
@@ -575,9 +577,9 @@ export default function ProfitCentersPage() {
                     user={user}
                     searchInput={
                         <SearchableSelect
-                            placeholder="بحث بالكود أو الاسم..."
+                            placeholder={i18n.catalog["text_eda980b83daa"]}
                             value={searchTerm}
-                            options={centers.map((c) => ({ value: c.name, label: `${c.code} - ${c.name}` }))}
+                            options={centers.map((c) => ({ value: c.name, label: catalogText(i18n, "text_2a9059a3c52f", { value0: c.code, value1: c.name }) }))}
                             onChange={(val) => setSearchTerm(val?.toString() || "")}
                             onSearch={(term) => setSearchTerm(term)}
                             className="header-search-bar"
@@ -588,7 +590,7 @@ export default function ProfitCentersPage() {
                         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
                             <SegmentedToggle
                                 options={[
-                                    { value: "all", label: "الكل" },
+                                    { value: "all", label: i18n.catalog["text_65f276da33cf"] },
                                     ...TYPE_OPTIONS,
                                 ]}
                                 value={filterType}
@@ -596,8 +598,7 @@ export default function ProfitCentersPage() {
                             />
                             {canAccess(permissions, "chart_of_accounts", "create") && (
                                 <Button variant="primary" onClick={openAddDialog} icon="plus">
-                                    مركز ربح جديد
-                                </Button>
+                                    {i18n.catalog["text_42e7fa6997d6"]}</Button>
                             )}
                         </div>
                     }
@@ -607,7 +608,7 @@ export default function ProfitCentersPage() {
                     columns={columns}
                     data={centers}
                     keyExtractor={(item) => item.id}
-                    emptyMessage="لا توجد مراكز ربح مسجلة"
+                    emptyMessage={i18n.catalog["text_b9404ab5f99a"]}
                     isLoading={isLoading}
                     pagination={{
                         currentPage,
@@ -621,27 +622,27 @@ export default function ProfitCentersPage() {
             <Dialog
                 isOpen={formDialog}
                 onClose={() => setFormDialog(false)}
-                title={editId ? "تعديل مركز الربح" : "إضافة مركز ربح جديد"}
+                title={editId ? i18n.catalog["text_f180666de215"] : i18n.catalog["text_3830b0c11107"]}
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setFormDialog(false)}>إلغاء</Button>
-                        <Button variant="primary" onClick={saveCenter}>حفظ</Button>
+                        <Button variant="secondary" onClick={() => setFormDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                        <Button variant="primary" onClick={saveCenter}>{i18n.catalog["text_ddfcaf9d0144"]}</Button>
                     </>
                 }
             >
                 <form onSubmit={(e) => { e.preventDefault(); saveCenter(); }}>
                     <div className="form-row">
                         <TextInput
-                            label="الكود *"
+                            label={i18n.catalog["text_d7e401b615ba"]}
                             id="pc-code"
                             value={formCode}
                             onChange={(e) => setFormCode(e.target.value)}
                             required
                             className="flex-1"
-                            placeholder="PC-001"
+                            placeholder={i18n.catalog["text_f082ecc021f2"]}
                         />
                         <Select
-                            label="النوع"
+                            label={i18n.catalog["text_caa3f2bb4a36"]}
                             id="pc-type"
                             value={formType}
                             onChange={(e) => setFormType(e.target.value)}
@@ -652,7 +653,7 @@ export default function ProfitCentersPage() {
 
                     <div className="form-row">
                         <TextInput
-                            label="الاسم بالعربية *"
+                            label={i18n.catalog["text_b90b881d800d"]}
                             id="pc-name"
                             value={formName}
                             onChange={(e) => setFormName(e.target.value)}
@@ -660,7 +661,7 @@ export default function ProfitCentersPage() {
                             className="flex-1"
                         />
                         <TextInput
-                            label="الاسم بالإنجليزية"
+                            label={i18n.catalog["text_07450d9ff8ed"]}
                             id="pc-name-en"
                             value={formNameEn}
                             onChange={(e) => setFormNameEn(e.target.value)}
@@ -670,26 +671,26 @@ export default function ProfitCentersPage() {
 
                     <div className="form-row">
                         <Select
-                            label="المركز الأب"
+                            label={i18n.catalog["text_737f847aa339"]}
                             id="pc-parent"
                             value={formParentId}
                             onChange={(e) => setFormParentId(e.target.value)}
                             className="flex-1"
                             options={[
-                                { value: "", label: "— لا يوجد (مركز رئيسي)" },
+                                { value: "", label: i18n.catalog["text_16f6e8e85cf0"] },
                                 ...centers
                                     .filter((c) => c.id !== editId)
-                                    .map((c) => ({ value: String(c.id), label: `${c.code} - ${c.name}` })),
+                                    .map((c) => ({ value: String(c.id), label: catalogText(i18n, "text_2a9059a3c52f", { value0: c.code, value1: c.name }) })),
                             ]}
                         />
                         <Select
-                            label="المدير المسؤول"
+                            label={i18n.catalog["text_98ea1b1cf854"]}
                             id="pc-manager"
                             value={formManagerId}
                             onChange={(e) => setFormManagerId(e.target.value)}
                             className="flex-1"
                             options={[
-                                { value: "", label: "— بدون تعيين" },
+                                { value: "", label: i18n.catalog["text_d61e2f352ee3"] },
                                 ...employees.map((emp) => ({ value: String(emp.id), label: emp.name })),
                             ]}
                         />
@@ -697,32 +698,32 @@ export default function ProfitCentersPage() {
 
                     <div className="form-row">
                         <Select
-                            label="حساب الإيرادات"
+                            label={i18n.catalog["text_655ae4e5b345"]}
                             id="pc-revenue-account"
                             value={formRevenueAccountId}
                             onChange={(e) => setFormRevenueAccountId(e.target.value)}
                             className="flex-1"
                             options={[
-                                { value: "", label: "— بدون ربط" },
-                                ...accounts.map((a) => ({ value: String(a.id), label: `${a.account_code} - ${a.account_name}` })),
+                                { value: "", label: i18n.catalog["text_10d55a2623de"] },
+                                ...accounts.map((a) => ({ value: String(a.id), label: catalogText(i18n, "text_2a9059a3c52f", { value0: a.account_code, value1: a.account_name }) })),
                             ]}
                         />
                         <Select
-                            label="حساب المصروفات"
+                            label={i18n.catalog["text_9d4aed28b0af"]}
                             id="pc-expense-account"
                             value={formExpenseAccountId}
                             onChange={(e) => setFormExpenseAccountId(e.target.value)}
                             className="flex-1"
                             options={[
-                                { value: "", label: "— بدون ربط" },
-                                ...accounts.map((a) => ({ value: String(a.id), label: `${a.account_code} - ${a.account_name}` })),
+                                { value: "", label: i18n.catalog["text_10d55a2623de"] },
+                                ...accounts.map((a) => ({ value: String(a.id), label: catalogText(i18n, "text_2a9059a3c52f", { value0: a.account_code, value1: a.account_name }) })),
                             ]}
                         />
                     </div>
 
                     <div className="form-row">
                         <NumberInput
-                            label="هدف الإيرادات"
+                            label={i18n.catalog["text_41e6fca5d7c3"]}
                             id="pc-revenue-target"
                             value={formRevenueTarget}
                             onChange={(val) => setFormRevenueTarget(val)}
@@ -731,7 +732,7 @@ export default function ProfitCentersPage() {
                             className="flex-1"
                         />
                         <NumberInput
-                            label="ميزانية المصروفات"
+                            label={i18n.catalog["text_c3a08fcbbcb9"]}
                             id="pc-expense-budget"
                             value={formExpenseBudget}
                             onChange={(val) => setFormExpenseBudget(val)}
@@ -743,20 +744,20 @@ export default function ProfitCentersPage() {
 
                     <div className="form-row">
                         <Select
-                            label="الحالة"
+                            label={i18n.catalog["text_c3a4749caed4"]}
                             id="pc-status"
                             value={formIsActive}
                             onChange={(e) => setFormIsActive(e.target.value)}
                             className="flex-1"
                             options={[
-                                { value: "true", label: "نشط" },
-                                { value: "false", label: "غير نشط" },
+                                { value: "true", label: i18n.catalog["text_629e90b3af3d"] },
+                                { value: "false", label: i18n.catalog["text_b719ac8add4e"] },
                             ]}
                         />
                     </div>
 
                     <Textarea
-                        label="الوصف"
+                        label={i18n.catalog["text_95023fc76e1b"]}
                         id="pc-description"
                         value={formDescription}
                         onChange={(e) => setFormDescription(e.target.value)}
@@ -770,9 +771,9 @@ export default function ProfitCentersPage() {
                 isOpen={confirmDialog}
                 onClose={() => setConfirmDialog(false)}
                 onConfirm={deleteCenter}
-                title="تأكيد الحذف"
-                message="هل أنت متأكد من حذف مركز الربح هذا؟ لا يمكن حذف مراكز مرتبطة بقيود محاسبية."
-                confirmText="حذف"
+                title={i18n.catalog["text_5f9cb54dc136"]}
+                message={i18n.catalog["text_ac30c4a27ed7"]}
+                confirmText={i18n.catalog["text_59ca629220a6"]}
                 confirmVariant="danger"
             />
         </MainLayout>

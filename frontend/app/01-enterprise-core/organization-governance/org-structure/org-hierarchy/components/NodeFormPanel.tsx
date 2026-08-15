@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { Button, Dialog } from "@/components/ui";
 import { TextInput } from "@/components/ui/TextInput";
 import { Select } from "@/components/ui/select";
@@ -150,6 +151,7 @@ export function NodeFormContent({
     formData, setFormData, dynamicAttrs, setDynamicAttrs,
     metaTypes, nodes, topologyRules, selectedNode, getTypeLabel,
 }: NodeFormContentProps) {
+    const { t: i18n } = useI18n();
     const currentType = metaTypes.find(t => t.id === formData.node_type_id);
     const currentAttrs = currentType?.attributes || [];
     const domain = currentType?.level_domain || "";
@@ -179,7 +181,7 @@ export function NodeFormContent({
     return (
         <div style={{ animation: "fadeIn 0.25s ease" }}>
             {/* ── Section 1: Node Type ── */}
-            <FormSection icon="cube" title="نوع الوحدة" subtitle="Unit Type">
+            <FormSection icon="cube" title={i18n.catalog["text_0b7ee6a6a05b"]} subtitle={i18n.catalog["text_c2c7b1fab568"]}>
                 {/* Domain indicator */}
                 {domain && (
                     <div style={{
@@ -194,7 +196,7 @@ export function NodeFormContent({
                 <div className="form-row">
                     <div className="form-group">
                         <Select
-                            label="نوع الوحدة *"
+                            label={i18n.catalog["text_82248ad05ee3"]}
                             value={formData.node_type_id}
                             onChange={(e) => {
                                 setFormData({ ...formData, node_type_id: e.target.value });
@@ -202,7 +204,7 @@ export function NodeFormContent({
                             }}
                             disabled={!!selectedNode}
                         >
-                            <option value="" disabled>— اختر النوع —</option>
+                            <option value="" disabled>{i18n.catalog["text_4e58e0bb0937"]}</option>
                             {Array.from(domainGroups.entries()).map(([groupDomain, types]) => (
                                 <optgroup key={groupDomain} label={groupDomain}>
                                     {types.map(t => (
@@ -216,10 +218,10 @@ export function NodeFormContent({
                     </div>
                     <div className="form-group">
                         <TextInput
-                            label="الرمز *"
+                            label={i18n.catalog["text_db5a52e0d40a"]}
                             value={formData.code}
                             onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                            placeholder="مثال: CC01, PLANT_01"
+                            placeholder={i18n.catalog["text_f3c8f331561b"]}
                         />
                     </div>
                 </div>
@@ -229,20 +231,20 @@ export function NodeFormContent({
             {currentAttrs.length > 0 && (
                 <FormSection
                     icon="clipboard-list"
-                    title="السمات"
-                    subtitle={`Attributes — ${currentAttrs.filter(a => a.is_mandatory).length} إلزامية`}
+                    title={i18n.catalog["text_8e5f319dd13f"]}
+                    subtitle={catalogText(i18n, "text_7c6dc2294423", { value0: currentAttrs.filter(a => a.is_mandatory).length })}
                 >
                     <div className="form-row" style={{ flexWrap: "wrap" }}>
                         {currentAttrs.map(attr => (
                             <div className="form-group" key={attr.attribute_key} style={{ minWidth: "200px" }}>
                                 <TextInput
-                                    label={`${attr.attribute_key}${attr.is_mandatory ? " *" : ""}`}
+                                    label={catalogText(i18n, "text_82032eb13b31", { value0: attr.attribute_key, value1: attr.is_mandatory ? i18n.catalog["text_684888c0ebb1"] : "" })}
                                     value={dynamicAttrs[attr.attribute_key] || ""}
                                     onChange={(e) => setDynamicAttrs({
                                         ...dynamicAttrs,
                                         [attr.attribute_key]: e.target.value,
                                     })}
-                                    placeholder={attr.is_mandatory ? "مطلوب" : "اختياري"}
+                                    placeholder={attr.is_mandatory ? i18n.catalog["text_c2c05049aa06"] : i18n.catalog["text_33408684704e"]}
                                 />
                             </div>
                         ))}
@@ -251,11 +253,11 @@ export function NodeFormContent({
             )}
 
             {/* ── Section 3: Effective Dating ── */}
-            <FormSection icon="calendar" title="فترة الصلاحية" subtitle="Effective Dating">
+            <FormSection icon="calendar" title={i18n.catalog["text_0a3d340761f4"]} subtitle={i18n.catalog["text_0c4fce9aa5c7"]}>
                 <div className="form-row">
                     <div className="form-group">
                         <TextInput
-                            label="صالح من"
+                            label={i18n.catalog["text_7cc6a1a4756f"]}
                             type="date"
                             value={formData.valid_from}
                             onChange={(e) => setFormData({ ...formData, valid_from: e.target.value })}
@@ -263,7 +265,7 @@ export function NodeFormContent({
                     </div>
                     <div className="form-group">
                         <TextInput
-                            label="صالح حتى"
+                            label={i18n.catalog["text_817b190b2a5c"]}
                             type="date"
                             value={formData.valid_to}
                             onChange={(e) => setFormData({ ...formData, valid_to: e.target.value })}
@@ -274,18 +276,18 @@ export function NodeFormContent({
 
             {/* ── Section 4: Link ── */}
             {!selectedNode && linkableNodes.length > 0 && (
-                <FormSection icon="link" title="الربط الهيكلي" subtitle="Structure Link">
+                <FormSection icon="link" title={i18n.catalog["text_f75945dc12d4"]} subtitle={i18n.catalog["text_981775460360"]}>
                     <Select
-                        label="ربط بـ (اختياري)"
+                        label={i18n.catalog["text_10005f23c159"]}
                         value={formData.target_node_uuid}
                         onChange={(e) => setFormData({ ...formData, target_node_uuid: e.target.value })}
                     >
-                        <option value="">بدون ربط</option>
+                        <option value="">{i18n.catalog["text_e73c5594d648"]}</option>
                         {linkableNodes.map(n => (
                             <option key={n.node_uuid} value={n.node_uuid}>
                                 {n.code} — {getTypeLabel(n.node_type_id)}
                                 {(n.attributes_json as Record<string, unknown>)?.name
-                                    ? ` (${(n.attributes_json as Record<string, unknown>).name})`
+                                    ? catalogText(i18n, "text_239f04bc2797", { value0: (n.attributes_json as Record<string, unknown>).name })
                                     : ""}
                             </option>
                         ))}
@@ -294,15 +296,15 @@ export function NodeFormContent({
             )}
 
             {/* ── Section 5: Status ── */}
-            <FormSection icon="toggle-on" title="الحالة" subtitle="Status">
+            <FormSection icon="toggle-on" title={i18n.catalog["text_c3a4749caed4"]} subtitle="Status">
                 <Select
-                    label="الحالة"
+                    label={i18n.catalog["text_c3a4749caed4"]}
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                     options={[
-                        { value: "active", label: "نشط (Active)" },
-                        { value: "inactive", label: "غير نشط (Inactive)" },
-                        { value: "archived", label: "مؤرشف (Archived)" },
+                        { value: "active", label: i18n.catalog["text_45bde9fdafc3"] },
+                        { value: "inactive", label: i18n.catalog["text_ad16cd513d7f"] },
+                        { value: "archived", label: i18n.catalog["text_a1251f0700cd"] },
                     ]}
                 />
             </FormSection>
@@ -323,17 +325,18 @@ interface NodeFormDialogProps extends NodeFormContentProps {
 export function NodeFormDialog({
     isOpen, onClose, onSubmit, selectedNode, ...formProps
 }: NodeFormDialogProps) {
+    const { t: i18n } = useI18n();
     return (
         <Dialog
             isOpen={isOpen}
             onClose={onClose}
-            title={selectedNode ? "تعديل الوحدة" : "إضافة وحدة تنظيمية"}
+            title={selectedNode ? i18n.catalog["text_382d355a1e42"] : i18n.catalog["text_cc7088ed3648"]}
             maxWidth="680px"
             footer={
                 <>
-                    <Button variant="secondary" onClick={onClose}>إلغاء</Button>
+                    <Button variant="secondary" onClick={onClose}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
                     <Button variant="primary" icon="check" onClick={onSubmit}>
-                        {selectedNode ? "تحديث" : "إضافة"}
+                        {selectedNode ? i18n.catalog["text_00eab31f95b7"] : i18n.catalog["text_d52453ac627d"]}
                     </Button>
                 </>
             }
@@ -357,8 +360,9 @@ export function InitialNodeSetup({
     formData, setFormData, dynamicAttrs, setDynamicAttrs,
     metaTypes, nodes, topologyRules, selectedNode, getTypeLabel,
 }: InitialNodeSetupProps) {
+    const { t: i18n } = useI18n();
     const [step, setStep] = useState(0);
-    const STEPS = ["اختيار المجال", "تعبئة البيانات", "المراجعة"];
+    const STEPS = [i18n.catalog["text_3c51222bba70"], i18n.catalog["text_d8944574e4aa"], i18n.catalog["text_d2d4b7f9cfb5"]];
 
     const currentType = metaTypes.find(t => t.id === formData.node_type_id);
     const domain = currentType?.level_domain || "";
@@ -395,11 +399,9 @@ export function InitialNodeSetup({
                     {getIcon("sitemap")}
                 </div>
                 <h3 style={{ margin: "0 0 0.5rem", fontSize: "1.1rem" }}>
-                    ابدأ ببناء الهيكل التنظيمي
-                </h3>
+                    {i18n.catalog["text_748536b699b7"]}</h3>
                 <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", margin: 0 }}>
-                    اختر مجال الأعمال ونوع الوحدة التنظيمية الأولى التي تريد إنشاءها
-                </p>
+                    {i18n.catalog["text_a1c14902f908"]}</p>
             </div>
 
             {/* Domain cards grid */}
@@ -443,7 +445,7 @@ export function InitialNodeSetup({
                                 {groupDomain}
                             </div>
                             <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: "2px" }}>
-                                {types.length} {types.length === 1 ? "نوع" : "أنواع"}
+                                {types.length} {types.length === 1 ? i18n.catalog["text_b55501074dc5"] : i18n.catalog["text_74c3199f344e"]}
                             </div>
                         </div>
                     );
@@ -462,7 +464,7 @@ export function InitialNodeSetup({
                         fontSize: "0.78rem", fontWeight: 600, marginBottom: "0.6rem",
                         color: domainColor, display: "flex", alignItems: "center", gap: "0.35rem",
                     }}>
-                        {getIcon(DOMAIN_ICONS[domain] || "folder")} أنواع الوحدات في {domain}
+                        {getIcon(DOMAIN_ICONS[domain] || "folder")} {i18n.catalog["text_ed505c084d6a"]}{domain}
                     </div>
                     <div style={{ display: "grid", gap: "0.35rem" }}>
                         {(domainGroups.get(domain) || []).map(t => {
@@ -508,8 +510,7 @@ export function InitialNodeSetup({
                                             background: "var(--bg-secondary)", padding: "1px 6px",
                                             borderRadius: "4px",
                                         }}>
-                                            {t.attributes.length} سمات
-                                        </span>
+                                            {t.attributes.length} {i18n.catalog["text_92f869bc3475"]}</span>
                                     )}
                                 </div>
                             );
@@ -537,8 +538,7 @@ export function InitialNodeSetup({
                             {currentType.display_name_ar || currentType.display_name}
                         </div>
                         <div style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>
-                            {domain} • {currentAttrs.length} سمات
-                        </div>
+                            {domain} • {currentAttrs.length} {i18n.catalog["text_92f869bc3475"]}</div>
                     </div>
                 </div>
             )}
@@ -569,29 +569,27 @@ export function InitialNodeSetup({
                 <div style={{ fontSize: "2.5rem", marginBottom: "0.5rem", color: "var(--success)" }}>
                     {getIcon("check-circle")}
                 </div>
-                <h4 style={{ margin: "0 0 0.4rem" }}>مراجعة قبل الإنشاء</h4>
+                <h4 style={{ margin: "0 0 0.4rem" }}>{i18n.catalog["text_32b3ceb396da"]}</h4>
                 <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", margin: 0 }}>
-                    تأكد من صحة البيانات قبل إضافة الوحدة التنظيمية
-                </p>
+                    {i18n.catalog["text_54869277fac2"]}</p>
             </div>
 
             {/* Review card */}
             <div className="sales-card" style={{ padding: "1.25rem" }}>
                 <MetaGrid items={[
-                    { label: "النوع", value: currentType?.display_name_ar || currentType?.display_name || "-" },
-                    { label: "المجال", value: domain || "-" },
-                    { label: "الرمز", value: formData.code || "-" },
-                    { label: "الحالة", value: formData.status === "active" ? "نشط" : formData.status === "inactive" ? "غير نشط" : "مؤرشف" },
-                    ...(formData.valid_from ? [{ label: "صالح من", value: formData.valid_from }] : []),
-                    ...(formData.valid_to ? [{ label: "صالح حتى", value: formData.valid_to }] : []),
+                    { label: i18n.catalog["text_caa3f2bb4a36"], value: currentType?.display_name_ar || currentType?.display_name || "-" },
+                    { label: i18n.catalog["text_d197ebe8e67a"], value: domain || "-" },
+                    { label: i18n.catalog["text_589c6420ea10"], value: formData.code || "-" },
+                    { label: i18n.catalog["text_c3a4749caed4"], value: formData.status === "active" ? i18n.catalog["text_629e90b3af3d"] : formData.status === "inactive" ? i18n.catalog["text_b719ac8add4e"] : i18n.catalog["text_9d1b78e3b949"] },
+                    ...(formData.valid_from ? [{ label: i18n.catalog["text_7cc6a1a4756f"], value: formData.valid_from }] : []),
+                    ...(formData.valid_to ? [{ label: i18n.catalog["text_817b190b2a5c"], value: formData.valid_to }] : []),
                 ]} />
 
                 {/* Dynamic attrs review */}
                 {Object.keys(dynamicAttrs).filter(k => dynamicAttrs[k]).length > 0 && (
                     <div style={{ marginTop: "1rem" }}>
                         <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.5rem" }}>
-                            {getIcon("clipboard-list")} السمات
-                        </div>
+                            {getIcon("clipboard-list")} {i18n.catalog["text_8e5f319dd13f"]}</div>
                         <MetaGrid
                             items={Object.entries(dynamicAttrs)
                                 .filter(([, v]) => v)
@@ -605,10 +603,9 @@ export function InitialNodeSetup({
                 {formData.target_node_uuid && (
                     <div style={{ marginTop: "1rem" }}>
                         <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.5rem" }}>
-                            {getIcon("link")} الربط الهيكلي
-                        </div>
+                            {getIcon("link")} {i18n.catalog["text_f75945dc12d4"]}</div>
                         <MetaItem
-                            label="مرتبطة بـ"
+                            label={i18n.catalog["text_c863b73432eb"]}
                             value={(() => {
                                 const target = nodes.find(n => n.node_uuid === formData.target_node_uuid);
                                 return target
@@ -625,8 +622,8 @@ export function InitialNodeSetup({
                 display: "flex", flexWrap: "wrap", gap: "0.5rem",
                 marginTop: "1rem", justifyContent: "center",
             }}>
-                <CheckItem label="النوع محدد" icon={formData.node_type_id ? "check" : "times"} color={formData.node_type_id ? "var(--success)" : "var(--danger)"} />
-                <CheckItem label="الرمز معبأ" icon={formData.code ? "check" : "times"} color={formData.code ? "var(--success)" : "var(--danger)"} />
+                <CheckItem label={i18n.catalog["text_9f018af139b4"]} icon={formData.node_type_id ? "check" : "times"} color={formData.node_type_id ? "var(--success)" : "var(--danger)"} />
+                <CheckItem label={i18n.catalog["text_4dede5e7b31f"]} icon={formData.code ? "check" : "times"} color={formData.code ? "var(--success)" : "var(--danger)"} />
                 {currentAttrs.filter(a => a.is_mandatory).map(a => (
                     <CheckItem
                         key={a.attribute_key}
@@ -658,8 +655,7 @@ export function InitialNodeSetup({
                 <div>
                     {step > 0 && (
                         <Button variant="secondary" icon="chevron-right" onClick={() => setStep(s => s - 1)}>
-                            السابق
-                        </Button>
+                            {i18n.catalog["text_a9e9d067101a"]}</Button>
                     )}
                 </div>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -671,8 +667,7 @@ export function InitialNodeSetup({
                             onClick={() => setStep(s => s + 1)}
                             disabled={step === 0 ? !canProceedStep0 : !canProceedStep1}
                         >
-                            التالي
-                        </Button>
+                            {i18n.catalog["text_5cf7af74fd3a"]}</Button>
                     ) : (
                         <Button
                             variant="success"
@@ -681,8 +676,7 @@ export function InitialNodeSetup({
                             isLoading={isSubmitting}
                             disabled={!canProceedStep1}
                         >
-                            إنشاء الوحدة التنظيمية
-                        </Button>
+                            {i18n.catalog["text_a8754370c55c"]}</Button>
                     )}
                 </div>
             </div>

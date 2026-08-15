@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { ReactNode } from "react";
 import Image from "next/image";
 
@@ -65,7 +66,7 @@ export function FullLogo({
   return (
     <Image
       src={logo}
-      alt="Logo"
+      alt={catalogMessage("text_d707dc2f1936")}
       height={size.height}
       width={size.width}
       style={{ opacity: isWatermark ? opacity : 1 }}

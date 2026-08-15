@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import * as React from "react";
 
 interface ToggleProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -9,16 +10,17 @@ interface ToggleProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     size?: "default" | "sm" | "lg";
 }
 
-export function Toggle({ 
-    className = "", 
-    pressed, 
-    onPressedChange, 
-    variant = "default", 
+export function Toggle({
+    className = "",
+    pressed,
+    onPressedChange,
+    variant = "default",
     size = "default",
     onClick,
     children,
-    ...props 
+    ...props
 }: ToggleProps) {
+    const { t: i18n } = useI18n();
     const [isPressed, setIsPressed] = React.useState(pressed || false);
 
     React.useEffect(() => {
@@ -40,18 +42,18 @@ export function Toggle({
         }
     };
 
-    const baseClass = "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus:ring-2 disabled:pointer-events-none disabled:opacity-50";
-    
+    const baseClass = i18n.catalog["text_360f485012bf"];
+
     // Using simple styles or CSS variables from globals.css
-    const variantClass = variant === "outline" 
-        ? "border border-input hover:bg-gray-100" 
-        : "hover:bg-gray-100";
-    
-    const activeClass = isPressed 
-        ? "bg-gray-200 text-gray-900" 
-        : "bg-transparent text-gray-500";
-        
-    const sizeClass = size === "sm" ? "h-8 px-2" : size === "lg" ? "h-10 px-3" : "h-9 px-2.5";
+    const variantClass = variant === "outline"
+        ? i18n.catalog["text_fcf4e2b5e926"]
+        : i18n.catalog["text_07086c439fe7"];
+
+    const activeClass = isPressed
+        ? i18n.catalog["text_804b5103430a"]
+        : i18n.catalog["text_103d1e085b1e"];
+
+    const sizeClass = size === "sm" ? i18n.catalog["text_87c1f2732270"] : size === "lg" ? i18n.catalog["text_3e3a4d52171e"] : i18n.catalog["text_b665cc544c25"];
 
     return (
         <button

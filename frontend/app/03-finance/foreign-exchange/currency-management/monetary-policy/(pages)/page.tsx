@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { Alert, showToast } from "@/components/ui";
 import { ConfirmDialog } from "@/components/ui/Dialog";
 import { fetchAPI } from "@/lib/api";
@@ -9,6 +10,7 @@ import { useCallback, useEffect, useState } from "react";
 import { MainLayout } from "@/components/layout";
 
 export default function MonetaryPolicyPage() {
+    const { t: i18n } = useI18n();
     const [policies, setPolicies] = useState<CurrencyPolicy[]>([]);
     const [loadingPolicy, setLoadingPolicy] = useState(true);
     const [selectedPolicyId, setSelectedPolicyId] = useState<number | null>(null);
@@ -39,7 +41,7 @@ export default function MonetaryPolicyPage() {
             }
         } catch (e) {
             console.error(e);
-            showToast("خطأ في تحميل السياسات المالية", "error");
+            showToast(i18n.catalog["text_2f667ba898ce"], "error");
         } finally {
             setLoadingPolicy(false);
         }
@@ -54,20 +56,20 @@ export default function MonetaryPolicyPage() {
 
         setConfirmDialog({
             isOpen: true,
-            title: "تأكيد تغيير السياسة",
-            message: "هل أنت متأكد من تغيير سياسة العملات؟ قد يؤثر هذا على كيفية معالجة المعاملات الجديدة.",
+            title: i18n.catalog["text_3039409fb54b"],
+            message: i18n.catalog["text_592626fd4139"],
             variant: "primary",
             onConfirm: async () => {
                 try {
                     const res = await fetchAPI(API_ENDPOINTS.FINANCE.FOREIGN_EXCHANGE.POLICIES.ACTIVATE(selectedPolicyId), { method: "POST" });
                     if (res.success) {
-                        showToast("تم تفعيل السياسة بنجاح", "success");
+                        showToast(i18n.catalog["text_fbbb787d0e3c"], "success");
                         loadData();
                     } else {
-                        showToast(res.message || "فشل تفعيل السياسة", "error");
+                        showToast(res.message || i18n.catalog["text_bdd4b53d1cac"], "error");
                     }
                 } catch (e) {
-                    showToast("خطأ في الاتصال", "error");
+                    showToast(i18n.catalog["text_1ac65f6d78f4"], "error");
                 }
             }
         });
@@ -80,7 +82,7 @@ export default function MonetaryPolicyPage() {
                     {/* Header Section */}
                     <div className="card-header-flex">
                         <div className="title-with-icon">
-                            <h3 style={{ margin: 0 }}>السياسات النقدية</h3>
+                            <h3 style={{ margin: 0 }}>{i18n.catalog["text_2e59fd1930a2"]}</h3>
                         </div>
                         <button
                             className="btn btn-primary"
@@ -88,26 +90,24 @@ export default function MonetaryPolicyPage() {
                             disabled={!selectedPolicyId || policies.find(p => p.id === selectedPolicyId)?.is_active}
                         >
                             <i className="fas fa-save"></i>
-                            حفظ واعتماد السياسة
-                        </button>
+                            {i18n.catalog["text_efeb8bd9654f"]}</button>
                     </div>
 
                     <p className="text-muted" style={{ marginBottom: '1.5rem', fontSize: '0.9rem' }}>
-                        حدد السياسة التي يتبعها النظام في معالجة العملات الأجنبية وقيود اليومية. تحكم هذه السياسة في كيفية تقييم وتحويل العملات عند الترحيل.
-                    </p>
+                        {i18n.catalog["text_fc7ed944cb38"]}</p>
 
                     {/* Loading State */}
                     {loadingPolicy ? (
                         <div className="empty-state" style={{ minHeight: '200px' }}>
                             <div className="btn-spinner" style={{ width: '32px', height: '32px', borderWidth: '3px', borderColor: 'var(--border-color)', borderTopColor: 'var(--primary-color)' }}></div>
-                            <p style={{ marginTop: '1rem', color: 'var(--text-secondary)' }}>جاري تحميل السياسات المالية...</p>
+                            <p style={{ marginTop: '1rem', color: 'var(--text-secondary)' }}>{i18n.catalog["text_d7676b7b5e34"]}</p>
                         </div>
                     ) : policies.length === 0 ? (
                         /* Empty State */
                         <div className="empty-state" style={{ minHeight: '250px', background: 'var(--bg-color)', borderRadius: 'var(--radius-lg)', border: '2px dashed var(--border-color)' }}>
                             <i className="fas fa-folder-open" style={{ fontSize: '2.5rem' }}></i>
-                            <h3>لا توجد سياسات متاحة</h3>
-                            <p>لم يتم العثور على أي سياسات مالية معرفة في النظام. يرجى التأكد من تشغيل البيانات الأولية (Seeders).</p>
+                            <h3>{i18n.catalog["text_e70d693752a6"]}</h3>
+                            <p>{i18n.catalog["text_fe339958cd67"]}</p>
                         </div>
                     ) : (
                         /* Policies List */
@@ -171,8 +171,7 @@ export default function MonetaryPolicyPage() {
                                                     </span>
                                                     {isActive && (
                                                         <span className="badge badge-success" style={{ fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                                            <i className="fas fa-check-circle"></i> السياسة المطبقة
-                                                        </span>
+                                                            <i className="fas fa-check-circle"></i> {i18n.catalog["text_9a36b5eda8f0"]}</span>
                                                     )}
                                                 </h4>
                                                 <p style={{
@@ -197,8 +196,7 @@ export default function MonetaryPolicyPage() {
                                                     color: isSelected ? 'white' : undefined
                                                 }}>
                                                     <i className={`fas ${policy.allow_multi_currency_balances ? 'fa-check' : 'fa-times'}`} style={{ fontSize: '0.7rem' }}></i>
-                                                    أرصدة متعددة العملات
-                                                </span>
+                                                    {i18n.catalog["text_0da7189f0ae0"]}</span>
 
                                                 <span className={`action-checkbox ${policy.revaluation_enabled ? '' : 'disabled'}`} style={{
                                                     padding: '0.4rem 0.75rem',
@@ -210,8 +208,7 @@ export default function MonetaryPolicyPage() {
                                                     color: isSelected ? 'white' : undefined
                                                 }}>
                                                     <i className={`fas ${policy.revaluation_enabled ? 'fa-check' : 'fa-times'}`} style={{ fontSize: '0.7rem' }}></i>
-                                                    إعادة تقييم فروقات العملة
-                                                </span>
+                                                    {i18n.catalog["text_90b89a0fd451"]}</span>
 
                                                 <span className={`action-checkbox`} style={{
                                                     padding: '0.4rem 0.75rem',
@@ -221,10 +218,10 @@ export default function MonetaryPolicyPage() {
                                                     color: isSelected ? 'white' : undefined
                                                 }}>
                                                     <i className="fas fa-clock" style={{ fontSize: '0.7rem' }}></i>
-                                                    {policy.conversion_timing === 'POSTING' ? 'تحويل عند الترحيل' :
-                                                     policy.conversion_timing === 'SETTLEMENT' ? 'تحويل عند التسوية' :
-                                                     policy.conversion_timing === 'REPORTING' ? 'تحويل عند التقارير' :
-                                                     policy.conversion_timing === 'NEVER' ? 'بدون تحويل' : policy.conversion_timing}
+                                                    {policy.conversion_timing === 'POSTING' ? i18n.catalog["text_1247644ad1f0"] :
+                                                     policy.conversion_timing === 'SETTLEMENT' ? i18n.catalog["text_f90d835f23ad"] :
+                                                     policy.conversion_timing === 'REPORTING' ? i18n.catalog["text_ca95e3a45a1c"] :
+                                                     policy.conversion_timing === 'NEVER' ? i18n.catalog["text_b3cf9c69e6b6"] : policy.conversion_timing}
                                                 </span>
                                             </div>
                                         </div>
@@ -238,7 +235,7 @@ export default function MonetaryPolicyPage() {
                     <div style={{ marginTop: '1.5rem' }}>
                         <Alert
                             type="warning"
-                            message="ملاحظة هامة: تغيير السياسة المالية لا يؤثر على القيود السابقة (تُحفظ بنفس السياسة التي أنشئت بها). السياسة الجديدة ستطبق فقط على العمليات التي تتم بعد لحظة التفعيل."
+                            message={i18n.catalog["text_71230b996719"]}
                         />
                     </div>
 
@@ -249,8 +246,8 @@ export default function MonetaryPolicyPage() {
                         title={confirmDialog.title}
                         message={confirmDialog.message}
                         confirmVariant={confirmDialog.variant}
-                        confirmText="تأكيد"
-                        cancelText="إلغاء"
+                        confirmText={i18n.catalog["text_8f7d74ac0eac"]}
+                        cancelText={i18n.catalog["text_9a30dc2a96b8"]}
                     />
                 </div>
             </div>

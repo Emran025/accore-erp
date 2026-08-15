@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { FilterSection, FilterGroup } from "@/components/ui";
 import { getIcon } from "@/lib/icons";
 import { Representative } from "@/types";
@@ -20,7 +21,7 @@ export function RepresentativeInfoSection({ representative, showDeleted, onShowD
                 <div>
                     <h3 style={{ margin: 0 }}>{representative.name}</h3>
                     <p className="text-muted" style={{ margin: 0, fontSize: "0.85rem" }}>
-                        {representative.phone || "بدون هاتف"} | {representative.email || "بدون بريد إلكتروني"}
+                        {representative.phone || catalogMessage("text_04cf43a4d120")} | {representative.email || catalogMessage("text_9952acd0ca96")}
                     </p>
                 </div>
             </div>
@@ -33,8 +34,7 @@ export function RepresentativeInfoSection({ representative, showDeleted, onShowD
                     onChange={(e) => onShowDeletedChange(e.target.checked)}
                 />
                 <label htmlFor="show-deleted-toggle" style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: 0, cursor: "pointer" }}>
-                    عرض المحذوفات
-                </label>
+                    {catalogMessage("text_8860744ad348")}</label>
             </FilterGroup>
         </FilterSection>
     );

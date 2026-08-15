@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { navigationGroups, NavigationGroup, NavigationLink, getAllNavigationLinks, isNavigationGroup, NavigationItem } from "@/lib/navigation";
@@ -58,6 +59,7 @@ interface SideNavigationBarProps {
 }
 
 export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExternalMobileClose }: SideNavigationBarProps) {
+    const { t: i18n } = useI18n();
     const pathname = usePathname();
     const router = useRouter();
     const { permissions } = useAuthStore();
@@ -356,7 +358,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
     /* ── Computed sidebar width style ── */
     const sidebarWidth = sideNavCollapsed ? 64 : sideNavWidth;
     const sidebarStyle = {
-        width: `${sidebarWidth}px`,
+        width: catalogText(i18n, "text_412663ecb075", { value0: sidebarWidth }),
         minWidth: sideNavCollapsed ? "64px" : "200px",
     };
 
@@ -385,7 +387,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                     {/* ═══ Section 1: Opened (Recently Accessed) ═══ */}
                     {!sideNavCollapsed && (
                         <SectionHeader
-                            title="الحديثة"
+                            title={i18n.catalog["text_7ac022114d0a"]}
                             icon="clock"
                             collapsed={openedSectionCollapsed}
                             onToggle={() => toggleSection("opened")}
@@ -397,7 +399,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                         >
                             <div className="sidenav-section-content">
                                 {recentScreens.length === 0 ? (
-                                    <div className="sidenav-empty">No recent screens</div>
+                                    <div className="sidenav-empty">{i18n.catalog["text_3ba3cbbca012"]}</div>
                                 ) : (
                                     recentScreens.map((path) => {
                                         const link = findLink(path);
@@ -428,7 +430,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                     {/* ═══ Section 2: System Menu (Full Tree) ═══ */}
                     {!sideNavCollapsed && (
                         <SectionHeader
-                            title="القائمة الأساسية"
+                            title={i18n.catalog["text_cbc7b12e6748"]}
                             icon="sitemap"
                             collapsed={systemMenuSectionCollapsed}
                             onToggle={() => toggleSection("systemMenu")}
@@ -480,7 +482,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                                                                 color={moduleColor}
                                                                 isActive={pathname === link.href}
                                                                 isChild={true}
-                                                                badgeSoon={link.description.includes("قريباً")}
+                                                                badgeSoon={link.description.includes(i18n.catalog["text_1f921420481d"])}
                                                                 title={link.description}
                                                                 onClick={() => handleScreenClick(link.href)}
                                                                 onContextMenu={handleContextMenu}
@@ -515,7 +517,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                             <>
                                 {!sideNavCollapsed && (
                                     <SectionHeader
-                                        title="المفضلة"
+                                        title={i18n.catalog["text_9f2908941570"]}
                                         icon="star"
                                         collapsed={favoritesSectionCollapsed}
                                         onToggle={() => toggleSection("favorites")}
@@ -528,8 +530,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                                         <div className="sidenav-section-content">
                                             {resolvedFavorites.length === 0 ? (
                                                 <div className="sidenav-empty">
-                                                    Right-click any screen to add it to favorites
-                                                </div>
+                                                    {i18n.catalog["text_0decf2464b25"]}</div>
                                             ) : (
                                                 resolvedFavorites.map(({ path, link, group }) => (
                                                     <SidebarItem

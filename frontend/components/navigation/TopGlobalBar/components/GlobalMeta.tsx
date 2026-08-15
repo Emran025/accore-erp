@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { getIcon } from "@/lib/icons";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -18,6 +19,7 @@ function formatElapsed(seconds: number): string {
 }
 
 export function GlobalMeta() {
+    const { t: i18n } = useI18n();
     const { user } = useAuthStore();
 
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -57,7 +59,7 @@ export function GlobalMeta() {
                 <button
                     type="button"
                     className="top-global-icon-btn"
-                    aria-label="Settings"
+                    aria-label={i18n.catalog["text_74a883a037bc"]}
                 >
                     {getIcon("settings")}
                 </button>

@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { Dialog, SearchableSelect, SelectOption, showToast } from "@/components/ui";
 import { Product } from "@/types";
 import React, { useState } from "react";
@@ -27,17 +28,17 @@ export const AddRequestDialog: React.FC<AddRequestDialogProps> = ({
     const productOptions: SelectOption[] = products.map((p) => ({
         value: p.id,
         label: p.name,
-        subtitle: `المخزون: ${p.stock_quantity}`,
+        subtitle: catalogMessage("text_12227f24f5ed", { value0: p.stock_quantity }),
     }));
 
     const handleSubmit = async () => {
         if (!formData.quantity) {
-            showToast("الرجاء إدخال الكمية", "error");
+            showToast(catalogMessage("text_b0bce0a98e4a"), "error");
             return;
         }
 
         if (!formData.product_id && !formData.product_name) {
-            showToast("الرجاء اختيار منتج أو إدخال اسمه", "error");
+            showToast(catalogMessage("text_a5045cefb9c9"), "error");
             return;
         }
 
@@ -58,19 +59,19 @@ export const AddRequestDialog: React.FC<AddRequestDialogProps> = ({
         <Dialog
             isOpen={isOpen}
             onClose={onClose}
-            title="طلب شراء جديد"
+            title={catalogMessage("text_e68546925c8f")}
             maxWidth="600px"
             footer={
                 <>
-                    <button className="btn btn-secondary" onClick={onClose} disabled={isSaving}>إلغاء</button>
+                    <button className="btn btn-secondary" onClick={onClose} disabled={isSaving}>{catalogMessage("text_9a30dc2a96b8")}</button>
                     <button className="btn btn-primary" onClick={handleSubmit} disabled={isSaving}>
-                        {isSaving ? "جاري الحفظ..." : "تأكيد الطلب"}
+                        {isSaving ? catalogMessage("text_8688b0ff5f34") : catalogMessage("text_fb4a312e86ac")}
                     </button>
                 </>
             }
         >
             <div className="form-group">
-                <label>المنتج (إن وجد) *</label>
+                <label>{catalogMessage("text_9c4eaf1f344a")}</label>
                 <SearchableSelect
                     options={productOptions}
                     value={formData.product_id ? parseInt(formData.product_id) : null}
@@ -82,37 +83,37 @@ export const AddRequestDialog: React.FC<AddRequestDialogProps> = ({
                             product_name: prod ? prod.name : "",
                         });
                     }}
-                    placeholder="ابحث عن منتج..."
+                    placeholder={catalogMessage("text_157755d2bc65")}
                 />
             </div>
             {!formData.product_id && (
                 <div className="form-group">
-                    <label>أو أدخل اسم المنتج يدوياً</label>
+                    <label>{catalogMessage("text_bf0829be70fc")}</label>
                     <input
                         type="text"
                         className="form-control"
-                        placeholder="اسم الصنف أو المنتج"
+                        placeholder={catalogMessage("text_baa2ca8d4fd4")}
                         value={formData.product_name}
                         onChange={(e) => setFormData({ ...formData, product_name: e.target.value })}
                     />
                 </div>
             )}
             <div className="form-group">
-                <label>الكمية المطلوبة *</label>
+                <label>{catalogMessage("text_13ab4244836f")}</label>
                 <input
                     type="number"
                     className="form-control"
-                    placeholder="الكمية"
+                    placeholder={catalogMessage("text_935e21853946")}
                     value={formData.quantity}
                     onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
                     min="1"
                 />
             </div>
             <div className="form-group">
-                <label>ملاحظات إضافية</label>
+                <label>{catalogMessage("text_d90508176b1a")}</label>
                 <textarea
                     className="form-control"
-                    placeholder="سبب الطلب، مواصفات معينة الخ..."
+                    placeholder={catalogMessage("text_a7b0a7a6505b")}
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                     rows={3}

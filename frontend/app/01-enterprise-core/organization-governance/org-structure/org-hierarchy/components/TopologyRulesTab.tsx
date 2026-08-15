@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { PageSubHeader } from "@/components/layout";
 import { Column, Select, Table, showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -19,6 +20,7 @@ const CARDINALITY_COLORS: Record<string, string> = {
 };
 
 export function TopologyRulesTab() {
+    const { t: i18n } = useI18n();
     const [rules, setRules] = useState<TopologyRule[]>([]);
     const [metaTypes, setMetaTypes] = useState<MetaType[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +35,7 @@ export function TopologyRulesTab() {
             ]);
             setRules((rulesRes.topology_rules as TopologyRule[]) || []);
             setMetaTypes((metaRes.meta_types as MetaType[]) || []);
-        } catch { showToast("خطأ في تحميل القواعد", "error"); }
+        } catch { showToast(i18n.catalog["text_ddc7cd0ad0d7"], "error"); }
         finally { setIsLoading(false); }
     }, []);
 
@@ -50,11 +52,11 @@ export function TopologyRulesTab() {
 
     const topologyColumns: Column<TopologyRule>[] = [
         {
-            key: "source", header: "المصدر (Source)", dataLabel: "المصدر",
+            key: "source", header: i18n.catalog["text_b09a92d06205"], dataLabel: i18n.catalog["text_64660bb87d89"],
             render: (r) => <span style={{ fontWeight: 600 }}>{r.source_type?.display_name_ar || getTypeLabel(r.source_node_type_id)}</span>,
         },
         {
-            key: "cardinality", header: "العلاقة", dataLabel: "العلاقة",
+            key: "cardinality", header: i18n.catalog["text_ca62d074353f"], dataLabel: i18n.catalog["text_ca62d074353f"],
             render: (r) => {
                 const color = CARDINALITY_COLORS[r.cardinality] || "#6b7280";
                 return (
@@ -68,12 +70,12 @@ export function TopologyRulesTab() {
             },
         },
         {
-            key: "target", header: "الهدف (Target)", dataLabel: "الهدف",
+            key: "target", header: i18n.catalog["text_d46024b07e28"], dataLabel: i18n.catalog["text_acd37606a532"],
             render: (r) => <span style={{ fontWeight: 600 }}>{r.target_type?.display_name_ar || getTypeLabel(r.target_node_type_id)}</span>,
         },
-        { key: "description", header: "الوصف", dataLabel: "الوصف", render: (r) => <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>{r.description || "—"}</span> },
+        { key: "description", header: i18n.catalog["text_95023fc76e1b"], dataLabel: i18n.catalog["text_95023fc76e1b"], render: (r) => <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>{r.description || "—"}</span> },
         {
-            key: "constraints", header: "القيود", dataLabel: "القيود",
+            key: "constraints", header: i18n.catalog["text_62944c87a3d6"], dataLabel: i18n.catalog["text_62944c87a3d6"],
             render: (r) => {
                 const constraints = r.constraint_logic?.rules || [];
                 if (!constraints.length) return <span style={{ color: "var(--text-muted)" }}>—</span>;
@@ -93,8 +95,8 @@ export function TopologyRulesTab() {
     return (
         <div className="sales-card animate-fade">
             <PageSubHeader
-                title="قواعد الارتباط (Topology Rules)"
-                subTitle="القواعد التي تحكم العلاقات المسموحة بين أنواع الوحدات التنظيمية — بما يحاكي SAP SPRO"
+                title={i18n.catalog["text_e3e1caae49f1"]}
+                subTitle={i18n.catalog["text_ca3eca4c4221"]}
                 titleIcon="route"
                 actions={
                     <>
@@ -110,7 +112,7 @@ export function TopologyRulesTab() {
                                 maxWidth: "200px",
                                 fontSize: "1rem"
                             }}
-                            placeholder="اختر وحدة..."
+                            placeholder={i18n.catalog["text_c9434c71d391"]}
                         />
                     </>
                 }
@@ -123,16 +125,16 @@ export function TopologyRulesTab() {
                         <span style={{ width: 12, height: 12, borderRadius: "3px", background: color + "30", border: `1px solid ${color}`, display: "inline-block" }} />
                         <strong style={{ color }}>{card}</strong>
                         <span style={{ color: "var(--text-muted)" }}>
-                            {card === "1:1" ? "واحد-لواحد" : card === "1:N" ? "واحد-لعدة" : card === "N:1" ? "عدة-لواحد" : "عدة-لعدة"}
+                            {card === i18n.catalog["text_d6b5915c4605"] ? i18n.catalog["text_946d475a59fa"] : card === i18n.catalog["text_2636c6bccd0c"] ? i18n.catalog["text_5f4a13d44f7d"] : card === i18n.catalog["text_238b99a5f262"] ? i18n.catalog["text_ef1140fc7257"] : i18n.catalog["text_982838392d87"]}
                         </span>
                     </span>
                 ))}
             </div>
 
-            <Table columns={topologyColumns} data={filteredRules} keyExtractor={(r) => String(r.id)} emptyMessage="لا توجد قواعد" isLoading={isLoading} />
+            <Table columns={topologyColumns} data={filteredRules} keyExtractor={(r) => String(r.id)} emptyMessage={i18n.catalog["text_59ed74df7015"]} isLoading={isLoading} />
 
             <div style={{ marginTop: "0.5rem", fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                إجمالي: {filteredRules.length} قاعدة من {rules.length}
+                {i18n.catalog["text_97bd2075da0f"]}{filteredRules.length} {i18n.catalog["text_444040107f0b"]}{rules.length}
             </div>
         </div>
     );

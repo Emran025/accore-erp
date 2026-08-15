@@ -1,4 +1,4 @@
-
+import { catalogMessage } from "@/lib/i18n";
 import { PageSubHeader } from "@/components/layout";
 import { Button, DateRangePicker, FilterActions, showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -46,10 +46,10 @@ export function CashFlowTab() {
                     net_cash_flow: Number(apiData.net_change_in_cash || 0)
                 });
             } else {
-                showToast(response.message || "فشل تحميل قائمة التدفقات النقدية", "error");
+                showToast(response.message || catalogMessage("text_3bdb68306fc6"), "error");
             }
         } catch {
-            showToast("خطأ في الاتصال بالسيرفر", "error");
+            showToast(catalogMessage("text_22fa79f17c32"), "error");
         } finally {
             setIsLoading(false);
         }
@@ -58,7 +58,7 @@ export function CashFlowTab() {
     return (
         <div className="sales-card">
             <PageSubHeader
-                title="قائمة التدفقات النقدية"
+                title={catalogMessage("text_f8ffa9d3f4d5")}
                 titleIcon="money-bill-wave"
                 actions={
                     <>
@@ -71,8 +71,7 @@ export function CashFlowTab() {
                         />
                         <FilterActions>
                             <Button onClick={loadCashFlow} icon="search">
-                                عرض التقرير
-                            </Button>
+                                {catalogMessage("text_92ad0d774e56")}</Button>
                         </FilterActions>
                     </>
                 } />
@@ -84,40 +83,39 @@ export function CashFlowTab() {
             ) : cashFlow ? (
                 <div className="report-section animate-fade" style={{ marginTop: "1.5rem" }}>
                     <h2 style={{ marginBottom: "1.5rem" }}>
-                        <i className="fas fa-money-bill-wave"></i> قائمة التدفقات النقدية ({startDate} إلى {endDate})
+                        <i className="fas fa-money-bill-wave"></i> {catalogMessage("text_ebe3ca1ccedb")}{startDate} {catalogMessage("text_97fe3fe5b063")}{endDate})
                     </h2>
 
-                    <h3 style={{ marginTop: "1.5rem", marginBottom: "1rem", color: "var(--primary-dark)" }}>الأنشطة التشغيلية</h3>
+                    <h3 style={{ marginTop: "1.5rem", marginBottom: "1rem", color: "var(--primary-dark)" }}>{catalogMessage("text_b077acc711be")}</h3>
                     <div className="financial-row">
-                        <span className="report-label">صافي الربح</span>
+                        <span className="report-label">{catalogMessage("text_cceeb6ff14e3")}</span>
                         <span className="report-value">{formatCurrency(cashFlow.operating_activities?.net_profit || 0)}</span>
                     </div>
                     <div className="financial-row">
-                        <span className="report-label">التدفقات النقدية من الأنشطة التشغيلية</span>
+                        <span className="report-label">{catalogMessage("text_12da860fc5d3")}</span>
                         <span className="report-value">{formatCurrency(cashFlow.operating_activities?.net_cash_flow || 0)}</span>
                     </div>
 
-                    <h3 style={{ marginTop: "1.5rem", marginBottom: "1rem", color: "var(--primary-dark)" }}>الأنشطة الاستثمارية</h3>
+                    <h3 style={{ marginTop: "1.5rem", marginBottom: "1rem", color: "var(--primary-dark)" }}>{catalogMessage("text_1032d80d7d58")}</h3>
                     <div className="financial-row">
-                        <span className="report-label">شراء الأصول</span>
+                        <span className="report-label">{catalogMessage("text_4a079e0ce5e0")}</span>
                         <span className="report-value text-danger">-{formatCurrency(cashFlow.investing_activities?.asset_purchases || 0)}</span>
                     </div>
 
-                    <h3 style={{ marginTop: "1.5rem", marginBottom: "1rem", color: "var(--primary-dark)" }}>الأنشطة التمويلية</h3>
+                    <h3 style={{ marginTop: "1.5rem", marginBottom: "1rem", color: "var(--primary-dark)" }}>{catalogMessage("text_df61cb67d19c")}</h3>
                     <div className="financial-row">
-                        <span className="report-label">رأس المال</span>
+                        <span className="report-label">{catalogMessage("text_659bd974c93a")}</span>
                         <span className="report-value text-success">{formatCurrency(cashFlow.financing_activities?.capital || 0)}</span>
                     </div>
 
                     <div className="financial-row">
-                        <span className="report-label">صافي التدفق النقدي</span>
+                        <span className="report-label">{catalogMessage("text_d39b337da01d")}</span>
                         <span className="report-value">{formatCurrency(cashFlow.net_cash_flow || 0)}</span>
                     </div>
                 </div>
             ) : (
                 <p style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)" }}>
-                    اختر الفترة الزمنية واضغط على "عرض التقرير"
-                </p>
+                    {catalogMessage("text_1c49fa1be4b0")}</p>
             )}
         </div>
     );

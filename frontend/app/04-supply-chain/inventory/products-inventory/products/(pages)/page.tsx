@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Column, ConfirmDialog, Dialog, NumberInput, SearchableSelect, Table, showToast } from "@/components/ui";
 import { TextInput } from "@/components/ui/TextInput";
@@ -15,6 +16,7 @@ import { Icon } from "@/lib/icons";
 import { Category, Product } from "./types";
 
 export default function ProductsPage() {
+    const { t: i18n } = useI18n();
     const [user, setUser] = useState<User | null>(null);
     const [permissions, setPermissions] = useState<Permission[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -38,7 +40,7 @@ export default function ProductsPage() {
                 setCategories((response.data as Category[]) || []);
             }
         } catch (e) {
-            console.error("Error loading categories", e);
+            console.error(i18n.catalog["text_a400f101d9de"], e);
         }
     }, []);
 
@@ -145,7 +147,7 @@ export default function ProductsPage() {
 
     const handleSubmit = async () => {
         if (!formData.name.trim() || !formData.purchase_price || !formData.selling_price) {
-            showToast("يرجى ملء جميع الحقول المطلوبة", "error");
+            showToast(i18n.catalog["text_0a8eb85d0081"], "error");
             return;
         }
 
@@ -156,9 +158,9 @@ export default function ProductsPage() {
             unit_price: parseFloat(formData.selling_price),
             minimum_profit_margin: parseFloat(formData.profit_margin) || 0,
             stock_quantity: parseInt(formData.stock) || 0,
-            unit_name: formData.unit_type === 'ctn' ? 'كرتون' : 'حبة',
+            unit_name: formData.unit_type === 'ctn' ? i18n.catalog["text_cc7593424dc5"] : i18n.catalog["text_d400a30ad5f3"],
             items_per_unit: parseInt(formData.units_per_package) || 1,
-            sub_unit_name: formData.unit_type === 'ctn' ? 'حبة' : null,
+            sub_unit_name: formData.unit_type === 'ctn' ? i18n.catalog["text_d400a30ad5f3"] : null,
             description: formData.description,
             purchase_price: parseFloat(formData.purchase_price),
             item_type: formData.item_type,
@@ -176,7 +178,7 @@ export default function ProductsPage() {
 
     const addCategory = async () => {
         if (!newCategoryName.trim()) {
-            showToast("يرجى إدخال اسم الفئة", "error");
+            showToast(i18n.catalog["text_7c496f8155c1"], "error");
             return;
         }
         try {
@@ -185,13 +187,13 @@ export default function ProductsPage() {
                 body: JSON.stringify({ name: newCategoryName }),
             });
             if (res.success) {
-                showToast("تمت إضافة الفئة بنجاح", "success");
+                showToast(i18n.catalog["text_e5835868a342"], "success");
                 setCategoryDialog(false);
                 setNewCategoryName("");
                 loadCategories();
             }
         } catch {
-            showToast("خطأ في إضافة الفئة", "error");
+            showToast(i18n.catalog["text_d3373ebaddea"], "error");
         }
     };
 
@@ -204,75 +206,75 @@ export default function ProductsPage() {
     };
 
     const columns: Column<Product>[] = [
-        { key: "name", header: "اسم المنتج", dataLabel: "اسم المنتج" },
-        { key: "barcode", header: "الباركود", dataLabel: "الباركود" },
-        { key: "category_name", header: "الفئة", dataLabel: "الفئة" },
+        { key: "name", header: i18n.catalog["text_57efd1ac6869"], dataLabel: i18n.catalog["text_57efd1ac6869"] },
+        { key: "barcode", header: i18n.catalog["text_501881931acd"], dataLabel: i18n.catalog["text_501881931acd"] },
+        { key: "category_name", header: i18n.catalog["text_ff61fb213ffc"], dataLabel: i18n.catalog["text_ff61fb213ffc"] },
         {
             key: "item_type",
-            header: "النوع",
-            dataLabel: "النوع",
+            header: i18n.catalog["text_caa3f2bb4a36"],
+            dataLabel: i18n.catalog["text_caa3f2bb4a36"],
             render: (it) => (
                 <span className={`badge badge-${it.item_type === 'product' ? 'info' : it.item_type === 'raw_material' ? 'secondary' : 'warning'}`}>
-                    {it.item_type === 'product' ? 'منتج' : it.item_type === 'raw_material' ? 'مادة خام' : 'خدمة'}
+                    {it.item_type === 'product' ? i18n.catalog["text_f8720c7412f1"] : it.item_type === 'raw_material' ? i18n.catalog["text_ada78f6ec149"] : i18n.catalog["text_11f4216e101b"]}
                 </span>
             )
         },
         {
             key: "sellable",
-            header: "ليس مادة أولية",
-            dataLabel: "ليس مادة أولية",
+            header: i18n.catalog["text_07991139690d"],
+            dataLabel: i18n.catalog["text_07991139690d"],
             render: (it) => (
                 <span className={`badge badge-${it.sellable ? 'success' : 'danger'}`}>
-                    {it.sellable ? 'نعم' : 'لا'}
+                    {it.sellable ? i18n.catalog["text_4b2d2c65d365"] : i18n.catalog["text_2bd073516a87"]}
                 </span>
             )
         },
         {
             key: "selling_price",
-            header: "سعر البيع",
-            dataLabel: "سعر البيع",
+            header: i18n.catalog["text_2d37565e6fe3"],
+            dataLabel: i18n.catalog["text_2d37565e6fe3"],
             render: (it) => formatCurrency(it.selling_price || 0)
         },
         {
             key: "stock",
-            header: "المخزون",
-            dataLabel: "المخزون",
+            header: i18n.catalog["text_a0e7c1b2423d"],
+            dataLabel: i18n.catalog["text_a0e7c1b2423d"],
             render: (it) => (
                 <div className="stock-badge-container">
                     <span>{it.stock}</span>
                     {(it.stock || 0) <= 0 ? (
-                        <span className="badge badge-danger">نفذ</span>
+                        <span className="badge badge-danger">{i18n.catalog["text_50777a9576a9"]}</span>
                     ) : (it.stock || 0) <= (it.min_stock || 10) ? (
-                        <span className="badge badge-warning">منخفض</span>
+                        <span className="badge badge-warning">{i18n.catalog["text_5dddca7f4a48"]}</span>
                     ) : (
-                        <span className="badge badge-success">متوفر</span>
+                        <span className="badge badge-success">{i18n.catalog["text_17b91f56a97b"]}</span>
                     )}
                 </div>
             )
         },
         {
             key: "actions",
-            header: "الإجراءات",
-            dataLabel: "الإجراءات",
+            header: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (it) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "eye",
-                            title: "عرض",
+                            title: i18n.catalog["text_3824e18ca83b"],
                             variant: "view",
                             onClick: () => { setSelectedProduct(it); setViewDialog(true); }
                         },
                         {
                             icon: "edit",
-                            title: "تعديل",
+                            title: i18n.catalog["text_113d570d6555"],
                             variant: "edit",
                             onClick: () => openEditDialog(it),
                             hidden: !canAccess(permissions, "products", "edit")
                         },
                         {
                             icon: "trash",
-                            title: "حذف",
+                            title: i18n.catalog["text_59ca629220a6"],
                             variant: "delete",
                             onClick: () => { setDeleteId(it.id); setConfirmDialog(true); },
                             hidden: !canAccess(permissions, "products", "delete")
@@ -297,7 +299,7 @@ export default function ProductsPage() {
                                 setSearchTerm(val);
                                 loadProducts(1, val);
                             }}
-                            placeholder="بحث بالاسم أو الباركود..."
+                            placeholder={i18n.catalog["text_f52222a6a929"]}
                             className="header-search-bar"
                         />
                     }
@@ -308,8 +310,7 @@ export default function ProductsPage() {
                                 icon="plus"
                                 onClick={openAddDialog}
                             >
-                                إضافة منتج
-                            </Button>
+                                {i18n.catalog["text_515506c4eaa6"]}</Button>
                         )
                     }
                 />
@@ -330,7 +331,7 @@ export default function ProductsPage() {
             <Dialog
                 isOpen={productDialog}
                 onClose={() => setProductDialog(false)}
-                title={selectedProduct ? "تعديل المنتج" : "إضافة منتج جديد"}
+                title={selectedProduct ? i18n.catalog["text_f952513ba85f"] : i18n.catalog["text_9f9df8ce10ba"]}
                 maxWidth="800px"
                 footer={
                     <>
@@ -338,13 +339,12 @@ export default function ProductsPage() {
                             variant="secondary"
                             onClick={() => setProductDialog(false)}
                         >
-                            إلغاء
-                        </Button>
+                            {i18n.catalog["text_9a30dc2a96b8"]}</Button>
                         <Button
                             variant="primary"
                             onClick={handleSubmit}
                         >
-                            {selectedProduct ? "تحديث" : "إضافة"}
+                            {selectedProduct ? i18n.catalog["text_00eab31f95b7"] : i18n.catalog["text_d52453ac627d"]}
                         </Button>
                     </>
                 }
@@ -353,17 +353,17 @@ export default function ProductsPage() {
                 <div className="permission-group">
                     <div className="group-title">
                         <Icon name="box" size={18} />
-                        <span>المعلومات الأساسية للمنتج</span>
+                        <span>{i18n.catalog["text_d8d9330c62c0"]}</span>
                     </div>
 
                     <div className="form-row">
                         <TextInput
-                            label="اسم المنتج *"
+                            label={i18n.catalog["text_f1f73a577b94"]}
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         />
                         <TextInput
-                            label="الباركود"
+                            label={i18n.catalog["text_501881931acd"]}
                             value={formData.barcode}
                             onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
                         />
@@ -371,7 +371,7 @@ export default function ProductsPage() {
 
                     <div className="form-row">
                         <div className="form-group">
-                            <label>الفئة</label>
+                            <label>{i18n.catalog["text_ff61fb213ffc"]}</label>
                             <div className="input-with-action">
                                 <Select
                                     value={formData.category_id}
@@ -387,7 +387,7 @@ export default function ProductsPage() {
                             </div>
                         </div>
                         <Select
-                            label="نوع الصنف"
+                            label={i18n.catalog["text_606bf32290b0"]}
                             value={formData.item_type}
                             onChange={(e) => {
                                 const val = e.target.value as any;
@@ -399,8 +399,8 @@ export default function ProductsPage() {
                                 });
                             }}
                             options={[
-                                { value: "product", label: "منتج تام" },
-                                { value: "raw_material", label: "مادة خام (غير للبيع)" }
+                                { value: "product", label: i18n.catalog["text_b6c9e054c437"] },
+                                { value: "raw_material", label: i18n.catalog["text_16c848be11e7"] }
                             ]}
                         />
                     </div>
@@ -410,7 +410,7 @@ export default function ProductsPage() {
                 <div className="permission-group">
                     <div className="group-title">
                         <Icon name="check-square" size={18} />
-                        <span>خصائص المنتج والحالة</span>
+                        <span>{i18n.catalog["text_22fc62eed0bf"]}</span>
                     </div>
 
                     <div className="actions-grid">
@@ -420,7 +420,7 @@ export default function ProductsPage() {
                                 checked={formData.sellable}
                                 onChange={(e) => setFormData({ ...formData, sellable: e.target.checked })}
                             />
-                            <span>قابل للبيع</span>
+                            <span>{i18n.catalog["text_1f8d8a811d36"]}</span>
                         </label>
                         <label className="action-checkbox">
                             <input
@@ -428,7 +428,7 @@ export default function ProductsPage() {
                                 checked={formData.inventory_control}
                                 onChange={(e) => setFormData({ ...formData, inventory_control: e.target.checked })}
                             />
-                            <span>متابعة المخزون</span>
+                            <span>{i18n.catalog["text_5ba3b4722ba1"]}</span>
                         </label>
                         <label className="action-checkbox">
                             <input
@@ -436,7 +436,7 @@ export default function ProductsPage() {
                                 checked={formData.taxable}
                                 onChange={(e) => setFormData({ ...formData, taxable: e.target.checked })}
                             />
-                            <span>خاضع للضريبة</span>
+                            <span>{i18n.catalog["text_8d1c87e5718b"]}</span>
                         </label>
                     </div>
                 </div>
@@ -445,18 +445,18 @@ export default function ProductsPage() {
                 <div className="permission-group">
                     <div className="group-title">
                         <Icon name="coins" size={18} />
-                        <span>التسعير وهامش الربح</span>
+                        <span>{i18n.catalog["text_de07ad8308e2"]}</span>
                     </div>
 
                     <div className="form-row">
                         <NumberInput
-                            label="سعر الشراء *"
+                            label={i18n.catalog["text_f35d3f1366c0"]}
                             value={formData.purchase_price}
                             onChange={(val) => calculatePrices("purchase_price", String(val))}
                             step={0.01}
                         />
                         <NumberInput
-                            label="هامش الربح (%)"
+                            label={i18n.catalog["text_d6bcb1583fc6"]}
                             value={formData.profit_margin}
                             onChange={(val) => calculatePrices("profit_margin", String(val))}
                             step={0.1}
@@ -464,13 +464,13 @@ export default function ProductsPage() {
                     </div>
                     <div className="form-row">
                         <NumberInput
-                            label="سعر البيع *"
+                            label={i18n.catalog["text_76b4385b6ead"]}
                             value={formData.selling_price}
                             onChange={(val) => calculatePrices("selling_price", String(val))}
                             step={0.01}
                         />
                         <NumberInput
-                            label="وحدات/صندوق"
+                            label={i18n.catalog["text_f9db4a0169a7"]}
                             value={formData.units_per_package}
                             onChange={(val) => calculatePrices("units_per_package", String(val))}
                             min={1}
@@ -482,24 +482,24 @@ export default function ProductsPage() {
                 <div className="permission-group">
                     <div className="group-title">
                         <Icon name="layers" size={18} />
-                        <span>المخزون والبيانات الإضافية</span>
+                        <span>{i18n.catalog["text_6cfe3f8ab8ff"]}</span>
                     </div>
 
                     <div className="form-row">
                         <NumberInput
-                            label="المخزون الحالي"
+                            label={i18n.catalog["text_eabfe10ecac0"]}
                             value={formData.stock}
                             onChange={(val) => setFormData({ ...formData, stock: String(val) })}
                         />
                         <NumberInput
-                            label="حد الطلب الأدنى"
+                            label={i18n.catalog["text_ea7f5f360f4a"]}
                             value={formData.min_stock}
                             onChange={(val) => setFormData({ ...formData, min_stock: String(val) })}
                         />
                     </div>
 
                     <Textarea
-                        label="الوصف"
+                        label={i18n.catalog["text_95023fc76e1b"]}
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         rows={2}
@@ -510,7 +510,7 @@ export default function ProductsPage() {
             <Dialog
                 isOpen={categoryDialog}
                 onClose={() => setCategoryDialog(false)}
-                title="إضافة فئة جديدة"
+                title={i18n.catalog["text_d11d4b31d77b"]}
                 maxWidth="400px"
                 footer={
                     <>
@@ -518,57 +518,55 @@ export default function ProductsPage() {
                             variant="secondary"
                             onClick={() => setCategoryDialog(false)}
                         >
-                            إلغاء
-                        </Button>
+                            {i18n.catalog["text_9a30dc2a96b8"]}</Button>
                         <Button
                             variant="primary"
                             onClick={addCategory}
                         >
-                            إضافة
-                        </Button>
+                            {i18n.catalog["text_d52453ac627d"]}</Button>
                     </>
                 }
             >
                 <TextInput
-                    label="اسم الفئة *"
+                    label={i18n.catalog["text_b4b331965eea"]}
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
                 />
             </Dialog>
 
-            <Dialog isOpen={viewDialog} onClose={() => setViewDialog(false)} title="تفاصيل المنتج" maxWidth="600px">
+            <Dialog isOpen={viewDialog} onClose={() => setViewDialog(false)} title={i18n.catalog["text_d6d397948e95"]} maxWidth="600px">
                 {selectedProduct && (
                     <div className="details-grid">
                         <div className="detail-item">
-                            <span className="label">اسم المنتج</span>
+                            <span className="label">{i18n.catalog["text_57efd1ac6869"]}</span>
                             <span className="value strong">{selectedProduct.name}</span>
                         </div>
                         <div className="detail-item">
-                            <span className="label">الباركود</span>
+                            <span className="label">{i18n.catalog["text_501881931acd"]}</span>
                             <span className="value">{selectedProduct.barcode || "-"}</span>
                         </div>
                         <div className="detail-item">
-                            <span className="label">الفئة</span>
+                            <span className="label">{i18n.catalog["text_ff61fb213ffc"]}</span>
                             <span className="value">{selectedProduct.category_name || "-"}</span>
                         </div>
                         <div className="detail-item">
-                            <span className="label">سعر الشراء</span>
+                            <span className="label">{i18n.catalog["text_2b080520c372"]}</span>
                             <span className="value">{formatCurrency(selectedProduct.purchase_price || 0)}</span>
                         </div>
                         <div className="detail-item">
-                            <span className="label">سعر البيع</span>
+                            <span className="label">{i18n.catalog["text_2d37565e6fe3"]}</span>
                             <span className="value strong primary">{formatCurrency(selectedProduct.selling_price || 0)}</span>
                         </div>
                         <div className="detail-item">
-                            <span className="label">هامش الربح</span>
+                            <span className="label">{i18n.catalog["text_ceb4ee89b1bd"]}</span>
                             <span className="value">{selectedProduct.profit_margin}%</span>
                         </div>
                         <div className="detail-item">
-                            <span className="label">المخزون</span>
+                            <span className="label">{i18n.catalog["text_a0e7c1b2423d"]}</span>
                             <span className="value">{selectedProduct.stock} {selectedProduct.unit_name}</span>
                         </div>
                         <div className="detail-item full-width">
-                            <span className="label">الوصف</span>
+                            <span className="label">{i18n.catalog["text_95023fc76e1b"]}</span>
                             <span className="value">{selectedProduct.description || "-"}</span>
                         </div>
                     </div>
@@ -579,8 +577,8 @@ export default function ProductsPage() {
                 isOpen={confirmDialog}
                 onClose={() => setConfirmDialog(false)}
                 onConfirm={handleDelete}
-                title="تأكيد الحذف"
-                message="هل أنت متأكد من حذف هذا المنتج؟ سيتم حذف جميع السجلات المتعلقة به."
+                title={i18n.catalog["text_5f9cb54dc136"]}
+                message={i18n.catalog["text_b876352cde8f"]}
             />
         </MainLayout>
     );

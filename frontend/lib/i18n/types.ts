@@ -1,3 +1,5 @@
+import type { CatalogDictionary } from "./catalog";
+
 export const supportedLocales = ["ar-SA", "en-US"] as const;
 
 export type SupportedLocale = (typeof supportedLocales)[number];
@@ -15,6 +17,8 @@ export interface LocaleMetadata {
 }
 
 export interface AppDictionary {
+    /** Generated, exhaustive interface-text catalog keyed by stable source IDs. */
+    catalog: CatalogDictionary;
     common: {
         loading: string;
         save: string;

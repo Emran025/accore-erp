@@ -1,4 +1,4 @@
-
+import { catalogMessage } from "@/lib/i18n";
 import { showToast } from "@/components/ui";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { fetchAPI } from "@/lib/api";
@@ -14,17 +14,17 @@ export function SecurityTab() {
 
   const changePassword = async () => {
     if (!passwordData.current_password || !passwordData.new_password) {
-      showToast("يرجى ملء جميع الحقول", "error");
+      showToast(catalogMessage("text_ee5bf2016153"), "error");
       return;
     }
 
     if (passwordData.new_password !== passwordData.confirm_password) {
-      showToast("كلمة المرور الجديدة غير متطابقة", "error");
+      showToast(catalogMessage("text_7b9a263c5b94"), "error");
       return;
     }
 
     if (passwordData.new_password.length < 6) {
-      showToast("كلمة المرور يجب أن تكون 6 أحرف على الأقل", "error");
+      showToast(catalogMessage("text_ae978b4b01fd"), "error");
       return;
     }
 
@@ -36,20 +36,20 @@ export function SecurityTab() {
           new_password: passwordData.new_password,
         }),
       });
-      showToast("تم تغيير كلمة المرور بنجاح", "success");
+      showToast(catalogMessage("text_650866f7dbd3"), "success");
       setPasswordData({ current_password: "", new_password: "", confirm_password: "" });
     } catch {
-      showToast("خطأ في تغيير كلمة المرور", "error");
+      showToast(catalogMessage("text_b6e296a55e3f"), "error");
     }
   };
 
   return (
     <div className="sales-card">
-      <h3>تغيير كلمة المرور</h3>
+      <h3>{catalogMessage("text_473bcc4e9b46")}</h3>
       <div className="settings-form-narrow">
         <div className="form-group pb-0">
           <PasswordInput
-            label="كلمة المرور الحالية"
+            label={catalogMessage("text_e4f0784fe844")}
             id="current_password"
             value={passwordData.current_password}
             onChange={(e) => setPasswordData({ ...passwordData, current_password: e.target.value })}
@@ -57,7 +57,7 @@ export function SecurityTab() {
         </div>
         <div className="form-group pb-0">
           <PasswordInput
-            label="كلمة المرور الجديدة"
+            label={catalogMessage("text_202b9814ea8b")}
             id="new_password"
             value={passwordData.new_password}
             onChange={(e) => setPasswordData({ ...passwordData, new_password: e.target.value })}
@@ -65,15 +65,14 @@ export function SecurityTab() {
         </div>
         <div className="form-group pb-0">
           <PasswordInput
-            label="تأكيد كلمة المرور"
+            label={catalogMessage("text_57e87f00ead1")}
             id="confirm_password"
             value={passwordData.confirm_password}
             onChange={(e) => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
           />
         </div>
         <button className="btn btn-primary" onClick={changePassword}>
-          تغيير كلمة المرور
-        </button>
+          {catalogMessage("text_473bcc4e9b46")}</button>
       </div>
     </div>
   );

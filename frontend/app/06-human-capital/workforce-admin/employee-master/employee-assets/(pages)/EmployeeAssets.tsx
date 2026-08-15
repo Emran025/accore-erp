@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogMessage } from "@/lib/i18n";
 import { EmployeeAsset } from "@/types";
 import { PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Column, SearchableSelect, Select, Table } from "@/components/ui";
@@ -11,20 +12,20 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const assetTypeLabels: Record<string, string> = {
-  laptop: "لابتوب",
-  phone: "هاتف",
-  vehicle: "مركبة",
-  key: "مفتاح",
-  equipment: "معدات",
-  other: "أخرى",
+  laptop: catalogMessage("text_fe1966fd0299"),
+  phone: catalogMessage("text_c2e72da6dba5"),
+  vehicle: catalogMessage("text_1a83da3f0239"),
+  key: catalogMessage("text_8a9d0e6c56ec"),
+  equipment: catalogMessage("text_441296311989"),
+  other: catalogMessage("text_17a9f38e22b6"),
 };
 
 const statusLabels: Record<string, string> = {
-  allocated: "مخصص",
-  returned: "مسترد",
-  maintenance: "صيانة",
-  lost: "مفقود",
-  damaged: "تالف",
+  allocated: catalogMessage("text_17c28aaaa777"),
+  returned: catalogMessage("text_75fbb16d08be"),
+  maintenance: catalogMessage("text_9c499d210797"),
+  lost: catalogMessage("text_b4e5ae7ca0e7"),
+  damaged: catalogMessage("text_c4c3267f2898"),
 };
 
 const statusBadges: Record<string, string> = {
@@ -36,6 +37,7 @@ const statusBadges: Record<string, string> = {
 };
 
 export function EmployeeAssets() {
+    const { t: i18n } = useI18n();
   const router = useRouter();
   const { canAccess } = useAuthStore();
   const [assets, setAssets] = useState<EmployeeAsset[]>([]);
@@ -61,7 +63,7 @@ export function EmployeeAssets() {
       setAssets(res.data as EmployeeAsset[] || []);
       setTotalPages(Number(res.last_page) || 1);
     } catch (error) {
-      console.error("Failed to load assets", error);
+      console.error(i18n.catalog["text_5f046588fd1c"], error);
     } finally {
       setIsLoading(false);
     }
@@ -70,24 +72,24 @@ export function EmployeeAssets() {
   const columns: Column<EmployeeAsset>[] = [
     {
       key: "asset_code",
-      header: "رمز الأصل",
-      dataLabel: "رمز الأصل",
+      header: i18n.catalog["text_24f79f111ae7"],
+      dataLabel: i18n.catalog["text_24f79f111ae7"],
     },
     {
       key: "asset_name",
-      header: "اسم الأصل",
-      dataLabel: "اسم الأصل",
+      header: i18n.catalog["text_5812d0b5e210"],
+      dataLabel: i18n.catalog["text_5812d0b5e210"],
     },
     {
       key: "asset_type",
-      header: "النوع",
-      dataLabel: "النوع",
+      header: i18n.catalog["text_caa3f2bb4a36"],
+      dataLabel: i18n.catalog["text_caa3f2bb4a36"],
       render: (item) => assetTypeLabels[item.asset_type] || item.asset_type,
     },
     {
       key: "employee",
-      header: "الموظف",
-      dataLabel: "الموظف",
+      header: i18n.catalog["text_b71a39c832a6"],
+      dataLabel: i18n.catalog["text_b71a39c832a6"],
       render: (item) => (
         <div>
           <div>{item.employee?.full_name || '-'}</div>
@@ -97,14 +99,14 @@ export function EmployeeAssets() {
     },
     {
       key: "allocation_date",
-      header: "تاريخ التخصيص",
-      dataLabel: "تاريخ التخصيص",
+      header: i18n.catalog["text_b7dad2d69588"],
+      dataLabel: i18n.catalog["text_b7dad2d69588"],
       render: (item) => formatDate(item.allocation_date),
     },
     {
       key: "status",
-      header: "الحالة",
-      dataLabel: "الحالة",
+      header: i18n.catalog["text_c3a4749caed4"],
+      dataLabel: i18n.catalog["text_c3a4749caed4"],
       render: (item) => (
         <span className={`badge ${statusBadges[item.status] || 'badge-secondary'}`}>
           {statusLabels[item.status] || item.status}
@@ -113,26 +115,26 @@ export function EmployeeAssets() {
     },
     {
       key: "next_maintenance_date",
-      header: "الصيانة القادمة",
-      dataLabel: "الصيانة القادمة",
+      header: i18n.catalog["text_cdd3ae723397"],
+      dataLabel: i18n.catalog["text_cdd3ae723397"],
       render: (item) => item.next_maintenance_date ? formatDate(item.next_maintenance_date) : '-',
     },
     {
       key: "id",
-      header: "الإجراءات",
-      dataLabel: "إجراءات",
+      header: i18n.catalog["text_7797240d6caf"],
+      dataLabel: i18n.catalog["text_9f0a0f722601"],
       render: (item) => (
         <ActionButtons
           actions={[
             {
               icon: "eye",
-              title: "عرض التفاصيل",
+              title: i18n.catalog["text_4b615d0e6dd2"],
               variant: "view",
               onClick: () => router.push(`/06-human-capital/workforce-admin/employee-master/employee-assets/view/${item.id}`)
             },
             ...(canAccess("employees", "edit") ? [{
               icon: "edit" as const,
-              title: "تعديل",
+              title: i18n.catalog["text_113d570d6555"],
               variant: "edit" as const,
               onClick: () => router.push(`/06-human-capital/workforce-admin/employee-master/employee-assets/edit/${item.id}`)
             }] : [])
@@ -145,7 +147,7 @@ export function EmployeeAssets() {
   return (
     <div className="sales-card animate-fade">
       <PageSubHeader
-        title="أصول الموظفين"
+        title={i18n.catalog["text_dae7bb2736a6"]}
         titleIcon="laptop"
         searchInput={
           <SearchableSelect
@@ -156,7 +158,7 @@ export function EmployeeAssets() {
               setSearchTerm(val);
               setCurrentPage(1);
             }}
-            placeholder="بحث..."
+            placeholder={i18n.catalog["text_76b858f96489"]}
             className="search-input"
           />
         }
@@ -169,7 +171,7 @@ export function EmployeeAssets() {
                 setCurrentPage(1);
               }}
               style={{ minWidth: '150px' }}
-              placeholder="جميع الحالات"
+              placeholder={i18n.catalog["text_1ef213109d57"]}
               options={Object.entries(statusLabels).map(([value, label]) => ({ value, label }))}
             />
             {canAccess("employees", "create") && (
@@ -178,8 +180,7 @@ export function EmployeeAssets() {
                 variant="primary"
                 icon="plus"
               >
-                إضافة أصل
-              </Button>
+                {i18n.catalog["text_5952c2632b5f"]}</Button>
             )}
           </>
         }
@@ -189,7 +190,7 @@ export function EmployeeAssets() {
         columns={columns}
         data={assets}
         keyExtractor={(item) => item.id.toString()}
-        emptyMessage="لا توجد أصول مسجلة"
+        emptyMessage={i18n.catalog["text_af5031abf842"]}
         isLoading={isLoading}
         pagination={{
           currentPage,

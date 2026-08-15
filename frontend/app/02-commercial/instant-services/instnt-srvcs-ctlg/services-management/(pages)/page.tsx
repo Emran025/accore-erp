@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText, catalogMessage } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Column, ConfirmDialog, Dialog, Table, showToast } from "@/components/ui";
 import { Select } from "@/components/ui/select";
@@ -15,11 +16,12 @@ const emptyForm = {
     name: "",
     description: "",
     unit_price: "0",
-    unit_name: "خدمة",
+    unit_name: catalogMessage("text_11f4216e101b"),
     taxable: true,
 };
 
 export default function ServicesManagementPage() {
+    const { t: i18n } = useI18n();
     const {
         items: services,
         isLoading,
@@ -59,7 +61,7 @@ export default function ServicesManagementPage() {
             name: s.name,
             description: s.description ?? "",
             unit_price: String(s.selling_price || s.unit_price || 0),
-            unit_name: s.unit_name ?? "خدمة",
+            unit_name: s.unit_name ?? i18n.catalog["text_11f4216e101b"],
             taxable: s.taxable,
         });
         setFormOpen(true);
@@ -67,7 +69,7 @@ export default function ServicesManagementPage() {
 
     const handleSave = async () => {
         if (!form.name.trim()) {
-            showToast("الرجاء إدخال اسم الخدمة", "error");
+            showToast(i18n.catalog["text_6d5b30bf0cc1"], "error");
             return;
         }
         setSaving(true);
@@ -105,43 +107,43 @@ export default function ServicesManagementPage() {
 
     const columns: Column<Service>[] = [
         { key: "id", header: "#" },
-        { key: "name", header: "اسم الخدمة" },
-        { 
-            key: "selling_price", 
-            header: "السعر", 
-            render: (row) => formatCurrency(row.selling_price || row.unit_price || 0) 
+        { key: "name", header: i18n.catalog["text_8999278851b9"] },
+        {
+            key: "selling_price",
+            header: i18n.catalog["text_259862e8b313"],
+            render: (row) => formatCurrency(row.selling_price || row.unit_price || 0)
         },
-        { key: "unit_name", header: "وحدة" },
-        { 
-            key: "taxable", 
-            header: "خاضع للضريبة", 
+        { key: "unit_name", header: i18n.catalog["text_584f05614c76"] },
+        {
+            key: "taxable",
+            header: i18n.catalog["text_8d1c87e5718b"],
             render: (row) => (
                 <span className={`badge badge-${row.taxable ? 'success' : 'secondary'}`}>
-                    {row.taxable ? "نعم" : "لا"}
+                    {row.taxable ? i18n.catalog["text_4b2d2c65d365"] : i18n.catalog["text_2bd073516a87"]}
                 </span>
             )
         },
-        { 
-            key: "created_at", 
-            header: "تاريخ الإنشاء", 
-            render: (row) => row.created_at ? row.created_at.substring(0, 10) : "-" 
+        {
+            key: "created_at",
+            header: i18n.catalog["text_dc08056fa4f2"],
+            render: (row) => row.created_at ? row.created_at.substring(0, 10) : "-"
         },
         {
             key: "actions",
-            header: "الإجراءات",
+            header: i18n.catalog["text_7797240d6caf"],
             render: (row) => (
                 <ActionButtons
                     actions={
                         [
                             {
                                 icon: "edit",
-                                title: "تعديل",
+                                title: i18n.catalog["text_113d570d6555"],
                                 variant: "secondary",
                                 onClick: () => openEdit(row),
                             },
                             {
                                 icon: "trash",
-                                title: "حذف",
+                                title: i18n.catalog["text_59ca629220a6"],
                                 variant: "delete",
                                 onClick: () => confirmDelete(row),
                             },
@@ -156,13 +158,13 @@ export default function ServicesManagementPage() {
         <MainLayout>
             <div className="sales-card animate-fade">
                 <PageSubHeader
-                    title="إدارة الخدمات"
+                    title={i18n.catalog["text_829bed999387"]}
                     titleIcon="briefcase"
-                    actions={<Button variant="primary" icon="plus" onClick={openNew}>خدمة جديدة</Button>}
+                    actions={<Button variant="primary" icon="plus" onClick={openNew}>{i18n.catalog["text_61c45907c9d2"]}</Button>}
                     searchInput={
                         <div style={{ display: "flex", gap: "0.5rem" }}>
                             <TextInput
-                                placeholder="بحث عن خدمة..."
+                                placeholder={i18n.catalog["text_22813b439fa6"]}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 style={{ width: "300px" }}
@@ -189,49 +191,49 @@ export default function ServicesManagementPage() {
             <Dialog
                 isOpen={formOpen}
                 onClose={() => setFormOpen(false)}
-                title={editingId ? "تعديل الخدمة" : "إضافة خدمة جديدة"}
+                title={editingId ? i18n.catalog["text_e82b95030144"] : i18n.catalog["text_7198020eb56d"]}
                 maxWidth="600px"
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setFormOpen(false)}>إلغاء</Button>
+                        <Button variant="secondary" onClick={() => setFormOpen(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
                         <Button variant="primary" icon="check" onClick={handleSave} disabled={saving}>
-                            {saving ? "جارٍ الحفظ..." : editingId ? "تحديث" : "حفظ"}
+                            {saving ? i18n.catalog["text_dd81b078c15b"] : editingId ? i18n.catalog["text_00eab31f95b7"] : i18n.catalog["text_ddfcaf9d0144"]}
                         </Button>
                     </>
                 }
             >
                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                     <TextInput
-                        label="اسم الخدمة *"
+                        label={i18n.catalog["text_307322a4c247"]}
                         value={form.name}
                         onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))}
                         required
                     />
                     <Textarea
-                        label="الوصف"
+                        label={i18n.catalog["text_95023fc76e1b"]}
                         value={form.description}
                         onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
                         rows={3}
                     />
                     <div className="form-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                         <NumberInput
-                            label="السعر *"
+                            label={i18n.catalog["text_8cb73887fa76"]}
                             value={form.unit_price}
                             onChange={(v) => setForm(f => ({ ...f, unit_price: String(v) }))}
                             min={0}
                             required
                         />
                         <TextInput
-                            label="وحدة القياس"
+                            label={i18n.catalog["text_02e927a2fbf5"]}
                             value={form.unit_name}
                             onChange={(e) => setForm(f => ({ ...f, unit_name: e.target.value }))}
                         />
                     </div>
                     <Select
-                        label="خاضع للضريبة"
+                        label={i18n.catalog["text_8d1c87e5718b"]}
                         value={form.taxable ? "1" : "0"}
                         onChange={(e) => setForm(f => ({ ...f, taxable: e.target.value === "1" }))}
-                        options={[{ value: "1", label: "نعم" }, { value: "0", label: "لا" }]}
+                        options={[{ value: "1", label: i18n.catalog["text_4b2d2c65d365"] }, { value: "0", label: i18n.catalog["text_2bd073516a87"] }]}
                     />
                 </div>
             </Dialog>
@@ -240,9 +242,9 @@ export default function ServicesManagementPage() {
                 isOpen={deleteDialog}
                 onClose={() => setDeleteDialog(false)}
                 onConfirm={handleDelete}
-                title="تأكيد الحذف"
-                message={`هل أنت متأكد من حذف الخدمة "${toDelete?.name}"؟`}
-                confirmText="حذف"
+                title={i18n.catalog["text_5f9cb54dc136"]}
+                message={catalogText(i18n, "text_a247abff53d0", { value0: toDelete?.name })}
+                confirmText={i18n.catalog["text_59ca629220a6"]}
             />
         </MainLayout>
     );

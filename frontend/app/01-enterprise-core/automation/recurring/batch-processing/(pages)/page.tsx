@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { Button, Column, ConfirmDialog, Dialog, Table, showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -28,6 +29,7 @@ interface BatchItem {
 }
 
 export default function BatchProcessingPage() {
+    const { t: i18n } = useI18n();
   const [user, setUser] = useState<User | null>(null);
   const [batches, setBatches] = useState<Batch[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -64,10 +66,10 @@ export default function BatchProcessingPage() {
         setTotalPages(Math.ceil(total / itemsPerPage));
         setCurrentPage(page);
       } else {
-        showToast(response.message || "فشل تحميل الدفعات", "error");
+        showToast(response.message || i18n.catalog["text_4322533d32d7"], "error");
       }
     } catch {
-      showToast("خطأ في الاتصال بالسيرفر", "error");
+      showToast(i18n.catalog["text_22fa79f17c32"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -94,19 +96,19 @@ export default function BatchProcessingPage() {
 
   const getBatchTypeLabel = (type: string) => {
     const types: Record<string, string> = {
-      journal_entry_import: "استيراد قيود يومية",
-      expense_posting: "ترحيل مصروفات",
+      journal_entry_import: i18n.catalog["text_927d1e98cb04"],
+      expense_posting: i18n.catalog["text_b60732404e72"],
     };
     return types[type] || type;
   };
 
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { class: string; text: string }> = {
-      pending: { class: "badge-secondary", text: "معلقة" },
-      processing: { class: "badge-info", text: "قيد المعالجة" },
-      completed: { class: "badge-success", text: "مكتملة" },
-      completed_with_errors: { class: "badge-warning", text: "مكتملة مع أخطاء" },
-      failed: { class: "badge-danger", text: "فشلت" },
+      pending: { class: "badge-secondary", text: i18n.catalog["text_debc42b60ecd"] },
+      processing: { class: "badge-info", text: i18n.catalog["text_0cc6a7db6080"] },
+      completed: { class: "badge-success", text: i18n.catalog["text_f1d6d15f76da"] },
+      completed_with_errors: { class: "badge-warning", text: i18n.catalog["text_bfe4957eb0ac"] },
+      failed: { class: "badge-danger", text: i18n.catalog["text_f5c4293be71d"] },
     };
 
     const statusLower = status?.toLowerCase() || "pending";
@@ -136,7 +138,7 @@ export default function BatchProcessingPage() {
     e.preventDefault();
 
     if (!batchName || !batchType) {
-      showToast("يرجى إدخال اسم الدفعة ونوعها", "error");
+      showToast(i18n.catalog["text_d22e1b0282c3"], "error");
       return;
     }
 
@@ -152,7 +154,7 @@ export default function BatchProcessingPage() {
 
       if (response.success && response.data) {
         const data = response.data as Batch;
-        showToast("تم إنشاء الدفعة بنجاح. يمكنك الآن إضافة العناصر.", "success");
+        showToast(i18n.catalog["text_17c8e33cdc65"], "success");
         setCreateDialog(false);
         await loadBatches(1);
 
@@ -163,10 +165,10 @@ export default function BatchProcessingPage() {
           }, 500);
         }
       } else {
-        showToast(response.message || "فشل إنشاء الدفعة", "error");
+        showToast(response.message || i18n.catalog["text_3583476d1f64"], "error");
       }
     } catch {
-      showToast("خطأ في إنشاء الدفعة", "error");
+      showToast(i18n.catalog["text_cd14f52d2adf"], "error");
     }
   };
 
@@ -181,11 +183,11 @@ export default function BatchProcessingPage() {
         const items = (response.data as { items?: BatchItem[] }).items || [];
         setBatchItems(items);
       } else {
-        showToast(response.message || "فشل تحميل العناصر", "error");
+        showToast(response.message || i18n.catalog["text_e6aa99062649"], "error");
         setItemsDialog(false);
       }
     } catch {
-      showToast("خطأ في تحميل العناصر", "error");
+      showToast(i18n.catalog["text_3d1f569c8842"], "error");
       setItemsDialog(false);
     } finally {
       setIsLoadingItems(false);
@@ -208,15 +210,15 @@ export default function BatchProcessingPage() {
       });
 
       if (response.success) {
-        showToast("تم تنفيذ الدفعة بنجاح", "success");
+        showToast(i18n.catalog["text_7c0e942076ed"], "success");
         setConfirmDialog(false);
         setExecuteBatchId(null);
         await loadBatches(currentPage);
       } else {
-        showToast(response.message || "فشل تنفيذ الدفعة", "error");
+        showToast(response.message || i18n.catalog["text_d3f336fffb19"], "error");
       }
     } catch {
-      showToast("خطأ في تنفيذ الدفعة", "error");
+      showToast(i18n.catalog["text_5e0959cfa6b2"], "error");
     }
   };
 
@@ -229,18 +231,18 @@ export default function BatchProcessingPage() {
     if (!deleteBatchId) return;
 
     try {
-      const response = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.BATCH}/${deleteBatchId}`, { method: "DELETE" });
+      const response = await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.ENTERPRISE_CORE.BATCH, value1: deleteBatchId }), { method: "DELETE" });
 
       if (response.success) {
-        showToast("تم حذف الدفعة بنجاح", "success");
+        showToast(i18n.catalog["text_1d25a38f4084"], "success");
         setConfirmDialog(false);
         setDeleteBatchId(null);
         await loadBatches(currentPage);
       } else {
-        showToast(response.message || "فشل حذف الدفعة", "error");
+        showToast(response.message || i18n.catalog["text_d8f1b96d3ff6"], "error");
       }
     } catch {
-      showToast("خطأ في حذف الدفعة", "error");
+      showToast(i18n.catalog["text_e2f6dd925b80"], "error");
     }
   };
 
@@ -254,11 +256,11 @@ export default function BatchProcessingPage() {
 
   const getItemStatusBadge = (status: string) => {
     const statusMap: Record<string, { class: string; text: string }> = {
-      pending: { class: "badge-secondary", text: "معلقة" },
-      success: { class: "badge-success", text: "مكتملة" },
-      completed: { class: "badge-success", text: "مكتملة" },
-      error: { class: "badge-danger", text: "فشلت" },
-      failed: { class: "badge-danger", text: "فشلت" },
+      pending: { class: "badge-secondary", text: i18n.catalog["text_debc42b60ecd"] },
+      success: { class: "badge-success", text: i18n.catalog["text_f1d6d15f76da"] },
+      completed: { class: "badge-success", text: i18n.catalog["text_f1d6d15f76da"] },
+      error: { class: "badge-danger", text: i18n.catalog["text_f5c4293be71d"] },
+      failed: { class: "badge-danger", text: i18n.catalog["text_f5c4293be71d"] },
     };
 
     const statusLower = status?.toLowerCase() || "pending";
@@ -270,50 +272,50 @@ export default function BatchProcessingPage() {
   const columns: Column<Batch>[] = [
     {
       key: "batch_name",
-      header: "اسم الدفعة",
-      dataLabel: "اسم الدفعة",
+      header: i18n.catalog["text_21d5e8a1e88c"],
+      dataLabel: i18n.catalog["text_21d5e8a1e88c"],
       render: (item) => <strong>{item.batch_name}</strong>,
     },
     {
       key: "batch_type",
-      header: "نوع الدفعة",
-      dataLabel: "نوع الدفعة",
+      header: i18n.catalog["text_448543036e9c"],
+      dataLabel: i18n.catalog["text_448543036e9c"],
       render: (item) => getBatchTypeLabel(item.batch_type),
     },
     {
       key: "status",
-      header: "الحالة",
-      dataLabel: "الحالة",
+      header: i18n.catalog["text_c3a4749caed4"],
+      dataLabel: i18n.catalog["text_c3a4749caed4"],
       render: (item) => getStatusBadge(item.status),
     },
     {
       key: "total_items",
-      header: "عدد العناصر",
-      dataLabel: "عدد العناصر",
+      header: i18n.catalog["text_ea45bc23f2a5"],
+      dataLabel: i18n.catalog["text_ea45bc23f2a5"],
       render: (item) => item.total_items || 0,
     },
     {
       key: "created_at",
-      header: "تاريخ الإنشاء",
-      dataLabel: "تاريخ الإنشاء",
+      header: i18n.catalog["text_dc08056fa4f2"],
+      dataLabel: i18n.catalog["text_dc08056fa4f2"],
       render: (item) => formatDate(item.created_at),
     },
     {
       key: "started_at",
-      header: "تاريخ البدء",
-      dataLabel: "تاريخ البدء",
+      header: i18n.catalog["text_90f719b91522"],
+      dataLabel: i18n.catalog["text_90f719b91522"],
       render: (item) => item.started_at ? formatDate(item.started_at) : "-",
     },
     {
       key: "completed_at",
-      header: "تاريخ الاكتمال",
-      dataLabel: "تاريخ الاكتمال",
+      header: i18n.catalog["text_408f41c7f4d5"],
+      dataLabel: i18n.catalog["text_408f41c7f4d5"],
       render: (item) => item.completed_at ? formatDate(item.completed_at) : "-",
     },
     {
       key: "actions",
-      header: "الإجراءات",
-      dataLabel: "الإجراءات",
+      header: i18n.catalog["text_7797240d6caf"],
+      dataLabel: i18n.catalog["text_7797240d6caf"],
       render: (item) => {
         const isPending = item.status?.toLowerCase() === "pending";
         return (
@@ -321,7 +323,7 @@ export default function BatchProcessingPage() {
             <button
               className="icon-btn view"
               onClick={() => viewBatchItems(item.id)}
-              title="عرض العناصر"
+              title={i18n.catalog["text_f75b6132088e"]}
             >
               {getIcon("eye")}
             </button>
@@ -330,14 +332,14 @@ export default function BatchProcessingPage() {
                 <button
                   className="icon-btn edit"
                   onClick={() => confirmExecuteBatch(item.id, item.batch_type)}
-                  title="تنفيذ"
+                  title={i18n.catalog["text_5087e935ba15"]}
                 >
                   {getIcon("check")}
                 </button>
                 <button
                   className="icon-btn delete"
                   onClick={() => confirmDeleteBatch(item.id)}
-                  title="حذف"
+                  title={i18n.catalog["text_59ca629220a6"]}
                 >
                   {getIcon("trash")}
                 </button>
@@ -358,8 +360,8 @@ export default function BatchProcessingPage() {
     },
     {
       key: "item_data",
-      header: "بيانات العنصر",
-      dataLabel: "بيانات العنصر",
+      header: i18n.catalog["text_08ab6ec0960e"],
+      dataLabel: i18n.catalog["text_08ab6ec0960e"],
       render: (item) => {
         const dataStr = JSON.stringify(item.item_data || {}, null, 2);
         const truncated = dataStr.length > 100 ? dataStr.substring(0, 100) + "..." : dataStr;
@@ -372,14 +374,14 @@ export default function BatchProcessingPage() {
     },
     {
       key: "status",
-      header: "الحالة",
-      dataLabel: "الحالة",
+      header: i18n.catalog["text_c3a4749caed4"],
+      dataLabel: i18n.catalog["text_c3a4749caed4"],
       render: (item) => getItemStatusBadge(item.status),
     },
     {
       key: "error_message",
-      header: "رسالة الخطأ",
-      dataLabel: "رسالة الخطأ",
+      header: i18n.catalog["text_ee81747fe922"],
+      dataLabel: i18n.catalog["text_ee81747fe922"],
       render: (item) => item.error_message || "-",
     },
   ];
@@ -397,15 +399,14 @@ export default function BatchProcessingPage() {
               onClick={openCreateDialog}
               icon="plus"
             >
-              دفعة جديدة
-            </Button>
+              {i18n.catalog["text_57ee14656ff9"]}</Button>
           }
         />
         <Table
           columns={columns}
           data={batches}
           keyExtractor={(item) => item.id}
-          emptyMessage="لا توجد دفعات"
+          emptyMessage={i18n.catalog["text_1e7a035eca9d"]}
           isLoading={isLoading}
           pagination={{
             currentPage,
@@ -419,21 +420,19 @@ export default function BatchProcessingPage() {
       <Dialog
         isOpen={createDialog}
         onClose={closeCreateDialog}
-        title="إنشاء دفعة جديدة"
+        title={i18n.catalog["text_88af98e092ea"]}
         footer={
           <>
             <button className="btn btn-secondary" onClick={closeCreateDialog}>
-              إلغاء
-            </button>
+              {i18n.catalog["text_9a30dc2a96b8"]}</button>
             <button className="btn btn-primary" onClick={createBatch}>
-              إنشاء
-            </button>
+              {i18n.catalog["text_a820f3590d36"]}</button>
           </>
         }
       >
         <form onSubmit={createBatch}>
           <div className="form-group">
-            <label htmlFor="batch-name">اسم الدفعة *</label>
+            <label htmlFor="batch-name">{i18n.catalog["text_42c9e54dc4f1"]}</label>
             <input
               type="text"
               id="batch-name"
@@ -444,21 +443,21 @@ export default function BatchProcessingPage() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="batch-type">نوع الدفعة *</label>
+            <label htmlFor="batch-type">{i18n.catalog["text_e23f625bb935"]}</label>
             <select
               id="batch-type"
               value={batchType}
               onChange={(e) => setBatchType(e.target.value)}
               required
             >
-              <option value="">اختر نوع الدفعة</option>
-              <option value="journal_entry_import">استيراد قيود يومية</option>
-              <option value="expense_posting">ترحيل مصروفات</option>
+              <option value="">{i18n.catalog["text_5eaa1d03bdd9"]}</option>
+              <option value="journal_entry_import">{i18n.catalog["text_927d1e98cb04"]}</option>
+              <option value="expense_posting">{i18n.catalog["text_b60732404e72"]}</option>
             </select>
           </div>
 
           <div className="form-group">
-            <label htmlFor="batch-description">الوصف</label>
+            <label htmlFor="batch-description">{i18n.catalog["text_95023fc76e1b"]}</label>
             <textarea
               id="batch-description"
               value={batchDescription}
@@ -473,24 +472,23 @@ export default function BatchProcessingPage() {
       <Dialog
         isOpen={itemsDialog}
         onClose={closeItemsDialog}
-        title="عناصر الدفعة"
+        title={i18n.catalog["text_044dd0f15b5f"]}
         maxWidth="900px"
       >
         {isLoadingItems ? (
           <div style={{ textAlign: "center", padding: "3rem" }}>
             <i className="fas fa-spinner fa-spin" style={{ fontSize: "2rem" }}></i>
-            <p style={{ marginTop: "1rem" }}>جاري التحميل...</p>
+            <p style={{ marginTop: "1rem" }}>{i18n.catalog["text_ceac78d7f5d3"]}</p>
           </div>
         ) : batchItems.length === 0 ? (
           <p style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)" }}>
-            لا توجد عناصر
-          </p>
+            {i18n.catalog["text_8deb714c7ec2"]}</p>
         ) : (
           <Table
             columns={itemColumns}
             data={batchItems}
             keyExtractor={(item, index) => `${item.id}-${index}`}
-            emptyMessage="لا توجد عناصر"
+            emptyMessage={i18n.catalog["text_8deb714c7ec2"]}
           />
         )}
       </Dialog>
@@ -504,13 +502,13 @@ export default function BatchProcessingPage() {
           setExecuteBatchId(null);
         }}
         onConfirm={handleConfirm}
-        title="تأكيد"
+        title={i18n.catalog["text_8f7d74ac0eac"]}
         message={
           deleteBatchId
-            ? "هل أنت متأكد من حذف هذه الدفعة؟"
-            : "هل أنت متأكد من تنفيذ هذه الدفعة؟"
+            ? i18n.catalog["text_9889d784c0a8"]
+            : i18n.catalog["text_ea0bc590678a"]
         }
-        confirmText={deleteBatchId ? "حذف" : "تنفيذ"}
+        confirmText={deleteBatchId ? i18n.catalog["text_59ca629220a6"] : i18n.catalog["text_5087e935ba15"]}
         confirmVariant={deleteBatchId ? "danger" : "primary"}
       />
     </MainLayout>

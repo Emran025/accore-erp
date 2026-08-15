@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Column, ConfirmDialog, Dialog, Table, showAlert, showToast } from "@/components/ui";
 import { TextInput } from "@/components/ui/TextInput";
@@ -19,6 +20,7 @@ interface FiscalPeriod {
 }
 
 export default function FiscalPeriodsPage() {
+    const { t: i18n } = useI18n();
   const [user, setUser] = useState<User | null>(null);
   const [periods, setPeriods] = useState<FiscalPeriod[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,10 +54,10 @@ export default function FiscalPeriodsPage() {
         setTotalPages(pagination?.total_pages ?? Math.max(1, Math.ceil(periods.length / itemsPerPage)));
         setCurrentPage(page);
       } else {
-        showAlert("alert-container", response.message || "فشل تحميل الفترات المالية", "error");
+        showAlert("alert-container", response.message || i18n.catalog["text_e5fbfede7e09"], "error");
       }
     } catch {
-      showAlert("alert-container", "خطأ في الاتصال بالسيرفر", "error");
+      showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -88,12 +90,12 @@ export default function FiscalPeriodsPage() {
         const period = Array.isArray(response.data) ? response.data[0] : response.data;
         if (period) {
           alert(
-            `اسم الفترة: ${period.period_name}\nمن: ${formatDate(period.start_date)}\nإلى: ${formatDate(period.end_date)}\nمقفلة: ${period.is_locked ? "نعم" : "لا"}\nمغلقة: ${period.is_closed ? "نعم" : "لا"}`
+            catalogText(i18n, "text_85e1ec56a68a", { value0: period.period_name, value1: formatDate(period.start_date), value2: formatDate(period.end_date), value3: period.is_locked ? i18n.catalog["text_4b2d2c65d365"] : i18n.catalog["text_2bd073516a87"], value4: period.is_closed ? i18n.catalog["text_4b2d2c65d365"] : i18n.catalog["text_2bd073516a87"] })
           );
         }
       }
     } catch {
-      showToast("خطأ في تحميل الفترة", "error");
+      showToast(i18n.catalog["text_416cc1248be5"], "error");
     }
   };
 
@@ -103,7 +105,7 @@ export default function FiscalPeriodsPage() {
       if (response.success && response.data) {
         const period = Array.isArray(response.data) ? response.data[0] : response.data;
         if (!period) {
-          showAlert("alert-container", "الفترة غير موجودة", "error");
+          showAlert("alert-container", i18n.catalog["text_5cea9853fe98"], "error");
           return;
         }
 
@@ -114,13 +116,13 @@ export default function FiscalPeriodsPage() {
         setPeriodDialog(true);
       }
     } catch {
-      showAlert("alert-container", "خطأ في تحميل الفترة", "error");
+      showAlert("alert-container", i18n.catalog["text_416cc1248be5"], "error");
     }
   };
 
   const savePeriod = async () => {
     if (!periodName || !periodStart || !periodEnd) {
-      showAlert("alert-container", "يرجى ملء جميع الحقول", "error");
+      showAlert("alert-container", i18n.catalog["text_ee5bf2016153"], "error");
       return;
     }
 
@@ -138,14 +140,14 @@ export default function FiscalPeriodsPage() {
       });
 
       if (response.success) {
-        showAlert("alert-container", "تم الحفظ بنجاح", "success");
+        showAlert("alert-container", i18n.catalog["text_ff783ee2826d"], "success");
         setPeriodDialog(false);
         await loadPeriods(currentPage);
       } else {
-        showAlert("alert-container", response.message || "فشل الحفظ", "error");
+        showAlert("alert-container", response.message || i18n.catalog["text_b0dbba00004b"], "error");
       }
     } catch {
-      showAlert("alert-container", "خطأ في الحفظ", "error");
+      showAlert("alert-container", i18n.catalog["text_c574313242be"], "error");
     }
   };
 
@@ -168,9 +170,9 @@ export default function FiscalPeriodsPage() {
     if (!confirmAction) return;
 
     const messages = {
-      lock: "هل أنت متأكد من قفل هذه الفترة؟ لن يمكن إضافة قيود جديدة.",
-      unlock: "هل أنت متأكد من فتح هذه الفترة؟ سيتم السماح بإضافة قيود جديدة.",
-      close: "هل أنت متأكد من إغلاق هذه الفترة؟ سيتم إنشاء قيود الإغلاق ولن يمكن تعديل الفترة.",
+      lock: i18n.catalog["text_64e46a01635b"],
+      unlock: i18n.catalog["text_1ff4d2f17553"],
+      close: i18n.catalog["text_7fae2238d44c"],
     };
 
     try {
@@ -189,98 +191,98 @@ export default function FiscalPeriodsPage() {
 
       if (response.success) {
         const successMessages = {
-          lock: "تم قفل الفترة بنجاح",
-          unlock: "تم فتح الفترة بنجاح",
-          close: "تم إغلاق الفترة بنجاح",
+          lock: i18n.catalog["text_8642af4236c5"],
+          unlock: i18n.catalog["text_a247c8409452"],
+          close: i18n.catalog["text_d9926ef2082b"],
         };
         showAlert("alert-container", successMessages[confirmAction.type], "success");
         setConfirmDialog(false);
         setConfirmAction(null);
         await loadPeriods(currentPage);
       } else {
-        showAlert("alert-container", response.message || "فشل العملية", "error");
+        showAlert("alert-container", response.message || i18n.catalog["text_c10db3dd267c"], "error");
       }
     } catch {
-      showAlert("alert-container", "خطأ في تنفيذ العملية", "error");
+      showAlert("alert-container", i18n.catalog["text_a42849991074"], "error");
     }
   };
 
   const getStatusBadge = (period: FiscalPeriod) => {
     if (period.is_closed) {
-      return <span className="badge badge-danger">مغلقة</span>;
+      return <span className="badge badge-danger">{i18n.catalog["text_ca7e1dec1654"]}</span>;
     } else if (period.is_locked) {
-      return <span className="badge badge-warning">مقفلة</span>;
+      return <span className="badge badge-warning">{i18n.catalog["text_03fc404e13c8"]}</span>;
     }
-    return <span className="badge badge-success">نشطة</span>;
+    return <span className="badge badge-success">{i18n.catalog["text_8ab217d48613"]}</span>;
   };
 
   const columns: Column<FiscalPeriod>[] = [
     {
       key: "period_name",
-      header: "اسم الفترة",
-      dataLabel: "اسم الفترة",
+      header: i18n.catalog["text_eaad95530396"],
+      dataLabel: i18n.catalog["text_eaad95530396"],
       render: (item) => <strong>{item.period_name}</strong>,
     },
     {
       key: "start_date",
-      header: "تاريخ البداية",
-      dataLabel: "تاريخ البداية",
+      header: i18n.catalog["text_fa53acac3b29"],
+      dataLabel: i18n.catalog["text_fa53acac3b29"],
       render: (item) => formatDate(item.start_date),
     },
     {
       key: "end_date",
-      header: "تاريخ النهاية",
-      dataLabel: "تاريخ النهاية",
+      header: i18n.catalog["text_5b51836ad9ac"],
+      dataLabel: i18n.catalog["text_5b51836ad9ac"],
       render: (item) => formatDate(item.end_date),
     },
     {
       key: "status",
-      header: "الحالة",
-      dataLabel: "الحالة",
+      header: i18n.catalog["text_c3a4749caed4"],
+      dataLabel: i18n.catalog["text_c3a4749caed4"],
       render: (item) => getStatusBadge(item),
     },
     {
       key: "is_locked",
-      header: "مقفلة",
-      dataLabel: "مقفلة",
+      header: i18n.catalog["text_03fc404e13c8"],
+      dataLabel: i18n.catalog["text_03fc404e13c8"],
       render: (item) => (item.is_locked ? "✓" : "✗"),
     },
     {
       key: "is_closed",
-      header: "مغلقة",
-      dataLabel: "مغلقة",
+      header: i18n.catalog["text_ca7e1dec1654"],
+      dataLabel: i18n.catalog["text_ca7e1dec1654"],
       render: (item) => (item.is_closed ? "✓" : "✗"),
     },
     {
       key: "actions",
-      header: "الإجراءات",
-      dataLabel: "الإجراءات",
+      header: i18n.catalog["text_7797240d6caf"],
+      dataLabel: i18n.catalog["text_7797240d6caf"],
       render: (item) => (
         <ActionButtons
           actions={[
             {
               icon: "eye",
-              title: "عرض",
+              title: i18n.catalog["text_3824e18ca83b"],
               variant: "view",
               onClick: () => viewPeriod(item.id)
             },
             {
               icon: item.is_locked ? "unlock" : "lock",
-              title: item.is_locked ? "فتح" : "قفل",
+              title: item.is_locked ? i18n.catalog["text_3765484d0c5f"] : i18n.catalog["text_7815a91262fc"],
               variant: "view",
               onClick: () => (item.is_locked ? confirmUnlockPeriod(item.id) : confirmLockPeriod(item.id)),
               hidden: item.is_closed
             },
             {
               icon: "edit",
-              title: "تعديل",
+              title: i18n.catalog["text_113d570d6555"],
               variant: "edit",
               onClick: () => editPeriod(item.id),
               hidden: item.is_closed || item.is_locked
             },
             {
               icon: "check",
-              title: "إغلاق",
+              title: i18n.catalog["text_ca90c297b099"],
               variant: "delete", // Closing is a "danger" action here
               onClick: () => confirmClosePeriod(item.id),
               hidden: item.is_closed
@@ -302,15 +304,14 @@ export default function FiscalPeriodsPage() {
           user={user}
           actions={
             <Button variant="primary" icon="plus" onClick={openCreateDialog}>
-              فترة جديدة
-            </Button>
+              {i18n.catalog["text_e14d8ac47493"]}</Button>
           }
         />
         <Table
           columns={columns}
           data={periods}
           keyExtractor={(item) => item.id}
-          emptyMessage="لا توجد فترات مالية"
+          emptyMessage={i18n.catalog["text_a90b97f9b44c"]}
           isLoading={isLoading}
           pagination={{
             currentPage,
@@ -324,15 +325,13 @@ export default function FiscalPeriodsPage() {
       <Dialog
         isOpen={periodDialog}
         onClose={() => setPeriodDialog(false)}
-        title={currentPeriodId ? "تعديل الفترة" : "فترة مالية جديدة"}
+        title={currentPeriodId ? i18n.catalog["text_642c3b34ca7b"] : i18n.catalog["text_becf48aac6bc"]}
         footer={
           <>
             <Button variant="secondary" onClick={() => setPeriodDialog(false)}>
-              إلغاء
-            </Button>
+              {i18n.catalog["text_9a30dc2a96b8"]}</Button>
             <Button variant="primary" onClick={savePeriod}>
-              حفظ
-            </Button>
+              {i18n.catalog["text_ddfcaf9d0144"]}</Button>
           </>
         }
       >
@@ -344,7 +343,7 @@ export default function FiscalPeriodsPage() {
           className="space-y-4"
         >
           <TextInput
-            label="اسم الفترة *"
+            label={i18n.catalog["text_f1aecdc2642f"]}
             id="period-name"
             value={periodName}
             onChange={(e) => setPeriodName(e.target.value)}
@@ -354,7 +353,7 @@ export default function FiscalPeriodsPage() {
           <div className="form-row">
             <TextInput
               type="date"
-              label="تاريخ البداية *"
+              label={i18n.catalog["text_d5176c9868fe"]}
               id="period-start"
               value={periodStart}
               onChange={(e) => setPeriodStart(e.target.value)}
@@ -363,7 +362,7 @@ export default function FiscalPeriodsPage() {
             />
             <TextInput
               type="date"
-              label="تاريخ النهاية *"
+              label={i18n.catalog["text_1afab48eab54"]}
               id="period-end"
               value={periodEnd}
               onChange={(e) => setPeriodEnd(e.target.value)}
@@ -382,15 +381,15 @@ export default function FiscalPeriodsPage() {
           setConfirmAction(null);
         }}
         onConfirm={executeAction}
-        title="تأكيد العملية"
+        title={i18n.catalog["text_c094165ba1ec"]}
         message={
           confirmAction?.type === "lock"
-            ? "هل أنت متأكد من قفل هذه الفترة؟ لن يمكن إضافة قيود جديدة."
+            ? i18n.catalog["text_64e46a01635b"]
             : confirmAction?.type === "unlock"
-              ? "هل أنت متأكد من فتح هذه الفترة؟ سيتم السماح بإضافة قيود جديدة."
-              : "هل أنت متأكد من إغلاق هذه الفترة؟ سيتم إنشاء قيود الإغلاق ولن يمكن تعديل الفترة."
+              ? i18n.catalog["text_1ff4d2f17553"]
+              : i18n.catalog["text_7fae2238d44c"]
         }
-        confirmText="تأكيد"
+        confirmText={i18n.catalog["text_8f7d74ac0eac"]}
         confirmVariant={confirmAction?.type === "close" ? "danger" : "primary"}
       />
     </MainLayout>

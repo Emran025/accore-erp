@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { create } from 'zustand';
 import { persist, devtools } from 'zustand/middleware';
 import { fetchAPI } from '@/lib/api';
@@ -140,9 +141,9 @@ export const useAuthStore = create<AuthState>()(
 
                             return { success: true };
                         }
-                        return { success: false, error: response.message || 'فشل تسجيل الدخول' };
+                        return { success: false, error: response.message || catalogMessage("text_48aee85d50a3") };
                     } catch (e) {
-                        return { success: false, error: e instanceof Error ? e.message : 'حدث خطأ في الاتصال' };
+                        return { success: false, error: e instanceof Error ? e.message : catalogMessage("text_42ac6f8ab88c") };
                     }
                 },
 

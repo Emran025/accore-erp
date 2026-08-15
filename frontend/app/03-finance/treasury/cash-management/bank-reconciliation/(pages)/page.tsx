@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Column, Dialog, NumberInput, Table, showAlert } from "@/components/ui";
 import { TextInput } from "@/components/ui/TextInput";
@@ -20,6 +21,7 @@ interface Reconciliation {
 }
 
 export default function ReconciliationPage() {
+    const { t: i18n } = useI18n();
   const [user, setUser] = useState<User | null>(null);
   const [reconciliations, setReconciliations] = useState<Reconciliation[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -50,10 +52,10 @@ export default function ReconciliationPage() {
         setTotalPages(pagination?.total_pages ?? Math.max(1, Math.ceil(reconciliations.length / itemsPerPage)));
         setCurrentPage(page);
       } else {
-        showAlert("alert-container", response.message || "فشل تحميل التسويات", "error");
+        showAlert("alert-container", response.message || i18n.catalog["text_74f488a92a0f"], "error");
       }
     } catch {
-      showAlert("alert-container", "خطأ في الاتصال بالسيرفر", "error");
+      showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -81,7 +83,7 @@ export default function ReconciliationPage() {
 
   const calculateReconciliation = async () => {
     if (!reconciliationDate) {
-      showAlert("alert-container", "يرجى إدخال تاريخ التسوية", "warning");
+      showAlert("alert-container", i18n.catalog["text_79d1b5ee0338"], "warning");
       return;
     }
 
@@ -99,7 +101,7 @@ export default function ReconciliationPage() {
 
   const saveReconciliation = async () => {
     if (!reconciliationDate) {
-      showAlert("alert-container", "يرجى إدخال تاريخ التسوية", "warning");
+      showAlert("alert-container", i18n.catalog["text_79d1b5ee0338"], "warning");
       return;
     }
 
@@ -114,14 +116,14 @@ export default function ReconciliationPage() {
       });
 
       if (response.success) {
-        showAlert("alert-container", "تم حفظ التسوية بنجاح", "success");
+        showAlert("alert-container", i18n.catalog["text_a391ac7c5b88"], "success");
         setCreateDialog(false);
         await loadReconciliations(1);
       } else {
-        showAlert("alert-container", response.message || "فشل حفظ التسوية", "error");
+        showAlert("alert-container", response.message || i18n.catalog["text_415fc43738ae"], "error");
       }
     } catch {
-      showAlert("alert-container", "خطأ في حفظ التسوية", "error");
+      showAlert("alert-container", i18n.catalog["text_01026837328d"], "error");
     }
   };
 
@@ -131,13 +133,13 @@ export default function ReconciliationPage() {
   };
 
   const createAdjustment = async (reconciliationId: number) => {
-    const amount = prompt("أدخل مبلغ قيد التسوية:");
+    const amount = prompt(i18n.catalog["text_c412242a4413"]);
     if (!amount || parseNumber(amount) <= 0) return;
 
-    const description = prompt("أدخل وصف قيد التسوية:");
+    const description = prompt(i18n.catalog["text_4d3340cf8b22"]);
     if (!description) return;
 
-    const entryType = confirm("هل هذا مبلغ مدين؟ (نعم = مدين، لا = دائن)")
+    const entryType = confirm(i18n.catalog["text_368662e49b5b"])
       ? "DEBIT"
       : "CREDIT";
 
@@ -153,13 +155,13 @@ export default function ReconciliationPage() {
       });
 
       if (response.success) {
-        showAlert("alert-container", "تم إنشاء قيد التسوية بنجاح", "success");
+        showAlert("alert-container", i18n.catalog["text_2ac6bd2dc04e"], "success");
         await loadReconciliations(currentPage);
       } else {
-        showAlert("alert-container", response.message || "فشل إنشاء قيد التسوية", "error");
+        showAlert("alert-container", response.message || i18n.catalog["text_5fab83e3712e"], "error");
       }
     } catch {
-      showAlert("alert-container", "خطأ في إنشاء قيد التسوية", "error");
+      showAlert("alert-container", i18n.catalog["text_5065c6d80765"], "error");
     }
   };
 
@@ -170,26 +172,26 @@ export default function ReconciliationPage() {
   const columns: Column<Reconciliation>[] = [
     {
       key: "reconciliation_date",
-      header: "التاريخ",
-      dataLabel: "التاريخ",
+      header: i18n.catalog["text_d90c384199ac"],
+      dataLabel: i18n.catalog["text_d90c384199ac"],
       render: (item) => formatDate(item.reconciliation_date),
     },
     {
       key: "bank_balance",
-      header: "رصيد البنك",
-      dataLabel: "رصيد البنك",
+      header: i18n.catalog["text_99376192028a"],
+      dataLabel: i18n.catalog["text_99376192028a"],
       render: (item) => formatCurrency(item.bank_balance),
     },
     {
       key: "ledger_balance",
-      header: "رصيد الدفتر",
-      dataLabel: "رصيد الدفتر",
+      header: i18n.catalog["text_dafaab0107f7"],
+      dataLabel: i18n.catalog["text_dafaab0107f7"],
       render: (item) => formatCurrency(item.ledger_balance),
     },
     {
       key: "difference",
-      header: "الفرق",
-      dataLabel: "الفرق",
+      header: i18n.catalog["text_0b5254487af9"],
+      dataLabel: i18n.catalog["text_0b5254487af9"],
       render: (item) => (
         <span className={getDifferenceClass(item.difference)}>
           {formatCurrency(item.difference)}
@@ -198,26 +200,26 @@ export default function ReconciliationPage() {
     },
     {
       key: "notes",
-      header: "ملاحظات",
-      dataLabel: "ملاحظات",
+      header: i18n.catalog["text_d446d2dc6b81"],
+      dataLabel: i18n.catalog["text_d446d2dc6b81"],
       render: (item) => item.notes || "-",
     },
     {
       key: "actions",
-      header: "الإجراءات",
-      dataLabel: "الإجراءات",
+      header: i18n.catalog["text_7797240d6caf"],
+      dataLabel: i18n.catalog["text_7797240d6caf"],
       render: (item) => (
         <ActionButtons
           actions={[
             {
               icon: "eye",
-              title: "عرض",
+              title: i18n.catalog["text_3824e18ca83b"],
               variant: "view",
               onClick: () => viewReconciliation(item)
             },
             {
               icon: "edit",
-              title: "إنشاء قيد تسوية",
+              title: i18n.catalog["text_7816efbf663c"],
               variant: "edit",
               onClick: () => createAdjustment(item.id),
               hidden: Math.abs(item.difference) <= 0.01
@@ -238,15 +240,14 @@ export default function ReconciliationPage() {
           user={user}
           actions={
             <Button variant="primary" icon="plus" onClick={openCreateDialog}>
-              تسوية جديدة
-            </Button>
+              {i18n.catalog["text_350a900989e6"]}</Button>
           }
         />
         <Table
           columns={columns}
           data={reconciliations}
           keyExtractor={(item) => item.id}
-          emptyMessage="لا توجد تسويات"
+          emptyMessage={i18n.catalog["text_69207d0435ea"]}
           isLoading={isLoading}
           pagination={{
             currentPage,
@@ -260,15 +261,13 @@ export default function ReconciliationPage() {
       <Dialog
         isOpen={createDialog}
         onClose={() => setCreateDialog(false)}
-        title="تسوية جديدة"
+        title={i18n.catalog["text_350a900989e6"]}
         footer={
           <>
             <Button variant="secondary" onClick={() => setCreateDialog(false)}>
-              إلغاء
-            </Button>
+              {i18n.catalog["text_9a30dc2a96b8"]}</Button>
             <Button variant="primary" onClick={saveReconciliation}>
-              حفظ
-            </Button>
+              {i18n.catalog["text_ddfcaf9d0144"]}</Button>
           </>
         }
       >
@@ -281,7 +280,7 @@ export default function ReconciliationPage() {
         >
           <TextInput
             type="date"
-            label="تاريخ التسوية *"
+            label={i18n.catalog["text_fc1570608208"]}
             id="reconciliation-date"
             value={reconciliationDate}
             onChange={(e) => {
@@ -292,7 +291,7 @@ export default function ReconciliationPage() {
           />
 
           <NumberInput
-            label="رصيد البنك *"
+            label={i18n.catalog["text_a80bda0939c5"]}
             id="bank-balance"
             value={bankBalance}
             onChange={(val) => setBankBalance(val)}
@@ -303,14 +302,14 @@ export default function ReconciliationPage() {
           {ledgerBalance > 0 && (
             <div className="summary-stat-box">
               <div className="stat-item">
-                <span className="stat-label">رصيد الدفتر</span>
+                <span className="stat-label">{i18n.catalog["text_dafaab0107f7"]}</span>
                 <span className="stat-value">{formatCurrency(ledgerBalance)}</span>
               </div>
             </div>
           )}
 
           <Textarea
-            label="ملاحظات"
+            label={i18n.catalog["text_d446d2dc6b81"]}
             id="reconciliation-notes"
             value={reconciliationNotes}
             onChange={(e) => setReconciliationNotes(e.target.value)}
@@ -323,25 +322,25 @@ export default function ReconciliationPage() {
       <Dialog
         isOpen={viewDialog}
         onClose={() => setViewDialog(false)}
-        title="تفاصيل التسوية"
+        title={i18n.catalog["text_b312d1a22803"]}
       >
         {selectedReconciliation && (
           <div>
             <div className="summary-stat-box">
               <div className="stat-item">
-                <span className="stat-label">رصيد البنك</span>
+                <span className="stat-label">{i18n.catalog["text_99376192028a"]}</span>
                 <span className="stat-value">
                   {formatCurrency(selectedReconciliation.bank_balance)}
                 </span>
               </div>
               <div className="stat-item">
-                <span className="stat-label">رصيد الدفتر</span>
+                <span className="stat-label">{i18n.catalog["text_dafaab0107f7"]}</span>
                 <span className="stat-value">
                   {formatCurrency(selectedReconciliation.ledger_balance)}
                 </span>
               </div>
               <div className="stat-item">
-                <span className="stat-label">الفرق</span>
+                <span className="stat-label">{i18n.catalog["text_0b5254487af9"]}</span>
                 <span className={`stat-value ${getDifferenceClass(selectedReconciliation.difference)}`}>
                   {formatCurrency(selectedReconciliation.difference)}
                 </span>
@@ -349,7 +348,7 @@ export default function ReconciliationPage() {
             </div>
             {selectedReconciliation.notes && (
               <p style={{ marginTop: "1rem" }}>
-                <strong>ملاحظات:</strong> {selectedReconciliation.notes}
+                <strong>{i18n.catalog["text_8c9d1b5aec34"]}</strong> {selectedReconciliation.notes}
               </p>
             )}
           </div>

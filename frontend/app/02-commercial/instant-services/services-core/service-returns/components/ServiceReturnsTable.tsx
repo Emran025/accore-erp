@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import {
     InvoiceTableColumn,
     SelectableInvoiceItem,
@@ -32,9 +33,9 @@ export function ServiceReturnsTable({
     const [activeTab, setActiveTab] = useState("all");
 
     const tabs = [
-        { key: "all", label: "جميع المرتجعات", icon: "list" },
-        { key: "cash", label: "مرتجعات نقدية", icon: "dollar" },
-        { key: "credit", label: "مرتجعات آجل", icon: "file-text" },
+        { key: "all", label: catalogMessage("text_dd1712a2b1bc"), icon: "list" },
+        { key: "cash", label: catalogMessage("text_eb286e2d1542"), icon: "dollar" },
+        { key: "credit", label: catalogMessage("text_447d3445b7f1"), icon: "file-text" },
     ];
 
     const filteredTransactions = transactions.filter((t) => {
@@ -44,8 +45,8 @@ export function ServiceReturnsTable({
 
     const getPaymentTypeName = (paymentType: string) => {
         const types: Record<string, string> = {
-            cash: "نقدي",
-            credit: "آجل (ذمم)",
+            cash: catalogMessage("text_1beb05a45173"),
+            credit: catalogMessage("text_70122ff036ec"),
         };
         return types[paymentType] || paymentType;
     };
@@ -61,8 +62,8 @@ export function ServiceReturnsTable({
         },
         {
             key: "transaction_date",
-            header: "التاريخ",
-            dataLabel: "التاريخ",
+            header: catalogMessage("text_d90c384199ac"),
+            dataLabel: catalogMessage("text_d90c384199ac"),
             render: (item) => (
                 <span style={{ fontSize: "0.9em" }}>
                     {formatDateTime(item.transaction_date)}
@@ -71,8 +72,8 @@ export function ServiceReturnsTable({
         },
         {
             key: "customer_name" as any,
-            header: "العميل",
-            dataLabel: "العميل",
+            header: catalogMessage("text_a042411e90be"),
+            dataLabel: catalogMessage("text_a042411e90be"),
             render: (item) => (
                 <span style={{ fontWeight: 500 }}>
                     {(item as any).customer_name || "—"}
@@ -81,8 +82,8 @@ export function ServiceReturnsTable({
         },
         {
             key: "payment_type" as any,
-            header: "نوع الفاتورة",
-            dataLabel: "نوع الفاتورة",
+            header: catalogMessage("text_1670fc15da04"),
+            dataLabel: catalogMessage("text_1670fc15da04"),
             render: (item) => (
                 <span
                     className={`badge ${(item as any).payment_type === "credit" ? "badge-warning" : "badge-success"
@@ -94,14 +95,14 @@ export function ServiceReturnsTable({
         },
         {
             key: "description",
-            header: "الوصف / السبب",
-            dataLabel: "الوصف / السبب",
+            header: catalogMessage("text_32d887d68e89"),
+            dataLabel: catalogMessage("text_32d887d68e89"),
             render: (item) => <div>{item.description || "—"}</div>,
         },
         {
             key: "related_invoice_number" as any,
-            header: "رقم الفاتورة الأصلية",
-            dataLabel: "رقم الفاتورة",
+            header: catalogMessage("text_3a682728f828"),
+            dataLabel: catalogMessage("text_b6e71278be04"),
             render: (item) => (
                 <span style={{ color: "var(--primary-color)", fontWeight: "bold" }}>
                     {(item as any).related_invoice_number || item.invoice_number || "—"}
@@ -110,8 +111,8 @@ export function ServiceReturnsTable({
         },
         {
             key: "amount",
-            header: "المبلغ المرتجع (دائن)",
-            dataLabel: "المبلغ المرتجع",
+            header: catalogMessage("text_7be7892e0ba6"),
+            dataLabel: catalogMessage("text_ad81c0b4e84a"),
             render: (item) => (
                 <span className="text-success font-bold">
                     {formatCurrency(item.amount)}
@@ -120,8 +121,8 @@ export function ServiceReturnsTable({
         },
         {
             key: "created_by",
-            header: "المستخدم",
-            dataLabel: "المستخدم",
+            header: catalogMessage("text_2fb01868740d"),
+            dataLabel: catalogMessage("text_2fb01868740d"),
             render: (item) => item.created_by || "—",
         },
     ];
@@ -145,19 +146,19 @@ export function ServiceReturnsTable({
                 }}
             >
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ fontWeight: "bold" }}>مرتجع من فاتورة خدمة:</span>
+                    <span style={{ fontWeight: "bold" }}>{catalogMessage("text_e1bd376e208c")}</span>
                     <span style={{ color: "var(--primary-color)", fontWeight: "bold" }}>
                         {relatedInvoice || item.invoice_number || "—"}
                     </span>
                 </div>
                 {customerName && (
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <span style={{ fontWeight: "bold" }}>العميل:</span>
+                        <span style={{ fontWeight: "bold" }}>{catalogMessage("text_a9fd8b729e26")}</span>
                         <span>{customerName}</span>
                     </div>
                 )}
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ fontWeight: "bold" }}>نوع الفاتورة:</span>
+                    <span style={{ fontWeight: "bold" }}>{catalogMessage("text_75bd3b347558")}</span>
                     <span
                         className={`badge ${paymentType === "credit" ? "badge-warning" : "badge-success"
                             }`}
@@ -166,7 +167,7 @@ export function ServiceReturnsTable({
                     </span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ fontWeight: "bold" }}>المبلغ المرتجع:</span>
+                    <span style={{ fontWeight: "bold" }}>{catalogMessage("text_c50fb897b3c3")}</span>
                     <span
                         style={{
                             color: "var(--success-color)",
@@ -192,7 +193,7 @@ export function ServiceReturnsTable({
                 onSearch={setSearch}
                 getInvoiceItems={getInvoiceItems}
                 renderCustomExpandedRow={renderReturnDetails}
-                emptyMessage="لا توجد مرتجعات خدمات"
+                emptyMessage={catalogMessage("text_e97d491200b6")}
                 FilterTabNavigation={
                     <TabSubNavigation
                         tabs={tabs}

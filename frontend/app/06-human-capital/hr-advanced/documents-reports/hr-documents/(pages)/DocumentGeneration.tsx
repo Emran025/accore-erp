@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { DocumentTemplate, Employee } from "@/types";
 import { PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Column, DocumentPreview, SearchableSelect, Select, showToast, Table } from "@/components/ui";
@@ -12,6 +13,7 @@ import { useEffect, useState } from "react";
 import { templateTypeBadgeClass, templateTypeLabels } from "./templates-data";
 
 export function DocumentGeneration() {
+    const { t: i18n } = useI18n();
     const { canAccess } = useAuthStore();
     const router = useRouter();
     const { allEmployees: employees, loadAllEmployees } = useEmployeeStore();
@@ -34,9 +36,9 @@ export function DocumentGeneration() {
         setIsLoading(true);
         try {
             const query = typeFilter ? `?type=${typeFilter}` : "";
-            const res = await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.DOCUMENT_TEMPLATES.BASE}${query}`);
+            const res = await fetchAPI(catalogText(i18n, "text_82032eb13b31", { value0: API_ENDPOINTS.HUMAN_CAPITAL.DOCUMENT_TEMPLATES.BASE, value1: query }));
             setTemplates((res as any).data || []);
-        } catch { console.error("Failed to load templates"); }
+        } catch { console.error(i18n.catalog["text_ddeafa3a6bff"]); }
         finally { setIsLoading(false); }
     };
 
@@ -50,7 +52,7 @@ export function DocumentGeneration() {
     // ── Open Preview ──
     const openPreview = async (template: DocumentTemplate) => {
         if (!selectedEmployeeId) {
-            showToast("يرجى اختيار موظف للمعاينة أولاً", "error");
+            showToast(i18n.catalog["text_9a90cdda5831"], "error");
             return;
         }
 
@@ -76,8 +78,8 @@ export function DocumentGeneration() {
 
             setPreviewHtml(finalHtml);
         } catch (error) {
-            console.error("Render error:", error);
-            showToast("فشل في تحميل المعاينة", "error");
+            console.error(i18n.catalog["text_910266324d35"], error);
+            showToast(i18n.catalog["text_cafcc71591f3"], "error");
             setIsPreviewMode(false);
         } finally {
             setIsPreviewLoading(false);
@@ -86,20 +88,20 @@ export function DocumentGeneration() {
 
     // ── Delete ──
     const handleDelete = async (id: number) => {
-        if (!confirm("هل أنت متأكد من حذف هذا القالب؟")) return;
+        if (!confirm(i18n.catalog["text_25afc8d1f0a9"])) return;
         try {
             await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.DOCUMENT_TEMPLATES.withId(id), { method: "DELETE" });
-            showToast("تم حذف القالب", "success");
+            showToast(i18n.catalog["text_13e2d08f7ce4"], "success");
             loadTemplates();
-        } catch { showToast("فشل حذف القالب", "error"); }
+        } catch { showToast(i18n.catalog["text_3ce4224c7569"], "error"); }
     };
 
     // ── Table columns ──
     const columns: Column<DocumentTemplate>[] = [
         {
             key: "template_name_ar",
-            header: "اسم القالب",
-            dataLabel: "اسم القالب",
+            header: i18n.catalog["text_65dd5089d209"],
+            dataLabel: i18n.catalog["text_65dd5089d209"],
             render: (item) => (
                 <div>
                     <div style={{ fontWeight: 600 }}>{item.template_name_ar}</div>
@@ -109,25 +111,25 @@ export function DocumentGeneration() {
         },
         {
             key: "template_type",
-            header: "النوع",
-            dataLabel: "النوع",
+            header: i18n.catalog["text_caa3f2bb4a36"],
+            dataLabel: i18n.catalog["text_caa3f2bb4a36"],
             render: (item) => (
                 <span className={`badge ${templateTypeBadgeClass[item.template_type] || 'badge-secondary'}`}>
                     {templateTypeLabels[item.template_type] || item.template_type}
                 </span>
             ),
         },
-        { key: "template_key", header: "المفتاح", dataLabel: "المفتاح" },
+        { key: "template_key", header: i18n.catalog["text_ac5d54e55625"], dataLabel: i18n.catalog["text_ac5d54e55625"] },
         {
             key: "id",
-            header: "الإجراءات",
-            dataLabel: "الإجراءات",
+            header: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (item) => (
                 <ActionButtons
                     actions={[
-                        { icon: "eye", title: "معاينة", variant: "view", onClick: () => openPreview(item) },
-                        ...(canAccess("employees", "edit") ? [{ icon: "edit" as const, title: "محرر القالب", variant: "edit" as const, onClick: () => openEdit(item) }] : []),
-                        ...(canAccess("employees", "delete") ? [{ icon: "trash" as const, title: "حذف", variant: "delete" as const, onClick: () => handleDelete(item.id) }] : [])
+                        { icon: "eye", title: i18n.catalog["text_63742c2bd171"], variant: "view", onClick: () => openPreview(item) },
+                        ...(canAccess("employees", "edit") ? [{ icon: "edit" as const, title: i18n.catalog["text_0338711dd814"], variant: "edit" as const, onClick: () => openEdit(item) }] : []),
+                        ...(canAccess("employees", "delete") ? [{ icon: "trash" as const, title: i18n.catalog["text_59ca629220a6"], variant: "delete" as const, onClick: () => handleDelete(item.id) }] : [])
                     ]}
                 />
             ),
@@ -152,14 +154,14 @@ export function DocumentGeneration() {
     return (
         <div className="sales-card animate-fade">
             <PageSubHeader
-                title="المستندات والتقارير الرسمية"
+                title={i18n.catalog["text_f0213b4e6d35"]}
                 titleIcon="file-signature"
                 searchInput={
                     <SearchableSelect
-                        options={employees.map((e: Employee) => ({ value: e.id.toString(), label: `${e.full_name} (${e.employee_code})` }))}
+                        options={employees.map((e: Employee) => ({ value: e.id.toString(), label: catalogText(i18n, "text_e11f55b693d8", { value0: e.full_name, value1: e.employee_code }) }))}
                         value={selectedEmployeeId}
                         onChange={(val) => setSelectedEmployeeId(val?.toString() || "")}
-                        placeholder="اختر موظف للمعاينة..."
+                        placeholder={i18n.catalog["text_b85e621ca7e6"]}
                     />
                 }
                 actions={
@@ -167,20 +169,19 @@ export function DocumentGeneration() {
                         <Select
                             value={typeFilter}
                             onChange={(e) => setTypeFilter(e.target.value)}
-                            placeholder="جميع الأنواع"
+                            placeholder={i18n.catalog["text_76b1679edecf"]}
                             options={Object.entries(templateTypeLabels).map(([v, l]) => ({ value: v, label: l }))}
                             style={{ minWidth: "140px" }}
                         />
                         {canAccess("employees", "create") && (
                             <Button variant="primary" icon="edit" onClick={() => router.push("/06-human-capital/hr-advanced/documents-reports/hr-documents/editor")}>
-                                محرر قالب جديد
-                            </Button>
+                                {i18n.catalog["text_d47ce96c1881"]}</Button>
                         )}
                     </>
                 }
             />
 
-            <Table columns={columns} data={templates} keyExtractor={(i) => i.id.toString()} emptyMessage="لا توجد قوالب مسجلة" isLoading={isLoading} />
+            <Table columns={columns} data={templates} keyExtractor={(i) => i.id.toString()} emptyMessage={i18n.catalog["text_a1a06599a7e0"]} isLoading={isLoading} />
 
         </div>
     );

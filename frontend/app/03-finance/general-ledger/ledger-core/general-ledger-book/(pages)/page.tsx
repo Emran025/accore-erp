@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { Button, Column, DateRangePicker, FilterActions, FilterSection, TabNavigation, Table, showToast } from "@/components/ui";
 import { Select } from "@/components/ui/select";
@@ -66,6 +67,7 @@ interface Account {
  * @returns The General Ledger page component
  */
 export default function GeneralLedgerPage() {
+    const { t: i18n } = useI18n();
   const [user, setUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState("journal");
   const [isLoading, setIsLoading] = useState(true);
@@ -102,7 +104,7 @@ export default function GeneralLedgerPage() {
       setJournalTotalPages(Math.ceil((response.total as number || 0) / itemsPerPage));
       setJournalPage(page);
     } catch {
-      showToast("خطأ في تحميل القيود", "error");
+      showToast(i18n.catalog["text_5cd3338c8c87"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -119,7 +121,7 @@ export default function GeneralLedgerPage() {
         balance: response.balance as number || 0,
       });
     } catch {
-      showToast("خطأ في تحميل ميزان المراجعة", "error");
+      showToast(i18n.catalog["text_efd108d11120"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -130,7 +132,7 @@ export default function GeneralLedgerPage() {
       const response = await fetchAPI(API_ENDPOINTS.FINANCE.ACCOUNTS.BASE);
       setAccounts(response.accounts as Account[] || []);
     } catch {
-      console.error("Error loading accounts");
+      console.error(i18n.catalog["text_a8ded9e0e1f3"]);
     }
   }, []);
 
@@ -159,12 +161,12 @@ export default function GeneralLedgerPage() {
         debit: item.debits,
         credit: item.credits,
         running_balance: item.balance,
-        description: `الرصيد المجمع ليوم ${item.period}` // "Summary balance for day..."
+        description: catalogText(i18n, "text_b3fc0cb35cf0", { value0: item.period }) // "Summary balance for day..."
       }));
 
       setAccountHistory(mappedHistory as AccountHistoryItem[]);
     } catch {
-      showToast("خطأ في تحميل سجل الحساب", "error");
+      showToast(i18n.catalog["text_226844967c58"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -196,7 +198,7 @@ export default function GeneralLedgerPage() {
   }, [activeTab, loadJournalEntries, loadTrialBalance, loadAccountHistory, selectedAccountId]);
 
   const handleExport = () => {
-    showToast("جاري تصدير البيانات...", "info");
+    showToast(i18n.catalog["text_7cb56fc1c226"], "info");
   };
 
   const handleRefresh = () => {
@@ -210,47 +212,47 @@ export default function GeneralLedgerPage() {
   };
 
   const journalColumns: Column<JournalEntry>[] = [
-    { key: "entry_number", header: "رقم القيد", dataLabel: "رقم القيد" },
+    { key: "entry_number", header: i18n.catalog["text_cb6fc9a27e0d"], dataLabel: i18n.catalog["text_cb6fc9a27e0d"] },
     {
       key: "entry_date",
-      header: "التاريخ",
-      dataLabel: "التاريخ",
+      header: i18n.catalog["text_d90c384199ac"],
+      dataLabel: i18n.catalog["text_d90c384199ac"],
       render: (item) => formatDate(item.entry_date),
     },
-    { key: "description", header: "البيان", dataLabel: "البيان" },
-    { key: "debit_account", header: "الحساب المدين", dataLabel: "الحساب المدين" },
-    { key: "credit_account", header: "الحساب الدائن", dataLabel: "الحساب الدائن" },
+    { key: "description", header: i18n.catalog["text_15391f77cefa"], dataLabel: i18n.catalog["text_15391f77cefa"] },
+    { key: "debit_account", header: i18n.catalog["text_66adbc515c95"], dataLabel: i18n.catalog["text_66adbc515c95"] },
+    { key: "credit_account", header: i18n.catalog["text_034aa5c4e065"], dataLabel: i18n.catalog["text_034aa5c4e065"] },
     {
       key: "amount",
-      header: "المبلغ",
-      dataLabel: "المبلغ",
+      header: i18n.catalog["text_1cd480f91b24"],
+      dataLabel: i18n.catalog["text_1cd480f91b24"],
       render: (item) => formatCurrency(item.amount),
     },
-    { key: "reference", header: "المرجع", dataLabel: "المرجع" },
+    { key: "reference", header: i18n.catalog["text_d6a838d92c8d"], dataLabel: i18n.catalog["text_d6a838d92c8d"] },
   ];
 
   const trialColumns: Column<TrialBalanceItem>[] = [
-    { key: "account_code", header: "رقم الحساب", dataLabel: "رقم الحساب" },
-    { key: "account_name", header: "اسم الحساب", dataLabel: "اسم الحساب" },
+    { key: "account_code", header: i18n.catalog["text_62a19661ff2e"], dataLabel: i18n.catalog["text_62a19661ff2e"] },
+    { key: "account_name", header: i18n.catalog["text_03cec4ee9ea4"], dataLabel: i18n.catalog["text_03cec4ee9ea4"] },
     {
       key: "debit",
-      header: "مدين",
-      dataLabel: "مدين",
+      header: i18n.catalog["text_b19917a31039"],
+      dataLabel: i18n.catalog["text_b19917a31039"],
       render: (item) => (item.debit > 0 ? formatCurrency(item.debit) : "-"),
     },
     {
       key: "credit",
-      header: "دائن",
-      dataLabel: "دائن",
+      header: i18n.catalog["text_a91798231743"],
+      dataLabel: i18n.catalog["text_a91798231743"],
       render: (item) => (item.credit > 0 ? formatCurrency(item.credit) : "-"),
     },
     {
       key: "balance",
-      header: "الرصيد",
-      dataLabel: "الرصيد",
+      header: i18n.catalog["text_f311da916aa5"],
+      dataLabel: i18n.catalog["text_f311da916aa5"],
       render: (item) => (
         <span className={item.balance >= 0 ? "text-success" : "text-danger"}>
-          {formatCurrency(Math.abs(item.balance))} {item.balance >= 0 ? "مدين" : "دائن"}
+          {formatCurrency(Math.abs(item.balance))} {item.balance >= 0 ? i18n.catalog["text_b19917a31039"] : i18n.catalog["text_a91798231743"]}
         </span>
       ),
     },
@@ -259,27 +261,27 @@ export default function GeneralLedgerPage() {
   const historyColumns: Column<AccountHistoryItem>[] = [
     {
       key: "entry_date",
-      header: "التاريخ",
-      dataLabel: "التاريخ",
+      header: i18n.catalog["text_d90c384199ac"],
+      dataLabel: i18n.catalog["text_d90c384199ac"],
       render: (item) => formatDate(item.entry_date),
     },
-    { key: "description", header: "البيان", dataLabel: "البيان" },
+    { key: "description", header: i18n.catalog["text_15391f77cefa"], dataLabel: i18n.catalog["text_15391f77cefa"] },
     {
       key: "debit",
-      header: "مدين",
-      dataLabel: "مدين",
+      header: i18n.catalog["text_b19917a31039"],
+      dataLabel: i18n.catalog["text_b19917a31039"],
       render: (item) => (item.debit > 0 ? formatCurrency(item.debit) : "-"),
     },
     {
       key: "credit",
-      header: "دائن",
-      dataLabel: "دائن",
+      header: i18n.catalog["text_a91798231743"],
+      dataLabel: i18n.catalog["text_a91798231743"],
       render: (item) => (item.credit > 0 ? formatCurrency(item.credit) : "-"),
     },
     {
       key: "running_balance",
-      header: "الرصيد",
-      dataLabel: "الرصيد",
+      header: i18n.catalog["text_f311da916aa5"],
+      dataLabel: i18n.catalog["text_f311da916aa5"],
       render: (item) => (
         <span className={item.running_balance >= 0 ? "text-success" : "text-danger"}>
           {formatCurrency(Math.abs(item.running_balance))}
@@ -296,19 +298,17 @@ export default function GeneralLedgerPage() {
           actions={
             <>
               <Button variant="secondary" onClick={handleExport} icon="download">
-                تصدير
-              </Button>
+                {i18n.catalog["text_4fa0ad254538"]}</Button>
               <Button variant="primary" onClick={handleRefresh} icon="refresh">
-                تحديث
-              </Button>
+                {i18n.catalog["text_00eab31f95b7"]}</Button>
             </>
           }
         />
         <TabNavigation
           tabs={[
-            { key: "journal", label: "القيود اليومية", icon: "fa-book" },
-            { key: "trial", label: "ميزان المراجعة", icon: "fa-balance-scale" },
-            { key: "history", label: "سجل الحساب", icon: "fa-history" },
+            { key: "journal", label: i18n.catalog["text_510b9f89882b"], icon: "fa-book" },
+            { key: "trial", label: i18n.catalog["text_10f3050f24f0"], icon: "fa-balance-scale" },
+            { key: "history", label: i18n.catalog["text_a695041e88e7"], icon: "fa-history" },
           ]}
           activeTab={activeTab}
           onTabChange={(key) => setActiveTab(key)}
@@ -318,7 +318,7 @@ export default function GeneralLedgerPage() {
         <div className={`tab-content ${activeTab === "journal" ? "active" : ""}`}>
           <div className="sales-card">
             <PageSubHeader
-              title="القيود اليومية"
+              title={i18n.catalog["text_510b9f89882b"]}
               titleIcon="chart-line"
               actions={
                 <>
@@ -335,8 +335,7 @@ export default function GeneralLedgerPage() {
                       icon="search"
                       variant="primary"
                     >
-                      بحث
-                    </Button>
+                      {i18n.catalog["text_d0f6edcf6d65"]}</Button>
                   </FilterActions>
                 </>
               } />
@@ -344,7 +343,7 @@ export default function GeneralLedgerPage() {
               columns={journalColumns}
               data={journalEntries}
               keyExtractor={(item) => item.id}
-              emptyMessage="لا توجد قيود"
+              emptyMessage={i18n.catalog["text_71882ad45d10"]}
               isLoading={isLoading}
               pagination={{
                 currentPage: journalPage,
@@ -362,22 +361,22 @@ export default function GeneralLedgerPage() {
               columns={trialColumns}
               data={trialBalance}
               keyExtractor={(item) => item.account_code}
-              emptyMessage="لا توجد بيانات"
+              emptyMessage={i18n.catalog["text_d812e8bbc06f"]}
               isLoading={isLoading}
             />
 
             {trialBalance.length > 0 && (
               <div className="summary-stat-box" style={{ marginTop: "1.5rem" }}>
                 <div className="stat-item">
-                  <span className="stat-label">إجمالي المدين</span>
+                  <span className="stat-label">{i18n.catalog["text_9b3ffc60129b"]}</span>
                   <span className="stat-value">{formatCurrency(trialTotals.debit)}</span>
                 </div>
                 <div className="stat-item">
-                  <span className="stat-label">إجمالي الدائن</span>
+                  <span className="stat-label">{i18n.catalog["text_ccfe7f015017"]}</span>
                   <span className="stat-value">{formatCurrency(trialTotals.credit)}</span>
                 </div>
                 <div className="stat-item">
-                  <span className="stat-label">الفرق</span>
+                  <span className="stat-label">{i18n.catalog["text_0b5254487af9"]}</span>
                   <span className={`stat-value ${trialTotals.balance === 0 ? "text-success" : "text-danger"}`}>
                     {formatCurrency(trialTotals.balance)}
                     {trialTotals.balance === 0 && " ✓"}
@@ -393,16 +392,16 @@ export default function GeneralLedgerPage() {
           <div className="sales-card">
             <FilterSection>
               <Select
-                label="الحساب"
+                label={i18n.catalog["text_66dcee1f4616"]}
                 value={selectedAccountId}
                 onChange={(e) => setSelectedAccountId(e.target.value)}
                 options={[
-                  { value: "", label: "اختر حساب" },
-                  ...accounts.map(acc => ({ value: acc.id, label: `${acc.code} - ${acc.name}` }))
+                  { value: "", label: i18n.catalog["text_b2e1c053ebe5"] },
+                  ...accounts.map(acc => ({ value: acc.id, label: catalogText(i18n, "text_2a9059a3c52f", { value0: acc.code, value1: acc.name }) }))
                 ]}
               />
               <DateRangePicker
-                label="الفترة"
+                label={i18n.catalog["text_0335edfeb5f3"]}
                 startDate={historyDateFrom}
                 endDate={historyDateTo}
                 onStartDateChange={setHistoryDateFrom}
@@ -414,8 +413,7 @@ export default function GeneralLedgerPage() {
                   disabled={!selectedAccountId}
                   icon="search"
                 >
-                  عرض
-                </Button>
+                  {i18n.catalog["text_3824e18ca83b"]}</Button>
               </FilterActions>
             </FilterSection>
 
@@ -424,13 +422,12 @@ export default function GeneralLedgerPage() {
                 columns={historyColumns}
                 data={accountHistory}
                 keyExtractor={(item) => item.id}
-                emptyMessage="لا توجد حركات"
+                emptyMessage={i18n.catalog["text_42817b82a8c0"]}
                 isLoading={isLoading}
               />
             ) : (
               <p style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2rem" }}>
-                اختر حساب لعرض سجل الحركات
-              </p>
+                {i18n.catalog["text_9f335fab90a7"]}</p>
             )}
           </div>
         </div>

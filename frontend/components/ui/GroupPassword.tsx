@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { PasswordInput } from "./PasswordInput";
 
 interface PasswordGroupProps {
@@ -19,16 +20,17 @@ export function GroupPassword({
     passwordError,
     confirmError
 }: PasswordGroupProps) {
+    const { t: i18n } = useI18n();
     
     // Auto-detect mismatch if confirm has value
-    const mismatch = confirmValue && passwordValue !== confirmValue ? "كلمة المرور غير متطابقة" : null;
+    const mismatch = confirmValue && passwordValue !== confirmValue ? i18n.catalog["text_bc7412a2d230"] : null;
     const finalConfirmError = confirmError || mismatch;
 
     return (
         <div className="space-y-4">
             <PasswordInput
                 id="password"
-                label="كلمة المرور"
+                label={i18n.catalog["text_b05d306b5591"]}
                 value={passwordValue}
                 onChange={onPasswordChange}
                 error={passwordError}
@@ -36,7 +38,7 @@ export function GroupPassword({
             />
             <PasswordInput
                 id="confirm_password"
-                label="تأكيد كلمة المرور"
+                label={i18n.catalog["text_57e87f00ead1"]}
                 value={confirmValue}
                 onChange={onConfirmChange}
                 error={finalConfirmError || undefined}

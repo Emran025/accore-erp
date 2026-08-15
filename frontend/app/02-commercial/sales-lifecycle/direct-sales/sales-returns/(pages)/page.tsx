@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText, catalogMessage } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import {
     Button,
@@ -27,11 +28,12 @@ import { InvoiceDetailsDialog } from "@/components/ui";
 
 /** Top-level page tabs */
 const PAGE_TABS = [
-    { key: "records", label: "سجل المرتجعات", icon: "list" },
-    { key: "new-return", label: "إضافة مرتجع", icon: "plus" },
+    { key: "records", label: catalogMessage("text_96b959815e98"), icon: "list" },
+    { key: "new-return", label: catalogMessage("text_eeeb15dc112c"), icon: "plus" },
 ];
 
 function ReturnsPageContent() {
+    const { t: i18n } = useI18n();
     const [user, setUser] = useState<User | null>(null);
     const [activePage, setActivePage] = useState<"records" | "new-return">("records");
 
@@ -83,7 +85,7 @@ function ReturnsPageContent() {
                     const mapped: LedgerTransaction[] = (response.data as any[]).map((item) => ({
                         ...item,
                         type: "return" as const,
-                        invoice_number: item.invoice_number || `RTN-${item.id}`,
+                        invoice_number: item.invoice_number || catalogText(i18n, "text_0b460728501d", { value0: item.id }),
                         total_amount: item.amount,
                         subtotal: item.subtotal ?? item.amount,
                         vat_amount: item.vat_amount ?? 0,
@@ -100,10 +102,10 @@ function ReturnsPageContent() {
                     }
                     setCurrentPage(page);
                 } else {
-                    showAlert("alert-container", response.message || "فشل تحميل المرتجعات", "error");
+                    showAlert("alert-container", response.message || i18n.catalog["text_04d2b03f06e0"], "error");
                 }
             } catch {
-                showAlert("alert-container", "خطأ في الاتصال بالسيرفر", "error");
+                showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
             } finally {
                 setIsLoading(false);
             }
@@ -137,7 +139,7 @@ function ReturnsPageContent() {
                 setViewDialog(true);
             }
         } catch {
-            showAlert("alert-container", "خطأ في جلب تفاصيل الفاتورة", "error");
+            showAlert("alert-container", i18n.catalog["text_7e684f9a5c3b"], "error");
         }
     };
 
@@ -164,7 +166,7 @@ function ReturnsPageContent() {
 
     const openReturnDialog = async () => {
         if (selectedReturnItems.length === 0) {
-            showToast("يرجى تحديد عناصر للإرجاع أولاً", "warning");
+            showToast(i18n.catalog["text_54f0b0947619"], "warning");
             return;
         }
 
@@ -183,7 +185,7 @@ function ReturnsPageContent() {
                 );
                 setInvoicesMap(newMap);
             } catch {
-                showToast("فشل تحميل بيانات الفواتير", "error");
+                showToast(i18n.catalog["text_f154fa31b161"], "error");
             } finally {
                 setIsLoadingInvoices(false);
             }
@@ -200,10 +202,10 @@ function ReturnsPageContent() {
                 body: JSON.stringify(returnData),
             });
             if (!response.success) {
-                throw new Error(response.message || "فشل تسجيل المرتجع");
+                throw new Error(response.message || i18n.catalog["text_311143511f9e"]);
             }
         }
-        showToast("تم تسجيل المرتجع بنجاح", "success");
+        showToast(i18n.catalog["text_23e6f8991b99"], "success");
     };
 
     const applyFilters = () => {
@@ -232,8 +234,7 @@ function ReturnsPageContent() {
                                 icon="search"
                                 onClick={() => setFilterDialog(true)}
                             >
-                                تصفية
-                            </Button>
+                                {i18n.catalog["text_a826a913e567"]}</Button>
                         )}
                     </>
                 }
@@ -300,8 +301,9 @@ function ReturnsPageContent() {
 }
 
 export default function ReturnsPage() {
+    const { t: i18n } = useI18n();
     return (
-        <Suspense fallback={<div className="p-4 text-center">جاري التحميل...</div>}>
+        <Suspense fallback={<div className="p-4 text-center">{i18n.catalog["text_ceac78d7f5d3"]}</div>}>
             <ReturnsPageContent />
         </Suspense>
     );

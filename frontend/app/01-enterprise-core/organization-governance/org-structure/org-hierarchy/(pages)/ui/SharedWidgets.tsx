@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { getIcon } from "@/lib/icons";
 import { ReactNode } from "react";
 
@@ -97,6 +98,7 @@ interface FilterChipProps {
  * ```
  */
 export function FilterChip({ label, active, onClick, count }: FilterChipProps) {
+    const { t: i18n } = useI18n();
     return (
         <button
             onClick={onClick}
@@ -112,7 +114,7 @@ export function FilterChip({ label, active, onClick, count }: FilterChipProps) {
                 transition: "all 0.15s",
             }}
         >
-            {label}{count !== undefined ? ` (${count})` : ""}
+            {label}{count !== undefined ? catalogText(i18n, "text_239f04bc2797", { value0: count }) : ""}
         </button>
     );
 }

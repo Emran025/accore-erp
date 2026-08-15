@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogMessage } from "@/lib/i18n";
 import { MainLayout } from "@/components/layout";
 import { Button, TabNavigation } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -12,16 +13,17 @@ import { Employee } from "@/types";
 
 // Lazy load tab components
 const BasicInfoTab = dynamic(() => import("./components/BasicInfoTab"), {
-    loading: () => <div className="p-10 text-center text-muted">جاري تحميل البيانات الأساسية...</div>
+    loading: () => <div className="p-10 text-center text-muted">{catalogMessage("text_b6620633be5f")}</div>
 });
 const DocumentsTab = dynamic(() => import("../../components/DocumentsTab"), {
-    loading: () => <div className="p-10 text-center text-muted">جاري تحميل المستندات...</div>
+    loading: () => <div className="p-10 text-center text-muted">{catalogMessage("text_60e8ca919572")}</div>
 });
 const FinancialTab = dynamic(() => import("./components/FinancialTab"), {
-    loading: () => <div className="p-10 text-center text-muted">جاري تحميل البيانات المالية...</div>
+    loading: () => <div className="p-10 text-center text-muted">{catalogMessage("text_408d5526924a")}</div>
 });
 
 function ViewEmployeePageContent() {
+    const { t: i18n } = useI18n();
     const searchParams = useSearchParams();
     const id = searchParams.get("id") || "";
     const router = useRouter();
@@ -42,7 +44,7 @@ function ViewEmployeePageContent() {
             const emp = (res.data as Employee) || (res as unknown as Employee);
             setEmployee(emp);
         } catch (e) {
-            console.error("Failed to load employee", e);
+            console.error(i18n.catalog["text_7142b6865405"], e);
         } finally {
             setIsLoading(false);
         }
@@ -53,7 +55,7 @@ function ViewEmployeePageContent() {
             <MainLayout >
                 <div className="flex flex-col items-center justify-center p-20 min-h-[60vh] text-center">
                     <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" style={{ borderColor: 'var(--primary-color)', borderTopColor: 'transparent' }}></div>
-                    <p className="text-muted" style={{ fontSize: '1.1rem' }}>جاري تحميل بيانات الموظف...</p>
+                    <p className="text-muted" style={{ fontSize: '1.1rem' }}>{i18n.catalog["text_c806b83377d1"]}</p>
                 </div>
             </MainLayout>
         );
@@ -71,19 +73,16 @@ function ViewEmployeePageContent() {
                     }}>
                         <i className="fas fa-user-slash"></i>
                     </div>
-                    <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--text-primary)' }}>الموظف غير موجود</h2>
+                    <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--text-primary)' }}>{i18n.catalog["text_56eb6939d5d3"]}</h2>
                     <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', maxWidth: '500px', lineHeight: '1.6', marginBottom: '2.5rem', textAlign: 'center' }}>
-                        عذراً، لم نتمكن من العثور على بيانات الموظف المطلوب. قد يكون قد تم حذفه من النظام أو أن الرابط غير صحيح.
-                    </p>
+                        {i18n.catalog["text_d92233bdea8d"]}</p>
                     <div style={{ display: 'flex', gap: '1rem' }}>
                         <Button variant="secondary" onClick={() => router.push('/06-human-capital/workforce-admin/employee-master/employees-list')}>
                             <i className="fas fa-arrow-right" style={{ marginLeft: '0.5rem' }}></i>
-                            العودة لقائمة الموظفين
-                        </Button>
+                            {i18n.catalog["text_4db5e3fa1d74"]}</Button>
                         <Button variant="primary" onClick={() => window.location.reload()}>
                             <i className="fas fa-sync" style={{ marginLeft: '0.5rem' }}></i>
-                            إعادة المحاولة
-                        </Button>
+                            {i18n.catalog["text_14d5786f2e64"]}</Button>
                     </div>
                 </div>
             </MainLayout>
@@ -96,9 +95,9 @@ function ViewEmployeePageContent() {
             <div className="settings-wrapper animate-fade">
                 <TabNavigation
                     tabs={[
-                        { key: "info", label: "البيانات الأساسية", icon: "fa-user" },
-                        { key: "documents", label: "المستندات والملفات", icon: "fa-folder-open" },
-                        { key: "financial", label: "البدلات والاستقطاعات", icon: "fa-coins" },
+                        { key: "info", label: i18n.catalog["text_a50e5beef8e3"], icon: "fa-user" },
+                        { key: "documents", label: i18n.catalog["text_d30998d1fe56"], icon: "fa-folder-open" },
+                        { key: "financial", label: i18n.catalog["text_70b40aa1312b"], icon: "fa-coins" },
                     ]}
                     activeTab={activeTab}
                     onTabChange={setActiveTab}
@@ -116,8 +115,9 @@ function ViewEmployeePageContent() {
 
 
 export default function ViewEmployeePage() {
+    const { t: i18n } = useI18n();
     return (
-        <Suspense fallback={<div className="p-8 text-center">جاري التحميل...</div>}>
+        <Suspense fallback={<div className="p-8 text-center">{i18n.catalog["text_ceac78d7f5d3"]}</div>}>
             <ViewEmployeePageContent />
         </Suspense>
     );

@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "include": [
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "lib/**/*.ts",
+    "lib/**/*.tsx",
+    "stores/**/*.ts",
+    "stores/**/*.tsx"
+  ],
+  "exclude": [
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/tests/**",
+    "lib/i18n/**",
+    "lib/translations.ts",
+    "**/*.d.ts"
+  ],
+  "userFacingJsxAttributes": ["title", "placeholder", "aria-label", "aria-description", "alt", "label"],
+  "userFacingObjectProperties": ["title", "label", "description", "placeholder", "emptyMessage", "tooltip", "message", "helperText", "ariaLabel", "ariaDescription"],
+  "userFacingCallNames": ["showAlert", "alert", "confirm", "prompt", "toast", "notify"],
+  "approvedExceptions": [
+    { "path": "app/layout.tsx", "line": 20, "reason": "Technical document metadata; tracked separately for locale metadata migration." },
+    { "path": "lib/endpoints/**", "reason": "API paths and protocol identifiers are not interface copy." },
+    { "path": "lib/icons.tsx", "reason": "Icon aliases and SVG metadata are technical identifiers." },
+    { "path": "lib/api.ts", "reason": "Transport and developer diagnostics are not user-facing copy." },
+    { "path": "stores/**", "reason": "Store candidates remain in inventory but require semantic classification before any migration." }
+  ]
+}

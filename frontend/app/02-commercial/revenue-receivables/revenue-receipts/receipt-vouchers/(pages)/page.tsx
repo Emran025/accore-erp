@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { MainLayout } from "@/components/layout";
 import { Button, Column, ConfirmDialog, SearchableSelect, SelectOption, Table, showAlert, showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -26,6 +27,7 @@ interface Receipt {
 }
 
 export default function ReceiptsPage() {
+    const { t: i18n } = useI18n();
     const [user, setUser] = useState<User | null>(null);
     const [customers, setCustomers] = useState<Customer[]>([]);
 
@@ -65,7 +67,7 @@ export default function ReceiptsPage() {
                 }
             }
         } catch {
-            showToast("خطأ في تحميل السندات", "error");
+            showToast(i18n.catalog["text_e1e1dc7023c4"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -78,7 +80,7 @@ export default function ReceiptsPage() {
                 setCustomers((response.data as Customer[]) || []);
             }
         } catch (error) {
-            console.error("Failed to load customers", error);
+            console.error(i18n.catalog["text_5150589fdbe0"], error);
         }
     }, []);
 
@@ -103,13 +105,13 @@ export default function ReceiptsPage() {
         e.preventDefault();
 
         if (!selectedCustomer) {
-            showAlert("alert-container", "يرجى اختيار العميل", "error");
+            showAlert("alert-container", i18n.catalog["text_8596f1b18e53"], "error");
             return;
         }
 
         const numAmount = parseFloat(amount);
         if (isNaN(numAmount) || numAmount <= 0) {
-            showAlert("alert-container", "المبلغ غير صحيح", "error");
+            showAlert("alert-container", i18n.catalog["text_457ff7bc7182"], "error");
             return;
         }
 
@@ -127,7 +129,7 @@ export default function ReceiptsPage() {
             });
 
             if (response.success) {
-                showAlert("alert-container", "تمت إضافة السند بنجاح", "success");
+                showAlert("alert-container", i18n.catalog["text_2c33a1e8602b"], "success");
 
                 // Reset form
                 setSelectedCustomer(null);
@@ -138,10 +140,10 @@ export default function ReceiptsPage() {
                 // Reload data
                 await Promise.all([loadCustomers(), loadReceipts(1, searchTerm)]);
             } else {
-                showAlert("alert-container", response.message || "فشل حفظ السند", "error");
+                showAlert("alert-container", response.message || i18n.catalog["text_bceefd20567c"], "error");
             }
         } catch {
-            showAlert("alert-container", "خطأ في حفظ السند", "error");
+            showAlert("alert-container", i18n.catalog["text_9709a87f3bfe"], "error");
         } finally {
             setIsSubmitting(false);
         }
@@ -160,13 +162,13 @@ export default function ReceiptsPage() {
                 method: "DELETE"
             });
             if (response.success) {
-                showToast("تم حذف السند بنجاح", "success");
+                showToast(i18n.catalog["text_62b245330ed1"], "success");
                 loadReceipts(currentPage, searchTerm);
             } else {
-                showToast(response.message || "فشل الحذف", "error");
+                showToast(response.message || i18n.catalog["text_f46bfc521612"], "error");
             }
         } catch {
-            showToast("خطأ في حذف السند", "error");
+            showToast(i18n.catalog["text_efa19ed994b9"], "error");
         } finally {
             setConfirmDialog(false);
             setDeleteId(null);
@@ -176,42 +178,42 @@ export default function ReceiptsPage() {
     const customerOptions: SelectOption[] = customers.map((c) => ({
         value: c.id,
         label: c.name,
-        subtitle: `الرصيد: ${formatCurrency(c.current_balance)}`,
+        subtitle: catalogText(i18n, "text_4b3672e910cf", { value0: formatCurrency(c.current_balance) }),
         original: c,
     }));
 
     const columns: Column<Receipt>[] = [
         {
             key: "customer_name",
-            header: "العميل",
-            dataLabel: "العميل",
-            render: (item) => item.customer?.name || "غير معروف",
+            header: i18n.catalog["text_a042411e90be"],
+            dataLabel: i18n.catalog["text_a042411e90be"],
+            render: (item) => item.customer?.name || i18n.catalog["text_d44d443520df"],
         },
         {
             key: "amount",
-            header: "المبلغ",
-            dataLabel: "المبلغ",
+            header: i18n.catalog["text_1cd480f91b24"],
+            dataLabel: i18n.catalog["text_1cd480f91b24"],
             render: (item) => <span className="text-success fw-bold">{formatCurrency(item.amount)}</span>,
         },
         {
             key: "transaction_date",
-            header: "التاريخ",
-            dataLabel: "التاريخ",
+            header: i18n.catalog["text_d90c384199ac"],
+            dataLabel: i18n.catalog["text_d90c384199ac"],
             render: (item) => formatDate(item.transaction_date),
         },
         {
             key: "description",
-            header: "البيان / الوصف",
-            dataLabel: "البيان / الوصف",
+            header: i18n.catalog["text_263b62fdd71b"],
+            dataLabel: i18n.catalog["text_263b62fdd71b"],
             render: (item) => item.description || "-",
         },
         {
             key: "actions",
-            header: "الإجراءات",
-            dataLabel: "الإجراءات",
+            header: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (item) => (
                 <div className="action-buttons">
-                    <button className="icon-btn delete" onClick={() => confirmDelete(item.id)} title="حذف">
+                    <button className="icon-btn delete" onClick={() => confirmDelete(item.id)} title={i18n.catalog["text_59ca629220a6"]}>
                         {getIcon("trash")}
                     </button>
                 </div>
@@ -228,27 +230,27 @@ export default function ReceiptsPage() {
                 {/* Form Card (Match Sales / Sales structure) */}
                 <div className="sales-card compact animate-slide">
                     <div className="card-header-flex">
-                        <h3>تسجيل سند قبض جديد</h3>
+                        <h3>{i18n.catalog["text_75b3aeabab5e"]}</h3>
                     </div>
 
                     <form onSubmit={handleSubmit} className="sales-form-grid">
                         <div className="form-group">
-                            <label>العميل *</label>
+                            <label>{i18n.catalog["text_8fb18f581806"]}</label>
                             <SearchableSelect
                                 options={customerOptions}
                                 value={selectedCustomer ? selectedCustomer.id : null}
                                 onChange={(val, opt) => setSelectedCustomer(opt ? (opt.original as Customer) : null)}
-                                placeholder="ابحث عن عميل..."
+                                placeholder={i18n.catalog["text_96b809b02ccc"]}
                             />
                             {selectedCustomer && (
                                 <small className="text-muted mt-1 d-block">
-                                    الرصيد الحالي: <span dir="ltr">{formatCurrency(selectedCustomer.current_balance)}</span>
+                                    {i18n.catalog["text_73a95ba2ae3d"]}<span dir="ltr">{formatCurrency(selectedCustomer.current_balance)}</span>
                                 </small>
                             )}
                         </div>
 
                         <div className="form-group">
-                            <label>المبلغ *</label>
+                            <label>{i18n.catalog["text_3cfbd3350215"]}</label>
                             <input
                                 type="number"
                                 step="0.01"
@@ -256,13 +258,13 @@ export default function ReceiptsPage() {
                                 className="styled-input"
                                 value={amount}
                                 onChange={(e) => setAmount(e.target.value)}
-                                placeholder="0.00"
+                                placeholder={i18n.catalog["text_561b2814d3c0"]}
                                 required
                             />
                         </div>
 
                         <div className="form-group">
-                            <label>التاريخ *</label>
+                            <label>{i18n.catalog["text_24ab9ad4f30d"]}</label>
                             <input
                                 type="date"
                                 className="styled-input"
@@ -273,13 +275,13 @@ export default function ReceiptsPage() {
                         </div>
 
                         <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                            <label>البيان / الوصف</label>
+                            <label>{i18n.catalog["text_263b62fdd71b"]}</label>
                             <input
                                 type="text"
                                 className="styled-input"
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                placeholder="مثال: دفعة من الحساب"
+                                placeholder={i18n.catalog["text_5181ae2bdcaa"]}
                             />
                         </div>
 
@@ -290,7 +292,7 @@ export default function ReceiptsPage() {
                                 type="submit"
                                 disabled={isSubmitting || !selectedCustomer || !amount}
                             >
-                                {isSubmitting ? "جاري الحفظ..." : "حفظ السند"}
+                                {isSubmitting ? i18n.catalog["text_8688b0ff5f34"] : i18n.catalog["text_f95b81cb1ce4"]}
                             </Button>
                         </div>
                     </form>
@@ -299,11 +301,11 @@ export default function ReceiptsPage() {
                 {/* Table Card */}
                 <div className="sales-card animate-fade">
                     <div className="card-header-flex" style={{ marginBottom: '15px' }}>
-                        <h3>سجل المقبوضات</h3>
+                        <h3>{i18n.catalog["text_09217dd85277"]}</h3>
                         <div className="search-bar">
                             <input
                                 type="text"
-                                placeholder="بحث عن سند..."
+                                placeholder={i18n.catalog["text_afb84f951136"]}
                                 value={searchTerm}
                                 onChange={handleSearch}
                                 className="styled-input"
@@ -316,7 +318,7 @@ export default function ReceiptsPage() {
                         columns={columns}
                         data={receipts}
                         keyExtractor={(item) => item.id}
-                        emptyMessage="لا توجد سندات قبض"
+                        emptyMessage={i18n.catalog["text_99676bba6584"]}
                         isLoading={isLoading}
                         pagination={{
                             currentPage,
@@ -331,9 +333,9 @@ export default function ReceiptsPage() {
                 isOpen={confirmDialog}
                 onClose={() => setConfirmDialog(false)}
                 onConfirm={handleDelete}
-                title="تأكيد الحذف"
-                message="هل أنت متأكد من حذف هذا السند؟ سيتم تحديث رصيد العميل."
-                confirmText="حذف السند"
+                title={i18n.catalog["text_5f9cb54dc136"]}
+                message={i18n.catalog["text_7d9b904f0f1b"]}
+                confirmText={i18n.catalog["text_45ce3d5e8a57"]}
                 confirmVariant="danger"
             />
         </MainLayout>

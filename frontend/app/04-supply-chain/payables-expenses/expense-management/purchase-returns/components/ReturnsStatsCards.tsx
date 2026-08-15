@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { StatsCard } from "@/components/ui/StatsCard";
 import { getIcon } from "@/lib/icons";
 import { formatCurrency } from "@/lib/utils";
@@ -22,14 +23,14 @@ export function ReturnsStatsCards({ stats }: ReturnsStatsCardsProps) {
     return (
         <div className="dashboard-stats animate-fade" style={{ marginBottom: "2rem" }}>
             <StatsCard
-                title="إجمالي المرتجعات"
+                title={catalogMessage("text_ccab0fda414e")}
                 value={formatCurrency(stats.total_returns)}
                 icon={getIcon("repeat")}
                 colorClass="alert"
             />
             {stats.total_cash_returns !== undefined && (
                 <StatsCard
-                    title="مرتجعات نقدية"
+                    title={catalogMessage("text_eb286e2d1542")}
                     value={formatCurrency(stats.total_cash_returns)}
                     icon={getIcon("dollar")}
                     colorClass="products"
@@ -37,14 +38,14 @@ export function ReturnsStatsCards({ stats }: ReturnsStatsCardsProps) {
             )}
             {stats.total_credit_returns !== undefined && (
                 <StatsCard
-                    title="مرتجعات ذمم (آجل)"
+                    title={catalogMessage("text_4023c844d5c1")}
                     value={formatCurrency(stats.total_credit_returns)}
                     icon={getIcon("dollar")}
                     colorClass="total"
                 />
             )}
             <StatsCard
-                title="عدد المرتجعات"
+                title={catalogMessage("text_e802230d56e6")}
                 value={stats.transaction_count}
                 icon={getIcon("eye")}
                 colorClass="sales"

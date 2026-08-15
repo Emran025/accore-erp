@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { TemplateData, TemplateEditor } from "@/components/template-editor";
 import { showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -10,6 +11,7 @@ import { SystemTemplate } from "../SystemTemplates";
 import { SYSTEM_APPROVED_KEYS, SYSTEM_MOCK_CONTEXT, templateTypeLabels } from "../templates-data";
 
 function DocumentEditorContent() {
+    const { t: i18n } = useI18n();
     const router = useRouter();
     const searchParams = useSearchParams();
     const id = searchParams.get("id");
@@ -32,13 +34,13 @@ function DocumentEditorContent() {
             if (templateData && templateData.template_key) {
                 setTemplate(templateData);
             } else {
-                console.error("Invalid template data:", res);
-                showToast("فشل في تحميل بيانات القالب", "error");
+                console.error(i18n.catalog["text_ecf3b9e34517"], res);
+                showToast(i18n.catalog["text_f98b35d32447"], "error");
                 router.push("/02-commercial/sales-governance/templates/template-manager");
             }
         } catch (error) {
-            console.error("Fetch error:", error);
-            showToast("حدث خطأ أثناء الاتصال بالخادم", "error");
+            console.error(i18n.catalog["text_6bcb5b1100be"], error);
+            showToast(i18n.catalog["text_7c28fdce1a4e"], "error");
             router.push("/02-commercial/sales-governance/templates/template-manager");
         } finally {
             setIsLoading(false);
@@ -54,7 +56,7 @@ function DocumentEditorContent() {
                     body: JSON.stringify(data),
                 });
                 if ((res as any).success === false) throw new Error((res as any).message);
-                showToast("تم تحديث القالب وتسجيل السجل بنجاح", "success");
+                showToast(i18n.catalog["text_f43c40bfd0cc"], "success");
             } else {
                 // Create
                 const body = data.body_html || "";
@@ -63,11 +65,11 @@ function DocumentEditorContent() {
                     body: JSON.stringify({ ...data, body_html: body }),
                 });
                 if ((res as any).success === false) throw new Error((res as any).message);
-                showToast("تم إنشاء القالب بنجاح", "success");
+                showToast(i18n.catalog["text_46676f04e406"], "success");
             }
             router.push("/02-commercial/sales-governance/templates/template-manager");
         } catch (error: any) {
-            showToast(error.message || "حدث خطأ أثناء حفظ القالب", "error");
+            showToast(error.message || i18n.catalog["text_4f9ddf3e39da"], "error");
             throw error;
         }
     };
@@ -89,7 +91,7 @@ function DocumentEditorContent() {
             <TemplateEditor
                 key={id ? `edit-${id}` : "create"}
                 template={template as any}
-                moduleName="قوالب النظام الرئيسية"
+                moduleName={i18n.catalog["text_d623d1d59eba"]}
                 templateTypeLabels={templateTypeLabels}
                 approvedKeys={SYSTEM_APPROVED_KEYS}
                 mockContext={SYSTEM_MOCK_CONTEXT}

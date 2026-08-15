@@ -1,4 +1,4 @@
-
+import { catalogMessage } from "@/lib/i18n";
 import { Dialog, showToast } from "@/components/ui";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/Textarea";
@@ -34,7 +34,7 @@ export function InvoiceSettingsTab() {
         setInvoiceSettings(response.settings as InvoiceSettings);
       }
     } catch {
-      console.error("Error loading invoice settings");
+      console.error(catalogMessage("text_6a1aebcf84cb"));
     }
   }, []);
 
@@ -45,7 +45,7 @@ export function InvoiceSettingsTab() {
         setStoreSettings(response.settings as StoreSettings);
       }
     } catch {
-      console.error("Error loading store settings for preview");
+      console.error(catalogMessage("text_e0bc163df330"));
     }
   }, []);
 
@@ -60,9 +60,9 @@ export function InvoiceSettingsTab() {
         method: "PUT",
         body: JSON.stringify(invoiceSettings),
       });
-      showToast("تم حفظ إعدادات الفاتورة", "success");
+      showToast(catalogMessage("text_2870ff2cbee7"), "success");
     } catch {
-      showToast("خطأ في حفظ الإعدادات", "error");
+      showToast(catalogMessage("text_fc7bf4aa6124"), "error");
     }
   };
 
@@ -72,7 +72,7 @@ export function InvoiceSettingsTab() {
       if (!storeSettings) {
         await loadStoreSettings(); // Ensure we have them
         if (!storeSettings) {
-          showToast("فشل تحميل معلومات المتجر للمعاينة", "error");
+          showToast(catalogMessage("text_cb18d4baba17"), "error");
           return;
         }
       }
@@ -81,14 +81,14 @@ export function InvoiceSettingsTab() {
       const invoicesResponse = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICES}?page=1&limit=1`);
       const invoices = invoicesResponse.invoices as InvoiceData[] | undefined;
       if (!invoicesResponse.success || !invoices || invoices.length === 0) {
-        showToast("لا توجد فواتير سابقة لإجراء المعاينة", "error");
+        showToast(catalogMessage("text_df218d19d49c"), "error");
         return;
       }
 
       const sampleInvoice = invoices[0];
       const detailResponse = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICE_DETAILS}?id=${sampleInvoice.id}`);
       if (!detailResponse.success && !detailResponse.invoice) {
-        showToast("فشل تحميل تفاصيل الفاتورة", "error");
+        showToast(catalogMessage("text_c260a701b5b7"), "error");
         return;
       }
 
@@ -102,7 +102,7 @@ export function InvoiceSettingsTab() {
         tax_number: storeSettings!.tax_number,
         invoice_size: (invoiceSettings.show_qr ? "thermal" : "a4") as "thermal" | "a4",
         footer_message: invoiceSettings.footer_text,
-        currency_symbol: getSetting("currency_symbol", "ر.ي"),
+        currency_symbol: getSetting("currency_symbol", catalogMessage("text_62814ade7518")),
         show_logo: invoiceSettings.show_logo,
         show_qr: invoiceSettings.show_qr,
       };
@@ -122,8 +122,8 @@ export function InvoiceSettingsTab() {
 
       setPreviewDialog(true);
     } catch (error) {
-      console.error("Preview error", error);
-      showToast("حدث خطأ أثناء المعاينة", "error");
+      console.error(catalogMessage("text_7943d3df6962"), error);
+      showToast(catalogMessage("text_d82c5b97e7f9"), "error");
     } finally {
       setIsGeneratingPreview(false);
     }
@@ -132,12 +132,12 @@ export function InvoiceSettingsTab() {
   return (
     <>
       <div className="sales-card">
-        <h3>إعدادات الفاتورة</h3>
+        <h3>{catalogMessage("text_e217fe66e326")}</h3>
         <div className="settings-form-grid">
           <div className="form-group">
             <Checkbox
               id="show_logo"
-              label="عرض الشعار"
+              label={catalogMessage("text_46f631eac62e")}
               checked={invoiceSettings.show_logo}
               onChange={(e) => setInvoiceSettings({ ...invoiceSettings, show_logo: e.target.checked })}
             />
@@ -145,14 +145,14 @@ export function InvoiceSettingsTab() {
           <div className="form-group">
             <Checkbox
               id="show_qr"
-              label="عرض رمز QR"
+              label={catalogMessage("text_988e3c12cddd")}
               checked={invoiceSettings.show_qr}
               onChange={(e) => setInvoiceSettings({ ...invoiceSettings, show_qr: e.target.checked })}
             />
           </div>
 
           <div style={{ marginTop: "2rem", paddingTop: "1rem", borderTop: "1px dashed var(--border-color)" }}>
-            <h4 style={{ marginBottom: "1rem", color: "var(--text-primary)" }}>الامتثال الضريبي والتكامل الحكومي</h4>
+            <h4 style={{ marginBottom: "1rem", color: "var(--text-primary)" }}>{catalogMessage("text_8a0b1f3c26b5")}</h4>
             <div className="form-group">
               <div className="checkbox-group" style={{
                 borderRight: "4px solid #10b981",
@@ -172,11 +172,10 @@ export function InvoiceSettingsTab() {
                   style={{ marginTop: "4px" }}
                 />
                 <div>
-                  <label htmlFor="zatca_enabled" style={{ fontWeight: 600, display: "block", cursor: "pointer" }}>تفعيل الربط الحكومي (مثل هيئة الزكاة / ZATCA)</label>
+                  <label htmlFor="zatca_enabled" style={{ fontWeight: 600, display: "block", cursor: "pointer" }}>{catalogMessage("text_4241d4bf5648")}</label>
                   <p style={{ marginTop: "0.25rem", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                    تفعيل هذا الخيار سيقوم بتشغيل خصائص الفوترة الإلكترونية وإرسال الفواتير للمنصات الحكومية المعتمدة تلقائياً.
-                    <br />
-                    <span style={{ fontSize: "0.8rem", opacity: 0.8 }}>(مخصص للمنشآت الملزمة بالربط الضريبي والزكوي)</span>
+                    {catalogMessage("text_0a0739dfd25c")}<br />
+                    <span style={{ fontSize: "0.8rem", opacity: 0.8 }}>{catalogMessage("text_ef249c970127")}</span>
                   </p>
                 </div>
               </div>
@@ -184,7 +183,7 @@ export function InvoiceSettingsTab() {
           </div>
           <div className="form-group full-width">
             <Textarea
-              label="نص التذييل"
+              label={catalogMessage("text_679cb585cd6b")}
               id="footer_text"
               value={invoiceSettings.footer_text}
               onChange={(e) => setInvoiceSettings({ ...invoiceSettings, footer_text: e.target.value })}
@@ -193,7 +192,7 @@ export function InvoiceSettingsTab() {
           </div>
           <div className="form-group full-width">
             <Textarea
-              label="الشروط والأحكام"
+              label={catalogMessage("text_370b1e9cba0a")}
               id="terms_text"
               value={invoiceSettings.terms_text}
               onChange={(e) => setInvoiceSettings({ ...invoiceSettings, terms_text: e.target.value })}
@@ -203,11 +202,10 @@ export function InvoiceSettingsTab() {
         </div>
         <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
           <button className="btn btn-secondary" onClick={previewInvoice} disabled={isGeneratingPreview}>
-            {isGeneratingPreview ? "جاري التحميل..." : "معاينة الفاتورة"}
+            {isGeneratingPreview ? catalogMessage("text_ceac78d7f5d3") : catalogMessage("text_b30abc9f9eae")}
           </button>
           <button className="btn btn-primary" onClick={saveInvoiceSettings}>
-            حفظ التغييرات
-          </button>
+            {catalogMessage("text_9b70c9af5cbd")}</button>
         </div>
       </div>
 
@@ -215,7 +213,7 @@ export function InvoiceSettingsTab() {
       <Dialog
         isOpen={previewDialog}
         onClose={() => setPreviewDialog(false)}
-        title="معاينة الفاتورة"
+        title={catalogMessage("text_b30abc9f9eae")}
         maxWidth="900px"
         footer={
           <>
@@ -228,11 +226,9 @@ export function InvoiceSettingsTab() {
                 }
               }}
             >
-              {getIcon("print")} طباعة
-            </button>
+              {getIcon("print")} {catalogMessage("text_2e00e00acffe")}</button>
             <button className="btn btn-primary" onClick={() => setPreviewDialog(false)}>
-              إغلاق
-            </button>
+              {catalogMessage("text_ca90c297b099")}</button>
           </>
         }
       >
@@ -246,7 +242,7 @@ export function InvoiceSettingsTab() {
               background: "white",
               borderRadius: "4px",
             }}
-            title="Invoice Preview"
+            title={catalogMessage("text_178147261084")}
           />
         </div>
       </Dialog>

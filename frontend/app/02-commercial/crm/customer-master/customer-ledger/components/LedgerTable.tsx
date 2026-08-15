@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { useState } from "react";
 import { ActionButtons, SelectableInvoiceTable, SelectedItem, SelectableInvoiceItem, InvoiceTableColumn, Button } from "@/components/ui";
 import { TabSubNavigation } from "@/components/navigation/TabNavigation";
@@ -38,19 +39,19 @@ export function LedgerTable({
     const [activeTab, setActiveTab] = useState("all");
 
     const tabs = [
-        { key: "all", label: "جميع العمليات", icon: "list" },
-        { key: "invoice", label: "فواتير المبيعات", icon: "file-text" },
-        { key: "receipt", label: "سندات قبض", icon: "receipt" },
-        { key: "return", label: "المرتجعات", icon: "repeat" },
+        { key: "all", label: catalogMessage("text_b8080d923b38"), icon: "list" },
+        { key: "invoice", label: catalogMessage("text_5009f3495500"), icon: "file-text" },
+        { key: "receipt", label: catalogMessage("text_e35f68619fd8"), icon: "receipt" },
+        { key: "return", label: catalogMessage("text_239156a671f5"), icon: "repeat" },
     ];
 
     const filteredTransactions = transactions.filter(t => activeTab === 'all' || t.type === activeTab);
 
     const getTypeName = (type: string) => {
         const types: Record<string, string> = {
-            invoice: "فاتورة مبيعات",
-            receipt: "سند قبض",
-            return: "مرتجع",
+            invoice: catalogMessage("text_88b1dd50dc91"),
+            receipt: catalogMessage("text_3412df9cc7ec"),
+            return: catalogMessage("text_f996c544ba6c"),
         };
         return types[type] || type;
     };
@@ -81,8 +82,8 @@ export function LedgerTable({
         },
         {
             key: "transaction_date",
-            header: "التاريخ",
-            dataLabel: "التاريخ",
+            header: catalogMessage("text_d90c384199ac"),
+            dataLabel: catalogMessage("text_d90c384199ac"),
             render: (item) => (
                 <span style={{ fontSize: "0.9em" }}>
                     {formatDateTime(item.transaction_date)}
@@ -91,8 +92,8 @@ export function LedgerTable({
         },
         {
             key: "type",
-            header: "نوع العملية",
-            dataLabel: "نوع العملية",
+            header: catalogMessage("text_4567eb273df3"),
+            dataLabel: catalogMessage("text_4567eb273df3"),
             render: (item) => (
                 <span
                     className={`badge ${item.type === "invoice" ? "badge-primary" : "badge-success"
@@ -104,22 +105,22 @@ export function LedgerTable({
         },
         {
             key: "description",
-            header: "الوصف",
-            dataLabel: "الوصف",
+            header: catalogMessage("text_95023fc76e1b"),
+            dataLabel: catalogMessage("text_95023fc76e1b"),
             render: (item) => (
                 <div
                     className={item.reference_type === "invoices" ? "clickable-desc" : ""}
                     onClick={() => item.reference_type === "invoices" && onViewInvoice(item.reference_id!)}
                     style={{ cursor: item.reference_type === "invoices" ? "pointer" : "default" }}
                 >
-                    {item.description || "-"} {item.is_deleted && "(محذوف)"}
+                    {item.description || "-"} {item.is_deleted && catalogMessage("text_13a743673003")}
                 </div>
             ),
         },
         {
             key: "debit",
-            header: "مدين (عليك)",
-            dataLabel: "مدين (عليك)",
+            header: catalogMessage("text_53f3a581a089"),
+            dataLabel: catalogMessage("text_53f3a581a089"),
             render: (item) => (
                 <span className="text-danger font-bold">
                     {item.type === "invoice" ? formatCurrency(item.amount) : "-"}
@@ -128,8 +129,8 @@ export function LedgerTable({
         },
         {
             key: "credit",
-            header: "دائن (لك)",
-            dataLabel: "دائن (لك)",
+            header: catalogMessage("text_2f39da3fdd88"),
+            dataLabel: catalogMessage("text_2f39da3fdd88"),
             render: (item) => (
                 <span className="text-success font-bold">
                     {item.type !== "invoice" ? formatCurrency(item.amount) : "-"}
@@ -138,41 +139,41 @@ export function LedgerTable({
         },
         {
             key: "created_by",
-            header: "المستخدم",
-            dataLabel: "المستخدم",
+            header: catalogMessage("text_2fb01868740d"),
+            dataLabel: catalogMessage("text_2fb01868740d"),
             render: (item) => item.created_by || "-",
         },
         {
             key: "actions",
-            header: "الإجراءات",
-            dataLabel: "الإجراءات",
+            header: catalogMessage("text_7797240d6caf"),
+            dataLabel: catalogMessage("text_7797240d6caf"),
             render: (item) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "check",
-                            title: "استعادة",
+                            title: catalogMessage("text_56f1dce3e781"),
                             variant: "edit",
                             onClick: () => onRestoreTransaction(item.id),
                             hidden: !item.is_deleted
                         },
                         {
                             icon: "edit",
-                            title: "تعديل",
+                            title: catalogMessage("text_113d570d6555"),
                             variant: "edit",
                             onClick: () => onEditTransaction(item),
                             hidden: item.is_deleted || !canEdit(item)
                         },
                         {
                             icon: "trash",
-                            title: "حذف",
+                            title: catalogMessage("text_59ca629220a6"),
                             variant: "delete",
                             onClick: () => onDeleteTransaction(item.id),
                             hidden: item.is_deleted || item.type === "invoice"
                         },
                         {
                             icon: "eye",
-                            title: "عرض الفاتورة",
+                            title: catalogMessage("text_64fb0d77cd4e"),
                             variant: "view",
                             onClick: () => onViewInvoice(item.reference_id!),
                             hidden: item.is_deleted || item.reference_type !== "invoices"
@@ -189,7 +190,7 @@ export function LedgerTable({
         return (
             <div style={{ padding: "1.5rem", background: "var(--surface-hover)", borderRadius: "var(--radius-md)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ fontWeight: "bold" }}>سداد للفاتورة:</span>
+                    <span style={{ fontWeight: "bold" }}>{catalogMessage("text_7d67b98ad6f6")}</span>
                     <span
                         style={{ color: "var(--primary-color)", cursor: "pointer", fontWeight: "bold", textDecoration: "underline" }}
                         onClick={() => onViewInvoice(item.reference_id!)}
@@ -198,7 +199,7 @@ export function LedgerTable({
                     </span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ fontWeight: "bold" }}>المبلغ المدفوع:</span>
+                    <span style={{ fontWeight: "bold" }}>{catalogMessage("text_254f4472bdb8")}</span>
                     <span style={{ color: "var(--success-color)", fontWeight: "bold", fontSize: "1.1em" }}>
                         {formatCurrency(item.amount)}
                     </span>
@@ -208,8 +209,7 @@ export function LedgerTable({
                     icon="eye"
                     onClick={() => onViewInvoice(item.reference_id!)}
                 >
-                    عرض الفاتورة المسددة
-                </Button>
+                    {catalogMessage("text_43c2a09fb9e4")}</Button>
             </div>
         );
     };
@@ -225,7 +225,7 @@ export function LedgerTable({
                 onSearch={setSearch}
                 getInvoiceItems={getInvoiceItems}
                 renderCustomExpandedRow={renderPaymentDetails}
-                emptyMessage="لا توجد عمليات"
+                emptyMessage={catalogMessage("text_96dede8eb705")}
                 FilterTabNavigation={
                     <TabSubNavigation
                         tabs={tabs}

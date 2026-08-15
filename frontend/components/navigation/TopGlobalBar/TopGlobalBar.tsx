@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { SearchableSelect, SelectOption } from "@/components/ui";
 import { GlobalMenus } from "./components/GlobalMenus";
 import { GlobalMeta } from "./components/GlobalMeta";
@@ -32,6 +33,7 @@ interface SearchResultItem {
 }
 
 export function TopGlobalBar({ onNavigate, titleOverride, mobileSidebarToggle }: TopGlobalBarProps) {
+    const { t: i18n } = useI18n();
     const pathname = usePathname();
     const [query, setQuery] = useState("");
     const { permissions } = useAuthStore();
@@ -92,9 +94,9 @@ export function TopGlobalBar({ onNavigate, titleOverride, mobileSidebarToggle }:
                     }}
                     paddingVertical={0.25}
                     onSearch={setQuery}
-                    placeholder="بحث في القوائم..."
+                    placeholder={i18n.catalog["text_7c91c7f6b10d"]}
                     className="w-full"
-                    noResultsText="لا توجد نتائج"
+                    noResultsText={i18n.catalog["text_2d8a461130e0"]}
                 />
             </div>
 

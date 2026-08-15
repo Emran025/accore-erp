@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import React from "react";
 
 interface FilterSectionProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -53,6 +54,7 @@ export function DateRangePicker({
     label,
     className = "",
 }: DateRangePickerProps) {
+    const { t: i18n } = useI18n();
     const content = (
         <div className={`date-range-group ${className}`}>
             <input
@@ -60,7 +62,7 @@ export function DateRangePicker({
                 value={startDate}
                 onChange={(e) => onStartDateChange(e.target.value)}
             />
-            <span>إلى</span>
+            <span>{i18n.catalog["text_97fe3fe5b063"]}</span>
             <input
                 type="date"
                 value={endDate}

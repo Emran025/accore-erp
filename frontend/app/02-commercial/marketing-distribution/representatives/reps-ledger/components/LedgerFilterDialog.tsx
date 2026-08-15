@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { Dialog, FilterActions, Button, FilterGroup, DateRangePicker } from "@/components/ui";
 import { Select } from "@/components/ui/select";
 
@@ -27,20 +28,18 @@ export function LedgerFilterDialog({
         <Dialog
             isOpen={isOpen}
             onClose={onClose}
-            title="تصفية العمليات"
+            title={catalogMessage("text_4e7a6c70bd5c")}
             footer={
                 <FilterActions>
                     <Button variant="secondary" onClick={onClose}>
-                        إلغاء
-                    </Button>
+                        {catalogMessage("text_9a30dc2a96b8")}</Button>
                     <Button variant="primary" onClick={onApply}>
-                        تطبيق
-                    </Button>
+                        {catalogMessage("text_268974da5082")}</Button>
                 </FilterActions>
             }
         >
             <div className="space-y-4">
-                <FilterGroup label="الفترة">
+                <FilterGroup label={catalogMessage("text_0335edfeb5f3")}>
                     <DateRangePicker
                         startDate={filters.date_from}
                         endDate={filters.date_to}
@@ -49,16 +48,16 @@ export function LedgerFilterDialog({
                     />
                 </FilterGroup>
                 <Select
-                    label="نوع العملية"
+                    label={catalogMessage("text_4567eb273df3")}
                     id="filter-type"
                     value={filters.type}
                     onChange={(e) => setFilters({ ...filters, type: e.target.value })}
                     options={[
-                        { value: "", label: "الكل" },
-                        { value: "commission", label: "عمولات" },
-                        { value: "payment", label: "دفعات للمندوب" },
-                        { value: "return", label: "مرتجعات مبيعات" },
-                        { value: "adjustment", label: "تسويات مالية" },
+                        { value: "", label: catalogMessage("text_65f276da33cf") },
+                        { value: "commission", label: catalogMessage("text_5c7f63974760") },
+                        { value: "payment", label: catalogMessage("text_89fef1e7d7d5") },
+                        { value: "return", label: catalogMessage("text_9a49731f4a00") },
+                        { value: "adjustment", label: catalogMessage("text_794a751a4992") },
                     ]}
                 />
             </div>

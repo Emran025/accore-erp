@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText, catalogMessage } from "@/lib/i18n";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { Button, showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -19,51 +20,51 @@ import "./styles.css";
 
 // ── Transmission format options ──
 const formatOptions: { value: TransmissionFormat; label: string; icon: string }[] = [
-    { value: "json", label: "JSON", icon: "fas fa-brackets-curly" },
-    { value: "xml", label: "XML", icon: "fas fa-code" },
-    { value: "yml", label: "YML", icon: "fas fa-file-alt" },
-    { value: "excel", label: "Excel", icon: "fas fa-file-excel" },
+    { value: "json", label: catalogMessage("text_db1a21a0bc2e"), icon: "fas fa-brackets-curly" },
+    { value: "xml", label: catalogMessage("text_40658e9af8fd"), icon: "fas fa-code" },
+    { value: "yml", label: catalogMessage("text_996518f221d2"), icon: "fas fa-file-alt" },
+    { value: "excel", label: catalogMessage("text_48d53635551c"), icon: "fas fa-file-excel" },
 ];
 
 // ── Auth type options ──
 const authTypeOptions: { value: AuthType; label: string }[] = [
-    { value: "none", label: "بدون مصادقة" },
-    { value: "bearer", label: "Bearer Token" },
-    { value: "basic", label: "Basic Auth" },
-    { value: "oauth2", label: "OAuth 2.0" },
-    { value: "api_key", label: "API Key" },
+    { value: "none", label: catalogMessage("text_ad45158f2562") },
+    { value: "bearer", label: catalogMessage("text_105f8fe557fe") },
+    { value: "basic", label: catalogMessage("text_f0a792cf36e6") },
+    { value: "oauth2", label: catalogMessage("text_aebabad39063") },
+    { value: "api_key", label: catalogMessage("text_23189d55f697") },
 ];
 
 // ── Default system keys (these would typically be fetched from API) ──
 const defaultSystemKeys: SystemKey[] = [
-    { key: "invoice_number", label: "رقم الفاتورة", type: "string" },
-    { key: "invoice_date", label: "تاريخ الفاتورة", type: "date" },
-    { key: "invoice_type", label: "نوع الفاتورة", type: "string" },
-    { key: "subtotal", label: "المجموع الفرعي", type: "number" },
-    { key: "total_tax", label: "إجمالي الضريبة", type: "number" },
-    { key: "grand_total", label: "الإجمالي النهائي", type: "number" },
-    { key: "discount_amount", label: "مبلغ الخصم", type: "number" },
-    { key: "currency_code", label: "رمز العملة", type: "string" },
-    { key: "tax_type_code", label: "رمز نوع الضريبة", type: "string" },
-    { key: "tax_rate", label: "نسبة الضريبة", type: "number" },
-    { key: "taxable_amount", label: "المبلغ الخاضع", type: "number" },
-    { key: "tax_amount", label: "مبلغ الضريبة", type: "number" },
-    { key: "tax_authority_code", label: "رمز الجهة الضريبية", type: "string" },
-    { key: "seller_name", label: "اسم البائع", type: "string" },
-    { key: "seller_vat_number", label: "الرقم الضريبي للبائع", type: "string" },
-    { key: "seller_cr_number", label: "السجل التجاري للبائع", type: "string" },
-    { key: "seller_address", label: "عنوان البائع", type: "string" },
-    { key: "buyer_name", label: "اسم المشتري", type: "string" },
-    { key: "buyer_vat_number", label: "الرقم الضريبي للمشتري", type: "string" },
-    { key: "buyer_address", label: "عنوان المشتري", type: "string" },
-    { key: "item_name", label: "اسم الصنف", type: "string" },
-    { key: "item_quantity", label: "الكمية", type: "number" },
-    { key: "item_unit_price", label: "سعر الوحدة", type: "number" },
-    { key: "item_total", label: "إجمالي الصنف", type: "number" },
-    { key: "item_tax_amount", label: "ضريبة الصنف", type: "number" },
-    { key: "payment_method", label: "طريقة الدفع", type: "string" },
-    { key: "payment_date", label: "تاريخ الدفع", type: "date" },
-    { key: "payment_reference", label: "مرجع الدفع", type: "string" },
+    { key: "invoice_number", label: catalogMessage("text_b6e71278be04"), type: "string" },
+    { key: "invoice_date", label: catalogMessage("text_4994aa18979f"), type: "date" },
+    { key: "invoice_type", label: catalogMessage("text_1670fc15da04"), type: "string" },
+    { key: "subtotal", label: catalogMessage("text_4793cceb7aa3"), type: "number" },
+    { key: "total_tax", label: catalogMessage("text_d8f7fda426b0"), type: "number" },
+    { key: "grand_total", label: catalogMessage("text_63c2f6768cf8"), type: "number" },
+    { key: "discount_amount", label: catalogMessage("text_7d815bba7b75"), type: "number" },
+    { key: "currency_code", label: catalogMessage("text_48e954a1635b"), type: "string" },
+    { key: "tax_type_code", label: catalogMessage("text_9c528eb38b35"), type: "string" },
+    { key: "tax_rate", label: catalogMessage("text_093feaffdf0c"), type: "number" },
+    { key: "taxable_amount", label: catalogMessage("text_c2c42c8813fc"), type: "number" },
+    { key: "tax_amount", label: catalogMessage("text_fa13267975f9"), type: "number" },
+    { key: "tax_authority_code", label: catalogMessage("text_a5075a8961b7"), type: "string" },
+    { key: "seller_name", label: catalogMessage("text_07b03bb3d5d0"), type: "string" },
+    { key: "seller_vat_number", label: catalogMessage("text_b5b5dcbf0186"), type: "string" },
+    { key: "seller_cr_number", label: catalogMessage("text_3767ae186e95"), type: "string" },
+    { key: "seller_address", label: catalogMessage("text_1cb381b18f89"), type: "string" },
+    { key: "buyer_name", label: catalogMessage("text_b86625c75377"), type: "string" },
+    { key: "buyer_vat_number", label: catalogMessage("text_bb55b47b40f8"), type: "string" },
+    { key: "buyer_address", label: catalogMessage("text_97bd9e9f5221"), type: "string" },
+    { key: "item_name", label: catalogMessage("text_ba490b3b4be5"), type: "string" },
+    { key: "item_quantity", label: catalogMessage("text_935e21853946"), type: "number" },
+    { key: "item_unit_price", label: catalogMessage("text_c274e3ec351e"), type: "number" },
+    { key: "item_total", label: catalogMessage("text_ca2c57c400ff"), type: "number" },
+    { key: "item_tax_amount", label: catalogMessage("text_3cd9a2ef895e"), type: "number" },
+    { key: "payment_method", label: catalogMessage("text_ae2d60052976"), type: "string" },
+    { key: "payment_date", label: catalogMessage("text_e35687ed04c0"), type: "date" },
+    { key: "payment_reference", label: catalogMessage("text_f215a289905e"), type: "string" },
 ];
 
 /**
@@ -83,6 +84,7 @@ export function ComplianceProfileEditor({
     onCancel,
     className = "",
 }: ComplianceProfileEditorProps) {
+    const { t: i18n } = useI18n();
     const isNew = !profile;
 
     // ── Form State ──
@@ -150,19 +152,19 @@ export function ComplianceProfileEditor({
     // ── Save Handler ──
     const handleSave = async () => {
         if (!name.trim()) {
-            showToast("اسم الملف التعريفي مطلوب", "error");
+            showToast(i18n.catalog["text_026df915c3d4"], "error");
             return;
         }
         if (!code.trim()) {
-            showToast("الرمز المعرف مطلوب", "error");
+            showToast(i18n.catalog["text_ba5d6a04a189"], "error");
             return;
         }
         if (!taxAuthorityId) {
-            showToast("يرجى اختيار الجهة الضريبية", "error");
+            showToast(i18n.catalog["text_932d008fbbd5"], "error");
             return;
         }
         if (policyType === "push" && !endpointUrl.trim()) {
-            showToast("رابط نقطة النهاية مطلوب للسياسة 1 (الإرسال)", "error");
+            showToast(i18n.catalog["text_101a3056782b"], "error");
             return;
         }
 
@@ -170,7 +172,7 @@ export function ComplianceProfileEditor({
         if (structureTemplate.trim() && transmissionFormat !== "excel") {
             const validation = validateFormat(structureTemplate, editorFormat);
             if (!validation.valid) {
-                showToast("هيكل القالب يحتوي على أخطاء – يرجى إصلاحها أولاً", "error");
+                showToast(i18n.catalog["text_a8a80b6e15d8"], "error");
                 return;
             }
         }
@@ -182,7 +184,7 @@ export function ComplianceProfileEditor({
                 try {
                     parsedOpenApiSpec = JSON.parse(openApiSpec);
                 } catch {
-                    showToast("مواصفات OpenAPI غير صالحة (JSON)", "error");
+                    showToast(i18n.catalog["text_8686034d39b6"], "error");
                     setIsSaving(false);
                     return;
                 }
@@ -224,16 +226,16 @@ export function ComplianceProfileEditor({
     const handleCopyToken = useCallback(() => {
         if (rawToken) {
             navigator.clipboard.writeText(rawToken);
-            showToast("تم نسخ التوكن الكامل", "success");
+            showToast(i18n.catalog["text_69b8b3133653"], "success");
         } else if (tokenPreview) {
-            showToast("التوكن مخفي – أعد إنشاءه للحصول على النسخة الكاملة", "warning");
+            showToast(i18n.catalog["text_837963cc4ee3"], "warning");
         }
     }, [rawToken, tokenPreview]);
 
     // ── Regenerate token ──
     const handleRegenerateToken = useCallback(async () => {
         if (!profile?.id) {
-            showToast("يجب حفظ الملف التعريفي أولاً", "warning");
+            showToast(i18n.catalog["text_57f69608c48c"], "warning");
             return;
         }
         const res = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.COMPLIANCE_PROFILES.GENERATE_TOKEN(profile.id), {
@@ -245,9 +247,9 @@ export function ComplianceProfileEditor({
             setRawToken(newToken);
             setTokenPreview(newToken.substring(0, 12) + '••••••••' + newToken.substring(newToken.length - 6));
             setTokenExpiresAt((res as Record<string, unknown>).token_expires_at as string || "");
-            showToast("تم إعادة إنشاء التوكن بنجاح – انسخه الآن", "success");
+            showToast(i18n.catalog["text_0dabe0c6f86a"], "success");
         } else {
-            showToast(res.message || "فشل إنشاء التوكن", "error");
+            showToast(res.message || i18n.catalog["text_6d95e4a69876"], "error");
         }
     }, [profile?.id]);
 
@@ -261,9 +263,9 @@ export function ComplianceProfileEditor({
             setTokenPreview("");
             setRawToken(null);
             setTokenExpiresAt("");
-            showToast("تم إلغاء التوكن", "success");
+            showToast(i18n.catalog["text_86a553b2c8bb"], "success");
         } else {
-            showToast(res.message || "فشل إلغاء التوكن", "error");
+            showToast(res.message || i18n.catalog["text_af1c943cff83"], "error");
         }
     }, [profile?.id]);
 
@@ -285,14 +287,14 @@ export function ComplianceProfileEditor({
                         <i className="fas fa-shield-alt" />
                         <span>
                             {isNew
-                                ? "إنشاء ملف تعريف الامتثال"
-                                : `تعديل: ${profile?.name || ""}`}
+                                ? i18n.catalog["text_03622bfee2c5"]
+                                : catalogText(i18n, "text_5ac6e84eaa5a", { value0: profile?.name || "" })}
                         </span>
                     </div>
                     <div className="ce-status-badges">
                         <span className={`ce-badge ce-badge-${policyType}`}>
                             <i className={`fas fa-${policyType === "push" ? "paper-plane" : "download"}`} />
-                            {policyType === "push" ? "سياسة 1: إرسال" : "سياسة 2: استقبال"}
+                            {policyType === "push" ? i18n.catalog["text_80c19dc251b2"] : i18n.catalog["text_582efd7f4b25"]}
                         </span>
                         <span className="ce-badge ce-badge-format">
                             <i className="fas fa-file-code" />
@@ -300,12 +302,12 @@ export function ComplianceProfileEditor({
                         </span>
                         <span className={`ce-badge ${isActive ? "ce-badge-active" : "ce-badge-inactive"}`}>
                             <i className={`fas fa-${isActive ? "check-circle" : "times-circle"}`} />
-                            {isActive ? "نشط" : "غير نشط"}
+                            {isActive ? i18n.catalog["text_629e90b3af3d"] : i18n.catalog["text_b719ac8add4e"]}
                         </span>
                     </div>
                 </div>
                 <div className="ce-topbar-actions">
-                    <Button size="sm" variant="secondary" icon="times" onClick={onCancel}>إلغاء</Button>
+                    <Button size="sm" variant="secondary" icon="times" onClick={onCancel}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
                     <Button
                         size="sm"
                         variant="primary"
@@ -313,7 +315,7 @@ export function ComplianceProfileEditor({
                         onClick={handleSave}
                         disabled={isSaving}
                     >
-                        {isSaving ? "جاري الحفظ..." : isNew ? "إنشاء" : "حفظ التعديلات"}
+                        {isSaving ? i18n.catalog["text_8688b0ff5f34"] : isNew ? i18n.catalog["text_a820f3590d36"] : i18n.catalog["text_6c03d6737c2f"]}
                     </Button>
                 </div>
             </div>
@@ -325,21 +327,18 @@ export function ComplianceProfileEditor({
                         className={`ce-tab ${activeView === "config" ? "active" : ""}`}
                         onClick={() => setActiveView("config")}
                     >
-                        <i className="fas fa-cog" /> الإعدادات
-                    </button>
+                        <i className="fas fa-cog" /> {i18n.catalog["text_5fd9563e6846"]}</button>
                     <button
                         className={`ce-tab ${activeView === "editor" ? "active" : ""}`}
                         onClick={() => setActiveView("editor")}
                     >
-                        <i className="fas fa-code" /> محرر الهيكل
-                    </button>
+                        <i className="fas fa-code" /> {i18n.catalog["text_2fdd9e8e47a1"]}</button>
                 </div>
                 <div className="ce-editor-tabs-right">
                     {activeView === "editor" && (
                         <span style={{ fontSize: 11, color: "#8890a4", display: "flex", alignItems: "center", gap: 5 }}>
                             <i className="fas fa-info-circle" style={{ color: "#6c8cff" }} />
-                            استخدم {"{{key}}"} لإدراج مفتاح نظام
-                        </span>
+                            {i18n.catalog["text_325d78c284e5"]}{i18n.catalog["text_d0f7284a94b4"]} {i18n.catalog["text_c6fdf80ff75b"]}</span>
                     )}
                 </div>
             </div>
@@ -350,33 +349,32 @@ export function ComplianceProfileEditor({
                     <div className="ce-config-panel" style={{ borderBottom: "none" }}>
                         {/* ── Basic Info ── */}
                         <div className="ce-config-section-label">
-                            <i className="fas fa-info-circle" /> المعلومات الأساسية
-                        </div>
+                            <i className="fas fa-info-circle" /> {i18n.catalog["text_66a68be6dd8a"]}</div>
                         <div className="ce-config-row">
                             <div className="ce-field">
-                                <label>اسم الملف التعريفي *</label>
+                                <label>{i18n.catalog["text_08c8e8814cdf"]}</label>
                                 <input
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    placeholder="مثال: تقرير هيئة الزكاة"
+                                    placeholder={i18n.catalog["text_acf1b798b352"]}
                                     className="ce-input"
                                 />
                             </div>
                             <div className="ce-field">
-                                <label>الرمز المعرف *</label>
+                                <label>{i18n.catalog["text_803cc32ed119"]}</label>
                                 <input
                                     type="text"
                                     value={code}
                                     onChange={(e) => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, ""))}
-                                    placeholder="ZATCA_VAT_PUSH"
+                                    placeholder={i18n.catalog["text_97b981b6224b"]}
                                     className="ce-input"
                                     disabled={!isNew}
                                     style={{ direction: "ltr", textAlign: "left" }}
                                 />
                             </div>
                             <div className="ce-field">
-                                <label>الجهة الضريبية *</label>
+                                <label>{i18n.catalog["text_b65ad533c1a8"]}</label>
                                 <select
                                     value={taxAuthorityId}
                                     onChange={(e) => setTaxAuthorityId(Number(e.target.value))}
@@ -388,22 +386,21 @@ export function ComplianceProfileEditor({
                                 </select>
                             </div>
                             <div className="ce-field" style={{ minWidth: 100, flex: "0 0 auto" }}>
-                                <label>الحالة</label>
+                                <label>{i18n.catalog["text_c3a4749caed4"]}</label>
                                 <select
                                     value={isActive ? "1" : "0"}
                                     onChange={(e) => setIsActive(e.target.value === "1")}
                                     className="ce-select"
                                 >
-                                    <option value="1">نشط</option>
-                                    <option value="0">غير نشط</option>
+                                    <option value="1">{i18n.catalog["text_629e90b3af3d"]}</option>
+                                    <option value="0">{i18n.catalog["text_b719ac8add4e"]}</option>
                                 </select>
                             </div>
                         </div>
 
                         {/* ── Policy Selection ── */}
                         <div className="ce-config-section-label" style={{ marginTop: 4 }}>
-                            <i className="fas fa-route" /> نوع السياسة
-                        </div>
+                            <i className="fas fa-route" /> {i18n.catalog["text_8263f1a89ee2"]}</div>
                         <div className="ce-config-row">
                             <div className="ce-policy-toggle">
                                 <button
@@ -412,10 +409,9 @@ export function ComplianceProfileEditor({
                                     type="button"
                                 >
                                     <i className="fas fa-paper-plane ce-policy-icon" />
-                                    <span className="ce-policy-label">سياسة 1: الإرسال (Push)</span>
+                                    <span className="ce-policy-label">{i18n.catalog["text_97df31193a2f"]}</span>
                                     <span className="ce-policy-desc">
-                                        نظامنا يرسل البيانات تلقائياً إلى نقطة النهاية الخاصة بالجهة
-                                    </span>
+                                        {i18n.catalog["text_48ca2884016a"]}</span>
                                 </button>
                                 <button
                                     className={`ce-policy-option ${policyType === "pull" ? "active pull" : ""}`}
@@ -423,18 +419,16 @@ export function ComplianceProfileEditor({
                                     type="button"
                                 >
                                     <i className="fas fa-download ce-policy-icon" />
-                                    <span className="ce-policy-label">سياسة 2: الاستقبال (Pull)</span>
+                                    <span className="ce-policy-label">{i18n.catalog["text_73fe261a9d42"]}</span>
                                     <span className="ce-policy-desc">
-                                        الجهة تصل إلى بياناتنا عبر API وتوكن أمان مُولَّد
-                                    </span>
+                                        {i18n.catalog["text_f3f2473dab7b"]}</span>
                                 </button>
                             </div>
                         </div>
 
                         {/* ── Format Selection ── */}
                         <div className="ce-config-section-label">
-                            <i className="fas fa-file-export" /> صيغة الإرسال
-                        </div>
+                            <i className="fas fa-file-export" /> {i18n.catalog["text_290eba083a3c"]}</div>
                         <div className="ce-config-row">
                             <div className="ce-field-full">
                                 <div className="ce-format-selector">
@@ -457,22 +451,21 @@ export function ComplianceProfileEditor({
                         {policyType === "push" && (
                             <>
                                 <div className="ce-config-section-label" style={{ marginTop: 4 }}>
-                                    <i className="fas fa-server" /> إعدادات الإرسال (Push)
-                                </div>
+                                    <i className="fas fa-server" /> {i18n.catalog["text_290aad95abe2"]}</div>
                                 <div className="ce-config-row">
                                     <div className="ce-field ce-field-wide">
-                                        <label>رابط نقطة النهاية (Endpoint URL) *</label>
+                                        <label>{i18n.catalog["text_1ab6a589f765"]}</label>
                                         <input
                                             type="url"
                                             value={endpointUrl}
                                             onChange={(e) => setEndpointUrl(e.target.value)}
-                                            placeholder="https://api.entity.gov/v1/submit"
+                                            placeholder={i18n.catalog["text_50021a580033"]}
                                             className="ce-input"
                                             style={{ direction: "ltr", textAlign: "left" }}
                                         />
                                     </div>
                                     <div className="ce-field" style={{ minWidth: 120, flex: "0 0 auto" }}>
-                                        <label>HTTP Method</label>
+                                        <label>{i18n.catalog["text_596fe2e088b3"]}</label>
                                         <select
                                             value={httpMethod}
                                             onChange={(e) => setHttpMethod(e.target.value)}
@@ -486,7 +479,7 @@ export function ComplianceProfileEditor({
                                 </div>
                                 <div className="ce-config-row">
                                     <div className="ce-field">
-                                        <label>نوع المصادقة</label>
+                                        <label>{i18n.catalog["text_119babff2748"]}</label>
                                         <select
                                             value={authType}
                                             onChange={(e) => setAuthType(e.target.value as AuthType)}
@@ -499,16 +492,16 @@ export function ComplianceProfileEditor({
                                     </div>
                                     {authType !== "none" && (
                                         <div className="ce-field ce-field-wide">
-                                            <label>بيانات المصادقة</label>
+                                            <label>{i18n.catalog["text_b2ebbefd586a"]}</label>
                                             <input
                                                 type="password"
                                                 value={authCredentials}
                                                 onChange={(e) => setAuthCredentials(e.target.value)}
                                                 placeholder={
-                                                    authType === "bearer" ? "Bearer token..." :
-                                                        authType === "basic" ? "username:password" :
-                                                            authType === "api_key" ? "API Key..." :
-                                                                "Credentials..."
+                                                    authType === i18n.catalog["text_2454ad61c2ac"] ? i18n.catalog["text_5e4f407b48c5"] :
+                                                        authType === i18n.catalog["text_fbb7b5bf4ca3"] ? i18n.catalog["text_bc842c31a9e5"] :
+                                                            authType === i18n.catalog["text_2e9bc6c94a4c"] ? i18n.catalog["text_226cfd9ea50d"] :
+                                                                i18n.catalog["text_ca0e88ea2d25"]
                                                 }
                                                 className="ce-input"
                                                 style={{ direction: "ltr", textAlign: "left" }}
@@ -518,11 +511,11 @@ export function ComplianceProfileEditor({
                                 </div>
                                 <div className="ce-config-row">
                                     <div className="ce-field-full">
-                                        <label>رؤوس HTTP إضافية (اختياري – JSON)</label>
+                                        <label>{i18n.catalog["text_2ab497db3f85"]}</label>
                                         <textarea
                                             value={requestHeaders}
                                             onChange={(e) => setRequestHeaders(e.target.value)}
-                                            placeholder='{"X-Custom-Header": "value", "Accept-Language": "ar"}'
+                                            placeholder={i18n.catalog["text_ba706d3707b1"]}
                                             className="ce-textarea"
                                             rows={3}
                                             style={{ direction: "ltr", textAlign: "left" }}
@@ -531,19 +524,18 @@ export function ComplianceProfileEditor({
                                 </div>
                                 <div className="ce-config-row">
                                     <div className="ce-field-full">
-                                        <label>مواصفات OpenAPI (اختياري – JSON)</label>
+                                        <label>{i18n.catalog["text_e76fe1849d63"]}</label>
                                         <textarea
                                             value={openApiSpec}
                                             onChange={(e) => setOpenApiSpec(e.target.value)}
-                                            placeholder='{"openapi": "3.0.0", "info": {...}, "paths": {...}}'
+                                            placeholder={i18n.catalog["text_9a9c15c97a8f"]}
                                             className="ce-textarea"
                                             rows={4}
                                             style={{ direction: "ltr", textAlign: "left" }}
                                         />
                                         <span style={{ fontSize: 10, color: "#6c8cff", marginTop: 2 }}>
                                             <i className="fas fa-info-circle" style={{ marginLeft: 4 }} />
-                                            عند تقديم مواصفات OpenAPI، سيقوم النظام بتحويل البيانات تلقائياً إلى الصيغة المطلوبة
-                                        </span>
+                                            {i18n.catalog["text_522ec464f7c2"]}</span>
                                     </div>
                                 </div>
                             </>
@@ -553,27 +545,26 @@ export function ComplianceProfileEditor({
                         {policyType === "pull" && (
                             <>
                                 <div className="ce-config-section-label" style={{ marginTop: 4 }}>
-                                    <i className="fas fa-key" /> إعدادات الاستقبال (Pull)
-                                </div>
+                                    <i className="fas fa-key" /> {i18n.catalog["text_df3bf5f6b8dc"]}</div>
                                 <div className="ce-config-row">
                                     <div className="ce-field">
-                                        <label>مسار نقطة النهاية</label>
+                                        <label>{i18n.catalog["text_41a30dff4aec"]}</label>
                                         <input
                                             type="text"
                                             value={pullEndpointPath}
                                             onChange={(e) => setPullEndpointPath(e.target.value.replace(/[^a-zA-Z0-9_-]/g, ""))}
-                                            placeholder="compliance-data"
+                                            placeholder={i18n.catalog["text_c9d9b1e8a3df"]}
                                             className="ce-input"
                                             style={{ direction: "ltr", textAlign: "left" }}
                                         />
                                     </div>
                                     <div className="ce-field ce-field-wide">
-                                        <label>عناوين IP المسموحة (اختياري، مفصولة بفاصلة)</label>
+                                        <label>{i18n.catalog["text_91e71ba1752a"]}</label>
                                         <input
                                             type="text"
                                             value={allowedIps}
                                             onChange={(e) => setAllowedIps(e.target.value)}
-                                            placeholder="192.168.1.1, 10.0.0.0/24"
+                                            placeholder={i18n.catalog["text_75e1d58991bc"]}
                                             className="ce-input"
                                             style={{ direction: "ltr", textAlign: "left" }}
                                         />
@@ -583,7 +574,7 @@ export function ComplianceProfileEditor({
                                 {/* Endpoint Preview */}
                                 <div className="ce-config-row">
                                     <div className="ce-field-full">
-                                        <label>نقطة النهاية للجهة</label>
+                                        <label>{i18n.catalog["text_3bdcf1d3b90f"]}</label>
                                         <div className="ce-endpoint-info">
                                             <span className="ce-method-badge">GET</span>
                                             <code>{pullEndpoint}</code>
@@ -594,44 +585,40 @@ export function ComplianceProfileEditor({
                                 {/* Token Display */}
                                 <div className="ce-config-row">
                                     <div className="ce-field-full">
-                                        <label>توكن الوصول</label>
+                                        <label>{i18n.catalog["text_0c5fbf4ab285"]}</label>
                                         <div className="ce-token-display">
                                             {(tokenPreview || rawToken) ? (
                                                 <>
                                                     <div className="ce-token-value">
                                                         <code>{rawToken || tokenPreview}</code>
                                                         <button className="ce-token-copy" onClick={handleCopyToken}>
-                                                            <i className="fas fa-copy" /> {rawToken ? "نسخ" : "مخفي"}
+                                                            <i className="fas fa-copy" /> {rawToken ? i18n.catalog["text_29a0e2739a92"] : i18n.catalog["text_2ba494867920"]}
                                                         </button>
                                                     </div>
                                                     {rawToken && (
                                                         <div style={{ fontSize: 10, color: "#f59e0b", margin: "4px 0", display: "flex", alignItems: "center", gap: 4 }}>
                                                             <i className="fas fa-exclamation-triangle" />
-                                                            هذا التوكن يظهر مرة واحدة فقط – انسخه الآن
-                                                        </div>
+                                                            {i18n.catalog["text_4da20aa7276d"]}</div>
                                                     )}
                                                     <div className="ce-token-meta">
                                                         {tokenExpiresAt && (
                                                             <span>
                                                                 <i className="fas fa-clock" />
-                                                                ينتهي: {new Date(tokenExpiresAt).toLocaleDateString("ar-SA")}
+                                                                {i18n.catalog["text_c13403f9b32d"]}{new Date(tokenExpiresAt).toLocaleDateString("ar-SA")}
                                                             </span>
                                                         )}
                                                     </div>
                                                     <div className="ce-token-actions">
                                                         <button className="ce-token-btn generate" onClick={handleRegenerateToken}>
-                                                            <i className="fas fa-sync" /> إعادة إنشاء
-                                                        </button>
+                                                            <i className="fas fa-sync" /> {i18n.catalog["text_adcb933a3cb3"]}</button>
                                                         <button className="ce-token-btn revoke" onClick={handleRevokeToken}>
-                                                            <i className="fas fa-ban" /> إلغاء التوكن
-                                                        </button>
+                                                            <i className="fas fa-ban" /> {i18n.catalog["text_feecb98abc70"]}</button>
                                                     </div>
                                                 </>
                                             ) : (
                                                 <div style={{ textAlign: "center", padding: "12px 0" }}>
                                                     <span style={{ color: "#8890a4", fontSize: 12 }}>
-                                                        لم يتم إنشاء توكن بعد. سيتم إنشاء توكن تلقائياً عند الحفظ.
-                                                    </span>
+                                                        {i18n.catalog["text_c969380c2022"]}</span>
                                                 </div>
                                             )}
                                         </div>
@@ -642,14 +629,13 @@ export function ComplianceProfileEditor({
 
                         {/* ── Notes ── */}
                         <div className="ce-config-section-label" style={{ marginTop: 4 }}>
-                            <i className="fas fa-sticky-note" /> ملاحظات
-                        </div>
+                            <i className="fas fa-sticky-note" /> {i18n.catalog["text_d446d2dc6b81"]}</div>
                         <div className="ce-config-row" style={{ paddingBottom: 20 }}>
                             <div className="ce-field-full">
                                 <textarea
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
-                                    placeholder="ملاحظات إضافية حول هذا الملف التعريفي..."
+                                    placeholder={i18n.catalog["text_d3da818ddc30"]}
                                     className="ce-textarea"
                                     rows={3}
                                 />

@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { useSearchParams, useRouter } from "next/navigation";
 import { NavigationCard, NavigationGrid } from "@/components/navigation";
 import { getNavigationGroup, isNavigationGroup, isNavigationLink } from "@/lib/navigation";
@@ -14,6 +15,7 @@ interface NavigationGridContentProps {
 }
 
 export function NavigationGridContent({ groupId }: NavigationGridContentProps) {
+    const { t: i18n } = useI18n();
     const searchParams = useSearchParams();
     const router = useRouter();
     const { permissions } = useAuthStore();
@@ -21,7 +23,7 @@ export function NavigationGridContent({ groupId }: NavigationGridContentProps) {
     // 1. Determine the active group key
     // Priority: Prop > Query Param > Default fallback
     const rawGroup = groupId || searchParams.get("group") || "dashboard";
-    
+
     // Normalize: remove trailing slash
     const activeGroup = rawGroup.endsWith("/") ? rawGroup.slice(0, -1) : rawGroup;
 
@@ -33,19 +35,18 @@ export function NavigationGridContent({ groupId }: NavigationGridContentProps) {
                 <i className="text-primary">
                     <Icon name="search" size={48} />
                 </i>
-                <h3>المجموعة غير موجودة</h3>
+                <h3>{i18n.catalog["text_68c6a5645a71"]}</h3>
                 <p>
-                    لم يتم العثور على مجموعة القوائم المسماة <code>{activeGroup}</code>. 
+                    {i18n.catalog["text_3cc6d1b3a312"]}<code>{activeGroup}</code>.
                     قد يكون الرابط خاطئاً أو تم نقل المحتوى.
                 </p>
-                <Button 
-                    variant="primary" 
-                    size="lg" 
-                    icon="home" 
+                <Button
+                    variant="primary"
+                    size="lg"
+                    icon="home"
                     onClick={() => router.push('/navigation')}
                 >
-                    العودة للقائمة الرئيسية
-                </Button>
+                    {i18n.catalog["text_0c2449c125b0"]}</Button>
             </div>
         );
     }

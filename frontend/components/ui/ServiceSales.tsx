@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { MainLayout } from "@/components/layout";
 import {
     ActionButtons,
@@ -43,6 +44,7 @@ export interface ServiceSalesPageProps {
 ══════════════════════════════════════════════ */
 
 export function ServiceSales({ mode }: ServiceSalesPageProps) {
+    const { t: i18n } = useI18n();
     const isCash = mode === "cash";
     const { items: rawServices, load: loadServices } = useServiceStore();
     const services: Service[] = rawServices as unknown as Service[];
@@ -175,7 +177,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                 setGovernmentFees(activeFees);
             }
         } catch (e) {
-            console.error("Failed to load tax engine logic", e);
+            console.error(i18n.catalog["text_08041689c0be"], e);
         }
     }, []);
 
@@ -197,7 +199,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                     setCurrentPage(page);
                 }
             } catch {
-                showAlert("alert-container", "خطأ في تحميل السجل", "error");
+                showAlert("alert-container", i18n.catalog["text_7df68dc366ee"], "error");
             } finally {
                 setIsLoading(false);
             }
@@ -241,7 +243,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                     if (vatSetting) setVatRate(parseFloat(vatSetting.setting_value) / 100);
                 }
             } catch (e) {
-                console.error("Failed to load VAT rate", e);
+                console.error(i18n.catalog["text_23c311930343"], e);
             }
 
             await Promise.all([loadServices(1), loadInvoices(), loadFees()]);
@@ -313,20 +315,20 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
 
     const addItemToInvoice = () => {
         if (!selectedService) {
-            showAlert("alert-container", "يرجى اختيار خدمة أولاً", "error");
+            showAlert("alert-container", i18n.catalog["text_d245d6c7b964"], "error");
             return;
         }
         const qty = parseNumber(quantity);
         const price = parseNumber(unitPrice);
         if (qty <= 0) {
-            showAlert("alert-container", "الكمية يجب أن تكون أكبر من صفر", "error");
+            showAlert("alert-container", i18n.catalog["text_7b4573a8bc5e"], "error");
             return;
         }
 
         const newItem: InvoiceItem = {
             service_id: selectedService.id,
             service_name: selectedService.name,
-            display_name: `${selectedService.name} (${qty})`,
+            display_name: catalogText(i18n, "text_e11f55b693d8", { value0: selectedService.name, value1: qty }),
             quantity: qty,
             unit_price: price,
             subtotal: qty * price,
@@ -344,11 +346,11 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
 
     const finishInvoice = async () => {
         if (invoiceItems.length === 0) {
-            showAlert("alert-container", "الفاتورة فارغة!", "error");
+            showAlert("alert-container", i18n.catalog["text_8e74806a7149"], "error");
             return;
         }
         if (!isCash && !selectedCustomer) {
-            showAlert("alert-container", "يرجى اختيار العميل للفاتورة الآجلة", "error");
+            showAlert("alert-container", i18n.catalog["text_252e91e07703"], "error");
             return;
         }
 
@@ -385,7 +387,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
             if (response.success || response.id) {
                 showAlert(
                     "alert-container",
-                    `تمت العملية بنجاح (الإجمالي: ${formatCurrency(finalTotal)})`,
+                    catalogText(i18n, "text_5c8f28364dae", { value0: formatCurrency(finalTotal) }),
                     "success"
                 );
                 setInvoiceItems([]);
@@ -398,19 +400,19 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                 generateInvoiceNumber();
                 await loadInvoices();
             } else {
-                showAlert("alert-container", response.message || "فشل حفظ الفاتورة", "error");
+                showAlert("alert-container", response.message || i18n.catalog["text_ab1f43db92fa"], "error");
                 if (
                     response.message?.includes("UNIQUE") ||
                     response.message?.includes("exists") ||
-                    response.message?.includes("موجود")
+                    response.message?.includes(i18n.catalog["text_8d8ddd2defe0"])
                 ) {
                     generateInvoiceNumber();
                 }
             }
         } catch (error) {
-            const msg = error instanceof Error ? error.message : "خطأ غير معروف";
-            showAlert("alert-container", "خطأ: " + msg, "error");
-            if (msg.includes("UNIQUE") || msg.includes("exists") || msg.includes("موجود")) {
+            const msg = error instanceof Error ? error.message : i18n.catalog["text_a80b88135eb4"];
+            showAlert("alert-container", i18n.catalog["text_4c4968aba347"] + msg, "error");
+            if (msg.includes("UNIQUE") || msg.includes("exists") || msg.includes(i18n.catalog["text_8d8ddd2defe0"])) {
                 generateInvoiceNumber();
             }
         }
@@ -426,7 +428,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                 setViewDialog(true);
             }
         } catch {
-            showAlert("alert-container", "خطأ في جلب التفاصيل", "error");
+            showAlert("alert-container", i18n.catalog["text_740c5c55bbc3"], "error");
         }
     };
 
@@ -443,13 +445,13 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                 { method: "DELETE" }
             );
             if (response.success) {
-                showAlert("alert-container", "تم الحذف بنجاح", "success");
+                showAlert("alert-container", i18n.catalog["text_12b6e3813b40"], "success");
                 await loadInvoices();
             } else {
-                showAlert("alert-container", response.message || "فشل الحذف", "error");
+                showAlert("alert-container", response.message || i18n.catalog["text_f46bfc521612"], "error");
             }
         } catch {
-            showAlert("alert-container", "خطأ في الحذف", "error");
+            showAlert("alert-container", i18n.catalog["text_3bdb299872fb"], "error");
         } finally {
             setConfirmDialog(false);
             setDeleteInvoiceId(null);
@@ -490,7 +492,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
 
     const openReturnDialog = async () => {
         if (selectedReturnItems.length === 0) {
-            showToast("يرجى تحديد عناصر للإرجاع أولاً", "warning");
+            showToast(i18n.catalog["text_54f0b0947619"], "warning");
             return;
         }
         const uniqueInvoiceIds = Array.from(new Set(selectedReturnItems.map((i) => i.invoiceId)));
@@ -508,7 +510,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                 );
                 setInvoicesMap(newMap);
             } catch {
-                showToast("فشل تحميل بيانات الفواتير", "error");
+                showToast(i18n.catalog["text_f154fa31b161"], "error");
             }
         }
         setReturnDialog(true);
@@ -521,9 +523,9 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                 method: "POST",
                 body: JSON.stringify(returnData),
             });
-            if (!response.success) throw new Error(response.message || "فشل تسجيل المرتجع");
+            if (!response.success) throw new Error(response.message || i18n.catalog["text_311143511f9e"]);
         }
-        showToast("تم تسجيل المرتجع بنجاح", "success");
+        showToast(i18n.catalog["text_23e6f8991b99"], "success");
     };
 
     /* ──────────────────────────────────────────
@@ -531,35 +533,35 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
     ────────────────────────────────────────── */
 
     const currentInvoiceColumns: Column<InvoiceItem>[] = [
-        { key: "display_name", header: "الخدمة", dataLabel: "الخدمة" },
+        { key: "display_name", header: i18n.catalog["text_728e6087980c"], dataLabel: i18n.catalog["text_728e6087980c"] },
         {
             key: "quantity",
-            header: "الكمية",
-            dataLabel: "الكمية",
+            header: i18n.catalog["text_935e21853946"],
+            dataLabel: i18n.catalog["text_935e21853946"],
             render: (item) => `${item.quantity}`,
         },
         {
             key: "unit_price",
-            header: "السعر",
-            dataLabel: "السعر",
+            header: i18n.catalog["text_259862e8b313"],
+            dataLabel: i18n.catalog["text_259862e8b313"],
             render: (item) => formatCurrency(item.unit_price),
         },
         {
             key: "subtotal",
-            header: "المجموع",
-            dataLabel: "المجموع",
+            header: i18n.catalog["text_9c33cdc71a89"],
+            dataLabel: i18n.catalog["text_9c33cdc71a89"],
             render: (item) => formatCurrency(item.subtotal),
         },
         {
             key: "actions",
             header: "",
-            dataLabel: "الإجراءات",
+            dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (_, index) => (
                 <ActionButtons
                 actions={[
                     {
                     icon: "trash",
-                    title: "حذف",
+                    title: i18n.catalog["text_59ca629220a6"],
                     variant: "delete",
                     onClick: () => removeInvoiceItem(index)
                     }
@@ -572,14 +574,14 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
     const invoiceColumns: InvoiceTableColumn<Invoice>[] = [
         {
             key: "invoice_number",
-            header: "رقم الفاتورة",
-            dataLabel: "رقم الفاتورة",
+            header: i18n.catalog["text_b6e71278be04"],
+            dataLabel: i18n.catalog["text_b6e71278be04"],
             render: (item) => <strong>{item.invoice_number}</strong>,
         },
         {
             key: "total_amount",
-            header: "المبلغ الإجمالي",
-            dataLabel: "المبلغ الإجمالي",
+            header: i18n.catalog["text_1f4a626bcba2"],
+            dataLabel: i18n.catalog["text_1f4a626bcba2"],
             render: (item) => formatCurrency(item.total_amount),
         },
         ...(isCash
@@ -587,8 +589,8 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
             : [
                 {
                     key: "amount_paid" as keyof Invoice,
-                    header: "المدفوع / المتبقي",
-                    dataLabel: "المدفوع / المتبقي",
+                    header: i18n.catalog["text_904a5d3af9fd"],
+                    dataLabel: i18n.catalog["text_904a5d3af9fd"],
                     render: (item: Invoice) => (
                         <div style={{ fontSize: "0.85rem" }}>
                             <span className="text-success">{formatCurrency(item.amount_paid || 0)}</span> /{" "}
@@ -600,26 +602,26 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                 } as InvoiceTableColumn<Invoice>,
                 {
                     key: "customer_name" as keyof Invoice,
-                    header: "العميل",
+                    header: i18n.catalog["text_a042411e90be"],
                     render: (item: Invoice) => item.customer_name || "—",
                 } as InvoiceTableColumn<Invoice>,
             ]),
         {
             key: "created_at",
-            header: "التاريخ والوقت",
-            dataLabel: "التاريخ والوقت",
+            header: i18n.catalog["text_78e9c561195c"],
+            dataLabel: i18n.catalog["text_78e9c561195c"],
             render: (item) => formatDateTime(item.created_at),
         },
         {
             key: "actions",
-            header: "الإجراءات",
-            dataLabel: "الإجراءات",
+            header: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (item) => (
                 <ActionButtons
                     actions={[
                     {
                         icon: "view",
-                        title: "عرض",
+                        title: i18n.catalog["text_3824e18ca83b"],
                         variant: "view",
                         onClick: () => viewInvoice(item.id)
                     }
@@ -644,9 +646,9 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                         /* Cash mode: single card */
                         <div className="sales-card compact animate-slide">
                             <div className="card-header-flex">
-                                <h3>إضافة خدمات</h3>
+                                <h3>{i18n.catalog["text_092b3dafaaa0"]}</h3>
                                 <div className="invoice-badge">
-                                    <span className="stat-label">رقم الفاتورة:</span>
+                                    <span className="stat-label">{i18n.catalog["text_2cd4e7c1b5fb"]}</span>
                                     <input
                                         type="text"
                                         id="invoice-number"
@@ -664,13 +666,13 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                 }}
                             >
                                 <div className="form-group">
-                                    <label htmlFor="service-select">اختر الخدمة *</label>
+                                    <label htmlFor="service-select">{i18n.catalog["text_d8c64c9940ea"]}</label>
                                     <SearchableSelect
                                         id="service-select"
                                         options={serviceOptions}
                                         value={selectedService?.id || null}
                                         onChange={handleServiceSelect}
-                                        placeholder="ابحث عن خدمة..."
+                                        placeholder={i18n.catalog["text_236fc3420e26"]}
                                         required
                                     />
                                 </div>
@@ -679,7 +681,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                     <div className="form-group">
                                         <NumberInput
                                             id="item-quantity"
-                                            label="الكمية *"
+                                            label={i18n.catalog["text_82ed8e968688"]}
                                             min={1}
                                             value={quantity}
                                             onChange={(val) => setQuantity(val)}
@@ -689,7 +691,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                     <div className="form-group">
                                         <NumberInput
                                             id="item-unit-price"
-                                            label="سعر الوحدة *"
+                                            label={i18n.catalog["text_a412620a1341"]}
                                             min={0}
                                             step={0.01}
                                             value={unitPrice}
@@ -701,7 +703,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
 
                                 <div className="summary-stat-box">
                                     <div className="stat-item">
-                                        <span className="stat-label">المجموع الفرعي</span>
+                                        <span className="stat-label">{i18n.catalog["text_4793cceb7aa3"]}</span>
                                         <span id="item-subtotal" className="stat-value highlight">
                                             {formatCurrency(subtotal)}
                                         </span>
@@ -712,8 +714,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                         onClick={addItemToInvoice}
                                         data-icon="plus"
                                     >
-                                        إضافة للفاتورة
-                                    </button>
+                                        {i18n.catalog["text_c40f2ef41888"]}</button>
                                 </div>
                             </form>
                         </div>
@@ -722,9 +723,9 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                         <div className="side-panel">
                             <div className="sales-card compact animate-slide">
                                 <div className="card-header-flex">
-                                    <h3>إضافة خدمات</h3>
+                                    <h3>{i18n.catalog["text_092b3dafaaa0"]}</h3>
                                     <div className="invoice-badge">
-                                        <span className="stat-label">رقم الفاتورة:</span>
+                                        <span className="stat-label">{i18n.catalog["text_2cd4e7c1b5fb"]}</span>
                                         <input
                                             type="text"
                                             id="invoice-number"
@@ -743,13 +744,13 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                     }}
                                 >
                                     <div className="form-group">
-                                        <label htmlFor="service-select">اختر الخدمة *</label>
+                                        <label htmlFor="service-select">{i18n.catalog["text_d8c64c9940ea"]}</label>
                                         <SearchableSelect
                                             id="service-select"
                                             options={serviceOptions}
                                             value={selectedService?.id || null}
                                             onChange={handleServiceSelect}
-                                            placeholder="ابحث عن خدمة..."
+                                            placeholder={i18n.catalog["text_236fc3420e26"]}
                                             required
                                         />
                                     </div>
@@ -758,7 +759,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                         <div className="form-group">
                                             <NumberInput
                                                 id="item-quantity"
-                                                label="الكمية *"
+                                                label={i18n.catalog["text_82ed8e968688"]}
                                                 min={1}
                                                 value={quantity}
                                                 onChange={(val) => setQuantity(val)}
@@ -768,7 +769,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                         <div className="form-group">
                                             <NumberInput
                                                 id="item-unit-price"
-                                                label="سعر الوحدة *"
+                                                label={i18n.catalog["text_a412620a1341"]}
                                                 min={0}
                                                 step={0.01}
                                                 value={unitPrice}
@@ -780,7 +781,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
 
                                     <div className="summary-stat-box">
                                         <div className="stat-item">
-                                            <span className="stat-label">المجموع الفرعي</span>
+                                            <span className="stat-label">{i18n.catalog["text_4793cceb7aa3"]}</span>
                                             <span id="item-subtotal" className="stat-value highlight">
                                                 {formatCurrency(subtotal)}
                                             </span>
@@ -791,8 +792,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                             onClick={addItemToInvoice}
                                             data-icon="plus"
                                         >
-                                            إضافة
-                                        </button>
+                                            {i18n.catalog["text_d52453ac627d"]}</button>
                                     </div>
                                 </form>
                             </div>
@@ -802,13 +802,13 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                     {/* ── Right panel: Items + Summary ── */}
                     {isCash ? (
                         <div className="sales-card animate-slide" style={{ animationDelay: "0.1s" }}>
-                            <h3>عناصر الفاتورة الحالية</h3>
+                            <h3>{i18n.catalog["text_0dd962e486c9"]}</h3>
                             <div className="current-invoice-table" style={{ width: "100%", overflowX: "auto" }}>
                                 <Table
                                     columns={currentInvoiceColumns}
                                     data={invoiceItems}
                                     keyExtractor={(_, index) => index}
-                                    emptyMessage="لا توجد عناصر مضافة"
+                                    emptyMessage={i18n.catalog["text_9172081b079d"]}
                                 />
                             </div>
 
@@ -817,20 +817,20 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                     <div className="form-group" style={{ marginBottom: 0, flex: "1 1 200px", minWidth: "0" }}>
                                         <NumberInput
                                             id="invoice-discount"
-                                            label="قيمة الخصم"
+                                            label={i18n.catalog["text_9820f0061954"]}
                                             value={discountValue}
                                             onChange={(val) => setDiscountValue(val)}
                                             min={0}
-                                            placeholder="0.00"
+                                            placeholder={i18n.catalog["text_561b2814d3c0"]}
                                         />
                                     </div>
                                     <SegmentedToggle
-                                        label="نوع التخفيض"
+                                        label={i18n.catalog["text_3bf1c1fc67c1"]}
                                         value={discountType}
                                         onChange={(val) => setDiscountType(val as "fixed" | "percent")}
                                         options={[
-                                            { value: "fixed", label: "مبلغ" },
-                                            { value: "percent", label: "نسبة" },
+                                            { value: "fixed", label: i18n.catalog["text_30de87b72026"] },
+                                            { value: "percent", label: i18n.catalog["text_d75c4c7090fc"] },
                                         ]}
                                     />
                                 </div>
@@ -843,7 +843,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                             paddingRight: "1.5rem",
                                         }}
                                     >
-                                        <span className="stat-label">إجمالي الخصم</span>
+                                        <span className="stat-label">{i18n.catalog["text_8b9ac0222699"]}</span>
                                         <span className="stat-value text-danger" style={{ fontSize: "1.1rem" }}>
                                             -{formatCurrency(calculatedDiscount())}
                                         </span>
@@ -857,29 +857,29 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                         <div className="side-panel" style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                             {/* Customer card */}
                             <div className="sales-card compact animate-slide">
-                                <h3>بيانات العميل</h3>
+                                <h3>{i18n.catalog["text_8d098aea9a44"]}</h3>
                                 <div className="form-row" style={{ marginTop: "1rem" }}>
                                     <div className="form-group">
-                                        <label htmlFor="customer-select">اختر العميل *</label>
+                                        <label htmlFor="customer-select">{i18n.catalog["text_9f9599729768"]}</label>
                                         <SearchableSelect
                                             id="customer-select"
                                             options={customerOptions}
                                             value={selectedCustomer?.id || null}
                                             onChange={handleCustomerSelect}
                                             onSearch={(term) => setCustomerSearchTerm(term)}
-                                            placeholder="ابحث عن عميل..."
+                                            placeholder={i18n.catalog["text_96b809b02ccc"]}
                                             required
                                             noResultsText={
                                                 customerSearchTerm.length < 2
-                                                    ? "اكتب حرفين على الأقل للبحث"
-                                                    : "لا يوجد عملاء"
+                                                    ? i18n.catalog["text_d34f5f1ea138"]
+                                                    : i18n.catalog["text_1027871af7c9"]
                                             }
                                         />
                                     </div>
                                     <div className="form-group">
                                         <NumberInput
                                             id="amount-paid"
-                                            label="المبلغ المدفوع (نقدًا)"
+                                            label={i18n.catalog["text_623e1883b3d2"]}
                                             min={0}
                                             step={0.01}
                                             value={amountPaid}
@@ -888,19 +888,18 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                     </div>
                                 </div>
                                 <small style={{ color: "var(--text-light)", display: "block" }}>
-                                    المبلغ الذي سيسدده العميل حالياً من قيمة الفاتورة
-                                </small>
+                                    {i18n.catalog["text_528b8f309bc0"]}</small>
                             </div>
 
                             {/* Invoice items + summary */}
                             <div className="sales-card animate-slide" style={{ animationDelay: "0.1s" }}>
-                                <h3>عناصر الفاتورة الحالية</h3>
+                                <h3>{i18n.catalog["text_0dd962e486c9"]}</h3>
                                 <div className="current-invoice-table" style={{ width: "100%", overflowX: "auto" }}>
                                     <Table
                                         columns={currentInvoiceColumns}
                                         data={invoiceItems}
                                         keyExtractor={(_, index) => index}
-                                        emptyMessage="لا توجد عناصر مضافة"
+                                        emptyMessage={i18n.catalog["text_9172081b079d"]}
                                     />
                                 </div>
 
@@ -912,20 +911,20 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                         >
                                             <NumberInput
                                                 id="invoice-discount"
-                                                label="قيمة الخصم"
+                                                label={i18n.catalog["text_9820f0061954"]}
                                                 value={discountValue}
                                                 onChange={(val) => setDiscountValue(val)}
                                                 min={0}
-                                                placeholder="0.00"
+                                                placeholder={i18n.catalog["text_561b2814d3c0"]}
                                             />
                                         </div>
                                         <SegmentedToggle
-                                            label="نوع التخفيض"
+                                            label={i18n.catalog["text_3bf1c1fc67c1"]}
                                             value={discountType}
                                             onChange={(val) => setDiscountType(val as "fixed" | "percent")}
                                             options={[
-                                                { value: "fixed", label: "مبلغ" },
-                                                { value: "percent", label: "نسبة" },
+                                                { value: "fixed", label: i18n.catalog["text_30de87b72026"] },
+                                                { value: "percent", label: i18n.catalog["text_d75c4c7090fc"] },
                                             ]}
                                         />
                                     </div>
@@ -938,7 +937,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                                 paddingRight: "1.5rem",
                                             }}
                                         >
-                                            <span className="stat-label">إجمالي الخصم</span>
+                                            <span className="stat-label">{i18n.catalog["text_8b9ac0222699"]}</span>
                                             <span className="stat-value text-danger" style={{ fontSize: "1.1rem" }}>
                                                 -{formatCurrency(calculatedDiscount())}
                                             </span>
@@ -954,14 +953,14 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
 
                 {/* ── Bottom: Invoice History ── */}
                 <div className="sales-card animate-slide" style={{ animationDelay: "0.2s" }}>
-                    <h3>سجل الفواتير السابقة</h3>
+                    <h3>{i18n.catalog["text_d4b083328f95"]}</h3>
                     <div className="table-container">
                         <div className="table-wrapper">
                             <SelectableInvoiceTable
                                 invoices={invoices}
                                 columns={invoiceColumns}
                                 keyExtractor={(item) => item.id}
-                                emptyMessage="لا توجد فواتير سابقة"
+                                emptyMessage={i18n.catalog["text_b20f10f0038b"]}
                                 isLoading={isLoading}
                                 pagination={{
                                     currentPage,
@@ -993,7 +992,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
             />
 
             {/* ── View Invoice Dialog ── */}
-            <Dialog isOpen={viewDialog} onClose={() => setViewDialog(false)} title="تفاصيل الفاتورة">
+            <Dialog isOpen={viewDialog} onClose={() => setViewDialog(false)} title={i18n.catalog["text_e603e7637507"]}>
                 {selectedInvoice && (
                     <div id="view-dialog-body">
                         <div
@@ -1006,18 +1005,18 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                         >
                             <div className="form-row">
                                 <div className="summary-stat">
-                                    <span className="stat-label">رقم الفاتورة</span>
+                                    <span className="stat-label">{i18n.catalog["text_b6e71278be04"]}</span>
                                     <span className="stat-value">{selectedInvoice.invoice_number}</span>
                                 </div>
                                 <div className="summary-stat">
-                                    <span className="stat-label">التاريخ</span>
+                                    <span className="stat-label">{i18n.catalog["text_d90c384199ac"]}</span>
                                     <span className="stat-value">{formatDateTime(selectedInvoice.created_at)}</span>
                                 </div>
                                 <div className="summary-stat">
-                                    <span className="stat-label">نوع الدفع</span>
+                                    <span className="stat-label">{i18n.catalog["text_d31f653fcdaf"]}</span>
                                     <span className="stat-value">
                                         <span className={`badge ${isCash ? "badge-success" : "badge-warning"}`}>
-                                            {isCash ? "نقدي" : "آجل (ذمم)"}
+                                            {isCash ? i18n.catalog["text_1beb05a45173"] : i18n.catalog["text_70122ff036ec"]}
                                         </span>
                                     </span>
                                 </div>
@@ -1034,12 +1033,12 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                     }}
                                 >
                                     <div className="summary-stat">
-                                        <span className="stat-label">العميل</span>
+                                        <span className="stat-label">{i18n.catalog["text_a042411e90be"]}</span>
                                         <span className="stat-value">{selectedInvoice.customer_name}</span>
                                     </div>
                                     {selectedInvoice.customer_phone && (
                                         <div className="summary-stat">
-                                            <span className="stat-label">الهاتف</span>
+                                            <span className="stat-label">{i18n.catalog["text_94b59a5125fb"]}</span>
                                             <span className="stat-value">{selectedInvoice.customer_phone}</span>
                                         </div>
                                     )}
@@ -1049,13 +1048,13 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                             {!isCash && (
                                 <div className="form-row" style={{ marginTop: "1rem" }}>
                                     <div className="summary-stat">
-                                        <span className="stat-label">المبلغ المدفوع</span>
+                                        <span className="stat-label">{i18n.catalog["text_558ab4456b6f"]}</span>
                                         <span className="stat-value" style={{ color: "var(--success-color)" }}>
                                             {formatCurrency(selectedInvoice.amount_paid || 0)}
                                         </span>
                                     </div>
                                     <div className="summary-stat">
-                                        <span className="stat-label">المبلغ المتبقي</span>
+                                        <span className="stat-label">{i18n.catalog["text_a707de32d885"]}</span>
                                         <span
                                             className="stat-value"
                                             style={{ color: "var(--danger-color)", fontWeight: 700 }}
@@ -1070,7 +1069,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                         </div>
 
                         <div className="invoice-items-minimal">
-                            <h4 style={{ marginBottom: "1rem" }}>الخدمات المباعة:</h4>
+                            <h4 style={{ marginBottom: "1rem" }}>{i18n.catalog["text_2d4152957d34"]}</h4>
                             {selectedInvoice.items?.map((item, index) => (
                                 <div
                                     key={index}
@@ -1099,7 +1098,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                             className="item-meta-pkg"
                                             style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}
                                         >
-                                            سعر الوحدة: {formatCurrency(item.unit_price)}
+                                            {i18n.catalog["text_91f3a71d4d14"]}{formatCurrency(item.unit_price)}
                                             {item.returned_quantity && item.returned_quantity > 0 && (
                                                 <span
                                                     style={{
@@ -1111,8 +1110,8 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                                     }}
                                                 >
                                                     {item.quantity === 0
-                                                        ? "(مسترجع بالكامل)"
-                                                        : `(مسترجع: ${item.returned_quantity})`}
+                                                        ? i18n.catalog["text_4af7488d2163"]
+                                                        : catalogText(i18n, "text_1d6328b75bfd", { value0: item.returned_quantity })}
                                                 </span>
                                             )}
                                         </span>
@@ -1130,7 +1129,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                                         >
                                             {item.quantity}{" "}
                                             {item.quantity !== item.original_quantity &&
-                                                `(من ${item.original_quantity})`}
+                                                catalogText(i18n, "text_2d9ad16d909d", { value0: item.original_quantity })}
                                         </span>
                                     </div>
                                 </div>
@@ -1143,16 +1142,14 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                         >
                             <div className="summary-stat">
                                 <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>
-                                    عدد الأصناف
-                                </span>
+                                    {i18n.catalog["text_f6f66d9545bc"]}</span>
                                 <span className="stat-value" style={{ color: "white", fontSize: "1.2rem" }}>
                                     {selectedInvoice.item_count || selectedInvoice.items?.length || 0}
                                 </span>
                             </div>
                             <div className="summary-stat">
                                 <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>
-                                    المجموع الفرعي
-                                </span>
+                                    {i18n.catalog["text_4793cceb7aa3"]}</span>
                                 <span className="stat-value" style={{ color: "white", fontSize: "1.2rem" }}>
                                     {formatCurrency(selectedInvoice.subtotal || 0)}
                                 </span>
@@ -1160,8 +1157,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                             {selectedInvoice.discount_amount && selectedInvoice.discount_amount > 0 && (
                                 <div className="summary-stat">
                                     <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>
-                                        الخصم
-                                    </span>
+                                        {i18n.catalog["text_b593a6457673"]}</span>
                                     <span className="stat-value" style={{ color: "#ffccd5", fontSize: "1.2rem" }}>
                                         -{formatCurrency(selectedInvoice.discount_amount)}
                                     </span>
@@ -1169,8 +1165,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                             )}
                             <div className="summary-stat">
                                 <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>
-                                    الإجمالي
-                                </span>
+                                    {i18n.catalog["text_baed6e999960"]}</span>
                                 <span className="stat-value highlight" style={{ color: "white" }}>
                                     {formatCurrency(selectedInvoice.total_amount)}
                                 </span>
@@ -1188,9 +1183,9 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                     setDeleteInvoiceId(null);
                 }}
                 onConfirm={deleteInvoice}
-                title="تأكيد الحذف"
-                message="هل أنت متأكد من حذف هذه الفاتورة؟"
-                confirmText="نعم، متابعة"
+                title={i18n.catalog["text_5f9cb54dc136"]}
+                message={i18n.catalog["text_88d81ac2be07"]}
+                confirmText={i18n.catalog["text_f900e96c0235"]}
                 confirmVariant="primary"
             />
         </MainLayout>
@@ -1204,7 +1199,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
         return (
             <div className="sales-summary-bar">
                 <div className="summary-stat">
-                    <span className="stat-label">مجموع الخدمات</span>
+                    <span className="stat-label">{i18n.catalog["text_a0676c3ecd8b"]}</span>
                     <span className="stat-value">{formatCurrency(baseItemsTotal)}</span>
                 </div>
 
@@ -1218,7 +1213,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                     if (feeAmount <= 0) return null;
                     return (
                         <div className="summary-stat" key={fee.id}>
-                            <span className="stat-label">{fee.name} (التزام)</span>
+                            <span className="stat-label">{fee.name} {i18n.catalog["text_fe22a7c4900c"]}</span>
                             <span className="stat-value">{formatCurrency(feeAmount)}</span>
                         </div>
                     );
@@ -1227,14 +1222,14 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                 {totalVAT > 0 && (
                     <div className="summary-stat">
                         <span className="stat-label">
-                            ضريبة القيمة المضافة ({(vatRate * 100).toFixed(0)}%)
+                            {i18n.catalog["text_f254555f1f08"]}{(vatRate * 100).toFixed(0)}%)
                         </span>
                         <span className="stat-value">{formatCurrency(totalVAT)}</span>
                     </div>
                 )}
 
                 <div className="summary-stat">
-                    <span className="stat-label">{isCash ? "إجمالي الفاتورة" : "المبلغ الإجمالي"}</span>
+                    <span className="stat-label">{isCash ? i18n.catalog["text_50a90c019154"] : i18n.catalog["text_1f4a626bcba2"]}</span>
                     <span id="total-amount" className="stat-value highlight">
                         {formatCurrency(finalTotal)}
                     </span>
@@ -1248,7 +1243,7 @@ export function ServiceSales({ mode }: ServiceSalesPageProps) {
                     data-icon="check"
                     disabled={invoiceItems.length === 0}
                 >
-                    {isCash ? "إنهاء الفاتورة" : "حفظ الفاتورة"}
+                    {isCash ? i18n.catalog["text_f663f7a034fa"] : i18n.catalog["text_06873ff74693"]}
                 </button>
             </div>
         );

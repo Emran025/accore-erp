@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { fetchAPI } from '@/lib/api';
@@ -59,7 +60,7 @@ export const useOperatingContextStore = create<OperatingContextState>()(
           );
           if (!response.success) {
             set({
-              error: response.message || 'Unable to load operating readiness.',
+              error: response.message || catalogMessage("text_e7b5e0494505"),
               isLoading: false,
             });
             return null;
@@ -68,8 +69,8 @@ export const useOperatingContextStore = create<OperatingContextState>()(
           set({ readiness, isLoading: false });
           return readiness;
         } catch (error) {
-          console.error('Unable to load operating readiness.', error);
-          set({ error: 'Unable to load operating readiness.', isLoading: false });
+          console.error(catalogMessage("text_e7b5e0494505"), error);
+          set({ error: catalogMessage("text_e7b5e0494505"), isLoading: false });
           return null;
         }
       },
@@ -85,7 +86,7 @@ export const useOperatingContextStore = create<OperatingContextState>()(
           await useOperatingContextStore.getState().loadReadiness();
           return true;
         } catch (error) {
-          console.error('Unable to select operating context.', error);
+          console.error(catalogMessage("text_6ca363805854"), error);
           return false;
         }
       },

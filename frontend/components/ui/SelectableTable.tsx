@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogMessage } from "@/lib/i18n";
 import { ReactNode, useState, useRef, useCallback } from "react";
 import { Icon } from "@/lib/icons";
 import { Checkbox } from "./checkbox";
@@ -39,9 +40,10 @@ export function SelectableTable<T>({
   onRowLongPress,
   onRowClick,
   isLoading = false,
-  emptyMessage = "لا توجد بيانات",
+  emptyMessage = catalogMessage("text_d812e8bbc06f"),
   isRowSelectable,
 }: SelectableTableProps<T>) {
+    const { t: i18n } = useI18n();
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const pressStartPos = useRef<{ x: number; y: number } | null>(null);
 
@@ -115,7 +117,7 @@ export function SelectableTable<T>({
       <div className="table-container">
         <div className="empty-state" style={{ textAlign: "center", padding: "1rem" }}>
           <div className="loading-spinner"></div>
-          <div>جاري التحميل...</div>
+          <div>{i18n.catalog["text_ceac78d7f5d3"]}</div>
         </div>
       </div>
     );

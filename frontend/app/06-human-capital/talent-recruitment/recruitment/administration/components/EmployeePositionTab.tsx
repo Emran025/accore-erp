@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { Position } from "@/types";
 import { PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Column, Dialog, SearchableSelect, showToast, Table } from "@/components/ui";
@@ -23,6 +24,7 @@ interface EmployeeWithPosition {
 }
 
 export function EmployeePositionTab() {
+    const { t: i18n } = useI18n();
     const { canAccess } = useAuthStore();
     const { allEmployees, loadAllEmployees } = useEmployeeStore();
     const [positions, setPositions] = useState<Position[]>([]);
@@ -51,7 +53,7 @@ export function EmployeePositionTab() {
             const empData = (empRes as any).data || (empRes as any).employees || [];
             setEmployeesWithPositions(empData);
         } catch {
-            console.error("Failed to load data");
+            console.error(i18n.catalog["text_afa69443bb93"]);
         } finally {
             setIsLoading(false);
         }
@@ -59,7 +61,7 @@ export function EmployeePositionTab() {
 
     const handleAssign = async () => {
         if (!selectedEmployeeId || !selectedPositionId) {
-            showToast("يرجى اختيار كل من الموظف والمنصب", "error");
+            showToast(i18n.catalog["text_bd9102761c00"], "error");
             return;
         }
         try {
@@ -70,26 +72,26 @@ export function EmployeePositionTab() {
                     position_id: Number(selectedPositionId),
                 }),
             });
-            showToast("تم تعيين الموظف للمنصب بنجاح - تم توريث الدور والصلاحيات تلقائياً", "success");
+            showToast(i18n.catalog["text_379dde10a8f5"], "success");
             setShowAssign(false);
             setSelectedEmployeeId("");
             setSelectedPositionId("");
             loadData();
         } catch (e: any) {
-            showToast(e?.message || "فشل تعيين الموظف", "error");
+            showToast(e?.message || i18n.catalog["text_cb7fc15b04df"], "error");
         }
     };
 
     const handleUnassign = async (employeeId: number) => {
-        if (!confirm("هل أنت متأكد من إلغاء تعيين هذا الموظف من المنصب؟")) return;
+        if (!confirm(i18n.catalog["text_b4acff89b80f"])) return;
         try {
             await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.ADMINISTRATION.POSITIONS.UNASSIGN(employeeId), {
                 method: "DELETE",
             });
-            showToast("تم إلغاء تعيين الموظف", "success");
+            showToast(i18n.catalog["text_98c956850b7a"], "success");
             loadData();
         } catch {
-            showToast("فشل إلغاء التعيين", "error");
+            showToast(i18n.catalog["text_b9c13cce8559"], "error");
         }
     };
 
@@ -109,23 +111,23 @@ export function EmployeePositionTab() {
     const columns: Column<EmployeeWithPosition>[] = [
         {
             key: "employee_code",
-            header: "كود الموظف",
-            dataLabel: "الكود",
+            header: i18n.catalog["text_5a5681b59ed0"],
+            dataLabel: i18n.catalog["text_e28ef005ab68"],
             render: (item) => (
                 <span style={{ fontFamily: "monospace", fontWeight: 600 }}>{item.employee_code}</span>
             ),
         },
-        { key: "full_name", header: "اسم الموظف", dataLabel: "الاسم" },
+        { key: "full_name", header: i18n.catalog["text_394f067f92ff"], dataLabel: i18n.catalog["text_52ab09847cf8"] },
         {
             key: "department",
-            header: "القسم",
-            dataLabel: "القسم",
-            render: (item) => <span>{item.department?.name_ar || "غير محدد"}</span>,
+            header: i18n.catalog["text_0771c3ff9336"],
+            dataLabel: i18n.catalog["text_0771c3ff9336"],
+            render: (item) => <span>{item.department?.name_ar || i18n.catalog["text_5a0374f3ff5a"]}</span>,
         },
         {
             key: "position",
-            header: "المنصب",
-            dataLabel: "المنصب",
+            header: i18n.catalog["text_66e3bc906d4b"],
+            dataLabel: i18n.catalog["text_66e3bc906d4b"],
             render: (item) =>
                 item.position ? (
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
@@ -137,13 +139,13 @@ export function EmployeePositionTab() {
                         </span>
                     </div>
                 ) : (
-                    <span className="badge badge-warning">غير معيّن</span>
+                    <span className="badge badge-warning">{i18n.catalog["text_3eed0035cf5d"]}</span>
                 ),
         },
         {
             key: "role",
-            header: "الدور الموروث",
-            dataLabel: "الدور",
+            header: i18n.catalog["text_9897db2426d7"],
+            dataLabel: i18n.catalog["text_de69d94fee12"],
             render: (item) =>
                 item.position?.role ? (
                     <span className="badge badge-success" style={{ fontSize: "0.8rem" }}>
@@ -159,8 +161,8 @@ export function EmployeePositionTab() {
         },
         {
             key: "job_title",
-            header: "المسمى الوظيفي",
-            dataLabel: "المسمى",
+            header: i18n.catalog["text_de98bd734462"],
+            dataLabel: i18n.catalog["text_39adfb54212e"],
             render: (item) => (
                 <span>
                     {item.position?.job_title?.title_ar || item.job_title?.title_ar || "—"}
@@ -169,8 +171,8 @@ export function EmployeePositionTab() {
         },
         {
             key: "id",
-            header: "الإجراءات",
-            dataLabel: "الإجراءات",
+            header: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (item) => (
                 <ActionButtons
                     actions={[
@@ -178,7 +180,7 @@ export function EmployeePositionTab() {
                             ? [
                                 {
                                     icon: "link" as const,
-                                    title: "تعيين لمنصب",
+                                    title: i18n.catalog["text_63ede7f49d05"],
                                     variant: "view" as const,
                                     onClick: () => {
                                         setSelectedEmployeeId(item.id.toString());
@@ -192,7 +194,7 @@ export function EmployeePositionTab() {
                             ? [
                                 {
                                     icon: "unlink" as const,
-                                    title: "إلغاء التعيين",
+                                    title: i18n.catalog["text_422b5ac73e82"],
                                     variant: "delete" as const,
                                     onClick: () => handleUnassign(item.id),
                                 },
@@ -212,24 +214,24 @@ export function EmployeePositionTab() {
                     className={`btn btn-sm ${filter === "all" ? "btn-primary" : "btn-ghost"}`}
                     onClick={() => setFilter("all")}
                 >
-                    الكل ({employeesWithPositions.length})
+                    {i18n.catalog["text_62ea41744d9a"]}{employeesWithPositions.length})
                 </button>
                 <button
                     className={`btn btn-sm ${filter === "assigned" ? "btn-primary" : "btn-ghost"}`}
                     onClick={() => setFilter("assigned")}
                 >
-                    {getIcon("check-circle")} معيّنون ({assignedCount})
+                    {getIcon("check-circle")} {i18n.catalog["text_90ece19ba0f2"]}{assignedCount})
                 </button>
                 <button
                     className={`btn btn-sm ${filter === "unassigned" ? "btn-primary" : "btn-ghost"}`}
                     onClick={() => setFilter("unassigned")}
                 >
-                    {getIcon("alert-circle")} غير معيّنين ({unassignedCount})
+                    {getIcon("alert-circle")} {i18n.catalog["text_093e986c5c2f"]}{unassignedCount})
                 </button>
             </div>
 
             <PageSubHeader
-                title="ربط الموظفين بالمناصب"
+                title={i18n.catalog["text_d0663c8fd54e"]}
                 titleIcon="users"
                 actions={
                     <>
@@ -243,8 +245,7 @@ export function EmployeePositionTab() {
                                     setShowAssign(true);
                                 }}
                             >
-                                تعيين موظف لمنصب
-                            </Button>
+                                {i18n.catalog["text_e102619f95e1"]}</Button>
                         )}
                     </>
                 }
@@ -254,7 +255,7 @@ export function EmployeePositionTab() {
                 columns={columns}
                 data={filteredEmployees}
                 keyExtractor={(i) => i.id.toString()}
-                emptyMessage="لا توجد بيانات"
+                emptyMessage={i18n.catalog["text_d812e8bbc06f"]}
                 isLoading={isLoading}
             />
 
@@ -262,20 +263,18 @@ export function EmployeePositionTab() {
             <Dialog
                 isOpen={showAssign}
                 onClose={() => setShowAssign(false)}
-                title="تعيين موظف لمنصب وظيفي"
+                title={i18n.catalog["text_2deab183607f"]}
                 footer={
                     <>
                         <Button variant="secondary" onClick={() => setShowAssign(false)}>
-                            إلغاء
-                        </Button>
+                            {i18n.catalog["text_9a30dc2a96b8"]}</Button>
                         <Button
                             variant="primary"
                             icon="link"
                             onClick={handleAssign}
                             disabled={!selectedEmployeeId || !selectedPositionId}
                         >
-                            تعيين
-                        </Button>
+                            {i18n.catalog["text_961e2be91215"]}</Button>
                     </>
                 }
             >
@@ -286,43 +285,40 @@ export function EmployeePositionTab() {
                     >
                         {getIcon("info")}
                         <div>
-                            <strong>توريث تلقائي</strong>
+                            <strong>{i18n.catalog["text_d1a63c173a87"]}</strong>
                             <p style={{ margin: "0.25rem 0 0", fontSize: "0.85rem" }}>
-                                عند تعيين الموظف لمنصب، يتم تلقائياً:
-                                <br />• توريث <strong>الدور الوظيفي</strong> وصلاحياته
-                                <br />• تعيين <strong>المسمى الوظيفي</strong>
-                                <br />• تحديد <strong>القسم</strong> المرتبط بالمنصب
-                            </p>
+                                {i18n.catalog["text_0867526593b4"]}<br />{i18n.catalog["text_9ec4bbc51c0e"]}<strong>{i18n.catalog["text_5e7dccdb4d93"]}</strong> {i18n.catalog["text_fdf3a627b72b"]}<br />{i18n.catalog["text_037be498aa84"]}<strong>{i18n.catalog["text_de98bd734462"]}</strong>
+                                <br />{i18n.catalog["text_b25d21702c28"]}<strong>{i18n.catalog["text_0771c3ff9336"]}</strong> {i18n.catalog["text_7899041f6538"]}</p>
                         </div>
                     </div>
 
                     <div className="form-group">
-                        <Label>اختر الموظف *</Label>
+                        <Label>{i18n.catalog["text_3d8e9985377a"]}</Label>
                         <SearchableSelect
                             options={allEmployees
                                 .filter((e: any) => !e.position_id)
                                 .map((e: any) => ({
                                     value: e.id.toString(),
-                                    label: `${e.full_name} (${e.employee_code})`,
+                                    label: catalogText(i18n, "text_e11f55b693d8", { value0: e.full_name, value1: e.employee_code }),
                                 }))}
                             value={selectedEmployeeId}
                             onChange={(val) => setSelectedEmployeeId(val?.toString() || "")}
-                            placeholder="ابحث عن موظف غير معيّن..."
+                            placeholder={i18n.catalog["text_73eecad18c9a"]}
                         />
                     </div>
 
                     <div className="form-group">
-                        <Label>اختر المنصب *</Label>
+                        <Label>{i18n.catalog["text_070481f5ecc8"]}</Label>
                         <SearchableSelect
                             options={positions
                                 .filter((p) => p.is_active)
                                 .map((p) => ({
                                     value: p.id.toString(),
-                                    label: `${p.position_name_ar} (${p.position_code})`,
+                                    label: catalogText(i18n, "text_e11f55b693d8", { value0: p.position_name_ar, value1: p.position_code }),
                                 }))}
                             value={selectedPositionId}
                             onChange={(val) => setSelectedPositionId(val?.toString() || "")}
-                            placeholder="ابحث عن منصب..."
+                            placeholder={i18n.catalog["text_fe9d5c934e37"]}
                         />
                     </div>
 
@@ -346,8 +342,7 @@ export function EmployeePositionTab() {
                                     color: "var(--primary)",
                                 }}
                             >
-                                {getIcon("eye")} معاينة المنصب المحدد
-                            </h4>
+                                {getIcon("eye")} {i18n.catalog["text_52c9ede74573"]}</h4>
                             <div
                                 style={{
                                     display: "grid",
@@ -357,27 +352,27 @@ export function EmployeePositionTab() {
                                 }}
                             >
                                 <div>
-                                    <span className="stat-label">المسمى الوظيفي</span>
+                                    <span className="stat-label">{i18n.catalog["text_de98bd734462"]}</span>
                                     <p>{selectedPosition.job_title?.title_ar || "—"}</p>
                                 </div>
                                 <div>
-                                    <span className="stat-label">الدور الوظيفي</span>
+                                    <span className="stat-label">{i18n.catalog["text_5e7dccdb4d93"]}</span>
                                     <p>
                                         {selectedPosition.role ? (
                                             <span className="badge badge-info">
                                                 {selectedPosition.role.role_name_ar || selectedPosition.role.role_key}
                                             </span>
                                         ) : (
-                                            "غير محدد"
+                                            i18n.catalog["text_5a0374f3ff5a"]
                                         )}
                                     </p>
                                 </div>
                                 <div>
-                                    <span className="stat-label">القسم</span>
-                                    <p>{selectedPosition.department?.name_ar || "غير محدد"}</p>
+                                    <span className="stat-label">{i18n.catalog["text_0771c3ff9336"]}</span>
+                                    <p>{selectedPosition.department?.name_ar || i18n.catalog["text_5a0374f3ff5a"]}</p>
                                 </div>
                                 <div>
-                                    <span className="stat-label">المستوى</span>
+                                    <span className="stat-label">{i18n.catalog["text_961a0a03b98b"]}</span>
                                     <p>{selectedPosition.grade_level || "—"}</p>
                                 </div>
                             </div>

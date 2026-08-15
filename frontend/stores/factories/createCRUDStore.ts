@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { fetchAPI } from '@/lib/api';
@@ -128,7 +129,7 @@ export function createCRUDStore<T extends { id: number }>(config: CRUDConfig<T>)
                             });
                         }
                     } catch {
-                        showToast(messages.loadError || 'خطأ في تحميل البيانات', 'error');
+                        showToast(messages.loadError || catalogMessage("text_f10d2b4c7fe1"), 'error');
                     } finally {
                         set({ isLoading: false });
                     }
@@ -136,7 +137,7 @@ export function createCRUDStore<T extends { id: number }>(config: CRUDConfig<T>)
 
                 save: async (data, id?) => {
                     try {
-                        const url = id ? `${endpoint}/${id}` : endpoint;
+                        const url = id ? catalogMessage("text_0907f4dfb304", { value0: endpoint, value1: id }) : endpoint;
                         const res = await fetchAPI(url, {
                             method: id ? 'PUT' : 'POST',
                             body: JSON.stringify(data),
@@ -144,35 +145,35 @@ export function createCRUDStore<T extends { id: number }>(config: CRUDConfig<T>)
                         if (res.success) {
                             showToast(
                                 id
-                                    ? (messages.updateSuccess || 'تم التحديث بنجاح')
-                                    : (messages.saveSuccess || 'تمت الإضافة بنجاح'),
+                                    ? (messages.updateSuccess || catalogMessage("text_e1d61adfff9f"))
+                                    : (messages.saveSuccess || catalogMessage("text_3355250a8d54")),
                                 'success'
                             );
                             // Invalidate cache so next load is fresh
                             get().invalidate();
                             return true;
                         }
-                        showToast(res.message || messages.saveError || 'فشل الحفظ', 'error');
+                        showToast(res.message || messages.saveError || catalogMessage("text_b0dbba00004b"), 'error');
                         return false;
                     } catch {
-                        showToast(messages.saveError || 'خطأ في الحفظ', 'error');
+                        showToast(messages.saveError || catalogMessage("text_c574313242be"), 'error');
                         return false;
                     }
                 },
 
                 remove: async (id) => {
                     try {
-                        const res = await fetchAPI(`${endpoint}/${id}`, { method: 'DELETE' });
+                        const res = await fetchAPI(catalogMessage("text_0907f4dfb304", { value0: endpoint, value1: id }), { method: 'DELETE' });
                         if (res.success) {
-                            showToast(messages.deleteSuccess || 'تم الحذف', 'success');
+                            showToast(messages.deleteSuccess || catalogMessage("text_3e8ae8d6a62c"), 'success');
                             // Optimistic removal from local items
                             set(state => ({ items: state.items.filter(item => item.id !== id) }));
                             return true;
                         }
-                        showToast(res.message || messages.deleteError || 'فشل الحذف', 'error');
+                        showToast(res.message || messages.deleteError || catalogMessage("text_f46bfc521612"), 'error');
                         return false;
                     } catch {
-                        showToast(messages.deleteError || 'خطأ في الحذف', 'error');
+                        showToast(messages.deleteError || catalogMessage("text_3bdb299872fb"), 'error');
                         return false;
                     }
                 },

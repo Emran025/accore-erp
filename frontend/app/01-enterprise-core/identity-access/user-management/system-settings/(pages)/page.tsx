@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { MainLayout } from "@/components/layout";
 import { TabNavigation } from "@/components/ui";
 import { useState } from "react";
@@ -11,6 +12,7 @@ import { StoreSettingsTab } from "../components/StoreSettingsTab";
 
 
 export default function SettingsPage() {
+    const { t: i18n } = useI18n();
   const [activeTab, setActiveTab] = useState("store");
 
   return (
@@ -18,10 +20,10 @@ export default function SettingsPage() {
       <div className="settings-wrapper animate-fade">
         <TabNavigation
           tabs={[
-            { key: "store", label: "معلومات المتجر", icon: "fa-store" },
-            { key: "invoice", label: "إعدادات الفاتورة", icon: "fa-file-invoice" },
-            { key: "security", label: "الحساب والأمان", icon: "fa-lock" },
-            { key: "sessions", label: "الجلسات النشطة", icon: "fa-desktop" },
+            { key: "store", label: i18n.catalog["text_e11ec54f7103"], icon: "fa-store" },
+            { key: "invoice", label: i18n.catalog["text_e217fe66e326"], icon: "fa-file-invoice" },
+            { key: "security", label: i18n.catalog["text_251996bd474c"], icon: "fa-lock" },
+            { key: "sessions", label: i18n.catalog["text_49726b3d3b3c"], icon: "fa-desktop" },
           ]}
           activeTab={activeTab}
           onTabChange={setActiveTab}

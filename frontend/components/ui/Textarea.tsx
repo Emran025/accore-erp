@@ -1,5 +1,6 @@
 "use client";
 
+import { catalogMessage } from "@/lib/i18n";
 import { useState, useRef, forwardRef } from "react";
 import { Icon, IconName } from "@/lib/icons";
 import { isArabic as checkIsArabic } from "@/lib/utils";
@@ -86,7 +87,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
                             onClear();
                         }}
                         className="clear-btn"
-                        title="مسح"
+                        title={catalogMessage("text_308cf07fa826")}
                         style={{
                             position: "absolute",
                             right: "10px",

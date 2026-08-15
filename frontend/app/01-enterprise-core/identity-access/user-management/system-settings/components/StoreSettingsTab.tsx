@@ -1,4 +1,4 @@
-
+import { catalogMessage } from "@/lib/i18n";
 import { showToast } from "@/components/ui";
 import { TextInput } from "@/components/ui/TextInput";
 import { Textarea } from "@/components/ui/Textarea";
@@ -34,7 +34,7 @@ export function StoreSettingsTab() {
         setStoreSettings(response.settings as StoreSettings);
       }
     } catch {
-      console.error("Error loading store settings");
+      console.error(catalogMessage("text_79878ac752cf"));
     }
   }, []);
 
@@ -48,19 +48,19 @@ export function StoreSettingsTab() {
         method: "PUT",
         body: JSON.stringify(storeSettings),
       });
-      showToast("تم حفظ إعدادات المتجر", "success");
+      showToast(catalogMessage("text_a0ba28b2b84e"), "success");
     } catch {
-      showToast("خطأ في حفظ الإعدادات", "error");
+      showToast(catalogMessage("text_fc7bf4aa6124"), "error");
     }
   };
 
   return (
     <div className="sales-card">
-      <h3>معلومات المتجر</h3>
+      <h3>{catalogMessage("text_e11ec54f7103")}</h3>
       <div className="settings-form-grid">
         <div className="form-group pb-0">
           <TextInput
-            label="اسم المتجر"
+            label={catalogMessage("text_a9ac0e475f40")}
             id="store_name"
             value={storeSettings.store_name}
             onChange={(e) => setStoreSettings({ ...storeSettings, store_name: e.target.value })}
@@ -68,7 +68,7 @@ export function StoreSettingsTab() {
         </div>
         <div className="form-group pb-0">
           <TextInput
-            label="رقم الهاتف"
+            label={catalogMessage("text_42095a7a6c15")}
             type="tel"
             id="store_phone"
             value={storeSettings.store_phone}
@@ -77,7 +77,7 @@ export function StoreSettingsTab() {
         </div>
         <div className="form-group pb-0">
           <TextInput
-            label="البريد الإلكتروني"
+            label={catalogMessage("text_ddf0fca39a4f")}
             type="email"
             id="store_email"
             value={storeSettings.store_email}
@@ -86,7 +86,7 @@ export function StoreSettingsTab() {
         </div>
         <div className="form-group pb-0">
           <TextInput
-            label="الرقم الضريبي"
+            label={catalogMessage("text_74b3eeb4b88d")}
             id="tax_number"
             value={storeSettings.tax_number}
             onChange={(e) => setStoreSettings({ ...storeSettings, tax_number: e.target.value })}
@@ -94,7 +94,7 @@ export function StoreSettingsTab() {
         </div>
         <div className="form-group pb-0">
           <TextInput
-            label="السجل التجاري"
+            label={catalogMessage("text_5f7b0c338fde")}
             id="cr_number"
             value={storeSettings.cr_number}
             onChange={(e) => setStoreSettings({ ...storeSettings, cr_number: e.target.value })}
@@ -102,7 +102,7 @@ export function StoreSettingsTab() {
         </div>
         <div className="form-group full-width pb-0">
           <Textarea
-            label="العنوان"
+            label={catalogMessage("text_2d110e56d5f5")}
             id="store_address"
             value={storeSettings.store_address}
             onChange={(e) => setStoreSettings({ ...storeSettings, store_address: e.target.value })}
@@ -111,8 +111,7 @@ export function StoreSettingsTab() {
         </div>
       </div>
       <button className="btn btn-primary" onClick={saveStoreSettings}>
-        حفظ التغييرات
-      </button>
+        {catalogMessage("text_9b70c9af5cbd")}</button>
     </div>
   );
 }

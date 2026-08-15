@@ -1,5 +1,6 @@
 "use client";
 
+import { catalogMessage } from "@/lib/i18n";
 import { useState, useEffect, useCallback } from "react";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
@@ -61,14 +62,14 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
                 }),
             });
             if (res.success) {
-                alert("تم إنشاء إعدادات الترقيم بنجاح", "success");
+                alert(catalogMessage("text_85eabbc05825"), "success");
                 await loadData();
                 return true;
             }
-            alert(res.message || "فشل الإنشاء", "error");
+            alert(res.message || catalogMessage("text_33807b6d3510"), "error");
             return false;
         } catch {
-            alert("خطأ في الاتصال", "error");
+            alert(catalogMessage("text_1ac65f6d78f4"), "error");
             return false;
         }
     };
@@ -93,14 +94,14 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
                 body: JSON.stringify(data),
             });
             if (res.success) {
-                alert(isEdit ? "تم تحديث المجموعة" : "تم إنشاء المجموعة", "success");
+                alert(isEdit ? catalogMessage("text_9b163de55441") : catalogMessage("text_882db2502743"), "success");
                 await loadData();
                 return true;
             }
-            alert(res.message || "فشل الحفظ", "error");
+            alert(res.message || catalogMessage("text_b0dbba00004b"), "error");
             return false;
         } catch {
-            alert("خطأ في الاتصال", "error");
+            alert(catalogMessage("text_1ac65f6d78f4"), "error");
             return false;
         }
     };
@@ -109,14 +110,14 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
         try {
             const res = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.GROUPS.delete(id), { method: "DELETE" });
             if (res.success) {
-                alert("تم حذف المجموعة", "success");
+                alert(catalogMessage("text_5b9541617085"), "success");
                 await loadData();
                 return true;
             }
-            alert(res.message || "فشل الحذف", "error");
+            alert(res.message || catalogMessage("text_f46bfc521612"), "error");
             return false;
         } catch {
-            alert("خطأ في الاتصال", "error");
+            alert(catalogMessage("text_1ac65f6d78f4"), "error");
             return false;
         }
     };
@@ -142,14 +143,14 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
                 body: JSON.stringify(data),
             });
             if (res.success) {
-                alert(isEdit ? "تم تحديث النطاق" : "تم إنشاء النطاق", "success");
+                alert(isEdit ? catalogMessage("text_753fa01bea3d") : catalogMessage("text_87d7138539e4"), "success");
                 await loadData();
                 return true;
             }
-            alert(res.message || "فشل الحفظ", "error");
+            alert(res.message || catalogMessage("text_b0dbba00004b"), "error");
             return false;
         } catch {
-            alert("خطأ في الاتصال", "error");
+            alert(catalogMessage("text_1ac65f6d78f4"), "error");
             return false;
         }
     };
@@ -158,14 +159,14 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
         try {
             const res = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.INTERVALS.delete(id), { method: "DELETE" });
             if (res.success) {
-                alert("تم حذف النطاق", "success");
+                alert(catalogMessage("text_c10ce32a7208"), "success");
                 await loadData();
                 return true;
             }
-            alert(res.message || "فشل الحذف", "error");
+            alert(res.message || catalogMessage("text_f46bfc521612"), "error");
             return false;
         } catch {
-            alert("خطأ في الاتصال", "error");
+            alert(catalogMessage("text_1ac65f6d78f4"), "error");
             return false;
         }
     };
@@ -177,14 +178,14 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
                 body: JSON.stringify({ new_to: newTo, reason: reason || null }),
             });
             if (res.success) {
-                alert("تم توسيع النطاق بنجاح", "success");
+                alert(catalogMessage("text_107f5ee706f8"), "success");
                 await loadData();
                 return true;
             }
-            alert(res.message || "فشل التوسيع", "error");
+            alert(res.message || catalogMessage("text_7875cc0d732c"), "error");
             return false;
         } catch {
-            alert("خطأ في الاتصال", "error");
+            alert(catalogMessage("text_1ac65f6d78f4"), "error");
             return false;
         }
     };
@@ -201,14 +202,14 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
                 }),
             });
             if (res.success) {
-                alert("تم الربط بنجاح", "success");
+                alert(catalogMessage("text_7abf4fcd9dd0"), "success");
                 await loadData();
                 return true;
             }
-            alert(res.message || "فشل الربط", "error");
+            alert(res.message || catalogMessage("text_71819ae001d1"), "error");
             return false;
         } catch {
-            alert("خطأ في الاتصال", "error");
+            alert(catalogMessage("text_1ac65f6d78f4"), "error");
             return false;
         }
     };
@@ -217,14 +218,14 @@ export function useNumberRange({ objectType, alertContainerId = "nr-alert" }: Us
         try {
             const res = await fetchAPI(API_ENDPOINTS.PLATFORM.NUMBER_RANGES.ASSIGNMENTS.delete(id), { method: "DELETE" });
             if (res.success) {
-                alert("تم حذف الربط", "success");
+                alert(catalogMessage("text_9a5c62f88123"), "success");
                 await loadData();
                 return true;
             }
-            alert(res.message || "فشل الحذف", "error");
+            alert(res.message || catalogMessage("text_f46bfc521612"), "error");
             return false;
         } catch {
-            alert("خطأ في الاتصال", "error");
+            alert(catalogMessage("text_1ac65f6d78f4"), "error");
             return false;
         }
     };

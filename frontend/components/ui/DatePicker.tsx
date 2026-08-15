@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogMessage } from "@/lib/i18n";
 import { useState, useRef, useEffect } from "react";
 import { Icon } from "@/lib/icons";
 
@@ -18,11 +19,11 @@ export interface DatePickerProps {
 }
 
 const ARABIC_MONTHS = [
-    "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
-    "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
+    catalogMessage("text_bc40bf9bf5db"), catalogMessage("text_4c9195d55893"), catalogMessage("text_121f3712ae7c"), catalogMessage("text_b5021be42c23"), catalogMessage("text_e490a80977c5"), catalogMessage("text_f6c57592aa1d"),
+    catalogMessage("text_7f5c6765af36"), catalogMessage("text_47bea73f4ca8"), catalogMessage("text_339eb2be7171"), catalogMessage("text_128ed0f7c924"), catalogMessage("text_0b699e61fe99"), catalogMessage("text_c22ea1f7f156")
 ];
 
-const ARABIC_DAYS = ["أح", "إث", "ثل", "أر", "خم", "جم", "سب"];
+const ARABIC_DAYS = [catalogMessage("text_8e5e32496bda"), catalogMessage("text_28c1ccb528c6"), catalogMessage("text_a00e80404853"), catalogMessage("text_3864a806f044"), catalogMessage("text_e9b5a180ed40"), catalogMessage("text_368ad191a55a"), catalogMessage("text_d69a3814a7db")];
 
 export function DatePicker({
     value,
@@ -30,13 +31,14 @@ export function DatePicker({
     id,
     name,
     label,
-    placeholder = "اختر التاريخ...",
+    placeholder = catalogMessage("text_bb6fff05dcfd"),
     required = false,
     disabled = false,
     className = "",
     minDate,
     maxDate,
 }: DatePickerProps) {
+    const { t: i18n } = useI18n();
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -203,7 +205,7 @@ export function DatePicker({
                             e.stopPropagation();
                             onChange("");
                         }}
-                        title="مسح"
+                        title={i18n.catalog["text_308cf07fa826"]}
                     >
                         <Icon name="x" size={16} />
                     </button>
@@ -216,7 +218,7 @@ export function DatePicker({
                                 type="button"
                                 className="calendar-nav-btn"
                                 onClick={prevMonth}
-                                title="الشهر السابق"
+                                title={i18n.catalog["text_d957f5d519c5"]}
                             >
                                 <Icon name="chevron-right" size={16} />
                             </button>
@@ -227,7 +229,7 @@ export function DatePicker({
                                 type="button"
                                 className="calendar-nav-btn"
                                 onClick={nextMonth}
-                                title="الشهر التالي"
+                                title={i18n.catalog["text_f74bf8c633df"]}
                             >
                                 <Icon name="chevronLeft" size={16} />
                             </button>
@@ -271,29 +273,25 @@ export function DatePicker({
                                 className="calendar-preset-btn"
                                 onClick={() => handlePreset("today")}
                             >
-                                اليوم
-                            </button>
+                                {i18n.catalog["text_2422f71e7f4e"]}</button>
                             <button
                                 type="button"
                                 className="calendar-preset-btn"
                                 onClick={() => handlePreset("6m")}
                             >
-                                +6 أشهر
-                            </button>
+                                {i18n.catalog["text_7d3a954422ce"]}</button>
                             <button
                                 type="button"
                                 className="calendar-preset-btn"
                                 onClick={() => handlePreset("1y")}
                             >
-                                +سنة
-                            </button>
+                                {i18n.catalog["text_02f617588d93"]}</button>
                             <button
                                 type="button"
                                 className="calendar-preset-btn danger"
                                 onClick={() => handlePreset("clear")}
                             >
-                                مسح
-                            </button>
+                                {i18n.catalog["text_308cf07fa826"]}</button>
                         </div>
                     </div>
                 )}

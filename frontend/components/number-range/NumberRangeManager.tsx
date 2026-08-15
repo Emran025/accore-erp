@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { useState, useEffect, useCallback } from "react";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
@@ -45,6 +46,7 @@ export function NumberRangeManager({
     allowObjectCreation = true,
     defaultConfig,
 }: NumberRangeManagerProps) {
+    const { t: i18n } = useI18n();
     // ── State ─────────────────────────────────────────────────
     const [objectData, setObjectData] = useState<NrObjectFull | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -117,7 +119,7 @@ export function NumberRangeManager({
     // ── Object Setup ──────────────────────────────────────────
     const createObject = async () => {
         if (!setupName || !setupLength) {
-            showAlert("nr-alert", "يرجى ملء الحقول المطلوبة", "error");
+            showAlert("nr-alert", i18n.catalog["text_7b758312f829"], "error");
             return;
         }
         try {
@@ -132,14 +134,14 @@ export function NumberRangeManager({
                 }),
             });
             if (res.success) {
-                showAlert("nr-alert", "تم إنشاء إعدادات الترقيم بنجاح", "success");
+                showAlert("nr-alert", i18n.catalog["text_85eabbc05825"], "success");
                 setSetupDialog(false);
                 await loadData();
             } else {
-                showAlert("nr-alert", res.message || "فشل الإنشاء", "error");
+                showAlert("nr-alert", res.message || i18n.catalog["text_33807b6d3510"], "error");
             }
         } catch {
-            showAlert("nr-alert", "خطأ في الاتصال", "error");
+            showAlert("nr-alert", i18n.catalog["text_1ac65f6d78f4"], "error");
         }
     };
 
@@ -164,7 +166,7 @@ export function NumberRangeManager({
 
     const saveGroup = async () => {
         if (!groupCode || !groupName || !objectData) {
-            showAlert("nr-alert", "يرجى ملء الكود والاسم", "error");
+            showAlert("nr-alert", i18n.catalog["text_5ebd47e3ad9f"], "error");
             return;
         }
         try {
@@ -184,14 +186,14 @@ export function NumberRangeManager({
                 }),
             });
             if (res.success) {
-                showAlert("nr-alert", isEdit ? "تم تحديث المجموعة" : "تم إنشاء المجموعة", "success");
+                showAlert("nr-alert", isEdit ? i18n.catalog["text_9b163de55441"] : i18n.catalog["text_882db2502743"], "success");
                 setGroupDialog(false);
                 await loadData();
             } else {
-                showAlert("nr-alert", res.message || "فشل الحفظ", "error");
+                showAlert("nr-alert", res.message || i18n.catalog["text_b0dbba00004b"], "error");
             }
         } catch {
-            showAlert("nr-alert", "خطأ في الاتصال", "error");
+            showAlert("nr-alert", i18n.catalog["text_1ac65f6d78f4"], "error");
         }
     };
 
@@ -218,7 +220,7 @@ export function NumberRangeManager({
 
     const saveInterval = async () => {
         if (!intCode || !intFrom || !intTo || !objectData) {
-            showAlert("nr-alert", "يرجى ملء الحقول المطلوبة", "error");
+            showAlert("nr-alert", i18n.catalog["text_7b758312f829"], "error");
             return;
         }
         try {
@@ -240,14 +242,14 @@ export function NumberRangeManager({
 
             const res = await fetchAPI(url, { method, body: JSON.stringify(body) });
             if (res.success) {
-                showAlert("nr-alert", isEdit ? "تم تحديث النطاق" : "تم إنشاء النطاق", "success");
+                showAlert("nr-alert", isEdit ? i18n.catalog["text_753fa01bea3d"] : i18n.catalog["text_87d7138539e4"], "success");
                 setIntervalDialog(false);
                 await loadData();
             } else {
-                showAlert("nr-alert", res.message || "فشل الحفظ", "error");
+                showAlert("nr-alert", res.message || i18n.catalog["text_b0dbba00004b"], "error");
             }
         } catch {
-            showAlert("nr-alert", "خطأ في الاتصال", "error");
+            showAlert("nr-alert", i18n.catalog["text_1ac65f6d78f4"], "error");
         }
     };
 
@@ -260,7 +262,7 @@ export function NumberRangeManager({
 
     const saveAssignment = async () => {
         if (!assignGroupId || !assignIntervalId || !objectData) {
-            showAlert("nr-alert", "يرجى اختيار مجموعة ونطاق", "error");
+            showAlert("nr-alert", i18n.catalog["text_40ec18cd675a"], "error");
             return;
         }
         try {
@@ -272,14 +274,14 @@ export function NumberRangeManager({
                 }),
             });
             if (res.success) {
-                showAlert("nr-alert", "تم الربط بنجاح", "success");
+                showAlert("nr-alert", i18n.catalog["text_7abf4fcd9dd0"], "success");
                 setAssignDialog(false);
                 await loadData();
             } else {
-                showAlert("nr-alert", res.message || "فشل الربط", "error");
+                showAlert("nr-alert", res.message || i18n.catalog["text_71819ae001d1"], "error");
             }
         } catch {
-            showAlert("nr-alert", "خطأ في الاتصال", "error");
+            showAlert("nr-alert", i18n.catalog["text_1ac65f6d78f4"], "error");
         }
     };
 
@@ -293,7 +295,7 @@ export function NumberRangeManager({
 
     const saveExpansion = async () => {
         if (!expandNewTo || !expandIntervalId) {
-            showAlert("nr-alert", "يرجى إدخال الحد الجديد", "error");
+            showAlert("nr-alert", i18n.catalog["text_5b36a560d44f"], "error");
             return;
         }
         try {
@@ -305,14 +307,14 @@ export function NumberRangeManager({
                 }),
             });
             if (res.success) {
-                showAlert("nr-alert", "تم توسيع النطاق بنجاح", "success");
+                showAlert("nr-alert", i18n.catalog["text_107f5ee706f8"], "success");
                 setExpandDialog(false);
                 await loadData();
             } else {
-                showAlert("nr-alert", res.message || "فشل التوسيع", "error");
+                showAlert("nr-alert", res.message || i18n.catalog["text_7875cc0d732c"], "error");
             }
         } catch {
-            showAlert("nr-alert", "خطأ في الاتصال", "error");
+            showAlert("nr-alert", i18n.catalog["text_1ac65f6d78f4"], "error");
         }
     };
 
@@ -332,15 +334,15 @@ export function NumberRangeManager({
 
             const res = await fetchAPI(url, { method: "DELETE" });
             if (res.success) {
-                showAlert("nr-alert", "تم الحذف بنجاح", "success");
+                showAlert("nr-alert", i18n.catalog["text_12b6e3813b40"], "success");
                 setConfirmDelete(false);
                 setDeleteTarget(null);
                 await loadData();
             } else {
-                showAlert("nr-alert", res.message || "فشل الحذف", "error");
+                showAlert("nr-alert", res.message || i18n.catalog["text_f46bfc521612"], "error");
             }
         } catch {
-            showAlert("nr-alert", "خطأ في الاتصال", "error");
+            showAlert("nr-alert", i18n.catalog["text_1ac65f6d78f4"], "error");
         }
     };
 
@@ -352,17 +354,17 @@ export function NumberRangeManager({
 
     // ── Tab Definitions ───────────────────────────────────────
     const tabs: Tab[] = [
-        { key: "groups", label: "المجموعات", icon: "layers" },
-        { key: "intervals", label: "نطاقات الأرقام", icon: "hash" },
-        { key: "assignments", label: "الربط والتعيين", icon: "link" },
-        { key: "fullness", label: "تحليل الامتلاء", icon: "pie-chart" },
+        { key: "groups", label: i18n.catalog["text_d9f131dd2174"], icon: "layers" },
+        { key: "intervals", label: i18n.catalog["text_c6419d513cea"], icon: "hash" },
+        { key: "assignments", label: i18n.catalog["text_6df2d7ab183d"], icon: "link" },
+        { key: "fullness", label: i18n.catalog["text_f1ad9f76489d"], icon: "pie-chart" },
     ];
 
     // ── Table Columns ─────────────────────────────────────────
 
     const groupColumns: Column<NrGroup>[] = [
         {
-            key: "code", header: "الكود", dataLabel: "الكود",
+            key: "code", header: i18n.catalog["text_e28ef005ab68"], dataLabel: i18n.catalog["text_e28ef005ab68"],
             render: (item) => (
                 <span style={{ fontFamily: "monospace", fontWeight: 700, color: "var(--accent-primary)" }}>
                     {item.code}
@@ -370,28 +372,28 @@ export function NumberRangeManager({
             ),
         },
         {
-            key: "name", header: "الاسم", dataLabel: "الاسم", render: (item) => (
+            key: "name", header: i18n.catalog["text_52ab09847cf8"], dataLabel: i18n.catalog["text_52ab09847cf8"], render: (item) => (
                 <div>
                     <strong>{item.name}</strong>
                     {item.name_en && <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{item.name_en}</div>}
                 </div>
             )
         },
-        { key: "description", header: "الوصف", dataLabel: "الوصف", render: (item) => item.description || "—" },
+        { key: "description", header: i18n.catalog["text_95023fc76e1b"], dataLabel: i18n.catalog["text_95023fc76e1b"], render: (item) => item.description || "—" },
         {
-            key: "is_active", header: "الحالة", dataLabel: "الحالة",
+            key: "is_active", header: i18n.catalog["text_c3a4749caed4"], dataLabel: i18n.catalog["text_c3a4749caed4"],
             render: (item) => (
                 <span className={`badge ${item.is_active ? "badge-success" : "badge-danger"}`}>
-                    {item.is_active ? "نشط" : "معطل"}
+                    {item.is_active ? i18n.catalog["text_629e90b3af3d"] : i18n.catalog["text_21dc96b9f9f8"]}
                 </span>
             ),
         },
         {
-            key: "actions", header: "الإجراءات", dataLabel: "الإجراءات",
+            key: "actions", header: i18n.catalog["text_7797240d6caf"], dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (item) => (
                 <ActionButtons actions={[
-                    { icon: "edit", title: "تعديل", variant: "edit", onClick: () => openEditGroup(item) },
-                    { icon: "trash", title: "حذف", variant: "delete", onClick: () => triggerDelete("group", item.id) },
+                    { icon: "edit", title: i18n.catalog["text_113d570d6555"], variant: "edit", onClick: () => openEditGroup(item) },
+                    { icon: "trash", title: i18n.catalog["text_59ca629220a6"], variant: "delete", onClick: () => triggerDelete("group", item.id) },
                 ]} />
             ),
         },
@@ -399,7 +401,7 @@ export function NumberRangeManager({
 
     const intervalColumns: Column<NrInterval>[] = [
         {
-            key: "code", header: "الكود", dataLabel: "الكود",
+            key: "code", header: i18n.catalog["text_e28ef005ab68"], dataLabel: i18n.catalog["text_e28ef005ab68"],
             render: (item) => (
                 <span style={{ fontFamily: "monospace", fontWeight: 700, color: "var(--accent-primary)" }}>
                     {item.code}
@@ -407,7 +409,7 @@ export function NumberRangeManager({
             ),
         },
         {
-            key: "range", header: "النطاق", dataLabel: "النطاق",
+            key: "range", header: i18n.catalog["text_0713b3646ee7"], dataLabel: i18n.catalog["text_0713b3646ee7"],
             render: (item) => (
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontFamily: "monospace" }}>
                     <span style={{ color: "#10b981", fontWeight: 600 }}>{item.from_number.toLocaleString()}</span>
@@ -417,15 +419,15 @@ export function NumberRangeManager({
             ),
         },
         {
-            key: "current", header: "الموضع الحالي", dataLabel: "الموضع",
+            key: "current", header: i18n.catalog["text_35246be561fe"], dataLabel: i18n.catalog["text_0ca5d92c6fdf"],
             render: (item) => (
                 <span style={{ fontFamily: "monospace", fontWeight: 600, color: item.current_number > 0 ? "var(--text-primary)" : "var(--text-muted)" }}>
-                    {item.current_number > 0 ? item.current_number.toLocaleString() : "لم يبدأ"}
+                    {item.current_number > 0 ? item.current_number.toLocaleString() : i18n.catalog["text_ad3e6bb12ee8"]}
                 </span>
             ),
         },
         {
-            key: "fullness", header: "الامتلاء", dataLabel: "الامتلاء",
+            key: "fullness", header: i18n.catalog["text_a0058b6e3c2d"], dataLabel: i18n.catalog["text_a0058b6e3c2d"],
             render: (item) => {
                 const color = item.status === "critical" ? "#ef4444" : item.status === "warning" ? "#f59e0b" : "#10b981";
                 return (
@@ -448,7 +450,7 @@ export function NumberRangeManager({
             },
         },
         {
-            key: "remaining", header: "المتبقي", dataLabel: "المتبقي",
+            key: "remaining", header: i18n.catalog["text_b2127e3a35be"], dataLabel: i18n.catalog["text_b2127e3a35be"],
             render: (item) => (
                 <span style={{ fontFamily: "monospace", color: item.remaining < 100 ? "#ef4444" : "var(--text-secondary)" }}>
                     {item.remaining.toLocaleString()}
@@ -456,21 +458,21 @@ export function NumberRangeManager({
             ),
         },
         {
-            key: "type", header: "النوع", dataLabel: "النوع",
+            key: "type", header: i18n.catalog["text_caa3f2bb4a36"], dataLabel: i18n.catalog["text_caa3f2bb4a36"],
             render: (item) => (
                 <span className={`badge ${item.is_external ? "badge-warning" : "badge-primary"}`}>
-                    {item.is_external ? "خارجي" : "داخلي"}
+                    {item.is_external ? i18n.catalog["text_48b8964443c2"] : i18n.catalog["text_2b1d660384e0"]}
                 </span>
             ),
         },
         {
-            key: "actions", header: "الإجراءات", dataLabel: "الإجراءات",
+            key: "actions", header: i18n.catalog["text_7797240d6caf"], dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (item) => (
                 <ActionButtons actions={[
-                    { icon: "maximize-2", title: "توسيع النطاق", variant: "primary" as const, onClick: () => openExpand(item) },
-                    { icon: "activity", title: "سجل التوسعات", variant: "view" as const, onClick: () => openLogs(item.id) },
-                    { icon: "edit", title: "تعديل", variant: "edit", onClick: () => openEditInterval(item) },
-                    { icon: "trash", title: "حذف", variant: "delete", onClick: () => triggerDelete("interval", item.id), hidden: item.current_number > 0 },
+                    { icon: "maximize-2", title: i18n.catalog["text_c92a323a1343"], variant: "primary" as const, onClick: () => openExpand(item) },
+                    { icon: "activity", title: i18n.catalog["text_e52cb276310f"], variant: "view" as const, onClick: () => openLogs(item.id) },
+                    { icon: "edit", title: i18n.catalog["text_113d570d6555"], variant: "edit", onClick: () => openEditInterval(item) },
+                    { icon: "trash", title: i18n.catalog["text_59ca629220a6"], variant: "delete", onClick: () => triggerDelete("interval", item.id), hidden: item.current_number > 0 },
                 ]} />
             ),
         },
@@ -478,7 +480,7 @@ export function NumberRangeManager({
 
     const assignmentColumns: Column<NrAssignment>[] = [
         {
-            key: "group", header: "المجموعة", dataLabel: "المجموعة",
+            key: "group", header: i18n.catalog["text_a73be01ddb83"], dataLabel: i18n.catalog["text_a73be01ddb83"],
             render: (item) => (
                 <div>
                     <span className="badge badge-secondary" style={{ fontFamily: "monospace", marginInlineEnd: "0.4rem" }}>
@@ -489,7 +491,7 @@ export function NumberRangeManager({
             ),
         },
         {
-            key: "interval", header: "النطاق", dataLabel: "النطاق",
+            key: "interval", header: i18n.catalog["text_0713b3646ee7"], dataLabel: i18n.catalog["text_0713b3646ee7"],
             render: (item) => (
                 <div style={{ fontFamily: "monospace" }}>
                     <span className="badge badge-primary" style={{ marginInlineEnd: "0.4rem" }}>
@@ -502,10 +504,10 @@ export function NumberRangeManager({
             ),
         },
         {
-            key: "actions", header: "الإجراءات", dataLabel: "الإجراءات",
+            key: "actions", header: i18n.catalog["text_7797240d6caf"], dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (item) => (
                 <ActionButtons actions={[
-                    { icon: "trash", title: "إلغاء الربط", variant: "delete", onClick: () => triggerDelete("assignment", item.id) },
+                    { icon: "trash", title: i18n.catalog["text_f684b7cd80d6"], variant: "delete", onClick: () => triggerDelete("assignment", item.id) },
                 ]} />
             ),
         },
@@ -516,7 +518,7 @@ export function NumberRangeManager({
         return (
             <div className="nr-manager-loading">
                 <div className="nr-spinner" />
-                <p>جارِ تحميل إعدادات الترقيم...</p>
+                <p>{i18n.catalog["text_fb5cce8aee1f"]}</p>
             </div>
         );
     }
@@ -528,37 +530,36 @@ export function NumberRangeManager({
                 <div id="nr-alert" />
                 <div className="nr-setup-prompt">
                     <div className="nr-setup-icon">{getIcon("hash")}</div>
-                    <h3>إعداد نظام الترقيم</h3>
-                    <p>لم يتم تكوين نظام ترقيم لهذا النوع بعد. قم بتحديد طول الترقيم والإعدادات الأولية للبدء.</p>
+                    <h3>{i18n.catalog["text_1fb2f7d0de99"]}</h3>
+                    <p>{i18n.catalog["text_ddbd5f016a39"]}</p>
                     <Button variant="primary" onClick={() => setSetupDialog(true)} icon="plus">
-                        إعداد نظام الترقيم
-                    </Button>
+                        {i18n.catalog["text_1fb2f7d0de99"]}</Button>
                 </div>
 
                 <Dialog
                     isOpen={setupDialog}
                     onClose={() => setSetupDialog(false)}
-                    title="إعداد نظام الترقيم"
+                    title={i18n.catalog["text_1fb2f7d0de99"]}
                     maxWidth="520px"
                     footer={
                         <>
-                            <Button variant="secondary" onClick={() => setSetupDialog(false)}>إلغاء</Button>
-                            <Button variant="primary" onClick={createObject}>إنشاء</Button>
+                            <Button variant="secondary" onClick={() => setSetupDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                            <Button variant="primary" onClick={createObject}>{i18n.catalog["text_a820f3590d36"]}</Button>
                         </>
                     }
                 >
                     <form onSubmit={(e) => { e.preventDefault(); createObject(); }}>
                         <div className="nr-info-banner">
                             <span className="nr-info-icon">{getIcon("info")}</span>
-                            <span>طول الترقيم يحدد الحد الأقصى لنطاقات الأرقام المتاحة. مثال: طول 8 أرقام يسمح بنطاقات حتى 99,999,999</span>
+                            <span>{i18n.catalog["text_a2dd0448fcdc"]}</span>
                         </div>
                         <div className="form-row">
-                            <TextInput label="الاسم بالعربية *" id="nr-setup-name" value={setupName} onChange={(e) => setSetupName(e.target.value)} required className="flex-1" />
-                            <TextInput label="الاسم بالإنجليزية" id="nr-setup-name-en" value={setupNameEn} onChange={(e) => setSetupNameEn(e.target.value)} className="flex-1" />
+                            <TextInput label={i18n.catalog["text_b90b881d800d"]} id="nr-setup-name" value={setupName} onChange={(e) => setSetupName(e.target.value)} required className="flex-1" />
+                            <TextInput label={i18n.catalog["text_07450d9ff8ed"]} id="nr-setup-name-en" value={setupNameEn} onChange={(e) => setSetupNameEn(e.target.value)} className="flex-1" />
                         </div>
                         <div className="form-row">
-                            <NumberInput label="طول الترقيم *" id="nr-setup-length" value={setupLength} onChange={setSetupLength} min={1} max={20} className="flex-1" />
-                            <TextInput label="البادئة (اختياري)" id="nr-setup-prefix" value={setupPrefix} onChange={(e) => setSetupPrefix(e.target.value)} className="flex-1" placeholder="EMP-" />
+                            <NumberInput label={i18n.catalog["text_1cb26fb66890"]} id="nr-setup-length" value={setupLength} onChange={setSetupLength} min={1} max={20} className="flex-1" />
+                            <TextInput label={i18n.catalog["text_de683d06206e"]} id="nr-setup-prefix" value={setupPrefix} onChange={(e) => setSetupPrefix(e.target.value)} className="flex-1" placeholder={i18n.catalog["text_5be93de51cfb"]} />
                         </div>
                     </form>
                 </Dialog>
@@ -586,19 +587,18 @@ export function NumberRangeManager({
                 {activeTab === "groups" && (
                     <div>
                         <PageSubHeader
-                            title="المجموعات"
+                            title={i18n.catalog["text_d9f131dd2174"]}
                             titleIcon="layers"
                             actions={
                                 <Button variant="primary" icon="plus" onClick={openAddGroup}>
-                                    مجموعة جديدة
-                                </Button>
+                                    {i18n.catalog["text_d36d9170c3cb"]}</Button>
                             }
                         />
                         <Table
                             columns={groupColumns}
                             data={objectData.groups || []}
                             keyExtractor={(item) => item.id}
-                            emptyMessage="لا توجد مجموعات — أضف مجموعة للبدء"
+                            emptyMessage={i18n.catalog["text_fd10a2b6dd0f"]}
                         />
                     </div>
                 )}
@@ -607,19 +607,18 @@ export function NumberRangeManager({
                 {activeTab === "intervals" && (
                     <div>
                         <PageSubHeader
-                            title="نطاقات الأرقام"
+                            title={i18n.catalog["text_c6419d513cea"]}
                             titleIcon="hash"
                             actions={
                                 <Button variant="primary" icon="plus" onClick={openAddInterval}>
-                                    نطاق جديد
-                                </Button>
+                                    {i18n.catalog["text_2dad54aebcc4"]}</Button>
                             }
                         />
                         <Table
                             columns={intervalColumns}
                             data={objectData.intervals || []}
                             keyExtractor={(item) => item.id}
-                            emptyMessage="لا توجد نطاقات أرقام — أضف نطاقاً للبدء"
+                            emptyMessage={i18n.catalog["text_17b816b84544"]}
                         />
                     </div>
                 )}
@@ -628,19 +627,18 @@ export function NumberRangeManager({
                 {activeTab === "assignments" && (
                     <div>
                         <PageSubHeader
-                            title="الربط والتعيين"
+                            title={i18n.catalog["text_6df2d7ab183d"]}
                             titleIcon="link"
                             actions={
                                 <Button variant="primary" icon="plus" onClick={openAssignment}>
-                                    ربط جديد
-                                </Button>
+                                    {i18n.catalog["text_e9d3483e8518"]}</Button>
                             }
                         />
                         <Table
                             columns={assignmentColumns}
                             data={objectData.assignments || []}
                             keyExtractor={(item) => item.id}
-                            emptyMessage="لا توجد روابط — أنشئ مجموعات ونطاقات أولاً ثم اربطها"
+                            emptyMessage={i18n.catalog["text_dba3710e408f"]}
                         />
                     </div>
                 )}
@@ -662,24 +660,24 @@ export function NumberRangeManager({
             <Dialog
                 isOpen={groupDialog}
                 onClose={() => setGroupDialog(false)}
-                title={editGroupId ? "تعديل المجموعة" : "إضافة مجموعة جديدة"}
+                title={editGroupId ? i18n.catalog["text_7c57cf4e1134"] : i18n.catalog["text_6dfce4a268a5"]}
                 maxWidth="520px"
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setGroupDialog(false)}>إلغاء</Button>
-                        <Button variant="primary" onClick={saveGroup}>حفظ</Button>
+                        <Button variant="secondary" onClick={() => setGroupDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                        <Button variant="primary" onClick={saveGroup}>{i18n.catalog["text_ddfcaf9d0144"]}</Button>
                     </>
                 }
             >
                 <form onSubmit={(e) => { e.preventDefault(); saveGroup(); }}>
                     <div className="form-row">
-                        <TextInput label="الكود *" id="grp-code" value={groupCode} onChange={(e) => setGroupCode(e.target.value)} required className="flex-1" placeholder="GRP-01" />
+                        <TextInput label={i18n.catalog["text_d7e401b615ba"]} id="grp-code" value={groupCode} onChange={(e) => setGroupCode(e.target.value)} required className="flex-1" placeholder={i18n.catalog["text_3a0b123c69c9"]} />
                     </div>
                     <div className="form-row">
-                        <TextInput label="الاسم بالعربية *" id="grp-name" value={groupName} onChange={(e) => setGroupName(e.target.value)} required className="flex-1" />
-                        <TextInput label="الاسم بالإنجليزية" id="grp-name-en" value={groupNameEn} onChange={(e) => setGroupNameEn(e.target.value)} className="flex-1" />
+                        <TextInput label={i18n.catalog["text_b90b881d800d"]} id="grp-name" value={groupName} onChange={(e) => setGroupName(e.target.value)} required className="flex-1" />
+                        <TextInput label={i18n.catalog["text_07450d9ff8ed"]} id="grp-name-en" value={groupNameEn} onChange={(e) => setGroupNameEn(e.target.value)} className="flex-1" />
                     </div>
-                    <Textarea label="الوصف" id="grp-desc" value={groupDesc} onChange={(e) => setGroupDesc(e.target.value)} rows={2} />
+                    <Textarea label={i18n.catalog["text_95023fc76e1b"]} id="grp-desc" value={groupDesc} onChange={(e) => setGroupDesc(e.target.value)} rows={2} />
                 </form>
             </Dialog>
 
@@ -687,47 +685,47 @@ export function NumberRangeManager({
             <Dialog
                 isOpen={intervalDialog}
                 onClose={() => setIntervalDialog(false)}
-                title={editIntervalId ? "تعديل نطاق الأرقام" : "إضافة نطاق أرقام جديد"}
+                title={editIntervalId ? i18n.catalog["text_65d9cbc39add"] : i18n.catalog["text_a65c4621a72a"]}
                 maxWidth="560px"
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setIntervalDialog(false)}>إلغاء</Button>
-                        <Button variant="primary" onClick={saveInterval}>حفظ</Button>
+                        <Button variant="secondary" onClick={() => setIntervalDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                        <Button variant="primary" onClick={saveInterval}>{i18n.catalog["text_ddfcaf9d0144"]}</Button>
                     </>
                 }
             >
                 <form onSubmit={(e) => { e.preventDefault(); saveInterval(); }}>
                     <div className="nr-info-banner">
                         <span className="nr-info-icon">{getIcon("info")}</span>
-                        <span>النطاق يجب أن يكون ضمن الحدود المسموحة (1 إلى {Number("9".repeat(objectData.number_length)).toLocaleString()}) ولا يتداخل مع نطاقات أخرى</span>
+                        <span>{i18n.catalog["text_98e9c9e2c7c6"]}{Number("9".repeat(objectData.number_length)).toLocaleString()}{i18n.catalog["text_543ae764b5c2"]}</span>
                     </div>
                     <div className="form-row">
-                        <TextInput label="الكود *" id="int-code" value={intCode} onChange={(e) => setIntCode(e.target.value)} required className="flex-1" placeholder="INT-01" />
+                        <TextInput label={i18n.catalog["text_d7e401b615ba"]} id="int-code" value={intCode} onChange={(e) => setIntCode(e.target.value)} required className="flex-1" placeholder={i18n.catalog["text_be93852f887b"]} />
                         <Select
-                            label="النوع"
+                            label={i18n.catalog["text_caa3f2bb4a36"]}
                             id="int-type"
                             value={intExternal}
                             onChange={(e) => setIntExternal(e.target.value)}
                             className="flex-1"
                             options={[
-                                { value: "false", label: "داخلي (تلقائي)" },
-                                { value: "true", label: "خارجي (يدوي)" },
+                                { value: "false", label: i18n.catalog["text_230d2cbaba15"] },
+                                { value: "true", label: i18n.catalog["text_136bf8bd5b76"] },
                             ]}
                         />
                     </div>
                     {!editIntervalId && (
                         <div className="form-row">
-                            <NumberInput label="من الرقم *" id="int-from" value={intFrom} onChange={setIntFrom} min={1} className="flex-1" />
-                            <NumberInput label="إلى الرقم *" id="int-to" value={intTo} onChange={setIntTo} min={1} className="flex-1" />
+                            <NumberInput label={i18n.catalog["text_650a13ff0c45"]} id="int-from" value={intFrom} onChange={setIntFrom} min={1} className="flex-1" />
+                            <NumberInput label={i18n.catalog["text_f3177d026e93"]} id="int-to" value={intTo} onChange={setIntTo} min={1} className="flex-1" />
                         </div>
                     )}
                     {editIntervalId && (
                         <div className="nr-info-banner" style={{ background: "rgba(245, 158, 11, 0.08)", borderColor: "rgba(245, 158, 11, 0.3)" }}>
                             <span className="nr-info-icon" style={{ color: "#f59e0b" }}>{getIcon("alert-triangle")}</span>
-                            <span>لتغيير حدود النطاق، استخدم وظيفة التوسيع من الجدول</span>
+                            <span>{i18n.catalog["text_ae9a74e54ff8"]}</span>
                         </div>
                     )}
-                    <Textarea label="الوصف" id="int-desc" value={intDesc} onChange={(e) => setIntDesc(e.target.value)} rows={2} />
+                    <Textarea label={i18n.catalog["text_95023fc76e1b"]} id="int-desc" value={intDesc} onChange={(e) => setIntDesc(e.target.value)} rows={2} />
                 </form>
             </Dialog>
 
@@ -735,36 +733,36 @@ export function NumberRangeManager({
             <Dialog
                 isOpen={assignDialog}
                 onClose={() => setAssignDialog(false)}
-                title="ربط مجموعة بنطاق أرقام"
+                title={i18n.catalog["text_389eef0c2c4c"]}
                 maxWidth="480px"
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setAssignDialog(false)}>إلغاء</Button>
-                        <Button variant="primary" onClick={saveAssignment}>ربط</Button>
+                        <Button variant="secondary" onClick={() => setAssignDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                        <Button variant="primary" onClick={saveAssignment}>{i18n.catalog["text_8840978a5919"]}</Button>
                     </>
                 }
             >
                 <form onSubmit={(e) => { e.preventDefault(); saveAssignment(); }}>
                     <Select
-                        label="المجموعة *"
+                        label={i18n.catalog["text_b4d2e9c57446"]}
                         id="assign-group"
                         value={assignGroupId}
                         onChange={(e) => setAssignGroupId(e.target.value)}
                         options={[
-                            { value: "", label: "— اختر مجموعة —" },
-                            ...(objectData.groups || []).map(g => ({ value: String(g.id), label: `${g.code} — ${g.name}` })),
+                            { value: "", label: i18n.catalog["text_7954f0831481"] },
+                            ...(objectData.groups || []).map(g => ({ value: String(g.id), label: catalogText(i18n, "text_ec39c7cc0c64", { value0: g.code, value1: g.name }) })),
                         ]}
                     />
                     <Select
-                        label="النطاق *"
+                        label={i18n.catalog["text_3d9e903b1ce4"]}
                         id="assign-interval"
                         value={assignIntervalId}
                         onChange={(e) => setAssignIntervalId(e.target.value)}
                         options={[
-                            { value: "", label: "— اختر نطاقاً —" },
+                            { value: "", label: i18n.catalog["text_e094cb7c305d"] },
                             ...(objectData.intervals || []).map(iv => ({
                                 value: String(iv.id),
-                                label: `${iv.code} (${iv.from_number.toLocaleString()} → ${iv.to_number.toLocaleString()})`,
+                                label: catalogText(i18n, "text_c3ef9f4b12fa", { value0: iv.code, value1: iv.from_number.toLocaleString(), value2: iv.to_number.toLocaleString() }),
                             })),
                         ]}
                     />
@@ -775,22 +773,22 @@ export function NumberRangeManager({
             <Dialog
                 isOpen={expandDialog}
                 onClose={() => setExpandDialog(false)}
-                title="توسيع نطاق الأرقام"
+                title={i18n.catalog["text_3c8b4eeae181"]}
                 maxWidth="480px"
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setExpandDialog(false)}>إلغاء</Button>
-                        <Button variant="primary" onClick={saveExpansion}>توسيع</Button>
+                        <Button variant="secondary" onClick={() => setExpandDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                        <Button variant="primary" onClick={saveExpansion}>{i18n.catalog["text_e3f5bab05753"]}</Button>
                     </>
                 }
             >
                 <form onSubmit={(e) => { e.preventDefault(); saveExpansion(); }}>
                     <div className="nr-info-banner" style={{ background: "rgba(245, 158, 11, 0.08)", borderColor: "rgba(245, 158, 11, 0.3)" }}>
                         <span className="nr-info-icon" style={{ color: "#f59e0b" }}>{getIcon("alert-triangle")}</span>
-                        <span>عملية التوسيع لا يمكن التراجع عنها وسيتم تسجيلها في سجل التوسعات</span>
+                        <span>{i18n.catalog["text_5c49c2aac290"]}</span>
                     </div>
-                    <NumberInput label="الحد الأعلى الجديد *" id="expand-new-to" value={expandNewTo} onChange={setExpandNewTo} min={1} />
-                    <Textarea label="سبب التوسيع" id="expand-reason" value={expandReason} onChange={(e) => setExpandReason(e.target.value)} rows={2} placeholder="أدخل سبب التوسيع للتوثيق..." />
+                    <NumberInput label={i18n.catalog["text_80f09dcbe4f0"]} id="expand-new-to" value={expandNewTo} onChange={setExpandNewTo} min={1} />
+                    <Textarea label={i18n.catalog["text_13463bd693d0"]} id="expand-reason" value={expandReason} onChange={(e) => setExpandReason(e.target.value)} rows={2} placeholder={i18n.catalog["text_d724ac3e58c5"]} />
                 </form>
             </Dialog>
 
@@ -808,13 +806,13 @@ export function NumberRangeManager({
                 isOpen={confirmDelete}
                 onClose={() => { setConfirmDelete(false); setDeleteTarget(null); }}
                 onConfirm={executeDelete}
-                title="تأكيد الحذف"
+                title={i18n.catalog["text_5f9cb54dc136"]}
                 message={
-                    deleteTarget?.type === "group" ? "هل أنت متأكد من حذف هذه المجموعة؟ سيتم حذف جميع الروابط المرتبطة بها."
-                        : deleteTarget?.type === "interval" ? "هل أنت متأكد من حذف هذا النطاق؟"
-                            : "هل أنت متأكد من إلغاء هذا الربط؟"
+                    deleteTarget?.type === "group" ? i18n.catalog["text_1cf407f0853b"]
+                        : deleteTarget?.type === "interval" ? i18n.catalog["text_adf144448fae"]
+                            : i18n.catalog["text_2eeb1db10345"]
                 }
-                confirmText="حذف"
+                confirmText={i18n.catalog["text_59ca629220a6"]}
                 confirmVariant="danger"
             />
         </div>

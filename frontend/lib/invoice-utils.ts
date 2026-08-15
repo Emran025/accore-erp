@@ -1,3 +1,5 @@
+import { catalogMessage } from "@/lib/i18n";
+
 // Invoice Printing Utilities - Migrated from common.js
 
 import { fetchAPI } from "./api";
@@ -65,7 +67,7 @@ export async function getSettings(): Promise<InvoiceSettings> {
         tax_number: data.tax_number,
         invoice_size: data.invoice_size || "thermal",
         footer_message: data.footer_message || data.footer_text,
-        currency_symbol: data.currency_symbol || "ر.س",
+        currency_symbol: data.currency_symbol || catalogMessage("text_feafe34f5add"),
         show_logo: data.show_logo !== false,
         show_qr: data.show_qr !== false,
         zatca_enabled: data.zatca_enabled === true,
@@ -73,7 +75,7 @@ export async function getSettings(): Promise<InvoiceSettings> {
       return systemSettings;
     }
   } catch (e) {
-    console.error("Failed to load settings", e);
+    console.error(catalogMessage("text_80874559d400"), e);
   }
   return {};
 }
@@ -100,7 +102,7 @@ export async function generateInvoiceHTML(
   qrDataUrl?: string
 ): Promise<string> {
   const isThermal = (settings.invoice_size || "thermal") === "thermal";
-  const currencySymbol = settings.currency_symbol || "ر.س";
+  const currencySymbol = settings.currency_symbol || catalogMessage("text_feafe34f5add");
 
   // Format currency locally for the invoice
   const localFormatCurrency = (amount: number): string => {
@@ -172,7 +174,7 @@ export async function generateInvoiceHTML(
             :root{ --accent: #0f172a; --muted:#6b7280; --surface:#ffffff }
             @page { 
                 margin: 0; 
-                size: ${isThermal ? "80mm auto" : "A4"};
+                size: ${isThermal ? catalogMessage("text_5821152a9979") : "A4"};
             }
             body { 
                 font-family: 'Cairo', 'Outfit', sans-serif; 
@@ -186,7 +188,7 @@ export async function generateInvoiceHTML(
             }
 
             .invoice-container{
-                width: ${isThermal ? "70mm" : "100%"};
+                width: ${isThermal ? "70mm" : catalogMessage("text_32e48995f98c")};
                 max-width: ${isThermal ? "70mm" : "820px"};
                 margin: 0 auto;
                 box-sizing: border-box;
@@ -202,7 +204,7 @@ export async function generateInvoiceHTML(
 
             .header h1{
               margin:0 0 6px 0;
-              font-size:${isThermal ? "1rem" : "1.6rem"};
+              font-size:${isThermal ? "1rem" : catalogMessage("text_9ef54f11a38e")};
               font-weight:700;
               color:var(--accent)
             }
@@ -316,47 +318,11 @@ export async function generateInvoiceHTML(
         </style>
     `;
 
-  return `
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>Invoice ${inv.invoice_number}</title>
-            ${style}
-        </head>
-        <body>
-            <div class="invoice-container">
-                <div class="header">
-                    <h1>${settings.store_name || "سوبر ماركت"}</h1>
-                    <p>${settings.store_address || ""}</p>
-                    <p>هاتف: ${settings.store_phone || ""}</p>
-                    ${settings.tax_number
-      ? `<p>الرقم الضريبي: <strong>${settings.tax_number}</strong></p>`
-      : ""
-    }
-                </div>
-
-                <div class="invoice-meta">
-                    <div>
-                        <strong>رقم الفاتورة:</strong> #${inv.invoice_number}
-                    </div>
-                    <div>
-                        <strong>التاريخ:</strong> ${formatDate(inv.created_at)}
-                    </div>
-                </div>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>الصنف</th>
-                            <th style="text-align:center">الكمية</th>
-                            <th style="text-align:left">السعر</th>
-                            <th style="text-align:left">الإجمالي</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${inv.items
-      .map(
-        (i) => `
+  return catalogMessage("text_55bb59e65a8a", { value0: inv.invoice_number, value1: style, value2: settings.store_name || catalogMessage("text_f2317073c393"), value3: settings.store_address || "", value4: settings.store_phone || "", value5: settings.tax_number
+        ? catalogMessage("text_26423f5bb3c5", { value0: settings.tax_number })
+        : "", value6: inv.invoice_number, value7: formatDate(inv.created_at), value8: inv.items
+        .map(
+          (i) => `
                             <tr>
                                 <td>${i.product_name}</td>
                                 <td style="text-align:center">${i.quantity}</td>
@@ -364,32 +330,8 @@ export async function generateInvoiceHTML(
                                 <td style="text-align:left">${localFormatCurrency(i.subtotal)}</td>
                             </tr>
                         `
-      )
-      .join("")}
-                    </tbody>
-                </table>
-
-                <div class="totals">
-                    <div class="total-row grand-total">
-                        <span>الإجمالي النهائي:</span>
-                        <span>${localFormatCurrency(finalTotal)}</span>
-                    </div>
-                </div>
-
-                <div class="footer">
-                    ${settings.show_qr !== false ? `<img src="${qrUrl}" class="barcode" alt="QR Code">` : ""}
-
-                    <p><strong>${settings.footer_message || "شكراً لزيارتكم!"
-    }</strong></p>
-                    <p>الموظف: ${inv.salesperson_name || "المسؤول"}</p>
-                    <p style="font-size: 0.7rem;
-              color: #777;">نظام إدارة أكور الذكي</p>
-                </div>
-            </div>
-            <div class="watermark">Supermarket System v1.0</div>
-        </body>
-        </html>
-    `;
+        )
+        .join(""), value9: localFormatCurrency(finalTotal), value10: settings.show_qr !== false ? `<img src="${qrUrl}" class="barcode" alt="QR Code">` : "", value11: settings.footer_message || catalogMessage("text_83159ef24844"), value12: inv.salesperson_name || catalogMessage("text_5087bf126a06") });
 }
 
 /**
@@ -399,7 +341,7 @@ export async function printInvoice(invoiceId: number): Promise<void> {
   // Verify printer connection (simulated)
   const isPrinterReady = await checkPrinterConnection();
   if (!isPrinterReady) {
-    throw new Error("فشل الاتصال بالطابعة. يرجى التحقق من الكابلات.");
+    throw new Error(catalogMessage("text_9766c95f3c29"));
   }
 
   // Get settings
@@ -408,7 +350,7 @@ export async function printInvoice(invoiceId: number): Promise<void> {
   // Fetch invoice details
   const response = await fetchAPI(API_ENDPOINTS.COMMERCIAL.SALES.INVOICE_BY_ID(invoiceId));
   if (!response.success && !response.invoice) {
-    throw new Error("فشل تحميل تفاصيل الفاتورة");
+    throw new Error(catalogMessage("text_c260a701b5b7"));
   }
 
   const inv = response.invoice as InvoiceData;
@@ -463,7 +405,7 @@ export async function printInvoice(invoiceId: number): Promise<void> {
       }
     }, 1000);
   } catch (e) {
-    console.error("Print error", e);
-    throw new Error("خطأ أثناء تحضير الفاتورة للطباعة");
+    console.error(catalogMessage("text_dbe5a40047e5"), e);
+    throw new Error(catalogMessage("text_e994699804f0"));
   }
 }

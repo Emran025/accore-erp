@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { useState, useEffect } from "react";
 import { getIcon } from "@/lib/icons";
 import { NavigationGroup } from "@/lib/navigation";
@@ -18,6 +19,7 @@ export function NavigationSidebar({
   onGroupSelect,
   onCollapsedChange
 }: NavigationSidebarProps) {
+    const { t: i18n } = useI18n();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
@@ -97,7 +99,7 @@ export function NavigationSidebar({
       <button
         className={`sidebar-toggle-btn ${isMobileOpen ? "mobile-open" : ""}`}
         onClick={handleToggle}
-        aria-label={isCollapsed ? "توسيع القائمة" : "طي القائمة"}
+        aria-label={isCollapsed ? i18n.catalog["text_5b3695df20ea"] : i18n.catalog["text_202fb152d810"]}
       >
         {getIcon("chevron-right")}
       </button>

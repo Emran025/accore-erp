@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { createCRUDStore } from './factories/createCRUDStore';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import { Product as Service } from '@/types';
@@ -10,12 +11,12 @@ export const useServiceStore = createCRUDStore<Service>({
     endpoint: API_ENDPOINTS.COMMERCIAL.SERVICES.BASE,
     storeName: 'service-store',
     messages: {
-        loadError: 'خطأ في تحميل الخدمات',
-        saveSuccess: 'تمت إضافة الخدمة بنجاح',
-        updateSuccess: 'تم تحديث الخدمة بنجاح',
-        saveError: 'خطأ في حفظ الخدمة',
-        deleteSuccess: 'تم حذف الخدمة',
-        deleteError: 'خطأ في حذف الخدمة',
+        loadError: catalogMessage("text_2567903dd0bd"),
+        saveSuccess: catalogMessage("text_9df81bf2a0d8"),
+        updateSuccess: catalogMessage("text_3b9e9f188077"),
+        saveError: catalogMessage("text_32040c7944f8"),
+        deleteSuccess: catalogMessage("text_ff360bbaf64a"),
+        deleteError: catalogMessage("text_8d15356c1d39"),
     },
     transform: (raw: unknown[]): Service[] =>
         (raw as Record<string, any>[]).map(s => ({

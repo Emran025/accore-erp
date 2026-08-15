@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText, catalogMessage } from "@/lib/i18n";
 import { MainLayout } from "@/components/layout";
 import { Button, EmailInput, Label, PasswordInput, SearchableSelect, Select, TabNavigation, TextInput } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -11,10 +12,11 @@ import { Suspense, useEffect, useState } from "react";
 import { Department, Employee, Role } from "@/types";
 
 const DocumentsTab = dynamic(() => import("../../components/DocumentsTab"), {
-    loading: () => <div className="p-10 text-center text-muted">جاري تحميل المستندات...</div>
+    loading: () => <div className="p-10 text-center text-muted">{catalogMessage("text_60e8ca919572")}</div>
 });
 
 function EditEmployeePageContent() {
+    const { t: i18n } = useI18n();
     const searchParams = useSearchParams();
     const id = searchParams.get("id") || "";
     const router = useRouter();
@@ -106,7 +108,7 @@ function EditEmployeePageContent() {
                 manager_id: emp.manager_id || '',
             });
         } catch (e) {
-            console.error("Failed to load data", e);
+            console.error(i18n.catalog["text_afa69443bb93"], e);
         } finally {
             setIsLoading(false);
         }
@@ -122,7 +124,7 @@ function EditEmployeePageContent() {
                 }
             }
         } catch (e) {
-            console.error("Failed to load number range groups", e);
+            console.error(i18n.catalog["text_8863d50a501e"], e);
         }
     };
 
@@ -140,7 +142,7 @@ function EditEmployeePageContent() {
                         setFormData(prev => ({ ...prev, employee_code: generatedNumber }));
                     }
                 } catch (error) {
-                    console.error("Failed to generate numbering code", error);
+                    console.error(i18n.catalog["text_5c64142f4a76"], error);
                 }
             }
         };
@@ -161,28 +163,28 @@ function EditEmployeePageContent() {
             });
 
             if (res.success !== false) {
-                alert('تم تحديث بيانات الموظف بنجاح');
+                alert(i18n.catalog["text_86fba7a2c048"]);
             } else {
-                alert('فشل التحديث: ' + res.message);
+                alert(i18n.catalog["text_95da6b41256f"] + res.message);
             }
         } catch (error) {
             console.error(error);
-            alert('حدث خطأ غير متوقع');
+            alert(i18n.catalog["text_cdd288620509"]);
         } finally {
             setIsLoading(false);
         }
     };
 
-    if (isLoading) return <div className="p-5 text-center">جاري التحميل...</div>;
+    if (isLoading) return <div className="p-5 text-center">{i18n.catalog["text_ceac78d7f5d3"]}</div>;
 
     return (
         <MainLayout >
             <div className="settings-wrapper animate-fade">
                 <TabNavigation
                     tabs={[
-                        { key: "info", label: "البيانات الأساسية", icon: "fa-user" },
-                        { key: "documents", label: "المستندات", icon: "fa-file" },
-                        { key: "financial", label: "البدلات والاستقطاعات", icon: "fa-coins" },
+                        { key: "info", label: i18n.catalog["text_a50e5beef8e3"], icon: "fa-user" },
+                        { key: "documents", label: i18n.catalog["text_9d66d0084b75"], icon: "fa-file" },
+                        { key: "financial", label: i18n.catalog["text_70b40aa1312b"], icon: "fa-coins" },
                     ]}
                     activeTab={activeTab}
                     onTabChange={setActiveTab}
@@ -195,24 +197,24 @@ function EditEmployeePageContent() {
                             <div className="section-card sales-card mb-4" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.5rem', gap: '0.5rem', color: 'var(--primary-color)' }}>
                                     <i className="fas fa-user-circle fa-lg"></i>
-                                    <h4 style={{ margin: 0 }}>المعلومات الشخصية</h4>
+                                    <h4 style={{ margin: 0 }}>{i18n.catalog["text_27a850003581"]}</h4>
                                 </div>
                                 <div className="form-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
-                                    <TextInput label="الاسم الكامل" name="full_name" required value={formData.full_name} onChange={handleChange} />
-                                    <TextInput label="رقم الهوية / الإقامة" name="national_id" value={formData.national_id} onChange={handleChange} />
-                                    <TextInput label="تاريخ الميلاد" type="date" name="date_of_birth" value={formData.date_of_birth} onChange={handleChange} />
+                                    <TextInput label={i18n.catalog["text_6c2ab9bdeb2c"]} name="full_name" required value={formData.full_name} onChange={handleChange} />
+                                    <TextInput label={i18n.catalog["text_216ef8eca6ac"]} name="national_id" value={formData.national_id} onChange={handleChange} />
+                                    <TextInput label={i18n.catalog["text_3364645354dd"]} type="date" name="date_of_birth" value={formData.date_of_birth} onChange={handleChange} />
                                     <Select
-                                        label="الجنس"
+                                        label={i18n.catalog["text_a79dffdd2070"]}
                                         name="gender"
                                         value={formData.gender}
                                         onChange={handleChange}
                                         options={[
-                                            { value: 'male', label: 'ذكر' },
-                                            { value: 'female', label: 'أنثى' }
+                                            { value: 'male', label: i18n.catalog["text_2f13379bf81e"] },
+                                            { value: 'female', label: i18n.catalog["text_d2ee47ec7d05"] }
                                         ]}
                                     />
-                                    <TextInput label="رقم الهاتف" name="phone" value={formData.phone} onChange={handleChange} />
-                                    <TextInput label="العنوان" name="address" value={formData.address} onChange={handleChange} />
+                                    <TextInput label={i18n.catalog["text_42095a7a6c15"]} name="phone" value={formData.phone} onChange={handleChange} />
+                                    <TextInput label={i18n.catalog["text_2d110e56d5f5"]} name="address" value={formData.address} onChange={handleChange} />
                                 </div>
                             </div>
 
@@ -220,75 +222,75 @@ function EditEmployeePageContent() {
                             <div className="section-card sales-card mb-4" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.5rem', gap: '0.5rem', color: 'var(--primary-color)' }}>
                                     <i className="fas fa-briefcase fa-lg"></i>
-                                    <h4 style={{ margin: 0 }}>معلومات التوظيف</h4>
+                                    <h4 style={{ margin: 0 }}>{i18n.catalog["text_374aa726c036"]}</h4>
                                 </div>
                                 <div className="form-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
-                                    <TextInput label="الرقم الوظيفي" name="employee_code" required value={formData.employee_code} onChange={handleChange} placeholder={nrGroups.length > 0 ? "يتم التوليد تلقائيا..." : "أدخل الرقم"} />
+                                    <TextInput label={i18n.catalog["text_092f08fd75ac"]} name="employee_code" required value={formData.employee_code} onChange={handleChange} placeholder={nrGroups.length > 0 ? i18n.catalog["text_3bebb10295e4"] : i18n.catalog["text_d353b8b69191"]} />
                                     {nrGroups.length > 0 && !formData.employee_code && (
                                         <Select
-                                            label="مجموعة الترقيم"
+                                            label={i18n.catalog["text_30b23b8e5db8"]}
                                             name="nr_group"
                                             value={selectedGroup}
                                             onChange={(e) => setSelectedGroup(e.target.value)}
                                             options={[
-                                                { value: '', label: 'اختر مجموعة الترقيم لتوليد رقم' },
+                                                { value: '', label: i18n.catalog["text_fdeaa0f5c478"] },
                                                 ...nrGroups.map(grp => ({ value: grp.id.toString(), label: grp.name }))
                                             ]}
                                         />
                                     )}
                                     <Select
-                                        label="المنصب الوظيفي"
+                                        label={i18n.catalog["text_c612bab8abc0"]}
                                         name="position_id"
                                         value={formData.position_id}
                                         onChange={handleChange}
                                         required
-                                        placeholder="اختر المنصب الوظيفي (الهيكل التنظيمي)"
+                                        placeholder={i18n.catalog["text_c3a8cfdd082f"]}
                                         options={positions.map(pos => ({
                                             value: pos.id,
-                                            label: `${pos.position_name_ar} (${pos.job_title?.title_ar || 'بدون مسمى'})`
+                                            label: catalogText(i18n, "text_e11f55b693d8", { value0: pos.position_name_ar, value1: pos.job_title?.title_ar || i18n.catalog["text_1b8b7c9f8038"] })
                                         }))}
                                     />
-                                    <TextInput label="تاريخ التعيين" type="date" name="hire_date" required value={formData.hire_date} onChange={handleChange} />
+                                    <TextInput label={i18n.catalog["text_057fc55c3df6"]} type="date" name="hire_date" required value={formData.hire_date} onChange={handleChange} />
                                     <Select
-                                        label="نوع العقد"
+                                        label={i18n.catalog["text_2b9fa3db572a"]}
                                         name="contract_type"
                                         value={formData.contract_type}
                                         onChange={handleChange}
                                         options={[
-                                            { value: 'full_time', label: 'دوام كامل' },
-                                            { value: 'part_time', label: 'دوام جزئي' },
-                                            { value: 'contract', label: 'عقد محدد المدة' },
-                                            { value: 'freelance', label: 'تعاون / عمل حر' }
+                                            { value: 'full_time', label: i18n.catalog["text_ae607c34c510"] },
+                                            { value: 'part_time', label: i18n.catalog["text_68b482db7711"] },
+                                            { value: 'contract', label: i18n.catalog["text_e2e8af908ce5"] },
+                                            { value: 'freelance', label: i18n.catalog["text_826a0eb2ee68"] }
                                         ]}
                                     />
                                     <div className="form-group">
-                                        <Label>المدير المباشر</Label>
+                                        <Label>{i18n.catalog["text_35a54fa24d99"]}</Label>
                                         <SearchableSelect
                                             name="manager_id"
                                             value={formData.manager_id}
                                             onChange={(val) => setFormData({ ...formData, manager_id: val?.toString() || '' })}
                                             options={[
-                                                { value: '', label: 'بدون مدير (إدارة عليا)' },
+                                                { value: '', label: i18n.catalog["text_15f6796f46e5"] },
                                                 ...managers.filter(m => m.id.toString() !== id).map(m => ({
                                                     value: m.id.toString(),
-                                                    label: `${m.full_name} (${m.employee_code})`
+                                                    label: catalogText(i18n, "text_e11f55b693d8", { value0: m.full_name, value1: m.employee_code })
                                                 }))
                                             ]}
                                         />
                                     </div>
                                     <Select
-                                        label="حالة التوظيف"
+                                        label={i18n.catalog["text_b9fae6c6b12f"]}
                                         name="employment_status"
                                         value={formData.employment_status}
                                         onChange={handleChange}
                                         options={[
-                                            { value: 'active', label: 'نشط' },
-                                            { value: 'suspended', label: 'معلق' },
-                                            { value: 'terminated', label: 'منهي خدماته' }
+                                            { value: 'active', label: i18n.catalog["text_629e90b3af3d"] },
+                                            { value: 'suspended', label: i18n.catalog["text_701d5d7a86f9"] },
+                                            { value: 'terminated', label: i18n.catalog["text_ec0852e29a7e"] }
                                         ]}
                                     />
                                     {formData.employment_status === 'terminated' && (
-                                        <TextInput label="تاريخ إنهاء الخدمة" type="date" name="termination_date" value={formData.termination_date} onChange={handleChange} />
+                                        <TextInput label={i18n.catalog["text_89e5dd6e919b"]} type="date" name="termination_date" value={formData.termination_date} onChange={handleChange} />
                                     )}
                                 </div>
                             </div>
@@ -297,14 +299,14 @@ function EditEmployeePageContent() {
                             <div className="section-card sales-card mb-4" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.5rem', gap: '0.5rem', color: 'var(--primary-color)' }}>
                                     <i className="fas fa-money-check-alt fa-lg"></i>
-                                    <h4 style={{ margin: 0 }}>المعلومات المالية</h4>
+                                    <h4 style={{ margin: 0 }}>{i18n.catalog["text_6b7790de11d3"]}</h4>
                                 </div>
                                 <div className="form-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
-                                    <TextInput label="الراتب الأساسي" type="number" name="base_salary" required value={formData.base_salary} onChange={handleChange} min="0" step="0.01" />
-                                    <TextInput label="رقم التأمينات (GOSI)" name="gosi_number" value={formData.gosi_number} onChange={handleChange} />
-                                    <TextInput label="اسم البنك" name="bank_name" value={formData.bank_name} onChange={handleChange} />
-                                    <TextInput label="رقم الآيبان (IBAN)" name="iban" value={formData.iban} onChange={handleChange} />
-                                    <TextInput label="رصيد الإجازات" type="number" name="vacation_days_balance" value={formData.vacation_days_balance} onChange={handleChange} />
+                                    <TextInput label={i18n.catalog["text_73ad6b20ceb7"]} type="number" name="base_salary" required value={formData.base_salary} onChange={handleChange} min="0" step="0.01" />
+                                    <TextInput label={i18n.catalog["text_79cc07b91844"]} name="gosi_number" value={formData.gosi_number} onChange={handleChange} />
+                                    <TextInput label={i18n.catalog["text_c6d5a7b17fc0"]} name="bank_name" value={formData.bank_name} onChange={handleChange} />
+                                    <TextInput label={i18n.catalog["text_2f6a9a7e78ee"]} name="iban" value={formData.iban} onChange={handleChange} />
+                                    <TextInput label={i18n.catalog["text_65c7b5f96855"]} type="number" name="vacation_days_balance" value={formData.vacation_days_balance} onChange={handleChange} />
                                 </div>
                             </div>
 
@@ -312,17 +314,17 @@ function EditEmployeePageContent() {
                             <div className="section-card sales-card mb-4" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.5rem', gap: '0.5rem', color: 'var(--primary-color)' }}>
                                     <i className="fas fa-lock fa-lg"></i>
-                                    <h4 style={{ margin: 0 }}>تحديث بيانات الدخول</h4>
+                                    <h4 style={{ margin: 0 }}>{i18n.catalog["text_5e1aafd958cf"]}</h4>
                                 </div>
                                 <div className="form-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
-                                    <EmailInput label="البريد الإلكتروني" name="email" required value={formData.email} onChange={handleChange} />
-                                    <PasswordInput label="كلمة المرور الجديدة" name="password" value={formData.password} onChange={handleChange} minLength={6} placeholder="اتركه فارغاً إذا لم ترغب بالتغيير" />
+                                    <EmailInput label={i18n.catalog["text_ddf0fca39a4f"]} name="email" required value={formData.email} onChange={handleChange} />
+                                    <PasswordInput label={i18n.catalog["text_202b9814ea8b"]} name="password" value={formData.password} onChange={handleChange} minLength={6} placeholder={i18n.catalog["text_f80743fc4075"]} />
                                 </div>
                             </div>
 
                             <div className="form-actions" style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-                                <Button variant="secondary" onClick={() => router.push('/06-human-capital/workforce-admin/employee-master/employees-list')}>إلغاء</Button>
-                                <Button type="submit">حفظ التعديلات</Button>
+                                <Button variant="secondary" onClick={() => router.push('/06-human-capital/workforce-admin/employee-master/employees-list')}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                                <Button type="submit">{i18n.catalog["text_6c03d6737c2f"]}</Button>
                             </div>
                         </form>
                     )}
@@ -333,8 +335,8 @@ function EditEmployeePageContent() {
 
                     {activeTab === 'financial' && (
                         <div className="sales-card p-4">
-                            <h3>البدلات والاستقطاعات</h3>
-                            <p>سيتم تفعيل إدارة البدلات قريباً.</p>
+                            <h3>{i18n.catalog["text_70b40aa1312b"]}</h3>
+                            <p>{i18n.catalog["text_f0e5718c8a5b"]}</p>
                         </div>
                     )}
                 </div>
@@ -345,8 +347,9 @@ function EditEmployeePageContent() {
 
 
 export default function EditEmployeePage() {
+    const { t: i18n } = useI18n();
     return (
-        <Suspense fallback={<div className="p-8 text-center">جاري التحميل...</div>}>
+        <Suspense fallback={<div className="p-8 text-center">{i18n.catalog["text_ceac78d7f5d3"]}</div>}>
             <EditEmployeePageContent />
         </Suspense>
     );

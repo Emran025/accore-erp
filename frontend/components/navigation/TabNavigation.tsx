@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { useState, useRef, useEffect } from "react";
 import { getIcon } from "@/lib/icons";
 import { Button } from "../ui";
@@ -64,6 +65,7 @@ function MobileTabDropdown({
 }
 
 export function TabNavigation({ tabs, activeTab, onTabChange, className = "" }: TabNavigationProps) {
+    const { t: i18n } = useI18n();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
@@ -128,7 +130,7 @@ export function TabNavigation({ tabs, activeTab, onTabChange, className = "" }: 
         <button
           className={`scroll-btn right ${showRightArrow ? "visible" : "hidden"}`}
           onClick={() => scroll("right")}
-          aria-label="Scroll right"
+          aria-label={i18n.catalog["text_366bd578350a"]}
           type="button"
         >
           <i className="fas fa-chevron-right"></i>
@@ -153,7 +155,7 @@ export function TabNavigation({ tabs, activeTab, onTabChange, className = "" }: 
         <button
           className={`scroll-btn left ${showLeftArrow ? "visible" : "hidden"}`}
           onClick={() => scroll("left")}
-          aria-label="Scroll left"
+          aria-label={i18n.catalog["text_35dfa1045cb2"]}
           type="button"
         >
           <i className="fas fa-chevron-left"></i>

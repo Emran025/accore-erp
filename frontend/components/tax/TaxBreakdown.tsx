@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText, catalogMessage } from "@/lib/i18n";
 import { formatCurrency } from "@/lib/utils";
 
 export interface TaxLine {
@@ -32,11 +33,11 @@ interface TaxBreakdownProps {
 }
 
 const defaultLabels = {
-  taxBreakdown: "تفاصيل الضريبة",
-  vat: "ضريبة القيمة المضافة",
-  rate: "النسبة",
-  amount: "المبلغ",
-  authority: "الهيئة",
+  taxBreakdown: catalogMessage("text_1c59f4c63c96"),
+  vat: catalogMessage("text_98dcf296111b"),
+  rate: catalogMessage("text_0b39fb8d555d"),
+  amount: catalogMessage("text_1cd480f91b24"),
+  authority: catalogMessage("text_aeea8d57eb69"),
 };
 
 /**
@@ -52,6 +53,7 @@ export function TaxBreakdown({
   compact = false,
   labels = {},
 }: TaxBreakdownProps) {
+    const { t: i18n } = useI18n();
   const l = { ...defaultLabels, ...labels };
 
   // New Tax Engine: multiple lines
@@ -81,7 +83,7 @@ export function TaxBreakdown({
             }}
           >
             <span>
-              {line.tax_type_code} ({line.tax_authority_code}) {line.rate > 0 ? `– ${(line.rate * 100).toFixed(1)}%` : `– مقطوع`}
+              {line.tax_type_code} ({line.tax_authority_code}) {line.rate > 0 ? catalogText(i18n, "text_8b53b6db3826", { value0: (line.rate * 100).toFixed(1) }) : i18n.catalog["text_d48aaa3d66b7"]}
             </span>
             <span className="tax-amount">{formatCurrency(line.tax_amount)}</span>
           </div>

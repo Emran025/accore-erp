@@ -1,5 +1,6 @@
 "use client";
 
+import { catalogMessage } from "@/lib/i18n";
 import { Button } from "@/components/ui/Button";
 
 export interface StepCheck {
@@ -68,10 +69,10 @@ export function StepNavigation({
     onPrevious,
     onCancel,
     onSave,
-    nextLabel = "الخطوة التالية",
-    previousLabel = "السابق",
-    cancelLabel = "إلغاء",
-    saveLabel = "حفظ وإتمام العملية",
+    nextLabel = catalogMessage("text_e161f8a04285"),
+    previousLabel = catalogMessage("text_a9e9d067101a"),
+    cancelLabel = catalogMessage("text_9a30dc2a96b8"),
+    saveLabel = catalogMessage("text_5b745f48a0c3"),
     isNextDisabled = false,
     isSaveDisabled = false,
     isLoading = false,

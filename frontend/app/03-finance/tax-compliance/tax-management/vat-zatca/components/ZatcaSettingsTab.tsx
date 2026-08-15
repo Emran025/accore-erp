@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { PageSubHeader } from "@/components/layout";
 import { Button, showToast } from "@/components/ui";
 import { TextInput } from "@/components/ui/TextInput";
@@ -12,6 +13,7 @@ import { TaxAuthority } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 
 export function ZatcaSettingsTab() {
+    const { t: i18n } = useI18n();
     const [authority, setAuthority] = useState<TaxAuthority | null>(null);
     const [config, setConfig] = useState<any>({});
 
@@ -44,8 +46,8 @@ export function ZatcaSettingsTab() {
                 }
             }
         } catch (error) {
-            console.error("Error loading Tax Authority setup", error);
-            showToast("خطأ في تحميل إعدادات هيئة الضرائب والزكاة", "error");
+            console.error(i18n.catalog["text_71a1ab31e78a"], error);
+            showToast(i18n.catalog["text_5f8e4ede7a16"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -74,11 +76,11 @@ export function ZatcaSettingsTab() {
                 method: "PUT",
                 body: JSON.stringify(payload),
             });
-            showToast("تم حفظ سياسة الوصول الفني للهيئة بنجاح", "success");
+            showToast(i18n.catalog["text_017690f38660"], "success");
             loadAuthority();
         } catch (error) {
-            console.error("Error saving authority framework data.", error);
-            showToast("حدث خطأ في تحديث البيانات. يرجى مراجعة الصلاحيات.", "error");
+            console.error(i18n.catalog["text_65da8cc8c0e2"], error);
+            showToast(i18n.catalog["text_9fa7bdbaae3f"], "error");
         } finally {
             setIsSaving(false);
         }
@@ -86,7 +88,7 @@ export function ZatcaSettingsTab() {
 
     const handleOnboard = async () => {
         if (!config.zatca_otp) {
-            showToast("يرجى إدخال رمز OTP من بوابة المطوّرين أو Fatoora", "error");
+            showToast(i18n.catalog["text_fe268d45c1d8"], "error");
             return;
         }
 
@@ -107,77 +109,76 @@ export function ZatcaSettingsTab() {
             });
 
             if (response.success) {
-                showToast("تم إكمال الربط الأمني/الفني للهيئة بنجاح! تم التقاط التوكن.", "success");
+                showToast(i18n.catalog["text_9027a03111fe"], "success");
                 loadAuthority(); // Reload to snatch the updated config
             } else {
-                showToast(response.message || "فشلت عملية الربط مع خوادم الحكومة.", "error");
+                showToast(response.message || i18n.catalog["text_b245062a9a4c"], "error");
             }
         } catch (error) {
-            console.error("Onboarding logic execution error:", error);
-            showToast("بيانات الاعتماد مرفوضة من الهيئة. الاتصال مغلق.", "error");
+            console.error(i18n.catalog["text_0c3039143459"], error);
+            showToast(i18n.catalog["text_778ba406d30f"], "error");
         } finally {
             setIsOnboarding(false);
         }
     };
 
     if (isLoading) {
-        return <div className="empty-state"><p>جارٍ إنشاء قنوات الاتصال بمحرك الضرائب الأساسي (Tax Engine)...</p></div>;
+        return <div className="empty-state"><p>{i18n.catalog["text_2d3d3199b2b2"]}</p></div>;
     }
 
     if (!authority) {
-        return <div className="empty-state"><p>عذراً، لم يتم العثور على أي سلطة ضريبية نشطة (Tax Authority) في النظام. يرجى تكوين خادم الضرائب في الخلفية.</p></div>;
+        return <div className="empty-state"><p>{i18n.catalog["text_479e3ef175db"]}</p></div>;
     }
 
     return (
         <div className="animate-fade">
             <PageSubHeader
-                title={`سياسات الاتصال والامتثال: ${authority.name} (${authority.code})`}
+                title={catalogText(i18n, "text_4a93c7a1a80c", { value0: authority.name, value1: authority.code })}
                 titleIcon="shield-check"
                 actions={
                     <div className="action-buttons">
-                        <Button variant="secondary" onClick={loadAuthority} icon="undo">الإلغاء (Reload)</Button>
-                        <Button variant="primary" onClick={handleSave} icon="save" isLoading={isSaving}>حفظ سياسات الوصول</Button>
+                        <Button variant="secondary" onClick={loadAuthority} icon="undo">{i18n.catalog["text_adc4c9205d66"]}</Button>
+                        <Button variant="primary" onClick={handleSave} icon="save" isLoading={isSaving}>{i18n.catalog["text_2eec8ae8fd7d"]}</Button>
                     </div>
                 }
             />
 
             <div className="alert alert-info">
                 <i className="fa-solid fa-lock me-2 ms-2"></i>
-                <strong>نظام الحماية والأمان الجمركي العالمي:</strong>
-                لا يُسمح بإعطاء الوصول لقواعد البيانات بشكل مباشر. يجب اختيار نوع الاتصال "Push API" (דفع البيانات وتوقيعها للحكومة) أو سياسات "Pull" حسب موافقات الأمن السيبراني.
-            </div>
+                <strong>{i18n.catalog["text_57b4542bd7af"]}</strong>
+                {i18n.catalog["text_a0b2c050c7d1"]}</div>
 
             <div className="form-group checkbox-group my-3">
                 <Checkbox
                     id="is_active"
-                    label={`تفعيل الارتباط والتكامل الفعّال مع هيئة ${authority.code}`}
+                    label={catalogText(i18n, "text_95e69bd88e88", { value0: authority.code })}
                     checked={authority.is_active}
                     onChange={(e) => setAuthority({ ...authority, is_active: e.target.checked })}
                 />
-                <small className="text-muted">تفعيل هذا الخيار سيطبق الضرائب والرسوم التابعة لهذه السلطة أثناء معالجة الفواتير، ويُفعّل بوابات الاتصال.</small>
+                <small className="text-muted">{i18n.catalog["text_29e410b45c44"]}</small>
             </div>
 
             <div className="sales-card">
-                <h3><i className="fa-solid fa-network-wired me-2 ms-2"></i>سياسة الربط الخارجي</h3>
+                <h3><i className="fa-solid fa-network-wired me-2 ms-2"></i>{i18n.catalog["text_949d1b456a76"]}</h3>
                 <div className="row mt-3">
                     <div className="col-md-6 form-group">
                         <Select
-                            label="بروتوكول التكامل (Integration Strategy)"
+                            label={i18n.catalog["text_28cf76c094e5"]}
                             value={authority.connection_type || 'none'}
                             onChange={(e) => setAuthority({ ...authority, connection_type: e.target.value as any })}
                             options={[
-                                { value: "none", label: "بدون ربط (داخلي فقط) / Offline" },
-                                { value: "push_api", label: "التوقيع وإرسال XML للحكومة (ZATCA Model)" },
-                                { value: "pull_key", label: "منح كود للوكالة لسحب البيانات محلياً" }
+                                { value: "none", label: i18n.catalog["text_37b53cf91512"] },
+                                { value: "push_api", label: i18n.catalog["text_b6d69e321ff2"] },
+                                { value: "pull_key", label: i18n.catalog["text_c319b9c7bcda"] }
                             ]}
                         />
                     </div>
                     <div className="col-md-6 form-group">
                         <TextInput
-                            label="الخوادم الطرفية الحكومية (Endpoint URL)"
+                            label={i18n.catalog["text_bcc51e304775"]}
                             value={authority.endpoint_url || ''}
                             onChange={(e) => setAuthority({ ...authority, endpoint_url: e.target.value })}
-                            placeholder="https://gw-fatoora.zatca.gov.sa/e-invoicing"
+                            placeholder={i18n.catalog["text_70dcf24d6f7c"]}
                         />
                     </div>
                 </div>
@@ -186,11 +187,11 @@ export function ZatcaSettingsTab() {
                     <div className="form-row border-top pt-3 mt-2">
                         <div className="form-group w-100">
                             <TextInput
-                                label="بيانات الاعتماد الأمنية الخام (Secret Key / OAuth / Token) [Encrypted In DB]"
+                                label={i18n.catalog["text_4fa6cd49db4b"]}
                                 value={authority.connection_credentials || ''}
                                 type="password"
                                 onChange={(e) => setAuthority({ ...authority, connection_credentials: e.target.value })}
-                                placeholder="مخفي آلياً... اتركه فارغاً للاحتفاظ بالقيمة القديمة."
+                                placeholder={i18n.catalog["text_0bc92e9c66bd"]}
                             />
                         </div>
                     </div>
@@ -198,27 +199,27 @@ export function ZatcaSettingsTab() {
             </div>
 
             <div className="sales-card compact">
-                <h3>{getIcon("info-circle")} بيانات الاعتماد (الرقم الضريبي وتفاصيل الشهادات للمرحلة 2)</h3>
+                <h3>{getIcon("info-circle")} {i18n.catalog["text_4c7899251879"]}</h3>
 
                 <div className="row mt-3">
                     <div className="col-md-6 form-group">
                         <Select
-                            label="بيئة العمل الرسمية (Environment)"
+                            label={i18n.catalog["text_64ab125b83c0"]}
                             value={config.zatca_environment}
                             onChange={(e) => setConfig({ ...config, zatca_environment: e.target.value })}
                             options={[
-                                { value: "sandbox", label: "بيئة المطورين والاختبار (Sandbox)" },
-                                { value: "simulation", label: "بيئة المحاكاة للحكومة (Simulation)" },
-                                { value: "production", label: "البيئة الإنتاجية الحية والمراقبة (Production)" }
+                                { value: "sandbox", label: i18n.catalog["text_5b2f8a6593d3"] },
+                                { value: "simulation", label: i18n.catalog["text_f5f6f2634dc4"] },
+                                { value: "production", label: i18n.catalog["text_a305a53b1171"] }
                             ]}
                         />
                     </div>
                     <div className="col-md-6 form-group">
                         <TextInput
-                            label="الرقم الضريبي للمنشأة (VAT Number) *"
+                            label={i18n.catalog["text_66978ceda822"]}
                             value={config.zatca_vat_number}
                             onChange={(e) => setConfig({ ...config, zatca_vat_number: e.target.value })}
-                            placeholder="310XXXXXXXXXXXXX"
+                            placeholder={i18n.catalog["text_d4be10fdacd0"]}
                         />
                     </div>
                 </div>
@@ -226,33 +227,33 @@ export function ZatcaSettingsTab() {
                 <div className="row">
                     <div className="col-md-6 form-group">
                         <TextInput
-                            label="اسم المنشأة/الشركة بالإنجليزية (Organisation Name) *"
+                            label={i18n.catalog["text_5764d58b757e"]}
                             value={config.zatca_org_name}
                             onChange={(e) => setConfig({ ...config, zatca_org_name: e.target.value })}
-                            placeholder="e.g. My Global Co Ltd"
+                            placeholder={i18n.catalog["text_14e7a0e62a8a"]}
                         />
                     </div>
                     <div className="col-md-6 form-group">
                         <TextInput
-                            label="اسم النظام/الفرع (Common Name/Unit) *"
+                            label={i18n.catalog["text_e991cf23cc2e"]}
                             value={config.zatca_org_unit_name}
                             onChange={(e) => setConfig({ ...config, zatca_org_unit_name: e.target.value })}
-                            placeholder="Riyadh Branch / IT"
+                            placeholder={i18n.catalog["text_9fa2ff4d2ddb"]}
                         />
                     </div>
                 </div>
 
                 <div className="alert alert-secondary mt-3">
-                    <h5 className="mb-2"><i className="fa-solid fa-key text-warning me-2 ms-2"></i>استخراج شهادة الربط (CSR & OTP)</h5>
-                    <p className="text-muted mb-3">للربط الصارم مع بروتوكولات الحكومة، صرّح بالنظام عبر إدخال رمز OTP صالح ليتم تسجيله بخادم الضرائب وتوليد الشهادات الرقمية للتوقيع (Binary Security Token).</p>
+                    <h5 className="mb-2"><i className="fa-solid fa-key text-warning me-2 ms-2"></i>{i18n.catalog["text_4dce4f2dece8"]}</h5>
+                    <p className="text-muted mb-3">{i18n.catalog["text_5cdabebfd94b"]}</p>
 
                     <div className="row align-items-end">
                         <div className="col-md-8 form-group mb-0">
                             <TextInput
-                                label="رمز التفعيل (OTP) من بوابة الفوترة"
+                                label={i18n.catalog["text_9969b29b5de9"]}
                                 value={config.zatca_otp}
                                 onChange={(e) => setConfig({ ...config, zatca_otp: e.target.value })}
-                                placeholder="123456"
+                                placeholder={i18n.catalog["text_8d969eef6eca"]}
                             />
                         </div>
                         <div className="col-md-4">
@@ -263,8 +264,7 @@ export function ZatcaSettingsTab() {
                                 isLoading={isOnboarding}
                                 className="w-100"
                             >
-                                طلب اتصال آمن (Onboard)
-                            </Button>
+                                {i18n.catalog["text_61410a44ae85"]}</Button>
                         </div>
                     </div>
                 </div>
@@ -272,12 +272,12 @@ export function ZatcaSettingsTab() {
                 {config.zatca_binary_token && (
                     <div className="summary-stat-box mt-3">
                         <div className="stat-item">
-                            <span className="stat-label">حالة الشهادة الأمنية وتخزين المفاتيح</span>
-                            <span className="badge badge-success mt-1"><i className="fa-solid fa-check mx-1"></i>Token Acquired - Secure</span>
+                            <span className="stat-label">{i18n.catalog["text_1d27ab1f3951"]}</span>
+                            <span className="badge badge-success mt-1"><i className="fa-solid fa-check mx-1"></i>{i18n.catalog["text_e6d10eeeb027"]}</span>
                         </div>
                         <div className="stat-item">
-                            <span className="stat-label">الرقم المرجعي للشهادة (Request ID)</span>
-                            <code className="stat-value text-muted">{config.zatca_request_id || "N/A"}</code>
+                            <span className="stat-label">{i18n.catalog["text_18084e520f19"]}</span>
+                            <code className="stat-value text-muted">{config.zatca_request_id || i18n.catalog["text_e2f79e5b6033"]}</code>
                         </div>
                     </div>
                 )}
@@ -285,16 +285,16 @@ export function ZatcaSettingsTab() {
 
             <div className="invoice-info bg-light">
                 <div className="info-row">
-                    <span className="label fw-bold"><i className="fa-solid fa-code-merge me-2 ms-2 text-primary"></i>تأكيد الامتثال للالتزامات الحكومية</span>
+                    <span className="label fw-bold"><i className="fa-solid fa-code-merge me-2 ms-2 text-primary"></i>{i18n.catalog["text_562769fa6a1f"]}</span>
                 </div>
                 <div className="info-row text-secondary">
-                    <span>✓</span> <span className="value ms-2 ps-2 border-end">توحيد كامل بقاعدة واحدة لتجنب تجزئة الضرائب</span>
+                    <span>✓</span> <span className="value ms-2 ps-2 border-end">{i18n.catalog["text_782fcb9f4e4b"]}</span>
                 </div>
                 <div className="info-row text-secondary">
-                    <span>✓</span> <span className="value ms-2 ps-2 border-end">التوقيع المحلي قبل الضخ للـ API الحكومي (Push Mode)</span>
+                    <span>✓</span> <span className="value ms-2 ps-2 border-end">{i18n.catalog["text_35482b26d556"]}</span>
                 </div>
                 <div className="info-row text-secondary">
-                    <span>✓</span> <span className="value ms-2 ps-2 border-end">منع الوصول المباشر لقواعد البيانات للحماية ضد الثغرات (Zero DB Access)</span>
+                    <span>✓</span> <span className="value ms-2 ps-2 border-end">{i18n.catalog["text_7d394e4c9590"]}</span>
                 </div>
             </div>
         </div>

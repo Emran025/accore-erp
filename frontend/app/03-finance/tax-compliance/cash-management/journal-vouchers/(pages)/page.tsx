@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Column, ConfirmDialog, Dialog, NumberInput, Table, showToast } from "@/components/ui";
 import { TextInput } from "@/components/ui/TextInput";
@@ -48,6 +49,7 @@ interface Voucher {
 }
 
 export default function JournalVouchersPage() {
+    const { t: i18n } = useI18n();
   const [user, setUser] = useState<User | null>(null);
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
@@ -82,14 +84,14 @@ export default function JournalVouchersPage() {
       setIsLoading(true);
       const response = await fetchAPI(`${API_ENDPOINTS.FINANCE.TREASURY.VOUCHERS.BASE}?page=${page}&limit=${itemsPerPage}`);
       if (!response.success || !Array.isArray(response.data)) {
-        throw new Error(response.message || "فشل تحميل السندات");
+        throw new Error(response.message || i18n.catalog["text_aa47a6dab24d"]);
       }
       setVouchers(response.data as Voucher[]);
       const pagination = response.pagination as { total_pages?: number } | undefined;
       setTotalPages(pagination?.total_pages ?? 1);
       setCurrentPage(page);
     } catch {
-      showToast("خطأ في تحميل السندات", "error");
+      showToast(i18n.catalog["text_e1e1dc7023c4"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -111,7 +113,7 @@ export default function JournalVouchersPage() {
       if (ccRes.success && ccRes.data) setCostCenters(ccRes.data as CenterOption[]);
       if (pcRes.success && pcRes.data) setProfitCenters(pcRes.data as CenterOption[]);
     } catch {
-      console.error("Error loading lookups");
+      console.error(i18n.catalog["text_6cbd94092239"]);
     }
   }, []);
 
@@ -143,7 +145,7 @@ export default function JournalVouchersPage() {
       setSelectedVoucher(response.voucher as Voucher || voucher);
       setViewDialog(true);
     } catch {
-      showToast("خطأ في تحميل تفاصيل السند", "error");
+      showToast(i18n.catalog["text_01e0ae615b5b"], "error");
     }
   };
 
@@ -156,7 +158,7 @@ export default function JournalVouchersPage() {
 
   const removeLine = (index: number) => {
     if (formData.lines.length <= 2) {
-      showToast("يجب أن يحتوي السند على سطرين على الأقل", "error");
+      showToast(i18n.catalog["text_2e8cc203a4be"], "error");
       return;
     }
     setFormData({
@@ -185,7 +187,7 @@ export default function JournalVouchersPage() {
 
   const handleSubmit = async () => {
     if (!formData.description.trim()) {
-      showToast("يرجى إدخال وصف السند", "error");
+      showToast(i18n.catalog["text_bb2eed2ae1f8"], "error");
       return;
     }
 
@@ -194,12 +196,12 @@ export default function JournalVouchersPage() {
     );
 
     if (validLines.length < 2) {
-      showToast("يجب إدخال سطرين على الأقل", "error");
+      showToast(i18n.catalog["text_f6278da2140e"], "error");
       return;
     }
 
     if (!isBalanced()) {
-      showToast("السند غير متوازن - المدين لا يساوي الدائن", "error");
+      showToast(i18n.catalog["text_2f2d8c1a6e59"], "error");
       return;
     }
 
@@ -221,21 +223,21 @@ export default function JournalVouchersPage() {
         method: "POST",
         body: JSON.stringify(payload),
       });
-      showToast("تم إنشاء السند بنجاح", "success");
+      showToast(i18n.catalog["text_1da89a2b2c05"], "success");
       setFormDialog(false);
       loadVouchers(currentPage);
     } catch {
-      showToast("خطأ في حفظ السند", "error");
+      showToast(i18n.catalog["text_9709a87f3bfe"], "error");
     }
   };
 
   const postVoucher = async (id: number) => {
     try {
       await fetchAPI(API_ENDPOINTS.FINANCE.TREASURY.VOUCHERS.POST(id), { method: "POST" });
-      showToast("تم ترحيل السند", "success");
+      showToast(i18n.catalog["text_c205f0fe3ac7"], "success");
       loadVouchers(currentPage);
     } catch {
-      showToast("خطأ في ترحيل السند", "error");
+      showToast(i18n.catalog["text_6f4e9e60605a"], "error");
     }
   };
 
@@ -249,67 +251,67 @@ export default function JournalVouchersPage() {
 
     try {
       await fetchAPI(API_ENDPOINTS.FINANCE.TREASURY.VOUCHERS.withId(deleteId), { method: "DELETE" });
-      showToast("تم حذف السند", "success");
+      showToast(i18n.catalog["text_67fb2a1bd795"], "success");
       loadVouchers(currentPage);
     } catch {
-      showToast("خطأ في حذف السند", "error");
+      showToast(i18n.catalog["text_efa19ed994b9"], "error");
     }
   };
 
   const columns: Column<Voucher>[] = [
-    { key: "voucher_number", header: "رقم السند", dataLabel: "رقم السند" },
+    { key: "voucher_number", header: i18n.catalog["text_b1f955190176"], dataLabel: i18n.catalog["text_b1f955190176"] },
     {
       key: "voucher_date",
-      header: "التاريخ",
-      dataLabel: "التاريخ",
+      header: i18n.catalog["text_d90c384199ac"],
+      dataLabel: i18n.catalog["text_d90c384199ac"],
       render: (item) => formatDate(item.voucher_date),
     },
-    { key: "description", header: "الوصف", dataLabel: "الوصف" },
+    { key: "description", header: i18n.catalog["text_95023fc76e1b"], dataLabel: i18n.catalog["text_95023fc76e1b"] },
     {
       key: "total_debit",
-      header: "المدين",
-      dataLabel: "المدين",
+      header: i18n.catalog["text_761dab1874ad"],
+      dataLabel: i18n.catalog["text_761dab1874ad"],
       render: (item) => formatCurrency(item.total_debit),
     },
     {
       key: "total_credit",
-      header: "الدائن",
-      dataLabel: "الدائن",
+      header: i18n.catalog["text_bb186ac310b7"],
+      dataLabel: i18n.catalog["text_bb186ac310b7"],
       render: (item) => formatCurrency(item.total_credit),
     },
     {
       key: "status",
-      header: "الحالة",
-      dataLabel: "الحالة",
+      header: i18n.catalog["text_c3a4749caed4"],
+      dataLabel: i18n.catalog["text_c3a4749caed4"],
       render: (item) => (
         <span className={`badge ${item.status === "posted" ? "badge-success" : "badge-warning"}`}>
-          {item.status === "posted" ? "مرحل" : "مسودة"}
+          {item.status === "posted" ? i18n.catalog["text_a88bc9f2d813"] : i18n.catalog["text_552aec56f591"]}
         </span>
       ),
     },
     {
       key: "actions",
-      header: "الإجراءات",
-      dataLabel: "الإجراءات",
+      header: i18n.catalog["text_7797240d6caf"],
+      dataLabel: i18n.catalog["text_7797240d6caf"],
       render: (item) => (
         <ActionButtons
           actions={[
             {
               icon: "eye",
-              title: "عرض",
+              title: i18n.catalog["text_3824e18ca83b"],
               variant: "view",
               onClick: () => openViewDialog(item)
             },
             {
               icon: "check",
-              title: "ترحيل",
+              title: i18n.catalog["text_64a11fadf742"],
               variant: "edit",
               onClick: () => postVoucher(item.id),
               hidden: item.status !== "draft" || !canAccess(permissions, "journal_vouchers", "edit")
             },
             {
               icon: "trash",
-              title: "حذف",
+              title: i18n.catalog["text_59ca629220a6"],
               variant: "delete",
               onClick: () => confirmDelete(item.id),
               hidden: item.status !== "draft" || !canAccess(permissions, "journal_vouchers", "delete")
@@ -323,22 +325,22 @@ export default function JournalVouchersPage() {
   const voucherLineColumns: Column<any>[] = [
     {
       key: "account_id",
-      header: "الحساب",
+      header: i18n.catalog["text_66dcee1f4616"],
       render: (line, index) => (
         <Select
           value={line.account_id}
           onChange={(e) => updateLine(index, "account_id", e.target.value)}
           className="w-full"
           options={[
-            { value: "", label: "اختر حساب" },
-            ...accounts.map(acc => ({ value: acc.id, label: `${acc.code} - ${acc.name}` }))
+            { value: "", label: i18n.catalog["text_b2e1c053ebe5"] },
+            ...accounts.map(acc => ({ value: acc.id, label: catalogText(i18n, "text_2a9059a3c52f", { value0: acc.code, value1: acc.name }) }))
           ]}
         />
       ),
     },
     {
       key: "debit",
-      header: "مدين",
+      header: i18n.catalog["text_b19917a31039"],
       render: (line, index) => (
         <NumberInput
           value={line.debit}
@@ -351,7 +353,7 @@ export default function JournalVouchersPage() {
     },
     {
       key: "credit",
-      header: "دائن",
+      header: i18n.catalog["text_a91798231743"],
       render: (line, index) => (
         <NumberInput
           value={line.credit}
@@ -364,42 +366,42 @@ export default function JournalVouchersPage() {
     },
     {
       key: "description",
-      header: "البيان",
+      header: i18n.catalog["text_15391f77cefa"],
       render: (line, index) => (
         <TextInput
           value={line.description}
           onChange={(e) => updateLine(index, "description", e.target.value)}
-          placeholder="بيان اختياري..."
+          placeholder={i18n.catalog["text_f02fcac93ed1"]}
           className="w-full"
         />
       ),
     },
     {
       key: "cost_center_id",
-      header: "مركز التكلفة",
+      header: i18n.catalog["text_3d8ab274b4d9"],
       render: (line, index) => (
         <Select
           value={line.cost_center_id}
           onChange={(e) => updateLine(index, "cost_center_id", e.target.value)}
           className="w-full"
           options={[
-            { value: "", label: "—" },
-            ...costCenters.map(cc => ({ value: cc.id, label: `${cc.code} - ${cc.name}` }))
+            { value: "", label: i18n.catalog["text_bda050585a00"] },
+            ...costCenters.map(cc => ({ value: cc.id, label: catalogText(i18n, "text_2a9059a3c52f", { value0: cc.code, value1: cc.name }) }))
           ]}
         />
       ),
     },
     {
       key: "profit_center_id",
-      header: "مركز الربح",
+      header: i18n.catalog["text_22f515c45510"],
       render: (line, index) => (
         <Select
           value={line.profit_center_id}
           onChange={(e) => updateLine(index, "profit_center_id", e.target.value)}
           className="w-full"
           options={[
-            { value: "", label: "—" },
-            ...profitCenters.map(pc => ({ value: pc.id, label: `${pc.code} - ${pc.name}` }))
+            { value: "", label: i18n.catalog["text_bda050585a00"] },
+            ...profitCenters.map(pc => ({ value: pc.id, label: catalogText(i18n, "text_2a9059a3c52f", { value0: pc.code, value1: pc.name }) }))
           ]}
         />
       ),
@@ -421,39 +423,39 @@ export default function JournalVouchersPage() {
   ];
 
   const viewVoucherColumns: Column<VoucherLine>[] = [
-    { key: "account_name", header: "الحساب", dataLabel: "الحساب" },
+    { key: "account_name", header: i18n.catalog["text_66dcee1f4616"], dataLabel: i18n.catalog["text_66dcee1f4616"] },
     {
       key: "debit",
-      header: "مدين",
-      dataLabel: "مدين",
+      header: i18n.catalog["text_b19917a31039"],
+      dataLabel: i18n.catalog["text_b19917a31039"],
       render: (item) => (item.debit > 0 ? formatCurrency(item.debit) : "-"),
     },
     {
       key: "credit",
-      header: "دائن",
-      dataLabel: "دائن",
+      header: i18n.catalog["text_a91798231743"],
+      dataLabel: i18n.catalog["text_a91798231743"],
       render: (item) => (item.credit > 0 ? formatCurrency(item.credit) : "-"),
     },
     {
       key: "cost_center_name",
-      header: "م. التكلفة",
-      dataLabel: "م. التكلفة",
+      header: i18n.catalog["text_d7a5a7f126af"],
+      dataLabel: i18n.catalog["text_d7a5a7f126af"],
       render: (item) => item.cost_center_name ? (
         <span className="badge badge-secondary">{item.cost_center_name}</span>
       ) : "-",
     },
     {
       key: "profit_center_name",
-      header: "م. الربح",
-      dataLabel: "م. الربح",
+      header: i18n.catalog["text_83da58551a6f"],
+      dataLabel: i18n.catalog["text_83da58551a6f"],
       render: (item) => item.profit_center_name ? (
         <span className="badge badge-secondary">{item.profit_center_name}</span>
       ) : "-",
     },
     {
       key: "description",
-      header: "البيان",
-      dataLabel: "البيان",
+      header: i18n.catalog["text_15391f77cefa"],
+      dataLabel: i18n.catalog["text_15391f77cefa"],
       render: (item) => item.description || "-",
     },
   ];
@@ -468,8 +470,7 @@ export default function JournalVouchersPage() {
           actions={
             canAccess(permissions, "journal_vouchers", "create") && (
               <Button icon="plus" onClick={openAddDialog}>
-                إنشاء سند
-              </Button>
+                {i18n.catalog["text_30e1d586ec9b"]}</Button>
             )
           }
         />
@@ -477,7 +478,7 @@ export default function JournalVouchersPage() {
           columns={columns}
           data={vouchers}
           keyExtractor={(item) => item.id}
-          emptyMessage="لا توجد سندات"
+          emptyMessage={i18n.catalog["text_2719caa043d5"]}
           isLoading={isLoading}
           pagination={{
             currentPage,
@@ -491,30 +492,28 @@ export default function JournalVouchersPage() {
       <Dialog
         isOpen={formDialog}
         onClose={() => setFormDialog(false)}
-        title="إنشاء سند قيد"
+        title={i18n.catalog["text_d02cec3de121"]}
         maxWidth="800px"
         footer={
           <>
             <Button variant="secondary" onClick={() => setFormDialog(false)}>
-              إلغاء
-            </Button>
+              {i18n.catalog["text_9a30dc2a96b8"]}</Button>
             <Button variant="primary" onClick={handleSubmit}>
-              حفظ
-            </Button>
+              {i18n.catalog["text_ddfcaf9d0144"]}</Button>
           </>
         }
       >
         <div className="form-row">
           <TextInput
             type="date"
-            label="التاريخ *"
+            label={i18n.catalog["text_24ab9ad4f30d"]}
             id="voucher_date"
             value={formData.voucher_date}
             onChange={(e) => setFormData({ ...formData, voucher_date: e.target.value })}
             className="flex-1"
           />
           <TextInput
-            label="الوصف *"
+            label={i18n.catalog["text_c5293e340faa"]}
             id="description"
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -522,13 +521,13 @@ export default function JournalVouchersPage() {
           />
         </div>
 
-        <h4 style={{ marginTop: "1.5rem", marginBottom: "1rem" }}>بنود السند</h4>
+        <h4 style={{ marginTop: "1.5rem", marginBottom: "1rem" }}>{i18n.catalog["text_e6aef3285b6f"]}</h4>
 
         <Table
           columns={voucherLineColumns}
           data={formData.lines}
           keyExtractor={(_, index) => index}
-          emptyMessage="لا توجد بنود"
+          emptyMessage={i18n.catalog["text_69685693e77f"]}
         />
 
         <Button
@@ -537,20 +536,19 @@ export default function JournalVouchersPage() {
           icon="plus"
           style={{ marginTop: "1rem" }}
         >
-          إضافة سطر
-        </Button>
+          {i18n.catalog["text_cbba06a9c34c"]}</Button>
 
         <div className="summary-stat-box" style={{ marginTop: "1.5rem" }}>
           <div className="stat-item">
-            <span className="stat-label">إجمالي المدين</span>
+            <span className="stat-label">{i18n.catalog["text_9b3ffc60129b"]}</span>
             <span className="stat-value">{formatCurrency(getTotalDebit())}</span>
           </div>
           <div className="stat-item">
-            <span className="stat-label">إجمالي الدائن</span>
+            <span className="stat-label">{i18n.catalog["text_ccfe7f015017"]}</span>
             <span className="stat-value">{formatCurrency(getTotalCredit())}</span>
           </div>
           <div className="stat-item">
-            <span className="stat-label">الفرق</span>
+            <span className="stat-label">{i18n.catalog["text_0b5254487af9"]}</span>
             <span className={`stat-value ${isBalanced() ? "text-success" : "text-danger"}`}>
               {formatCurrency(Math.abs(getTotalDebit() - getTotalCredit()))}
               {isBalanced() && " ✓"}
@@ -563,18 +561,18 @@ export default function JournalVouchersPage() {
       <Dialog
         isOpen={viewDialog}
         onClose={() => setViewDialog(false)}
-        title={`سند قيد رقم ${selectedVoucher?.voucher_number || ""}`}
+        title={catalogText(i18n, "text_07bdd6199c9b", { value0: selectedVoucher?.voucher_number || "" })}
         maxWidth="700px"
       >
         {selectedVoucher && (
           <div>
             <div style={{ marginBottom: "1.5rem" }}>
-              <p><strong>التاريخ:</strong> {formatDate(selectedVoucher.voucher_date)}</p>
-              <p><strong>الوصف:</strong> {selectedVoucher.description}</p>
+              <p><strong>{i18n.catalog["text_174200101521"]}</strong> {formatDate(selectedVoucher.voucher_date)}</p>
+              <p><strong>{i18n.catalog["text_3ec7e12fb399"]}</strong> {selectedVoucher.description}</p>
               <p>
-                <strong>الحالة:</strong>{" "}
+                <strong>{i18n.catalog["text_02e196bdec60"]}</strong>{" "}
                 <span className={`badge ${selectedVoucher.status === "posted" ? "badge-success" : "badge-warning"}`}>
-                  {selectedVoucher.status === "posted" ? "مرحل" : "مسودة"}
+                  {selectedVoucher.status === "posted" ? i18n.catalog["text_a88bc9f2d813"] : i18n.catalog["text_552aec56f591"]}
                 </span>
               </p>
             </div>
@@ -587,11 +585,11 @@ export default function JournalVouchersPage() {
 
             <div className="summary-stat-box" style={{ marginTop: "1.5rem" }}>
               <div className="stat-item">
-                <span className="stat-label">إجمالي المدين</span>
+                <span className="stat-label">{i18n.catalog["text_9b3ffc60129b"]}</span>
                 <span className="stat-value">{formatCurrency(selectedVoucher.total_debit)}</span>
               </div>
               <div className="stat-item">
-                <span className="stat-label">إجمالي الدائن</span>
+                <span className="stat-label">{i18n.catalog["text_ccfe7f015017"]}</span>
                 <span className="stat-value">{formatCurrency(selectedVoucher.total_credit)}</span>
               </div>
             </div>
@@ -604,9 +602,9 @@ export default function JournalVouchersPage() {
         isOpen={confirmDialog}
         onClose={() => setConfirmDialog(false)}
         onConfirm={handleDelete}
-        title="تأكيد الحذف"
-        message="هل أنت متأكد من حذف هذا السند؟"
-        confirmText="حذف"
+        title={i18n.catalog["text_5f9cb54dc136"]}
+        message={i18n.catalog["text_7ffa0cbbb78d"]}
+        confirmText={i18n.catalog["text_59ca629220a6"]}
         confirmVariant="danger"
       />
     </MainLayout>

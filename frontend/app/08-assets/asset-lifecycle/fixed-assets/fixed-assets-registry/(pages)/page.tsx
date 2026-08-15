@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Column, ConfirmDialog, Dialog, NumberInput, SearchableSelect, Table, showAlert } from "@/components/ui";
 import { TextInput } from "@/components/ui/TextInput";
@@ -23,6 +24,7 @@ interface Asset {
 }
 
 export default function AssetsPage() {
+    const { t: i18n } = useI18n();
     const [user, setUser] = useState<User | null>(null);
     const [permissions, setPermissions] = useState<Permission[]>([]);
     const [assets, setAssets] = useState<Asset[]>([]);
@@ -60,10 +62,10 @@ export default function AssetsPage() {
                 setTotalPages(pagination?.total_pages ?? Math.max(1, Math.ceil(assets.length / itemsPerPage)));
                 setCurrentPage(page);
             } else {
-                showAlert("alert-container", response.message || "فشل تحميل الأصول", "error");
+                showAlert("alert-container", response.message || i18n.catalog["text_259c51fe072b"], "error");
             }
         } catch {
-            showAlert("alert-container", "خطأ في الاتصال بالسيرفر", "error");
+            showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -93,9 +95,9 @@ export default function AssetsPage() {
 
     const translateStatus = (status: string) => {
         const statuses: Record<string, string> = {
-            active: "نشط",
-            maintenance: "في الصيانة",
-            disposed: "مستبعد",
+            active: i18n.catalog["text_629e90b3af3d"],
+            maintenance: i18n.catalog["text_99a308b7c785"],
+            disposed: i18n.catalog["text_eb0bd9ba362a"],
         };
         return statuses[status] || status;
     };
@@ -136,7 +138,7 @@ export default function AssetsPage() {
 
     const saveAsset = async () => {
         if (!assetName || !assetValue || !assetDate) {
-            showAlert("alert-container", "يرجى ملء جميع الحقول المطلوبة", "error");
+            showAlert("alert-container", i18n.catalog["text_0a8eb85d0081"], "error");
             return;
         }
 
@@ -151,7 +153,7 @@ export default function AssetsPage() {
                 description: assetDescription,
             };
             const url = currentAssetId 
-                ? `${API_ENDPOINTS.ASSETS.FIXED_ASSETS}/${currentAssetId}`
+                ? catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.ASSETS.FIXED_ASSETS, value1: currentAssetId })
                 : API_ENDPOINTS.ASSETS.FIXED_ASSETS;
 
             const response = await fetchAPI(url, {
@@ -160,14 +162,14 @@ export default function AssetsPage() {
             });
 
             if (response.success) {
-                showAlert("alert-container", "تم الحفظ بنجاح", "success");
+                showAlert("alert-container", i18n.catalog["text_ff783ee2826d"], "success");
                 setAssetDialog(false);
                 await loadAssets(currentPage, searchTerm);
             } else {
-                showAlert("alert-container", response.message || "فشل الحفظ", "error");
+                showAlert("alert-container", response.message || i18n.catalog["text_b0dbba00004b"], "error");
             }
         } catch {
-            showAlert("alert-container", "خطأ في الاتصال بالسيرفر", "error");
+            showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
         }
     };
 
@@ -180,17 +182,17 @@ export default function AssetsPage() {
         if (!deleteAssetId) return;
 
         try {
-            const response = await fetchAPI(`${API_ENDPOINTS.ASSETS.FIXED_ASSETS}/${deleteAssetId}`, { method: "DELETE" });
+            const response = await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.ASSETS.FIXED_ASSETS, value1: deleteAssetId }), { method: "DELETE" });
             if (response.success) {
-                showAlert("alert-container", "تم الحذف بنجاح", "success");
+                showAlert("alert-container", i18n.catalog["text_12b6e3813b40"], "success");
                 setConfirmDialog(false);
                 setDeleteAssetId(null);
                 await loadAssets(currentPage, searchTerm);
             } else {
-                showAlert("alert-container", response.message || "فشل الحذف", "error");
+                showAlert("alert-container", response.message || i18n.catalog["text_f46bfc521612"], "error");
             }
         } catch {
-            showAlert("alert-container", "خطأ في الحذف", "error");
+            showAlert("alert-container", i18n.catalog["text_3bdb299872fb"], "error");
         }
     };
 
@@ -203,32 +205,32 @@ export default function AssetsPage() {
         },
         {
             key: "name",
-            header: "الاسم",
-            dataLabel: "الاسم",
+            header: i18n.catalog["text_52ab09847cf8"],
+            dataLabel: i18n.catalog["text_52ab09847cf8"],
             render: (item) => <strong>{item.name}</strong>,
         },
         {
             key: "purchase_value",
-            header: "القيمة",
-            dataLabel: "القيمة",
+            header: i18n.catalog["text_4c49efecd6cb"],
+            dataLabel: i18n.catalog["text_4c49efecd6cb"],
             render: (item) => formatCurrency(item.purchase_value),
         },
         {
             key: "purchase_date",
-            header: "تاريخ الشراء",
-            dataLabel: "تاريخ الشراء",
+            header: i18n.catalog["text_dc24afda1b22"],
+            dataLabel: i18n.catalog["text_dc24afda1b22"],
             render: (item) => formatDate(item.purchase_date),
         },
         {
             key: "depreciation_rate",
-            header: "نسبة الإهلاك",
-            dataLabel: "نسبة الإهلاك",
-            render: (item) => `${item.depreciation_rate || 0}%`,
+            header: i18n.catalog["text_104ab9ffd0a7"],
+            dataLabel: i18n.catalog["text_104ab9ffd0a7"],
+            render: (item) => catalogText(i18n, "text_518ef1823474", { value0: item.depreciation_rate || 0 }),
         },
         {
             key: "status",
-            header: "الحالة",
-            dataLabel: "الحالة",
+            header: i18n.catalog["text_c3a4749caed4"],
+            dataLabel: i18n.catalog["text_c3a4749caed4"],
             render: (item) => (
                 <span className={`badge ${getStatusClass(item.status)}`}>
                     {translateStatus(item.status)}
@@ -237,29 +239,29 @@ export default function AssetsPage() {
         },
         {
             key: "recorder_name",
-            header: "بواسطة",
-            dataLabel: "بواسطة",
+            header: i18n.catalog["text_a98b66bae2c9"],
+            dataLabel: i18n.catalog["text_a98b66bae2c9"],
             render: (item) => (
-                <span className="badge badge-secondary">{item.recorder_name || "النظام"}</span>
+                <span className="badge badge-secondary">{item.recorder_name || i18n.catalog["text_df8d4a3bd114"]}</span>
             ),
         },
         {
             key: "actions",
-            header: "الإجراءات",
-            dataLabel: "الإجراءات",
+            header: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (item) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "edit",
-                            title: "تعديل",
+                            title: i18n.catalog["text_113d570d6555"],
                             variant: "edit",
                             onClick: () => editAsset(item.id),
                             hidden: !canAccess(permissions, "assets", "edit")
                         },
                         {
                             icon: "trash",
-                            title: "حذف",
+                            title: i18n.catalog["text_59ca629220a6"],
                             variant: "delete",
                             onClick: () => confirmDeleteAsset(item.id),
                             hidden: !canAccess(permissions, "assets", "delete")
@@ -281,7 +283,7 @@ export default function AssetsPage() {
                     user={user}
                     searchInput={
                         <SearchableSelect
-                            placeholder="بحث في الاسم أو الوصف..."
+                            placeholder={i18n.catalog["text_91203668fa54"]}
                             value={searchTerm}
                             options={assets.map((asset) => ({ value: asset.name, label: asset.name }))}
                             onChange={(val) => setSearchTerm(val?.toString() || "")}
@@ -297,8 +299,7 @@ export default function AssetsPage() {
                                 onClick={openAddDialog}
                                 icon="plus"
                             >
-                                أصل جديد
-                            </Button>
+                                {i18n.catalog["text_acb7acbececf"]}</Button>
                         )
                     }
                 />
@@ -306,7 +307,7 @@ export default function AssetsPage() {
                     columns={columns}
                     data={assets}
                     keyExtractor={(item) => item.id}
-                    emptyMessage="لا توجد أصول مسجلة"
+                    emptyMessage={i18n.catalog["text_af5031abf842"]}
                     isLoading={isLoading}
                     pagination={{
                         currentPage,
@@ -320,15 +321,13 @@ export default function AssetsPage() {
             <Dialog
                 isOpen={assetDialog}
                 onClose={() => setAssetDialog(false)}
-                title={currentAssetId ? "تعديل بيانات الأصل" : "إضافة أصل جديد"}
+                title={currentAssetId ? i18n.catalog["text_582db3fdd97e"] : i18n.catalog["text_7e430444cd59"]}
                 footer={
                     <>
                         <Button variant="secondary" onClick={() => setAssetDialog(false)}>
-                            إلغاء
-                        </Button>
+                            {i18n.catalog["text_9a30dc2a96b8"]}</Button>
                         <Button variant="primary" onClick={saveAsset}>
-                            حفظ
-                        </Button>
+                            {i18n.catalog["text_ddfcaf9d0144"]}</Button>
                     </>
                 }
             >
@@ -339,7 +338,7 @@ export default function AssetsPage() {
                     }}
                 >
                     <TextInput
-                        label="اسم الأصل *"
+                        label={i18n.catalog["text_1f7f12d037c9"]}
                         id="asset-name"
                         value={assetName}
                         onChange={(e) => setAssetName(e.target.value)}
@@ -348,7 +347,7 @@ export default function AssetsPage() {
 
                     <div className="form-row">
                         <NumberInput
-                            label="القيمة *"
+                            label={i18n.catalog["text_30e32320ab69"]}
                             id="asset-value"
                             value={assetValue}
                             onChange={(val) => setAssetValue(val)}
@@ -359,7 +358,7 @@ export default function AssetsPage() {
                         />
                         <TextInput
                             type="date"
-                            label="تاريخ الشراء *"
+                            label={i18n.catalog["text_394b2119824c"]}
                             id="asset-date"
                             value={assetDate}
                             onChange={(e) => setAssetDate(e.target.value)}
@@ -370,7 +369,7 @@ export default function AssetsPage() {
 
                     <div className="form-row">
                         <NumberInput
-                            label="نسبة الإهلاك (%)"
+                            label={i18n.catalog["text_31c92663521d"]}
                             id="asset-depreciation"
                             value={assetDepreciation}
                             onChange={(val) => setAssetDepreciation(val)}
@@ -380,21 +379,21 @@ export default function AssetsPage() {
                             className="flex-1"
                         />
                         <Select
-                            label="الحالة"
+                            label={i18n.catalog["text_c3a4749caed4"]}
                             id="asset-status"
                             value={assetStatus}
                             onChange={(e) => setAssetStatus(e.target.value as typeof assetStatus)}
                             className="flex-1"
                             options={[
-                                { value: "active", label: "نشط" },
-                                { value: "maintenance", label: "في الصيانة" },
-                                { value: "disposed", label: "مستبعد" }
+                                { value: "active", label: i18n.catalog["text_629e90b3af3d"] },
+                                { value: "maintenance", label: i18n.catalog["text_99a308b7c785"] },
+                                { value: "disposed", label: i18n.catalog["text_eb0bd9ba362a"] }
                             ]}
                         />
                     </div>
 
                     <Textarea
-                        label="الوصف"
+                        label={i18n.catalog["text_95023fc76e1b"]}
                         id="asset-description"
                         value={assetDescription}
                         onChange={(e) => setAssetDescription(e.target.value)}
@@ -408,9 +407,9 @@ export default function AssetsPage() {
                 isOpen={confirmDialog}
                 onClose={() => setConfirmDialog(false)}
                 onConfirm={deleteAsset}
-                title="تأكيد الحذف"
-                message="هل أنت متأكد من حذف هذا الأصل؟"
-                confirmText="حذف"
+                title={i18n.catalog["text_5f9cb54dc136"]}
+                message={i18n.catalog["text_bb7c9c094a6c"]}
+                confirmText={i18n.catalog["text_59ca629220a6"]}
                 confirmVariant="danger"
             />
         </MainLayout>

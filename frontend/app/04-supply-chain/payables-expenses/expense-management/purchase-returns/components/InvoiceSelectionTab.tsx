@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { TabSubNavigation } from "@/components/navigation/TabNavigation";
 import {
     InvoiceTableColumn,
@@ -40,6 +41,7 @@ export function InvoiceSelectionTab({
     onSelectionChange,
     openReturnDialog,
 }: InvoiceSelectionTabProps) {
+    const { t: i18n } = useI18n();
     const [invoices, setInvoices] = useState<InvoiceRow[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
@@ -48,7 +50,7 @@ export function InvoiceSelectionTab({
     const itemsPerPage = 20;
 
     const filterTabs = [
-        { key: "all", label: "جميع الفواتير", icon: "list" },
+        { key: "all", label: i18n.catalog["text_377c0cb35dea"], icon: "list" },
     ];
 
     const loadInvoices = useCallback(
@@ -78,7 +80,7 @@ export function InvoiceSelectionTab({
                     setCurrentPage(page);
                 }
             } catch (error) {
-                console.error("Failed to load invoices", error);
+                console.error(i18n.catalog["text_0b0cb3f74801"], error);
             } finally {
                 setIsLoading(false);
             }
@@ -110,8 +112,8 @@ export function InvoiceSelectionTab({
     const columns: InvoiceTableColumn<InvoiceRow>[] = [
         {
             key: "invoice_number",
-            header: "رقم الفاتورة",
-            dataLabel: "رقم الفاتورة",
+            header: i18n.catalog["text_b6e71278be04"],
+            dataLabel: i18n.catalog["text_b6e71278be04"],
             render: (item) => (
                 <span style={{ color: "var(--primary-color)", fontWeight: "bold" }}>
                     {item.invoice_number}
@@ -120,8 +122,8 @@ export function InvoiceSelectionTab({
         },
         {
             key: "created_at",
-            header: "التاريخ",
-            dataLabel: "التاريخ",
+            header: i18n.catalog["text_d90c384199ac"],
+            dataLabel: i18n.catalog["text_d90c384199ac"],
             render: (item) => (
                 <span style={{ fontSize: "0.9em" }}>
                     {formatDateTime(item.created_at)}
@@ -130,8 +132,8 @@ export function InvoiceSelectionTab({
         },
         {
             key: "supplier_name" as any,
-            header: "المورد",
-            dataLabel: "المورد",
+            header: i18n.catalog["text_4680c31a727f"],
+            dataLabel: i18n.catalog["text_4680c31a727f"],
             render: (item) => (
                 <span style={{ fontWeight: 500 }}>
                     {item.supplier?.name || (item as any).supplier_name || "—"}
@@ -140,8 +142,8 @@ export function InvoiceSelectionTab({
         },
         {
             key: "total_amount",
-            header: "إجمالي الفاتورة",
-            dataLabel: "الإجمالي",
+            header: i18n.catalog["text_50a90c019154"],
+            dataLabel: i18n.catalog["text_baed6e999960"],
             render: (item) => (
                 <span style={{ fontWeight: "bold" }}>
                     {formatCurrency(item.total_amount)}
@@ -160,12 +162,12 @@ export function InvoiceSelectionTab({
                 onSelectionChange={onSelectionChange}
                 onSearch={(query) => loadInvoices(1, query)}
                 getInvoiceItems={getInvoiceItems}
-                emptyMessage="لا توجد فواتير"
+                emptyMessage={i18n.catalog["text_e954a549b77f"]}
                 multiInvoiceSelection={true}
                 invoiceIdExtractor={(item) => item.id}
                 isExpandable={() => true}
                 openReturnDialog={openReturnDialog}
-                searchPlaceholder="بحث برقم الفاتورة أو اسم المورد..."
+                searchPlaceholder={i18n.catalog["text_79a7f01ad21d"]}
                 pagination={{
                     currentPage,
                     totalPages,

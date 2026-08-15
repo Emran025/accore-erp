@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText, catalogMessage } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import {
     ActionButtons,
@@ -70,17 +71,17 @@ interface Summary {
 
 // ── Type translations ────────────────────────────────────────────────
 const TYPE_MAP: Record<string, string> = {
-    operational: "تشغيلي",
-    administrative: "إداري",
-    production: "إنتاجي",
-    support: "دعم",
+    operational: catalogMessage("text_85116cea780e"),
+    administrative: catalogMessage("text_ba433520879c"),
+    production: catalogMessage("text_5a8ffb95ff6f"),
+    support: catalogMessage("text_cdfa93f63f42"),
 };
 
 const TYPE_OPTIONS = [
-    { value: "operational", label: "تشغيلي" },
-    { value: "administrative", label: "إداري" },
-    { value: "production", label: "إنتاجي" },
-    { value: "support", label: "دعم" },
+    { value: "operational", label: catalogMessage("text_85116cea780e") },
+    { value: "administrative", label: catalogMessage("text_ba433520879c") },
+    { value: "production", label: catalogMessage("text_5a8ffb95ff6f") },
+    { value: "support", label: catalogMessage("text_cdfa93f63f42") },
 ];
 
 const TYPE_COLORS: Record<string, string> = {
@@ -92,6 +93,7 @@ const TYPE_COLORS: Record<string, string> = {
 
 // ═══════════════════════════════════════════════════════════════════════
 export default function CostCentersPage() {
+    const { t: i18n } = useI18n();
     // ── Auth state ────────────────────────────────────────────
     const [user, setUser] = useState<User | null>(null);
     const [permissions, setPermissions] = useState<Permission[]>([]);
@@ -144,10 +146,10 @@ export default function CostCentersPage() {
                 setTotalPages(Math.ceil(total / itemsPerPage));
                 setCurrentPage(page);
             } else {
-                showAlert("alert-container", response.message || "فشل تحميل مراكز التكلفة", "error");
+                showAlert("alert-container", response.message || i18n.catalog["text_c7915787f5a6"], "error");
             }
         } catch {
-            showAlert("alert-container", "خطأ في الاتصال بالسيرفر", "error");
+            showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -205,15 +207,15 @@ export default function CostCentersPage() {
             if (response.success) {
                 showAlert(
                     "alert-container",
-                    currentlyActive ? "تم إغلاق المركز وتحديث الهيكل التنظيمي" : "تم فتح المركز وتحديث الهيكل التنظيمي",
+                    currentlyActive ? i18n.catalog["text_4b305b1d7000"] : i18n.catalog["text_e88ae5b85423"],
                     "success"
                 );
                 await Promise.all([loadCenters(currentPage, searchTerm, filterType), loadLookups()]);
             } else {
-                showAlert("alert-container", response.message || "فشل تغيير حالة المركز", "error");
+                showAlert("alert-container", response.message || i18n.catalog["text_6766d88b51c9"], "error");
             }
         } catch {
-            showAlert("alert-container", "خطأ في الاتصال", "error");
+            showAlert("alert-container", i18n.catalog["text_1ac65f6d78f4"], "error");
         }
     };
 
@@ -239,7 +241,7 @@ export default function CostCentersPage() {
             const num = parseInt(c.code.replace(/\D/g, "")) || 0;
             return num > max ? num : max;
         }, 0);
-        setFormCode(`CC-${String(maxNum + 1).padStart(3, "0")}`);
+        setFormCode(catalogText(i18n, "text_0ea98e4f2c67", { value0: String(maxNum + 1).padStart(3, "0") }));
         setFormDialog(true);
     };
 
@@ -262,7 +264,7 @@ export default function CostCentersPage() {
 
     const saveCenter = async () => {
         if (!formCode || !formName) {
-            showAlert("alert-container", "يرجى ملء الحقول المطلوبة (الكود والاسم)", "error");
+            showAlert("alert-container", i18n.catalog["text_9bb430444d33"], "error");
             return;
         }
 
@@ -291,15 +293,15 @@ export default function CostCentersPage() {
             });
 
             if (response.success) {
-                showAlert("alert-container", editId ? "تم تحديث مركز التكلفة" : "تم إنشاء مركز التكلفة", "success");
+                showAlert("alert-container", editId ? i18n.catalog["text_becf9fd5bc8f"] : i18n.catalog["text_bba4533a5a48"], "success");
                 setFormDialog(false);
                 resetForm();
                 await Promise.all([loadCenters(currentPage, searchTerm, filterType), loadLookups()]);
             } else {
-                showAlert("alert-container", response.message || "فشل الحفظ", "error");
+                showAlert("alert-container", response.message || i18n.catalog["text_b0dbba00004b"], "error");
             }
         } catch {
-            showAlert("alert-container", "خطأ في الاتصال بالسيرفر", "error");
+            showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
         }
     };
 
@@ -313,15 +315,15 @@ export default function CostCentersPage() {
         try {
             const response = await fetchAPI(API_ENDPOINTS.FINANCE.COST_CENTERS.withId(deleteId), { method: "DELETE" });
             if (response.success) {
-                showAlert("alert-container", "تم حذف مركز التكلفة", "success");
+                showAlert("alert-container", i18n.catalog["text_c7b2b22f8b9b"], "success");
                 setConfirmDialog(false);
                 setDeleteId(null);
                 await Promise.all([loadCenters(currentPage, searchTerm, filterType), loadLookups()]);
             } else {
-                showAlert("alert-container", response.message || "فشل الحذف", "error");
+                showAlert("alert-container", response.message || i18n.catalog["text_f46bfc521612"], "error");
             }
         } catch {
-            showAlert("alert-container", "خطأ في الحذف", "error");
+            showAlert("alert-container", i18n.catalog["text_3bdb299872fb"], "error");
         }
     };
 
@@ -329,8 +331,8 @@ export default function CostCentersPage() {
     const columns: Column<CostCenter>[] = [
         {
             key: "code",
-            header: "الكود",
-            dataLabel: "الكود",
+            header: i18n.catalog["text_e28ef005ab68"],
+            dataLabel: i18n.catalog["text_e28ef005ab68"],
             render: (item) => (
                 <span style={{ fontFamily: "monospace", fontWeight: 700, color: "var(--accent-primary)" }}>
                     {item.code}
@@ -339,8 +341,8 @@ export default function CostCentersPage() {
         },
         {
             key: "name",
-            header: "الاسم",
-            dataLabel: "الاسم",
+            header: i18n.catalog["text_52ab09847cf8"],
+            dataLabel: i18n.catalog["text_52ab09847cf8"],
             render: (item) => (
                 <div>
                     <strong>{item.name}</strong>
@@ -350,8 +352,8 @@ export default function CostCentersPage() {
         },
         {
             key: "type",
-            header: "النوع",
-            dataLabel: "النوع",
+            header: i18n.catalog["text_caa3f2bb4a36"],
+            dataLabel: i18n.catalog["text_caa3f2bb4a36"],
             render: (item) => (
                 <span className={`badge ${TYPE_COLORS[item.type] || "badge-secondary"}`}>
                     {TYPE_MAP[item.type] || item.type}
@@ -360,24 +362,24 @@ export default function CostCentersPage() {
         },
         {
             key: "parent_name",
-            header: "المركز الأب",
-            dataLabel: "المركز الأب",
+            header: i18n.catalog["text_737f847aa339"],
+            dataLabel: i18n.catalog["text_737f847aa339"],
             render: (item) => item.parent_name ? (
                 <span className="badge badge-secondary">{item.parent_name}</span>
             ) : (
-                <span style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>— رئيسي</span>
+                <span style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>{i18n.catalog["text_48edee59831b"]}</span>
             ),
         },
         {
             key: "budget",
-            header: "الميزانية",
-            dataLabel: "الميزانية",
+            header: i18n.catalog["text_94410bef3fe2"],
+            dataLabel: i18n.catalog["text_94410bef3fe2"],
             render: (item) => item.budget ? formatCurrency(item.budget) : "—",
         },
         {
             key: "actual_cost",
-            header: "التكاليف الفعلية",
-            dataLabel: "التكاليف الفعلية",
+            header: i18n.catalog["text_7735776bca61"],
+            dataLabel: i18n.catalog["text_7735776bca61"],
             render: (item) => (
                 <span style={{ color: item.actual_cost > 0 ? "#ef4444" : "var(--text-muted)" }}>
                     {formatCurrency(item.actual_cost)}
@@ -386,8 +388,8 @@ export default function CostCentersPage() {
         },
         {
             key: "budget_utilization",
-            header: "الاستخدام",
-            dataLabel: "الاستخدام",
+            header: i18n.catalog["text_905db3269be8"],
+            dataLabel: i18n.catalog["text_905db3269be8"],
             render: (item) => {
                 if (!item.budget) return <span style={{ color: "var(--text-muted)" }}>—</span>;
                 const pct = item.budget_utilization;
@@ -421,16 +423,16 @@ export default function CostCentersPage() {
         },
         {
             key: "is_active",
-            header: "الحالة",
-            dataLabel: "الحالة",
+            header: i18n.catalog["text_c3a4749caed4"],
+            dataLabel: i18n.catalog["text_c3a4749caed4"],
             render: (item) => (
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                     <span className={`badge ${item.is_active ? "badge-success" : "badge-danger"}`}>
-                        {item.is_active ? "مفتوح" : "مغلق"}
+                        {item.is_active ? i18n.catalog["text_46ea59915eec"] : i18n.catalog["text_e655261f9c96"]}
                     </span>
                     {item.structure_node_uuid && (
                         <span
-                            title="مرتبط بالهيكل التنظيمي"
+                            title={i18n.catalog["text_47d45034947d"]}
                             style={{
                                 display: "inline-flex",
                                 alignItems: "center",
@@ -451,28 +453,28 @@ export default function CostCentersPage() {
         },
         {
             key: "actions",
-            header: "الإجراءات",
-            dataLabel: "الإجراءات",
+            header: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (item) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: item.is_active ? "x-octagon" : "check-circle",
-                            title: item.is_active ? "إغلاق المركز" : "فتح المركز",
+                            title: item.is_active ? i18n.catalog["text_ffe852986bcb"] : i18n.catalog["text_7faca43b0eea"],
                             variant: item.is_active ? "warning" : "success",
                             onClick: () => toggleCenterStatus(item.id, item.is_active),
                             hidden: !canAccess(permissions, "chart_of_accounts", "edit"),
                         },
                         {
                             icon: "edit",
-                            title: "تعديل",
+                            title: i18n.catalog["text_113d570d6555"],
                             variant: "edit",
                             onClick: () => openEditDialog(item.id),
                             hidden: !canAccess(permissions, "chart_of_accounts", "edit"),
                         },
                         {
                             icon: "trash",
-                            title: "حذف",
+                            title: i18n.catalog["text_59ca629220a6"],
                             variant: "delete",
                             onClick: () => confirmDelete(item.id),
                             hidden: !canAccess(permissions, "chart_of_accounts", "delete"),
@@ -494,31 +496,31 @@ export default function CostCentersPage() {
                     KPICards={[
                         {
                             icon: "building",
-                            label: "مراكز التكلفة النشطة",
+                            label: i18n.catalog["text_e86090dd229a"],
                             value: summary.cost_centers_count,
                             color: "#3b82f6",
-                            subtitle: "مركز تكلفة",
+                            subtitle: i18n.catalog["text_a553bf3a5305"],
                         },
                         {
                             icon: "wallet",
-                            label: "إجمالي الميزانيات",
+                            label: i18n.catalog["text_279e8e2997e0"],
                             value: summary.total_budget,
                             color: "#8b5cf6",
                             subtitle: formatCurrency(summary.total_budget),
                         },
                         {
                             icon: "credit-card",
-                            label: "التكاليف الفعلية",
+                            label: i18n.catalog["text_7735776bca61"],
                             value: summary.total_actual_cost,
                             color: "#ef4444",
                             subtitle: formatCurrency(summary.total_actual_cost),
                         },
                         {
                             icon: "pie-chart",
-                            label: "نسبة الاستخدام",
+                            label: i18n.catalog["text_16c36b085606"],
                             value: summary.budget_utilization,
                             color: getUtilizationColor(summary.budget_utilization),
-                            subtitle: `${summary.budget_utilization}% من الميزانية`,
+                            subtitle: catalogText(i18n, "text_843ea80042e6", { value0: summary.budget_utilization }),
                         },
                     ]}
                 />
@@ -529,9 +531,9 @@ export default function CostCentersPage() {
                     user={user}
                     searchInput={
                         <SearchableSelect
-                            placeholder="بحث بالكود أو الاسم..."
+                            placeholder={i18n.catalog["text_eda980b83daa"]}
                             value={searchTerm}
-                            options={centers.map((c) => ({ value: c.name, label: `${c.code} - ${c.name}` }))}
+                            options={centers.map((c) => ({ value: c.name, label: catalogText(i18n, "text_2a9059a3c52f", { value0: c.code, value1: c.name }) }))}
                             onChange={(val) => setSearchTerm(val?.toString() || "")}
                             onSearch={(term) => setSearchTerm(term)}
                             className="header-search-bar"
@@ -542,7 +544,7 @@ export default function CostCentersPage() {
                         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
                             <SegmentedToggle
                                 options={[
-                                    { value: "all", label: "الكل" },
+                                    { value: "all", label: i18n.catalog["text_65f276da33cf"] },
                                     ...TYPE_OPTIONS,
                                 ]}
                                 value={filterType}
@@ -550,8 +552,7 @@ export default function CostCentersPage() {
                             />
                             {canAccess(permissions, "chart_of_accounts", "create") && (
                                 <Button variant="primary" onClick={openAddDialog} icon="plus">
-                                    مركز تكلفة جديدة
-                                </Button>
+                                    {i18n.catalog["text_aaebfd5d71ff"]}</Button>
                             )}
                         </div>
                     }
@@ -561,7 +562,7 @@ export default function CostCentersPage() {
                     columns={columns}
                     data={centers}
                     keyExtractor={(item) => item.id}
-                    emptyMessage="لا توجد مراكز تكلفة مسجلة"
+                    emptyMessage={i18n.catalog["text_086cdac2ed73"]}
                     isLoading={isLoading}
                     pagination={{
                         currentPage,
@@ -575,27 +576,27 @@ export default function CostCentersPage() {
             <Dialog
                 isOpen={formDialog}
                 onClose={() => setFormDialog(false)}
-                title={editId ? "تعديل مركز التكلفة" : "إضافة مركز تكلفة جديد"}
+                title={editId ? i18n.catalog["text_20444d689568"] : i18n.catalog["text_d8524df86005"]}
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setFormDialog(false)}>إلغاء</Button>
-                        <Button variant="primary" onClick={saveCenter}>حفظ</Button>
+                        <Button variant="secondary" onClick={() => setFormDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                        <Button variant="primary" onClick={saveCenter}>{i18n.catalog["text_ddfcaf9d0144"]}</Button>
                     </>
                 }
             >
                 <form onSubmit={(e) => { e.preventDefault(); saveCenter(); }}>
                     <div className="form-row">
                         <TextInput
-                            label="الكود *"
+                            label={i18n.catalog["text_d7e401b615ba"]}
                             id="cc-code"
                             value={formCode}
                             onChange={(e) => setFormCode(e.target.value)}
                             required
                             className="flex-1"
-                            placeholder="CC-001"
+                            placeholder={i18n.catalog["text_67c569ef57b3"]}
                         />
                         <Select
-                            label="النوع"
+                            label={i18n.catalog["text_caa3f2bb4a36"]}
                             id="cc-type"
                             value={formType}
                             onChange={(e) => setFormType(e.target.value)}
@@ -606,7 +607,7 @@ export default function CostCentersPage() {
 
                     <div className="form-row">
                         <TextInput
-                            label="الاسم بالعربية *"
+                            label={i18n.catalog["text_b90b881d800d"]}
                             id="cc-name"
                             value={formName}
                             onChange={(e) => setFormName(e.target.value)}
@@ -614,7 +615,7 @@ export default function CostCentersPage() {
                             className="flex-1"
                         />
                         <TextInput
-                            label="الاسم بالإنجليزية"
+                            label={i18n.catalog["text_07450d9ff8ed"]}
                             id="cc-name-en"
                             value={formNameEn}
                             onChange={(e) => setFormNameEn(e.target.value)}
@@ -624,45 +625,45 @@ export default function CostCentersPage() {
 
                     <div className="form-row">
                         <Select
-                            label="المركز الأب"
+                            label={i18n.catalog["text_737f847aa339"]}
                             id="cc-parent"
                             value={formParentId}
                             onChange={(e) => setFormParentId(e.target.value)}
                             className="flex-1"
                             options={[
-                                { value: "", label: "— لا يوجد (مركز رئيسي)" },
+                                { value: "", label: i18n.catalog["text_16f6e8e85cf0"] },
                                 ...centers
                                     .filter((c) => c.id !== editId)
-                                    .map((c) => ({ value: String(c.id), label: `${c.code} - ${c.name}` })),
+                                    .map((c) => ({ value: String(c.id), label: catalogText(i18n, "text_2a9059a3c52f", { value0: c.code, value1: c.name }) })),
                             ]}
                         />
                         <Select
-                            label="الحساب المرتبط"
+                            label={i18n.catalog["text_3023f2fa97fb"]}
                             id="cc-account"
                             value={formAccountId}
                             onChange={(e) => setFormAccountId(e.target.value)}
                             className="flex-1"
                             options={[
-                                { value: "", label: "— بدون ربط" },
-                                ...accounts.map((a) => ({ value: String(a.id), label: `${a.account_code} - ${a.account_name}` })),
+                                { value: "", label: i18n.catalog["text_10d55a2623de"] },
+                                ...accounts.map((a) => ({ value: String(a.id), label: catalogText(i18n, "text_2a9059a3c52f", { value0: a.account_code, value1: a.account_name }) })),
                             ]}
                         />
                     </div>
 
                     <div className="form-row">
                         <Select
-                            label="المدير المسؤول"
+                            label={i18n.catalog["text_98ea1b1cf854"]}
                             id="cc-manager"
                             value={formManagerId}
                             onChange={(e) => setFormManagerId(e.target.value)}
                             className="flex-1"
                             options={[
-                                { value: "", label: "— بدون تعيين" },
+                                { value: "", label: i18n.catalog["text_d61e2f352ee3"] },
                                 ...employees.map((emp) => ({ value: String(emp.id), label: emp.name })),
                             ]}
                         />
                         <NumberInput
-                            label="الميزانية"
+                            label={i18n.catalog["text_94410bef3fe2"]}
                             id="cc-budget"
                             value={formBudget}
                             onChange={(val) => setFormBudget(val)}
@@ -674,20 +675,20 @@ export default function CostCentersPage() {
 
                     <div className="form-row">
                         <Select
-                            label="الحالة"
+                            label={i18n.catalog["text_c3a4749caed4"]}
                             id="cc-status"
                             value={formIsActive}
                             onChange={(e) => setFormIsActive(e.target.value)}
                             className="flex-1"
                             options={[
-                                { value: "true", label: "نشط" },
-                                { value: "false", label: "غير نشط" },
+                                { value: "true", label: i18n.catalog["text_629e90b3af3d"] },
+                                { value: "false", label: i18n.catalog["text_b719ac8add4e"] },
                             ]}
                         />
                     </div>
 
                     <Textarea
-                        label="الوصف"
+                        label={i18n.catalog["text_95023fc76e1b"]}
                         id="cc-description"
                         value={formDescription}
                         onChange={(e) => setFormDescription(e.target.value)}
@@ -701,9 +702,9 @@ export default function CostCentersPage() {
                 isOpen={confirmDialog}
                 onClose={() => setConfirmDialog(false)}
                 onConfirm={deleteCenter}
-                title="تأكيد الحذف"
-                message="هل أنت متأكد من حذف مركز التكلفة هذا؟ لا يمكن حذف مراكز مرتبطة بقيود محاسبية."
-                confirmText="حذف"
+                title={i18n.catalog["text_5f9cb54dc136"]}
+                message={i18n.catalog["text_7d13e29aa162"]}
+                confirmText={i18n.catalog["text_59ca629220a6"]}
                 confirmVariant="danger"
             />
         </MainLayout>

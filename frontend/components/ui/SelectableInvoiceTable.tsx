@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText, catalogMessage } from "@/lib/i18n";
 import { useState, useEffect } from "react";
 import { ExpandableTable, Column as ExpandableColumn } from "./ExpandableTable";
 import { SelectableTable, SelectableColumn } from "./SelectableTable";
@@ -69,11 +70,11 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
   keyExtractor,
   onSelectionChange,
   onSearch,
-  searchPlaceholder = "بحث برقم الفاتورة...",
+  searchPlaceholder = catalogMessage("text_aa511cb1c4c3"),
   isLoading = false,
   pagination,
   getInvoiceItems,
-  emptyMessage = "لا توجد فواتير",
+  emptyMessage = catalogMessage("text_e954a549b77f"),
   multiInvoiceSelection = false,
   isExpandable,
   openReturnDialog,
@@ -81,6 +82,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
   invoiceIdExtractor = (item: T) => item.id,
   FilterTabNavigation,
 }: SelectableInvoiceTableProps<T>) {
+    const { t: i18n } = useI18n();
   // State
   const [invoiceItems, setInvoiceItems] = useState<Record<number, InvoiceItem[]>>({});
   const [loadingItems, setLoadingItems] = useState<Record<number, boolean>>({});
@@ -124,7 +126,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
   const searchOptions: SelectOption[] = invoices.map(inv => ({
     value: inv.id,
     label: inv.invoice_number,
-    subtitle: `الإجمالي: ${formatCurrency(inv.total_amount ?? inv.amount ?? 0)}`
+    subtitle: catalogText(i18n, "text_2944777ec6bf", { value0: formatCurrency(inv.total_amount ?? inv.amount ?? 0) })
   }));
 
   // Fetch items when expanding
@@ -136,7 +138,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
         const items = await getInvoiceItems(invoice);
         setInvoiceItems(prev => ({ ...prev, [invId]: items }));
       } catch (error) {
-        console.error("Failed to load items", error);
+        console.error(i18n.catalog["text_6d54b0001795"], error);
       } finally {
         setLoadingItems(prev => ({ ...prev, [invId]: false }));
       }
@@ -155,7 +157,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
           invoiceItemId: Number(item.id),
           quantity: item.quantity,
           maxQuantity: item.quantity,
-          productName: item.product?.name || (item as any).product_name || `منتج #${item.product_id}`,
+          productName: item.product?.name || (item as any).product_name || catalogText(i18n, "text_46d08c61c7d5", { value0: item.product_id }),
           unitPrice: item.unit_price,
           originalQuantity: item.original_quantity,
         }));
@@ -177,7 +179,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
     // Enforce Single Invoice Constraint if not multi-invoice
     if (!multiInvoiceSelection && currentInvoiceId && currentInvoiceId !== invoiceId && selectedIds.length > 0) {
       setConfirmData({
-        message: "هل تريد إلغاء تحديد العناصر من الفاتورة السابقة والبدء في هذه؟",
+        message: i18n.catalog["text_7fcda5a704e7"],
         onConfirm: processSelection
       });
       setShowConfirm(true);
@@ -191,7 +193,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
   const itemColumns: SelectableColumn<InvoiceItem>[] = [
     {
       key: "product_name",
-      header: "المنتج",
+      header: i18n.catalog["text_a79e304d96a1"],
       render: (item) => (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <span>{item.product?.name || (item as any).product_name || item.product_id}</span>
@@ -201,7 +203,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
               color: item.quantity === 0 ? 'var(--danger-color)' : 'var(--warning-color)',
               fontWeight: 'bold'
             }}>
-              {item.quantity === 0 ? '(مسترجع بالكامل)' : `(تم إرجاع ${item.returned_quantity})`}
+              {item.quantity === 0 ? i18n.catalog["text_4af7488d2163"] : catalogText(i18n, "text_1922f97d21a6", { value0: item.returned_quantity })}
             </span>
           )}
         </div>
@@ -209,7 +211,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
     },
     {
       key: "quantity",
-      header: "الكمية",
+      header: i18n.catalog["text_935e21853946"],
       render: (item) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {item.original_quantity !== undefined && item.original_quantity !== item.quantity && (
@@ -226,8 +228,8 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
         </div>
       )
     },
-    { key: "unit_price", header: "السعر", render: (item) => formatCurrency(item.unit_price) },
-    { key: "subtotal", header: "الإجمالي", render: (item) => formatCurrency(item.unit_price * item.quantity) },
+    { key: "unit_price", header: i18n.catalog["text_259862e8b313"], render: (item) => formatCurrency(item.unit_price) },
+    { key: "subtotal", header: i18n.catalog["text_baed6e999960"], render: (item) => formatCurrency(item.unit_price * item.quantity) },
   ];
 
   const clearSelection = () => {
@@ -246,7 +248,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
 
       {FilterTabNavigation &&
         (<PageSubHeader
-          title="قائمة الفواتير"
+          title={i18n.catalog["text_62bd2aabbe5f"]}
           titleIcon="receipt"
           actions={
             <>
@@ -272,16 +274,16 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
         </div>
         <FloatingActionTableBar
           isVisible={selectionMode}
-          message={`تم تحديد ${selectedItems.length} عنصر من ${new Set(selectedItems.map(i => i.invoiceId)).size} فاتورة`}
+          message={catalogText(i18n, "text_6dc5241b1d0e", { value0: selectedItems.length, value1: new Set(selectedItems.map(i => i.invoiceId)).size })}
           actions={[
             {
-              label: "تسجيل مرتجع",
+              label: i18n.catalog["text_1aeab420bcd7"],
               icon: "repeat",
               onClick: openReturnDialog,
               variant: "primary"
             },
             {
-              label: "إلغاء التحديد",
+              label: i18n.catalog["text_1551d5ed3d4d"],
               icon: "shield-check",
               onClick: clearSelection,
               variant: "secondary"
@@ -317,7 +319,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
           return (
             <>
               {isLoading ? (
-                <div className="p-4 text-center text-secondary">جاري تحميل العناصر...</div>
+                <div className="p-4 text-center text-secondary">{i18n.catalog["text_bb3a8d5d282e"]}</div>
               ) : (
                 <div className="inner-table-container">
 
@@ -329,7 +331,7 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
                     onSelectionChange={(ids) => handleItemSelectionChange(ids, invId)}
                     selectionMode={true} // Always allow selection in expanded row
                     isRowSelectable={(item) => item.quantity > 0}
-                    emptyMessage="لا توجد عناصر في هذه الفاتورة"
+                    emptyMessage={i18n.catalog["text_8d63376ad1e9"]}
                   // If user wants long press to toggle "selection mode" visually (checkboxes), pass state.
                   // Here we just enable checkboxes always for clarity or logic.
                   // User "Selection is not long-pressed" fix: 
@@ -348,9 +350,9 @@ export function SelectableInvoiceTable<T extends SelectableInvoice>({
         onClose={() => setShowConfirm(false)}
         onConfirm={() => confirmData?.onConfirm()}
         message={confirmData?.message || ""}
-        title="تأكيد التغيير"
-        confirmText="نعم، ابدأ جديد"
-        cancelText="إلغاء"
+        title={i18n.catalog["text_dbe619a3f14f"]}
+        confirmText={i18n.catalog["text_b6d8927cdf78"]}
+        cancelText={i18n.catalog["text_9a30dc2a96b8"]}
       />
     </div>
   );

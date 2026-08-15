@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 import React from "react";
 import { SessionExpiredModal } from "@/components/ui/SessionExpiredModal";
-import { LocaleProvider } from "@/lib/i18n";
+import { LocaleProvider, catalogMessage } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: "نظام أكور",
-  description: "نظام إدارة أكور والمحاسبة",
+  title: catalogMessage("text_b00cf16ad1e4"),
+  description: catalogMessage("text_67e139f06046"),
 };
 
 export default function RootLayout({

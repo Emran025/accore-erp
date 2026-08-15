@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -9,6 +10,7 @@ import { createPortal } from "react-dom";
 import { Alert } from "@/components/ui/Alert";
 
 export function SessionExpiredModal() {
+    const { t: i18n } = useI18n();
     const { sessionExpired, login, canAccess, setSessionExpired } = useAuthStore();
     const [mounted, setMounted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -45,7 +47,7 @@ export function SessionExpiredModal() {
             }
             return result;
         } catch {
-            return { success: false, error: "حدث خطأ في الاتصال بالخادم" };
+            return { success: false, error: i18n.catalog["text_5e224aae1f83"] };
         } finally {
             setIsLoading(false);
         }
@@ -54,7 +56,7 @@ export function SessionExpiredModal() {
     return createPortal(
         <div className="dialog-overlay active" style={{ zIndex: 99999 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem', width: '100%', maxWidth: '420px' }}>
-                <Alert type="warning" message="إنتهت الجلسة، يرجى تسجيل الدخول مرة أخرى" />
+                <Alert type="warning" message={i18n.catalog["text_76ea6d1e9f2f"]} />
                 <LoginForm onSubmit={handleLogin} isLoading={isLoading} />
             </div>
         </div>,

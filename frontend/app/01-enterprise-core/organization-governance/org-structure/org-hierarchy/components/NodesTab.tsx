@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Checkbox, Column, ConfirmDialog, Dialog, SearchableSelect, showToast, Table } from "@/components/ui";
 import { Select } from "@/components/ui/select";
@@ -38,6 +39,7 @@ interface TopologyRule {
 }
 
 export function NodesTab() {
+    const { t: i18n } = useI18n();
     const [nodes, setNodes] = useState<StructureNode[]>([]);
     const [metaTypes, setMetaTypes] = useState<MetaType[]>([]);
     const [topologyRules, setTopologyRules] = useState<TopologyRule[]>([]);
@@ -73,7 +75,7 @@ export function NodesTab() {
             const response = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES}?${params}`);
             setNodes((response.nodes as StructureNode[]) || []);
             setInitialDataLoaded(true);
-        } catch { showToast("خطأ في تحميل الوحدات التنظيمية", "error"); }
+        } catch { showToast(i18n.catalog["text_19001cfc2cbf"], "error"); }
         finally { setIsLoading(false); }
     }, [searchTerm, filterType, filterStatus, filterDomain]);
 
@@ -81,7 +83,7 @@ export function NodesTab() {
         try {
             const response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.META_TYPES);
             setMetaTypes((response.meta_types as MetaType[]) || []);
-        } catch { showToast("خطأ في تحميل أنواع الوحدات", "error"); }
+        } catch { showToast(i18n.catalog["text_e1fa4693db09"], "error"); }
     }, []);
 
     const loadTopologyRules = useCallback(async () => {
@@ -124,7 +126,7 @@ export function NodesTab() {
 
     const handleSubmit = async () => {
         if (!formData.node_type_id.trim() || !formData.code.trim()) {
-            showToast("يرجى إدخال النوع والرمز", "error"); return;
+            showToast(i18n.catalog["text_c9e5868f314d"], "error"); return;
         }
         setIsSubmitting(true);
         const attrs: Record<string, string> = { ...dynamicAttrs };
@@ -144,15 +146,15 @@ export function NodesTab() {
                         valid_from: formData.valid_from || null, valid_to: formData.valid_to || null,
                     }),
                 });
-                showToast("تم تحديث الوحدة بنجاح", "success");
+                showToast(i18n.catalog["text_4cd959b04c70"], "success");
             } else {
                 await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES, { method: "POST", body: JSON.stringify(payload) });
-                showToast("تمت إضافة الوحدة بنجاح", "success");
+                showToast(i18n.catalog["text_ae038721ee27"], "success");
             }
             setFormDialog(false); loadNodes();
         } catch (e: unknown) {
             const err = e as { message?: string };
-            showToast(err?.message || "خطأ في الحفظ", "error");
+            showToast(err?.message || i18n.catalog["text_c574313242be"], "error");
         } finally {
             setIsSubmitting(false);
         }
@@ -164,10 +166,10 @@ export function NodesTab() {
         if (!deleteUuid) return;
         try {
             await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODE(deleteUuid), { method: "DELETE" });
-            showToast("تم حذف الوحدة", "success"); loadNodes();
+            showToast(i18n.catalog["text_2292d78ed5cb"], "success"); loadNodes();
         } catch (e: unknown) {
             const err = e as { message?: string };
-            showToast(err?.message || "خطأ في الحذف", "error");
+            showToast(err?.message || i18n.catalog["text_3bdb299872fb"], "error");
         }
         setConfirmDialog(false); setDeleteUuid(null);
     };
@@ -195,12 +197,12 @@ export function NodesTab() {
                 method: "POST",
                 body: JSON.stringify({ node_uuids: Array.from(selectedUuids), status: bulkStatus }),
             });
-            showToast(`تم تحديث ${selectedUuids.size} وحدة`, "success");
+            showToast(catalogText(i18n, "text_63b4a5d68b48", { value0: selectedUuids.size }), "success");
             setSelectedUuids(new Set());
             setBulkDialog(false);
             loadNodes();
         } catch (e: unknown) {
-            showToast((e as { message?: string })?.message || "خطأ في التحديث الجماعي", "error");
+            showToast((e as { message?: string })?.message || i18n.catalog["text_598f8b7818df"], "error");
         }
     };
 
@@ -220,9 +222,9 @@ export function NodesTab() {
                 />
             ),
         },
-        { key: "code", header: "الرمز", dataLabel: "الرمز" },
+        { key: "code", header: i18n.catalog["text_589c6420ea10"], dataLabel: i18n.catalog["text_589c6420ea10"] },
         {
-            key: "node_type_id", header: "النوع", dataLabel: "النوع",
+            key: "node_type_id", header: i18n.catalog["text_caa3f2bb4a36"], dataLabel: i18n.catalog["text_caa3f2bb4a36"],
             render: (item) => {
                 const domain = getTypeDomain(item.node_type_id);
                 const color = DOMAIN_COLORS[domain] || "#6b7280";
@@ -230,31 +232,31 @@ export function NodesTab() {
             },
         },
         {
-            key: "domain", header: "المجال", dataLabel: "المجال",
+            key: "domain", header: i18n.catalog["text_d197ebe8e67a"], dataLabel: i18n.catalog["text_d197ebe8e67a"],
             render: (item) => {
                 const domain = getTypeDomain(item.node_type_id);
                 return <span style={{ color: DOMAIN_COLORS[domain] || "#6b7280", fontWeight: 500, fontSize: "0.8rem" }}>{domain}</span>;
             },
         },
         {
-            key: "name", header: "الاسم", dataLabel: "الاسم",
+            key: "name", header: i18n.catalog["text_52ab09847cf8"], dataLabel: i18n.catalog["text_52ab09847cf8"],
             render: (item) => (item.attributes_json as Record<string, unknown>)?.name as string || "-",
         },
         {
-            key: "links", header: "الروابط", dataLabel: "الروابط",
+            key: "links", header: i18n.catalog["text_d814da6b7a05"], dataLabel: i18n.catalog["text_d814da6b7a05"],
             render: (item) => {
                 const out = item.outgoing_links?.length ?? 0;
                 const inc = item.incoming_links?.length ?? 0;
                 return (
                     <div style={{ display: "flex", gap: "4px", fontSize: "0.75rem" }}>
-                        <span title="صادرة" style={{ color: "#3b82f6" }}>↑{out}</span>
-                        <span title="واردة" style={{ color: "#10b981" }}>↓{inc}</span>
+                        <span title={i18n.catalog["text_0bbca6cfeedf"]} style={{ color: "#3b82f6" }}>↑{out}</span>
+                        <span title={i18n.catalog["text_32a6b085ca6d"]} style={{ color: "#10b981" }}>↓{inc}</span>
                     </div>
                 );
             },
         },
         {
-            key: "validity", header: "الصلاحية", dataLabel: "الصلاحية",
+            key: "validity", header: i18n.catalog["text_9f9b2c7c5fa3"], dataLabel: i18n.catalog["text_9f9b2c7c5fa3"],
             render: (item) => {
                 if (!item.valid_from && !item.valid_to) return <span style={{ color: "var(--text-muted)", fontSize: "0.75rem" }}>—</span>;
                 return (
@@ -265,20 +267,20 @@ export function NodesTab() {
             },
         },
         {
-            key: "status", header: "الحالة", dataLabel: "الحالة",
+            key: "status", header: i18n.catalog["text_c3a4749caed4"], dataLabel: i18n.catalog["text_c3a4749caed4"],
             render: (item) => (
                 <span className={`badge ${item.status === "active" ? "badge-success" : item.status === "inactive" ? "badge-warning" : "badge-secondary"}`}>
-                    {item.status === "active" ? "نشط" : item.status === "inactive" ? "غير نشط" : "مؤرشف"}
+                    {item.status === "active" ? i18n.catalog["text_629e90b3af3d"] : item.status === "inactive" ? i18n.catalog["text_b719ac8add4e"] : i18n.catalog["text_9d1b78e3b949"]}
                 </span>
             ),
         },
         {
-            key: "actions", header: "الإجراءات", dataLabel: "الإجراءات",
+            key: "actions", header: i18n.catalog["text_7797240d6caf"], dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (item) => (
                 <ActionButtons
                     actions={[
-                        { icon: "edit", title: "تعديل", variant: "edit", onClick: () => openEditDialog(item) },
-                        { icon: "trash", title: "حذف", variant: "delete", onClick: () => confirmDelete(item.node_uuid) },
+                        { icon: "edit", title: i18n.catalog["text_113d570d6555"], variant: "edit", onClick: () => openEditDialog(item) },
+                        { icon: "trash", title: i18n.catalog["text_59ca629220a6"], variant: "delete", onClick: () => confirmDelete(item.node_uuid) },
                     ]}
                 />
             ),
@@ -307,15 +309,15 @@ export function NodesTab() {
             <div className="sales-card animate-fade">
 
                 <PageSubHeader
-                    title="إدارة الوحدات التنظيمية"
-                    subTitle="استعراض وإدارة جميع الوحدات التنظيمية في الهيكل."
+                    title={i18n.catalog["text_c677033cfd4c"]}
+                    subTitle={i18n.catalog["text_8eec5d845d11"]}
                     titleIcon="sitemap"
                     searchInput={
                         <SearchableSelect
                             value={null}
                             options={nodes.map(n => ({
                                 value: n.node_uuid,
-                                label: `${n.code} - ${(n.attributes_json as any)?.name || ''}`,
+                                label: catalogText(i18n, "text_2a9059a3c52f", { value0: n.code, value1: (n.attributes_json as any)?.name || '' }),
                                 subtitle: getTypeLabel(n.node_type_id)
                             }))}
                             onChange={(val) => {
@@ -325,7 +327,7 @@ export function NodesTab() {
                                 }
                             }}
                             onSearch={(term) => setSearchTerm(term)}
-                            placeholder="بحث بالرمز أو الاسم..."
+                            placeholder={i18n.catalog["text_5707c58f40d2"]}
                         />
                     }
                     actions={
@@ -333,10 +335,10 @@ export function NodesTab() {
                             <div style={{ display: "flex", gap: "0.5rem" }}>
                                 {selectedUuids.size > 0 && (
                                     <Button variant="secondary" icon="edit" onClick={() => setBulkDialog(true)}>
-                                        تعديل جماعي ({selectedUuids.size})
+                                        {i18n.catalog["text_8786c463ec42"]}{selectedUuids.size})
                                     </Button>
                                 )}
-                                <Button variant="primary" icon="plus" onClick={openAddDialog}>إضافة وحدة</Button>
+                                <Button variant="primary" icon="plus" onClick={openAddDialog}>{i18n.catalog["text_8b7ffe548e72"]}</Button>
                             </div>
                         </>
                     }
@@ -348,7 +350,7 @@ export function NodesTab() {
                                 <Checkbox
                                     checked={selectedUuids.size === nodes.length && nodes.length > 0}
                                     onChange={toggleSelectAll}
-                                    label={`تحديد الكل (${nodes.length})`}
+                                    label={catalogText(i18n, "text_34cf14a4fe2b", { value0: nodes.length })}
                                 />
                             </div>
                         ) : (<Select
@@ -356,7 +358,7 @@ export function NodesTab() {
                             onChange={(e) => { setFilterDomain(e.target.value); setFilterType(""); }}
                             style={{ maxWidth: "220px" }}
                             options={[
-                                { value: "", label: "جميع المجالات" },
+                                { value: "", label: i18n.catalog["text_89a4eea1bc00"] },
                                 ...domains.map((d) => ({ value: d, label: d }))
                             ]}
                         />)
@@ -368,7 +370,7 @@ export function NodesTab() {
                                 onChange={(e) => { setFilterDomain(e.target.value); setFilterType(""); }}
                                 style={{ maxWidth: "220px" }}
                                 options={[
-                                    { value: "", label: "جميع المجالات" },
+                                    { value: "", label: i18n.catalog["text_89a4eea1bc00"] },
                                     ...domains.map((d) => ({ value: d, label: d }))
                                 ]}
                             />)}
@@ -378,7 +380,7 @@ export function NodesTab() {
                                 onChange={(e) => setFilterType(e.target.value)}
                                 style={{ maxWidth: "220px" }}
                                 options={[
-                                    { value: "", label: "جميع الأنواع" },
+                                    { value: "", label: i18n.catalog["text_76b1679edecf"] },
                                     ...filteredMetaTypes.map((t) => ({ value: t.id, label: t.display_name_ar || t.display_name })),
                                 ]}
                             />
@@ -388,23 +390,22 @@ export function NodesTab() {
                                 style={{ maxWidth: "220px" }}
                                 options={
                                     [
-                                        { value: "", label: "جميع الحالات" },
-                                        { value: "active", label: "نشط" },
-                                        { value: "inactive", label: "غير نشط" },
-                                        { value: "archived", label: "مؤرشف" },
+                                        { value: "", label: i18n.catalog["text_1ef213109d57"] },
+                                        { value: "active", label: i18n.catalog["text_629e90b3af3d"] },
+                                        { value: "inactive", label: i18n.catalog["text_b719ac8add4e"] },
+                                        { value: "archived", label: i18n.catalog["text_9d1b78e3b949"] },
                                     ]
                                 }
 
                             />
-                            <Button variant="secondary" onClick={loadNodes}>بحث</Button>
+                            <Button variant="secondary" onClick={loadNodes}>{i18n.catalog["text_d0f6edcf6d65"]}</Button>
                         </>
                     }
                 />
 
-                <Table columns={nodeColumns} data={nodes} keyExtractor={(item) => item.node_uuid} emptyMessage="لا توجد وحدات تنظيمية" isLoading={isLoading} />
+                <Table columns={nodeColumns} data={nodes} keyExtractor={(item) => item.node_uuid} emptyMessage={i18n.catalog["text_0ed477f32881"]} isLoading={isLoading} />
                 <div style={{ marginTop: "0.5rem", fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                    إجمالي: {nodes.length} وحدة
-                </div>
+                    {i18n.catalog["text_97bd2075da0f"]}{nodes.length} {i18n.catalog["text_584f05614c76"]}</div>
             </div >
 
             {/* Add/Edit Dialog */}
@@ -419,30 +420,29 @@ export function NodesTab() {
             <Dialog
                 isOpen={bulkDialog}
                 onClose={() => setBulkDialog(false)}
-                title={`تعديل جماعي — ${selectedUuids.size} وحدة`}
+                title={catalogText(i18n, "text_7e5bd2fed66a", { value0: selectedUuids.size })}
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setBulkDialog(false)}>إلغاء</Button>
-                        <Button variant="primary" onClick={handleBulkStatus}>تحديث الحالة</Button>
+                        <Button variant="secondary" onClick={() => setBulkDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                        <Button variant="primary" onClick={handleBulkStatus}>{i18n.catalog["text_dcf45bf69058"]}</Button>
                     </>
                 }
             >
                 <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
-                    سيتم تحديث حالة {selectedUuids.size} وحدة/وحدات، محاكاةً لعملية Mass Change في SAP.
-                </p>
-                <Select label="الحالة الجديدة" value={bulkStatus} onChange={(e) => setBulkStatus(e.target.value)}
+                    {i18n.catalog["text_07ce1eb3380c"]}{selectedUuids.size} {i18n.catalog["text_cb5510a0ad97"]}</p>
+                <Select label={i18n.catalog["text_9c0468e01fbb"]} value={bulkStatus} onChange={(e) => setBulkStatus(e.target.value)}
                     options={
                         [
-                            { value: "active", label: "نشط (Active)" },
-                            { value: "inactive", label: "غير نشط (Inactive)" },
-                            { value: "archived", label: "مؤرشف (Archived)" },
+                            { value: "active", label: i18n.catalog["text_45bde9fdafc3"] },
+                            { value: "inactive", label: i18n.catalog["text_ad16cd513d7f"] },
+                            { value: "archived", label: i18n.catalog["text_a1251f0700cd"] },
                         ]
                     }
                 />
             </Dialog>
 
             <ConfirmDialog isOpen={confirmDialog} onClose={() => setConfirmDialog(false)} onConfirm={handleDelete}
-                title="تأكيد الحذف" message="هل أنت متأكد من حذف هذه الوحدة؟ إذا كانت مرتبطة بوحدات أخرى، قد تفشل العملية." confirmText="حذف" confirmVariant="danger" />
+                title={i18n.catalog["text_5f9cb54dc136"]} message={i18n.catalog["text_5a31ec6592a8"]} confirmText={i18n.catalog["text_59ca629220a6"]} confirmVariant="danger" />
         </>
     );
 }

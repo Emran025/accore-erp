@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText, catalogMessage } from "@/lib/i18n";
 import { PageSubHeader } from "@/components/layout";
 import { Button, showToast, StatsCard } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -24,15 +25,16 @@ interface IntegrityIssue {
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
-    missing_attribute: "سمات إجبارية مفقودة",
-    orphan_node: "وحدات معزولة",
-    missing_parent: "ارتباطات إجبارية مفقودة",
-    cardinality_violation: "مخالفات تعدد العلاقات",
-    expired_link: "ارتباطات منتهية الصلاحية",
-    inactive_with_links: "وحدات غير نشطة لها ارتباطات",
+    missing_attribute: catalogMessage("text_e719e6a2c81f"),
+    orphan_node: catalogMessage("text_4a9ffe71a029"),
+    missing_parent: catalogMessage("text_5e762b2e16b2"),
+    cardinality_violation: catalogMessage("text_0f6473e6e5b3"),
+    expired_link: catalogMessage("text_36dab31263bb"),
+    inactive_with_links: catalogMessage("text_c6e14a399fc9"),
 };
 
 export function IntegrityTab() {
+    const { t: i18n } = useI18n();
     const [issues, setIssues] = useState<IntegrityIssue[]>([]);
     const [isScanning, setIsScanning] = useState(false);
     const [summary, setSummary] = useState({ total: 0, errors: 0, warnings: 0, info: 0 });
@@ -54,10 +56,10 @@ export function IntegrityTab() {
                     warnings: res.warnings as number || 0,
                     info: res.info as number || 0,
                 });
-                showToast(`اكتمل الفحص. تم العثور على ${res.total} ملاحظة`, "info");
+                showToast(catalogText(i18n, "text_089f02a23233", { value0: res.total }), "info");
             }
         } catch {
-            showToast("فشل تشغيل فحص السلامة", "error");
+            showToast(i18n.catalog["text_62407da805a9"], "error");
         } finally {
             setIsScanning(false);
         }
@@ -84,12 +86,12 @@ export function IntegrityTab() {
             {/* Header */}
             <PageSubHeader
                 titleIcon="shield-check"
-                title="فحص سلامة الهيكل التنظيمي (Consistency Check)"
-                subTitle="فحص شامل للتعيينات والسمات والعلاقات بما يحاكي SAP Consistency Log &amp; SCDO."
+                title={i18n.catalog["text_dd1e300a0e00"]}
+                subTitle={i18n.catalog["text_7f3e19a4a3e2"]}
                 actions={
                     <>
                         <Button variant="primary" onClick={runScan} disabled={isScanning}>
-                            {isScanning ? "جاري الفحص..." : "إعادة تشغيل الفحص"}
+                            {isScanning ? i18n.catalog["text_3e60e9968a72"] : i18n.catalog["text_89cec82a1b30"]}
                         </Button>
                     </>
                 }
@@ -98,28 +100,28 @@ export function IntegrityTab() {
             {/* Stats Row */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginBottom: "1.5rem" }}>
                 <StatsCard
-                    title="إجمالي النتائج"
+                    title={i18n.catalog["text_c93844dd04a3"]}
                     value={summary.total}
                     icon={getIcon("list")}
                     colorClass="total"
                     onClick={() => setFilterType("")}
                 />
                 <StatsCard
-                    title="أخطاء (Blockers)"
+                    title={i18n.catalog["text_aac2ad44108f"]}
                     value={summary.errors}
                     icon={getIcon("alert")}
                     colorClass="alert"
                     onClick={() => setFilterType(filterType === "ERROR" ? "" : "ERROR")}
                 />
                 <StatsCard
-                    title="تحذيرات"
+                    title={i18n.catalog["text_c10e071b77c7"]}
                     value={summary.warnings}
                     icon={getIcon("alertTriangle")}
                     colorClass="default"
                     onClick={() => setFilterType(filterType === "WARNING" ? "" : "WARNING")}
                 />
                 <StatsCard
-                    title="تنبيهات"
+                    title={i18n.catalog["text_0f029691ed6d"]}
                     value={summary.info}
                     icon={getIcon("eye")}
                     colorClass="sales"
@@ -130,7 +132,7 @@ export function IntegrityTab() {
             {/* Category Filter */}
             {categories.length > 0 && (
                 <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem", flexWrap: "wrap" }}>
-                    <FilterChip label="الكل" active={!filterCategory} onClick={() => setFilterCategory("")} />
+                    <FilterChip label={i18n.catalog["text_65f276da33cf"]} active={!filterCategory} onClick={() => setFilterCategory("")} />
                     {categories.map(cat => {
                         const count = issues.filter(i => i.category === cat && (!filterType || i.type === filterType)).length;
                         return (
@@ -150,20 +152,20 @@ export function IntegrityTab() {
             {issues.length === 0 && !isScanning ? (
                 <EmptyState
                     icon="check-circle"
-                    title="الهيكل سليم 100%"
-                    description="لا توجد تعارضات أو سمات إجبارية مفقودة أو مخالفات في القواعد المعرّفة حالياً."
+                    title={i18n.catalog["text_c1e8d631340d"]}
+                    description={i18n.catalog["text_5602b66cbe09"]}
                     iconColor="var(--success)"
                 >
-                    <CheckItem label="السمات الإجبارية" />
-                    <CheckItem label="الارتباطات الأساسية" />
-                    <CheckItem label="قواعد التعدد" />
-                    <CheckItem label="صلاحية الروابط" />
-                    <CheckItem label="الوحدات المعزولة" />
+                    <CheckItem label={i18n.catalog["text_1ea0b2bbad92"]} />
+                    <CheckItem label={i18n.catalog["text_faeb848c82b1"]} />
+                    <CheckItem label={i18n.catalog["text_5cbd9c7fdb78"]} />
+                    <CheckItem label={i18n.catalog["text_a65e8c16aedf"]} />
+                    <CheckItem label={i18n.catalog["text_3ef644f85481"]} />
                 </EmptyState>
             ) : isScanning ? (
                 <div className="sales-card" style={{ textAlign: "center", padding: "3rem" }}>
                     <div className="loading-spinner" style={{ margin: "0 auto 1rem" }} />
-                    <p style={{ color: "var(--text-muted)" }}>جاري فحص الوحدات التنظيمية والارتباطات والقواعد...</p>
+                    <p style={{ color: "var(--text-muted)" }}>{i18n.catalog["text_92fd51f8f513"]}</p>
                 </div>
             ) : (
                 <div style={{ display: "grid", gap: "1rem" }}>
@@ -183,12 +185,12 @@ export function IntegrityTab() {
                                         message={issue.message_ar || issue.message}
                                         meta={
                                             <>
-                                                الوحدة: <strong>{issue.node_code}</strong>
+                                                {i18n.catalog["text_f94ffee01209"]}<strong>{issue.node_code}</strong>
                                                 <span style={{ marginRight: "0.5rem", marginLeft: "0.5rem" }}>|</span>
-                                                النوع: <code style={{ fontSize: "0.75rem" }}>{issue.node_type}</code>
+                                                {i18n.catalog["text_0e20d829bef2"]}<code style={{ fontSize: "0.75rem" }}>{issue.node_type}</code>
                                                 {issue.node_uuid && (
                                                     <span style={{ marginRight: "0.5rem", color: "var(--text-muted)", fontSize: "0.72rem" }}>
-                                                        (ID: {issue.node_uuid.substring(0, 8)}...)
+                                                        {i18n.catalog["text_088d1d97164b"]}{issue.node_uuid.substring(0, 8)}...)
                                                     </span>
                                                 )}
                                             </>

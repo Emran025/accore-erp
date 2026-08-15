@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { fetchAPI } from '@/lib/api';
@@ -89,7 +90,7 @@ export const usePayrollStore = create<PayrollState>()(
                     set({ cycles: Array.isArray(data) ? data : [] });
                 } catch (error) {
                     console.error(error);
-                    showToast('خطأ في تحميل دورات الرواتب', 'error');
+                    showToast(catalogMessage("text_4b8b467c9440"), 'error');
                 } finally {
                     set({ cyclesLoading: false });
                 }
@@ -105,7 +106,7 @@ export const usePayrollStore = create<PayrollState>()(
                     return items;
                 } catch (error) {
                     console.error(error);
-                    showToast('خطأ في تحميل تفاصيل الدورة', 'error');
+                    showToast(catalogMessage("text_e4112296ed23"), 'error');
                     return [];
                 }
             },
@@ -137,7 +138,7 @@ export const usePayrollStore = create<PayrollState>()(
                         defaultAccountId: cashAcc ? cashAcc.id.toString() : '',
                     });
                 } catch (e) {
-                    console.error('Failed to load accounts', e);
+                    console.error(catalogMessage("text_3867abe1d888"), e);
                 }
             },
 
@@ -150,7 +151,7 @@ export const usePayrollStore = create<PayrollState>()(
                     return transactions;
                 } catch (error) {
                     console.error(error);
-                    showToast('خطأ في تحميل سجل التحويلات', 'error');
+                    showToast(catalogMessage("text_aeb4cf930337"), 'error');
                     return [];
                 }
             },
@@ -163,14 +164,14 @@ export const usePayrollStore = create<PayrollState>()(
                         body: JSON.stringify(payload),
                     });
                     if (res.success !== false) {
-                        showToast('تم إنشاء المسير بنجاح', 'success');
+                        showToast(catalogMessage("text_4492ec68d413"), 'success');
                         get().loadCycles();
                         return true;
                     }
-                    showToast('فشل إنشاء المسير: ' + res.message, 'error');
+                    showToast(catalogMessage("text_58188a9245b0") + res.message, 'error');
                     return false;
                 } catch {
-                    showToast('حدث خطأ غير متوقع', 'error');
+                    showToast(catalogMessage("text_cdd288620509"), 'error');
                     return false;
                 }
             },
@@ -180,14 +181,14 @@ export const usePayrollStore = create<PayrollState>()(
                 try {
                     const res: any = await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.PAYROLL.APPROVE(id), { method: 'POST' });
                     if (res.success !== false) {
-                        showToast('تمت الموافقة بنجاح', 'success');
+                        showToast(catalogMessage("text_2c78d4e841c7"), 'success');
                         get().loadCycles();
                         return true;
                     }
-                    showToast('فشل الموافقة: ' + res.message, 'error');
+                    showToast(catalogMessage("text_578a9519e505") + res.message, 'error');
                     return false;
                 } catch {
-                    showToast('حدث خطأ', 'error');
+                    showToast(catalogMessage("text_83d3d40014f9"), 'error');
                     return false;
                 }
             },
@@ -200,14 +201,14 @@ export const usePayrollStore = create<PayrollState>()(
                         body: JSON.stringify({ account_id: accountId }),
                     });
                     if (res.success !== false) {
-                        showToast('تم ترحيل وصرف الرواتب بنجاح', 'success');
+                        showToast(catalogMessage("text_a4a7b8b29df9"), 'success');
                         get().loadCycles();
                         return true;
                     }
-                    showToast('فشل الصرف: ' + res.message, 'error');
+                    showToast(catalogMessage("text_74816c5ceb8d") + res.message, 'error');
                     return false;
                 } catch {
-                    showToast('حدث خطأ', 'error');
+                    showToast(catalogMessage("text_83d3d40014f9"), 'error');
                     return false;
                 }
             },
@@ -221,8 +222,8 @@ export const usePayrollStore = create<PayrollState>()(
                     if (res) {
                         showToast(
                             res.status === 'on_hold'
-                                ? 'تم إيقاف صرف الراتب مؤقتاً'
-                                : 'تم تفعيل صرف الراتب',
+                                ? catalogMessage("text_3f0cfce45d88")
+                                : catalogMessage("text_97e2e8b0073e"),
                             'info'
                         );
                         get().loadCycleDetails(item.payroll_cycle_id);
@@ -230,7 +231,7 @@ export const usePayrollStore = create<PayrollState>()(
                     }
                     return false;
                 } catch {
-                    showToast('حدث خطأ', 'error');
+                    showToast(catalogMessage("text_83d3d40014f9"), 'error');
                     return false;
                 }
             },
@@ -243,7 +244,7 @@ export const usePayrollStore = create<PayrollState>()(
                         body: JSON.stringify(data),
                     });
                     if (res.id) {
-                        showToast('تم تحديث بيانات الموظف بنجاح', 'success');
+                        showToast(catalogMessage("text_86fba7a2c048"), 'success');
                         get().loadCycles(); // refresh totals
                         return true;
                     }
@@ -261,13 +262,13 @@ export const usePayrollStore = create<PayrollState>()(
                         body: JSON.stringify(data),
                     });
                     if (res.success !== false) {
-                        showToast('تم تسجيل عملية التحويل بنجاح', 'success');
+                        showToast(catalogMessage("text_ae1b23c3a264"), 'success');
                         return true;
                     }
-                    showToast(res.message || res.error || 'فشل تسجيل التحويل', 'error');
+                    showToast(res.message || res.error || catalogMessage("text_f9a444a8389a"), 'error');
                     return false;
                 } catch {
-                    showToast('حدث خطأ', 'error');
+                    showToast(catalogMessage("text_83d3d40014f9"), 'error');
                     return false;
                 }
             },

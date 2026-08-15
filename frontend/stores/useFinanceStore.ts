@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { fetchAPI } from '@/lib/api';
@@ -110,7 +111,7 @@ export const useFinanceStore = create<FinanceState>()(
                         set({ accounts, accountsLastFetched: Date.now() });
                     }
                 } catch {
-                    showToast('خطأ في تحميل الحسابات', 'error');
+                    showToast(catalogMessage("text_f5ee53a0a302"), 'error');
                 } finally {
                     set({ accountsLoading: false });
                 }
@@ -136,7 +137,7 @@ export const useFinanceStore = create<FinanceState>()(
                         set({ fiscalPeriods, fiscalPeriodsLastFetched: Date.now() });
                     }
                 } catch {
-                    showToast('خطأ في تحميل الفترات المالية', 'error');
+                    showToast(catalogMessage("text_f9d4b011a9ce"), 'error');
                 } finally {
                     set({ fiscalPeriodsLoading: false });
                 }
@@ -173,7 +174,7 @@ export const useFinanceStore = create<FinanceState>()(
                         });
                     }
                 } catch {
-                    showToast('خطأ في تحميل سندات القيد', 'error');
+                    showToast(catalogMessage("text_9d43b75e43dc"), 'error');
                 } finally {
                     set({ jvLoading: false });
                 }

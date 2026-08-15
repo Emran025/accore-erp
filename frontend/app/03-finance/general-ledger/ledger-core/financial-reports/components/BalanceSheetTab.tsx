@@ -1,4 +1,4 @@
-
+import { catalogMessage } from "@/lib/i18n";
 import { PageSubHeader } from "@/components/layout";
 import { Button, showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -41,39 +41,39 @@ export function BalanceSheetTab({ onLoad }: { onLoad?: () => void }) {
 
                 // Assets Mapping
                 const cash = getSum(assetsAccounts, [
-                    { start: '101' }, { start: '111' }, { has: 'cash' }, { has: 'نقدية' }, { has: 'بنك' }, { has: 'صندوق' }
+                    { start: '101' }, { start: '111' }, { has: 'cash' }, { has: catalogMessage("text_ae53d36eb89a") }, { has: catalogMessage("text_5dd57ac23e9a") }, { has: catalogMessage("text_e8c39755d5e8") }
                 ]);
                 const stock = getSum(assetsAccounts, [
-                    { start: '113' }, { has: 'inventory' }, { has: 'مخزون' }, { has: 'بضاعة' }
+                    { start: '113' }, { has: 'inventory' }, { has: catalogMessage("text_355217b16f3a") }, { has: catalogMessage("text_9173745d7bd5") }
                 ]);
                 const fixed = getSum(assetsAccounts, [
-                    { start: '12' }, { start: '15' }, { has: 'fixed' }, { has: 'أصول ثابتة' }, { has: 'معدات' }, { has: 'سيارات' }
+                    { start: '12' }, { start: '15' }, { has: 'fixed' }, { has: catalogMessage("text_564c9bf3f131") }, { has: catalogMessage("text_441296311989") }, { has: catalogMessage("text_707efed205f7") }
                 ]);
                 const ar = getSum(assetsAccounts, [
-                    { start: '112' }, { has: 'receivable' }, { has: 'عملاء' }, { has: 'ذمم مدينة' }
+                    { start: '112' }, { has: 'receivable' }, { has: catalogMessage("text_36afc9ba115a") }, { has: catalogMessage("text_c879d1efe3d3") }
                 ]);
 
                 const totalAssets = Number(apiData.assets.total || 0);
 
                 // Liabilities Mapping
                 const payable = getSum(liabilitiesAccounts, [
-                    { start: '211' }, { has: 'payable' }, { has: 'موردين' }, { has: 'ذمم دائنة' }
+                    { start: '211' }, { has: 'payable' }, { has: catalogMessage("text_09b27bb7a062") }, { has: catalogMessage("text_0d4ea606b882") }
                 ]);
                 const tax = getSum(liabilitiesAccounts, [
-                    { start: '22' }, { has: 'vat' }, { has: 'tax' }, { has: 'ضريبة' }, { has: 'زكاة' }
+                    { start: '22' }, { has: 'vat' }, { has: 'tax' }, { has: catalogMessage("text_3a1f79e34162") }, { has: catalogMessage("text_16b6be5f9bba") }
                 ]);
                 const loans = getSum(liabilitiesAccounts, [
-                    { start: '23' }, { has: 'loan' }, { has: 'bank' }, { has: 'قروض' }, { has: 'تمويل' }
+                    { start: '23' }, { has: 'loan' }, { has: 'bank' }, { has: catalogMessage("text_f7bdfc7fa11a") }, { has: catalogMessage("text_a644a3229aa3") }
                 ]);
 
                 const totalLiabilities = Number(apiData.liabilities.total || 0);
 
                 // Equity Mapping
                 const capital = getSum(equityAccounts, [
-                    { start: '31' }, { has: 'capital' }, { has: 'رأس المال' }
+                    { start: '31' }, { has: 'capital' }, { has: catalogMessage("text_659bd974c93a") }
                 ]);
                 const retained = getSum(equityAccounts, [
-                    { start: '32' }, { has: 'retained' }, { has: 'أرباح مبقاة' }, { has: 'أرباح محتجزة' }
+                    { start: '32' }, { has: 'retained' }, { has: catalogMessage("text_0652dc915c7a") }, { has: catalogMessage("text_91cca632f8df") }
                 ]);
 
                 const totalEquity = Number(apiData.equity.total || 0);
@@ -106,11 +106,11 @@ export function BalanceSheetTab({ onLoad }: { onLoad?: () => void }) {
                 setBalanceSheet(mappedData);
                 if (onLoad) onLoad();
             } else {
-                showToast("فشل تحميل البيانات المالية", "error");
+                showToast(catalogMessage("text_5a545fc8201f"), "error");
             }
         } catch (error) {
             console.error(error);
-            showToast("خطأ في الاتصال بالسيرفر", "error");
+            showToast(catalogMessage("text_22fa79f17c32"), "error");
         } finally {
             setIsLoading(false);
         }
@@ -129,7 +129,7 @@ export function BalanceSheetTab({ onLoad }: { onLoad?: () => void }) {
     return (
         <div className="sales-card balance-sheet-wrapper">
             <PageSubHeader
-                title="الميزانية العمومية"
+                title={catalogMessage("text_ad62a7b84f05")}
                 titleIcon="chart-line"
                 actions={
                     <>
@@ -138,8 +138,7 @@ export function BalanceSheetTab({ onLoad }: { onLoad?: () => void }) {
                             icon="sync"
                             onClick={loadFinancialData}
                         >
-                            تحديث البيانات
-                        </Button>
+                            {catalogMessage("text_5bc457c0bbd7")}</Button>
                     </>
                 }
             />
@@ -147,7 +146,7 @@ export function BalanceSheetTab({ onLoad }: { onLoad?: () => void }) {
             {isLoading ? (
                 <div style={{ textAlign: "center", padding: "5rem" }}>
                     <i className="fas fa-spinner fa-spin" style={{ fontSize: "2.5rem", color: "var(--primary-color)" }}></i>
-                    <p style={{ marginTop: "1rem", fontSize: "1.1rem" }}>جاري تحميل البيانات المالية...</p>
+                    <p style={{ marginTop: "1rem", fontSize: "1.1rem" }}>{catalogMessage("text_408d5526924a")}</p>
                 </div>
             ) : balanceSheet ? (
                 <div className="animate-fade">
@@ -156,7 +155,7 @@ export function BalanceSheetTab({ onLoad }: { onLoad?: () => void }) {
                         <div className="sales-card" style={{ borderTop: "4px solid var(--success-color)", padding: "1.5rem" }}>
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                                 <div>
-                                    <h3 style={{ fontSize: "1rem", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>إجمالي الأصول</h3>
+                                    <h3 style={{ fontSize: "1rem", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>{catalogMessage("text_37252061e51e")}</h3>
                                     <div style={{ fontSize: "1.8rem", fontWeight: "bold", color: "var(--success-color)" }}>
                                         {formatCurrency(balanceSheet.assets.total_assets)}
                                     </div>
@@ -169,7 +168,7 @@ export function BalanceSheetTab({ onLoad }: { onLoad?: () => void }) {
                         <div className="sales-card" style={{ borderTop: "4px solid var(--danger-color)", padding: "1.5rem" }}>
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                                 <div>
-                                    <h3 style={{ fontSize: "1rem", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>إجمالي الخصوم</h3>
+                                    <h3 style={{ fontSize: "1rem", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>{catalogMessage("text_8080273e1c6e")}</h3>
                                     <div style={{ fontSize: "1.8rem", fontWeight: "bold", color: "var(--danger-color)" }}>
                                         {formatCurrency(balanceSheet.liabilities.total_liabilities)}
                                     </div>
@@ -182,7 +181,7 @@ export function BalanceSheetTab({ onLoad }: { onLoad?: () => void }) {
                         <div className="sales-card" style={{ borderTop: "4px solid var(--primary-color)", padding: "1.5rem" }}>
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                                 <div>
-                                    <h3 style={{ fontSize: "1rem", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>إجمالي حقوق الملكية</h3>
+                                    <h3 style={{ fontSize: "1rem", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>{catalogMessage("text_f70618f9ec8a")}</h3>
                                     <div style={{ fontSize: "1.8rem", fontWeight: "bold", color: "var(--primary-color)" }}>
                                         {formatCurrency(balanceSheet.equity.total_equity)}
                                     </div>
@@ -200,35 +199,34 @@ export function BalanceSheetTab({ onLoad }: { onLoad?: () => void }) {
                         <div className="sales-card h-full">
                             <div style={{ borderBottom: "1px solid var(--border-color)", paddingBottom: "1rem", marginBottom: "1rem" }}>
                                 <h2 style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                    <i className="fas fa-cubes text-success"></i> الأصول (الممتلكات)
-                                </h2>
+                                    <i className="fas fa-cubes text-success"></i> {catalogMessage("text_713bcf7c8d44")}</h2>
                             </div>
 
                             <div className="financial-section">
                                 <div className="financial-row">
-                                    <span className="report-label">النقدية وما في حكمها</span>
+                                    <span className="report-label">{catalogMessage("text_b2354ccd7967")}</span>
                                     <span className="report-value">{formatCurrency(balanceSheet.assets.cash_estimate)}</span>
                                 </div>
                                 <div className="financial-row">
-                                    <span className="report-label">المخزون السلعي</span>
+                                    <span className="report-label">{catalogMessage("text_5a7a1f020cdd")}</span>
                                     <span className="report-value">{formatCurrency(balanceSheet.assets.stock_value)}</span>
                                 </div>
                                 <div className="financial-row">
-                                    <span className="report-label">الذمم المدينة (العملاء)</span>
+                                    <span className="report-label">{catalogMessage("text_0b364f5af1be")}</span>
                                     <span className="report-value">{formatCurrency(balanceSheet.assets.accounts_receivable)}</span>
                                 </div>
                                 <div className="financial-row">
-                                    <span className="report-label">الأصول الثابتة (بالصافي)</span>
+                                    <span className="report-label">{catalogMessage("text_e5544986019d")}</span>
                                     <span className="report-value">{formatCurrency(balanceSheet.assets.fixed_assets)}</span>
                                 </div>
                                 {balanceSheet.assets.other_assets > 0 && (
                                     <div className="financial-row">
-                                        <span className="report-label">أصول أخرى</span>
+                                        <span className="report-label">{catalogMessage("text_575af647048a")}</span>
                                         <span className="report-value">{formatCurrency(balanceSheet.assets.other_assets)}</span>
                                     </div>
                                 )}
                                 <div className="financial-row total-row" style={{ marginTop: "2rem", borderTop: "2px dashed var(--border-color)", paddingTop: "1rem" }}>
-                                    <span className="report-label font-bold text-lg">إجمالي الأصول</span>
+                                    <span className="report-label font-bold text-lg">{catalogMessage("text_37252061e51e")}</span>
                                     <span className="report-value text-success font-bold text-lg">{formatCurrency(balanceSheet.assets.total_assets)}</span>
                                 </div>
                             </div>
@@ -240,32 +238,31 @@ export function BalanceSheetTab({ onLoad }: { onLoad?: () => void }) {
                             <div className="sales-card">
                                 <div style={{ borderBottom: "1px solid var(--border-color)", paddingBottom: "1rem", marginBottom: "1rem" }}>
                                     <h2 style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                        <i className="fas fa-hand-holding-usd text-danger"></i> الخصوم (الالتزامات)
-                                    </h2>
+                                        <i className="fas fa-hand-holding-usd text-danger"></i> {catalogMessage("text_6bd373fdd253")}</h2>
                                 </div>
                                 <div className="financial-section">
                                     <div className="financial-row">
-                                        <span className="report-label">الذمم الدائنة (الموردين)</span>
+                                        <span className="report-label">{catalogMessage("text_f4460e8ce12c")}</span>
                                         <span className="report-value">{formatCurrency(balanceSheet.liabilities.accounts_payable)}</span>
                                     </div>
                                     <div className="financial-row">
-                                        <span className="report-label">الضرائب والرسوم المستحقة</span>
+                                        <span className="report-label">{catalogMessage("text_4dde21aae599")}</span>
                                         <span className="report-value">{formatCurrency(balanceSheet.liabilities.tax_payable)}</span>
                                     </div>
                                     {balanceSheet.liabilities.loans > 0 && (
                                         <div className="financial-row">
-                                            <span className="report-label">القروض والتمويلات</span>
+                                            <span className="report-label">{catalogMessage("text_3fdfe7c630b2")}</span>
                                             <span className="report-value">{formatCurrency(balanceSheet.liabilities.loans)}</span>
                                         </div>
                                     )}
                                     {balanceSheet.liabilities.other_liabilities > 0 && (
                                         <div className="financial-row">
-                                            <span className="report-label">التزامات أخرى</span>
+                                            <span className="report-label">{catalogMessage("text_0e6dae3b7180")}</span>
                                             <span className="report-value">{formatCurrency(balanceSheet.liabilities.other_liabilities)}</span>
                                         </div>
                                     )}
                                     <div className="financial-row total-row" style={{ marginTop: "1rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.5rem" }}>
-                                        <span className="report-label font-bold">إجمالي الخصوم</span>
+                                        <span className="report-label font-bold">{catalogMessage("text_8080273e1c6e")}</span>
                                         <span className="report-value text-danger font-bold">{formatCurrency(balanceSheet.liabilities.total_liabilities)}</span>
                                     </div>
                                 </div>
@@ -275,26 +272,25 @@ export function BalanceSheetTab({ onLoad }: { onLoad?: () => void }) {
                             <div className="sales-card">
                                 <div style={{ borderBottom: "1px solid var(--border-color)", paddingBottom: "1rem", marginBottom: "1rem" }}>
                                     <h2 style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                        <i className="fas fa-balance-scale text-primary"></i> حقوق الملكية
-                                    </h2>
+                                        <i className="fas fa-balance-scale text-primary"></i> {catalogMessage("text_44c108da36be")}</h2>
                                 </div>
                                 <div className="financial-section">
                                     <div className="financial-row">
-                                        <span className="report-label">رأس المال</span>
+                                        <span className="report-label">{catalogMessage("text_659bd974c93a")}</span>
                                         <span className="report-value">{formatCurrency(balanceSheet.equity.capital)}</span>
                                     </div>
                                     <div className="financial-row">
-                                        <span className="report-label">الأرباح المبقاة</span>
+                                        <span className="report-label">{catalogMessage("text_c608c372ab22")}</span>
                                         <span className="report-value">{formatCurrency(balanceSheet.equity.retained_earnings)}</span>
                                     </div>
                                     {balanceSheet.equity.other_equity > 0 && (
                                         <div className="financial-row">
-                                            <span className="report-label">بنود حقوق ملكية أخرى</span>
+                                            <span className="report-label">{catalogMessage("text_3419515e0234")}</span>
                                             <span className="report-value">{formatCurrency(balanceSheet.equity.other_equity)}</span>
                                         </div>
                                     )}
                                     <div className="financial-row total-row" style={{ marginTop: "1rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.5rem" }}>
-                                        <span className="report-label font-bold">إجمالي حقوق الملكية</span>
+                                        <span className="report-label font-bold">{catalogMessage("text_f70618f9ec8a")}</span>
                                         <span className="report-value text-primary font-bold">{formatCurrency(balanceSheet.equity.total_equity)}</span>
                                     </div>
                                 </div>
@@ -305,8 +301,8 @@ export function BalanceSheetTab({ onLoad }: { onLoad?: () => void }) {
                     {/* Balance Check Bar */}
                     <div className={`sales-card ${balanceSheet.is_balanced ? 'border-l-4 border-success' : 'border-l-4 border-danger'}`} style={{ marginTop: "2rem", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "1.5rem" }}>
                         <div>
-                            <h3 style={{ fontSize: "1.2rem", marginBottom: "0.5rem" }}>معادلة الميزانية</h3>
-                            <p style={{ color: "var(--text-secondary)" }}>يجب أن تتساوى الأصول مع مجموع الخصوم وحقوق الملكية</p>
+                            <h3 style={{ fontSize: "1.2rem", marginBottom: "0.5rem" }}>{catalogMessage("text_5b086dc92cb6")}</h3>
+                            <p style={{ color: "var(--text-secondary)" }}>{catalogMessage("text_92da02adbd1a")}</p>
                         </div>
                         <div style={{ textAlign: "left" }}>
                             <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: "var(--primary-dark)" }}>
@@ -314,16 +310,16 @@ export function BalanceSheetTab({ onLoad }: { onLoad?: () => void }) {
                             </div>
                             <div style={{ fontSize: "0.9rem", color: balanceSheet.is_balanced ? "var(--success-color)" : "var(--danger-color)" }}>
                                 {balanceSheet.is_balanced ? (
-                                    <span><i className="fas fa-check-circle"></i> الميزانية متوازنة</span>
+                                    <span><i className="fas fa-check-circle"></i> {catalogMessage("text_f3d73400a584")}</span>
                                 ) : (
-                                    <span><i className="fas fa-exclamation-triangle"></i> فارق: {formatCurrency(balanceSheet.assets.total_assets - balanceSheet.total_liabilities_and_equity)}</span>
+                                    <span><i className="fas fa-exclamation-triangle"></i> {catalogMessage("text_47fcb1d55897")}{formatCurrency(balanceSheet.assets.total_assets - balanceSheet.total_liabilities_and_equity)}</span>
                                 )}
                             </div>
                         </div>
                     </div>
                 </div>
             ) : (
-                <p style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)" }}>لا توجد بيانات</p>
+                <p style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)" }}>{catalogMessage("text_d812e8bbc06f")}</p>
             )}
         </div>
     );

@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { PageSubHeader } from "@/components/layout";
 import { Button, Dialog, Label, SearchableSelect, showToast } from "@/components/ui";
 import { TextInput } from "@/components/ui/TextInput";
@@ -29,6 +30,7 @@ import { useEffect, useState } from "react";
  * @returns The EOSBCalculator component
  */
 export function EOSBCalculator() {
+    const { t: i18n } = useI18n();
   const { allEmployees: employees, loadAllEmployees } = useEmployeeStore();
   const { canAccess } = useAuthStore();
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
@@ -48,7 +50,7 @@ export function EOSBCalculator() {
 
   const handleCalculate = async () => {
     if (!formData.employee_id) {
-      showToast("يرجى اختيار الموظف", "error");
+      showToast(i18n.catalog["text_8c0019b7fcee"], "error");
       return;
     }
 
@@ -65,7 +67,7 @@ export function EOSBCalculator() {
       setCalculation(res);
       setShowDialog(true);
     } catch (e: any) {
-      showToast(e.message || "فشل حساب مكافأة نهاية الخدمة", "error");
+      showToast(e.message || i18n.catalog["text_6497f864668b"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -76,14 +78,14 @@ export function EOSBCalculator() {
   return (
     <div className="sales-card animate-fade">
       <PageSubHeader
-        title="حاسبة مكافأة نهاية الخدمة"
+        title={i18n.catalog["text_49abcfa72030"]}
         titleIcon="calculator"
       />
 
       <div className="sales-card compact" style={{ marginBottom: '1.5rem' }}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="flex flex-col gap-1">
-            <Label className="text-secondary mb-1">الموظف *</Label>
+            <Label className="text-secondary mb-1">{i18n.catalog["text_972803dc7d86"]}</Label>
             <SearchableSelect
               options={employees.map((emp: Employee) => ({ value: emp.id.toString(), label: emp.full_name }))}
               value={formData.employee_id}
@@ -92,23 +94,23 @@ export function EOSBCalculator() {
                 const emp = employees.find(e => e.id.toString() === String(value || ""));
                 setSelectedEmployee(emp || null);
               }}
-              placeholder="اختر الموظف"
+              placeholder={i18n.catalog["text_dee783929dea"]}
             />
           </div>
           <TextInput
-            label="تاريخ إنهاء الخدمة *"
+            label={i18n.catalog["text_c247115504ea"]}
             type="date"
             value={formData.termination_date}
             onChange={(e) => setFormData({ ...formData, termination_date: e.target.value })}
           />
           <Select
-            label="سبب إنهاء الخدمة *"
+            label={i18n.catalog["text_2508f0f772c8"]}
             value={formData.termination_reason}
             onChange={(e) => setFormData({ ...formData, termination_reason: e.target.value as any })}
             options={[
-              { value: 'resignation', label: 'استقالة' },
-              { value: 'termination', label: 'إنهاء من قبل صاحب العمل' },
-              { value: 'end_of_contract', label: 'انتهاء العقد' }
+              { value: 'resignation', label: i18n.catalog["text_07b5904e4949"] },
+              { value: 'termination', label: i18n.catalog["text_bfd7ed22e667"] },
+              { value: 'end_of_contract', label: i18n.catalog["text_170f227e0594"] }
             ]}
           />
         </div>
@@ -117,22 +119,22 @@ export function EOSBCalculator() {
           <div className="sales-card compact" style={{ marginTop: '1.5rem', background: 'var(--primary-subtle)', border: '1px solid var(--primary-light)' }}>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div className="stat-item">
-                <span className="stat-label">تاريخ التوظيف</span>
+                <span className="stat-label">{i18n.catalog["text_075142ff2d44"]}</span>
                 <span className="stat-value" style={{ fontSize: '0.95rem' }}>{formatDate(selectedEmp.hire_date)}</span>
               </div>
               <div className="stat-item">
-                <span className="stat-label">الراتب الأساسي</span>
+                <span className="stat-label">{i18n.catalog["text_73ad6b20ceb7"]}</span>
                 <span className="stat-value" style={{ fontSize: '0.95rem' }}>{formatCurrency(selectedEmp.base_salary)}</span>
               </div>
               <div className="stat-item">
-                <span className="stat-label">رصيد الإجازات</span>
-                <span className="stat-value" style={{ fontSize: '0.95rem' }}>{selectedEmp.vacation_days_balance} يوم</span>
+                <span className="stat-label">{i18n.catalog["text_65c7b5f96855"]}</span>
+                <span className="stat-value" style={{ fontSize: '0.95rem' }}>{selectedEmp.vacation_days_balance} {i18n.catalog["text_eb07f635d883"]}</span>
               </div>
               <div className="stat-item">
-                <span className="stat-label">حالة التوظيف</span>
+                <span className="stat-label">{i18n.catalog["text_b9fae6c6b12f"]}</span>
                 <span className="stat-value" style={{ fontSize: '0.95rem' }}>
-                  {selectedEmp.employment_status === 'active' ? 'نشط' :
-                    selectedEmp.employment_status === 'suspended' ? 'موقوف' : 'منتهي'}
+                  {selectedEmp.employment_status === 'active' ? i18n.catalog["text_629e90b3af3d"] :
+                    selectedEmp.employment_status === 'suspended' ? i18n.catalog["text_e858894dedb7"] : i18n.catalog["text_6217883aee8e"]}
                 </span>
               </div>
             </div>
@@ -146,8 +148,7 @@ export function EOSBCalculator() {
               disabled={isLoading || !formData.employee_id}
               variant="primary"
               icon="calculator">
-              حساب مكافأة نهاية الخدمة
-            </Button>
+              {i18n.catalog["text_25a547cdd42e"]}</Button>
           )}
         </div>
       </div>
@@ -155,7 +156,7 @@ export function EOSBCalculator() {
       <Dialog
         isOpen={showDialog}
         onClose={() => setShowDialog(false)}
-        title="نتيجة حساب مكافأة نهاية الخدمة"
+        title={i18n.catalog["text_3551cefcbbd4"]}
         maxWidth="700px"
       >
         {calculation && (
@@ -163,38 +164,38 @@ export function EOSBCalculator() {
             <div className="sales-card compact" style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', border: '1px solid #bfdbfe' }}>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="stat-item">
-                  <span className="stat-label">سنوات الخدمة</span>
-                  <span className="stat-value">{calculation.years_of_service} سنة</span>
+                  <span className="stat-label">{i18n.catalog["text_abcd7088179f"]}</span>
+                  <span className="stat-value">{calculation.years_of_service} {i18n.catalog["text_2d54bea33ed4"]}</span>
                 </div>
                 <div className="stat-item">
-                  <span className="stat-label">أشهر الخدمة</span>
-                  <span className="stat-value">{calculation.months_of_service} شهر</span>
+                  <span className="stat-label">{i18n.catalog["text_4950f16d03c1"]}</span>
+                  <span className="stat-value">{calculation.months_of_service} {i18n.catalog["text_418e78e480bd"]}</span>
                 </div>
                 <div className="stat-item">
-                  <span className="stat-label">أيام الخدمة</span>
-                  <span className="stat-value">{calculation.days_of_service} يوم</span>
+                  <span className="stat-label">{i18n.catalog["text_36a062950c5c"]}</span>
+                  <span className="stat-value">{calculation.days_of_service} {i18n.catalog["text_eb07f635d883"]}</span>
                 </div>
                 <div className="stat-item">
-                  <span className="stat-label">آخر راتب إجمالي</span>
+                  <span className="stat-label">{i18n.catalog["text_0280b2c2f72d"]}</span>
                   <span className="stat-value">{formatCurrency(calculation.last_gross_salary)}</span>
                 </div>
               </div>
             </div>
 
             <div className="space-y-2">
-              <h4 style={{ fontWeight: 600, marginBottom: '1rem', color: 'var(--text-primary)' }}>تفاصيل الحساب:</h4>
+              <h4 style={{ fontWeight: 600, marginBottom: '1rem', color: 'var(--text-primary)' }}>{i18n.catalog["text_13f6b1265e3f"]}</h4>
               <div className="sales-card compact">
                 <div className="grid grid-cols-1 gap-3">
                   <div className="flex justify-between items-center p-3" style={{ background: 'var(--bg-color)', borderRadius: 'var(--radius-md)' }}>
-                    <span style={{ color: 'var(--text-secondary)' }}>مكافأة نهاية الخدمة:</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["text_a04b5cf98000"]}</span>
                     <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{formatCurrency(calculation.eosb_amount)}</span>
                   </div>
                   <div className="flex justify-between items-center p-3" style={{ background: 'var(--bg-color)', borderRadius: 'var(--radius-md)' }}>
-                    <span style={{ color: 'var(--text-secondary)' }}>رصيد الإجازات غير المستخدم:</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["text_196d8f5a0c1d"]}</span>
                     <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{formatCurrency(calculation.unused_vacation_amount)}</span>
                   </div>
                   <div className="flex justify-between items-center p-3" style={{ background: 'var(--bg-color)', borderRadius: 'var(--radius-md)' }}>
-                    <span style={{ color: 'var(--text-secondary)' }}>مبلغ فترة الإشعار:</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>{i18n.catalog["text_8e7ccf6a2b82"]}</span>
                     <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{formatCurrency(calculation.notice_period_amount)}</span>
                   </div>
                 </div>
@@ -203,7 +204,7 @@ export function EOSBCalculator() {
 
             <div className="sales-card compact" style={{ background: 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)', border: '2px solid #10b981' }}>
               <div className="flex justify-between items-center">
-                <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)' }}>إجمالي التسوية:</span>
+                <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)' }}>{i18n.catalog["text_a05353dbd114"]}</span>
                 <span style={{ fontSize: '1.5rem', fontWeight: 800, color: '#059669' }}>
                   {formatCurrency(calculation.total_settlement)}
                 </span>
@@ -212,16 +213,14 @@ export function EOSBCalculator() {
 
             <div className="flex justify-end gap-2" style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
               <Button variant="secondary" onClick={() => setShowDialog(false)}>
-                إلغاء
-              </Button>
+                {i18n.catalog["text_9a30dc2a96b8"]}</Button>
               <Button
                 onClick={() => {
-                  showToast("تم حفظ الحساب", "success");
+                  showToast(i18n.catalog["text_8a7ce06014e1"], "success");
                 }}
                 variant="primary"
                 icon="save">
-                حفظ
-              </Button>
+                {i18n.catalog["text_ddfcaf9d0144"]}</Button>
             </div>
           </div>
         )}

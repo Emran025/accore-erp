@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import Link from "next/link";
 import { getIcon } from "@/lib/icons";
 import { BadgeLabel } from "@/components/ui";
@@ -46,7 +47,7 @@ export function SidebarItem({
                     {getIcon(icon)}
                 </span>
                 <span className="sidenav-item-label">{label}</span>
-                {badgeSoon && <BadgeLabel label="Soon" />}
+                {badgeSoon && <BadgeLabel label={catalogMessage("text_cf0ee3547a4e")} />}
                 {hasStar && !onActionClick && <span className="sidenav-item-star">★</span>}
             </Link>
             {onActionClick && (

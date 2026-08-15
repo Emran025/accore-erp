@@ -1,4 +1,6 @@
 "use client";
+
+import { useI18n } from "@/lib/i18n";
 import { Currency } from "@/types";
 import { PageSubHeader } from "@/components/layout";
 import { Button } from "@/components/ui";
@@ -7,6 +9,7 @@ import { API_ENDPOINTS } from "@/lib/endpoints";
 import { useEffect, useState } from "react";
 
 export function ExchangeRatesWidget() {
+    const { t: i18n } = useI18n();
   const [currencies, setCurrencies] = useState<Currency[]>([]);
 
   useEffect(() => {
@@ -31,13 +34,13 @@ export function ExchangeRatesWidget() {
   return (
     <div className="sales-card mb-4" style={{ marginBottom: "1.5rem" }}>
       <PageSubHeader
-        title="أسعار الصرف اليوم"
+        title={i18n.catalog["text_c05208c09a3b"]}
         titleIcon="repeat"
         actions={
           <>
 
             <span style={{ fontSize: "0.9em", fontWeight: "bold", color: "var(--text-secondary)", marginRight: "10px" }}>
-              (مقابل {displayBase?.symbol})
+              {i18n.catalog["text_5590955ea45b"]}{displayBase?.symbol})
             </span>
 
             <Button
@@ -46,8 +49,7 @@ export function ExchangeRatesWidget() {
               key="refresh"
             // onClick={() => loadDashboardData()}
             >
-              تحديث
-            </Button>
+              {i18n.catalog["text_00eab31f95b7"]}</Button>
           </>
         }
       />

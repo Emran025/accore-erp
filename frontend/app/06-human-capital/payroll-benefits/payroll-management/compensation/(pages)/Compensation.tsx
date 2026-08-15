@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText, catalogMessage } from "@/lib/i18n";
 import { PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Column, Table, TabNavigation } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -32,22 +33,22 @@ interface CompensationEntry {
 }
 
 const planTypeLabels: Record<string, string> = {
-    merit: "استحقاق",
-    promotion: "ترقية",
-    adjustment: "تعديل",
-    bonus: "مكافأة",
-    commission: "عمولة",
+    merit: catalogMessage("text_6e8c89702521"),
+    promotion: catalogMessage("text_dd4fb886e84d"),
+    adjustment: catalogMessage("text_113d570d6555"),
+    bonus: catalogMessage("text_c396e6b8b30a"),
+    commission: catalogMessage("text_1cae74794eb1"),
 };
 
 const statusLabels: Record<string, string> = {
-    draft: "مسودة",
-    pending_approval: "قيد الموافقة",
-    approved: "موافق عليه",
-    active: "نشط",
-    closed: "مغلق",
-    pending: "قيد الانتظار",
-    rejected: "مرفوض",
-    processed: "معالج",
+    draft: catalogMessage("text_552aec56f591"),
+    pending_approval: catalogMessage("text_38c10ba741b1"),
+    approved: catalogMessage("text_a98d8a418ba0"),
+    active: catalogMessage("text_629e90b3af3d"),
+    closed: catalogMessage("text_e655261f9c96"),
+    pending: catalogMessage("text_7d7913fdef74"),
+    rejected: catalogMessage("text_5d969a71dad3"),
+    processed: catalogMessage("text_15fa5b98bec0"),
 };
 
 const statusBadges: Record<string, string> = {
@@ -62,6 +63,7 @@ const statusBadges: Record<string, string> = {
 };
 
 export function Compensation() {
+    const { t: i18n } = useI18n();
     const router = useRouter();
     const { canAccess } = useAuthStore();
     const [activeTab, setActiveTab] = useState("plans");
@@ -89,7 +91,7 @@ export function Compensation() {
             setPlans(res.data as CompensationPlan[] || []);
             setTotalPages(Number(res.last_page) || 1);
         } catch (error) {
-            console.error("Failed to load plans", error);
+            console.error(i18n.catalog["text_a37d4d9af6c0"], error);
         } finally {
             setIsLoading(false);
         }
@@ -105,7 +107,7 @@ export function Compensation() {
             setEntries(res.data as CompensationEntry[] || []);
             setTotalPages(Number(res.last_page) || 1);
         } catch (error) {
-            console.error("Failed to load entries", error);
+            console.error(i18n.catalog["text_345d08a2a175"], error);
         } finally {
             setIsLoading(false);
         }
@@ -114,36 +116,36 @@ export function Compensation() {
     const planColumns: Column<CompensationPlan>[] = [
         {
             key: "plan_name",
-            header: "اسم الخطة",
-            dataLabel: "اسم الخطة",
+            header: i18n.catalog["text_0dbb5c16476f"],
+            dataLabel: i18n.catalog["text_0dbb5c16476f"],
         },
         {
             key: "plan_type",
-            header: "النوع",
-            dataLabel: "النوع",
+            header: i18n.catalog["text_caa3f2bb4a36"],
+            dataLabel: i18n.catalog["text_caa3f2bb4a36"],
             render: (item) => planTypeLabels[item.plan_type] || item.plan_type,
         },
         {
             key: "fiscal_year",
-            header: "السنة المالية",
-            dataLabel: "السنة المالية",
+            header: i18n.catalog["text_956acd975554"],
+            dataLabel: i18n.catalog["text_956acd975554"],
         },
         {
             key: "budget_pool",
-            header: "ميزانية الخطة",
-            dataLabel: "ميزانية الخطة",
+            header: i18n.catalog["text_c15b068a504b"],
+            dataLabel: i18n.catalog["text_c15b068a504b"],
             render: (item) => formatCurrency(item.budget_pool),
         },
         {
             key: "allocated_amount",
-            header: "المخصص",
-            dataLabel: "المخصص",
+            header: i18n.catalog["text_e8fabd53d8e4"],
+            dataLabel: i18n.catalog["text_e8fabd53d8e4"],
             render: (item) => formatCurrency(item.allocated_amount),
         },
         {
             key: "status",
-            header: "الحالة",
-            dataLabel: "الحالة",
+            header: i18n.catalog["text_c3a4749caed4"],
+            dataLabel: i18n.catalog["text_c3a4749caed4"],
             render: (item) => (
                 <span className={`badge ${statusBadges[item.status] || 'badge-secondary'}`}>
                     {statusLabels[item.status] || item.status}
@@ -152,22 +154,22 @@ export function Compensation() {
         },
         {
             key: "id",
-            header: "الإجراءات",
-            dataLabel: "الإجراءات",
+            header: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (item) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "eye",
-                            title: "عرض التفاصيل",
+                            title: i18n.catalog["text_4b615d0e6dd2"],
                             variant: "view",
-                            onClick: () => alert("هذه الميزة قيد التطوير وسيتم إضافتها قريباً")
+                            onClick: () => alert(i18n.catalog["text_5ba17dbe5a91"])
                         },
                         ...(canAccess("compensation", "edit") ? [{
                             icon: "edit" as const,
-                            title: "تعديل",
+                            title: i18n.catalog["text_113d570d6555"],
                             variant: "edit" as const,
-                            onClick: () => alert("هذه الميزة قيد التطوير وسيتم إضافتها قريباً")
+                            onClick: () => alert(i18n.catalog["text_5ba17dbe5a91"])
                         }] : [])
                     ]}
                 />
@@ -178,26 +180,26 @@ export function Compensation() {
     const entryColumns: Column<CompensationEntry>[] = [
         {
             key: "employee",
-            header: "الموظف",
-            dataLabel: "الموظف",
+            header: i18n.catalog["text_b71a39c832a6"],
+            dataLabel: i18n.catalog["text_b71a39c832a6"],
             render: (item) => item.employee?.full_name || '-',
         },
         {
             key: "current_salary",
-            header: "الراتب الحالي",
-            dataLabel: "الراتب الحالي",
+            header: i18n.catalog["text_c6db8a859950"],
+            dataLabel: i18n.catalog["text_c6db8a859950"],
             render: (item) => formatCurrency(item.current_salary),
         },
         {
             key: "proposed_salary",
-            header: "الراتب المقترح",
-            dataLabel: "الراتب المقترح",
+            header: i18n.catalog["text_cd4af52917a0"],
+            dataLabel: i18n.catalog["text_cd4af52917a0"],
             render: (item) => formatCurrency(item.proposed_salary),
         },
         {
             key: "increase_amount",
-            header: "مقدار الزيادة",
-            dataLabel: "مقدار الزيادة",
+            header: i18n.catalog["text_c70faaf771c7"],
+            dataLabel: i18n.catalog["text_c70faaf771c7"],
             render: (item) => (
                 <span className={item.increase_amount > 0 ? 'text-success' : 'text-danger'}>
                     {formatCurrency(item.increase_amount)}
@@ -206,20 +208,20 @@ export function Compensation() {
         },
         {
             key: "increase_percentage",
-            header: "نسبة الزيادة",
-            dataLabel: "نسبة الزيادة",
-            render: (item) => `${item.increase_percentage}%`,
+            header: i18n.catalog["text_0778d2bfe740"],
+            dataLabel: i18n.catalog["text_0778d2bfe740"],
+            render: (item) => catalogText(i18n, "text_518ef1823474", { value0: item.increase_percentage }),
         },
         {
             key: "comp_ratio",
-            header: "نسبة التعويض",
-            dataLabel: "نسبة التعويض",
+            header: i18n.catalog["text_a98fb08fe037"],
+            dataLabel: i18n.catalog["text_a98fb08fe037"],
             render: (item) => item.comp_ratio ? item.comp_ratio.toFixed(2) : '-',
         },
         {
             key: "status",
-            header: "الحالة",
-            dataLabel: "الحالة",
+            header: i18n.catalog["text_c3a4749caed4"],
+            dataLabel: i18n.catalog["text_c3a4749caed4"],
             render: (item) => (
                 <span className={`badge ${statusBadges[item.status] || 'badge-secondary'}`}>
                     {statusLabels[item.status] || item.status}
@@ -228,22 +230,22 @@ export function Compensation() {
         },
         {
             key: "id",
-            header: "الإجراءات",
-            dataLabel: "الإجراءات",
+            header: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (item) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "eye",
-                            title: "عرض التفاصيل",
+                            title: i18n.catalog["text_4b615d0e6dd2"],
                             variant: "view",
-                            onClick: () => alert("هذه الميزة قيد التطوير وسيتم إضافتها قريباً")
+                            onClick: () => alert(i18n.catalog["text_5ba17dbe5a91"])
                         },
                         ...(canAccess("compensation", "edit") ? [{
                             icon: "edit" as const,
-                            title: "تعديل",
+                            title: i18n.catalog["text_113d570d6555"],
                             variant: "edit" as const,
-                            onClick: () => alert("هذه الميزة قيد التطوير وسيتم إضافتها قريباً")
+                            onClick: () => alert(i18n.catalog["text_5ba17dbe5a91"])
                         }] : [])
                     ]}
                 />
@@ -254,27 +256,25 @@ export function Compensation() {
     return (
         <div className="sales-card animate-fade">
             <PageSubHeader
-                title="إدارة التعويضات"
+                title={i18n.catalog["text_6334fe113b74"]}
                 titleIcon="money-bill-wave"
                 actions={
                     <>
                         {activeTab === "plans" && canAccess("compensation", "create") && (
                             <Button
-                                onClick={() => alert("هذه الميزة قيد التطوير وسيتم إضافتها قريباً")}
+                                onClick={() => alert(i18n.catalog["text_5ba17dbe5a91"])}
                                 variant="primary"
                                 icon="plus"
                             >
-                                خطة تعويضات جديدة
-                            </Button>
+                                {i18n.catalog["text_4687f6dd0432"]}</Button>
                         )}
                         {activeTab === "entries" && canAccess("compensation", "create") && (
                             <Button
-                                onClick={() => alert("هذه الميزة قيد التطوير وسيتم إضافتها قريباً")}
+                                onClick={() => alert(i18n.catalog["text_5ba17dbe5a91"])}
                                 variant="primary"
                                 icon="plus"
                             >
-                                إدخال تعويض جديد
-                            </Button>
+                                {i18n.catalog["text_10120057af71"]}</Button>
                         )}
                     </>
                 }
@@ -282,8 +282,8 @@ export function Compensation() {
 
             <TabNavigation
                 tabs={[
-                    { key: "plans", label: "خطط التعويضات", icon: "file-alt" },
-                    { key: "entries", label: "إدخالات التعويضات", icon: "list" },
+                    { key: "plans", label: i18n.catalog["text_082dde4337e4"], icon: "file-alt" },
+                    { key: "entries", label: i18n.catalog["text_bf7821475226"], icon: "list" },
                 ]}
                 activeTab={activeTab}
                 onTabChange={setActiveTab}
@@ -294,7 +294,7 @@ export function Compensation() {
                     columns={planColumns}
                     data={plans}
                     keyExtractor={(item) => item.id.toString()}
-                    emptyMessage="لا توجد خطط تعويضات"
+                    emptyMessage={i18n.catalog["text_2bbc89afcfa2"]}
                     isLoading={isLoading}
                     pagination={{
                         currentPage,
@@ -307,7 +307,7 @@ export function Compensation() {
                     columns={entryColumns}
                     data={entries}
                     keyExtractor={(item) => item.id.toString()}
-                    emptyMessage="لا توجد إدخالات تعويضات"
+                    emptyMessage={i18n.catalog["text_c404fe3ad7c2"]}
                     isLoading={isLoading}
                     pagination={{
                         currentPage,

@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { Dialog, Button, NumberInput } from "@/components/ui";
 import { Select } from "@/components/ui/select";
 import { TextInput } from "@/components/ui/TextInput";
@@ -36,15 +37,13 @@ export function TransactionFormDialog({
         <Dialog
             isOpen={isOpen}
             onClose={onClose}
-            title={isCustomId ? "تعديل عملية" : "تسجيل عملية جديدة"}
+            title={isCustomId ? catalogMessage("text_3c2a40dbd0cf") : catalogMessage("text_993b4ae77923")}
             footer={
                 <div className="flex justify-end gap-2">
                     <Button variant="secondary" onClick={onClose}>
-                        إلغاء
-                    </Button>
+                        {catalogMessage("text_9a30dc2a96b8")}</Button>
                     <Button variant="primary" onClick={onSave}>
-                        حفظ
-                    </Button>
+                        {catalogMessage("text_ddfcaf9d0144")}</Button>
                 </div>
             }
         >
@@ -56,20 +55,20 @@ export function TransactionFormDialog({
                 className="space-y-4"
             >
                 <Select
-                    label="نوع العملية *"
+                    label={catalogMessage("text_5df11e896245")}
                     id="trans-type"
                     value={transactionType}
                     onChange={(e) => setTransactionType(e.target.value as typeof transactionType)}
                     required
                     disabled={isCustomId}
                     options={[
-                        { value: "receipt", label: "سند قبض (استلام نقدية)" },
-                        { value: "invoice", label: "فاتورة (أجل) - يدوي" },
+                        { value: "receipt", label: catalogMessage("text_79cec3ad767e") },
+                        { value: "invoice", label: catalogMessage("text_a54ed19d05ca") },
                     ]}
                 />
                 <div className="form-row">
                     <NumberInput
-                        label="المبلغ *"
+                        label={catalogMessage("text_3cfbd3350215")}
                         id="trans-amount"
                         value={transactionAmount}
                         onChange={(val) => setTransactionAmount(val)}
@@ -79,7 +78,7 @@ export function TransactionFormDialog({
                     />
                     <TextInput
                         type="date"
-                        label="التاريخ *"
+                        label={catalogMessage("text_24ab9ad4f30d")}
                         id="trans-date"
                         value={transactionDate}
                         onChange={(e) => setTransactionDate(e.target.value)}
@@ -89,7 +88,7 @@ export function TransactionFormDialog({
                     />
                 </div>
                 <Textarea
-                    label="الوصف / البيان"
+                    label={catalogMessage("text_7727f8e68bc9")}
                     id="trans-desc"
                     rows={3}
                     value={transactionDescription}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Column, ConfirmDialog, Dialog, SearchableSelect, Table, showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -12,6 +13,7 @@ import { useEffect, useState } from "react";
 import { Supplier } from "@/types";
 
 export default function SuppliersPage() {
+    const { t: i18n } = useI18n();
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
     const [permissions, setPermissions] = useState<Permission[]>([]);
@@ -70,7 +72,7 @@ export default function SuppliersPage() {
                     }
                 }
             } catch (e) {
-                console.error("Failed to load number range groups", e);
+                console.error(i18n.catalog["text_8863d50a501e"], e);
             }
         };
         init();
@@ -90,7 +92,7 @@ export default function SuppliersPage() {
                         setFormData(prev => ({ ...prev, supplier_code: generatedNumber }));
                     }
                 } catch (error) {
-                    console.error("Failed to generate numbering code", error);
+                    console.error(i18n.catalog["text_5c64142f4a76"], error);
                 }
             }
         };
@@ -120,7 +122,7 @@ export default function SuppliersPage() {
 
     const handleSubmit = async () => {
         if (!formData.name.trim()) {
-            showToast("يرجى إدخال اسم المورد", "error");
+            showToast(i18n.catalog["text_bea88ca35e28"], "error");
             return;
         }
 
@@ -150,49 +152,49 @@ export default function SuppliersPage() {
     };
 
     const columns: Column<Supplier>[] = [
-        { key: "supplier_code", header: "الكود", dataLabel: "الكود" },
-        { key: "name", header: "اسم المورد", dataLabel: "اسم المورد" },
-        { key: "phone", header: "الهاتف", dataLabel: "الهاتف" },
+        { key: "supplier_code", header: i18n.catalog["text_e28ef005ab68"], dataLabel: i18n.catalog["text_e28ef005ab68"] },
+        { key: "name", header: i18n.catalog["text_63df5e485ac7"], dataLabel: i18n.catalog["text_63df5e485ac7"] },
+        { key: "phone", header: i18n.catalog["text_94b59a5125fb"], dataLabel: i18n.catalog["text_94b59a5125fb"] },
         {
             key: "current_balance",
-            header: "الرصيد المستحق",
-            dataLabel: "الرصيد المستحق",
+            header: i18n.catalog["text_fada69965d9d"],
+            dataLabel: i18n.catalog["text_fada69965d9d"],
             render: (it) => (
                 <span className={it.current_balance > 0 ? "text-danger strong" : "text-success"}>
                     {formatCurrency(it.current_balance)}
                 </span>
             )
         },
-        { key: "payment_terms", header: "شروط الدفع (يوم)", dataLabel: "شروط الدفع" },
+        { key: "payment_terms", header: i18n.catalog["text_40f5f25136ed"], dataLabel: i18n.catalog["text_a97195003727"] },
         {
             key: "actions",
-            header: "الإجراءات",
-            dataLabel: "الإجراءات",
+            header: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (it) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "view",
-                            title: "كشف الحساب",
+                            title: i18n.catalog["text_7c9977c2a35b"],
                             variant: "view",
                             onClick: () => { router.push(`/04-supply-chain/supplier-sourcing/supplier-master/supplier-ledger?supplier_id=${it.id}`) },
                         },
                         {
                             icon: "view",
-                            title: "تفاصيل",
+                            title: i18n.catalog["text_29f382c73779"],
                             variant: "view",
                             onClick: () => { setSelectedSupplier(it); setViewDialog(true); },
                         },
                         {
                             icon: "edit",
-                            title: "تعديل",
+                            title: i18n.catalog["text_113d570d6555"],
                             variant: "edit",
                             onClick: () => { openEditDialog(it) },
                             hidden: !canAccess(permissions, "ap_suppliers", "edit")
                         },
                         {
                             icon: "trash",
-                            title: "حذف",
+                            title: i18n.catalog["text_59ca629220a6"],
                             variant: "delete",
                             onClick: () => { setDeleteId(it.id); setConfirmDialog(true); },
                             hidden: !canAccess(permissions, "ap_suppliers", "delete")
@@ -219,7 +221,7 @@ export default function SuppliersPage() {
                                 setSearchTerm(val);
                                 loadSuppliers(1, val);
                             }}
-                            placeholder="بحث بالاسم أو الهاتف..."
+                            placeholder={i18n.catalog["text_a271bcbebe07"]}
                             className="header-search-bar"
                         />
                     }
@@ -230,8 +232,7 @@ export default function SuppliersPage() {
                                 icon="plus"
                                 onClick={openAddDialog}
                             >
-                                إضافة مورد
-                            </Button>
+                                {i18n.catalog["text_ca6613fedacd"]}</Button>
                         )
                     }
                 />
@@ -252,7 +253,7 @@ export default function SuppliersPage() {
             <Dialog
                 isOpen={formDialog}
                 onClose={() => setFormDialog(false)}
-                title={selectedSupplier ? "تعديل المورد" : "إضافة مورد جديد"}
+                title={selectedSupplier ? i18n.catalog["text_491a2b55387d"] : i18n.catalog["text_87842dcb677b"]}
                 maxWidth="600px"
                 footer={
                     <>
@@ -260,112 +261,111 @@ export default function SuppliersPage() {
                             variant="secondary"
                             onClick={() => setFormDialog(false)}
                         >
-                            إلغاء
-                        </Button>
+                            {i18n.catalog["text_9a30dc2a96b8"]}</Button>
                         <Button
                             variant="primary"
                             onClick={handleSubmit}
                         >
-                            {selectedSupplier ? "تحديث" : "إضافة"}
+                            {selectedSupplier ? i18n.catalog["text_00eab31f95b7"] : i18n.catalog["text_d52453ac627d"]}
                         </Button>
                     </>
                 }
             >
                 <div className="form-row">
                     <div className="form-group">
-                        <label>كود المورد</label>
+                        <label>{i18n.catalog["text_2a090a9210da"]}</label>
                         <input
                             type="text"
                             value={formData.supplier_code}
                             onChange={(e) => setFormData({ ...formData, supplier_code: e.target.value })}
-                            placeholder={selectedSupplier ? "" : (nrGroups.length > 0 ? "يتم التوليد تلقائيا..." : "أدخل الكود")}
+                            placeholder={selectedSupplier ? "" : (nrGroups.length > 0 ? i18n.catalog["text_3bebb10295e4"] : i18n.catalog["text_dcbab81a1fa8"])}
                         />
                     </div>
                     {(!selectedSupplier && nrGroups.length > 0) && (
                         <div className="form-group" style={{ flex: 1 }}>
-                            <label>مجموعة الترقيم</label>
+                            <label>{i18n.catalog["text_30b23b8e5db8"]}</label>
                             <SearchableSelect
                                 options={nrGroups.map(grp => ({ value: grp.id.toString(), label: grp.name }))}
                                 value={selectedGroup}
                                 onChange={(val) => setSelectedGroup(val ? val.toString() : "")}
-                                placeholder="ابحث أو اختر مجموعة الترقيم"
+                                placeholder={i18n.catalog["text_cceb790da419"]}
                             />
                         </div>
                     )}
                 </div>
 
                 <div className="form-group">
-                    <label>اسم المورد *</label>
+                    <label>{i18n.catalog["text_f4fb488f0b95"]}</label>
                     <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
                 </div>
 
                 <div className="form-row">
                     <div className="form-group">
-                        <label>رقم الهاتف</label>
+                        <label>{i18n.catalog["text_42095a7a6c15"]}</label>
                         <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
                     </div>
                     <div className="form-group">
-                        <label>البريد الإلكتروني</label>
+                        <label>{i18n.catalog["text_ddf0fca39a4f"]}</label>
                         <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                     </div>
                 </div>
 
                 <div className="form-row">
                     <div className="form-group">
-                        <label>الحد الائتماني</label>
+                        <label>{i18n.catalog["text_0305ad1923a5"]}</label>
                         <input type="number" value={formData.credit_limit} onChange={(e) => setFormData({ ...formData, credit_limit: e.target.value })} />
                     </div>
                     <div className="form-group">
-                        <label>شروط الدفع (يوم)</label>
+                        <label>{i18n.catalog["text_40f5f25136ed"]}</label>
                         <input type="number" value={formData.payment_terms} onChange={(e) => setFormData({ ...formData, payment_terms: e.target.value })} />
                     </div>
                 </div>
 
                 <div className="form-group">
-                    <label>الرقم الضريبي</label>
+                    <label>{i18n.catalog["text_74b3eeb4b88d"]}</label>
                     <input type="text" value={formData.tax_number} onChange={(e) => setFormData({ ...formData, tax_number: e.target.value })} />
                 </div>
 
                 <div className="form-group">
-                    <label>العنوان</label>
+                    <label>{i18n.catalog["text_2d110e56d5f5"]}</label>
                     <textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} rows={2} />
                 </div>
             </Dialog>
 
             {/* View Dialog */}
-            <Dialog isOpen={viewDialog} onClose={() => setViewDialog(false)} title="تفاصيل المورد" maxWidth="600px">
+            <Dialog isOpen={viewDialog} onClose={() => setViewDialog(false)} title={i18n.catalog["text_a3e561a4a6ba"]} maxWidth="600px">
                 {selectedSupplier && (
                     <div className="supplier-details">
                         <div className="details-grid">
                             <div className="detail-item">
-                                <span className="label">اسم المورد</span>
+                                <span className="label">{i18n.catalog["text_63df5e485ac7"]}</span>
                                 <span className="value strong">{selectedSupplier.name}</span>
                             </div>
                             <div className="detail-item">
-                                <span className="label">الهاتف</span>
+                                <span className="label">{i18n.catalog["text_94b59a5125fb"]}</span>
                                 <span className="value">{selectedSupplier.phone || "-"}</span>
                             </div>
                             <div className="detail-item">
-                                <span className="label">البريد الإلكتروني</span>
+                                <span className="label">{i18n.catalog["text_ddf0fca39a4f"]}</span>
                                 <span className="value">{selectedSupplier.email || "-"}</span>
                             </div>
                             <div className="detail-item">
-                                <span className="label">الرقم الضريبي</span>
+                                <span className="label">{i18n.catalog["text_74b3eeb4b88d"]}</span>
                                 <span className="value">{selectedSupplier.tax_number || "-"}</span>
                             </div>
                             <div className="detail-item">
-                                <span className="label">الحد الائتماني</span>
+                                <span className="label">{i18n.catalog["text_0305ad1923a5"]}</span>
                                 <span className="value">{formatCurrency(selectedSupplier.credit_limit)}</span>
                             </div>
                             <div className="detail-item">
-                                <span className="label">شروط الدفع</span>
-                                <span className="value">{selectedSupplier.payment_terms} يوم</span>
+                                <span className="label">{i18n.catalog["text_a97195003727"]}</span>
+                                <span className="value">{selectedSupplier.payment_terms} {i18n.catalog["text_eb07f635d883"]}</span>
                             </div>
                         </div>
 
                         <div className="balance-cards">
                             <div className="balance-card highlighted">
-                                <span className="label">الرصيد المستحق حالياً</span>
+                                <span className="label">{i18n.catalog["text_337dc0628570"]}</span>
                                 <span className={`value ${selectedSupplier.current_balance > 0 ? "danger" : "success"}`}>
                                     {formatCurrency(selectedSupplier.current_balance)}
                                 </span>
@@ -378,8 +378,7 @@ export default function SuppliersPage() {
                                 icon="list"
                                 onClick={() => router.push(`/04-supply-chain/supplier-sourcing/supplier-master/supplier-ledger?supplier_id=${selectedSupplier.id}`)}
                             >
-                                عرض كشف الحساب
-                            </Button>
+                                {i18n.catalog["text_7818712a19ae"]}</Button>
                         </div>
                     </div>
                 )}
@@ -389,8 +388,8 @@ export default function SuppliersPage() {
                 isOpen={confirmDialog}
                 onClose={() => setConfirmDialog(false)}
                 onConfirm={handleDelete}
-                title="تأكيد الحذف"
-                message="هل أنت متأكد من حذف هذا المورد؟ لا يمكن التراجع عن هذا الإجراء إذا كانت هناك معاملات مسجلة."
+                title={i18n.catalog["text_5f9cb54dc136"]}
+                message={i18n.catalog["text_d2119a4b2910"]}
             />
         </MainLayout>
     );

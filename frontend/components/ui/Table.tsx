@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogMessage } from "@/lib/i18n";
 import { ReactNode } from "react";
 import { Pagination } from "./Pagination";
 
@@ -29,12 +30,13 @@ export function TableLoding<T>({
 }: {
   columns: Column<T>[];
 }) {
+    const { t: i18n } = useI18n();
   return (
     <tr>
       <td colSpan={columns?.length}>
         <div className="empty-state" style={{ textAlign: "center" }}>
           <i className="fas fa-spinner fa-spin" style={{ fontSize: "2rem", marginBottom: "1rem" }}></i>
-          <div>جاري التحميل...</div>
+          <div>{i18n.catalog["text_ceac78d7f5d3"]}</div>
         </div>
       </td>
     </tr>
@@ -42,7 +44,7 @@ export function TableLoding<T>({
 };
 
 export function TableEmpty<T>({
-  emptyMessage = "لا توجد بيانات",
+  emptyMessage = catalogMessage("text_d812e8bbc06f"),
   columns = []
 }: {
   emptyMessage: String,
@@ -77,7 +79,7 @@ export function Table<T>({
   columns,
   data,
   keyExtractor,
-  emptyMessage = "لا توجد بيانات",
+  emptyMessage = catalogMessage("text_d812e8bbc06f"),
   pagination,
   isLoading = false,
 }: TableProps<T>) {

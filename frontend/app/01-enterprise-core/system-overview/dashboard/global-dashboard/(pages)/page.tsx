@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { MainLayout } from "@/components/layout";
 import { Button, Column, Dialog, Table, showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -48,6 +49,7 @@ interface ExpiringProduct {
 }
 
 export default function DashboardPage() {
+    const { t: i18n } = useI18n();
     const [user, setUser] = useState<User | null>(null);
     const [permissions, setPermissions] = useState<Permission[]>([]);
     const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -99,8 +101,8 @@ export default function DashboardPage() {
                 setRecentSales(Array.isArray(d.recent_sales) ? d.recent_sales : []);
             }
         } catch (error) {
-            console.error("Error loading dashboard:", error);
-            showToast("خطأ في تحميل البيانات", "error");
+            console.error(i18n.catalog["text_01f39e8b7f3e"], error);
+            showToast(i18n.catalog["text_f10d2b4c7fe1"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -120,7 +122,7 @@ export default function DashboardPage() {
             setLowStockProducts((response.data as LowStockProduct[]) || []);
             setLowStockDialog(true);
         } catch {
-            showToast("خطأ في تحميل المنتجات", "error");
+            showToast(i18n.catalog["text_bf68e6f346c3"], "error");
         }
     };
 
@@ -130,7 +132,7 @@ export default function DashboardPage() {
             setExpiringProducts((response.data as ExpiringProduct[]) || []);
             setExpiringDialog(true);
         } catch {
-            showToast("خطأ في تحميل المنتجات", "error");
+            showToast(i18n.catalog["text_bf68e6f346c3"], "error");
         }
     };
 
@@ -141,19 +143,19 @@ export default function DashboardPage() {
                 body: JSON.stringify({
                     product_name: productName,
                     quantity: 10,
-                    notes: "طلب إعادة تخزين تلقائي",
+                    notes: i18n.catalog["text_2e5f747de70f"],
                     type: "restock",
                 }),
             });
-            showToast("تم إنشاء طلب إعادة التخزين", "success");
+            showToast(i18n.catalog["text_af782a33f787"], "success");
         } catch {
-            showToast("خطأ في إنشاء الطلب", "error");
+            showToast(i18n.catalog["text_772deed3f951"], "error");
         }
     };
 
     const submitNewRequest = async () => {
         if (!requestProduct.trim() || !requestQuantity.trim()) {
-            showToast("يرجى ملء جميع الحقول المطلوبة", "error");
+            showToast(i18n.catalog["text_0a8eb85d0081"], "error");
             return;
         }
 
@@ -167,55 +169,55 @@ export default function DashboardPage() {
                     type: "new",
                 }),
             });
-            showToast("تم إرسال الطلب بنجاح", "success");
+            showToast(i18n.catalog["text_fe9286911506"], "success");
             setRequestDialog(false);
             setRequestProduct("");
             setRequestQuantity("");
             setRequestNotes("");
         } catch {
-            showToast("خطأ في إرسال الطلب", "error");
+            showToast(i18n.catalog["text_fe2e1743f437"], "error");
         }
     };
 
     const recentSalesColumns: Column<RecentSale>[] = [
-        { key: "invoice_number", header: "رقم الفاتورة", dataLabel: "رقم الفاتورة" },
+        { key: "invoice_number", header: i18n.catalog["text_b6e71278be04"], dataLabel: i18n.catalog["text_b6e71278be04"] },
         {
             key: "total_amount",
-            header: "المبلغ",
-            dataLabel: "المبلغ",
+            header: i18n.catalog["text_1cd480f91b24"],
+            dataLabel: i18n.catalog["text_1cd480f91b24"],
             render: (item) => formatCurrency(item.total_amount),
         },
         {
             key: "payment_type",
-            header: "نوع الدفع",
-            dataLabel: "نوع الدفع",
+            header: i18n.catalog["text_d31f653fcdaf"],
+            dataLabel: i18n.catalog["text_d31f653fcdaf"],
             render: (item) => (
                 <span className={`badge ${item.payment_type === "cash" ? "badge-success" : "badge-warning"}`}>
-                    {item.payment_type === "cash" ? "نقدي" : "آجل"}
+                    {item.payment_type === "cash" ? i18n.catalog["text_1beb05a45173"] : i18n.catalog["text_bf7775843f7c"]}
                 </span>
             ),
         },
         {
             key: "created_at",
-            header: "التاريخ",
-            dataLabel: "التاريخ",
+            header: i18n.catalog["text_d90c384199ac"],
+            dataLabel: i18n.catalog["text_d90c384199ac"],
             render: (item) => formatDate(item.created_at),
         },
     ];
 
     const lowStockColumns: Column<LowStockProduct>[] = [
-        { key: "name", header: "المنتج", dataLabel: "المنتج" },
+        { key: "name", header: i18n.catalog["text_a79e304d96a1"], dataLabel: i18n.catalog["text_a79e304d96a1"] },
         {
             key: "stock",
-            header: "المخزون الحالي",
-            dataLabel: "المخزون الحالي",
+            header: i18n.catalog["text_eabfe10ecac0"],
+            dataLabel: i18n.catalog["text_eabfe10ecac0"],
             render: (item) => <span className="text-danger">{item.stock}</span>,
         },
-        { key: "min_stock", header: "الحد الأدنى", dataLabel: "الحد الأدنى" },
+        { key: "min_stock", header: i18n.catalog["text_a3e1e1424079"], dataLabel: i18n.catalog["text_a3e1e1424079"] },
         {
             key: "actions",
-            header: "الإجراءات",
-            dataLabel: "الإجراءات",
+            header: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (item) => (
                 <Button
                     size="sm"
@@ -223,21 +225,20 @@ export default function DashboardPage() {
                     onClick={() => initiateRestock(item.id, item.name)}
                     icon="plus"
                 >
-                    طلب تخزين
-                </Button>
+                    {i18n.catalog["text_211f962973b9"]}</Button>
             ),
         },
     ];
 
     const expiringColumns: Column<ExpiringProduct>[] = [
-        { key: "name", header: "المنتج", dataLabel: "المنتج" },
+        { key: "name", header: i18n.catalog["text_a79e304d96a1"], dataLabel: i18n.catalog["text_a79e304d96a1"] },
         {
             key: "expiry_date",
-            header: "تاريخ الانتهاء",
-            dataLabel: "تاريخ الانتهاء",
+            header: i18n.catalog["text_ec3093bd6fd5"],
+            dataLabel: i18n.catalog["text_ec3093bd6fd5"],
             render: (item) => <span className="text-warning">{formatDate(item.expiry_date)}</span>,
         },
-        { key: "stock", header: "الكمية", dataLabel: "الكمية" },
+        { key: "stock", header: i18n.catalog["text_935e21853946"], dataLabel: i18n.catalog["text_935e21853946"] },
     ];
 
     return (
@@ -247,7 +248,7 @@ export default function DashboardPage() {
             {/* Stats Grid */}
             <div className="dashboard-stats animate-fade">
                 <StatsCard
-                    title="مبيعات اليوم"
+                    title={i18n.catalog["text_766a25692700"]}
                     value={formatCurrency(stats?.daily_sales || 0)}
                     icon={getIcon("cart")}
                     colorClass="sales"
@@ -274,7 +275,7 @@ export default function DashboardPage() {
                 />
 
                 <StatsCard
-                    title="إجمالي المنتجات"
+                    title={i18n.catalog["text_f3c1686f2b59"]}
                     value={stats?.total_products || 0}
                     icon={getIcon("box")}
                     colorClass="products"
@@ -282,7 +283,7 @@ export default function DashboardPage() {
                 />
 
                 <StatsCard
-                    title="مخزون منخفض"
+                    title={i18n.catalog["text_0691e8ba3ebd"]}
                     value={stats?.low_stock_count || 0}
                     icon={getIcon("alert")}
                     colorClass="alert"
@@ -291,7 +292,7 @@ export default function DashboardPage() {
                 />
 
                 <StatsCard
-                    title="قرب انتهاء الصلاحية"
+                    title={i18n.catalog["text_7bbf0af6d0ab"]}
                     value={stats?.expiring_soon_count || 0}
                     icon={getIcon("clock")}
                     colorClass="total" // Original was 'total', keeps it but maybe 'warning' is better? preserving 'total' class mapping for now.
@@ -300,7 +301,7 @@ export default function DashboardPage() {
                 />
 
                 <StatsCard
-                    title="إجمالي المبيعات"
+                    title={i18n.catalog["text_52f1fcac3509"]}
                     value={formatCurrency(stats?.total_sales || 0)}
                     icon={getIcon("chart-line")}
                     colorClass="sales"
@@ -308,7 +309,7 @@ export default function DashboardPage() {
                 />
 
                 <StatsCard
-                    title="مصروفات اليوم"
+                    title={i18n.catalog["text_567976f78679"]}
                     value={formatCurrency(stats?.today_expenses || 0)}
                     icon={getIcon("dollar")}
                     colorClass="alert"
@@ -316,7 +317,7 @@ export default function DashboardPage() {
                 />
 
                 <StatsCard
-                    title="إجمالي المصروفات"
+                    title={i18n.catalog["text_03a4c3145ccb"]}
                     value={formatCurrency(stats?.total_expenses || 0)}
                     icon={getIcon("wallet")}
                     colorClass="total"
@@ -324,7 +325,7 @@ export default function DashboardPage() {
                 />
 
                 <StatsCard
-                    title="إيرادات اليوم"
+                    title={i18n.catalog["text_c9a7860d2170"]}
                     value={formatCurrency(stats?.today_revenues || 0)}
                     icon={getIcon("coins")}
                     colorClass="products"
@@ -332,7 +333,7 @@ export default function DashboardPage() {
                 />
 
                 <StatsCard
-                    title="إجمالي الإيرادات"
+                    title={i18n.catalog["text_5f8d135d6d92"]}
                     value={formatCurrency(stats?.total_revenues || 0)}
                     icon={getIcon("hand-holding")}
                     colorClass="sales"
@@ -340,7 +341,7 @@ export default function DashboardPage() {
                 />
 
                 <StatsCard
-                    title="إجمالي الأصول"
+                    title={i18n.catalog["text_37252061e51e"]}
                     value={formatCurrency(stats?.total_assets || 0)}
                     icon={getIcon("building")}
                     colorClass="products"
@@ -353,18 +354,17 @@ export default function DashboardPage() {
                 {/* Recent Sales */}
                 <div className="section-card">
                     <div className="section-header">
-                        <h3>المبيعات الأخيرة</h3>
+                        <h3>{i18n.catalog["text_dda35ef04abb"]}</h3>
                         {canAccess(permissions, "sales", "view") && (
                             <Button href="/sales/sales" variant="secondary">
-                                عرض الكل
-                            </Button>
+                                {i18n.catalog["text_cc52200ebc71"]}</Button>
                         )}
                     </div>
                     <Table
                         columns={recentSalesColumns}
                         data={recentSales.slice(0, 5)}
                         keyExtractor={(item) => item.id}
-                        emptyMessage="لا توجد مبيعات حديثة"
+                        emptyMessage={i18n.catalog["text_4a978be6c1e0"]}
                         isLoading={isLoading}
                     />
                 </div>
@@ -372,18 +372,16 @@ export default function DashboardPage() {
                 {/* Quick Actions */}
                 <div className="section-card quick-actions">
                     <div className="section-header">
-                        <h3>إجراءات سريعة</h3>
+                        <h3>{i18n.catalog["text_8294d68c589e"]}</h3>
                     </div>
                     <div className="action-buttons">
                         {canAccess(permissions, "sales", "create") && (
                             <Button href="/sales/sales" variant="primary" icon="plus">
-                                بيع جديد
-                            </Button>
+                                {i18n.catalog["text_9be3735662ff"]}</Button>
                         )}
                         {canAccess(permissions, "products", "create") && (
                             <Button href="/inventory/products" variant="secondary" icon="box">
-                                إضافة منتج
-                            </Button>
+                                {i18n.catalog["text_515506c4eaa6"]}</Button>
                         )}
                         {canAccess(permissions, "purchases", "create") && (
                             <Button
@@ -391,13 +389,11 @@ export default function DashboardPage() {
                                 onClick={() => setRequestDialog(true)}
                                 icon="clipboard-list"
                             >
-                                طلب جديد
-                            </Button>
+                                {i18n.catalog["text_6d43782b2c9f"]}</Button>
                         )}
                         {canAccess(permissions, "reports", "view") && (
                             <Button href="/system/reports" variant="secondary" icon="chart-bar">
-                                عرض التقارير
-                            </Button>
+                                {i18n.catalog["text_f0a3fa7976bd"]}</Button>
                         )}
                     </div>
                 </div>
@@ -407,14 +403,14 @@ export default function DashboardPage() {
             <Dialog
                 isOpen={lowStockDialog}
                 onClose={() => setLowStockDialog(false)}
-                title="تنبيهات المخزون المنخفض"
+                title={i18n.catalog["text_f404f8ea7662"]}
                 maxWidth="700px"
             >
                 <Table
                     columns={lowStockColumns}
                     data={lowStockProducts}
                     keyExtractor={(item) => item.id}
-                    emptyMessage="لا توجد منتجات بمخزون منخفض"
+                    emptyMessage={i18n.catalog["text_abd809c068c5"]}
                 />
             </Dialog>
 
@@ -422,14 +418,14 @@ export default function DashboardPage() {
             <Dialog
                 isOpen={expiringDialog}
                 onClose={() => setExpiringDialog(false)}
-                title="تنبيهات قرب انتهاء الصلاحية"
+                title={i18n.catalog["text_2830e1a6248c"]}
                 maxWidth="700px"
             >
                 <Table
                     columns={expiringColumns}
                     data={expiringProducts}
                     keyExtractor={(item) => item.id}
-                    emptyMessage="لا توجد منتجات قرب انتهاء صلاحيتها"
+                    emptyMessage={i18n.catalog["text_cc162c0da0f0"]}
                 />
             </Dialog>
 
@@ -437,49 +433,47 @@ export default function DashboardPage() {
             <Dialog
                 isOpen={requestDialog}
                 onClose={() => setRequestDialog(false)}
-                title="طلب جديد"
+                title={i18n.catalog["text_6d43782b2c9f"]}
                 footer={
                     <>
                         <Button
                             variant="secondary"
                             onClick={() => setRequestDialog(false)}
                         >
-                            إلغاء
-                        </Button>
+                            {i18n.catalog["text_9a30dc2a96b8"]}</Button>
                         <Button variant="primary" onClick={submitNewRequest}>
-                            إرسال الطلب
-                        </Button>
+                            {i18n.catalog["text_ecf594c47513"]}</Button>
                     </>
                 }
             >
                 <div className="form-group">
-                    <label htmlFor="requestProduct">اسم المنتج *</label>
+                    <label htmlFor="requestProduct">{i18n.catalog["text_f1f73a577b94"]}</label>
                     <input
                         type="text"
                         id="requestProduct"
                         value={requestProduct}
                         onChange={(e) => setRequestProduct(e.target.value)}
-                        placeholder="أدخل اسم المنتج"
+                        placeholder={i18n.catalog["text_c833a0d05983"]}
                     />
                 </div>
                 <div className="form-group">
-                    <label htmlFor="requestQuantity">الكمية المطلوبة *</label>
+                    <label htmlFor="requestQuantity">{i18n.catalog["text_13ab4244836f"]}</label>
                     <input
                         type="number"
                         id="requestQuantity"
                         value={requestQuantity}
                         onChange={(e) => setRequestQuantity(e.target.value)}
-                        placeholder="أدخل الكمية"
+                        placeholder={i18n.catalog["text_5e6abc56a59b"]}
                         min="1"
                     />
                 </div>
                 <div className="form-group">
-                    <label htmlFor="requestNotes">ملاحظات</label>
+                    <label htmlFor="requestNotes">{i18n.catalog["text_d446d2dc6b81"]}</label>
                     <textarea
                         id="requestNotes"
                         value={requestNotes}
                         onChange={(e) => setRequestNotes(e.target.value)}
-                        placeholder="أدخل أي ملاحظات إضافية"
+                        placeholder={i18n.catalog["text_c5c400581f5b"]}
                         rows={3}
                     />
                 </div>

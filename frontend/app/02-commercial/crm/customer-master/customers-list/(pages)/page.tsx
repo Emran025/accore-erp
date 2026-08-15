@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Column, ConfirmDialog, Dialog, SearchableSelect, Table, showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -13,6 +14,7 @@ import { useEffect, useState } from "react";
 import { Customer } from "@/types";
 
 export default function ARCustomersPage() {
+    const { t: i18n } = useI18n();
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
     const [permissions, setPermissions] = useState<Permission[]>([]);
@@ -69,7 +71,7 @@ export default function ARCustomersPage() {
                     }
                 }
             } catch (e) {
-                console.error("Failed to load number range groups", e);
+                console.error(i18n.catalog["text_8863d50a501e"], e);
             }
         };
         init();
@@ -91,7 +93,7 @@ export default function ARCustomersPage() {
                         setFormData(prev => ({ ...prev, customer_code: generatedNumber }));
                     }
                 } catch (error) {
-                    console.error("Failed to generate numbering code", error);
+                    console.error(i18n.catalog["text_5c64142f4a76"], error);
                 }
             }
         };
@@ -119,7 +121,7 @@ export default function ARCustomersPage() {
 
     const handleSubmit = async () => {
         if (!formData.name.trim()) {
-            showToast("يرجى إدخال اسم العميل", "error");
+            showToast(i18n.catalog["text_973ca662d2aa"], "error");
             return;
         }
 
@@ -149,25 +151,25 @@ export default function ARCustomersPage() {
     };
 
     const columns: Column<Customer>[] = [
-        { key: "customer_code", header: "الكود", dataLabel: "الكود" },
-        { key: "name", header: "اسم العميل", dataLabel: "اسم العميل" },
-        { key: "phone", header: "الهاتف", dataLabel: "الهاتف" },
+        { key: "customer_code", header: i18n.catalog["text_e28ef005ab68"], dataLabel: i18n.catalog["text_e28ef005ab68"] },
+        { key: "name", header: i18n.catalog["text_70771eb8320f"], dataLabel: i18n.catalog["text_70771eb8320f"] },
+        { key: "phone", header: i18n.catalog["text_94b59a5125fb"], dataLabel: i18n.catalog["text_94b59a5125fb"] },
         {
             key: "total_debt",
-            header: "إجمالي الدين",
-            dataLabel: "إجمالي الدين",
+            header: i18n.catalog["text_e17ce10a93d1"],
+            dataLabel: i18n.catalog["text_e17ce10a93d1"],
             render: (it) => formatCurrency(it.total_debt)
         },
         {
             key: "total_paid",
-            header: "إجمالي المدفوع",
-            dataLabel: "إجمالي المدفوع",
+            header: i18n.catalog["text_f3f83c63f652"],
+            dataLabel: i18n.catalog["text_f3f83c63f652"],
             render: (it) => <span className="text-success">{formatCurrency(it.total_paid)}</span>
         },
         {
             key: "balance",
-            header: "الرصيد المتبقي",
-            dataLabel: "الرصيد المتبقي",
+            header: i18n.catalog["text_95a82033ffe7"],
+            dataLabel: i18n.catalog["text_95a82033ffe7"],
             render: (it) => (
                 <span className={it.balance > 0 ? "text-danger strong" : "text-success"}>
                     {formatCurrency(it.balance)}
@@ -176,33 +178,33 @@ export default function ARCustomersPage() {
         },
         {
             key: "actions",
-            header: "الإجراءات",
-            dataLabel: "الإجراءات",
+            header: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (it) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "list",
-                            title: "كشف الحساب",
+                            title: i18n.catalog["text_7c9977c2a35b"],
                             variant: "view",
                             onClick: () => { router.push(`/02-commercial/crm/customer-master/customer-ledger?customer_id=${it.id}`); }
                         },
                         {
                             icon: "eye",
-                            title: "تفاصيل",
+                            title: i18n.catalog["text_29f382c73779"],
                             variant: "info",
                             onClick: () => { setSelectedCustomer(it); setViewDialog(true); },
                         },
                         {
                             icon: "edit",
-                            title: "تعديل",
+                            title: i18n.catalog["text_113d570d6555"],
                             variant: "edit",
                             onClick: () => { openEditDialog(it) },
                             hidden: canAccess(permissions, "ar_customers", "edit")
                         },
                         {
                             icon: "trash",
-                            title: "حذف",
+                            title: i18n.catalog["text_59ca629220a6"],
                             variant: "delete",
                             onClick: () => { setDeleteId(it.id); setConfirmDialog(true); },
                             hidden: canAccess(permissions, "ar_customers", "delete")
@@ -227,7 +229,7 @@ export default function ARCustomersPage() {
                                 setSearchTerm(val);
                                 loadCustomers(1, val);
                             }}
-                            placeholder="بحث بالاسم أو الهاتف..."
+                            placeholder={i18n.catalog["text_a271bcbebe07"]}
                             className="header-search-bar"
                         />
                     }
@@ -238,8 +240,7 @@ export default function ARCustomersPage() {
                                 icon="plus"
                                 onClick={openAddDialog}
                             >
-                                إضافة عميل
-                            </Button>
+                                {i18n.catalog["text_bf5ecb5e2537"]}</Button>
                         )
                     }
                 />
@@ -260,7 +261,7 @@ export default function ARCustomersPage() {
             <Dialog
                 isOpen={formDialog}
                 onClose={() => setFormDialog(false)}
-                title={selectedCustomer ? "تعديل العميل" : "إضافة عميل جديد"}
+                title={selectedCustomer ? i18n.catalog["text_d21f656a885f"] : i18n.catalog["text_fdb4d8578880"]}
                 maxWidth="600px"
                 footer={
                     <>
@@ -268,63 +269,62 @@ export default function ARCustomersPage() {
                             variant="secondary"
                             onClick={() => setFormDialog(false)}
                         >
-                            إلغاء
-                        </Button>
+                            {i18n.catalog["text_9a30dc2a96b8"]}</Button>
                         <Button
                             variant="primary"
                             onClick={handleSubmit}
                         >
-                            {selectedCustomer ? "تحديث" : "إضافة"}
+                            {selectedCustomer ? i18n.catalog["text_00eab31f95b7"] : i18n.catalog["text_d52453ac627d"]}
                         </Button>
                     </>
                 }
             >
                 <div className="form-row">
                     <div className="form-group">
-                        <label>كود العميل</label>
+                        <label>{i18n.catalog["text_991b7b9d8fc2"]}</label>
                         <input
                             type="text"
                             value={formData.customer_code}
                             onChange={(e) => setFormData({ ...formData, customer_code: e.target.value })}
-                            placeholder={selectedCustomer ? "" : (nrGroups.length > 0 ? "يتم التوليد تلقائيا..." : "أدخل الكود")}
+                            placeholder={selectedCustomer ? "" : (nrGroups.length > 0 ? i18n.catalog["text_3bebb10295e4"] : i18n.catalog["text_dcbab81a1fa8"])}
                         />
                     </div>
                     {(!selectedCustomer && nrGroups.length > 0) && (
                         <div className="form-group" style={{ flex: 1 }}>
-                            <label>مجموعة الترقيم</label>
+                            <label>{i18n.catalog["text_30b23b8e5db8"]}</label>
                             <SearchableSelect
                                 options={nrGroups.map(grp => ({ value: grp.id.toString(), label: grp.name }))}
                                 value={selectedGroup}
                                 onChange={(val) => setSelectedGroup(val ? val.toString() : "")}
-                                placeholder="ابحث أو اختر مجموعة الترقيم"
+                                placeholder={i18n.catalog["text_cceb790da419"]}
                             />
                         </div>
                     )}
                 </div>
 
                 <div className="form-group">
-                    <label>اسم العميل *</label>
+                    <label>{i18n.catalog["text_dd06e4646135"]}</label>
                     <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
                 </div>
 
                 <div className="form-row">
                     <div className="form-group">
-                        <label>رقم الهاتف</label>
+                        <label>{i18n.catalog["text_42095a7a6c15"]}</label>
                         <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
                     </div>
                     <div className="form-group">
-                        <label>البريد الإلكتروني</label>
+                        <label>{i18n.catalog["text_ddf0fca39a4f"]}</label>
                         <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                     </div>
                 </div>
 
                 <div className="form-group">
-                    <label>الرقم الضريبي</label>
+                    <label>{i18n.catalog["text_74b3eeb4b88d"]}</label>
                     <input type="text" value={formData.tax_number} onChange={(e) => setFormData({ ...formData, tax_number: e.target.value })} />
                 </div>
 
                 <div className="form-group">
-                    <label>العنوان</label>
+                    <label>{i18n.catalog["text_2d110e56d5f5"]}</label>
                     <textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} rows={2} />
                 </div>
             </Dialog>
@@ -333,7 +333,7 @@ export default function ARCustomersPage() {
             <Dialog
                 isOpen={viewDialog}
                 onClose={() => setViewDialog(false)}
-                title="ملف العميل"
+                title={i18n.catalog["text_8fd03cfce13b"]}
                 maxWidth="600px"
             >
                 {selectedCustomer && (
@@ -345,7 +345,7 @@ export default function ARCustomersPage() {
                             <div className="profile-info">
                                 <h2>{selectedCustomer.name}</h2>
                                 <span className={`badge ${selectedCustomer.balance > 0 ? "badge-danger" : "badge-success"}`}>
-                                    {selectedCustomer.balance > 0 ? "مدين" : "رصيد مكتمل"}
+                                    {selectedCustomer.balance > 0 ? i18n.catalog["text_b19917a31039"] : i18n.catalog["text_f4482e2ef157"]}
                                 </span>
                             </div>
                         </div>
@@ -355,22 +355,22 @@ export default function ARCustomersPage() {
                                 <div className="info-item">
                                     <Icon name="user" className="info-icon" />
                                     <div className="info-content">
-                                        <label>رقم الهاتف</label>
-                                        <span>{selectedCustomer.phone || "غير متوفر"}</span>
+                                        <label>{i18n.catalog["text_42095a7a6c15"]}</label>
+                                        <span>{selectedCustomer.phone || i18n.catalog["text_e34b06cc7a25"]}</span>
                                     </div>
                                 </div>
                                 <div className="info-item">
                                     <Icon name="check" className="info-icon" />
                                     <div className="info-content">
-                                        <label>الرقم الضريبي</label>
-                                        <span>{selectedCustomer.tax_number || "غير متوفر"}</span>
+                                        <label>{i18n.catalog["text_74b3eeb4b88d"]}</label>
+                                        <span>{selectedCustomer.tax_number || i18n.catalog["text_e34b06cc7a25"]}</span>
                                     </div>
                                 </div>
                                 <div className="info-item full-width">
                                     <Icon name="home" className="info-icon" />
                                     <div className="info-content">
-                                        <label>العنوان</label>
-                                        <span>{selectedCustomer.address || "بدون عنوان مسجل"}</span>
+                                        <label>{i18n.catalog["text_2d110e56d5f5"]}</label>
+                                        <span>{selectedCustomer.address || i18n.catalog["text_59762001c956"]}</span>
                                     </div>
                                 </div>
                             </div>
@@ -380,21 +380,21 @@ export default function ARCustomersPage() {
                             <div className="stat-card">
                                 <div className="stat-icon alert">{getIcon("dollar")}</div>
                                 <div className="stat-info">
-                                    <h3>المبيعات (مدين)</h3>
+                                    <h3>{i18n.catalog["text_98f5e4330474"]}</h3>
                                     <p className="text-danger">{formatCurrency(selectedCustomer.total_debt)}</p>
                                 </div>
                             </div>
                             <div className="stat-card">
                                 <div className="stat-icon products">{getIcon("check")}</div>
                                 <div className="stat-info">
-                                    <h3>المدفوعات (دائن)</h3>
+                                    <h3>{i18n.catalog["text_782ce4991c1c"]}</h3>
                                     <p className="text-success">{formatCurrency(selectedCustomer.total_paid)}</p>
                                 </div>
                             </div>
                             <div className="stat-card highlighted">
                                 <div className="stat-icon total">{getIcon("building")}</div>
                                 <div className="stat-info">
-                                    <h3>الرصيد المستحق</h3>
+                                    <h3>{i18n.catalog["text_fada69965d9d"]}</h3>
                                     <p className={selectedCustomer.balance > 0 ? "text-danger" : "text-success"}>
                                         {formatCurrency(selectedCustomer.balance)}
                                     </p>
@@ -408,8 +408,7 @@ export default function ARCustomersPage() {
                                 icon="clipboard-list"
                                 onClick={() => router.push(`/02-commercial/crm/customer-master/customer-ledger?customer_id=${selectedCustomer.id}`)}
                             >
-                                عرض كشف الحساب الكامل
-                            </Button>
+                                {i18n.catalog["text_70fc48215fef"]}</Button>
                         </div>
                     </div>
                 )}
@@ -419,8 +418,8 @@ export default function ARCustomersPage() {
                 isOpen={confirmDialog}
                 onClose={() => setConfirmDialog(false)}
                 onConfirm={handleDelete}
-                title="تأكيد الحذف"
-                message="هل أنت متأكد من حذف هذا العميل؟ سيتم حذف جميع الفواتير المرتبطة به."
+                title={i18n.catalog["text_5f9cb54dc136"]}
+                message={i18n.catalog["text_ef87dc4ef185"]}
             />
         </MainLayout>
     );

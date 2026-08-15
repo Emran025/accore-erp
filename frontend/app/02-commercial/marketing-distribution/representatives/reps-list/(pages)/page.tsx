@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Column, ConfirmDialog, Dialog, SearchableSelect, Table, showToast } from "@/components/ui";
 import { Permission, User, canAccess, checkAuth, getStoredPermissions, getStoredUser } from "@/lib/auth";
@@ -11,6 +12,7 @@ import { useEffect, useState } from "react";
 import { SalesRepresentative } from "./types";
 
 export default function SalesRepresentativesPage() {
+    const { t: i18n } = useI18n();
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
     const [permissions, setPermissions] = useState<Permission[]>([]);
@@ -71,7 +73,7 @@ export default function SalesRepresentativesPage() {
 
     const handleSubmit = async () => {
         if (!formData.name.trim()) {
-            showToast("يرجى إدخال اسم المندوب", "error");
+            showToast(i18n.catalog["text_41af6ee6302b"], "error");
             return;
         }
 
@@ -91,24 +93,24 @@ export default function SalesRepresentativesPage() {
     };
 
     const columns: Column<SalesRepresentative>[] = [
-        { key: "name", header: "اسم المندوب", dataLabel: "اسم المندوب" },
-        { key: "phone", header: "الهاتف", dataLabel: "الهاتف" },
+        { key: "name", header: i18n.catalog["text_336a418f5408"], dataLabel: i18n.catalog["text_336a418f5408"] },
+        { key: "phone", header: i18n.catalog["text_94b59a5125fb"], dataLabel: i18n.catalog["text_94b59a5125fb"] },
         {
             key: "total_sales",
-            header: "إجمالي العمولات / المبيعات",
-            dataLabel: "إجمالي العمولات",
+            header: i18n.catalog["text_19905dc9f961"],
+            dataLabel: i18n.catalog["text_666f5dd27fb1"],
             render: (it) => formatCurrency(it.total_sales)
         },
         {
             key: "total_paid",
-            header: "المدفوع",
-            dataLabel: "المدفوع",
+            header: i18n.catalog["text_bcfc50ef7c18"],
+            dataLabel: i18n.catalog["text_bcfc50ef7c18"],
             render: (it) => <span className="text-success">{formatCurrency(it.total_paid)}</span>
         },
         {
             key: "current_balance",
-            header: "الرصيد المتبقي",
-            dataLabel: "الرصيد المتبقي",
+            header: i18n.catalog["text_95a82033ffe7"],
+            dataLabel: i18n.catalog["text_95a82033ffe7"],
             render: (it) => (
                 <span className={it.current_balance > 0 ? "text-danger strong" : "text-success"}>
                     {formatCurrency(it.current_balance)}
@@ -117,33 +119,33 @@ export default function SalesRepresentativesPage() {
         },
         {
             key: "actions",
-            header: "الإجراءات",
-            dataLabel: "الإجراءات",
+            header: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (it) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "list",
-                            title: "كشف الحساب",
+                            title: i18n.catalog["text_7c9977c2a35b"],
                             variant: "view",
                             onClick: () => { router.push(`/02-commercial/marketing-distribution/representatives/reps-ledger?sales_representative_id=${it.id}`); }
                         },
                         {
                             icon: "eye",
-                            title: "تفاصيل",
+                            title: i18n.catalog["text_29f382c73779"],
                             variant: "info",
                             onClick: () => { setSelectedRepresentative(it); setViewDialog(true); },
                         },
                         {
                             icon: "edit",
-                            title: "تعديل",
+                            title: i18n.catalog["text_113d570d6555"],
                             variant: "edit",
                             onClick: () => { openEditDialog(it) },
                             hidden: !canAccess(permissions, "representatives", "edit")
                         },
                         {
                             icon: "trash",
-                            title: "حذف",
+                            title: i18n.catalog["text_59ca629220a6"],
                             variant: "delete",
                             onClick: () => { setDeleteId(it.id); setConfirmDialog(true); },
                             hidden: !canAccess(permissions, "representatives", "delete")
@@ -169,7 +171,7 @@ export default function SalesRepresentativesPage() {
                                 setSearchTerm(val);
                                 loadRepresentatives(1, val);
                             }}
-                            placeholder="بحث بالاسم أو الهاتف..."
+                            placeholder={i18n.catalog["text_a271bcbebe07"]}
                             className="header-search-bar"
                         />
                     }
@@ -180,8 +182,7 @@ export default function SalesRepresentativesPage() {
                                 icon="plus"
                                 onClick={openAddDialog}
                             >
-                                إضافة مندوب
-                            </Button>
+                                {i18n.catalog["text_2cd7ef25fd17"]}</Button>
                         )
                     }
                 />
@@ -202,34 +203,34 @@ export default function SalesRepresentativesPage() {
             <Dialog
                 isOpen={formDialog}
                 onClose={() => setFormDialog(false)}
-                title={selectedRepresentative ? "تعديل بيانات المندوب" : "إضافة مندوب جديد"}
+                title={selectedRepresentative ? i18n.catalog["text_ac2633e82acf"] : i18n.catalog["text_0a047579d7a9"]}
                 maxWidth="600px"
                 footer={
                     <>
                         <Button
-                            variant="secondary" onClick={() => setFormDialog(false)}>إلغاء</Button>
-                        <Button variant="primary" onClick={handleSubmit}>{selectedRepresentative ? "تحديث" : "إضافة"}</Button>
+                            variant="secondary" onClick={() => setFormDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
+                        <Button variant="primary" onClick={handleSubmit}>{selectedRepresentative ? i18n.catalog["text_00eab31f95b7"] : i18n.catalog["text_d52453ac627d"]}</Button>
                     </>
                 }
             >
                 <div className="form-group">
-                    <label>اسم المندوب *</label>
+                    <label>{i18n.catalog["text_493d8055084e"]}</label>
                     <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
                 </div>
 
                 <div className="form-row">
                     <div className="form-group">
-                        <label>رقم الهاتف</label>
+                        <label>{i18n.catalog["text_42095a7a6c15"]}</label>
                         <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
                     </div>
                     <div className="form-group">
-                        <label>البريد الإلكتروني</label>
+                        <label>{i18n.catalog["text_ddf0fca39a4f"]}</label>
                         <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                     </div>
                 </div>
 
                 <div className="form-group">
-                    <label>العنوان</label>
+                    <label>{i18n.catalog["text_2d110e56d5f5"]}</label>
                     <textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} rows={2} />
                 </div>
             </Dialog>
@@ -238,7 +239,7 @@ export default function SalesRepresentativesPage() {
             <Dialog
                 isOpen={viewDialog}
                 onClose={() => setViewDialog(false)}
-                title="ملف المندوب"
+                title={i18n.catalog["text_67c359aaf791"]}
                 maxWidth="600px"
             >
                 {selectedRepresentative && (
@@ -250,7 +251,7 @@ export default function SalesRepresentativesPage() {
                             <div className="profile-info">
                                 <h2>{selectedRepresentative.name}</h2>
                                 <span className={`badge ${selectedRepresentative.current_balance > 0 ? "badge-danger" : "badge-success"}`}>
-                                    {selectedRepresentative.current_balance > 0 ? "يستحق عمولة" : "لا يوجد مستحقات"}
+                                    {selectedRepresentative.current_balance > 0 ? i18n.catalog["text_51b11255b597"] : i18n.catalog["text_35dc9e4f6a9a"]}
                                 </span>
                             </div>
                         </div>
@@ -260,22 +261,22 @@ export default function SalesRepresentativesPage() {
                                 <div className="info-item">
                                     <Icon name="user" className="info-icon" />
                                     <div className="info-content">
-                                        <label>رقم الهاتف</label>
-                                        <span>{selectedRepresentative.phone || "غير متوفر"}</span>
+                                        <label>{i18n.catalog["text_42095a7a6c15"]}</label>
+                                        <span>{selectedRepresentative.phone || i18n.catalog["text_e34b06cc7a25"]}</span>
                                     </div>
                                 </div>
                                 <div className="info-item">
                                     <Icon name="check" className="info-icon" />
                                     <div className="info-content">
-                                        <label>البريد الإلكتروني</label>
-                                        <span>{selectedRepresentative.email || "غير متوفر"}</span>
+                                        <label>{i18n.catalog["text_ddf0fca39a4f"]}</label>
+                                        <span>{selectedRepresentative.email || i18n.catalog["text_e34b06cc7a25"]}</span>
                                     </div>
                                 </div>
                                 <div className="info-item full-width">
                                     <Icon name="home" className="info-icon" />
                                     <div className="info-content">
-                                        <label>العنوان</label>
-                                        <span>{selectedRepresentative.address || "بدون عنوان مسجل"}</span>
+                                        <label>{i18n.catalog["text_2d110e56d5f5"]}</label>
+                                        <span>{selectedRepresentative.address || i18n.catalog["text_59762001c956"]}</span>
                                     </div>
                                 </div>
                             </div>
@@ -285,21 +286,21 @@ export default function SalesRepresentativesPage() {
                             <div className="stat-card">
                                 <div className="stat-icon alert">{getIcon("dollar")}</div>
                                 <div className="stat-info">
-                                    <h3>إجمالي العمولات</h3>
+                                    <h3>{i18n.catalog["text_666f5dd27fb1"]}</h3>
                                     <p className="text-danger">{formatCurrency(selectedRepresentative.total_sales)}</p>
                                 </div>
                             </div>
                             <div className="stat-card">
                                 <div className="stat-icon products">{getIcon("check")}</div>
                                 <div className="stat-info">
-                                    <h3>المدفوعات</h3>
+                                    <h3>{i18n.catalog["text_46e02865def4"]}</h3>
                                     <p className="text-success">{formatCurrency(selectedRepresentative.total_paid)}</p>
                                 </div>
                             </div>
                             <div className="stat-card highlighted">
                                 <div className="stat-icon total">{getIcon("building")}</div>
                                 <div className="stat-info">
-                                    <h3>المستحق للمندوب</h3>
+                                    <h3>{i18n.catalog["text_b0f981453405"]}</h3>
                                     <p className={selectedRepresentative.current_balance > 0 ? "text-danger" : "text-success"}>
                                         {formatCurrency(selectedRepresentative.current_balance)}
                                     </p>
@@ -313,8 +314,7 @@ export default function SalesRepresentativesPage() {
                                 icon="clipboard-list"
                                 onClick={() => router.push(`/02-commercial/marketing-distribution/representatives/reps-ledger?sales_representative_id=${selectedRepresentative.id}`)}
                             >
-                                عرض كشف الحساب الكامل
-                            </Button>
+                                {i18n.catalog["text_70fc48215fef"]}</Button>
                         </div>
                     </div>
                 )}
@@ -324,8 +324,8 @@ export default function SalesRepresentativesPage() {
                 isOpen={confirmDialog}
                 onClose={() => setConfirmDialog(false)}
                 onConfirm={handleDelete}
-                title="تأكيد الحذف"
-                message="هل أنت متأكد من حذف هذا المندوب؟"
+                title={i18n.catalog["text_5f9cb54dc136"]}
+                message={i18n.catalog["text_f23c174fe3d0"]}
             />
         </MainLayout>
     );

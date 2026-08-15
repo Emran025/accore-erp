@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { getIcon } from "@/lib/icons";
 
 /* ---------- StatusItem ---------- */
@@ -63,13 +64,14 @@ interface StatusBarProps {
  * ```
  */
 export function StatusBar({ label, count, total, color, showPercentage = true }: StatusBarProps) {
+    const { t: i18n } = useI18n();
     const pct = total > 0 ? Math.round((count / total) * 100) : 0;
     return (
         <div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.78rem", marginBottom: "3px" }}>
                 <span style={{ color: "var(--text-secondary)" }}>{label}</span>
                 <span style={{ fontWeight: 600 }}>
-                    {count}{showPercentage ? ` (${pct}%)` : ""}
+                    {count}{showPercentage ? catalogText(i18n, "text_24e8d131cd18", { value0: pct }) : ""}
                 </span>
             </div>
             <div style={{ height: "6px", background: "var(--bg-secondary)", borderRadius: "3px", overflow: "hidden" }}>

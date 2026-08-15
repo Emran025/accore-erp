@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogMessage } from "@/lib/i18n";
 import { useEffect, useRef, useState, ReactNode } from "react";
 import { createPortal } from "react-dom";
 
@@ -20,6 +21,7 @@ export function Dialog({
   footer,
   maxWidth = "600px",
 }: DialogProps) {
+    const { t: i18n } = useI18n();
   const dialogRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
 
@@ -80,7 +82,7 @@ export function Dialog({
       >
         <div className="dialog-header">
           <h2 id="dialog-title">{title}</h2>
-          <button className="close-btn" onClick={onClose} aria-label="إغلاق">×</button>
+          <button className="close-btn" onClick={onClose} aria-label={i18n.catalog["text_ca90c297b099"]}>×</button>
         </div>
         <div className="dialog-body">{children}</div>
         {footer && <div className="dialog-footer">{footer}</div>}
@@ -106,10 +108,10 @@ export function ConfirmDialog({
   isOpen,
   onClose,
   onConfirm,
-  title = "تأكيد",
+  title = catalogMessage("text_8f7d74ac0eac"),
   message,
-  confirmText = "تأكيد",
-  cancelText = "إلغاء",
+  confirmText = catalogMessage("text_8f7d74ac0eac"),
+  cancelText = catalogMessage("text_9a30dc2a96b8"),
   confirmVariant = "primary",
 }: ConfirmDialogProps) {
   const handleConfirm = () => {

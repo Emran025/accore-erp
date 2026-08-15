@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogMessage } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { Button, Column, DateRangePicker, FilterActions, FilterGroup, FilterSection, Table, showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -19,28 +20,29 @@ interface AuditLog {
 }
 
 const actionTypes = [
-  { value: "", label: "جميع الإجراءات" },
-  { value: "create", label: "إنشاء" },
-  { value: "update", label: "تعديل" },
-  { value: "delete", label: "حذف" },
-  { value: "login", label: "تسجيل دخول" },
-  { value: "logout", label: "تسجيل خروج" },
+  { value: "", label: catalogMessage("text_c6cd32defc32") },
+  { value: "create", label: catalogMessage("text_a820f3590d36") },
+  { value: "update", label: catalogMessage("text_113d570d6555") },
+  { value: "delete", label: catalogMessage("text_59ca629220a6") },
+  { value: "login", label: catalogMessage("text_e8408f9d3589") },
+  { value: "logout", label: catalogMessage("text_1850ba90fe7e") },
 ];
 
 const moduleTypes = [
-  { value: "", label: "جميع الوحدات" },
-  { value: "auth", label: "المصادقة" },
-  { value: "sales", label: "المبيعات" },
-  { value: "products", label: "المنتجات" },
-  { value: "purchases", label: "المشتريات" },
-  { value: "expenses", label: "المصروفات" },
-  { value: "users", label: "المستخدمين" },
-  { value: "settings", label: "الإعدادات" },
-  { value: "accounts", label: "الحسابات" },
-  { value: "vouchers", label: "السندات" },
+  { value: "", label: catalogMessage("text_a9051bd4dd17") },
+  { value: "auth", label: catalogMessage("text_e3c1917077fd") },
+  { value: "sales", label: catalogMessage("text_7bf1b13416bc") },
+  { value: "products", label: catalogMessage("text_c8775206b252") },
+  { value: "purchases", label: catalogMessage("text_2a14f93caa32") },
+  { value: "expenses", label: catalogMessage("text_4d514b65a483") },
+  { value: "users", label: catalogMessage("text_b378cbffd5df") },
+  { value: "settings", label: catalogMessage("text_5fd9563e6846") },
+  { value: "accounts", label: catalogMessage("text_c447ac426926") },
+  { value: "vouchers", label: catalogMessage("text_22a192d98656") },
 ];
 
 export default function AuditTrailPage() {
+    const { t: i18n } = useI18n();
   const [user, setUser] = useState<User | null>(null);
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -73,7 +75,7 @@ export default function AuditTrailPage() {
       setTotalPages(Math.ceil((response.total as number || 0) / itemsPerPage));
       setCurrentPage(page);
     } catch {
-      showToast("خطأ في تحميل سجل المراجعة", "error");
+      showToast(i18n.catalog["text_bfd528946468"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -90,22 +92,22 @@ export default function AuditTrailPage() {
   };
 
   const handleExport = () => {
-    showToast("جاري تصدير السجل...", "info");
+    showToast(i18n.catalog["text_02fab3be3aba"], "info");
     // Export logic would go here
   };
 
   const getActionBadge = (action: string) => {
     switch (action) {
       case "create":
-        return <span className="badge badge-success">إنشاء</span>;
+        return <span className="badge badge-success">{i18n.catalog["text_a820f3590d36"]}</span>;
       case "update":
-        return <span className="badge badge-info">تعديل</span>;
+        return <span className="badge badge-info">{i18n.catalog["text_113d570d6555"]}</span>;
       case "delete":
-        return <span className="badge badge-danger">حذف</span>;
+        return <span className="badge badge-danger">{i18n.catalog["text_59ca629220a6"]}</span>;
       case "login":
-        return <span className="badge badge-primary">دخول</span>;
+        return <span className="badge badge-primary">{i18n.catalog["text_2c860cedec90"]}</span>;
       case "logout":
-        return <span className="badge badge-secondary">خروج</span>;
+        return <span className="badge badge-secondary">{i18n.catalog["text_39db927c23ae"]}</span>;
       default:
         return <span className="badge badge-secondary">{action}</span>;
     }
@@ -119,25 +121,25 @@ export default function AuditTrailPage() {
   const columns: Column<AuditLog>[] = [
     {
       key: "created_at",
-      header: "التاريخ والوقت",
-      dataLabel: "التاريخ والوقت",
+      header: i18n.catalog["text_78e9c561195c"],
+      dataLabel: i18n.catalog["text_78e9c561195c"],
       render: (item) => formatDateTime(item.created_at),
     },
-    { key: "user_name", header: "المستخدم", dataLabel: "المستخدم" },
+    { key: "user_name", header: i18n.catalog["text_2fb01868740d"], dataLabel: i18n.catalog["text_2fb01868740d"] },
     {
       key: "action",
-      header: "الإجراء",
-      dataLabel: "الإجراء",
+      header: i18n.catalog["text_9200595fd0fe"],
+      dataLabel: i18n.catalog["text_9200595fd0fe"],
       render: (item) => getActionBadge(item.action),
     },
     {
       key: "module",
-      header: "الوحدة",
-      dataLabel: "الوحدة",
+      header: i18n.catalog["text_9a08d7d4bf73"],
+      dataLabel: i18n.catalog["text_9a08d7d4bf73"],
       render: (item) => getModuleLabel(item.module),
     },
-    { key: "description", header: "الوصف", dataLabel: "الوصف" },
-    { key: "ip_address", header: "عنوان IP", dataLabel: "عنوان IP" },
+    { key: "description", header: i18n.catalog["text_95023fc76e1b"], dataLabel: i18n.catalog["text_95023fc76e1b"] },
+    { key: "ip_address", header: i18n.catalog["text_662315283697"], dataLabel: i18n.catalog["text_662315283697"] },
   ];
 
   return (
@@ -147,20 +149,19 @@ export default function AuditTrailPage() {
         <PageSubHeader
           actions={
             <Button variant="secondary" onClick={handleExport} icon="download">
-              تصدير
-            </Button>
+              {i18n.catalog["text_4fa0ad254538"]}</Button>
           }
         />
         {/* Filters */}
         <FilterSection>
           <DateRangePicker
-            label="فترة المراجعة"
+            label={i18n.catalog["text_703172db8cd5"]}
             startDate={dateFrom}
             endDate={dateTo}
             onStartDateChange={setDateFrom}
             onEndDateChange={setDateTo}
           />
-          <FilterGroup label="الإجراء">
+          <FilterGroup label={i18n.catalog["text_9200595fd0fe"]}>
             <select
               value={actionFilter}
               onChange={(e) => setActionFilter(e.target.value)}
@@ -172,7 +173,7 @@ export default function AuditTrailPage() {
               ))}
             </select>
           </FilterGroup>
-          <FilterGroup label="الوحدة">
+          <FilterGroup label={i18n.catalog["text_9a08d7d4bf73"]}>
             <select
               value={moduleFilter}
               onChange={(e) => setModuleFilter(e.target.value)}
@@ -184,18 +185,17 @@ export default function AuditTrailPage() {
               ))}
             </select>
           </FilterGroup>
-          <FilterGroup label="بحث">
+          <FilterGroup label={i18n.catalog["text_d0f6edcf6d65"]}>
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="بحث بالمستخدم أو الوصف..."
+              placeholder={i18n.catalog["text_ce0b389bffe4"]}
             />
           </FilterGroup>
           <FilterActions>
             <Button onClick={handleFilter} icon="search">
-              تصفية
-            </Button>
+              {i18n.catalog["text_a826a913e567"]}</Button>
           </FilterActions>
         </FilterSection>
 
@@ -203,7 +203,7 @@ export default function AuditTrailPage() {
           columns={columns}
           data={logs}
           keyExtractor={(item) => item.id}
-          emptyMessage="لا توجد سجلات"
+          emptyMessage={i18n.catalog["text_6db2fc201fed"]}
           isLoading={isLoading}
           pagination={{
             currentPage,

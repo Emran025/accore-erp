@@ -1,5 +1,6 @@
 "use client";
 
+import { catalogMessage } from "@/lib/i18n";
 import { getIcon } from "@/lib/icons";
 
 interface QuickActionItemProps {
@@ -83,7 +84,7 @@ interface ActionListProps {
  * />
  * ```
  */
-export function ActionList({ items, title, gap = "0.5rem" }: ActionListProps) {
+export function ActionList({ items, title, gap = catalogMessage("text_558b9f364b59") }: ActionListProps) {
     return (
         <div>
             {title && (

@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 /**
  * ═══════════════════════════════════════════════════════════════════════════
  * Domain 10: Digital Platform & Extensions (المنصة الرقمية والتوسع)
@@ -17,29 +18,29 @@ import { Domain } from "../../types/navigation";
 export const PlatformDomain: Domain = {
     id: "platform",
     order: 10,
-    title: "المنصة الرقمية والتوسع",
+    title: catalogMessage("text_c718e0da305e"),
     icon: "settings",
-    description: "محور التكامل، محرك التخصيص، الاتصالات، ومنظومة المطورين",
+    description: catalogMessage("text_25188ee0ee76"),
     capabilities: [
         // ─────────────────────────────────────────────────────────────
         // Capability: Integration Hub
         // ─────────────────────────────────────────────────────────────
         {
             id: "integration-hub",
-            title: "محور التكامل",
+            title: catalogMessage("text_0f12be25c643"),
             icon: "link",
-            description: "إدارة واجهات البرمجة والربط مع الأنظمة الخارجية",
+            description: catalogMessage("text_84790aae61b5"),
             groups: [
                 {
                     id: "api-management",
-                    title: "إدارة API",
-                    description: "واجهات البرمجة والموصلات",
+                    title: catalogMessage("text_5859364cf6a2"),
+                    description: catalogMessage("text_d4dda7cfbcdd"),
                     screens: [
                         {
                             id: "api-gateway",
-                            title: "إدارة API",
+                            title: catalogMessage("text_5859364cf6a2"),
                             icon: "link",
-                            description: "إدارة واجهات REST/GraphQL (قريباً)",
+                            description: catalogMessage("text_5f64c0e76f92"),
                             href: "/10-platform/integration-hub/api-management/api-gateway",
                             permissions: [],
                             module: "platform",
@@ -55,20 +56,20 @@ export const PlatformDomain: Domain = {
         // ─────────────────────────────────────────────────────────────
         {
             id: "customization",
-            title: "محرك التخصيص",
+            title: catalogMessage("text_ca0e6e1e2e7a"),
             icon: "settings",
-            description: "حقول مخصصة وبناء واجهات المستخدم",
+            description: catalogMessage("text_7fe698f48a52"),
             groups: [
                 {
                     id: "low-code",
-                    title: "التخصيص بدون برمجة",
-                    description: "أدوات التخصيص منخفضة الكود",
+                    title: catalogMessage("text_cf7b13964f30"),
+                    description: catalogMessage("text_93b62fecf3fb"),
                     screens: [
                         {
                             id: "custom-fields",
-                            title: "الحقول المخصصة",
+                            title: catalogMessage("text_5198375bc00c"),
                             icon: "settings",
-                            description: "إدارة الحقول والكيانات المخصصة (قريباً)",
+                            description: catalogMessage("text_2310b6a050a6"),
                             href: "/10-platform/customization/low-code/custom-fields",
                             permissions: [],
                             module: "platform",
@@ -84,20 +85,20 @@ export const PlatformDomain: Domain = {
         // ─────────────────────────────────────────────────────────────
         {
             id: "communication",
-            title: "منظومة الاتصالات",
+            title: catalogMessage("text_c61a69e26ff0"),
             icon: "send",
-            description: "البريد الإلكتروني والرسائل والإشعارات",
+            description: catalogMessage("text_b75c980612df"),
             groups: [
                 {
                     id: "messaging",
-                    title: "خدمات المراسلة",
-                    description: "قنوات الاتصال المتعددة",
+                    title: catalogMessage("text_672be4a7844b"),
+                    description: catalogMessage("text_4ef801acfca2"),
                     screens: [
                         {
                             id: "email-sms",
-                            title: "البريد والرسائل",
+                            title: catalogMessage("text_acba8d3aed56"),
                             icon: "send",
-                            description: "بوابة البريد الإلكتروني والرسائل (قريباً)",
+                            description: catalogMessage("text_a864392dea51"),
                             href: "/10-platform/communication/messaging/email-sms",
                             permissions: [],
                             module: "platform",

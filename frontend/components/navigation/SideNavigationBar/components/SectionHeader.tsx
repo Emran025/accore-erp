@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { useRef, useCallback } from "react";
 import { getIcon } from "@/lib/icons";
 
@@ -106,7 +107,7 @@ export function SectionHeader({
             style.flex = 1;
             style.height = 'auto';
         } else {
-            style.height = `${sectionHeight}px`;
+            style.height = catalogMessage("text_412663ecb075", { value0: sectionHeight });
             style.flexShrink = 0;
         }
 

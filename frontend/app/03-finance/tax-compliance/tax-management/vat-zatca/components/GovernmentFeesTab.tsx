@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Column, ConfirmDialog, Dialog, showToast, Table } from "@/components/ui";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -12,6 +13,7 @@ import { Account, TaxAuthority, TaxType } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 
 export function GovernmentFeesTab() {
+    const { t: i18n } = useI18n();
     const { canAccess } = useAuthStore();
     const [authorities, setAuthorities] = useState<TaxAuthority[]>([]);
     const [taxTypes, setTaxTypes] = useState<TaxType[]>([]);
@@ -59,7 +61,7 @@ export function GovernmentFeesTab() {
             }
         } catch (e) {
             console.error(e);
-            showToast("خطأ في تحميل إعدادات محرك الضرائب", "error");
+            showToast(i18n.catalog["text_e3571b919fa7"], "error");
         }
     }, []);
 
@@ -74,7 +76,7 @@ export function GovernmentFeesTab() {
                 }
             }
         } catch (e) {
-            console.error("Error loading accounts", e);
+            console.error(i18n.catalog["text_a8ded9e0e1f3"], e);
         }
     }, []);
 
@@ -118,7 +120,7 @@ export function GovernmentFeesTab() {
             setFormData({
                 tax_authority_id: authorities.length > 0 ? authorities[0].id : "",
                 name: "",
-                code: `FEE_${Date.now().toString().slice(-4)}`,
+                code: catalogText(i18n, "text_b0a552ae24e7", { value0: Date.now().toString().slice(-4) }),
                 calculation_type: "percentage",
                 rate: 0,
                 fixed_amount: 0,
@@ -141,7 +143,7 @@ export function GovernmentFeesTab() {
 
     const handleSave = async () => {
         if (!formData.name || !formData.code || !formData.tax_authority_id) {
-            showToast("يرجى إدخال الحقول الأساسية (الاسم، الرمز، الجهة)", "error");
+            showToast(i18n.catalog["text_536a6319bbe4"], "error");
             return;
         }
 
@@ -157,19 +159,19 @@ export function GovernmentFeesTab() {
                     method: "PUT",
                     body: JSON.stringify(payload)
                 });
-                showToast("تم تحديث الفئة الضريبية/الالتزام بنجاح", "success");
+                showToast(i18n.catalog["text_319dedfa47a6"], "success");
             } else {
                 await fetchAPI(API_ENDPOINTS.FINANCE.TAX_ENGINE.TYPES.BASE, {
                     method: "POST",
                     body: JSON.stringify(payload)
                 });
-                showToast("تم إضافة الفئة الضريبية/الالتزام بنجاح", "success");
+                showToast(i18n.catalog["text_557a7cfcf2eb"], "success");
             }
             setDialogOpen(false);
             loadSetup();
         } catch (e) {
             console.error(e);
-            showToast("حدث خطأ أثناء الحفظ", "error");
+            showToast(i18n.catalog["text_1357fc9e2935"], "error");
         }
     };
 
@@ -182,10 +184,10 @@ export function GovernmentFeesTab() {
         if (!deleteId) return;
         try {
             await fetchAPI(API_ENDPOINTS.FINANCE.TAX_ENGINE.TYPES.withId(deleteId), { method: "DELETE" });
-            showToast("تم الحذف بنجاح", "success");
+            showToast(i18n.catalog["text_12b6e3813b40"], "success");
             loadSetup();
         } catch (e) {
-            showToast("حدث خطأ أثناء الحذف أو الالتزام مستخدم في عمليات", "error");
+            showToast(i18n.catalog["text_308649cd381d"], "error");
         } finally {
             setConfirmDialogOpen(false);
         }
@@ -199,37 +201,37 @@ export function GovernmentFeesTab() {
     const columns: Column<TaxType>[] = [
         {
             key: "code",
-            header: "الرمز",
+            header: i18n.catalog["text_589c6420ea10"],
             render: (fee) => <span className="text-muted">{fee.code}</span>
         },
         {
             key: "name",
-            header: "الاسم",
+            header: i18n.catalog["text_52ab09847cf8"],
         },
         {
             key: "calculation_type",
-            header: "النوع",
-            render: (fee) => fee.calculation_type === 'percentage' ? 'نسبة' : 'مبلغ ثابت',
+            header: i18n.catalog["text_caa3f2bb4a36"],
+            render: (fee) => fee.calculation_type === 'percentage' ? i18n.catalog["text_d75c4c7090fc"] : i18n.catalog["text_25162762270b"],
         },
         {
             key: "gl_account_code",
-            header: "الجهة (الهيئة)",
-            render: (fee: any) => <span className="badge badge-info">{fee.tax_authority_name || 'جهة غير محددة'}</span>
+            header: i18n.catalog["text_8aa51c1c6ee3"],
+            render: (fee: any) => <span className="badge badge-info">{fee.tax_authority_name || i18n.catalog["text_5f4b44eb6311"]}</span>
         },
         {
             key: "gl_account_code", // Just to render something different
-            header: "القيمة",
+            header: i18n.catalog["text_4c49efecd6cb"],
             render: (fee) => {
                 const defRate = fee.tax_rates?.find(r => r.is_default) || fee.tax_rates?.[0];
                 if (!defRate) return '-';
                 return fee.calculation_type === 'percentage'
-                    ? `${Number(defRate.rate * 100).toFixed(2)}%`
-                    : `${defRate.fixed_amount} ريال`;
+                    ? catalogText(i18n, "text_518ef1823474", { value0: Number(defRate.rate * 100).toFixed(2) })
+                    : catalogText(i18n, "text_239530228355", { value0: defRate.fixed_amount });
             },
         },
         {
             key: "tax_authority_id",
-            header: "نطاق التطبيق",
+            header: i18n.catalog["text_bc2fd164652d"],
             render: (fee) => {
                 let areas: string[] = [];
                 try {
@@ -246,36 +248,36 @@ export function GovernmentFeesTab() {
 
                 return areas.map((a: string) => (
                     <span key={a} className="badge badge-secondary me-1 ms-1">
-                        {a === 'sales' ? 'المبيعات' : a === 'purchases' ? 'المشتريات' : a === 'payroll' ? 'الرواتب' : a}
+                        {a === 'sales' ? i18n.catalog["text_7bf1b13416bc"] : a === 'purchases' ? i18n.catalog["text_2a14f93caa32"] : a === 'payroll' ? i18n.catalog["text_8da58f1c866a"] : a}
                     </span>
                 ));
             }
         },
         {
             key: "is_active",
-            header: "الحالة",
+            header: i18n.catalog["text_c3a4749caed4"],
             render: (fee) => (
                 <span className={`badge ${fee.is_active ? 'badge-success' : 'badge-danger'}`}>
-                    {fee.is_active ? 'نشط' : 'غير نشط'}
+                    {fee.is_active ? i18n.catalog["text_629e90b3af3d"] : i18n.catalog["text_b719ac8add4e"]}
                 </span>
             ),
         },
         {
             key: "id",
-            header: "الإجراءات",
-            dataLabel: "الإجراءات",
+            header: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (item) => (
                 <ActionButtons
                     actions={[
                         {
                             icon: "edit",
-                            title: "تعديل",
+                            title: i18n.catalog["text_113d570d6555"],
                             variant: "edit",
                             onClick: () => handleOpenDialog(item)
                         },
                         ...(canAccess("settings", "delete") ? [{
                             icon: "trash" as const,
-                            title: "حذف",
+                            title: i18n.catalog["text_59ca629220a6"],
                             variant: "delete" as const,
                             onClick: () => handleDeleteClick(item.id)
                         }] : [])
@@ -288,7 +290,7 @@ export function GovernmentFeesTab() {
     return (
         <div className="sales-card animate-fade">
             <PageSubHeader
-                title="الضرائب والالتزامات الحكومية الموحدة"
+                title={i18n.catalog["text_7f9b9f257d00"]}
                 titleIcon="box"
                 actions={
                     <Button
@@ -296,14 +298,12 @@ export function GovernmentFeesTab() {
                         variant="primary"
                         icon="plus"
                     >
-                        إضافة شرط ضريبي / رسم جديد
-                    </Button>
+                        {i18n.catalog["text_b157eddeae9a"]}</Button>
                 }
             />
             {authorities.length === 0 && !isLoading && (
                 <div className="alert alert-warning">
-                    الرجاء أولاً التأكد من تفعيل وتكوين السلطة الضريبية (Tax Authority) في الخادم!
-                </div>
+                    {i18n.catalog["text_a49de283e4c7"]}</div>
             )}
 
             <Table
@@ -311,34 +311,33 @@ export function GovernmentFeesTab() {
                 data={taxTypes}
                 keyExtractor={(fee) => fee.id}
                 isLoading={isLoading}
-                emptyMessage="لا توجد استقطاعات أو التزامات مسجلة"
+                emptyMessage={i18n.catalog["text_a1799fb742b3"]}
             />
 
             <Dialog
                 isOpen={dialogOpen}
                 onClose={() => setDialogOpen(false)}
-                title={editingFeeId ? "تعديل الشرط/الالتزام" : "إضافة شرط ضريبي/التزام جديد"}
+                title={editingFeeId ? i18n.catalog["text_813118d1d14c"] : i18n.catalog["text_9b886d65d0d8"]}
                 footer={
                     <>
-                        <button className="btn btn-secondary" onClick={() => setDialogOpen(false)}>إلغاء</button>
-                        <button className="btn btn-primary" onClick={handleSave}>حفظ وإرسال لمحرك الضرائب (Tax Engine)</button>
+                        <button className="btn btn-secondary" onClick={() => setDialogOpen(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</button>
+                        <button className="btn btn-primary" onClick={handleSave}>{i18n.catalog["text_fa167122a793"]}</button>
                     </>
                 }
             >
                 <div className="alert alert-info py-2">
                     <i className="fa-solid fa-server me-2 ms-2 text-primary"></i>
-                    هذه اللوحة مرتبطة بشكل مباشر مع "محرك الضرائب". جميع القواعد تحدد مكانياً وسوف تطبق بناء على النطاق تلقائياً أثناء المبيعات والمشتريات.
-                </div>
+                    {i18n.catalog["text_9ab8ac005fd7"]}</div>
 
                 <div className="row">
                     <div className="col-md-6 form-group">
                         <Select
-                            label="الجهة (السلطة الضريبية) *"
+                            label={i18n.catalog["text_2b5ea51d140f"]}
                             value={formData.tax_authority_id}
                             onChange={(e) => setFormData({ ...formData, tax_authority_id: e.target.value })}
                             disabled={!!editingFeeId}
                         >
-                            <option value="">-- اختر --</option>
+                            <option value="">{i18n.catalog["text_0969a8197763"]}</option>
                             {authorities.map(auth => (
                                 <option key={auth.id} value={auth.id}>{auth.name} ({auth.code})</option>
                             ))}
@@ -346,10 +345,10 @@ export function GovernmentFeesTab() {
                     </div>
                     <div className="col-md-6 form-group">
                         <TextInput
-                            label="رمز النظام (Code) *"
+                            label={i18n.catalog["text_4c44c2f6d96c"]}
                             value={formData.code}
                             onChange={e => setFormData({ ...formData, code: e.target.value })}
-                            placeholder="e.g. VAT_SA, MUNICIPAL_FEE"
+                            placeholder={i18n.catalog["text_6255dc6b0d5a"]}
                             disabled={!!editingFeeId}
                         />
                     </div>
@@ -357,30 +356,30 @@ export function GovernmentFeesTab() {
 
                 <div className="form-group">
                     <TextInput
-                        label="الاسم التعريفي *"
+                        label={i18n.catalog["text_d4b9fadaaeb8"]}
                         value={formData.name}
                         onChange={e => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="أدخل اسم الرسوم أو الضريبة (مثل: ضريبة القيمة المضافة / خراج)"
+                        placeholder={i18n.catalog["text_d3647115774c"]}
                     />
                 </div>
 
                 <div className="row mt-3">
                     <div className="col-12 form-group">
-                        <label className="form-label fw-bold"><i className="fa-solid fa-calculator me-2 ms-2"></i>معادلات الحساب:</label>
+                        <label className="form-label fw-bold"><i className="fa-solid fa-calculator me-2 ms-2"></i>{i18n.catalog["text_8a2a3bb6840f"]}</label>
                         <div className="d-flex gap-4">
                             <div className="form-check">
                                 <input className="form-check-input" type="radio" name="calc_type"
                                     checked={formData.calculation_type === 'percentage'}
                                     onChange={() => setFormData({ ...formData, calculation_type: 'percentage' })}
                                 />
-                                <label className="form-check-label">نسبة مئوية (%) من المجموع الخاضع</label>
+                                <label className="form-check-label">{i18n.catalog["text_9b4974321a50"]}</label>
                             </div>
                             <div className="form-check">
                                 <input className="form-check-input" type="radio" name="calc_type"
                                     checked={formData.calculation_type === 'fixed_amount'}
                                     onChange={() => setFormData({ ...formData, calculation_type: 'fixed_amount' })}
                                 />
-                                <label className="form-check-label">مبلغ ثابت مقطوع (لكل عملية)</label>
+                                <label className="form-check-label">{i18n.catalog["text_bbc4d2fb8ec6"]}</label>
                             </div>
                         </div>
                     </div>
@@ -390,56 +389,56 @@ export function GovernmentFeesTab() {
                     {formData.calculation_type === 'percentage' ? (
                         <div className="col-md-12 form-group">
                             <TextInput
-                                label="القيمة الافتراضية للنسبة المئوية (%) *"
+                                label={i18n.catalog["text_4eca62da9b5e"]}
                                 type="number"
                                 step="0.01"
                                 value={formData.rate}
                                 onChange={e => setFormData({ ...formData, rate: parseFloat(e.target.value) })}
                             />
-                            <small className="text-muted">أدخل النسبة مثل (15) لتطبيق 15%</small>
+                            <small className="text-muted">{i18n.catalog["text_cbce18b6619c"]}</small>
                         </div>
                     ) : (
                         <div className="col-md-12 form-group">
                             <TextInput
-                                label="المبلغ الثابت الافتراضي *"
+                                label={i18n.catalog["text_46a70c68447f"]}
                                 type="number"
                                 step="0.01"
                                 value={formData.fixed_amount}
                                 onChange={e => setFormData({ ...formData, fixed_amount: parseFloat(e.target.value) })}
                             />
-                            <small className="text-muted">مبلغ إضافي يُضاف بشكل مطلق (e.g. رسوم بلديات ثابته 50 ريال)</small>
+                            <small className="text-muted">{i18n.catalog["text_9b2632ff358c"]}</small>
                         </div>
                     )}
                 </div>
 
                 <div className="form-group mt-3">
                     <Select
-                        label="ربط بحساب دليل الحسابات (GL Mapping Account)"
+                        label={i18n.catalog["text_131568c66394"]}
                         value={formData.gl_account_code || ""}
                         onChange={e => setFormData({ ...formData, gl_account_code: e.target.value })}
                     >
-                        <option value="">بدون ربط تلقائي (أو افتراضي للنظام)</option>
+                        <option value="">{i18n.catalog["text_b4685a3ce36a"]}</option>
                         {accounts.map(acc => (
                             <option key={acc.id} value={acc.account_code}>
                                 {acc.account_code} - {acc.account_name}
                             </option>
                         ))}
                     </Select>
-                    <small className="text-muted">إجبارياً، النظام سيُصدّر القيم لهذا الحساب عند صدور الفواتير أو المشتريات.</small>
+                    <small className="text-muted">{i18n.catalog["text_9e0148908205"]}</small>
                 </div>
 
                 <div className="form-group mt-3">
-                    <label className="form-label fw-bold">تطبيق الاستقطاع/الالتزام على الوحدات (Applicable Areas):</label>
+                    <label className="form-label fw-bold">{i18n.catalog["text_b34512b79b13"]}</label>
                     <div className="d-flex gap-3 flex-wrap mt-2">
-                        <Checkbox label="المبيعات والفواتير (Sales)" checked={formData.applicable_areas.includes("sales")} onChange={() => toggleArea("sales")} />
-                        <Checkbox label="المشتريات والموردين (Purchases)" checked={formData.applicable_areas.includes("purchases")} onChange={() => toggleArea("purchases")} />
-                        <Checkbox label="الرواتب ونظام شؤون الموظفين (Payroll)" checked={formData.applicable_areas.includes("payroll")} onChange={() => toggleArea("payroll")} />
+                        <Checkbox label={i18n.catalog["text_d60ee97fdd55"]} checked={formData.applicable_areas.includes("sales")} onChange={() => toggleArea("sales")} />
+                        <Checkbox label={i18n.catalog["text_fe751a4822c8"]} checked={formData.applicable_areas.includes("purchases")} onChange={() => toggleArea("purchases")} />
+                        <Checkbox label={i18n.catalog["text_456da660292f"]} checked={formData.applicable_areas.includes("payroll")} onChange={() => toggleArea("payroll")} />
                     </div>
                 </div>
 
                 <div className="form-group checkbox-group mt-4">
                     <Checkbox
-                        label="تفعيل هذه السلطة محلياً والمطالبة بالامتثال"
+                        label={i18n.catalog["text_ab233f36e977"]}
                         checked={formData.is_active}
                         onChange={e => setFormData({ ...formData, is_active: e.target.checked })}
                     />
@@ -451,9 +450,9 @@ export function GovernmentFeesTab() {
                 isOpen={confirmDialogOpen}
                 onClose={() => setConfirmDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                title="تأكيد الحذف من سجل الضرائب"
-                message="هل أنت متأكد من حذف هذه الفئة الضريبية/الرسم الحكومي؟ لن يحطم هذا الفواتير القديمة لكن سيتم إيقاف حسابه مستقبلاً."
-                confirmText="حذف نهائي"
+                title={i18n.catalog["text_0958cf4c59b2"]}
+                message={i18n.catalog["text_25cfca5886a9"]}
+                confirmText={i18n.catalog["text_cd6f896cc0ee"]}
                 confirmVariant="danger"
             />
         </div>

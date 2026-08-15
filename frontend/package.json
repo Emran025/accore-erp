@@ -9,6 +9,9 @@
     "lint": "eslint",
     "format": "prettier --write .",
     "test": "vitest run",
+    "i18n:inventory": "tsx scripts/i18n-inventory.ts",
+    "i18n:check": "tsx scripts/i18n-inventory.ts --check",
+    "i18n:coverage": "tsx scripts/i18n-verify-coverage.ts --check",
     "tauri": "tauri",
     "desktop:dev": "tauri dev",
     "desktop:build": "tauri build"

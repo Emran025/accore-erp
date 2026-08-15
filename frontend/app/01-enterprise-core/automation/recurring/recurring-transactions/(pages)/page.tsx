@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { Button, Column, ConfirmDialog, Dialog, Table, showAlert, showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -32,6 +33,7 @@ interface RecurringTemplate {
 }
 
 export default function RecurringTransactionsPage() {
+    const { t: i18n } = useI18n();
     const [user, setUser] = useState<User | null>(null);
     const [templates, setTemplates] = useState<RecurringTemplate[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -76,10 +78,10 @@ export default function RecurringTransactionsPage() {
                 setTotalPages(Math.ceil(total / itemsPerPage));
                 setCurrentPage(page);
             } else {
-                showAlert("alert-container", response.message || "فشل تحميل القوالب", "error");
+                showAlert("alert-container", response.message || i18n.catalog["text_c539e2a5f32a"], "error");
             }
         } catch {
-            showAlert("alert-container", "خطأ في الاتصال بالسيرفر", "error");
+            showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -120,12 +122,12 @@ export default function RecurringTransactionsPage() {
                 const template = Array.isArray(response.data) ? response.data[0] : response.data;
                 if (template) {
                     alert(
-                        `الاسم: ${template.name}\nالنوع: ${template.type}\nالتكرار: ${template.frequency}\nتاريخ الاستحقاق: ${formatDate(template.next_due_date)}`
+                        catalogText(i18n, "text_c78b1d1d8ffc", { value0: template.name, value1: template.type, value2: template.frequency, value3: formatDate(template.next_due_date) })
                     );
                 }
             }
         } catch {
-            showToast("خطأ في تحميل القالب", "error");
+            showToast(i18n.catalog["text_cc09051b0fd8"], "error");
         }
     };
 
@@ -135,7 +137,7 @@ export default function RecurringTransactionsPage() {
             if (response.success && response.data) {
                 const template = Array.isArray(response.data) ? response.data[0] : response.data;
                 if (!template) {
-                    showAlert("alert-container", "القالب غير موجود", "error");
+                    showAlert("alert-container", i18n.catalog["text_995c081379d1"], "error");
                     return;
                 }
 
@@ -161,20 +163,20 @@ export default function RecurringTransactionsPage() {
                 setTemplateDialog(true);
             }
         } catch {
-            showAlert("alert-container", "خطأ في تحميل القالب", "error");
+            showAlert("alert-container", i18n.catalog["text_cc09051b0fd8"], "error");
         }
     };
 
     const saveTemplate = async () => {
         if (!templateName || !nextDueDate) {
-            showAlert("alert-container", "يرجى ملء جميع الحقول المطلوبة", "error");
+            showAlert("alert-container", i18n.catalog["text_0a8eb85d0081"], "error");
             return;
         }
 
         let templateData: RecurringTemplateData = {};
         if (templateType === "expense") {
             if (!expenseAccount || !expenseAmount) {
-                showAlert("alert-container", "يرجى ملء حساب المصروف والمبلغ", "error");
+                showAlert("alert-container", i18n.catalog["text_1038ba0763b8"], "error");
                 return;
             }
             templateData = {
@@ -184,7 +186,7 @@ export default function RecurringTransactionsPage() {
             };
         } else if (templateType === "revenue") {
             if (!revenueAccount || !revenueAmount) {
-                showAlert("alert-container", "يرجى ملء حساب الإيراد والمبلغ", "error");
+                showAlert("alert-container", i18n.catalog["text_c2ac07f5b030"], "error");
                 return;
             }
             templateData = {
@@ -194,13 +196,13 @@ export default function RecurringTransactionsPage() {
             };
         } else if (templateType === "journal_voucher") {
             if (!journalEntries) {
-                showAlert("alert-container", "يرجى إدخال القيود", "error");
+                showAlert("alert-container", i18n.catalog["text_62a8a98682e4"], "error");
                 return;
             }
             try {
                 templateData = { entries: JSON.parse(journalEntries) };
             } catch {
-                showAlert("alert-container", "صيغة JSON غير صحيحة", "error");
+                showAlert("alert-container", i18n.catalog["text_b2104c294dee"], "error");
                 return;
             }
         }
@@ -230,14 +232,14 @@ export default function RecurringTransactionsPage() {
             });
 
             if (response.success) {
-                showAlert("alert-container", "تم الحفظ بنجاح", "success");
+                showAlert("alert-container", i18n.catalog["text_ff783ee2826d"], "success");
                 setTemplateDialog(false);
                 await loadTemplates(currentPage);
             } else {
-                showAlert("alert-container", response.message || "فشل الحفظ", "error");
+                showAlert("alert-container", response.message || i18n.catalog["text_b0dbba00004b"], "error");
             }
         } catch {
-            showAlert("alert-container", "خطأ في الحفظ", "error");
+            showAlert("alert-container", i18n.catalog["text_c574313242be"], "error");
         }
     };
 
@@ -254,15 +256,15 @@ export default function RecurringTransactionsPage() {
                 method: "DELETE",
             });
             if (response.success) {
-                showAlert("alert-container", "تم حذف القالب بنجاح", "success");
+                showAlert("alert-container", i18n.catalog["text_a2bc69a3fce3"], "success");
                 setConfirmDialog(false);
                 setDeleteTemplateId(null);
                 await loadTemplates(currentPage);
             } else {
-                showAlert("alert-container", response.message || "فشل حذف القالب", "error");
+                showAlert("alert-container", response.message || i18n.catalog["text_3ce4224c7569"], "error");
             }
         } catch {
-            showAlert("alert-container", "خطأ في حذف القالب", "error");
+            showAlert("alert-container", i18n.catalog["text_20725a2c07a7"], "error");
         }
     };
 
@@ -286,36 +288,36 @@ export default function RecurringTransactionsPage() {
             if (response.success && response.data) {
                 showAlert(
                     "alert-container",
-                    `تم تنفيذ المعاملة بنجاح.`,
+                    i18n.catalog["text_be5e0e5fe181"],
                     "success"
                 );
                 setConfirmDialog(false);
                 setGenerateTemplateId(null);
                 await loadTemplates(currentPage);
             } else {
-                showAlert("alert-container", response.message || "فشل تنفيذ المعاملة", "error");
+                showAlert("alert-container", response.message || i18n.catalog["text_402ecb1be854"], "error");
             }
         } catch {
-            showAlert("alert-container", "خطأ في تنفيذ المعاملة", "error");
+            showAlert("alert-container", i18n.catalog["text_e18b2694dfd0"], "error");
         }
     };
 
     const getTypeText = (type: string) => {
         const types: Record<string, string> = {
-            expense: "مصروف",
-            revenue: "إيراد",
-            journal_voucher: "سند قيد",
+            expense: i18n.catalog["text_29816a44fdcd"],
+            revenue: i18n.catalog["text_cc886aa7a813"],
+            journal_voucher: i18n.catalog["text_a3e1bc51284d"],
         };
         return types[type] || type;
     };
 
     const getFrequencyText = (frequency: string) => {
         const frequencies: Record<string, string> = {
-            daily: "يومي",
-            weekly: "أسبوعي",
-            monthly: "شهري",
-            quarterly: "ربع سنوي",
-            annually: "سنوي",
+            daily: i18n.catalog["text_2a73df3ec9ae"],
+            weekly: i18n.catalog["text_e16e5870ecd8"],
+            monthly: i18n.catalog["text_9c677bb93912"],
+            quarterly: i18n.catalog["text_eb380eddf1ec"],
+            annually: i18n.catalog["text_1beeff0b0fec"],
         };
         return frequencies[frequency] || frequency;
     };
@@ -325,7 +327,7 @@ export default function RecurringTransactionsPage() {
             template.next_due_date && new Date(template.next_due_date) <= new Date();
         return (
             <span className={`badge ${isDue ? "badge-warning" : "badge-success"}`}>
-                {isDue ? "مستحق" : "نشط"}
+                {isDue ? i18n.catalog["text_710cab8f8610"] : i18n.catalog["text_629e90b3af3d"]}
             </span>
         );
     };
@@ -341,64 +343,64 @@ export default function RecurringTransactionsPage() {
     const columns: Column<RecurringTemplate>[] = [
         {
             key: "name",
-            header: "الاسم",
-            dataLabel: "الاسم",
+            header: i18n.catalog["text_52ab09847cf8"],
+            dataLabel: i18n.catalog["text_52ab09847cf8"],
             render: (item) => <strong>{item.name}</strong>,
         },
         {
             key: "type",
-            header: "النوع",
-            dataLabel: "النوع",
+            header: i18n.catalog["text_caa3f2bb4a36"],
+            dataLabel: i18n.catalog["text_caa3f2bb4a36"],
             render: (item) => getTypeText(item.type),
         },
         {
             key: "frequency",
-            header: "التكرار",
-            dataLabel: "التكرار",
+            header: i18n.catalog["text_b308d640bc25"],
+            dataLabel: i18n.catalog["text_b308d640bc25"],
             render: (item) => getFrequencyText(item.frequency),
         },
         {
             key: "next_due_date",
-            header: "تاريخ الاستحقاق القادم",
-            dataLabel: "تاريخ الاستحقاق القادم",
+            header: i18n.catalog["text_7559f4d2c81a"],
+            dataLabel: i18n.catalog["text_7559f4d2c81a"],
             render: (item) => (item.next_due_date ? formatDate(item.next_due_date) : "-"),
         },
         {
             key: "last_generated_date",
-            header: "آخر تنفيذ",
-            dataLabel: "آخر تنفيذ",
+            header: i18n.catalog["text_2b830eee21e3"],
+            dataLabel: i18n.catalog["text_2b830eee21e3"],
             render: (item) =>
-                item.last_generated_date ? formatDate(item.last_generated_date) : "لم ينفذ",
+                item.last_generated_date ? formatDate(item.last_generated_date) : i18n.catalog["text_0a3453886430"],
         },
         {
             key: "status",
-            header: "الحالة",
-            dataLabel: "الحالة",
+            header: i18n.catalog["text_c3a4749caed4"],
+            dataLabel: i18n.catalog["text_c3a4749caed4"],
             render: (item) => getStatusBadge(item),
         },
         {
             key: "actions",
-            header: "الإجراءات",
-            dataLabel: "الإجراءات",
+            header: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (item) => (
                 <div className="action-buttons">
-                    <button className="icon-btn view" onClick={() => viewTemplate(item.id)} title="عرض">
+                    <button className="icon-btn view" onClick={() => viewTemplate(item.id)} title={i18n.catalog["text_3824e18ca83b"]}>
                         {getIcon("eye")}
                     </button>
-                    <button className="icon-btn edit" onClick={() => editTemplate(item.id)} title="تعديل">
+                    <button className="icon-btn edit" onClick={() => editTemplate(item.id)} title={i18n.catalog["text_113d570d6555"]}>
                         {getIcon("edit")}
                     </button>
                     <button
                         className="icon-btn delete"
                         onClick={() => confirmDeleteTemplate(item.id)}
-                        title="حذف"
+                        title={i18n.catalog["text_59ca629220a6"]}
                     >
                         {getIcon("trash")}
                     </button>
                     <button
                         className="icon-btn"
                         onClick={() => confirmGenerateTransaction(item.id)}
-                        title="تنفيذ الآن"
+                        title={i18n.catalog["text_6fd1e0fe3b75"]}
                         style={{ background: "var(--success-color)", color: "white" }}
                     >
                         {getIcon("check")}
@@ -420,15 +422,14 @@ export default function RecurringTransactionsPage() {
                             onClick={openCreateDialog}
                             icon="plus"
                         >
-                            قالب جديد
-                        </Button>
+                            {i18n.catalog["text_6e812691a69b"]}</Button>
                     }
                 />
                 <Table
                     columns={columns}
                     data={templates}
                     keyExtractor={(item) => item.id.toString()}
-                    emptyMessage="لا توجد قوالب"
+                    emptyMessage={i18n.catalog["text_310f442b0ebe"]}
                     isLoading={isLoading}
                     pagination={{
                         currentPage,
@@ -442,15 +443,13 @@ export default function RecurringTransactionsPage() {
             <Dialog
                 isOpen={templateDialog}
                 onClose={() => setTemplateDialog(false)}
-                title={currentTemplateId ? "تعديل القالب" : "قالب معاملة متكررة جديد"}
+                title={currentTemplateId ? i18n.catalog["text_11f6eab416bf"] : i18n.catalog["text_d0fdc218719c"]}
                 footer={
                     <>
                         <button className="btn btn-secondary" onClick={() => setTemplateDialog(false)}>
-                            إلغاء
-                        </button>
+                            {i18n.catalog["text_9a30dc2a96b8"]}</button>
                         <button className="btn btn-primary" onClick={saveTemplate}>
-                            حفظ
-                        </button>
+                            {i18n.catalog["text_ddfcaf9d0144"]}</button>
                     </>
                 }
             >
@@ -461,7 +460,7 @@ export default function RecurringTransactionsPage() {
                     }}
                 >
                     <div className="form-group">
-                        <label htmlFor="template-name">اسم القالب *</label>
+                        <label htmlFor="template-name">{i18n.catalog["text_83ceb0871dd5"]}</label>
                         <input
                             type="text"
                             id="template-name"
@@ -473,7 +472,7 @@ export default function RecurringTransactionsPage() {
 
                     <div className="form-row">
                         <div className="form-group">
-                            <label htmlFor="template-type">نوع المعاملة *</label>
+                            <label htmlFor="template-type">{i18n.catalog["text_27a8ac990d70"]}</label>
                             <select
                                 id="template-type"
                                 value={templateType}
@@ -482,13 +481,13 @@ export default function RecurringTransactionsPage() {
                                 }
                                 required
                             >
-                                <option value="expense">مصروف</option>
-                                <option value="revenue">إيراد</option>
-                                <option value="journal_voucher">سند قيد</option>
+                                <option value="expense">{i18n.catalog["text_29816a44fdcd"]}</option>
+                                <option value="revenue">{i18n.catalog["text_cc886aa7a813"]}</option>
+                                <option value="journal_voucher">{i18n.catalog["text_a3e1bc51284d"]}</option>
                             </select>
                         </div>
                         <div className="form-group">
-                            <label htmlFor="template-frequency">التكرار *</label>
+                            <label htmlFor="template-frequency">{i18n.catalog["text_8ad1fa46519a"]}</label>
                             <select
                                 id="template-frequency"
                                 value={templateFrequency}
@@ -497,17 +496,17 @@ export default function RecurringTransactionsPage() {
                                 }
                                 required
                             >
-                                <option value="daily">يومي</option>
-                                <option value="weekly">أسبوعي</option>
-                                <option value="monthly">شهري</option>
-                                <option value="quarterly">ربع سنوي</option>
-                                <option value="annually">سنوي</option>
+                                <option value="daily">{i18n.catalog["text_2a73df3ec9ae"]}</option>
+                                <option value="weekly">{i18n.catalog["text_e16e5870ecd8"]}</option>
+                                <option value="monthly">{i18n.catalog["text_9c677bb93912"]}</option>
+                                <option value="quarterly">{i18n.catalog["text_eb380eddf1ec"]}</option>
+                                <option value="annually">{i18n.catalog["text_1beeff0b0fec"]}</option>
                             </select>
                         </div>
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="next-due-date">تاريخ الاستحقاق القادم *</label>
+                        <label htmlFor="next-due-date">{i18n.catalog["text_b58668e9c6ed"]}</label>
                         <input
                             type="date"
                             id="next-due-date"
@@ -521,18 +520,18 @@ export default function RecurringTransactionsPage() {
                     {templateType === "expense" && (
                         <div>
                             <div className="form-group">
-                                <label htmlFor="expense-account">حساب المصروف *</label>
+                                <label htmlFor="expense-account">{i18n.catalog["text_7c51fad1363e"]}</label>
                                 <input
                                     type="text"
                                     id="expense-account"
                                     value={expenseAccount}
                                     onChange={(e) => setExpenseAccount(e.target.value)}
-                                    placeholder="رمز الحساب"
+                                    placeholder={i18n.catalog["text_0c3e1588c25f"]}
                                     required
                                 />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="expense-amount">المبلغ *</label>
+                                <label htmlFor="expense-amount">{i18n.catalog["text_3cfbd3350215"]}</label>
                                 <input
                                     type="number"
                                     id="expense-amount"
@@ -544,7 +543,7 @@ export default function RecurringTransactionsPage() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="expense-description">الوصف</label>
+                                <label htmlFor="expense-description">{i18n.catalog["text_95023fc76e1b"]}</label>
                                 <textarea
                                     id="expense-description"
                                     value={expenseDescription}
@@ -559,18 +558,18 @@ export default function RecurringTransactionsPage() {
                     {templateType === "revenue" && (
                         <div>
                             <div className="form-group">
-                                <label htmlFor="revenue-account">حساب الإيراد *</label>
+                                <label htmlFor="revenue-account">{i18n.catalog["text_9939ed06499b"]}</label>
                                 <input
                                     type="text"
                                     id="revenue-account"
                                     value={revenueAccount}
                                     onChange={(e) => setRevenueAccount(e.target.value)}
-                                    placeholder="رمز الحساب"
+                                    placeholder={i18n.catalog["text_0c3e1588c25f"]}
                                     required
                                 />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="revenue-amount">المبلغ *</label>
+                                <label htmlFor="revenue-amount">{i18n.catalog["text_3cfbd3350215"]}</label>
                                 <input
                                     type="number"
                                     id="revenue-amount"
@@ -582,7 +581,7 @@ export default function RecurringTransactionsPage() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="revenue-description">الوصف</label>
+                                <label htmlFor="revenue-description">{i18n.catalog["text_95023fc76e1b"]}</label>
                                 <textarea
                                     id="revenue-description"
                                     value={revenueDescription}
@@ -597,18 +596,17 @@ export default function RecurringTransactionsPage() {
                     {templateType === "journal_voucher" && (
                         <div>
                             <div className="form-group">
-                                <label htmlFor="journal-entries">القيود (JSON) *</label>
+                                <label htmlFor="journal-entries">{i18n.catalog["text_9bb920c68658"]}</label>
                                 <textarea
                                     id="journal-entries"
                                     value={journalEntries}
                                     onChange={(e) => setJournalEntries(e.target.value)}
                                     rows={6}
-                                    placeholder='[{"account_code":"1110","entry_type":"DEBIT","amount":1000,"description":"..."},{"account_code":"5200","entry_type":"CREDIT","amount":1000,"description":"..."}]'
+                                    placeholder={i18n.catalog["text_a2012a8416cf"]}
                                     required
                                 />
                                 <small style={{ color: "var(--text-secondary)" }}>
-                                    يجب أن يكون إجمالي المدين = إجمالي الدائن
-                                </small>
+                                    {i18n.catalog["text_dd7f6ec25fa4"]}</small>
                             </div>
                         </div>
                     )}
@@ -624,13 +622,13 @@ export default function RecurringTransactionsPage() {
                     setGenerateTemplateId(null);
                 }}
                 onConfirm={handleConfirm}
-                title="تأكيد"
+                title={i18n.catalog["text_8f7d74ac0eac"]}
                 message={
                     deleteTemplateId
-                        ? "هل أنت متأكد من حذف هذا القالب؟"
-                        : "هل تريد تنفيذ هذه المعاملة الآن؟"
+                        ? i18n.catalog["text_25afc8d1f0a9"]
+                        : i18n.catalog["text_017896388246"]
                 }
-                confirmText="تأكيد"
+                confirmText={i18n.catalog["text_8f7d74ac0eac"]}
                 confirmVariant={deleteTemplateId ? "danger" : "primary"}
             />
         </MainLayout>

@@ -1,5 +1,6 @@
 "use client";
 
+import { catalogMessage } from "@/lib/i18n";
 import type { EditorFormat } from "./types";
 
 // ═══════════════════════════════════════════════════
@@ -192,7 +193,7 @@ export function validateFormat(code: string, format: EditorFormat): ValidationRe
             try {
                 JSON.parse(code);
             } catch (e) {
-                const msg = e instanceof Error ? e.message : "Invalid JSON";
+                const msg = e instanceof Error ? e.message : catalogMessage("text_f60c824125e6");
                 errors.push(msg);
             }
             break;
@@ -203,10 +204,10 @@ export function validateFormat(code: string, format: EditorFormat): ValidationRe
                 const doc = parser.parseFromString(code, "application/xml");
                 const parseError = doc.querySelector("parsererror");
                 if (parseError) {
-                    errors.push(parseError.textContent?.split("\n")[0] || "Invalid XML");
+                    errors.push(parseError.textContent?.split("\n")[0] || catalogMessage("text_9ca7e4667208"));
                 }
             } catch {
-                errors.push("XML parsing failed");
+                errors.push(catalogMessage("text_07b8acb6712c"));
             }
             break;
         }
@@ -219,7 +220,7 @@ export function validateFormat(code: string, format: EditorFormat): ValidationRe
 
                 // Check for tabs (YAML uses spaces)
                 if (line.includes("\t")) {
-                    errors.push(`Line ${idx + 1}: Tabs not allowed in YAML, use spaces`);
+                    errors.push(catalogMessage("text_afe806cce6a3", { value0: idx + 1 }));
                 }
             });
             break;
@@ -246,7 +247,7 @@ export function generateDefaultTemplate(
         case "json": {
             const obj: Record<string, string> = {};
             entries.forEach(([sysKey, entityKey]) => {
-                obj[entityKey || sysKey] = `{{${sysKey}}}`;
+                obj[entityKey || sysKey] = catalogMessage("text_ee3104aa901f", { value0: sysKey });
             });
             return JSON.stringify(obj, null, 4);
         }
@@ -254,16 +255,16 @@ export function generateDefaultTemplate(
             let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<report>\n';
             entries.forEach(([sysKey, entityKey]) => {
                 const tag = entityKey || sysKey;
-                xml += `    <${tag}>{{${sysKey}}}</${tag}>\n`;
+                xml += catalogMessage("text_da3c16e9b14c", { value0: tag, value1: sysKey, value2: tag });
             });
-            xml += '</report>';
+            xml += catalogMessage("text_810e52a3c597");
             return xml;
         }
         case "yml": {
             let yml = "# Compliance Report Structure\nreport:\n";
             entries.forEach(([sysKey, entityKey]) => {
                 const key = entityKey || sysKey;
-                yml += `  ${key}: "{{${sysKey}}}"\n`;
+                yml += catalogMessage("text_e6f80a7fa9db", { value0: key, value1: sysKey });
             });
             return yml;
         }

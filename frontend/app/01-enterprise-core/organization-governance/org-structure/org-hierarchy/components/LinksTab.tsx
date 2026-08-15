@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Checkbox, Column, ConfirmDialog, Dialog, showToast, Table } from "@/components/ui";
 import { Select } from "@/components/ui/select";
@@ -21,6 +22,7 @@ interface StructureLink {
 interface TopologyRule { id: number; source_node_type_id: string; target_node_type_id: string; cardinality: string; description?: string; }
 
 export function LinksTab() {
+    const { t: i18n } = useI18n();
     const [nodes, setNodes] = useState<StructureNode[]>([]);
     const [metaTypes, setMetaTypes] = useState<MetaType[]>([]);
     const [topologyRules, setTopologyRules] = useState<TopologyRule[]>([]);
@@ -60,7 +62,7 @@ export function LinksTab() {
             setNodes((nodesRes.nodes as StructureNode[]) || []);
             setMetaTypes((metaRes.meta_types as MetaType[]) || []);
             setTopologyRules((rulesRes.topology_rules as TopologyRule[]) || []);
-        } catch { showToast("خطأ في تحميل البيانات", "error"); }
+        } catch { showToast(i18n.catalog["text_f10d2b4c7fe1"], "error"); }
         finally { setIsLoading(false); }
     }, [filterSourceType, filterTargetType, filterLinkType, showActiveOnly]);
 
@@ -90,7 +92,7 @@ export function LinksTab() {
     };
 
     const handleCreateLink = async () => {
-        if (!sourceUuid || !targetUuid) { showToast("يرجى اختيار المصدر والهدف", "error"); return; }
+        if (!sourceUuid || !targetUuid) { showToast(i18n.catalog["text_d74281aef4a9"], "error"); return; }
         try {
             await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.LINKS, {
                 method: "POST",
@@ -100,10 +102,10 @@ export function LinksTab() {
                     valid_from: validFrom || null, valid_to: validTo || null,
                 }),
             });
-            showToast("تم إنشاء الارتباط", "success");
+            showToast(i18n.catalog["text_140d2acd0163"], "success");
             resetForm(); setAddDialog(false); loadAll();
         } catch (e: unknown) {
-            showToast((e as { message?: string })?.message || "خطأ في الإنشاء", "error");
+            showToast((e as { message?: string })?.message || i18n.catalog["text_2e0042b09f88"], "error");
         }
     };
 
@@ -126,10 +128,10 @@ export function LinksTab() {
                     valid_from: validFrom || null, valid_to: validTo || null,
                 }),
             });
-            showToast("تم تحديث الارتباط", "success");
+            showToast(i18n.catalog["text_477c01458f77"], "success");
             setEditDialog(false); setSelectedLink(null); loadAll();
         } catch (e: unknown) {
-            showToast((e as { message?: string })?.message || "خطأ في التحديث", "error");
+            showToast((e as { message?: string })?.message || i18n.catalog["text_133019abccaa"], "error");
         }
     };
 
@@ -142,10 +144,10 @@ export function LinksTab() {
         if (!selectedLink) return;
         try {
             await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.LINK(selectedLink.id), { method: "DELETE" });
-            showToast("تم حذف الارتباط", "success");
+            showToast(i18n.catalog["text_e3b49d492a2a"], "success");
             setDeleteDialog(false); setSelectedLink(null); loadAll();
         } catch (e: unknown) {
-            showToast((e as { message?: string })?.message || "خطأ في الحذف", "error");
+            showToast((e as { message?: string })?.message || i18n.catalog["text_3bdb299872fb"], "error");
         }
     };
 
@@ -169,7 +171,7 @@ export function LinksTab() {
 
     const linkColumns: Column<StructureLink>[] = [
         { key: "id", header: "#", dataLabel: "#", render: (l) => <span style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>{l.id}</span> },
-        { key: "source", header: "المصدر (Source)", dataLabel: "المصدر", render: (l) => getNodeLabel(l.source_node) },
+        { key: "source", header: i18n.catalog["text_b09a92d06205"], dataLabel: i18n.catalog["text_64660bb87d89"], render: (l) => getNodeLabel(l.source_node) },
         {
             key: "arrow", header: "", dataLabel: "",
             render: (l) => {
@@ -182,39 +184,39 @@ export function LinksTab() {
                 );
             },
         },
-        { key: "target", header: "الهدف (Target)", dataLabel: "الهدف", render: (l) => getNodeLabel(l.target_node) },
+        { key: "target", header: i18n.catalog["text_d46024b07e28"], dataLabel: i18n.catalog["text_acd37606a532"], render: (l) => getNodeLabel(l.target_node) },
         {
-            key: "link_type", header: "النوع", dataLabel: "النوع",
+            key: "link_type", header: i18n.catalog["text_caa3f2bb4a36"], dataLabel: i18n.catalog["text_caa3f2bb4a36"],
             render: (l) => <span className="badge badge-primary" style={{ fontSize: "0.72rem" }}>{l.link_type || "assignment"}</span>,
         },
         {
-            key: "priority", header: "الأولوية", dataLabel: "الأولوية",
+            key: "priority", header: i18n.catalog["text_4c3e5a87f1e4"], dataLabel: i18n.catalog["text_4c3e5a87f1e4"],
             render: (l) => <span style={{ fontWeight: 600, fontSize: "0.85rem" }}>{l.priority ?? 0}</span>,
         },
         {
-            key: "validity", header: "الصلاحية", dataLabel: "الصلاحية",
+            key: "validity", header: i18n.catalog["text_9f9b2c7c5fa3"], dataLabel: i18n.catalog["text_9f9b2c7c5fa3"],
             render: (l) => {
                 const active = isLinkActive(l);
-                if (!l.valid_from && !l.valid_to) return <span style={{ color: "var(--text-muted)", fontSize: "0.72rem" }}>دائمة</span>;
+                if (!l.valid_from && !l.valid_to) return <span style={{ color: "var(--text-muted)", fontSize: "0.72rem" }}>{i18n.catalog["text_027ff6a71aca"]}</span>;
                 return (
                     <div style={{ fontSize: "0.72rem" }}>
                         <span style={{ color: active ? "var(--text-secondary)" : "var(--danger)" }}>
                             {l.valid_from?.substring(0, 10) || "∞"} → {l.valid_to?.substring(0, 10) || "∞"}
                         </span>
-                        {!active && <span className="badge badge-danger" style={{ fontSize: "0.6rem", marginRight: "4px" }}>منتهي</span>}
+                        {!active && <span className="badge badge-danger" style={{ fontSize: "0.6rem", marginRight: "4px" }}>{i18n.catalog["text_6217883aee8e"]}</span>}
                     </div>
                 );
             },
         },
         {
             key: "actions",
-            header: "الإجراءات",
-            dataLabel: "الإجراءات",
+            header: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (l) => (
                 <ActionButtons
                     actions={[
-                        { icon: "edit", title: "تعديل", variant: "edit", onClick: () => openEditDialog(l) },
-                        { icon: "trash", title: "حذف", variant: "delete", onClick: () => confirmDeleteLink(l) },
+                        { icon: "edit", title: i18n.catalog["text_113d570d6555"], variant: "edit", onClick: () => openEditDialog(l) },
+                        { icon: "trash", title: i18n.catalog["text_59ca629220a6"], variant: "delete", onClick: () => confirmDeleteLink(l) },
                     ]}
                 />
             ),
@@ -225,90 +227,89 @@ export function LinksTab() {
         <>
             <div className="sales-card animate-fade">
                 <PageSubHeader
-                    title="إدارة الارتباطات (Assignment Matrix)"
-                    subTitle="ارتباطات الهيكل التنظيمي بما يحاكي SAP Assignment Block — تحكّم بالعلاقات والصلاحية الزمنية."
+                    title={i18n.catalog["text_eeb19f5c12b4"]}
+                    subTitle={i18n.catalog["text_321c9b05d85e"]}
                     titleIcon="link"
                     actions={
                         <>
                             <Select value={filterSourceType} onChange={(e) => setFilterSourceType(e.target.value)} style={{ maxWidth: "160px" }}
                                 options={[
-                                    { value: "", label: "نوع المصدر (الكل)" },
+                                    { value: "", label: i18n.catalog["text_08ae725dc95b"] },
                                     ...uniqueTypes.map(t => ({ value: t, label: getTypeLabel(t) }))
                                 ]}
                                 />
                             <Select value={filterTargetType} onChange={(e) => setFilterTargetType(e.target.value)} style={{ maxWidth: "160px" }}
                                 options={[
-                                    { value: "", label: "نوع الهدف (الكل)" },
+                                    { value: "", label: i18n.catalog["text_f610b41ff83b"] },
                                     ...uniqueTypes.map(t => ({ value: t, label: getTypeLabel(t) }))
                                 ]}
                                 />
                             <Select value={filterLinkType} onChange={(e) => setFilterLinkType(e.target.value)} style={{ maxWidth: "130px" }}
                                 options={[
-                                    { value: "", label: "نوع الارتباط (الكل)" },
-                                    { value: "assignment", label: "تعيين" },
-                                    { value: "reporting", label: "تقارير" }
+                                    { value: "", label: i18n.catalog["text_1b83e218a94e"] },
+                                    { value: "assignment", label: i18n.catalog["text_961e2be91215"] },
+                                    { value: "reporting", label: i18n.catalog["text_a4f428ac9186"] }
                                 ]}
                                 />
                             <Checkbox
-                                label="نشطة فقط"
+                                label={i18n.catalog["text_9878ba4f645f"]}
                                 checked={showActiveOnly}
                                 onChange={(e) => setShowActiveOnly(e.target.checked)}
                             />
 
-                            <Button variant="primary" icon="plus" onClick={() => { resetForm(); setAddDialog(true); }}>إنشاء ارتباط</Button>
+                            <Button variant="primary" icon="plus" onClick={() => { resetForm(); setAddDialog(true); }}>{i18n.catalog["text_d0b4e4ad3969"]}</Button>
                         </>}
                 />
 
                 {/* Summary stats */}
                 <div style={{ display: "flex", gap: "1.5rem", marginBottom: "1rem", fontSize: "0.8rem" }}>
-                    <span style={{ color: "var(--text-muted)" }}>إجمالي: <strong>{links.length}</strong></span>
-                    <span style={{ color: "#10b981" }}>نشط: <strong>{links.filter(l => isLinkActive(l)).length}</strong></span>
-                    <span style={{ color: "#ef4444" }}>منتهي: <strong>{links.filter(l => !isLinkActive(l)).length}</strong></span>
+                    <span style={{ color: "var(--text-muted)" }}>{i18n.catalog["text_97bd2075da0f"]}<strong>{links.length}</strong></span>
+                    <span style={{ color: "#10b981" }}>{i18n.catalog["text_e51dbd6a615c"]}<strong>{links.filter(l => isLinkActive(l)).length}</strong></span>
+                    <span style={{ color: "#ef4444" }}>{i18n.catalog["text_d06f63422796"]}<strong>{links.filter(l => !isLinkActive(l)).length}</strong></span>
                 </div>
 
-                <Table columns={linkColumns} data={links} keyExtractor={(l) => String(l.id)} emptyMessage="لا توجد ارتباطات" isLoading={isLoading} />
+                <Table columns={linkColumns} data={links} keyExtractor={(l) => String(l.id)} emptyMessage={i18n.catalog["text_0064b6c86937"]} isLoading={isLoading} />
             </div>
 
             {/* Create Link Dialog */}
-            <Dialog isOpen={addDialog} onClose={() => setAddDialog(false)} title="إنشاء ارتباط جديد"
-                footer={<><Button variant="secondary" onClick={() => setAddDialog(false)}>إلغاء</Button><Button variant="primary" onClick={handleCreateLink}>إنشاء</Button></>}>
+            <Dialog isOpen={addDialog} onClose={() => setAddDialog(false)} title={i18n.catalog["text_3b668df62e4b"]}
+                footer={<><Button variant="secondary" onClick={() => setAddDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button><Button variant="primary" onClick={handleCreateLink}>{i18n.catalog["text_a820f3590d36"]}</Button></>}>
                 <div className="form-group">
-                    <Select label="الوحدة المصدر *" value={sourceUuid} onChange={(e) => { setSourceUuid(e.target.value); setTargetUuid(""); }}>
-                        <option value="">اختر الوحدة المصدر</option>
-                        {nodes.map((n) => <option key={n.node_uuid} value={n.node_uuid}>{n.code} — {getTypeLabel(n.node_type_id)}{(n.attributes_json?.name as string) ? ` (${n.attributes_json?.name})` : ""}</option>)}
+                    <Select label={i18n.catalog["text_a2cb6b31b114"]} value={sourceUuid} onChange={(e) => { setSourceUuid(e.target.value); setTargetUuid(""); }}>
+                        <option value="">{i18n.catalog["text_b12d1b28a69f"]}</option>
+                        {nodes.map((n) => <option key={n.node_uuid} value={n.node_uuid}>{n.code} — {getTypeLabel(n.node_type_id)}{(n.attributes_json?.name as string) ? catalogText(i18n, "text_239f04bc2797", { value0: n.attributes_json?.name }) : ""}</option>)}
                     </Select>
                 </div>
                 <div className="form-group">
-                    <Select label="الوحدة الهدف *" value={targetUuid} onChange={(e) => setTargetUuid(e.target.value)} disabled={!sourceUuid}>
-                        <option value="">اختر الوحدة الهدف</option>
-                        {getValidTargets().map((n) => <option key={n.node_uuid} value={n.node_uuid}>{n.code} — {getTypeLabel(n.node_type_id)}{(n.attributes_json?.name as string) ? ` (${n.attributes_json?.name})` : ""}</option>)}
+                    <Select label={i18n.catalog["text_0e7983e3f1d4"]} value={targetUuid} onChange={(e) => setTargetUuid(e.target.value)} disabled={!sourceUuid}>
+                        <option value="">{i18n.catalog["text_599100cb5f57"]}</option>
+                        {getValidTargets().map((n) => <option key={n.node_uuid} value={n.node_uuid}>{n.code} — {getTypeLabel(n.node_type_id)}{(n.attributes_json?.name as string) ? catalogText(i18n, "text_239f04bc2797", { value0: n.attributes_json?.name }) : ""}</option>)}
                     </Select>
                 </div>
                 <div className="form-row">
                     <div className="form-group">
-                        <Select label="نوع الارتباط" value={linkType} onChange={(e) => setLinkType(e.target.value)}>
-                            <option value="assignment">تعيين (Assignment)</option>
-                            <option value="reporting">تقارير (Reporting)</option>
+                        <Select label={i18n.catalog["text_5b78766d649e"]} value={linkType} onChange={(e) => setLinkType(e.target.value)}>
+                            <option value="assignment">{i18n.catalog["text_14fca48a1f80"]}</option>
+                            <option value="reporting">{i18n.catalog["text_6194e0349207"]}</option>
                         </Select>
                     </div>
                     <div className="form-group">
-                        <TextInput label="الأولوية" type="number" value={priority} onChange={(e) => setPriority(e.target.value)} />
+                        <TextInput label={i18n.catalog["text_4c3e5a87f1e4"]} type="number" value={priority} onChange={(e) => setPriority(e.target.value)} />
                     </div>
                 </div>
                 <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", margin: "0.5rem 0 0.25rem" }}>
-                    {getIcon("calendar")} فترة الصلاحية (اختياري)
-                </p>
+                    {getIcon("calendar")} {i18n.catalog["text_6519c8c79051"]}</p>
                 <div className="form-row">
                     <div className="form-group">
-                        <TextInput label="من" type="date" value={validFrom} onChange={(e) => setValidFrom(e.target.value)} />
+                        <TextInput label={i18n.catalog["text_4d7d679f7b4c"]} type="date" value={validFrom} onChange={(e) => setValidFrom(e.target.value)} />
                     </div>
                     <div className="form-group">
-                        <TextInput label="حتى" type="date" value={validTo} onChange={(e) => setValidTo(e.target.value)} />
+                        <TextInput label={i18n.catalog["text_08b034994862"]} type="date" value={validTo} onChange={(e) => setValidTo(e.target.value)} />
                     </div>
                 </div>
                 {sourceUuid && (
                     <div style={{ marginTop: "0.5rem", padding: "0.5rem", background: "var(--bg-secondary)", borderRadius: "6px", fontSize: "0.75rem" }}>
-                        <strong>العلاقات المسموحة (Topology Rules):</strong>
+                        <strong>{i18n.catalog["text_69c6b9109c48"]}</strong>
                         {topologyRules
                             .filter((r) => r.source_node_type_id === nodes.find((n) => n.node_uuid === sourceUuid)?.node_type_id)
                             .map((r) => (
@@ -321,8 +322,8 @@ export function LinksTab() {
             </Dialog>
 
             {/* Edit Link Dialog */}
-            <Dialog isOpen={editDialog} onClose={() => setEditDialog(false)} title="تعديل الارتباط"
-                footer={<><Button variant="secondary" onClick={() => setEditDialog(false)}>إلغاء</Button><Button variant="primary" onClick={handleUpdateLink}>تحديث</Button></>}>
+            <Dialog isOpen={editDialog} onClose={() => setEditDialog(false)} title={i18n.catalog["text_91dbf81d524c"]}
+                footer={<><Button variant="secondary" onClick={() => setEditDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button><Button variant="primary" onClick={handleUpdateLink}>{i18n.catalog["text_00eab31f95b7"]}</Button></>}>
                 {selectedLink && (
                     <>
                         <div style={{ padding: "0.75rem", background: "var(--bg-secondary)", borderRadius: "8px", marginBottom: "1rem", fontSize: "0.85rem" }}>
@@ -337,24 +338,23 @@ export function LinksTab() {
                         </div>
                         <div className="form-row">
                             <div className="form-group">
-                                <Select label="نوع الارتباط" value={linkType} onChange={(e) => setLinkType(e.target.value)}>
-                                    <option value="assignment">تعيين (Assignment)</option>
-                                    <option value="reporting">تقارير (Reporting)</option>
+                                <Select label={i18n.catalog["text_5b78766d649e"]} value={linkType} onChange={(e) => setLinkType(e.target.value)}>
+                                    <option value="assignment">{i18n.catalog["text_14fca48a1f80"]}</option>
+                                    <option value="reporting">{i18n.catalog["text_6194e0349207"]}</option>
                                 </Select>
                             </div>
                             <div className="form-group">
-                                <TextInput label="الأولوية" type="number" value={priority} onChange={(e) => setPriority(e.target.value)} />
+                                <TextInput label={i18n.catalog["text_4c3e5a87f1e4"]} type="number" value={priority} onChange={(e) => setPriority(e.target.value)} />
                             </div>
                         </div>
                         <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", margin: "0.5rem 0 0.25rem" }}>
-                            {getIcon("calendar")} فترة الصلاحية
-                        </p>
+                            {getIcon("calendar")} {i18n.catalog["text_0a3d340761f4"]}</p>
                         <div className="form-row">
                             <div className="form-group">
-                                <TextInput label="من" type="date" value={validFrom} onChange={(e) => setValidFrom(e.target.value)} />
+                                <TextInput label={i18n.catalog["text_4d7d679f7b4c"]} type="date" value={validFrom} onChange={(e) => setValidFrom(e.target.value)} />
                             </div>
                             <div className="form-group">
-                                <TextInput label="حتى" type="date" value={validTo} onChange={(e) => setValidTo(e.target.value)} />
+                                <TextInput label={i18n.catalog["text_08b034994862"]} type="date" value={validTo} onChange={(e) => setValidTo(e.target.value)} />
                             </div>
                         </div>
                     </>
@@ -363,9 +363,9 @@ export function LinksTab() {
 
             {/* Delete Confirmation */}
             <ConfirmDialog isOpen={deleteDialog} onClose={() => setDeleteDialog(false)} onConfirm={handleDeleteLink}
-                title="تأكيد حذف الارتباط"
-                message={`هل أنت متأكد من حذف الارتباط بين "${selectedLink?.source_node?.code || "?"}" و "${selectedLink?.target_node?.code || "?"}"؟`}
-                confirmText="حذف" confirmVariant="danger" />
+                title={i18n.catalog["text_e3ae438dd709"]}
+                message={catalogText(i18n, "text_5a290c8d037e", { value0: selectedLink?.source_node?.code || "?", value1: selectedLink?.target_node?.code || "?" })}
+                confirmText={i18n.catalog["text_59ca629220a6"]} confirmVariant="danger" />
         </>
     );
 }

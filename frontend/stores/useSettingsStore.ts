@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { fetchAPI } from '@/lib/api';
@@ -61,7 +62,7 @@ export const useSettingsStore = create<SettingsState>()(
                         set({ settings: settingsObj, isLoading: false });
                         return settingsObj;
                     } catch (e) {
-                        console.error("Failed to initialize system settings", e);
+                        console.error(catalogMessage("text_e19f4348c1b5"), e);
                         set({ settings: {}, isLoading: false });
                         return null;
                     } finally {

@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { getIcon } from "@/lib/icons";
 
 export interface ContextMenuPortalProps {
@@ -49,7 +50,7 @@ export function ContextMenuPortal({
                         onClick={() => { onAddFavorite(); onClose(); }}
                     >
                         {getIcon("star")}
-                        <span>Add to Favorites</span>
+                        <span>{catalogMessage("text_2461cfb0ed43")}</span>
                     </button>
                 ) : (
                     <button
@@ -57,7 +58,7 @@ export function ContextMenuPortal({
                         onClick={() => { onRemoveFavorite(); onClose(); }}
                     >
                         {getIcon("x")}
-                        <span>Remove from Favorites</span>
+                        <span>{catalogMessage("text_33fb0dd35e91")}</span>
                     </button>
                 )
             )}
@@ -67,7 +68,7 @@ export function ContextMenuPortal({
                     onClick={() => { onRemoveRecent(); onClose(); }}
                 >
                     {getIcon("x")}
-                    <span>Remove from Recent</span>
+                    <span>{catalogMessage("text_944f0b11f94a")}</span>
                 </button>
             )}
         </div>

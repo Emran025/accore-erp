@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { Button, ConfirmDialog, ReturnData, SalesReturnDialog, SelectableInvoice, SelectableInvoiceItem, SelectedItem, showAlert, showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -18,6 +19,7 @@ import { TransactionFormDialog } from "../components/TransactionFormDialog";
 import { DetailedInvoiceSuppliers, LedgerStatsSuppliers, LedgerTransaction, Pagination, Supplier } from "@/types";
 
 function APLedgerPageContent() {
+    const { t: i18n } = useI18n();
   const router = useRouter();
   const searchParams = useSearchParams();
   const supplierId = searchParams.get("supplier_id");
@@ -94,7 +96,7 @@ function APLedgerPageContent() {
         setSupplier(supplierData as Supplier);
       }
     } catch {
-      showToast("خطأ في تحميل بيانات المورد", "error");
+      showToast(i18n.catalog["text_121ea766a4f9"], "error");
     }
   }, [supplierId]);
 
@@ -117,7 +119,7 @@ function APLedgerPageContent() {
           const mappedTransactions: LedgerTransaction[] = rawTransactions.map((item) => ({
             ...item,
             type: item.type,
-            invoice_number: item.reference_id ? `REF-${item.reference_id}` : `TRX-${item.id}`,
+            invoice_number: item.reference_id ? catalogText(i18n, "text_c8a143a2ca2b", { value0: item.reference_id }) : `TRX-${item.id}`,
             total_amount: item.amount,
             subtotal: item.amount,
             vat_amount: 0,
@@ -138,10 +140,10 @@ function APLedgerPageContent() {
           setTotalPages(Math.ceil(total / itemsPerPage));
           setCurrentPage(page);
         } else {
-          showAlert("alert-container", response.message || "فشل تحميل العمليات", "error");
+          showAlert("alert-container", response.message || i18n.catalog["text_40b69645bd46"], "error");
         }
       } catch {
-        showAlert("alert-container", "خطأ في الاتصال بالسيرفر", "error");
+        showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
       } finally {
         setIsLoading(false);
       }
@@ -186,7 +188,7 @@ function APLedgerPageContent() {
 
   const saveTransaction = async () => {
     if (!transactionAmount || parseNumber(transactionAmount) <= 0) {
-      showToast("المبلغ مطلوب", "error");
+      showToast(i18n.catalog["text_222e5860f0be"], "error");
       return;
     }
 
@@ -207,15 +209,15 @@ function APLedgerPageContent() {
       });
 
       if (response.success) {
-        showToast("تم الحفظ بنجاح", "success");
+        showToast(i18n.catalog["text_ff783ee2826d"], "success");
         setTransactionDialog(false);
         await loadLedger(currentPage);
         await loadSupplierDetails();
       } else {
-        showToast(response.message || "خطأ", "error");
+        showToast(response.message || i18n.catalog["text_acc74dcf4c2f"], "error");
       }
     } catch {
-      showToast("خطأ في الحفظ", "error");
+      showToast(i18n.catalog["text_c574313242be"], "error");
     }
   };
 
@@ -227,7 +229,7 @@ function APLedgerPageContent() {
         setViewDialog(true);
       }
     } catch {
-      showAlert("alert-container", "خطأ في جلب التفاصيل", "error");
+      showAlert("alert-container", i18n.catalog["text_740c5c55bbc3"], "error");
     }
   };
 
@@ -247,7 +249,7 @@ function APLedgerPageContent() {
       }
       return [];
     } catch (error) {
-      console.error("Failed to fetch items", error);
+      console.error(i18n.catalog["text_c0637151ed4f"], error);
       return [];
     }
   };
@@ -258,7 +260,7 @@ function APLedgerPageContent() {
 
   const openReturnDialog = async () => {
     if (selectedReturnItems.length === 0) {
-      showToast("يرجى تحديد عناصر للإرجاع أولاً", "warning");
+      showToast(i18n.catalog["text_54f0b0947619"], "warning");
       return;
     }
 
@@ -277,8 +279,8 @@ function APLedgerPageContent() {
         }));
         setInvoicesMap(newMap);
       } catch (error) {
-        console.error("Failed to load invoice details", error);
-        showToast("فشل تحميل بيانات الفواتير", "error");
+        console.error(i18n.catalog["text_d9ef03bc9e49"], error);
+        showToast(i18n.catalog["text_f154fa31b161"], "error");
       } finally {
         setIsLoadingInvoices(false);
       }
@@ -298,13 +300,13 @@ function APLedgerPageContent() {
         });
 
         if (!response.success) {
-          throw new Error(response.message || "فشل تسجيل المرتجع");
+          throw new Error(response.message || i18n.catalog["text_311143511f9e"]);
         }
       }
 
-      showToast("تم تسجيل المرتجع بنجاح", "success");
+      showToast(i18n.catalog["text_23e6f8991b99"], "success");
     } catch (error: any) {
-      showToast(error.message || "خطأ في تسجيل المرتجع", "error");
+      showToast(error.message || i18n.catalog["text_633a9d0a74cd"], "error");
       throw error;
     }
   };
@@ -322,15 +324,15 @@ function APLedgerPageContent() {
         method: "DELETE",
       });
       if (response.success) {
-        showToast("تم الحذف بنجاح", "success");
+        showToast(i18n.catalog["text_12b6e3813b40"], "success");
         setConfirmDialog(false);
         setDeleteTransactionId(null);
         await loadLedger(currentPage);
       } else {
-        showToast(response.message || "خطأ", "error");
+        showToast(response.message || i18n.catalog["text_acc74dcf4c2f"], "error");
       }
     } catch {
-      showToast("خطأ في الحذف", "error");
+      showToast(i18n.catalog["text_3bdb299872fb"], "error");
     }
   };
 
@@ -348,15 +350,15 @@ function APLedgerPageContent() {
         body: JSON.stringify({ id: restoreTransactionId, restore: true }),
       });
       if (response.success) {
-        showToast("تم الاستعادة بنجاح", "success");
+        showToast(i18n.catalog["text_aa78a43df0d6"], "success");
         setConfirmDialog(false);
         setRestoreTransactionId(null);
         await loadLedger(currentPage);
       } else {
-        showToast(response.message || "خطأ", "error");
+        showToast(response.message || i18n.catalog["text_acc74dcf4c2f"], "error");
       }
     } catch {
-      showToast("خطأ في الاستعادة", "error");
+      showToast(i18n.catalog["text_f456a605d85c"], "error");
     }
   };
 
@@ -388,15 +390,13 @@ function APLedgerPageContent() {
               icon="search"
               onClick={() => setFilterDialog(true)}
             >
-              تصفية
-            </Button>
+              {i18n.catalog["text_a826a913e567"]}</Button>
             <Button
               variant="primary"
               icon="plus"
               onClick={openAddTransactionDialog}
             >
-              عملية جديدة
-            </Button>
+              {i18n.catalog["text_20b69585a955"]}</Button>
           </>
         }
       />
@@ -468,13 +468,13 @@ function APLedgerPageContent() {
           setRestoreTransactionId(null);
         }}
         onConfirm={handleConfirm}
-        title="تأكيد الإجراء"
+        title={i18n.catalog["text_e289ca4b7f4a"]}
         message={
           deleteTransactionId
-            ? "هل أنت متأكد من حذف هذه العملية (حذف مؤقت)؟"
-            : "هل أنت متأكد من استعادة هذه العملية؟"
+            ? i18n.catalog["text_40656861c0bd"]
+            : i18n.catalog["text_2e51779fcc9a"]
         }
-        confirmText="تأكيد"
+        confirmText={i18n.catalog["text_8f7d74ac0eac"]}
         confirmVariant={deleteTransactionId ? "danger" : "primary"}
       />
 
@@ -497,8 +497,9 @@ function APLedgerPageContent() {
 }
 
 export default function APLedgerPage() {
+    const { t: i18n } = useI18n();
   return (
-    <Suspense fallback={<div className="p-4 text-center">جاري التحميل...</div>}>
+    <Suspense fallback={<div className="p-4 text-center">{i18n.catalog["text_ceac78d7f5d3"]}</div>}>
       <APLedgerPageContent />
     </Suspense>
   );

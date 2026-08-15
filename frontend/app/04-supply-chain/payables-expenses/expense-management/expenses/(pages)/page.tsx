@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText, catalogMessage } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { Column, ConfirmDialog, Dialog, SearchableSelect, Table, showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -26,17 +27,18 @@ interface Supplier {
 }
 
 const expenseCategories = [
-  { value: "rent", label: "إيجار" },
-  { value: "utilities", label: "مرافق" },
-  { value: "salaries", label: "رواتب" },
-  { value: "maintenance", label: "صيانة" },
-  { value: "supplies", label: "مستلزمات" },
-  { value: "marketing", label: "تسويق" },
-  { value: "transport", label: "نقل" },
-  { value: "other", label: "أخرى" },
+  { value: "rent", label: catalogMessage("text_b73ae0125ca9") },
+  { value: "utilities", label: catalogMessage("text_1882ff95c23d") },
+  { value: "salaries", label: catalogMessage("text_881e172ec666") },
+  { value: "maintenance", label: catalogMessage("text_9c499d210797") },
+  { value: "supplies", label: catalogMessage("text_817f32c5668f") },
+  { value: "marketing", label: catalogMessage("text_268f5c83d4f1") },
+  { value: "transport", label: catalogMessage("text_4dc3b4bfcd18") },
+  { value: "other", label: catalogMessage("text_17a9f38e22b6") },
 ];
 
 export default function ExpensesPage() {
+    const { t: i18n } = useI18n();
   const [user, setUser] = useState<User | null>(null);
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -74,7 +76,7 @@ export default function ExpensesPage() {
       setTotalPages((response.pagination as any)?.total_pages || 1);
       setCurrentPage(page);
     } catch {
-      showToast("خطأ في تحميل المصروفات", "error");
+      showToast(i18n.catalog["text_bb2e706de22f"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -85,7 +87,7 @@ export default function ExpensesPage() {
       const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.PROCUREMENT.SUPPLIERS.BASE}?limit=100`);
       setSuppliers(response.data as Supplier[] || []);
     } catch (error) {
-      console.error("Error loading suppliers:", error);
+      console.error(i18n.catalog["text_e4667f135ab0"], error);
     }
   }, []);
 
@@ -132,7 +134,7 @@ export default function ExpensesPage() {
 
   const handleSubmit = async () => {
     if (!formData.amount) {
-      showToast("يرجى إدخال المبلغ", "error");
+      showToast(i18n.catalog["text_a76ef36cf119"], "error");
       return;
     }
 
@@ -147,22 +149,22 @@ export default function ExpensesPage() {
 
     try {
       if (selectedExpense) {
-        await fetchAPI(`${API_ENDPOINTS.FINANCE.EXPENSES}/${selectedExpense.id}`, {
+        await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.FINANCE.EXPENSES, value1: selectedExpense.id }), {
           method: "PUT",
           body: JSON.stringify(payload),
         });
-        showToast("تم تحديث المصروف بنجاح", "success");
+        showToast(i18n.catalog["text_a9169bda50b8"], "success");
       } else {
         await fetchAPI(API_ENDPOINTS.FINANCE.EXPENSES, {
           method: "POST",
           body: JSON.stringify(payload),
         });
-        showToast("تمت إضافة المصروف بنجاح", "success");
+        showToast(i18n.catalog["text_542dd3a1717a"], "success");
       }
       setFormDialog(false);
       loadExpenses(currentPage, searchTerm);
     } catch {
-      showToast("خطأ في حفظ المصروف", "error");
+      showToast(i18n.catalog["text_ac00189ea4e2"], "error");
     }
   };
 
@@ -175,59 +177,59 @@ export default function ExpensesPage() {
     if (!deleteId) return;
 
     try {
-      const response = await fetchAPI(`${API_ENDPOINTS.FINANCE.EXPENSES}/${deleteId}`, { method: "DELETE" });
-      showToast("تم حذف المصروف", "success");
+      const response = await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.FINANCE.EXPENSES, value1: deleteId }), { method: "DELETE" });
+      showToast(i18n.catalog["text_6c69830d1b53"], "success");
       loadExpenses(currentPage, searchTerm);
     } catch {
-      showToast("خطأ في حذف المصروف", "error");
+      showToast(i18n.catalog["text_e6df23603c4e"], "error");
     }
   };
 
   const columns: Column<Expense>[] = [
     {
       key: "category",
-      header: "الفئة",
-      dataLabel: "الفئة",
+      header: i18n.catalog["text_ff61fb213ffc"],
+      dataLabel: i18n.catalog["text_ff61fb213ffc"],
       render: (item) => (
         <div className="flex flex-col gap-1">
           <span className="badge badge-secondary">{translateExpenseCategory(item.category)}</span>
           <span className={`text-xs ${item.payment_type === 'credit' ? 'text-warning' : 'text-success'}`}>
-            {item.payment_type === 'credit' ? 'آجل' : 'نقدي'}
+            {item.payment_type === 'credit' ? i18n.catalog["text_bf7775843f7c"] : i18n.catalog["text_1beb05a45173"]}
           </span>
         </div>
       ),
     },
     {
       key: "amount",
-      header: "المبلغ",
-      dataLabel: "المبلغ",
+      header: i18n.catalog["text_1cd480f91b24"],
+      dataLabel: i18n.catalog["text_1cd480f91b24"],
       render: (item) => <span className="text-danger">{formatCurrency(item.amount)}</span>,
     },
     {
       key: "expense_date",
-      header: "التاريخ",
-      dataLabel: "التاريخ",
+      header: i18n.catalog["text_d90c384199ac"],
+      dataLabel: i18n.catalog["text_d90c384199ac"],
       render: (item) => formatDate(item.expense_date),
     },
     {
       key: "description",
-      header: "الوصف",
-      dataLabel: "الوصف",
+      header: i18n.catalog["text_95023fc76e1b"],
+      dataLabel: i18n.catalog["text_95023fc76e1b"],
       render: (item) => item.description || "-",
     },
     {
       key: "actions",
-      header: "الإجراءات",
-      dataLabel: "الإجراءات",
+      header: i18n.catalog["text_7797240d6caf"],
+      dataLabel: i18n.catalog["text_7797240d6caf"],
       render: (item) => (
         <div className="action-buttons">
           {canAccess(permissions, "expenses", "edit") && (
-            <button className="icon-btn edit" onClick={() => openEditDialog(item)} title="تعديل">
+            <button className="icon-btn edit" onClick={() => openEditDialog(item)} title={i18n.catalog["text_113d570d6555"]}>
               {getIcon("edit")}
             </button>
           )}
           {canAccess(permissions, "expenses", "delete") && (
-            <button className="icon-btn delete" onClick={() => confirmDelete(item.id)} title="حذف">
+            <button className="icon-btn delete" onClick={() => confirmDelete(item.id)} title={i18n.catalog["text_59ca629220a6"]}>
               {getIcon("trash")}
             </button>
           )}
@@ -252,7 +254,7 @@ export default function ExpensesPage() {
               setSearchTerm(val);
               loadExpenses(1, val);
             }}
-            placeholder="بحث سريع..."
+            placeholder={i18n.catalog["text_c0d15d40fd31"]}
             className="header-search-bar"
           />
         }
@@ -261,8 +263,7 @@ export default function ExpensesPage() {
           canAccess(permissions, "expenses", "create") && (
             <button className="btn btn-primary" onClick={openAddDialog}>
               {getIcon("plus")}
-              إضافة مصروف
-            </button>
+              {i18n.catalog["text_6c110aacb65a"]}</button>
           )
         }
       />
@@ -270,7 +271,7 @@ export default function ExpensesPage() {
           columns={columns}
           data={expenses}
           keyExtractor={(item) => item.id}
-          emptyMessage="لا توجد مصروفات"
+          emptyMessage={i18n.catalog["text_03778af91117"]}
           isLoading={isLoading}
           pagination={{
             currentPage,
@@ -284,21 +285,20 @@ export default function ExpensesPage() {
       <Dialog
         isOpen={formDialog}
         onClose={() => setFormDialog(false)}
-        title={selectedExpense ? "تعديل المصروف" : "إضافة مصروف جديد"}
+        title={selectedExpense ? i18n.catalog["text_28aa319ccad5"] : i18n.catalog["text_6e9dbd5a5bf4"]}
         footer={
           <>
             <button className="btn btn-secondary" onClick={() => setFormDialog(false)}>
-              إلغاء
-            </button>
+              {i18n.catalog["text_9a30dc2a96b8"]}</button>
             <button className="btn btn-primary" onClick={handleSubmit}>
-              {selectedExpense ? "تحديث" : "إضافة"}
+              {selectedExpense ? i18n.catalog["text_00eab31f95b7"] : i18n.catalog["text_d52453ac627d"]}
             </button>
           </>
         }
       >
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="category">الفئة</label>
+            <label htmlFor="category">{i18n.catalog["text_ff61fb213ffc"]}</label>
             <select
               id="category"
               value={formData.category}
@@ -312,7 +312,7 @@ export default function ExpensesPage() {
             </select>
           </div>
           <div className="form-group">
-            <label htmlFor="amount">المبلغ *</label>
+            <label htmlFor="amount">{i18n.catalog["text_3cfbd3350215"]}</label>
             <input
               type="number"
               id="amount"
@@ -325,7 +325,7 @@ export default function ExpensesPage() {
         </div>
 
         <div className="form-group">
-          <label htmlFor="expense_date">التاريخ</label>
+          <label htmlFor="expense_date">{i18n.catalog["text_d90c384199ac"]}</label>
           <input
             type="date"
             id="expense_date"
@@ -335,7 +335,7 @@ export default function ExpensesPage() {
         </div>
 
         <div className="form-group">
-          <label htmlFor="description">الوصف</label>
+          <label htmlFor="description">{i18n.catalog["text_95023fc76e1b"]}</label>
           <textarea
             id="description"
             value={formData.description}
@@ -346,7 +346,7 @@ export default function ExpensesPage() {
 
         <div className="form-row border-t pt-4 mt-2">
           <div className="form-group">
-            <label>طريقة الدفع</label>
+            <label>{i18n.catalog["text_ae2d60052976"]}</label>
             <div className="flex gap-4 items-center h-10">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -356,8 +356,7 @@ export default function ExpensesPage() {
                   checked={formData.payment_type === "cash"}
                   onChange={() => setFormData({ ...formData, payment_type: "cash", supplier_id: "" })}
                 />
-                نقدي
-              </label>
+                {i18n.catalog["text_1beb05a45173"]}</label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="radio"
@@ -366,20 +365,19 @@ export default function ExpensesPage() {
                   checked={formData.payment_type === "credit"}
                   onChange={() => setFormData({ ...formData, payment_type: "credit" })}
                 />
-                آجل (ذمم)
-              </label>
+                {i18n.catalog["text_70122ff036ec"]}</label>
             </div>
           </div>
 
           {formData.payment_type === "credit" && (
             <div className="form-group">
-              <label>المورد *</label>
+              <label>{i18n.catalog["text_33d0685e3378"]}</label>
               <select
                 value={formData.supplier_id}
                 onChange={(e) => setFormData({ ...formData, supplier_id: e.target.value })}
                 required
               >
-                <option value="">اختر المورد</option>
+                <option value="">{i18n.catalog["text_78ba67f3f0a5"]}</option>
                 {suppliers.map(s => (
                   <option key={s.id} value={s.id}>{s.name}</option>
                 ))}
@@ -394,9 +392,9 @@ export default function ExpensesPage() {
         isOpen={confirmDialog}
         onClose={() => setConfirmDialog(false)}
         onConfirm={handleDelete}
-        title="تأكيد الحذف"
-        message="هل أنت متأكد من حذف هذا المصروف؟"
-        confirmText="حذف"
+        title={i18n.catalog["text_5f9cb54dc136"]}
+        message={i18n.catalog["text_ce562766db51"]}
+        confirmText={i18n.catalog["text_59ca629220a6"]}
         confirmVariant="danger"
       />
     </MainLayout>

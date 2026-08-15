@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import {
     InvoiceTableColumn,
     SelectableInvoiceItem,
@@ -37,6 +38,7 @@ export function ServiceInvoiceSelectionTab({
     onSelectionChange,
     openReturnDialog,
 }: ServiceInvoiceSelectionTabProps) {
+    const { t: i18n } = useI18n();
     const [invoices, setInvoices] = useState<ServiceInvoiceRow[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
@@ -45,9 +47,9 @@ export function ServiceInvoiceSelectionTab({
     const itemsPerPage = 20;
 
     const filterTabs = [
-        { key: "all", label: "جميع الفواتير", icon: "list" },
-        { key: "cash", label: "فواتير نقدية", icon: "dollar" },
-        { key: "credit", label: "فواتير آجل", icon: "file-text" },
+        { key: "all", label: i18n.catalog["text_377c0cb35dea"], icon: "list" },
+        { key: "cash", label: i18n.catalog["text_d75568def1e5"], icon: "dollar" },
+        { key: "credit", label: i18n.catalog["text_0c7cb28e4ae8"], icon: "file-text" },
     ];
 
     const loadInvoices = useCallback(
@@ -72,7 +74,7 @@ export function ServiceInvoiceSelectionTab({
                     setCurrentPage(page);
                 }
             } catch (error) {
-                console.error("Failed to load service invoices", error);
+                console.error(i18n.catalog["text_e3b7c4027270"], error);
             } finally {
                 setIsLoading(false);
             }
@@ -104,8 +106,8 @@ export function ServiceInvoiceSelectionTab({
     const columns: InvoiceTableColumn<ServiceInvoiceRow>[] = [
         {
             key: "invoice_number",
-            header: "رقم الفاتورة",
-            dataLabel: "رقم الفاتورة",
+            header: i18n.catalog["text_b6e71278be04"],
+            dataLabel: i18n.catalog["text_b6e71278be04"],
             render: (item) => (
                 <span style={{ color: "var(--primary-color)", fontWeight: "bold" }}>
                     {item.invoice_number}
@@ -114,8 +116,8 @@ export function ServiceInvoiceSelectionTab({
         },
         {
             key: "created_at",
-            header: "التاريخ",
-            dataLabel: "التاريخ",
+            header: i18n.catalog["text_d90c384199ac"],
+            dataLabel: i18n.catalog["text_d90c384199ac"],
             render: (item) => (
                 <span style={{ fontSize: "0.9em" }}>
                     {formatDateTime(item.created_at)}
@@ -124,8 +126,8 @@ export function ServiceInvoiceSelectionTab({
         },
         {
             key: "customer_name" as any,
-            header: "العميل",
-            dataLabel: "العميل",
+            header: i18n.catalog["text_a042411e90be"],
+            dataLabel: i18n.catalog["text_a042411e90be"],
             render: (item) => (
                 <span style={{ fontWeight: 500 }}>
                     {item.customer?.name || item.customer_name || "—"}
@@ -134,21 +136,21 @@ export function ServiceInvoiceSelectionTab({
         },
         {
             key: "payment_type",
-            header: "نوع البيع",
-            dataLabel: "نوع البيع",
+            header: i18n.catalog["text_7af05079bb45"],
+            dataLabel: i18n.catalog["text_7af05079bb45"],
             render: (item) => (
                 <span
                     className={`badge ${item.payment_type === "credit" ? "badge-warning" : "badge-success"
                         }`}
                 >
-                    {item.payment_type === "credit" ? "آجل (ذمم)" : "نقدي"}
+                    {item.payment_type === "credit" ? i18n.catalog["text_70122ff036ec"] : i18n.catalog["text_1beb05a45173"]}
                 </span>
             ),
         },
         {
             key: "total_amount",
-            header: "إجمالي الفاتورة",
-            dataLabel: "الإجمالي",
+            header: i18n.catalog["text_50a90c019154"],
+            dataLabel: i18n.catalog["text_baed6e999960"],
             render: (item) => (
                 <span style={{ fontWeight: "bold" }}>
                     {formatCurrency(item.total_amount)}
@@ -167,12 +169,12 @@ export function ServiceInvoiceSelectionTab({
                 onSelectionChange={onSelectionChange}
                 onSearch={(query) => loadInvoices(1, query)}
                 getInvoiceItems={getInvoiceItems}
-                emptyMessage="لا توجد فواتير خدمات"
+                emptyMessage={i18n.catalog["text_fe14e1a0a226"]}
                 multiInvoiceSelection={true}
                 invoiceIdExtractor={(item) => item.id}
                 isExpandable={() => true}
                 openReturnDialog={openReturnDialog}
-                searchPlaceholder="بحث برقم الفاتورة أو اسم العميل..."
+                searchPlaceholder={i18n.catalog["text_e74be403f307"]}
                 pagination={{
                     currentPage,
                     totalPages,

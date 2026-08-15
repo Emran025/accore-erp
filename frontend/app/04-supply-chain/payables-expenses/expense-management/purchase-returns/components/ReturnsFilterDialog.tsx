@@ -1,3 +1,4 @@
+import { catalogMessage } from "@/lib/i18n";
 import { Button, DateRangePicker, Dialog, FilterActions, FilterGroup } from "@/components/ui";
 
 interface Filters {
@@ -26,20 +27,18 @@ export function ReturnsFilterDialog({
         <Dialog
             isOpen={isOpen}
             onClose={onClose}
-            title="تصفية المرتجعات"
+            title={catalogMessage("text_05f2597cfac8")}
             footer={
                 <FilterActions>
                     <Button variant="secondary" onClick={onClose}>
-                        إلغاء
-                    </Button>
+                        {catalogMessage("text_9a30dc2a96b8")}</Button>
                     <Button variant="primary" onClick={onApply}>
-                        تطبيق
-                    </Button>
+                        {catalogMessage("text_268974da5082")}</Button>
                 </FilterActions>
             }
         >
             <div className="space-y-4">
-                <FilterGroup label="الفترة">
+                <FilterGroup label={catalogMessage("text_0335edfeb5f3")}>
                     <DateRangePicker
                         startDate={filters.date_from}
                         endDate={filters.date_to}

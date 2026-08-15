@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { MainLayout } from "@/components/layout";
 import {
     ActionButtons,
@@ -40,6 +41,7 @@ interface PurchaseRecord {
 }
 
 export default function PurchaseReturnsPage() {
+    const { t: i18n } = useI18n();
     const [purchases, setPurchases] = useState<PurchaseRecord[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -67,7 +69,7 @@ export default function PurchaseReturnsPage() {
                 setCurrentPage(page);
             }
         } catch {
-            showAlert("alert-container", "خطأ في تحميل السجل", "error");
+            showAlert("alert-container", i18n.catalog["text_7df68dc366ee"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -119,7 +121,7 @@ export default function PurchaseReturnsPage() {
 
     const openReturnDialog = async () => {
         if (selectedReturnItems.length === 0) {
-            showToast("يرجى تحديد عناصر للإرجاع أولاً", "warning");
+            showToast(i18n.catalog["text_54f0b0947619"], "warning");
             return;
         }
         const uniqueIds = Array.from(new Set(selectedReturnItems.map((i) => i.invoiceId)));
@@ -135,7 +137,7 @@ export default function PurchaseReturnsPage() {
                 );
                 setPurchasesMap(newMap);
             } catch {
-                showToast("فشل تحميل بيانات الفواتير", "error");
+                showToast(i18n.catalog["text_f154fa31b161"], "error");
             }
         }
         setReturnDialog(true);
@@ -150,11 +152,11 @@ export default function PurchaseReturnsPage() {
                     method: "POST",
                     body: JSON.stringify(payload),
                 });
-                if (!response.success) throw new Error(response.message || "فشل تسجيل المرتجع");
+                if (!response.success) throw new Error(response.message || i18n.catalog["text_311143511f9e"]);
             }
-            showToast("تم تسجيل مرتجع المشتريات بنجاح", "success");
+            showToast(i18n.catalog["text_11195848250a"], "success");
         } catch (error: any) {
-            showToast(error.message || "خطأ في تسجيل المرتجع", "error");
+            showToast(error.message || i18n.catalog["text_633a9d0a74cd"], "error");
             throw error;
         }
     };
@@ -173,57 +175,57 @@ export default function PurchaseReturnsPage() {
     const historyColumns: InvoiceTableColumn<PurchaseRecord>[] = [
         {
             key: "product_name",
-            header: "المنتج",
-            dataLabel: "المنتج",
+            header: i18n.catalog["text_a79e304d96a1"],
+            dataLabel: i18n.catalog["text_a79e304d96a1"],
             render: (item) => <strong>{item.product_name || "-"}</strong>,
         },
         {
             key: "quantity",
-            header: "الكمية",
-            dataLabel: "الكمية",
-            render: (item) => `${item.quantity} ${item.unit_type === "main" ? "كرتون" : "حبة"}`,
+            header: i18n.catalog["text_935e21853946"],
+            dataLabel: i18n.catalog["text_935e21853946"],
+            render: (item) => catalogText(i18n, "text_54ef3bb1085e", { value0: item.quantity, value1: item.unit_type === "main" ? i18n.catalog["text_cc7593424dc5"] : i18n.catalog["text_d400a30ad5f3"] }),
         },
         {
             key: "unit_price",
-            header: "سعر الوحدة",
-            dataLabel: "سعر الوحدة",
+            header: i18n.catalog["text_c274e3ec351e"],
+            dataLabel: i18n.catalog["text_c274e3ec351e"],
             render: (item) => formatCurrency(item.unit_price),
         },
         {
             key: "total_price" as keyof PurchaseRecord,
-            header: "الإجمالي",
-            dataLabel: "الإجمالي",
+            header: i18n.catalog["text_baed6e999960"],
+            dataLabel: i18n.catalog["text_baed6e999960"],
             render: (item) => formatCurrency(item.invoice_price || item.total_price || 0),
         },
         {
             key: "supplier" as keyof PurchaseRecord,
-            header: "المورد",
-            dataLabel: "المورد",
+            header: i18n.catalog["text_4680c31a727f"],
+            dataLabel: i18n.catalog["text_4680c31a727f"],
             render: (item) => item.supplier_name || item.supplier || "-",
         },
         {
             key: "payment_type" as keyof PurchaseRecord,
-            header: "الدفع",
-            dataLabel: "الدفع",
+            header: i18n.catalog["text_82c34fe99a13"],
+            dataLabel: i18n.catalog["text_82c34fe99a13"],
             render: (item) => (
                 <span className={`badge ${item.payment_type === "cash" ? "badge-success" : "badge-warning"}`}>
-                    {item.payment_type === "cash" ? "نقدي" : "آجل"}
+                    {item.payment_type === "cash" ? i18n.catalog["text_1beb05a45173"] : i18n.catalog["text_bf7775843f7c"]}
                 </span>
             ),
         },
         {
             key: "created_at",
-            header: "التاريخ",
-            dataLabel: "التاريخ",
+            header: i18n.catalog["text_d90c384199ac"],
+            dataLabel: i18n.catalog["text_d90c384199ac"],
             render: (item) => formatDateTime(item.created_at || item.purchase_date || ""),
         },
         {
             key: "actions",
-            header: "الإجراءات",
-            dataLabel: "الإجراءات",
+            header: i18n.catalog["text_7797240d6caf"],
+            dataLabel: i18n.catalog["text_7797240d6caf"],
             render: (item) => (
                 <ActionButtons
-                    actions={[{ icon: "view", title: "عرض", variant: "view", onClick: () => viewDetail(item.id) }]}
+                    actions={[{ icon: "view", title: i18n.catalog["text_3824e18ca83b"], variant: "view", onClick: () => viewDetail(item.id) }]}
                 />
             ),
         },
@@ -235,17 +237,16 @@ export default function PurchaseReturnsPage() {
             <div className="sales-layout">
                 <div className="sales-card animate-slide">
                     <div className="card-header-flex">
-                        <h3>مردودات المشتريات</h3>
+                        <h3>{i18n.catalog["text_0ba88658969c"]}</h3>
                         <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>
-                            حدد صفوفاً من الجدول ثم اضغط على زر المرتجع لتسجيل المرتجع
-                        </p>
+                            {i18n.catalog["text_65043270bc33"]}</p>
                     </div>
                     <div className="table-wrapper">
                         <SelectableInvoiceTable
                             invoices={purchases as any[]}
                             columns={historyColumns as any}
                             keyExtractor={(item: any) => item.id}
-                            emptyMessage="لا توجد مشتريات سابقة"
+                            emptyMessage={i18n.catalog["text_6ae79ed76824"]}
                             isLoading={isLoading}
                             pagination={{ currentPage, totalPages, onPageChange: loadPurchases }}
                             getInvoiceItems={getPurchaseItemsForTable as any}
@@ -270,34 +271,34 @@ export default function PurchaseReturnsPage() {
                 }}
             />
 
-            <Dialog isOpen={viewDialog} onClose={() => setViewDialog(false)} title="تفاصيل المشترى">
+            <Dialog isOpen={viewDialog} onClose={() => setViewDialog(false)} title={i18n.catalog["text_8f68e7eb79e2"]}>
                 {selectedPurchase && (
                     <div>
                         <div className="form-row">
                             <div className="summary-stat">
-                                <span className="stat-label">المنتج</span>
+                                <span className="stat-label">{i18n.catalog["text_a79e304d96a1"]}</span>
                                 <span className="stat-value">{selectedPurchase.product_name || "-"}</span>
                             </div>
                             <div className="summary-stat">
-                                <span className="stat-label">الكمية</span>
+                                <span className="stat-label">{i18n.catalog["text_935e21853946"]}</span>
                                 <span className="stat-value">
-                                    {selectedPurchase.quantity} {selectedPurchase.unit_type === "main" ? "كرتون" : "حبة"}
+                                    {selectedPurchase.quantity} {selectedPurchase.unit_type === "main" ? i18n.catalog["text_cc7593424dc5"] : i18n.catalog["text_d400a30ad5f3"]}
                                 </span>
                             </div>
                         </div>
                         <div className="form-row" style={{ marginTop: "1rem" }}>
                             <div className="summary-stat">
-                                <span className="stat-label">المورد</span>
+                                <span className="stat-label">{i18n.catalog["text_4680c31a727f"]}</span>
                                 <span className="stat-value">{selectedPurchase.supplier_name || selectedPurchase.supplier || "-"}</span>
                             </div>
                             <div className="summary-stat">
-                                <span className="stat-label">التاريخ</span>
+                                <span className="stat-label">{i18n.catalog["text_d90c384199ac"]}</span>
                                 <span className="stat-value">{formatDate(selectedPurchase.purchase_date || selectedPurchase.created_at || "")}</span>
                             </div>
                         </div>
                         <div className="sales-summary-bar" style={{ marginTop: "1.5rem", background: "var(--grad-primary)", color: "white" }}>
                             <div className="summary-stat">
-                                <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>الإجمالي</span>
+                                <span className="stat-label" style={{ color: "rgba(255,255,255,0.8)" }}>{i18n.catalog["text_baed6e999960"]}</span>
                                 <span className="stat-value highlight" style={{ color: "white" }}>
                                     {formatCurrency(selectedPurchase.invoice_price || selectedPurchase.total_price || 0)}
                                 </span>

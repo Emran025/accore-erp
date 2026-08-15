@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText, catalogMessage } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Column, ConfirmDialog, Dialog, SearchableSelect, Table, showToast } from "@/components/ui";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -25,14 +26,15 @@ interface Account {
 }
 
 const accountTypes = [
-  { value: "asset", label: "أصول" },
-  { value: "liability", label: "خصوم" },
-  { value: "equity", label: "حقوق ملكية" },
-  { value: "revenue", label: "إيرادات" },
-  { value: "expense", label: "مصروفات" },
+  { value: "asset", label: catalogMessage("text_c34a65a599f4") },
+  { value: "liability", label: catalogMessage("text_75da4e1662cd") },
+  { value: "equity", label: catalogMessage("text_d40585c3e6d9") },
+  { value: "revenue", label: catalogMessage("text_1750c80bdcdd") },
+  { value: "expense", label: catalogMessage("text_f4ee61408b6e") },
 ];
 
 export default function ChartOfAccountsPage() {
+    const { t: i18n } = useI18n();
   const [user, setUser] = useState<User | null>(null);
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -74,7 +76,7 @@ export default function ChartOfAccountsPage() {
         description: typeof account.description === 'string' ? account.description : undefined,
       })));
     } catch {
-      showToast("خطأ في تحميل الحسابات", "error");
+      showToast(i18n.catalog["text_f5ee53a0a302"], "error");
     } finally {
       setIsLoading(false);
     }
@@ -122,7 +124,7 @@ export default function ChartOfAccountsPage() {
 
   const handleSubmit = async () => {
     if (!formData.code.trim() || !formData.name.trim()) {
-      showToast("يرجى ملء جميع الحقول المطلوبة", "error");
+      showToast(i18n.catalog["text_0a8eb85d0081"], "error");
       return;
     }
 
@@ -137,22 +139,22 @@ export default function ChartOfAccountsPage() {
 
     try {
       if (selectedAccount) {
-        await fetchAPI(`${API_ENDPOINTS.FINANCE.ACCOUNTS.BASE}/${selectedAccount.id}`, {
+        await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.FINANCE.ACCOUNTS.BASE, value1: selectedAccount.id }), {
           method: "PUT",
           body: JSON.stringify(payload),
         });
-        showToast("تم تحديث الحساب بنجاح", "success");
+        showToast(i18n.catalog["text_e11c67ce8466"], "success");
       } else {
         await fetchAPI(API_ENDPOINTS.FINANCE.ACCOUNTS.BASE, {
           method: "POST",
           body: JSON.stringify(payload),
         });
-        showToast("تمت إضافة الحساب بنجاح", "success");
+        showToast(i18n.catalog["text_a274447c6860"], "success");
       }
       setFormDialog(false);
       loadAccounts(searchTerm);
     } catch {
-      showToast("خطأ في حفظ الحساب", "error");
+      showToast(i18n.catalog["text_b29eaf2a9aff"], "error");
     }
   };
 
@@ -165,11 +167,11 @@ export default function ChartOfAccountsPage() {
     if (!deleteId) return;
 
     try {
-      await fetchAPI(`${API_ENDPOINTS.FINANCE.ACCOUNTS.BASE}/${deleteId}`, { method: "DELETE" });
-      showToast("تم حذف الحساب", "success");
+      await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.FINANCE.ACCOUNTS.BASE, value1: deleteId }), { method: "DELETE" });
+      showToast(i18n.catalog["text_afad462d50b3"], "success");
       loadAccounts(searchTerm);
     } catch {
-      showToast("خطأ في حذف الحساب", "error");
+      showToast(i18n.catalog["text_3dea9db07a0d"], "error");
     }
   };
 
@@ -196,12 +198,12 @@ export default function ChartOfAccountsPage() {
   };
 
   const columns: Column<Account>[] = [
-    { key: "code", header: "رقم الحساب", dataLabel: "رقم الحساب" },
-    { key: "name", header: "اسم الحساب", dataLabel: "اسم الحساب" },
+    { key: "code", header: i18n.catalog["text_62a19661ff2e"], dataLabel: i18n.catalog["text_62a19661ff2e"] },
+    { key: "name", header: i18n.catalog["text_03cec4ee9ea4"], dataLabel: i18n.catalog["text_03cec4ee9ea4"] },
     {
       key: "type",
-      header: "النوع",
-      dataLabel: "النوع",
+      header: i18n.catalog["text_caa3f2bb4a36"],
+      dataLabel: i18n.catalog["text_caa3f2bb4a36"],
       render: (item) => (
         <span className={`badge ${getTypeBadgeClass(item.type)}`}>
           {getTypeLabel(item.type)}
@@ -210,14 +212,14 @@ export default function ChartOfAccountsPage() {
     },
     {
       key: "parent_name",
-      header: "الحساب الرئيسي",
-      dataLabel: "الحساب الرئيسي",
+      header: i18n.catalog["text_9418812573b6"],
+      dataLabel: i18n.catalog["text_9418812573b6"],
       render: (item) => item.parent_name || "-",
     },
     {
       key: "balance",
-      header: "الرصيد",
-      dataLabel: "الرصيد",
+      header: i18n.catalog["text_f311da916aa5"],
+      dataLabel: i18n.catalog["text_f311da916aa5"],
       render: (item) => (
         <span className={item.balance >= 0 ? "text-success" : "text-danger"}>
           {formatCurrency(Math.abs(item.balance))}
@@ -226,31 +228,31 @@ export default function ChartOfAccountsPage() {
     },
     {
       key: "is_active",
-      header: "الحالة",
-      dataLabel: "الحالة",
+      header: i18n.catalog["text_c3a4749caed4"],
+      dataLabel: i18n.catalog["text_c3a4749caed4"],
       render: (item) => (
         <span className={`badge ${item.is_active ? "badge-success" : "badge-secondary"}`}>
-          {item.is_active ? "نشط" : "غير نشط"}
+          {item.is_active ? i18n.catalog["text_629e90b3af3d"] : i18n.catalog["text_b719ac8add4e"]}
         </span>
       ),
     },
     {
       key: "actions",
-      header: "الإجراءات",
-      dataLabel: "الإجراءات",
+      header: i18n.catalog["text_7797240d6caf"],
+      dataLabel: i18n.catalog["text_7797240d6caf"],
       render: (item) => (
         <ActionButtons
           actions={[
             {
               icon: "edit",
-              title: "تعديل",
+              title: i18n.catalog["text_113d570d6555"],
               variant: "edit",
               onClick: () => openEditDialog(item),
               hidden: !canAccess(permissions, "chart_of_accounts", "edit")
             },
             {
               icon: "trash",
-              title: "حذف",
+              title: i18n.catalog["text_59ca629220a6"],
               variant: "delete",
               onClick: () => confirmDelete(item.id),
               hidden: !canAccess(permissions, "chart_of_accounts", "delete")
@@ -277,7 +279,7 @@ export default function ChartOfAccountsPage() {
           title=""
           searchInput={
             <SearchableSelect
-              placeholder="بحث بالرقم أو الاسم..."
+              placeholder={i18n.catalog["text_b9426e9512a9"]}
               value={searchTerm}
               onSearch={(term) => {
                 setSearchTerm(term);
@@ -288,15 +290,14 @@ export default function ChartOfAccountsPage() {
                 setSearchTerm(term);
                 loadAccounts(term);
               }}
-              options={accounts.map(acc => ({ value: acc.id, label: `${acc.code} - ${acc.name}` }))}
+              options={accounts.map(acc => ({ value: acc.id, label: catalogText(i18n, "text_2a9059a3c52f", { value0: acc.code, value1: acc.name }) }))}
               className="header-search-bar"
             />
           }
           actions={
             canAccess(permissions, "chart_of_accounts", "create") && (
               <Button variant="primary" icon="plus" onClick={openAddDialog}>
-                إضافة حساب
-              </Button>
+                {i18n.catalog["text_d80c89f7e6f0"]}</Button>
             )
           }
         />
@@ -304,7 +305,7 @@ export default function ChartOfAccountsPage() {
           columns={columns}
           data={accounts}
           keyExtractor={(item) => item.id}
-          emptyMessage="لا توجد حسابات"
+          emptyMessage={i18n.catalog["text_b3a2c70424fa"]}
           isLoading={isLoading}
         />
       </div>
@@ -313,14 +314,13 @@ export default function ChartOfAccountsPage() {
       <Dialog
         isOpen={formDialog}
         onClose={() => setFormDialog(false)}
-        title={selectedAccount ? "تعديل الحساب" : "إضافة حساب جديد"}
+        title={selectedAccount ? i18n.catalog["text_4ea15ab9960c"] : i18n.catalog["text_082a4dd9ae43"]}
         footer={
           <>
             <Button variant="secondary" onClick={() => setFormDialog(false)}>
-              إلغاء
-            </Button>
+              {i18n.catalog["text_9a30dc2a96b8"]}</Button>
             <Button variant="primary" onClick={handleSubmit}>
-              {selectedAccount ? "تحديث" : "إضافة"}
+              {selectedAccount ? i18n.catalog["text_00eab31f95b7"] : i18n.catalog["text_d52453ac627d"]}
             </Button>
           </>
         }
@@ -328,7 +328,7 @@ export default function ChartOfAccountsPage() {
         <div className="form-row">
           <div className="form-group pb-0">
             <TextInput
-              label="رقم الحساب *"
+              label={i18n.catalog["text_1ec708c0dd36"]}
               id="code"
               value={formData.code}
               onChange={(e) => setFormData({ ...formData, code: e.target.value })}
@@ -336,7 +336,7 @@ export default function ChartOfAccountsPage() {
           </div>
           <div className="form-group">
             <Select
-              label="النوع *"
+              label={i18n.catalog["text_fa91c2bc1f99"]}
               id="type"
               value={formData.type}
               onChange={(e) => setFormData({ ...formData, type: e.target.value })}
@@ -352,7 +352,7 @@ export default function ChartOfAccountsPage() {
 
         <div className="form-group">
           <TextInput
-            label="اسم الحساب *"
+            label={i18n.catalog["text_38550c801dc7"]}
             id="name"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -361,12 +361,12 @@ export default function ChartOfAccountsPage() {
 
         <div className="form-group">
           <Select
-            label="الحساب الرئيسي"
+            label={i18n.catalog["text_9418812573b6"]}
             id="parent_id"
             value={formData.parent_id}
             onChange={(e) => setFormData({ ...formData, parent_id: e.target.value })}
           >
-            <option value="">بدون حساب رئيسي</option>
+            <option value="">{i18n.catalog["text_3c6965ddd7ec"]}</option>
             {accounts
               .filter((acc) => acc.id !== selectedAccount?.id)
               .map((acc) => (
@@ -379,7 +379,7 @@ export default function ChartOfAccountsPage() {
 
         <div className="form-group">
           <Textarea
-            label="الوصف"
+            label={i18n.catalog["text_95023fc76e1b"]}
             id="description"
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -389,7 +389,7 @@ export default function ChartOfAccountsPage() {
 
         <div className="form-group">
           <Checkbox
-            label="نشط"
+            label={i18n.catalog["text_629e90b3af3d"]}
             id="is_active"
             checked={formData.is_active}
             onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
@@ -402,9 +402,9 @@ export default function ChartOfAccountsPage() {
         isOpen={confirmDialog}
         onClose={() => setConfirmDialog(false)}
         onConfirm={handleDelete}
-        title="تأكيد الحذف"
-        message="هل أنت متأكد من حذف هذا الحساب؟"
-        confirmText="حذف"
+        title={i18n.catalog["text_5f9cb54dc136"]}
+        message={i18n.catalog["text_35beaeefbfa8"]}
+        confirmText={i18n.catalog["text_59ca629220a6"]}
         confirmVariant="danger"
       />
     </MainLayout>

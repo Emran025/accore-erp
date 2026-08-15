@@ -1,6 +1,8 @@
+import { arCatalog } from "../catalog";
 import type { AppDictionary } from "../types";
 
 export const arSA = {
+    catalog: arCatalog,
     common: { loading: "جارِ التحميل...", save: "حفظ", cancel: "إلغاء", delete: "حذف", edit: "تعديل", add: "إضافة", search: "بحث", actions: "الإجراءات", yes: "نعم", no: "لا", confirm: "تأكيد", close: "إغلاق", view: "عرض", print: "طباعة", back: "رجوع", retry: "إعادة المحاولة" },
     auth: { login: "تسجيل الدخول", logout: "تسجيل الخروج", username: "اسم المستخدم", password: "كلمة المرور", loginTitle: "تسجيل الدخول إلى النظام", loginError: "اسم المستخدم أو كلمة المرور غير صحيحة", sessionExpired: "انتهت صلاحية الجلسة، يرجى تسجيل الدخول مرة أخرى" },
     dashboard: { title: "لوحة التحكم", dailySales: "مبيعات اليوم", totalProducts: "إجمالي المنتجات", lowStock: "مخزون منخفض", expiringSoon: "قرب انتهاء الصلاحية", recentSales: "المبيعات الأخيرة", quickActions: "إجراءات سريعة", newSale: "بيع جديد", addProduct: "إضافة منتج", viewReports: "عرض التقارير" },

@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { MainLayout, PageSubHeader } from "@/components/layout";
@@ -18,6 +19,7 @@ import { TransactionFormDialog } from "../components/TransactionFormDialog";
 import { InvoiceDetailsDialog } from "@/components/ui";
 
 function LedgerPageContent() {
+    const { t: i18n } = useI18n();
     const router = useRouter();
     const searchParams = useSearchParams();
     const representativeId = searchParams.get("sales_representative_id");
@@ -91,10 +93,10 @@ function LedgerPageContent() {
                 if (dataObj.pagination) setTotalPages(dataObj.pagination.total_pages);
                 setCurrentPage(page);
             } else {
-                showAlert("alert-container", response.message || "فشل تحميل العمليات", "error");
+                showAlert("alert-container", response.message || i18n.catalog["text_40b69645bd46"], "error");
             }
         } catch {
-            showAlert("alert-container", "خطأ في الاتصال بالسيرفر", "error");
+            showAlert("alert-container", i18n.catalog["text_22fa79f17c32"], "error");
         } finally {
             setIsLoading(false);
         }
@@ -121,7 +123,7 @@ function LedgerPageContent() {
 
     const editTransaction = (transaction: LedgerTransaction) => {
         if (transaction.type !== "payment" && transaction.type !== "adjustment") {
-            showToast("لا يمكن تعديل هذا النوع من العمليات", "error");
+            showToast(i18n.catalog["text_5371cd7fbbe5"], "error");
             return;
         }
 
@@ -135,7 +137,7 @@ function LedgerPageContent() {
 
     const saveTransaction = async () => {
         if (!transactionAmount || parseNumber(transactionAmount) <= 0) {
-            showToast("المبلغ مطلوب ويجب أن يكون أكبر من صفر", "error");
+            showToast(i18n.catalog["text_133a7ff54dff"], "error");
             return;
         }
 
@@ -153,7 +155,7 @@ function LedgerPageContent() {
             let response;
             if (editingTransactionId) {
                 data.id = editingTransactionId;
-                response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.REPRESENTATIVES.TRANSACTIONS}/${editingTransactionId}`, {
+                response = await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.COMMERCIAL.SALES.REPRESENTATIVES.TRANSACTIONS, value1: editingTransactionId }), {
                     method: "PUT",
                     body: JSON.stringify(data),
                 });
@@ -165,14 +167,14 @@ function LedgerPageContent() {
             }
 
             if (response.success) {
-                showToast("تم الحفظ بنجاح", "success");
+                showToast(i18n.catalog["text_ff783ee2826d"], "success");
                 setTransactionDialog(false);
                 await loadLedger(currentPage);
             } else {
-                showToast(response.message || "خطأ", "error");
+                showToast(response.message || i18n.catalog["text_acc74dcf4c2f"], "error");
             }
         } catch {
-            showToast("خطأ في الحفظ", "error");
+            showToast(i18n.catalog["text_c574313242be"], "error");
         }
     };
 
@@ -191,47 +193,47 @@ function LedgerPageContent() {
             });
 
             if (response.success) {
-                showToast("تم الحذف بنجاح", "success");
+                showToast(i18n.catalog["text_12b6e3813b40"], "success");
                 setConfirmDialog(false);
                 setDeleteTransactionId(null);
                 await loadLedger(currentPage);
             } else {
-                showToast(response.message || "خطأ", "error");
+                showToast(response.message || i18n.catalog["text_acc74dcf4c2f"], "error");
             }
         } catch {
-            showToast("خطأ في الحذف", "error");
+            showToast(i18n.catalog["text_3bdb299872fb"], "error");
         }
     };
 
     const restoreTransaction = async (id: number) => {
         try {
-            const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.REPRESENTATIVES.TRANSACTIONS}/${id}/restore`, {
+            const response = await fetchAPI(catalogText(i18n, "text_d9cbe9889e23", { value0: API_ENDPOINTS.COMMERCIAL.SALES.REPRESENTATIVES.TRANSACTIONS, value1: id }), {
                 method: "POST",
             });
 
             if (response.success) {
-                showToast("تم الاستعادة بنجاح", "success");
+                showToast(i18n.catalog["text_aa78a43df0d6"], "success");
                 await loadLedger(currentPage);
             } else {
-                showToast(response.message || "خطأ", "error");
+                showToast(response.message || i18n.catalog["text_acc74dcf4c2f"], "error");
             }
         } catch {
-            showToast("خطأ في الاستعادة", "error");
+            showToast(i18n.catalog["text_f456a605d85c"], "error");
         }
     };
 
     const viewInvoice = async (id: number) => {
         try {
-            const response = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICES}/${id}`);
+            const response = await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.COMMERCIAL.SALES.INVOICES, value1: id }));
             if (response.success && response.data) {
                 setSelectedInvoice(response.data as DetailedInvoiceRepresentatives);
                 setViewInvoiceDialog(true);
             } else {
-                showToast("حدث خطأ أثناء جلب تفاصيل الفاتورة", "error");
+                showToast(i18n.catalog["text_e9aa689cdb35"], "error");
             }
         } catch (error) {
             console.error(error);
-            showToast("حدث خطأ بالاتصال", "error");
+            showToast(i18n.catalog["text_b8c14ea4b319"], "error");
         }
     };
 
@@ -240,7 +242,7 @@ function LedgerPageContent() {
             return [];
         }
         try {
-            const res = await fetchAPI(`${API_ENDPOINTS.COMMERCIAL.SALES.INVOICES}/${transaction.reference_id}`);
+            const res = await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.COMMERCIAL.SALES.INVOICES, value1: transaction.reference_id }));
             if (res.success && res.data) {
                 return (res.data as any).items.map((item: any) => ({
                     id: item.id || Math.random(),
@@ -254,7 +256,7 @@ function LedgerPageContent() {
             }
             return [];
         } catch (error) {
-            console.error("Failed fetching invoice items:", error);
+            console.error(i18n.catalog["text_148759ded034"], error);
             return [];
         }
     };
@@ -269,11 +271,9 @@ function LedgerPageContent() {
                 actions={
                     <>
                         <Button variant="secondary" icon="filter" onClick={() => setFilterDialog(true)}>
-                            تصفية
-                        </Button>
+                            {i18n.catalog["text_a826a913e567"]}</Button>
                         <Button variant="primary" icon="plus" onClick={openAddTransactionDialog}>
-                            سند قبض / تسوية
-                        </Button>
+                            {i18n.catalog["text_15db20a15bbe"]}</Button>
                     </>
                 }
             />
@@ -291,7 +291,7 @@ function LedgerPageContent() {
             <div className="table-controls mb-4 flex gap-4">
                 <input
                     type="text"
-                    placeholder="بحث برقم المرجع أو الوصف..."
+                    placeholder={i18n.catalog["text_f6d32ad7b4a9"]}
                     value={filters.search}
                     onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                     onBlur={() => loadLedger(1)}
@@ -369,8 +369,8 @@ function LedgerPageContent() {
                 isOpen={confirmDialog}
                 onClose={() => setConfirmDialog(false)}
                 onConfirm={deleteTransaction}
-                title="تأكيد الحذف"
-                message="هل أنت متأكد من حذف هذه العملية؟ سيؤثر هذا على رصيد المندوب."
+                title={i18n.catalog["text_5f9cb54dc136"]}
+                message={i18n.catalog["text_28988ea29267"]}
                 confirmVariant="danger"
             />
         </MainLayout>
@@ -378,8 +378,9 @@ function LedgerPageContent() {
 }
 
 export default function LedgerPage() {
+    const { t: i18n } = useI18n();
     return (
-        <Suspense fallback={<div className="p-4 text-center">جاري التحميل...</div>}>
+        <Suspense fallback={<div className="p-4 text-center">{i18n.catalog["text_ceac78d7f5d3"]}</div>}>
             <LedgerPageContent />
         </Suspense>
     );

@@ -31,6 +31,11 @@ describe("typed locale runtime", () => {
         expect(dictionary.messages.recordsShown({ count: 3, total: 12 })).toBe("Showing 3 of 12 records");
     });
 
+    it("contains the complete generated catalog in both locales", () => {
+        expect(Object.keys(arSA.catalog).length).toBeGreaterThan(3000);
+        expect(Object.keys(enUS.catalog)).toEqual(Object.keys(arSA.catalog));
+    });
+
     it("exposes direction and formatting metadata through the locale registry", () => {
         expect(getLocaleMetadata("ar-SA")).toMatchObject({ direction: "rtl", formattingLocale: "ar-SA" });
         expect(getLocaleMetadata("en-US")).toMatchObject({ direction: "ltr", formattingLocale: "en-US" });

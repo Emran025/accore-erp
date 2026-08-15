@@ -1,5 +1,7 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
+
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
@@ -13,6 +15,7 @@ export function Pagination({
   onPageChange,
   showPageNumbers = true,
 }: PaginationProps) {
+    const { t: i18n } = useI18n();
   if (totalPages <= 1) return null;
 
   const getPageNumbers = (): (number | string)[] => {
@@ -62,8 +65,7 @@ export function Pagination({
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
-          السابق
-        </button>
+          {i18n.catalog["text_a9e9d067101a"]}</button>
 
         {showPageNumbers &&
           getPageNumbers().map((page, index) =>
@@ -87,8 +89,7 @@ export function Pagination({
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
-          التالي
-        </button>
+          {i18n.catalog["text_5cf7af74fd3a"]}</button>
       </div>
     </div>
   );

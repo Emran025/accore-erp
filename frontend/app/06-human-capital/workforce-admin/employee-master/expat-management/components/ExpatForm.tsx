@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n, catalogText } from "@/lib/i18n";
 import { Employee, ExpatRecord } from "@/types";
 import { PageSubHeader } from "@/components/layout";
 import { Button, Label, SearchableSelect, showToast } from "@/components/ui";
@@ -16,6 +17,7 @@ interface ExpatFormProps {
 }
 
 export function ExpatForm({ record }: ExpatFormProps) {
+    const { t: i18n } = useI18n();
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { allEmployees: employees, loadAllEmployees } = useEmployeeStore();
@@ -76,7 +78,7 @@ export function ExpatForm({ record }: ExpatFormProps) {
 
     const handleSubmit = async () => {
         if (!form.employee_id || !form.host_country) {
-            showToast("يرجى اختيار الموظف والبلد المضيف", "error");
+            showToast(i18n.catalog["text_f45b610d7116"], "error");
             return;
         }
 
@@ -96,21 +98,21 @@ export function ExpatForm({ record }: ExpatFormProps) {
             };
 
             if (record) {
-                await fetchAPI(`${API_ENDPOINTS.HUMAN_CAPITAL.EXPAT_MANAGEMENT.BASE}/${record.id}`, {
+                await fetchAPI(catalogText(i18n, "text_0907f4dfb304", { value0: API_ENDPOINTS.HUMAN_CAPITAL.EXPAT_MANAGEMENT.BASE, value1: record.id }), {
                     method: 'PUT',
                     body: JSON.stringify(payload)
                 });
-                showToast("تم تحديث السجل بنجاح", "success");
+                showToast(i18n.catalog["text_eb17a78099a3"], "success");
             } else {
                 await fetchAPI(API_ENDPOINTS.HUMAN_CAPITAL.EXPAT_MANAGEMENT.BASE, {
                     method: 'POST',
                     body: JSON.stringify(payload)
                 });
-                showToast("تم إنشاء السجل بنجاح", "success");
+                showToast(i18n.catalog["text_a2667844c9e4"], "success");
             }
             router.push('/06-human-capital/workforce-admin/employee-master/expat-management');
         } catch (error: any) {
-            showToast(error.message || "فشل حفظ السجل", "error");
+            showToast(error.message || i18n.catalog["text_76875fecd3ab"], "error");
         } finally {
             setIsSubmitting(false);
         }
@@ -119,34 +121,33 @@ export function ExpatForm({ record }: ExpatFormProps) {
     return (
         <div className="sales-card animate-fade">
             <PageSubHeader
-                title={record ? "تعديل سجل مغترب" : "إضافة سجل مغترب جديد"}
+                title={record ? i18n.catalog["text_1e02d763cfcb"] : i18n.catalog["text_94b579b3c7a7"]}
                 titleIcon="globe"
                 actions={
                     <Button variant="secondary" onClick={() => router.back()}>
-                        عودة
-                    </Button>
+                        {i18n.catalog["text_0dfcbc2d5f2a"]}</Button>
                 }
             />
             <div className="space-y-6 p-4">
                 {/* Employee Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex flex-col gap-1">
-                        <Label className="text-secondary mb-1">الموظف *</Label>
+                        <Label className="text-secondary mb-1">{i18n.catalog["text_972803dc7d86"]}</Label>
                         <SearchableSelect
                             options={employees.map((e: Employee) => ({ value: e.id.toString(), label: e.full_name }))}
                             value={form.employee_id}
                             onChange={(val) => setForm({ ...form, employee_id: val?.toString() || "" })}
-                            placeholder="اختر الموظف"
+                            placeholder={i18n.catalog["text_dee783929dea"]}
                         />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <TextInput
-                            label="البلد المضيف *"
+                            label={i18n.catalog["text_7260ce3227c3"]}
                             value={form.host_country}
                             onChange={(e) => setForm({ ...form, host_country: e.target.value })}
                         />
                         <TextInput
-                            label="البلد الأم"
+                            label={i18n.catalog["text_2a1a97ddb304"]}
                             value={form.home_country}
                             onChange={(e) => setForm({ ...form, home_country: e.target.value })}
                         />
@@ -154,18 +155,18 @@ export function ExpatForm({ record }: ExpatFormProps) {
                 </div>
 
                 <div className="border-t border-border my-4"></div>
-                <h3 className="font-semibold text-lg mb-4">الوثائق والإقامات</h3>
+                <h3 className="font-semibold text-lg mb-4">{i18n.catalog["text_eaa06e081543"]}</h3>
 
                 {/* Docs */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="grid grid-cols-2 gap-2">
                         <TextInput
-                            label="رقم الجواز"
+                            label={i18n.catalog["text_ed25f13794a2"]}
                             value={form.passport_number}
                             onChange={(e) => setForm({ ...form, passport_number: e.target.value })}
                         />
                         <TextInput
-                            label="تاريخ انتهاء الجواز"
+                            label={i18n.catalog["text_ef2164e6707f"]}
                             type="date"
                             value={form.passport_expiry}
                             onChange={(e) => setForm({ ...form, passport_expiry: e.target.value })}
@@ -173,12 +174,12 @@ export function ExpatForm({ record }: ExpatFormProps) {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         <TextInput
-                            label="رقم الإقامة"
+                            label={i18n.catalog["text_21075377a5cd"]}
                             value={form.residency_number}
                             onChange={(e) => setForm({ ...form, residency_number: e.target.value })}
                         />
                         <TextInput
-                            label="تاريخ انتهاء الإقامة"
+                            label={i18n.catalog["text_6448d33592ba"]}
                             type="date"
                             value={form.residency_expiry}
                             onChange={(e) => setForm({ ...form, residency_expiry: e.target.value })}
@@ -189,12 +190,12 @@ export function ExpatForm({ record }: ExpatFormProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="grid grid-cols-2 gap-2">
                         <TextInput
-                            label="رقم التأشيرة"
+                            label={i18n.catalog["text_98b9cdf4788f"]}
                             value={form.visa_number}
                             onChange={(e) => setForm({ ...form, visa_number: e.target.value })}
                         />
                         <TextInput
-                            label="تاريخ انتهاء التأشيرة"
+                            label={i18n.catalog["text_ae0cb62e028d"]}
                             type="date"
                             value={form.visa_expiry}
                             onChange={(e) => setForm({ ...form, visa_expiry: e.target.value })}
@@ -202,12 +203,12 @@ export function ExpatForm({ record }: ExpatFormProps) {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         <TextInput
-                            label="رقم تصريح العمل"
+                            label={i18n.catalog["text_d8a1ecad8f4c"]}
                             value={form.work_permit_number}
                             onChange={(e) => setForm({ ...form, work_permit_number: e.target.value })}
                         />
                         <TextInput
-                            label="تاريخ انتهاء التصريح"
+                            label={i18n.catalog["text_f4e8e7880006"]}
                             type="date"
                             value={form.work_permit_expiry}
                             onChange={(e) => setForm({ ...form, work_permit_expiry: e.target.value })}
@@ -216,23 +217,23 @@ export function ExpatForm({ record }: ExpatFormProps) {
                 </div>
 
                 <div className="border-t border-border my-4"></div>
-                <h3 className="font-semibold text-lg mb-4">البدلات والمعلومات المالية</h3>
+                <h3 className="font-semibold text-lg mb-4">{i18n.catalog["text_e5eff975c8ee"]}</h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <TextInput
-                        label="تسوية غلاء المعيشة"
+                        label={i18n.catalog["text_e41b455b29a2"]}
                         type="number"
                         value={form.cost_of_living_adjustment}
                         onChange={(e) => setForm({ ...form, cost_of_living_adjustment: e.target.value })}
                     />
                     <TextInput
-                        label="بدل السكن"
+                        label={i18n.catalog["text_408c0f457672"]}
                         type="number"
                         value={form.housing_allowance}
                         onChange={(e) => setForm({ ...form, housing_allowance: e.target.value })}
                     />
                     <TextInput
-                        label="حزمة الانتقال"
+                        label={i18n.catalog["text_91bbce9f47ae"]}
                         type="number"
                         value={form.relocation_package}
                         onChange={(e) => setForm({ ...form, relocation_package: e.target.value })}
@@ -241,7 +242,7 @@ export function ExpatForm({ record }: ExpatFormProps) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
                     <TextInput
-                        label="تاريخ العودة المتوقع"
+                        label={i18n.catalog["text_4f87a7ef5f90"]}
                         type="date"
                         value={form.repatriation_date}
                         onChange={(e) => setForm({ ...form, repatriation_date: e.target.value })}
@@ -254,21 +255,21 @@ export function ExpatForm({ record }: ExpatFormProps) {
                             onChange={(e) => setForm({ ...form, tax_equalization: e.target.checked })}
                             className="checkbox"
                         />
-                        <Label htmlFor="tax_equalization" style={{ marginBottom: 0 }}>تطبيق معادلة الضرائب (Tax Equalization)</Label>
+                        <Label htmlFor="tax_equalization" style={{ marginBottom: 0 }}>{i18n.catalog["text_77df6807b75d"]}</Label>
                     </div>
                 </div>
 
                 <Textarea
-                    label="ملاحظات"
+                    label={i18n.catalog["text_d446d2dc6b81"]}
                     value={form.notes}
                     onChange={(e) => setForm({ ...form, notes: e.target.value })}
                     rows={3}
                 />
 
                 <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-border">
-                    <Button variant="secondary" onClick={() => router.back()}>إلغاء</Button>
+                    <Button variant="secondary" onClick={() => router.back()}>{i18n.catalog["text_9a30dc2a96b8"]}</Button>
                     <Button variant="primary" onClick={handleSubmit} icon="save" disabled={isSubmitting}>
-                        {isSubmitting ? "جاري الحفظ..." : "حفظ"}
+                        {isSubmitting ? i18n.catalog["text_8688b0ff5f34"] : i18n.catalog["text_ddfcaf9d0144"]}
                     </Button>
                 </div>
             </div>

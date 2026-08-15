@@ -1,11 +1,13 @@
 "use client";
 
+import { catalogMessage } from "@/lib/i18n";
+
 interface EnvironmentIndicatorProps {
     env?: string;
 }
 
 export function EnvironmentIndicator({
-    env = "Test Environment",
+    env = catalogMessage("text_cb060950e735"),
 }: EnvironmentIndicatorProps) {
     return (
         <div className="status-notification-right">

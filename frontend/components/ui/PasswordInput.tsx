@@ -1,5 +1,6 @@
 "use client";
 
+import { catalogMessage } from "@/lib/i18n";
 import { useState, forwardRef } from "react";
 import { getIcon } from "@/lib/icons"; // Assuming getIcon is available, or use Icon component
 
@@ -63,7 +64,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(({
                          alignItems: "center",
                          display: "flex"
                     }}
-                    title={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+                    title={showPassword ? catalogMessage("text_b53728d6c3bd") : catalogMessage("text_d794fa009da5")}
                 >
                     {getIcon(showPassword ? "unlock" : "lock")} 
                 </button>

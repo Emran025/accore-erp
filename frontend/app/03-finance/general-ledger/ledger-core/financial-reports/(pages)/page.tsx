@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { Button, TabNavigation } from "@/components/ui";
 import { User, checkAuth, getStoredUser } from "@/lib/auth";
@@ -10,6 +11,7 @@ import { ComparativeTab } from "../components/ComparativeTab";
 import { ProfitLossTab } from "../components/ProfitLossTab";
 
 export default function ReportsPage() {
+    const { t: i18n } = useI18n();
     const [user, setUser] = useState<User | null>(null);
     const [activeTab, setActiveTab] = useState<"balance_sheet" | "profit_loss" | "cash_flow" | "comparative">("balance_sheet");
 
@@ -38,17 +40,16 @@ export default function ReportsPage() {
                             onClick={handleExport}
                             icon="download"
                         >
-                            طباعة / تصدير
-                        </Button>
+                            {i18n.catalog["text_d0f6eb9dc8fd"]}</Button>
                     }
                 />
                 {/* Tabs */}
                 <TabNavigation
                     tabs={[
-                        { key: "balance_sheet", label: "الميزانية العمومية", icon: "fa-balance-scale" },
-                        { key: "profit_loss", label: "قائمة الدخل", icon: "fa-chart-line" },
-                        { key: "cash_flow", label: "التدفقات النقدية", icon: "fa-money-bill-wave" },
-                        { key: "comparative", label: "المقارنة المالية", icon: "fa-chart-bar" }
+                        { key: "balance_sheet", label: i18n.catalog["text_ad62a7b84f05"], icon: "fa-balance-scale" },
+                        { key: "profit_loss", label: i18n.catalog["text_c011361fc78e"], icon: "fa-chart-line" },
+                        { key: "cash_flow", label: i18n.catalog["text_c6ca36f70684"], icon: "fa-money-bill-wave" },
+                        { key: "comparative", label: i18n.catalog["text_28e104b46abb"], icon: "fa-chart-bar" }
                     ]}
                     activeTab={activeTab}
                     onTabChange={(tab) => setActiveTab(tab as typeof activeTab)}
