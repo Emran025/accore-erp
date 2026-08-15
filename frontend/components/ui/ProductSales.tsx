@@ -33,6 +33,7 @@ import { PaginatedResponse } from "@/types/types";
 import { formatCurrency, formatDateTime, parseNumber } from "@/lib/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useOperatingContextStore } from "@/stores/useOperatingContextStore";
+import { publishProductNotification } from "@/stores/useNotificationStore";
 
 export interface ProductSalesPageProps {
     mode: "cash" | "credit";
@@ -283,6 +284,20 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
         };
         init();
     }, [loadProducts, loadInvoices, generateInvoiceNumber, loadFees, loadRepresentatives, loadReadiness]);
+
+    useEffect(() => {
+        if (!readiness || readiness.ready) return;
+
+        publishProductNotification({
+            message: i18n.catalog["ui.productsales.storeSetupIsIncompleteCompleteWarehousePointSale"],
+            source: "product-sales",
+            action: {
+                href: "/01-enterprise-core/organization-governance/org-structure/org-hierarchy",
+                label: i18n.catalog["enterpriseCore.orgHierarchy.operationalStoreReadiness"],
+            },
+            dedupeKey: "operating-readiness:incomplete",
+        });
+    }, [i18n.catalog, readiness]);
 
     useEffect(() => {
         if (!isCash && customerSearchTerm) {
@@ -838,18 +853,7 @@ export function ProductSales({ mode }: ProductSalesPageProps) {
 
     return (
         <MainLayout>
-            <div id="alert-container"></div>
             <div className="sales-layout">
-                <div className="sales-card" style={{ marginBottom: "1rem" }}>
-                    {readiness?.ready && readiness.context?.warehouse ? (
-                        <span>
-                            {i18n.catalog["common.general.executionContext"]}{readiness.context.warehouse.name}
-                            {readiness.context.pos_terminal ? catalogText(i18n, "ui.productsales.notAvailable", { value0: readiness.context.pos_terminal.name }) : ""}
-                        </span>
-                    ) : (
-                        <span>{i18n.catalog["ui.productsales.storeSetupIsIncompleteCompleteWarehousePointSale"]}</span>
-                    )}
-                </div>
                 <div className="sales-top-grids">
                     {/* Left: Input panels */}
                     {isCash ? InputPanelForm : (

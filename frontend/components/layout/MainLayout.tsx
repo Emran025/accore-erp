@@ -79,7 +79,7 @@ export function MainLayout({
       message: `${i18n.catalog["components.mainlayout.operatingSetupIsIncomplete"]} ${readiness.next_action ?? ""}`.trim(),
       source: "operating-context",
       details: missingActions.join(" • ") || undefined,
-      dedupeKey: `operating-readiness:${readiness.next_action ?? "incomplete"}`,
+      dedupeKey: "operating-readiness:incomplete",
     });
   }, [i18n.catalog, readiness]);
 
