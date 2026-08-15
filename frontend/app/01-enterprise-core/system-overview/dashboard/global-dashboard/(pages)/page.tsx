@@ -7,6 +7,7 @@ import { fetchAPI } from "@/lib/api";
 import { Permission, User, canAccess, getStoredPermissions, getStoredUser } from "@/lib/auth";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { getIcon } from "@/lib/icons";
+import { publishProductNotification } from "@/stores/useNotificationStore";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { useCallback, useEffect, useState } from "react";
 
@@ -99,6 +100,32 @@ export default function DashboardPage() {
                     total_assets: Number(d.total_assets) || 0,
                 });
                 setRecentSales(Array.isArray(d.recent_sales) ? d.recent_sales : []);
+
+                const lowStockCount = Array.isArray(d.low_stock_products) ? d.low_stock_products.length : 0;
+                if (lowStockCount > 0) {
+                    publishProductNotification({
+                        message: `${i18n.catalog["enterpriseCore.globalDashboard.lowStockAlerts"]}: ${lowStockCount}`,
+                        source: "global-dashboard",
+                        action: {
+                            href: "/01-enterprise-core/system-overview/dashboard/global-dashboard",
+                            label: i18n.catalog["enterpriseCore.globalDashboard.lowStockAlerts"],
+                        },
+                        dedupeKey: "dashboard-low-stock",
+                    });
+                }
+
+                const expiringSoonCount = Array.isArray(d.expiring_products) ? d.expiring_products.length : 0;
+                if (expiringSoonCount > 0) {
+                    publishProductNotification({
+                        message: `${i18n.catalog["enterpriseCore.globalDashboard.expiringSoonAlerts"]}: ${expiringSoonCount}`,
+                        source: "global-dashboard",
+                        action: {
+                            href: "/01-enterprise-core/system-overview/dashboard/global-dashboard",
+                            label: i18n.catalog["enterpriseCore.globalDashboard.expiringSoonAlerts"],
+                        },
+                        dedupeKey: "dashboard-expiring-products",
+                    });
+                }
             }
         } catch (error) {
             console.error(i18n.catalog["enterpriseCore.globalDashboard.errorLoadingDashboard"], error);
@@ -106,7 +133,7 @@ export default function DashboardPage() {
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [i18n.catalog]);
 
     useEffect(() => {
         const storedUser = getStoredUser();

@@ -10,12 +10,13 @@ import {
   SearchNavigationBar,
   StatusNotificationBar,
 } from "@/components/navigation";
-import { ToastContainer, FullLogo } from "@/components/ui";
+import { FullLogo } from "@/components/ui";
 import { initSystemSettings } from "@/lib/settings";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useUIStore } from "@/stores/useUIStore";
 import { useOperatingContextStore } from "@/stores/useOperatingContextStore";
-import { getIcon } from "@/lib/icons";
+import { NotificationRuntimeBridge } from "./NotificationRuntimeBridge";
+import { publishProductNotification } from "@/stores/useNotificationStore";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -38,7 +39,7 @@ export function MainLayout({
   const router = useRouter();
 
   const { isLoading, checkAuth, sessionExpired } = useAuthStore();
-  const { mobileOpen, setMobileOpen, sideNavCollapsed, sideNavWidth, setSideNavCollapsed } = useUIStore();
+  const { mobileOpen, setMobileOpen, setSideNavCollapsed } = useUIStore();
   const { readiness, loadReadiness } = useOperatingContextStore();
 
   useEffect(() => {
@@ -66,6 +67,21 @@ export function MainLayout({
 
     verifyAuth();
   }, [router, requiredModule, requiredAction, checkAuth, loadReadiness]);
+
+  useEffect(() => {
+    if (!readiness || readiness.ready) return;
+
+    const missingActions = readiness.missing
+      .map((item) => item.action)
+      .filter((action): action is string => Boolean(action));
+
+    publishProductNotification({
+      message: `${i18n.catalog["components.mainlayout.operatingSetupIsIncomplete"]} ${readiness.next_action ?? ""}`.trim(),
+      source: "operating-context",
+      details: missingActions.join(" • ") || undefined,
+      dedupeKey: `operating-readiness:${readiness.next_action ?? "incomplete"}`,
+    });
+  }, [i18n.catalog, readiness]);
 
   if (isLoading || sessionExpired) {
     return (
@@ -106,11 +122,7 @@ export function MainLayout({
   return (
     <div className="test-shell-column">
       <div>
-        {!readiness?.ready && readiness?.next_action && (
-          <div className="status-notification-bar" role="status">
-            <span>{i18n.catalog["components.mainlayout.operatingSetupIsIncomplete"]}{readiness.missing[0]?.action}</span>
-          </div>
-        )}
+        <NotificationRuntimeBridge />
         <Suspense fallback={<div className="top-global-bar" />}>
           <TopGlobalBar />
         </Suspense>
@@ -129,7 +141,6 @@ export function MainLayout({
             {children}
           </FullLogo>
         </main>
-        <ToastContainer />
       </div>
       <div style={{ alignItems: "stretch" }}>
         <StatusNotificationBar />

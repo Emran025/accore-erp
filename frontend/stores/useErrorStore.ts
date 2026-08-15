@@ -1,50 +1,60 @@
-import { catalogMessage } from "@/lib/i18n";
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
-
-// ─── Types ──────────────────────────────────────────────────────
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+import { publishCodeError, publishOperationalNotification } from "./useNotificationStore";
 
 export interface AppError {
     id: string;
     message: string;
-    severity: 'info' | 'warning' | 'error' | 'critical';
-    source?: string;       // e.g. 'payroll-store', 'api', 'auth'
+    severity: "info" | "warning" | "error" | "critical";
+    source?: string;
     timestamp: number;
     dismissed: boolean;
-    details?: string;      // stack trace or extra info
+    details?: string;
 }
 
 interface ErrorState {
     errors: AppError[];
     lastError: AppError | null;
-
-    /** Push a new error into the global log. Returns the generated error ID. */
-    addError: (error: Omit<AppError, 'id' | 'timestamp' | 'dismissed'>) => string;
-
-    /** Mark an error as dismissed (keeps it in history). */
+    addError: (error: Omit<AppError, "id" | "timestamp" | "dismissed">) => string;
     dismissError: (id: string) => void;
-
-    /** Remove all dismissed errors from the list. */
     clearDismissed: () => void;
-
-    /** Clear every error. */
     clearAll: () => void;
-
-    /** Get only active (non-dismissed) errors. */
     activeErrors: () => AppError[];
 }
-
-// ─── Helpers ────────────────────────────────────────────────────
 
 let errorCounter = 0;
 
 function generateErrorId(): string {
     errorCounter += 1;
-    return catalogMessage("state.useerrorstore.err", { value0: Date.now(), value1: errorCounter });
+    return `err_${Date.now()}_${errorCounter}`;
 }
 
-// ─── Store ──────────────────────────────────────────────────────
+function mirrorErrorInNotificationCenter(error: AppError): void {
+    const input = {
+        message: error.message,
+        source: error.source,
+        details: error.details,
+        dedupeKey: `legacy-error:${error.id}`,
+    };
 
+    if (error.severity === "error" || error.severity === "critical") {
+        publishCodeError(input);
+        return;
+    }
+
+    publishOperationalNotification({
+        ...input,
+        severity: error.severity,
+    });
+}
+
+/**
+ * Compatibility store for legacy error consumers.
+ *
+ * New code should publish through `useNotificationStore` so every category can
+ * be browsed in the global status center. This store remains intentionally
+ * stable while mirroring every entry into that center.
+ */
 export const useErrorStore = create<ErrorState>()(
     devtools(
         (set, get) => ({
@@ -59,32 +69,32 @@ export const useErrorStore = create<ErrorState>()(
                     dismissed: false,
                 };
 
-                set(state => ({
-                    errors: [newError, ...state.errors].slice(0, 50), // keep last 50
+                set((state) => ({
+                    errors: [newError, ...state.errors].slice(0, 50),
                     lastError: newError,
                 }));
+                mirrorErrorInNotificationCenter(newError);
 
                 return newError.id;
             },
 
             dismissError: (id) => {
-                set(state => ({
-                    errors: state.errors.map(e =>
-                        e.id === id ? { ...e, dismissed: true } : e
-                    ),
+                set((state) => ({
+                    errors: state.errors.map((error) => (
+                        error.id === id ? { ...error, dismissed: true } : error
+                    )),
                 }));
             },
 
             clearDismissed: () => {
-                set(state => ({
-                    errors: state.errors.filter(e => !e.dismissed),
+                set((state) => ({
+                    errors: state.errors.filter((error) => !error.dismissed),
                 }));
             },
 
             clearAll: () => set({ errors: [], lastError: null }),
-
-            activeErrors: () => get().errors.filter(e => !e.dismissed),
+            activeErrors: () => get().errors.filter((error) => !error.dismissed),
         }),
-        { name: 'error-store' }
+        { name: "error-store" }
     )
 );

@@ -127,6 +127,8 @@ export function createCRUDStore<T extends { id: number }>(config: CRUDConfig<T>)
                                 currentPage: page,
                                 lastFetched: Date.now(),
                             });
+                        } else {
+                            showToast(res.message || messages.loadError || catalogMessage("common.general.errorLoadingData"), 'error');
                         }
                     } catch {
                         showToast(messages.loadError || catalogMessage("common.general.errorLoadingData"), 'error');

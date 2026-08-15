@@ -1,8 +1,8 @@
-export { Toast, ToastContainer, showToast, setToastHandler } from "./Toast";
 export * from "./NumberInput";
 export { Alert, showAlert } from "./Alert";
 export type { AlertType } from "./Alert";
-export type { ToastType } from "./Toast";
+export type { ToastOptions, ToastType } from "./Toast";
+export { Toast, ToastContainer, showToast } from "./Toast";
 export { Dialog, ConfirmDialog } from "./Dialog";
 export { Pagination } from "./Pagination";
 

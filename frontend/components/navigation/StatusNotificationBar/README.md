@@ -1,82 +1,61 @@
-# StatusNotificationBar — UX Foundation Document
+# Status Notification Bar
 
-> **Scope**: This document defines the complete external user experience specification for the **StatusNotificationBar**, the permanent system floor responsible for operations feedback, environment status, and non-intrusive notifications.
+> **Scope:** The permanent bottom-level feedback surface for operational outcomes, product and configuration alerts, and unexpected client-side code failures.
 >
-> **Canonical Name**: `StatusNotificationBar`  
-> **Shell Level**: Global / External  
-> **Persistence**: Permanent, fixed
+> **Canonical name:** `StatusNotificationBar`
+>
+> **Shell level:** Global
+>
+> **Persistence:** Permanent bar with a browsable in-session history of the latest 100 notifications.
 
----
+## Purpose
 
-## Table of Contents
+`StatusNotificationBar` is the single, non-blocking feedback surface for the application shell. It replaces transient floating feedback with a compact status summary and a manually browsable notification center. The active item is visible in the bottom bar; selecting it opens the center without interrupting the current business flow.
 
-1. [Philosophy & Core Identity](#1-philosophy--core-identity)
-2. [Structural Architecture](#2-structural-architecture)
-3. [Component Definitions](#3-component-definitions)
-4. [Interaction Model](#4-interaction-model)
-5. [Visual Discipline](#5-visual-discipline)
-6. [Relationship with Other Shell Bars](#6-relationship-with-other-shell-bars)
+The component deliberately separates **data**, **presentation**, **runtime capture**, and **legacy compatibility**. `useNotificationStore.ts` owns typed state and history; `content.ts` owns the Arabic and English interface copy; `StatusNotificationBar.tsx` renders and navigates the history; `StatusNotificationBar.module.css` contains isolated styles; and `NotificationRuntimeBridge.tsx` captures otherwise unhandled client runtime failures.
 
----
+## Semantic notification channels
 
-## 1. Philosophy & Core Identity
+| Channel | Colour | Intended use | Typical source |
+| --- | --- | --- | --- |
+| **Operational and accounting** | Amber / yellow | Validation feedback, accounting operations, server responses, and workflow outcomes. | Existing `showToast(...)` calls and shared CRUD stores. |
+| **Code errors** | Red | Unhandled client runtime errors and rejected promises that need technical inspection. | `NotificationRuntimeBridge` and `useErrorStore`. |
+| **Product and setup** | Blue | Low stock, products nearing expiry, operating-context preparation, and financial periods nearing their end. | Global dashboard, operating-context readiness, and fiscal-period screen. |
 
-The **StatusNotificationBar** represents the "system floor." Borrowing deeply from enterprise desktop applications and IDEs (like VS Code), it is designed to communicate system state and operation results *without interrupting the user's workflow*.
+The legacy `showToast` API remains compatible but now writes a retained **operational** notification rather than producing a floating toast. This lets existing pages transition safely without a broad, high-risk rewrite.
 
-It prevents the need for disruptive modal dialogs or floating toast notifications that block the workspace by providing a dedicated, permanent zone for reporting success, failure, background processing, and environment details.
+## Interaction model
 
----
+The bottom bar always displays the most recent active notification, including its semantic colour and unread count. Clicking the summary opens the notification center. The center supports an explicit filter for every channel, a selectable chronological list, full-message details, source metadata, and protected technical details for code errors.
 
-## 2. Structural Architecture
+Manual navigation is always deliberate. Users select an item from the list or use the **previous** and **next** controls to move through the currently filtered sequence. Selecting an item marks it as read. An item can be dismissed without deleting the surrounding history; dismissed entries can later be cleaned from the retained history. Where an event supplies an application route, the center shows a direct link to the relevant screen.
 
-The bar maintains a rigid, horizontal strip format at the very bottom of the viewport, segmented logically:
+## Data contract
 
-| Zone | Component | Purpose |
-|------|-----------|---------|
-| **Feedback Area** | `StatusIndicator` | Shows transient messages (e.g., "Saved successfully", "Validation Error"). |
-| **System Info** | `EnvironmentIndicator` | Shows static technical context (e.g., "Testing Environment", "API connected"). |
-| **Background Tasks**| (Future Implementation) | Displays progress of long-running async tasks (e.g., bulk payroll processing). |
+Every entry in the store follows `AppNotification`:
 
----
+| Field | Description |
+| --- | --- |
+| `category` | One of `operational`, `code`, or `product`; it determines the semantic colour and filter. |
+| `severity` | Additional business severity: `info`, `success`, `warning`, `error`, or `critical`. |
+| `message` | The user-facing summary shown in the bar and list. |
+| `source` | The feature, runtime location, or service that produced the event. |
+| `details` | Optional extended context, including stack details for code errors where available. |
+| `action` | Optional internal route and link label for manual navigation to a related screen. |
+| `dedupeKey` | Optional stable key that updates an existing active item rather than adding duplicate rows. |
 
-## 3. Component Definitions
+Use the focused publishing helpers rather than modifying the store directly:
 
-### 3.1 StatusIndicator
+```ts
+publishOperationalNotification({ message, source, severity: "warning" });
+publishCodeError({ message, source, details });
+publishProductNotification({ message, source, action, dedupeKey });
+```
 
-The primary vehicle for non-blocking feedback.
-- **Behavior**: Updates dynamically upon operation completion. Reverts to a "Ready" state after a short period.
-- **Color Coding**: Utilizes strict semantic colors (Success = Green, Warning = Amber, Error = Red) only for the duration of the message, ensuring errors are highly visible but do not visually clutter the interface permanently.
+## Accessibility and responsive behaviour
 
-### 3.2 EnvironmentIndicator
+The center uses a labelled dialog, accessible state for category filters, keyboard-focusable controls, readable colour contrast, and semantic timestamps. Its detail drawer opens upward from the fixed bottom bar, avoiding overlap with the workspace. On narrow screens, the list and detail areas stack vertically while the bottom status summary remains compact.
 
-A permanently visible badge or text element clarifying the current server or database target.
-- **Rationale**: In complex enterprise setups, users (and testers) must immediately know if they are connected to Production vs. Staging, preventing catastrophic accidental data modifications.
+## Maintenance rules
 
----
-
-## 4. Interaction Model
-
-- **Click to Expand**: In the event of a complex error, clicking an error message in the status bar might open a drawer or log view detailing the issue, rather than popping a blocking modal.
-- **Hover States**: Hovering over truncated text reveals the full message or technical stack trace if permitted by user role.
-
----
-
-## 5. Visual Discipline
-
-- **Height Constraint**: The bar is deliberately very thin to maximize workspace real estate.
-- **Typography constraints**: Uses the smallest legible font size (`sm` tier mapping) uniformly, recognizing its role as secondary/tertiary information.
-- **No overlapping layers**: Floating "Toast" notifications should eventually be deprecated in favor of this bar to prevent hiding layout components.
-- **No borders or border-radius** on the bar itself, maintaining the uniform design language of the shell.
-
----
-
-## 6. Relationship with Other Shell Bars
-
-- **SideNavigationBar**: The StatusNotificationBar serves as the footer and spans either the full width of the screen or the remaining space next to the sidebar.
-- **SearchNavigationBar**: Unrelated.
-- **TopGlobalBar**: The Status bar shows system output (Bottom), mirroring the input/meta-state configuration (Top).
-
----
-
-> **Document Status**: Draft — Comprehensive Foundation  
-> **Intended Audience**: UX designers, frontend engineers, architects 
+New interface labels belong in `content.ts`; new store fields and publishing rules belong in `useNotificationStore.ts`; visual changes belong in `StatusNotificationBar.module.css`; and rendering changes belong in `StatusNotificationBar.tsx`. Do not reintroduce temporary floating feedback for global operational results. Feature pages should call `showToast` for ordinary operation feedback or one of the dedicated publishing helpers when they know the semantic channel.

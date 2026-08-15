@@ -1,95 +1,70 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect } from "react";
+import {
+    type NotificationAction,
+    type NotificationSeverity,
+    publishOperationalNotification,
+} from "@/stores/useNotificationStore";
 
 export type ToastType = "success" | "error" | "info" | "warning";
 
+export interface ToastOptions {
+    source?: string;
+    details?: string;
+    action?: NotificationAction;
+    dedupeKey?: string;
+}
+
 interface ToastProps {
-  message: string;
-  type?: ToastType;
-  duration?: number;
-  onClose?: () => void;
+    message: string;
+    type?: ToastType;
+    options?: ToastOptions;
+    onClose?: () => void;
 }
 
-export function Toast({ message, type = "info", duration = 3000, onClose }: ToastProps) {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    // Show toast after mount
-    const showTimeout = setTimeout(() => setIsVisible(true), 10);
-
-    // Hide toast after duration
-    const hideTimeout = setTimeout(() => {
-      setIsVisible(false);
-      setTimeout(() => onClose?.(), 300);
-    }, duration);
-
-    return () => {
-      clearTimeout(showTimeout);
-      clearTimeout(hideTimeout);
-    };
-  }, [duration, onClose]);
-
-  return (
-    <div className={`toast ${type} ${isVisible ? "show" : ""}`}>
-      {message}
-    </div>
-  );
+function toOperationalSeverity(type: ToastType): NotificationSeverity {
+    if (type === "error") return "warning";
+    return type;
 }
 
-// Toast container for managing multiple toasts
-interface ToastItem {
-  id: string;
-  message: string;
-  type: ToastType;
+/**
+ * Backward-compatible global feedback API.
+ *
+ * Existing feature pages continue to call `showToast`, while the message is
+ * retained in the permanent status center instead of disappearing in a
+ * floating overlay. Error toasts represent a failed business operation and
+ * therefore use the operational (amber) channel; unexpected runtime failures
+ * are reported through `publishCodeError` and use the red channel.
+ */
+export function showToast(message: string, type: ToastType = "info", options: ToastOptions = {}): string {
+    return publishOperationalNotification({
+        message,
+        severity: toOperationalSeverity(type),
+        source: options.source ?? "legacy-feedback",
+        details: options.details,
+        action: options.action,
+        dedupeKey: options.dedupeKey,
+    });
 }
 
-// interface ToastContextValue {
-//   showToast: (message: string, type?: ToastType) => void;
-// }
+/**
+ * Legacy component kept for external consumers that rendered a Toast directly.
+ * It publishes to the central, browsable status history and renders no floating
+ * layer.
+ */
+export function Toast({ message, type = "info", options, onClose }: ToastProps) {
+    useEffect(() => {
+        showToast(message, type, options);
+        onClose?.();
+    }, [message, onClose, options, type]);
 
-let toastHandler: ((message: string, type?: ToastType) => void) | null = null;
-
-export function setToastHandler(handler: (message: string, type?: ToastType) => void) {
-  toastHandler = handler;
+    return null;
 }
 
-export function showToast(message: string, type: ToastType = "info") {
-  if (toastHandler) {
-    toastHandler(message, type);
-  }
-}
-
+/**
+ * Kept as a no-op mount point so existing shell integrations remain valid.
+ */
 export function ToastContainer() {
-  const [toasts, setToasts] = useState<ToastItem[]>([]);
-
-  const addToast = useCallback((message: string, type: ToastType = "info") => {
-    const id = Date.now().toString();
-    setToasts((prev) => [...prev, { id, message, type }]);
-  }, []);
-
-  const removeToast = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  }, []);
-
-  useEffect(() => {
-    setToastHandler(addToast);
-    return () => {
-      toastHandler = null;
-    };
-  }, [addToast]);
-
-  return (
-    <>
-      {toasts.map((toast) => (
-        <Toast
-          key={toast.id}
-          message={toast.message}
-          type={toast.type}
-          onClose={() => removeToast(toast.id)}
-        />
-      ))}
-    </>
-  );
+    return null;
 }
-

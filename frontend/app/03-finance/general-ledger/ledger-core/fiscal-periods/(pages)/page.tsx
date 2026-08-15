@@ -8,6 +8,7 @@ import { fetchAPI } from "@/lib/api";
 import { User, checkAuth, getStoredUser } from "@/lib/auth";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { formatDate } from "@/lib/utils";
+import { publishProductNotification } from "@/stores/useNotificationStore";
 import { useCallback, useEffect, useState } from "react";
 
 interface FiscalPeriod {
@@ -53,6 +54,25 @@ export default function FiscalPeriodsPage() {
         const pagination = response.pagination as { total_pages?: number } | undefined;
         setTotalPages(pagination?.total_pages ?? Math.max(1, Math.ceil(periods.length / itemsPerPage)));
         setCurrentPage(page);
+
+        const warningWindowInMilliseconds = 30 * 24 * 60 * 60 * 1000;
+        const upcomingPeriod = periods
+          .filter((period) => !period.is_closed)
+          .map((period) => ({ period, remainingTime: new Date(period.end_date).getTime() - Date.now() }))
+          .filter(({ remainingTime }) => remainingTime >= 0 && remainingTime <= warningWindowInMilliseconds)
+          .sort((first, second) => first.remainingTime - second.remainingTime)[0]?.period;
+
+        if (upcomingPeriod) {
+          publishProductNotification({
+            message: `${i18n.catalog["finance.fiscalPeriods.periodName"]}: ${upcomingPeriod.period_name} — ${formatDate(upcomingPeriod.end_date)}`,
+            source: "fiscal-periods",
+            action: {
+              href: "/03-finance/general-ledger/ledger-core/fiscal-periods",
+              label: i18n.catalog["navigation.financeConfig.fiscalPeriods"],
+            },
+            dedupeKey: `fiscal-period-nearing-end:${upcomingPeriod.id}`,
+          });
+        }
       } else {
         showAlert("alert-container", response.message || i18n.catalog["finance.fiscalPeriods.failedLoadFinancialPeriods"], "error");
       }
@@ -61,7 +81,7 @@ export default function FiscalPeriodsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [i18n.catalog]);
 
   useEffect(() => {
     const init = async () => {
