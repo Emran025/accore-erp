@@ -183,7 +183,7 @@ export default function DocumentsTab({
                 if (uploadForm.expiration_date) fd.append("expiration_date", uploadForm.expiration_date);
 
                 const token = typeof window !== "undefined" ? localStorage.getItem("sessionToken") : null;
-                const headers: Record<string, string> = { Accept: i18n.catalog["text_bacb769b46f6"] };
+                const headers: Record<string, string> = { Accept: "application/json" };
                 if (token) headers["X-Session-Token"] = token;
 
                 const response = await fetch(catalogText(i18n, "text_0907f4dfb304", { value0: getApiBase(), value1: API_ENDPOINTS.HUMAN_CAPITAL.EMPLOYEE_FILES.UPLOAD(id).replace(/^\//, "") }), {

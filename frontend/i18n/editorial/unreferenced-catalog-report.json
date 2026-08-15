@@ -1,0 +1,113 @@
+{
+  "generatedAt": "2026-08-15T19:51:05.576Z",
+  "sourceEntries": 3966,
+  "referencedEntries": 3945,
+  "unreferencedEntries": 21,
+  "entries": [
+    {
+      "id": "text_07086c439fe7",
+      "source": "hover:bg-gray-100",
+      "classification": "review-required"
+    },
+    {
+      "id": "text_0ecc07d5b5c8",
+      "source": "btn-{value0}",
+      "classification": "review-required"
+    },
+    {
+      "id": "text_103d1e085b1e",
+      "source": "bg-transparent text-gray-500",
+      "classification": "review-required"
+    },
+    {
+      "id": "text_145848a06881",
+      "source": "{value0} {value1} {value2} {value3} {value4}",
+      "classification": "review-required"
+    },
+    {
+      "id": "text_2f9c7bb827d7",
+      "source": "tel:",
+      "classification": "review-required"
+    },
+    {
+      "id": "text_360f485012bf",
+      "source": "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus:ring-2 disabled:pointer-events-none disabled:opacity-50",
+      "classification": "review-required"
+    },
+    {
+      "id": "text_3e3a4d52171e",
+      "source": "h-10 px-3",
+      "classification": "review-required"
+    },
+    {
+      "id": "text_50021a580033",
+      "source": "https://api.entity.gov/v1/submit",
+      "classification": "user-facing"
+    },
+    {
+      "id": "text_544530a20001",
+      "source": "border-radius-{value0}",
+      "classification": "review-required"
+    },
+    {
+      "id": "text_6ab9a1efbc32",
+      "source": "@keyframes spin { to { transform: rotate(360deg); } }",
+      "classification": "review-required"
+    },
+    {
+      "id": "text_70dcf24d6f7c",
+      "source": "https://gw-fatoora.zatca.gov.sa/e-invoicing",
+      "classification": "user-facing"
+    },
+    {
+      "id": "text_804b5103430a",
+      "source": "bg-gray-200 text-gray-900",
+      "classification": "review-required"
+    },
+    {
+      "id": "text_87c1f2732270",
+      "source": "h-8 px-2",
+      "classification": "review-required"
+    },
+    {
+      "id": "text_b665cc544c25",
+      "source": "h-9 px-2.5",
+      "classification": "review-required"
+    },
+    {
+      "id": "text_bacb769b46f6",
+      "source": "application/json",
+      "classification": "review-required"
+    },
+    {
+      "id": "text_ce502c0bc809",
+      "source": "btn whitespace-nowrap",
+      "classification": "review-required"
+    },
+    {
+      "id": "text_de1eaa596f93",
+      "source": "mailto:",
+      "classification": "review-required"
+    },
+    {
+      "id": "text_e98a62ef23bb",
+      "source": "https://...",
+      "classification": "user-facing"
+    },
+    {
+      "id": "text_ec0f84cc9ffe",
+      "source": "noopener noreferrer",
+      "classification": "review-required"
+    },
+    {
+      "id": "text_f084b324d27d",
+      "source": "bg-gray-100 text-gray-800",
+      "classification": "review-required"
+    },
+    {
+      "id": "text_fcf4e2b5e926",
+      "source": "border border-input hover:bg-gray-100",
+      "classification": "review-required"
+    }
+  ]
+}

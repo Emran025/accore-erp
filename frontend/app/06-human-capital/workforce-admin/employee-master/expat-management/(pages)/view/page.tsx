@@ -38,7 +38,7 @@ function ViewExpatPageContent() {
     };
 
     const getExpiryStatus = (expiryDate?: string) => {
-        if (!expiryDate) return { class: i18n.catalog["text_f084b324d27d"], text: "-" };
+        if (!expiryDate) return { class: "bg-gray-100 text-gray-800", text: "-" };
         const expiry = new Date(expiryDate);
         const today = new Date();
         const daysUntilExpiry = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));

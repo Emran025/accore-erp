@@ -257,7 +257,7 @@ export function Learning() {
               <TextInput label={i18n.catalog["text_7ecd961d200a"]} type="number" min="0" max="100" value={courseForm.passing_score} onChange={(e) => setCourseForm({ ...courseForm, passing_score: e.target.value })} />
             )}
           </div>
-          <TextInput label={i18n.catalog["text_b6ec0f608813"]} value={courseForm.video_url} onChange={(e) => setCourseForm({ ...courseForm, video_url: e.target.value })} placeholder={i18n.catalog["text_e98a62ef23bb"]} />
+          <TextInput label={i18n.catalog["text_b6ec0f608813"]} value={courseForm.video_url} onChange={(e) => setCourseForm({ ...courseForm, video_url: e.target.value })} placeholder={"https://..."} />
           <div className="flex justify-end gap-2" style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}><Button variant="secondary" onClick={() => setShowCourseDialog(false)}>{i18n.catalog["text_9a30dc2a96b8"]}</Button><Button variant="primary" onClick={handleSaveCourse} icon="save">{i18n.catalog["text_ddfcaf9d0144"]}</Button></div>
         </div>
       </Dialog>

@@ -459,7 +459,7 @@ export function ComplianceProfileEditor({
                                             type="url"
                                             value={endpointUrl}
                                             onChange={(e) => setEndpointUrl(e.target.value)}
-                                            placeholder={i18n.catalog["text_50021a580033"]}
+                                            placeholder={"https://api.entity.gov/v1/submit"}
                                             className="ce-input"
                                             style={{ direction: "ltr", textAlign: "left" }}
                                         />

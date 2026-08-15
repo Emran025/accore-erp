@@ -167,7 +167,7 @@ export default function AddEmployeePage() {
 
             if (pendingFiles.length > 0) {
                 const token = typeof window !== "undefined" ? localStorage.getItem("sessionToken") : null;
-                const uploadHeaders: Record<string, string> = { Accept: i18n.catalog["text_bacb769b46f6"] };
+                const uploadHeaders: Record<string, string> = { Accept: "application/json" };
                 if (token) uploadHeaders["X-Session-Token"] = token;
 
                 const uploadPromises = pendingFiles.map(pf => {

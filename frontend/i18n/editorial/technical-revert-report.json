@@ -1,0 +1,10 @@
+{
+  "generatedAt": "2026-08-15T19:50:43.366Z",
+  "revertedReferences": 15,
+  "deferredDynamicEntries": [
+    {
+      "id": "text_544530a20001",
+      "value": "border-radius-{value0}"
+    }
+  ]
+}

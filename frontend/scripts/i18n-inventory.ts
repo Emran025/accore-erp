@@ -60,6 +60,9 @@ function isTechnicalValue(value: string): boolean {
         || (!hasArabic && /(?:rgba\(|linear-gradient\(|\d+(?:\.\d+)?px\s+solid|class=|<\/?(?:div|span|th|td|section|header|footer)\b)/i.test(value))
         || (!hasArabic && /^(?:TRX|INV|PO|SO|SRV)-/i.test(value))
         || (!hasArabic && /^(?:[A-Z]{2,}\d+,\d{4}-\d{2}-\d{2},\d{2}:\d{2}:\d{2}\s*)+$/u.test(value))
+        || (!hasArabic && /^(?:application\/[a-z0-9.+-]+|mailto:|tel:|noopener noreferrer)$/i.test(value))
+        || (!hasArabic && /(?:^|\s)(?:inline-flex|items-center|justify-center|rounded(?:-[a-z0-9]+)?|text-[a-z0-9-]+|bg-[a-z0-9-]+|border(?:-[a-z0-9-]+)?|hover:bg-[a-z0-9-]+|focus(?:-visible)?:[a-z0-9-]+|h-\d+|w-\d+|px-\d+(?:\.\d+)?|py-\d+(?:\.\d+)?)(?:\s|$)/i.test(value))
+        || (!hasArabic && /^(?:btn(?:\s|-)\S+|btn-\{value\d+\}|border-radius-\{value\d+\}|\{value\d+\}(?:\s+\{value\d+\})+)$/u.test(value))
         || (!hasArabic && /^\{value\d+\}(?:\s*[()|—:-]\s*\{value\d+\})*$/u.test(value));
 }
 
@@ -118,6 +121,7 @@ function classify(node: Node, value: string): { kind: CandidateKind; classificat
     const jsxAttribute = nearestAncestor(node, Node.isJsxAttribute);
     const attributeName = jsxAttribute ? jsxAttributeName(jsxAttribute) : undefined;
     if (attributeName && policy.userFacingJsxAttributes.includes(attributeName)) {
+        if (isTechnicalValue(value)) return { kind: "jsx-attribute", classification: "technical", context: `Technical JSX ${attributeName}` };
         return { kind: "jsx-attribute", classification: "user-facing", context: `JSX ${attributeName}` };
     }
     if (attributeName && ["className", "style", "id", "key", "href", "src", "name", "type", "role", "value"].includes(attributeName)) {

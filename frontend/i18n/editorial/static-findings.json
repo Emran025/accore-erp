@@ -1,0 +1,20 @@
+{
+  "summary": {
+    "generatedAt": "2026-08-15T19:54:46.698Z",
+    "catalogEntries": 3945,
+    "findings": 0,
+    "byKind": {
+      "untranslated": 0,
+      "placeholder-drift": 0,
+      "technical-remnant": 0,
+      "terminology-variant": 0,
+      "editorial-review": 0
+    },
+    "bySeverity": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  "findings": []
+}

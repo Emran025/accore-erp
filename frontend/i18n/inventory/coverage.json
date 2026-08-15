@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-08-15T18:36:04.719Z",
+  "generatedAt": "2026-08-15T19:52:31.017Z",
   "filesScanned": 466,
-  "candidatesScanned": 27492,
+  "candidatesScanned": 27491,
   "filesPassing": 466,
   "filesFailing": 0,
   "files": [
@@ -3409,11 +3409,11 @@
     },
     {
       "file": "components/ui/Button.tsx",
-      "candidates": 39,
+      "candidates": 38,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 39,
+      "technical": 38,
       "passed": true
     },
     {

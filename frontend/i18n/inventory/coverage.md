@@ -3,7 +3,7 @@
 | Metric | Value |
 |---|---:|
 | Files scanned | 466 |
-| Candidate literals scanned | 27492 |
+| Candidate literals scanned | 27491 |
 | Files passing | 466 |
 | Files failing | 0 |
 
@@ -389,7 +389,7 @@
 | `components/ui/ActionButtons.tsx` | 15 | 0 | 15 | Yes |
 | `components/ui/Alert.tsx` | 44 | 0 | 44 | Yes |
 | `components/ui/BadgeLabel.tsx` | 18 | 0 | 18 | Yes |
-| `components/ui/Button.tsx` | 39 | 0 | 39 | Yes |
+| `components/ui/Button.tsx` | 38 | 0 | 38 | Yes |
 | `components/ui/checkbox.tsx` | 5 | 0 | 5 | Yes |
 | `components/ui/DatePicker.tsx` | 83 | 0 | 83 | Yes |
 | `components/ui/Dialog.tsx` | 31 | 0 | 31 | Yes |

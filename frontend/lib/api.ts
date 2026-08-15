@@ -65,8 +65,8 @@ export async function fetchAPI<T = unknown>(
 ): Promise<APIResponse<T>> 
 {
   const headers: Record<string, string> = {
-    'Content-Type': catalogMessage("text_bacb769b46f6"),
-    'Accept': catalogMessage("text_bacb769b46f6"),
+    'Content-Type': "application/json",
+    'Accept': "application/json",
     ...options?.headers,
   };
 

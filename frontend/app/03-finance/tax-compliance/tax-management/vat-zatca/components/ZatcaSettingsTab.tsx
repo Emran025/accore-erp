@@ -178,7 +178,7 @@ export function ZatcaSettingsTab() {
                             label={i18n.catalog["text_bcc51e304775"]}
                             value={authority.endpoint_url || ''}
                             onChange={(e) => setAuthority({ ...authority, endpoint_url: e.target.value })}
-                            placeholder={i18n.catalog["text_70dcf24d6f7c"]}
+                            placeholder={"https://gw-fatoora.zatca.gov.sa/e-invoicing"}
                         />
                     </div>
                 </div>

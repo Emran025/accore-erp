@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-15T18:30:33.449Z",
-  "itemCount": 3966,
+  "generatedAt": "2026-08-15T19:51:05.577Z",
+  "itemCount": 3945,
   "items": [
     {
       "id": "text_001eea528d3c",
@@ -2223,21 +2223,6 @@
           "file": "app/06-human-capital/talent-recruitment/recruitment/administration/components/EmployeePositionTab.tsx",
           "line": 315,
           "column": 32,
-          "kind": "string-literal",
-          "context": "Unclassified textual literal"
-        }
-      ]
-    },
-    {
-      "id": "text_07086c439fe7",
-      "source": "hover:bg-gray-100",
-      "classification": "review-required",
-      "occurrences": [
-        {
-          "id": "components/ui/Toggle.tsx:48:11",
-          "file": "components/ui/Toggle.tsx",
-          "line": 48,
-          "column": 11,
           "kind": "string-literal",
           "context": "Unclassified textual literal"
         }
@@ -5417,21 +5402,6 @@
       ]
     },
     {
-      "id": "text_0ecc07d5b5c8",
-      "source": "btn-{value0}",
-      "classification": "review-required",
-      "occurrences": [
-        {
-          "id": "components/ui/Button.tsx:32:28",
-          "file": "components/ui/Button.tsx",
-          "line": 32,
-          "column": 28,
-          "kind": "template-literal",
-          "context": "Dynamic template literal"
-        }
-      ]
-    },
-    {
       "id": "text_0ed477f32881",
       "source": "لا توجد وحدات تنظيمية",
       "classification": "review-required",
@@ -5888,21 +5858,6 @@
           "column": 46,
           "kind": "call-argument",
           "context": "Call showAlert"
-        }
-      ]
-    },
-    {
-      "id": "text_103d1e085b1e",
-      "source": "bg-transparent text-gray-500",
-      "classification": "review-required",
-      "occurrences": [
-        {
-          "id": "components/ui/Toggle.tsx:52:11",
-          "file": "components/ui/Toggle.tsx",
-          "line": 52,
-          "column": 11,
-          "kind": "string-literal",
-          "context": "Unclassified textual literal"
         }
       ]
     },
@@ -7335,21 +7290,6 @@
           "column": 34,
           "kind": "object-property",
           "context": "Object description"
-        }
-      ]
-    },
-    {
-      "id": "text_145848a06881",
-      "source": "{value0} {value1} {value2} {value3} {value4}",
-      "classification": "review-required",
-      "occurrences": [
-        {
-          "id": "components/ui/Button.tsx:35:29",
-          "file": "components/ui/Button.tsx",
-          "line": 35,
-          "column": 29,
-          "kind": "template-literal",
-          "context": "Dynamic template literal"
         }
       ]
     },
@@ -17314,21 +17254,6 @@
       ]
     },
     {
-      "id": "text_2f9c7bb827d7",
-      "source": "tel:",
-      "classification": "review-required",
-      "occurrences": [
-        {
-          "id": "components/ui/Button.tsx:51:101",
-          "file": "components/ui/Button.tsx",
-          "line": 51,
-          "column": 101,
-          "kind": "string-literal",
-          "context": "Unclassified textual literal"
-        }
-      ]
-    },
-    {
       "id": "text_2fb01868740d",
       "source": "المستخدم",
       "classification": "review-required",
@@ -19586,21 +19511,6 @@
           "file": "app/06-human-capital/talent-recruitment/recruitment/administration/components/PermissionTemplatesTab.tsx",
           "line": 69,
           "column": 21,
-          "kind": "string-literal",
-          "context": "Unclassified textual literal"
-        }
-      ]
-    },
-    {
-      "id": "text_360f485012bf",
-      "source": "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus:ring-2 disabled:pointer-events-none disabled:opacity-50",
-      "classification": "review-required",
-      "occurrences": [
-        {
-          "id": "components/ui/Toggle.tsx:43:23",
-          "file": "components/ui/Toggle.tsx",
-          "line": 43,
-          "column": 23,
           "kind": "string-literal",
           "context": "Unclassified textual literal"
         }
@@ -21893,21 +21803,6 @@
           "file": "lib/utils.ts",
           "line": 247,
           "column": 37,
-          "kind": "string-literal",
-          "context": "Unclassified textual literal"
-        }
-      ]
-    },
-    {
-      "id": "text_3e3a4d52171e",
-      "source": "h-10 px-3",
-      "classification": "review-required",
-      "occurrences": [
-        {
-          "id": "components/ui/Toggle.tsx:54:68",
-          "file": "components/ui/Toggle.tsx",
-          "line": 54,
-          "column": 68,
           "kind": "string-literal",
           "context": "Unclassified textual literal"
         }
@@ -27396,21 +27291,6 @@
       ]
     },
     {
-      "id": "text_50021a580033",
-      "source": "https://api.entity.gov/v1/submit",
-      "classification": "user-facing",
-      "occurrences": [
-        {
-          "id": "components/tax/compliance-editor/ComplianceProfileEditor.tsx:469:57",
-          "file": "components/tax/compliance-editor/ComplianceProfileEditor.tsx",
-          "line": 469,
-          "column": 57,
-          "kind": "jsx-attribute",
-          "context": "JSX placeholder"
-        }
-      ]
-    },
-    {
       "id": "text_500253426833",
       "source": "إلزامية)",
       "classification": "review-required",
@@ -28617,21 +28497,6 @@
           "column": 140,
           "kind": "string-literal",
           "context": "Unclassified textual literal"
-        }
-      ]
-    },
-    {
-      "id": "text_544530a20001",
-      "source": "border-radius-{value0}",
-      "classification": "review-required",
-      "occurrences": [
-        {
-          "id": "components/ui/Button.tsx:34:47",
-          "file": "components/ui/Button.tsx",
-          "line": 34,
-          "column": 47,
-          "kind": "template-literal",
-          "context": "Dynamic template literal"
         }
       ]
     },
@@ -37513,21 +37378,6 @@
       ]
     },
     {
-      "id": "text_6ab9a1efbc32",
-      "source": "@keyframes spin { to { transform: rotate(360deg); } }",
-      "classification": "review-required",
-      "occurrences": [
-        {
-          "id": "components/layout/MainLayout.tsx:93:21",
-          "file": "components/layout/MainLayout.tsx",
-          "line": 93,
-          "column": 21,
-          "kind": "string-literal",
-          "context": "Unclassified textual literal"
-        }
-      ]
-    },
-    {
       "id": "text_6abb8c13afc1",
       "source": "إعدادات زاتكا (ZATCA)",
       "classification": "user-facing",
@@ -39148,21 +38998,6 @@
           "column": 52,
           "kind": "object-property",
           "context": "Object label"
-        }
-      ]
-    },
-    {
-      "id": "text_70dcf24d6f7c",
-      "source": "https://gw-fatoora.zatca.gov.sa/e-invoicing",
-      "classification": "user-facing",
-      "occurrences": [
-        {
-          "id": "app/03-finance/tax-compliance/tax-management/vat-zatca/components/ZatcaSettingsTab.tsx:180:41",
-          "file": "app/03-finance/tax-compliance/tax-management/vat-zatca/components/ZatcaSettingsTab.tsx",
-          "line": 180,
-          "column": 41,
-          "kind": "jsx-attribute",
-          "context": "JSX placeholder"
         }
       ]
     },
@@ -45235,21 +45070,6 @@
       ]
     },
     {
-      "id": "text_804b5103430a",
-      "source": "bg-gray-200 text-gray-900",
-      "classification": "review-required",
-      "occurrences": [
-        {
-          "id": "components/ui/Toggle.tsx:51:11",
-          "file": "components/ui/Toggle.tsx",
-          "line": 51,
-          "column": 11,
-          "kind": "string-literal",
-          "context": "Unclassified textual literal"
-        }
-      ]
-    },
-    {
       "id": "text_8053803bdbb7",
       "source": "تنظيمي",
       "classification": "review-required",
@@ -47273,21 +47093,6 @@
           "file": "app/06-human-capital/workforce-admin/employee-master/employees-list/components/DocumentsTab.tsx",
           "line": 386,
           "column": 37,
-          "kind": "string-literal",
-          "context": "Unclassified textual literal"
-        }
-      ]
-    },
-    {
-      "id": "text_87c1f2732270",
-      "source": "h-8 px-2",
-      "classification": "review-required",
-      "occurrences": [
-        {
-          "id": "components/ui/Toggle.tsx:54:39",
-          "file": "components/ui/Toggle.tsx",
-          "line": 54,
-          "column": 39,
           "kind": "string-literal",
           "context": "Unclassified textual literal"
         }
@@ -64268,21 +64073,6 @@
       ]
     },
     {
-      "id": "text_b665cc544c25",
-      "source": "h-9 px-2.5",
-      "classification": "review-required",
-      "occurrences": [
-        {
-          "id": "components/ui/Toggle.tsx:54:82",
-          "file": "components/ui/Toggle.tsx",
-          "line": 54,
-          "column": 82,
-          "kind": "string-literal",
-          "context": "Unclassified textual literal"
-        }
-      ]
-    },
-    {
       "id": "text_b6999c27b67d",
       "source": "قوالب الصلاحيات",
       "classification": "user-facing",
@@ -65950,45 +65740,6 @@
           "file": "app/06-human-capital/workforce-admin/employee-master/expat-management/(pages)/view/page.tsx",
           "line": 145,
           "column": 89,
-          "kind": "string-literal",
-          "context": "Unclassified textual literal"
-        }
-      ]
-    },
-    {
-      "id": "text_bacb769b46f6",
-      "source": "application/json",
-      "classification": "review-required",
-      "occurrences": [
-        {
-          "id": "app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/add/page.tsx:168:73",
-          "file": "app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/add/page.tsx",
-          "line": 168,
-          "column": 73,
-          "kind": "string-literal",
-          "context": "Unclassified textual literal"
-        },
-        {
-          "id": "app/06-human-capital/workforce-admin/employee-master/employees-list/components/DocumentsTab.tsx:184:67",
-          "file": "app/06-human-capital/workforce-admin/employee-master/employees-list/components/DocumentsTab.tsx",
-          "line": 184,
-          "column": 67,
-          "kind": "string-literal",
-          "context": "Unclassified textual literal"
-        },
-        {
-          "id": "lib/api.ts:67:21",
-          "file": "lib/api.ts",
-          "line": 67,
-          "column": 21,
-          "kind": "string-literal",
-          "context": "Unclassified textual literal"
-        },
-        {
-          "id": "lib/api.ts:68:15",
-          "file": "lib/api.ts",
-          "line": 68,
-          "column": 15,
           "kind": "string-literal",
           "context": "Unclassified textual literal"
         }
@@ -73643,21 +73394,6 @@
       ]
     },
     {
-      "id": "text_ce502c0bc809",
-      "source": "btn whitespace-nowrap",
-      "classification": "review-required",
-      "occurrences": [
-        {
-          "id": "components/ui/Button.tsx:31:25",
-          "file": "components/ui/Button.tsx",
-          "line": 31,
-          "column": 25,
-          "kind": "string-literal",
-          "context": "Unclassified textual literal"
-        }
-      ]
-    },
-    {
       "id": "text_ce562766db51",
       "source": "هل أنت متأكد من حذف هذا المصروف؟",
       "classification": "review-required",
@@ -80219,21 +79955,6 @@
       ]
     },
     {
-      "id": "text_de1eaa596f93",
-      "source": "mailto:",
-      "classification": "review-required",
-      "occurrences": [
-        {
-          "id": "components/ui/Button.tsx:51:71",
-          "file": "components/ui/Button.tsx",
-          "line": 51,
-          "column": 71,
-          "kind": "string-literal",
-          "context": "Unclassified textual literal"
-        }
-      ]
-    },
-    {
       "id": "text_de683d06206e",
       "source": "البادئة (اختياري)",
       "classification": "user-facing",
@@ -83698,21 +83419,6 @@
       ]
     },
     {
-      "id": "text_e98a62ef23bb",
-      "source": "https://...",
-      "classification": "user-facing",
-      "occurrences": [
-        {
-          "id": "app/06-human-capital/performance-development/performance/learning/(pages)/Learning.tsx:259:162",
-          "file": "app/06-human-capital/performance-development/performance/learning/(pages)/Learning.tsx",
-          "line": 259,
-          "column": 162,
-          "kind": "jsx-attribute",
-          "context": "JSX placeholder"
-        }
-      ]
-    },
-    {
       "id": "text_e98b07f5de8c",
       "source": "12,500",
       "classification": "review-required",
@@ -84764,21 +84470,6 @@
           "file": "app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/view/components/BasicInfoTab.tsx",
           "line": 102,
           "column": 142,
-          "kind": "string-literal",
-          "context": "Unclassified textual literal"
-        }
-      ]
-    },
-    {
-      "id": "text_ec0f84cc9ffe",
-      "source": "noopener noreferrer",
-      "classification": "review-required",
-      "occurrences": [
-        {
-          "id": "components/ui/Button.tsx:55:80",
-          "file": "components/ui/Button.tsx",
-          "line": 55,
-          "column": 80,
           "kind": "string-literal",
           "context": "Unclassified textual literal"
         }
@@ -86122,21 +85813,6 @@
           "column": 41,
           "kind": "jsx-attribute",
           "context": "JSX placeholder"
-        }
-      ]
-    },
-    {
-      "id": "text_f084b324d27d",
-      "source": "bg-gray-100 text-gray-800",
-      "classification": "review-required",
-      "occurrences": [
-        {
-          "id": "app/06-human-capital/workforce-admin/employee-master/expat-management/(pages)/view/page.tsx:39:42",
-          "file": "app/06-human-capital/workforce-admin/employee-master/expat-management/(pages)/view/page.tsx",
-          "line": 39,
-          "column": 42,
-          "kind": "string-literal",
-          "context": "Unclassified textual literal"
         }
       ]
     },
@@ -89835,21 +89511,6 @@
           "column": 33,
           "kind": "jsx-attribute",
           "context": "JSX placeholder"
-        }
-      ]
-    },
-    {
-      "id": "text_fcf4e2b5e926",
-      "source": "border border-input hover:bg-gray-100",
-      "classification": "review-required",
-      "occurrences": [
-        {
-          "id": "components/ui/Toggle.tsx:47:11",
-          "file": "components/ui/Toggle.tsx",
-          "line": 47,
-          "column": 11,
-          "kind": "string-literal",
-          "context": "Unclassified textual literal"
         }
       ]
     },
