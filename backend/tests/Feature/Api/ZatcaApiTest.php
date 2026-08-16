@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Tests\TestCase;
 use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Module;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Setting;
 use App\Domains\Commercial\SalesLifecycle\Models\InvoiceItem;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -16,6 +17,7 @@ class ZatcaApiTest extends TestCase
     {
         parent::setUp();
         $this->authenticateUser();
+        Module::query()->where('module_key', 'sales')->update(['is_active' => true]);
         
         // Mock storage for certificates
         \Illuminate\Support\Facades\Storage::fake('local');

@@ -27,6 +27,7 @@ class TaxEngineIntegrationTest extends TestCase
         parent::setUp();
 
         $this->authenticateUser();
+        $this->createReadyOperatingContext($this->authenticatedUser);
 
         // Turn ON the Tax Engine
         Config::set('tax.use_tax_engine', true);

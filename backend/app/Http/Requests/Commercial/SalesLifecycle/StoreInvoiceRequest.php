@@ -24,6 +24,9 @@ class StoreInvoiceRequest extends FormRequest
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
             'sales_representative_id' => 'nullable|exists:sales_representatives,id',
+            'operating_context_id' => 'nullable|integer|exists:operating_contexts,id',
+            // Legacy identifiers are accepted only so the resolver can reject
+            // mismatches. They are never trusted over the approved context.
             'warehouse_id' => 'nullable|exists:warehouses,id',
             'pos_terminal_id' => 'nullable|exists:pos_terminals,id',
             'cost_center_id' => 'nullable|exists:cost_centers,id',

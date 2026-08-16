@@ -24,13 +24,14 @@ class OperatingContextApiTest extends TestCase
 
         $this->assertSuccessResponse($response);
         $response->assertJsonPath('data.ready', false)
-            ->assertJsonPath('data.next_action', 'warehouse')
-            ->assertJsonPath('data.checks.0.action_key', 'operating_context.readiness.warehouse')
+            ->assertJsonPath('data.next_action', 'org_node')
+            ->assertJsonPath('data.checks.0.action_key', 'operating_context.readiness.org_node')
             ->assertJsonMissingPath('data.checks.0.action');
     }
 
     public function test_can_configure_an_operating_context_with_warehouse_and_pos(): void
     {
+        $storeNode = $this->createActiveStoreNode($this->authenticatedUser);
         $costCenter = CostCenter::create([
             'code' => 'CC-STORE',
             'name' => 'Store Operations',
@@ -45,6 +46,7 @@ class OperatingContextApiTest extends TestCase
         ]);
 
         $response = $this->authPost(route('v2.operating_context.configure'), [
+            'org_node_uuid' => $storeNode->node_uuid,
             'cost_center_id' => $costCenter->id,
             'profit_center_id' => $profitCenter->id,
             'warehouse' => [

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Module;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -13,6 +14,7 @@ class SalesQuotationApiTest extends TestCase
     {
         parent::setUp();
         $this->authenticateUser();
+        Module::query()->where('module_key', 'sales')->update(['is_active' => true]);
     }
 
     public function test_can_create_and_view_a_sales_quotation(): void

@@ -9,6 +9,7 @@ use App\Domains\SupplyChain\Inventory\Models\Product;
 use App\Domains\Commercial\CRM\Models\ArCustomer;
 use App\Domains\Commercial\SalesLifecycle\Models\SalesReturn;
 use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Module;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 
@@ -20,6 +21,7 @@ class SalesReturnApiTest extends TestCase
     {
         parent::setUp();
         $this->authenticateUser();
+        Module::query()->where('module_key', 'sales')->update(['is_active' => true]);
         $this->seedChartOfAccounts();
 
         FiscalPeriod::factory()->create([

@@ -2,25 +2,25 @@
 
 namespace App\Domains\Commercial\SalesLifecycle\Services;
 
-use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
-use App\Domains\Commercial\SalesLifecycle\Models\InvoiceItem;
-use App\Domains\SupplyChain\Inventory\Models\Product;
 use App\Domains\Commercial\CRM\Models\ArCustomer;
 use App\Domains\Commercial\RevenueReceivables\Models\ArTransaction;
-use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use App\Domains\Commercial\SalesLifecycle\Models\SalesReturn;
-use App\Domains\Commercial\SalesLifecycle\Models\SalesReturnItem;
+use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
+use App\Domains\Commercial\SalesLifecycle\Models\InvoiceItem;
 use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentative;
 use App\Domains\Commercial\SalesLifecycle\Models\SalesRepresentativeTransaction;
-use App\Domains\Finance\TaxCompliance\Services\TaxCalculator;
+use App\Domains\Commercial\SalesLifecycle\Models\SalesReturn;
+use App\Domains\Commercial\SalesLifecycle\Models\SalesReturnItem;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Setting;
+use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\Finance\GeneralLedger\Services\ChartOfAccountsMappingService;
 use App\Domains\Finance\GeneralLedger\Services\LedgerService;
-use App\Domains\SupplyChain\Inventory\Services\InventoryCostingService;
-use App\Domains\Finance\TaxCompliance\Models\TaxType;
 use App\Domains\Finance\TaxCompliance\Models\TaxLine;
-use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Setting;
+use App\Domains\Finance\TaxCompliance\Models\TaxType;
+use App\Domains\Finance\TaxCompliance\Services\TaxCalculator;
+use App\Domains\SupplyChain\Inventory\Models\Product;
+use App\Domains\SupplyChain\Inventory\Services\InventoryCostingService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Service for handling sales operations, including invoice creation, returns, and inventory integration.
@@ -29,66 +29,78 @@ use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Setting;
 class SalesService
 {
     private LedgerService $ledgerService;
+
     private ChartOfAccountsMappingService $coaService;
+
     private InventoryCostingService $costingService;
+
+    private SalesExecutionContextResolver $executionContextResolver;
 
     /**
      * SalesService constructor.
-     * 
-     * @param LedgerService $ledgerService
-     * @param ChartOfAccountsMappingService $coaService
-     * @param InventoryCostingService $costingService
      */
     public function __construct(
         LedgerService $ledgerService,
         ChartOfAccountsMappingService $coaService,
-        InventoryCostingService $costingService
+        InventoryCostingService $costingService,
+        SalesExecutionContextResolver $executionContextResolver
     ) {
         $this->ledgerService = $ledgerService;
         $this->coaService = $coaService;
         $this->costingService = $costingService;
+        $this->executionContextResolver = $executionContextResolver;
     }
 
     /**
      * Create a new sales invoice.
-     * Enforces pricing floors, calculates taxes (VAT) on the server, and handles 
+     * Enforces pricing floors, calculates taxes (VAT) on the server, and handles
      * both cash and credit payment workflows with appropriate GL entries.
-     * 
-     * @param array $data Invoice data including items, customer_id, payment_type, etc.
+     *
+     * @param  array  $data  Invoice data including items, customer_id, payment_type, etc.
      * @return int The ID of the newly created invoice
+     *
      * @throws \Exception If validation fails or inventory is insufficient
      */
     public function createInvoice(array $data): int
     {
+        $userId = (int) ($data['user_id'] ?? auth()->id());
+        if (! $userId) {
+            throw new \Exception('User ID is required');
+        }
+
+        // Resolve once at the application boundary and inject only trusted
+        // store/accounting identifiers into the transactional path.
+        $data = $this->executionContextResolver->resolve($data, $userId);
+        $data['user_id'] = $userId;
+
         return DB::transaction(function () use ($data) {
             // Extract data
-            $invoiceNumber = $data['invoice_number'] ?? 'INV-' . time();
+            $invoiceNumber = $data['invoice_number'] ?? 'INV-'.time();
             $paymentType = $data['payment_type'] ?? 'cash';
             $customerId = $data['customer_id'] ?? null;
-            $userId = $data['user_id'] ?? auth()->id();
-            if (!$userId) throw new \Exception("User ID is required");
-            $amountPaid = (float)($data['amount_paid'] ?? 0);
-            $discountAmount = (float)($data['discount_amount'] ?? 0);
+            $userId = $data['user_id'];
+            $amountPaid = (float) ($data['amount_paid'] ?? 0);
+            $discountAmount = (float) ($data['discount_amount'] ?? 0);
             $salesRepresentativeId = $data['sales_representative_id'] ?? null;
             $currencyId = $data['currency_id'] ?? null;
             $exchangeRate = $data['exchange_rate'] ?? null;
             $items = $data['items'] ?? [];
 
             if (empty($items)) {
-                throw new \Exception("Invoice must have items");
+                throw new \Exception('Invoice must have items');
             }
 
-            if ($paymentType === 'credit' && !$customerId) {
-                throw new \Exception("Customer is required for credit sales");
+            if ($paymentType === 'credit' && ! $customerId) {
+                throw new \Exception('Customer is required for credit sales');
             }
 
             // Ensure every invoice has a customer (Fixing "Cash sales don't contain a customer" flaw)
-            if (!$customerId) {
+            if (! $customerId) {
                 $cashCustomer = ArCustomer::withoutGlobalScopes()
                     ->where('customer_code', ArCustomer::CASH_CUSTOMER_CODE)
                     ->first();
 
-                if (!$cashCustomer) {
+                if (! $cashCustomer) {
                     $cashCustomer = ArCustomer::create([
                         'customer_code' => ArCustomer::CASH_CUSTOMER_CODE,
                         'name' => 'Cash Customer',
@@ -107,21 +119,21 @@ class SalesService
             $processedItems = [];
 
             foreach ($items as $item) {
-                $productId = (int)$item['product_id'];
-                $quantity = (float)$item['quantity'];
+                $productId = (int) $item['product_id'];
+                $quantity = (float) $item['quantity'];
                 $unitType = $item['unit_type'] ?? 'sub';
-                $unitPrice = (float)$item['unit_price'];
+                $unitPrice = (float) $item['unit_price'];
 
                 $product = Product::findOrFail($productId);
 
                 // Enforce sellable flag (Raw materials integration)
-                if (!$product->sellable) {
+                if (! $product->sellable) {
                     throw new \Exception("Item '{$product->name}' is not marked as sellable.");
                 }
 
                 // CRITICAL FIX (BUG-001): Enforce Pricing Floor
-                $costBasis = (float)($product->weighted_average_cost ?? 0);
-                $minProfitMargin = (float)($product->minimum_profit_margin ?? 0);
+                $costBasis = (float) ($product->weighted_average_cost ?? 0);
+                $minProfitMargin = (float) ($product->minimum_profit_margin ?? 0);
                 $minimumAllowedPrice = $costBasis + $minProfitMargin;
 
                 if ($costBasis > 0 && $unitPrice < $minimumAllowedPrice) {
@@ -150,14 +162,14 @@ class SalesService
                 }
 
                 $processedItems[] = [
-                    'product_id'      => $productId,
-                    'item_type'       => $product->item_type,
+                    'product_id' => $productId,
+                    'item_type' => $product->item_type,
                     'inventory_control' => $product->inventory_control,
-                    'quantity'        => $quantity,
+                    'quantity' => $quantity,
                     'stock_deduction' => $stockDeduction,
-                    'unit_price'      => $unitPrice,
-                    'line_total'      => $lineTotal,
-                    'unit_type'       => $unitType,
+                    'unit_price' => $unitPrice,
+                    'line_total' => $lineTotal,
+                    'unit_type' => $unitType,
                 ];
             }
 
@@ -198,12 +210,12 @@ class SalesService
                             'fee_name' => $line['tax_type_name'] ?? $line['tax_type_code'],
                             'fee_percentage' => $line['rate'] * 100, // percentage display
                             'amount' => $line['tax_amount'],
-                            'account_code' => $line['gl_account_code'] 
+                            'account_code' => $line['gl_account_code'],
                         ];
                     }
                 }
             }
-            
+
             // To prevent polluting legacy vat_amount with Kharaaj, isolate actual VAT sum
             $isolatedVatAmount = 0;
             if ($taxResult !== null) {
@@ -218,7 +230,7 @@ class SalesService
             $totalAmount = $taxableAmount + $taxResult->getTotalTax(); // Total tax encompasses VAT + Fees
 
             // Default amount_paid for cash sales
-            if ($paymentType === 'cash' && (!isset($data['amount_paid']) || $data['amount_paid'] === null)) {
+            if ($paymentType === 'cash' && (! isset($data['amount_paid']) || $data['amount_paid'] === null)) {
                 $amountPaid = $totalAmount;
             }
 
@@ -254,7 +266,7 @@ class SalesService
                     $lineCost = $this->costingService->recordSale(
                         $item['product_id'],
                         $invoice->id,
-                        $item['stock_deduction'], 
+                        $item['stock_deduction'],
                         config('accounting.inventory.costing_method', 'FIFO')
                     );
                 }
@@ -302,7 +314,7 @@ class SalesService
                         'created_by' => $userId,
                     ];
 
-                     ArCustomer::where('id', $customerId)
+                    ArCustomer::where('id', $customerId)
                         ->decrement('current_balance', $amountPaid);
                 }
             }
@@ -319,7 +331,7 @@ class SalesService
                         'account_code' => $this->coaService->getStandardAccounts()['sales_revenue'],
                         'entry_type' => 'CREDIT',
                         'amount' => $productRevenue,
-                        'description' => "Product Sales Revenue - Invoice #$invoiceNumber"
+                        'description' => "Product Sales Revenue - Invoice #$invoiceNumber",
                     ];
                 }
 
@@ -328,20 +340,20 @@ class SalesService
                         'account_code' => $this->coaService->getStandardAccounts()['service_revenue'],
                         'entry_type' => 'CREDIT',
                         'amount' => $serviceRevenue,
-                        'description' => "Service Revenue - Invoice #$invoiceNumber"
+                        'description' => "Service Revenue - Invoice #$invoiceNumber",
                     ];
                 }
 
                 if ($taxResult !== null) {
                     foreach ($taxResult->lines as $line) {
                         $actCode = $line['gl_account_code'] ?? ($line['tax_type_code'] === 'VAT' ? $this->coaService->getStandardAccounts()['output_vat'] : null);
-                        
+
                         if ($actCode && $line['tax_amount'] > 0) {
-                             $invoiceEntries[] = [
+                            $invoiceEntries[] = [
                                 'account_code' => $actCode,
                                 'entry_type' => 'CREDIT',
                                 'amount' => $line['tax_amount'],
-                                'description' => "Tax/Fee: {$line['tax_type_code']} - Invoice #$invoiceNumber"
+                                'description' => "Tax/Fee: {$line['tax_type_code']} - Invoice #$invoiceNumber",
                             ];
                         }
                     }
@@ -352,7 +364,7 @@ class SalesService
                             'account_code' => $this->coaService->getStandardAccounts()['output_vat'],
                             'entry_type' => 'CREDIT',
                             'amount' => $vatAmount,
-                            'description' => "VAT Output - Invoice #$invoiceNumber"
+                            'description' => "VAT Output - Invoice #$invoiceNumber",
                         ];
                     }
                 }
@@ -362,7 +374,7 @@ class SalesService
                     'account_code' => $this->coaService->getStandardAccounts()['accounts_receivable'],
                     'entry_type' => 'DEBIT',
                     'amount' => $totalAmount,
-                    'description' => "Accounts Receivable - Invoice #$invoiceNumber"
+                    'description' => "Accounts Receivable - Invoice #$invoiceNumber",
                 ];
 
                 // Debit Discount
@@ -371,24 +383,24 @@ class SalesService
                         'account_code' => $this->coaService->getStandardAccounts()['sales_discount'],
                         'entry_type' => 'DEBIT',
                         'amount' => $discountAmount,
-                        'description' => "Sales Discount - Invoice #$invoiceNumber"
+                        'description' => "Sales Discount - Invoice #$invoiceNumber",
                     ];
                 }
-                
+
                 // COGS (Debit) and Inventory (Credit)
                 if ($totalCost > 0) {
                     $invoiceEntries[] = [
                         'account_code' => $this->coaService->getStandardAccounts()['cost_of_goods_sold'],
                         'entry_type' => 'DEBIT',
                         'amount' => $totalCost,
-                        'description' => "Cost of Goods Sold - Invoice #$invoiceNumber"
+                        'description' => "Cost of Goods Sold - Invoice #$invoiceNumber",
                     ];
-    
+
                     $invoiceEntries[] = [
                         'account_code' => $this->coaService->getStandardAccounts()['inventory'],
                         'entry_type' => 'CREDIT',
                         'amount' => $totalCost,
-                        'description' => "Inventory usage - Invoice #$invoiceNumber"
+                        'description' => "Inventory usage - Invoice #$invoiceNumber",
                     ];
                 }
 
@@ -400,8 +412,8 @@ class SalesService
                     null,
                     now()->format('Y-m-d'),
                     'AUTOMATIC',
-                    $currencyId ? (int)$currencyId : null,
-                    $exchangeRate ? (float)$exchangeRate : null
+                    $currencyId ? (int) $currencyId : null,
+                    $exchangeRate ? (float) $exchangeRate : null
                 );
 
                 $invoice->update(['voucher_number' => $voucherNumber]);
@@ -414,14 +426,14 @@ class SalesService
                         'account_code' => $this->coaService->getStandardAccounts()['cash'],
                         'entry_type' => 'DEBIT',
                         'amount' => $amountPaid,
-                        'description' => "Payment Received - Invoice #$invoiceNumber"
+                        'description' => "Payment Received - Invoice #$invoiceNumber",
                     ];
                     // Cr AR
                     $paymentEntries[] = [
                         'account_code' => $this->coaService->getStandardAccounts()['accounts_receivable'],
                         'entry_type' => 'CREDIT',
                         'amount' => $amountPaid,
-                        'description' => "Payment Applied - Invoice #$invoiceNumber"
+                        'description' => "Payment Applied - Invoice #$invoiceNumber",
                     ];
 
                     $paymentVoucher = $this->ledgerService->postTransaction(
@@ -431,8 +443,8 @@ class SalesService
                         null,
                         now()->format('Y-m-d'),
                         'AUTOMATIC',
-                        $currencyId ? (int)$currencyId : null,
-                        $exchangeRate ? (float)$exchangeRate : null
+                        $currencyId ? (int) $currencyId : null,
+                        $exchangeRate ? (float) $exchangeRate : null
                     );
                 }
 
@@ -456,7 +468,7 @@ class SalesService
                         'account_code' => $this->coaService->getStandardAccounts()['sales_revenue'],
                         'entry_type' => 'CREDIT',
                         'amount' => $productRevenue,
-                        'description' => "Product Sales Revenue - Invoice #$invoiceNumber"
+                        'description' => "Product Sales Revenue - Invoice #$invoiceNumber",
                     ];
                 }
 
@@ -465,7 +477,7 @@ class SalesService
                         'account_code' => $this->coaService->getStandardAccounts()['service_revenue'],
                         'entry_type' => 'CREDIT',
                         'amount' => $serviceRevenue,
-                        'description' => "Service Revenue - Invoice #$invoiceNumber"
+                        'description' => "Service Revenue - Invoice #$invoiceNumber",
                     ];
                 }
 
@@ -474,11 +486,11 @@ class SalesService
                     foreach ($taxResult->lines as $line) {
                         $actCode = $line['gl_account_code'] ?? ($line['tax_type_code'] === 'VAT' ? $this->coaService->getStandardAccounts()['output_vat'] : null);
                         if ($actCode && $line['tax_amount'] > 0) {
-                             $glEntries[] = [
+                            $glEntries[] = [
                                 'account_code' => $actCode,
                                 'entry_type' => 'CREDIT',
                                 'amount' => $line['tax_amount'],
-                                'description' => "Tax/Fee: {$line['tax_type_code']} - Invoice #$invoiceNumber"
+                                'description' => "Tax/Fee: {$line['tax_type_code']} - Invoice #$invoiceNumber",
                             ];
                         }
                     }
@@ -489,7 +501,7 @@ class SalesService
                             'account_code' => $this->coaService->getStandardAccounts()['output_vat'],
                             'entry_type' => 'CREDIT',
                             'amount' => $vatAmount,
-                            'description' => "VAT Output - Invoice #$invoiceNumber"
+                            'description' => "VAT Output - Invoice #$invoiceNumber",
                         ];
                     }
                 }
@@ -500,7 +512,7 @@ class SalesService
                         'account_code' => $this->coaService->getStandardAccounts()['cash'],
                         'entry_type' => 'DEBIT',
                         'amount' => $amountPaid,
-                        'description' => "Cash Received - Invoice #$invoiceNumber"
+                        'description' => "Cash Received - Invoice #$invoiceNumber",
                     ];
                 }
 
@@ -510,7 +522,7 @@ class SalesService
                         'account_code' => $this->coaService->getStandardAccounts()['accounts_receivable'],
                         'entry_type' => 'DEBIT',
                         'amount' => $amountDue,
-                        'description' => "Accounts Receivable - Invoice #$invoiceNumber"
+                        'description' => "Accounts Receivable - Invoice #$invoiceNumber",
                     ];
                 }
 
@@ -520,14 +532,14 @@ class SalesService
                         'account_code' => $this->coaService->getStandardAccounts()['cost_of_goods_sold'],
                         'entry_type' => 'DEBIT',
                         'amount' => $totalCost,
-                        'description' => "Cost of Goods Sold - Invoice #$invoiceNumber"
+                        'description' => "Cost of Goods Sold - Invoice #$invoiceNumber",
                     ];
 
                     $glEntries[] = [
                         'account_code' => $this->coaService->getStandardAccounts()['inventory'],
                         'entry_type' => 'CREDIT',
                         'amount' => $totalCost,
-                        'description' => "Inventory usage - Invoice #$invoiceNumber"
+                        'description' => "Inventory usage - Invoice #$invoiceNumber",
                     ];
                 }
 
@@ -537,7 +549,7 @@ class SalesService
                         'account_code' => $this->coaService->getStandardAccounts()['sales_discount'],
                         'entry_type' => 'DEBIT',
                         'amount' => $discountAmount,
-                        'description' => "Sales Discount - Invoice #$invoiceNumber"
+                        'description' => "Sales Discount - Invoice #$invoiceNumber",
                     ];
                 }
 
@@ -549,8 +561,8 @@ class SalesService
                     null,
                     now()->format('Y-m-d'),
                     'AUTOMATIC',
-                    $currencyId ? (int)$currencyId : null,
-                    $exchangeRate ? (float)$exchangeRate : null
+                    $currencyId ? (int) $currencyId : null,
+                    $exchangeRate ? (float) $exchangeRate : null
                 );
 
                 $invoice->update(['voucher_number' => $voucherNumber]);
@@ -578,11 +590,12 @@ class SalesService
 
     /**
      * Delete (void) an existing invoice.
-     * Instead of a hard delete, it flags the invoice as reversed and creates 
+     * Instead of a hard delete, it flags the invoice as reversed and creates
      * reversing GL entries to maintain audit trail.
-     * 
-     * @param int $invoiceId The ID of the invoice to delete
+     *
+     * @param  int  $invoiceId  The ID of the invoice to delete
      * @return bool True on success
+     *
      * @throws \Exception If the invoice already has payments collected
      */
     public function deleteInvoice(int $invoiceId): bool
@@ -592,7 +605,7 @@ class SalesService
 
             // Fix BUG-002: Prevent deletion of paid invoices
             if ($invoice->amount_paid > 0) {
-                throw new \Exception("Cannot delete an invoice that has payments collected. Please use the Credit Note/Void workflow instead.");
+                throw new \Exception('Cannot delete an invoice that has payments collected. Please use the Credit Note/Void workflow instead.');
             }
 
             // Also check for any AR Transactions linked to this invoice that are NOT the invoice itself (e.g. payments)
@@ -607,7 +620,7 @@ class SalesService
             if ($glEntry) {
                 // 2. Reverse Transaction
                 $this->ledgerService->reverseTransaction(
-                    $glEntry->voucher_number, 
+                    $glEntry->voucher_number,
                     "Reversal for deleted Invoice #{$invoice->invoice_number}"
                 );
             }
@@ -653,7 +666,7 @@ class SalesService
             $invoice->update([
                 'is_reversed' => true,
                 'reversed_at' => now(),
-                'reversed_by' => auth()->id() ?? $invoice->user_id
+                'reversed_by' => auth()->id() ?? $invoice->user_id,
             ]);
 
             return true;
@@ -672,7 +685,7 @@ class SalesService
             // Validate that invoice hasn't been fully returned
             $existingReturns = SalesReturn::where('invoice_id', $invoiceId)->sum('subtotal');
             if ($existingReturns >= $invoice->subtotal) {
-                throw new \Exception("هذه الفاتورة تم إرجاعها بالكامل مسبقاً");
+                throw new \Exception('هذه الفاتورة تم إرجاعها بالكامل مسبقاً');
             }
 
             // Calculate return amounts
@@ -681,8 +694,8 @@ class SalesService
 
             foreach ($items as $item) {
                 $invoiceItem = $invoice->items->firstWhere('id', $item['invoice_item_id']);
-                if (!$invoiceItem) {
-                    Log::error("Return Error: Item not found in invoice.", [
+                if (! $invoiceItem) {
+                    Log::error('Return Error: Item not found in invoice.', [
                         'invoice_id' => $invoice->id,
                         'invoice_number' => $invoice->invoice_number,
                         'looking_for_item_id' => $item['invoice_item_id'],
@@ -691,7 +704,7 @@ class SalesService
                     throw new \Exception("عنصر الفاتورة غير موجود: {$item['invoice_item_id']} في الفاتورة رقم: {$invoice->id}");
                 }
 
-                $returnQuantity = (int)$item['return_quantity'];
+                $returnQuantity = (int) $item['return_quantity'];
 
                 // Check if return quantity is valid
                 $previouslyReturned = SalesReturnItem::where('invoice_item_id', $invoiceItem->id)
@@ -718,16 +731,16 @@ class SalesService
 
             // Calculate proportional VAT, Fees, and Discounts
             $proportion = $invoice->subtotal > 0 ? $returnSubtotal / $invoice->subtotal : 0;
-            
+
             $returnVat = 0;
             $taxLinesToInsert = [];
-            
+
             if (TaxCalculator::isTaxEngineEnabled() && $invoice->taxLines && $invoice->taxLines->count() > 0) {
                 foreach ($invoice->taxLines as $taxLine) {
                     $taxAmount = round($taxLine->tax_amount * $proportion, 4);
                     $taxableAmount = round($taxLine->taxable_amount * $proportion, 4);
                     $returnVat += $taxAmount;
-                    
+
                     $taxLinesToInsert[] = [
                         'tax_authority_id' => $taxLine->tax_authority_id,
                         'tax_type_id' => $taxLine->tax_type_id,
@@ -748,23 +761,23 @@ class SalesService
             } else {
                 $returnVat = round($invoice->vat_amount * $proportion, 2);
             }
-            
+
             $returnFees = 0;
             if (TaxCalculator::isTaxEngineEnabled() && $invoice->taxLines && $invoice->taxLines->count() > 0) {
-                 foreach ($invoice->taxLines as $taxLine) {
-                     if (strtoupper($taxLine->tax_type_code) !== 'VAT') {
-                         $returnFees += round($taxLine->tax_amount * $proportion, 4);
-                     }
-                 }
-                 $returnFees = round($returnFees, 2);
+                foreach ($invoice->taxLines as $taxLine) {
+                    if (strtoupper($taxLine->tax_type_code) !== 'VAT') {
+                        $returnFees += round($taxLine->tax_amount * $proportion, 4);
+                    }
+                }
+                $returnFees = round($returnFees, 2);
             } else {
-                 $returnFees = round($invoice->fees->sum('amount') * $proportion, 2);
+                $returnFees = round($invoice->fees->sum('amount') * $proportion, 2);
             }
             $returnDiscount = round(($invoice->discount_amount ?? 0) * $proportion, 2);
             $returnTotal = ($returnSubtotal - $returnDiscount) + $returnVat + $returnFees;
 
             // Generate return number
-            $returnNumber = 'RET-' . date('Ymd') . '-' . str_pad(
+            $returnNumber = 'RET-'.date('Ymd').'-'.str_pad(
                 SalesReturn::whereDate('created_at', today())->count() + 1,
                 4,
                 '0',
@@ -781,9 +794,10 @@ class SalesService
                 'user_id' => $userId,
             ]);
 
-            if (!empty($taxLinesToInsert)) {
-                $taxLinesToInsert = array_map(function($line) use ($return) {
+            if (! empty($taxLinesToInsert)) {
+                $taxLinesToInsert = array_map(function ($line) use ($return) {
                     $line['taxable_id'] = $return->id;
+
                     return $line;
                 }, $taxLinesToInsert);
                 TaxLine::insert($taxLinesToInsert);
@@ -816,7 +830,7 @@ class SalesService
             $invoiceNumber = $invoice->invoice_number;
 
             // Reverse Revenue (Debit) - Dynamically choose based on invoice type
-            $revenueAccount = ($invoice->invoice_type === 'service') 
+            $revenueAccount = ($invoice->invoice_type === 'service')
                 ? $this->coaService->getStandardAccounts()['service_revenue']
                 : $this->coaService->getStandardAccounts()['sales_revenue'];
 
@@ -824,7 +838,7 @@ class SalesService
                 'account_code' => $revenueAccount,
                 'entry_type' => 'DEBIT',
                 'amount' => $returnSubtotal,
-                'description' => "Sales Return - Invoice #$invoiceNumber (Return #$returnNumber)"
+                'description' => "Sales Return - Invoice #$invoiceNumber (Return #$returnNumber)",
             ];
 
             // Reverse VAT (Debit) if applicable
@@ -833,7 +847,7 @@ class SalesService
                     'account_code' => $this->coaService->getStandardAccounts()['output_vat'],
                     'entry_type' => 'DEBIT',
                     'amount' => $returnVat,
-                    'description' => "VAT Reversal - Return #$returnNumber"
+                    'description' => "VAT Reversal - Return #$returnNumber",
                 ];
             }
 
@@ -842,7 +856,7 @@ class SalesService
                 foreach ($invoice->taxLines as $taxLine) {
                     if (strtoupper($taxLine->tax_type_code) !== 'VAT') {
                         $feeReturn = round($taxLine->tax_amount * $proportion, 2);
-                        
+
                         // Parse metadata dynamically for the original code or fall back to tax type query
                         $accountCode = null;
                         if ($taxLine->metadata && isset($taxLine->metadata['gl_account_code'])) {
@@ -857,7 +871,7 @@ class SalesService
                                 'account_code' => $accountCode,
                                 'entry_type' => 'DEBIT',
                                 'amount' => $feeReturn,
-                                'description' => "Fee/Tax Reversal: {$taxLine->tax_type_code} - Return #$returnNumber"
+                                'description' => "Fee/Tax Reversal: {$taxLine->tax_type_code} - Return #$returnNumber",
                             ];
                         }
                     }
@@ -866,13 +880,13 @@ class SalesService
                 foreach ($invoice->fees as $fee) {
                     $feeReturn = round($fee->amount * $proportion, 2);
                     $accountCode = $fee->feeDefinition?->account?->account_code;
-                    
+
                     if ($feeReturn > 0 && $accountCode) {
                         $glEntries[] = [
                             'account_code' => $accountCode,
                             'entry_type' => 'DEBIT',
                             'amount' => $feeReturn,
-                            'description' => "Fee Reversal: {$fee->fee_name} - Return #$returnNumber"
+                            'description' => "Fee Reversal: {$fee->fee_name} - Return #$returnNumber",
                         ];
                     }
                 }
@@ -884,7 +898,7 @@ class SalesService
                     'account_code' => $this->coaService->getStandardAccounts()['sales_discount'],
                     'entry_type' => 'CREDIT',
                     'amount' => $returnDiscount,
-                    'description' => "Discount Reversal - Return #$returnNumber"
+                    'description' => "Discount Reversal - Return #$returnNumber",
                 ];
             }
 
@@ -895,7 +909,7 @@ class SalesService
                     'account_code' => $this->coaService->getStandardAccounts()['accounts_receivable'],
                     'entry_type' => 'CREDIT',
                     'amount' => $returnTotal,
-                    'description' => "AR Reduction - Return #$returnNumber"
+                    'description' => "AR Reduction - Return #$returnNumber",
                 ];
             } else {
                 // Cash refund
@@ -903,7 +917,7 @@ class SalesService
                     'account_code' => $this->coaService->getStandardAccounts()['cash'],
                     'entry_type' => 'CREDIT',
                     'amount' => $returnTotal,
-                    'description' => "Cash Refund - Return #$returnNumber"
+                    'description' => "Cash Refund - Return #$returnNumber",
                 ];
             }
 
@@ -912,9 +926,11 @@ class SalesService
             $returnCost = 0;
             foreach ($returnItems as $item) {
                 $product = $item['product'];
-                if (!$product->inventory_control) continue;
+                if (! $product->inventory_control) {
+                    continue;
+                }
 
-                $cost = (float)($product->weighted_average_cost ?? 0);
+                $cost = (float) ($product->weighted_average_cost ?? 0);
                 $stockRestore = $item['quantity'];
                 if ($item['unit_type'] === 'main' || $item['unit_type'] === 'package') {
                     $stockRestore = $item['quantity'] * ($product->items_per_unit ?? 1);
@@ -927,14 +943,14 @@ class SalesService
                     'account_code' => $this->coaService->getStandardAccounts()['inventory'],
                     'entry_type' => 'DEBIT',
                     'amount' => $returnCost,
-                    'description' => "Inventory Restored - Return #$returnNumber"
+                    'description' => "Inventory Restored - Return #$returnNumber",
                 ];
 
                 $glEntries[] = [
                     'account_code' => $this->coaService->getStandardAccounts()['cost_of_goods_sold'],
                     'entry_type' => 'CREDIT',
                     'amount' => $returnCost,
-                    'description' => "COGS Reversal - Return #$returnNumber"
+                    'description' => "COGS Reversal - Return #$returnNumber",
                 ];
             }
 
@@ -986,4 +1002,3 @@ class SalesService
         });
     }
 }
-

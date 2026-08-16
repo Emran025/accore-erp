@@ -1,0 +1,2 @@
+Iteration 01 — module availability and sales route guard
+Validated: ModuleAvailabilityApiTest (4 tests, 14 assertions)

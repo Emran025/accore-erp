@@ -2,42 +2,43 @@
 
 namespace Tests\Unit\Services;
 
-use Tests\TestCase;
+use App\Domains\Commercial\CRM\Models\ArCustomer;
 use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
 use App\Domains\Commercial\SalesLifecycle\Models\InvoiceItem;
-use App\Domains\SupplyChain\Inventory\Models\Product;
-use App\Domains\Finance\GeneralLedger\Services\LedgerService;
-use App\Domains\SupplyChain\Inventory\Services\InventoryCostingService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Carbon\Carbon;
+use App\Domains\Commercial\SalesLifecycle\Services\SalesExecutionContextResolver;
+use App\Domains\Commercial\SalesLifecycle\Services\SalesService;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
+use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
+use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\Finance\GeneralLedger\Models\UniversalJournal;
-use Mockery;
 use App\Domains\Finance\GeneralLedger\Services\ChartOfAccountsMappingService;
-use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
-use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
-use App\Domains\Commercial\CRM\Models\ArCustomer;
-use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
-use App\Domains\Commercial\SalesLifecycle\Services\SalesService;
-
+use App\Domains\Finance\GeneralLedger\Services\LedgerService;
+use App\Domains\SupplyChain\Inventory\Models\Product;
+use App\Domains\SupplyChain\Inventory\Services\InventoryCostingService;
+use Carbon\Carbon;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mockery;
+use Tests\TestCase;
 
 class SalesServiceTest extends TestCase
 {
     use RefreshDatabase;
 
     private SalesService $salesService;
+
     private $costingServiceMock;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->seedAccounts();
-        
-        $ledgerService = new LedgerService();
-        $coaService = new ChartOfAccountsMappingService();
+
+        $ledgerService = new LedgerService;
+        $coaService = new ChartOfAccountsMappingService;
         $this->costingServiceMock = Mockery::mock(InventoryCostingService::class);
-        
+
         // Mock method calls expected during invoice creation
         $this->costingServiceMock->shouldReceive('recordSale')
             ->andReturn(50.00); // Dummy COGS value based on logic
@@ -53,7 +54,8 @@ class SalesServiceTest extends TestCase
         $this->salesService = new SalesService(
             $ledgerService,
             $coaService,
-            $this->costingServiceMock
+            $this->costingServiceMock,
+            new SalesExecutionContextResolver
         );
     }
 
@@ -64,54 +66,55 @@ class SalesServiceTest extends TestCase
         ChartOfAccount::factory()->asset()->create([
             'account_code' => '1110',
             'account_name' => 'Cash',
-            'account_type' => 'Asset'
+            'account_type' => 'Asset',
         ]);
-        
+
         // Accounts Receivable
         ChartOfAccount::factory()->asset()->create([
             'account_code' => '1120',
             'account_name' => 'Accounts Receivable',
-            'account_type' => 'Asset'
+            'account_type' => 'Asset',
         ]);
 
         // Inventory
         ChartOfAccount::factory()->asset()->create([
             'account_code' => '1130',
             'account_name' => 'Inventory',
-            'account_type' => 'Asset'
+            'account_type' => 'Asset',
         ]);
-        
+
         // Sales Revenue
         ChartOfAccount::factory()->revenue()->create([
             'account_code' => '4100',
             'account_name' => 'Sales Revenue',
-            'account_type' => 'Revenue'
+            'account_type' => 'Revenue',
         ]);
-        
+
         // Output VAT
         ChartOfAccount::factory()->liability()->create([
             'account_code' => '2210',
             'account_name' => 'Output VAT',
-            'account_type' => 'Liability'
+            'account_type' => 'Liability',
         ]);
-        
+
         // COGS
         ChartOfAccount::factory()->expense()->create([
             'account_code' => '5100',
             'account_name' => 'Cost of Goods Sold',
-            'account_type' => 'Expense'
+            'account_type' => 'Expense',
         ]);
     }
 
     public function test_create_invoice_with_items()
     {
         $user = User::factory()->create();
+        $this->createReadyOperatingContext($user);
         $customer = ArCustomer::factory()->create();
         $product = Product::factory()->create([
             'unit_price' => 100,
             'stock_quantity' => 10,
             'weighted_average_cost' => 50,
-            'minimum_profit_margin' => 0
+            'minimum_profit_margin' => 0,
         ]);
 
         // Seed costing layer
@@ -129,9 +132,9 @@ class SalesServiceTest extends TestCase
                     'quantity' => 2,
                     'unit_price' => 100,
                     'discount' => 0,
-                    'tax_rate' => 0.15
-                ]
-            ]
+                    'tax_rate' => 0.15,
+                ],
+            ],
         ];
 
         $invoiceId = $this->salesService->createInvoice($data);
@@ -158,19 +161,19 @@ class SalesServiceTest extends TestCase
         $this->assertDatabaseHas('general_ledger', [
             'voucher_number' => $invoice->voucher_number,
             'amount' => 230.00,
-            'entry_type' => 'DEBIT'
+            'entry_type' => 'DEBIT',
         ]);
 
         $this->assertDatabaseHas('general_ledger', [
             'voucher_number' => $invoice->voucher_number,
             'amount' => 200.00,
-            'entry_type' => 'CREDIT'
+            'entry_type' => 'CREDIT',
         ]);
 
         $this->assertDatabaseHas('general_ledger', [
             'voucher_number' => $invoice->voucher_number,
             'amount' => 30.00,
-            'entry_type' => 'CREDIT'
+            'entry_type' => 'CREDIT',
         ]);
     }
 
@@ -179,22 +182,22 @@ class SalesServiceTest extends TestCase
         // Setup existing invoice
         $invoice = Invoice::factory()->create([
             'is_reversed' => false,
-            'payment_type' => 'credit'
+            'payment_type' => 'credit',
         ]);
-        
+
         $product = Product::factory()->create(['stock_quantity' => 10]);
-        
+
         InvoiceItem::factory()->create([
             'invoice_id' => $invoice->id,
             'product_id' => $product->id,
-            'quantity' => 1
+            'quantity' => 1,
         ]);
 
         // Manually create GL entries for this invoice so deletion can reverse them
         $voucherNumber = 'VCH-TEST-001';
         UniversalJournal::factory()->create(['voucher_number' => $voucherNumber]);
         $invoice->update(['voucher_number' => $voucherNumber]);
-        
+
         GeneralLedger::factory()->create([
             'voucher_number' => $voucherNumber,
             'account_id' => $this->debitAccount->id ?? ChartOfAccount::factory()->asset()->create()->id,
@@ -202,7 +205,7 @@ class SalesServiceTest extends TestCase
             'amount' => 115,
             'reference_type' => 'invoices',
             'reference_id' => $invoice->id,
-            'description' => 'Original Invoice Entry'
+            'description' => 'Original Invoice Entry',
         ]);
 
         GeneralLedger::factory()->create([
@@ -212,7 +215,7 @@ class SalesServiceTest extends TestCase
             'amount' => 115,
             'reference_type' => 'invoices',
             'reference_id' => $invoice->id,
-            'description' => 'Original Invoice Entry'
+            'description' => 'Original Invoice Entry',
         ]);
 
         // Mock COGS reversal (return negative or ignore, depending on impl)
@@ -223,14 +226,14 @@ class SalesServiceTest extends TestCase
 
         $this->assertTrue($result);
         $this->assertTrue($invoice->fresh()->is_reversed);
-        
+
         // Stock restored
         $this->assertEquals(11, $product->fresh()->stock_quantity);
-        
+
         // Reversal entries exist
         $this->assertDatabaseHas('general_ledger', [
             'is_closed' => false,
-            'description' => "Reversal for deleted Invoice #{$invoice->invoice_number}"
+            'description' => "Reversal for deleted Invoice #{$invoice->invoice_number}",
         ]);
     }
 

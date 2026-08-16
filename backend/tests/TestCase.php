@@ -2,21 +2,28 @@
 
 namespace Tests;
 
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
+use App\Domains\Commercial\SalesLifecycle\Models\PosTerminal;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\Role;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\Session;
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\OperatingContext;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\OrgMetaType;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\StructureNode;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
-
+use App\Domains\Finance\ManagementAccounting\Models\CostCenter;
+use App\Domains\Finance\ManagementAccounting\Models\ProfitCenter;
+use App\Domains\SupplyChain\Inventory\Models\Warehouse;
 use Carbon\Carbon;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
     use RefreshDatabase;
 
     protected ?User $authenticatedUser = null;
+
     protected ?string $sessionToken = null;
 
     /**
@@ -36,15 +43,15 @@ abstract class TestCase extends BaseTestCase
     protected function seedEssentialData(): void
     {
         // Run essential seeders for RBAC and system structure
-        (new \Database\Seeders\RoleSeeder())->run();
-        (new \Database\Seeders\ModuleSeeder())->run();
-        (new \Database\Seeders\PermissionSeeder())->run();
+        (new \Database\Seeders\RoleSeeder)->run();
+        (new \Database\Seeders\ModuleSeeder)->run();
+        (new \Database\Seeders\PermissionSeeder)->run();
 
         // Ensure a default admin user exists for created_by FKs
         if (User::count() === 0) {
             User::factory()->create([
                 'id' => 1,
-                'role_id' => Role::where('role_key', 'admin')->value('id')
+                'role_id' => Role::where('role_key', 'admin')->value('id'),
             ]);
         }
 
@@ -57,7 +64,7 @@ abstract class TestCase extends BaseTestCase
     protected function seedFiscalPeriod(): void
     {
         FiscalPeriod::firstOrCreate(
-            ['period_name' => 'FY' . Carbon::now()->year],
+            ['period_name' => 'FY'.Carbon::now()->year],
             [
                 'start_date' => Carbon::now()->startOfYear()->format('Y-m-d'),
                 'end_date' => Carbon::now()->endOfYear()->format('Y-m-d'),
@@ -72,7 +79,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function authenticateUser(?User $user = null): static
     {
-        if (!$user) {
+        if (! $user) {
             $role = Role::where('role_key', 'admin')->first();
             $user = User::factory()->create([
                 'role_id' => $role?->id,
@@ -152,22 +159,110 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
+     * Create a real organizational store node for operating-context tests.
+     */
+    protected function createActiveStoreNode(?User $user = null): StructureNode
+    {
+        $user ??= $this->authenticatedUser ?? User::factory()->create();
+        $suffix = (string) (StructureNode::count() + 1);
+        $nodeType = OrgMetaType::firstOrCreate(
+            ['id' => 'store'],
+            [
+                'display_name' => 'Store',
+                'display_name_ar' => 'متجر',
+                'level_domain' => 'operational',
+                'is_assignable' => true,
+                'sort_order' => 1,
+            ]
+        );
+
+        return StructureNode::create([
+            'node_type_id' => $nodeType->id,
+            'code' => "STORE-TEST-{$suffix}",
+            'attributes_json' => [],
+            'status' => 'active',
+            'created_by' => $user->id,
+        ]);
+    }
+
+    /**
+     * Create a ready retail operating context for a user. Tests can override
+     * returned resources to model branch, warehouse, and terminal variations.
+     */
+    protected function createReadyOperatingContext(?User $user = null): OperatingContext
+    {
+        $user ??= $this->authenticatedUser ?? User::factory()->create();
+        $suffix = (string) (OperatingContext::count() + 1);
+        $orgNodeUuid = $this->createActiveStoreNode($user)->node_uuid;
+
+        $costCenter = CostCenter::create([
+            'code' => "CC-TEST-{$suffix}",
+            'name' => "Test Cost Center {$suffix}",
+            'type' => 'operational',
+            'is_active' => true,
+        ]);
+
+        $profitCenter = ProfitCenter::create([
+            'code' => "PC-TEST-{$suffix}",
+            'name' => "Test Profit Center {$suffix}",
+            'type' => 'branch',
+            'is_active' => true,
+        ]);
+
+        $warehouse = Warehouse::create([
+            'code' => "WH-TEST-{$suffix}",
+            'name' => "Test Warehouse {$suffix}",
+            'org_node_uuid' => $orgNodeUuid,
+            'cost_center_id' => $costCenter->id,
+            'profit_center_id' => $profitCenter->id,
+            'status' => 'active',
+            'is_active' => true,
+            'created_by' => $user->id,
+        ]);
+
+        $terminal = PosTerminal::create([
+            'code' => "POS-TEST-{$suffix}",
+            'name' => "Test POS {$suffix}",
+            'org_node_uuid' => $orgNodeUuid,
+            'warehouse_id' => $warehouse->id,
+            'cost_center_id' => $costCenter->id,
+            'profit_center_id' => $profitCenter->id,
+            'status' => 'active',
+            'is_active' => true,
+            'created_by' => $user->id,
+        ]);
+
+        return OperatingContext::create([
+            'user_id' => $user->id,
+            'org_node_uuid' => $orgNodeUuid,
+            'warehouse_id' => $warehouse->id,
+            'pos_terminal_id' => $terminal->id,
+            'cost_center_id' => $costCenter->id,
+            'profit_center_id' => $profitCenter->id,
+            'status' => 'ready',
+            'is_default' => true,
+            'readiness_json' => ['ready' => true],
+        ])->fresh(['warehouse', 'posTerminal', 'costCenter', 'profitCenter']);
+    }
+
+    /**
      * Assert that a response is successful JSON
      */
-        protected function assertSuccessResponse($response, ?int $status = null)
+    protected function assertSuccessResponse($response, ?int $status = null)
     {
         $actualStatus = $response->status();
         $isExpectedStatus = $status === null
             ? in_array($actualStatus, [200, 201], true)
             : $actualStatus === $status;
 
-        if (!$isExpectedStatus) {
+        if (! $isExpectedStatus) {
             $this->debugResponse($response);
             $expected = $status === null ? '200 or 201' : (string) $status;
             $this->fail("Expected status {$expected} but got {$actualStatus}.");
         }
 
         $response->assertJson(['success' => true]);
+
         return $response;
     }
 
@@ -194,24 +289,24 @@ abstract class TestCase extends BaseTestCase
         $data = json_decode($content, true);
 
         echo "\n\n--- DEBUGGER: API RESPONSE FAILURE ---";
-        echo "\nStatus: " . $status;
-        
+        echo "\nStatus: ".$status;
+
         if (isset($data['errors'])) {
-            echo "\nValidation Errors: " . json_encode($data['errors'], JSON_PRETTY_PRINT);
+            echo "\nValidation Errors: ".json_encode($data['errors'], JSON_PRETTY_PRINT);
         } elseif (isset($data['message'])) {
-            echo "\nMessage: " . $data['message'];
+            echo "\nMessage: ".$data['message'];
         }
 
         if ($status >= 500 || $showTrace) {
-            echo "\nResponse Content: " . substr($content, 0, 1000) . (strlen($content) > 1000 ? '...' : '');
+            echo "\nResponse Content: ".substr($content, 0, 1000).(strlen($content) > 1000 ? '...' : '');
             if (isset($data['exception'])) {
-                echo "\nException: " . $data['exception'];
-                echo "\nFile: " . $data['file'] . ":" . $data['line'];
+                echo "\nException: ".$data['exception'];
+                echo "\nFile: ".$data['file'].':'.$data['line'];
             }
         }
-        
+
         echo "\n---------------------------------------\n\n";
-        
+
         return $this;
     }
 
@@ -224,8 +319,10 @@ abstract class TestCase extends BaseTestCase
             $this->debugResponse($response);
         }
         $response->assertStatus($expectedStatus);
+
         return $response;
     }
+
     /**
      * Seed Chart of Accounts with standard accounts
      */

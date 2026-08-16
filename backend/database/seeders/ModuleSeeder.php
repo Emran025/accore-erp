@@ -9,6 +9,17 @@ class ModuleSeeder extends Seeder
 {
     public function run(): void
     {
+        // Existing installations retain their current activation state. New
+        // installations activate only the minimum administration foundation;
+        // business modules require explicit setup and activation.
+        $coreModuleKeys = [
+            'dashboard',
+            'org_structure',
+            'settings',
+            'users',
+            'roles_permissions',
+        ];
+
         $modules = [
             ['module_key' => 'dashboard', 'module_name_ar' => 'لوحة التحكم', 'module_name_en' => 'Dashboard', 'category' => 'system', 'icon' => 'home', 'sort_order' => 1],
             ['module_key' => 'org_structure', 'module_name_ar' => 'الهيكل التنظيمي', 'module_name_en' => 'Organizational Structure', 'category' => 'system', 'icon' => 'tree', 'sort_order' => 2],
@@ -82,10 +93,16 @@ class ModuleSeeder extends Seeder
         ];
 
         foreach ($modules as $module) {
-            Module::updateOrCreate(
-                ['module_key' => $module['module_key']],
-                $module
-            );
+            $record = Module::firstOrNew(['module_key' => $module['module_key']]);
+            $isNewModule = !$record->exists;
+
+            $record->fill($module);
+
+            if ($isNewModule) {
+                $record->is_active = in_array($module['module_key'], $coreModuleKeys, true);
+            }
+
+            $record->save();
         }
     }
 }

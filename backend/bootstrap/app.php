@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'api.auth' => \App\Http\Middleware\ApiAuth::class,
             'can' => \App\Http\Middleware\CheckPermission::class,
+            'module.operational' => \App\Http\Middleware\EnsureModuleOperational::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

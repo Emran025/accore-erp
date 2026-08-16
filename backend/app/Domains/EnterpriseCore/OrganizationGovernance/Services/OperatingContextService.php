@@ -4,8 +4,7 @@ namespace App\Domains\EnterpriseCore\OrganizationGovernance\Services;
 
 use App\Domains\Commercial\SalesLifecycle\Models\PosTerminal;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\OperatingContext;
-use App\Domains\Finance\ManagementAccounting\Models\CostCenter;
-use App\Domains\Finance\ManagementAccounting\Models\ProfitCenter;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\StructureNode;
 use App\Domains\SupplyChain\Inventory\Models\Warehouse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -32,11 +31,32 @@ class OperatingContextService
         $costCenter = $context?->costCenter;
         $profitCenter = $context?->profitCenter;
 
+        $hasActiveOrganizationLocation = $context !== null
+            && $context->org_node_uuid !== null
+            && StructureNode::query()
+                ->where('node_uuid', $context->org_node_uuid)
+                ->where('status', 'active')
+                ->exists();
+
         $checks = [
-            $this->check('warehouse', $warehouse !== null && $warehouse->is_active && $warehouse->status === 'active'),
+            $this->check('org_node', $hasActiveOrganizationLocation),
+            $this->check(
+                'warehouse',
+                $warehouse !== null
+                    && $warehouse->is_active
+                    && $warehouse->status === 'active'
+                    && $warehouse->org_node_uuid === $context?->org_node_uuid
+            ),
             $this->check('cost_center', $costCenter !== null && $costCenter->is_active),
             $this->check('profit_center', $profitCenter !== null && $profitCenter->is_active),
-            $this->check('pos_terminal', $terminal !== null && $terminal->is_active && $terminal->status === 'active'),
+            $this->check(
+                'pos_terminal',
+                $terminal !== null
+                    && $terminal->is_active
+                    && $terminal->status === 'active'
+                    && $terminal->org_node_uuid === $context?->org_node_uuid
+                    && $terminal->warehouse_id === $warehouse?->id
+            ),
         ];
 
         $missing = collect($checks)->where('complete', false)->values()->all();
@@ -106,12 +126,15 @@ class OperatingContextService
 
             $context->load(['warehouse', 'posTerminal', 'costCenter', 'profitCenter']);
             $readiness = $this->readiness($userId);
-            $context->update(['readiness_json' => [
-                'ready' => $readiness['ready'],
-                'status' => $readiness['status'],
-                'checks' => $readiness['checks'],
-                'missing' => $readiness['missing'],
-            ]]);
+            $context->update([
+                'status' => $readiness['ready'] ? 'ready' : 'draft',
+                'readiness_json' => [
+                    'ready' => $readiness['ready'],
+                    'status' => $readiness['status'],
+                    'checks' => $readiness['checks'],
+                    'missing' => $readiness['missing'],
+                ],
+            ]);
 
             return $context->fresh(['warehouse', 'posTerminal', 'costCenter', 'profitCenter']);
         });

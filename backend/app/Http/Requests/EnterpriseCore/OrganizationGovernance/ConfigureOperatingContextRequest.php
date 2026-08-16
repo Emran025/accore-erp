@@ -14,7 +14,7 @@ class ConfigureOperatingContextRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'org_node_uuid' => 'nullable|exists:structure_nodes,node_uuid',
+            'org_node_uuid' => 'required|exists:structure_nodes,node_uuid',
             'cost_center_id' => 'required|exists:cost_centers,id',
             'profit_center_id' => 'required|exists:profit_centers,id',
             'warehouse' => 'required|array',
@@ -32,6 +32,7 @@ class ConfigureOperatingContextRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'org_node_uuid.required' => 'An organizational store location must be selected.',
             'cost_center_id.required' => 'An active cost center must be selected.',
             'profit_center_id.required' => 'An active profit center must be selected.',
             'warehouse.required' => 'Warehouse configuration is required.',

@@ -63,7 +63,7 @@ Route::group(['prefix' => 'ap', 'middleware' => 'can:ap_suppliers,view'], functi
 });
 
 // ── 04. Sales Lifecycle (Commercial/SalesLifecycle)
-Route::group(['prefix' => 'sales', 'middleware' => 'can:sales,view'], function () {
+Route::group(['prefix' => 'sales', 'middleware' => ['can:sales,view', 'module.operational:sales']], function () {
     // Invoices
     Route::get('/invoices', [SalesController::class, 'index'])->name('v2.invoices.index');
     Route::get('/invoices/{id}', [SalesController::class, 'show'])->name('v2.invoices.show');
