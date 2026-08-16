@@ -1,6 +1,6 @@
 "use client";
 
-import { useI18n } from "@/lib/i18n";
+import { catalogText, useI18n } from "@/lib/i18n";
 import { useEffect, ReactNode, Suspense } from "react";
 import { useRouter } from "next/navigation";
 
@@ -89,7 +89,10 @@ export function MainLayout({
     const nextActionLabel = readiness.next_action ? readinessLabels[readiness.next_action] : "";
 
     publishProductNotification({
-      message: `${i18n.catalog["components.mainlayout.operatingSetupIsIncomplete"]} ${nextActionLabel}`.trim(),
+      message: catalogText(i18n, "components.mainlayout.operatingSetupIncompleteWithAction", {
+        value0: i18n.catalog["components.mainlayout.operatingSetupIsIncomplete"],
+        value1: nextActionLabel,
+      }).trim(),
       source: "operating-context",
       details: missingActions.join(" • ") || undefined,
       dedupeKey: "operating-readiness:incomplete",

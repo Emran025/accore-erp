@@ -1,4 +1,4 @@
-import type { SupportedLocale } from "@/lib/i18n";
+import type { AppDictionary } from "@/lib/i18n";
 import type { NotificationCategory } from "@/stores/useNotificationStore";
 
 export interface StatusNotificationCopy {
@@ -19,53 +19,27 @@ export interface StatusNotificationCopy {
     categories: Record<NotificationCategory | "all", string>;
 }
 
-const copy: Record<SupportedLocale, StatusNotificationCopy> = {
-    "ar-SA": {
-        ready: "النظام جاهز",
-        centerTitle: "مركز الإشعارات",
-        openCenter: "فتح مركز الإشعارات",
-        closeCenter: "إغلاق مركز الإشعارات",
-        markAllRead: "تعليم الكل كمقروء",
-        clearDismissed: "تنظيف المخفي",
-        noNotifications: "لا توجد إشعارات ضمن هذا التصنيف.",
-        previous: "السابق",
-        next: "التالي",
-        dismiss: "إخفاء الإشعار",
-        details: "التفاصيل",
-        source: "المصدر",
-        openRelatedScreen: "فتح الشاشة ذات الصلة",
-        unreadSuffix: "غير مقروءة",
+export function getStatusNotificationCopy(dictionary: AppDictionary): StatusNotificationCopy {
+    return {
+        ready: dictionary.catalog["components.statusNotificationBar.ready"],
+        centerTitle: dictionary.catalog["components.statusNotificationBar.centerTitle"],
+        openCenter: dictionary.catalog["components.statusNotificationBar.openCenter"],
+        closeCenter: dictionary.catalog["components.statusNotificationBar.closeCenter"],
+        markAllRead: dictionary.catalog["components.statusNotificationBar.markAllRead"],
+        clearDismissed: dictionary.catalog["components.statusNotificationBar.clearDismissed"],
+        noNotifications: dictionary.catalog["components.statusNotificationBar.noNotifications"],
+        previous: dictionary.catalog["common.general.previous"],
+        next: dictionary.catalog["common.general.next"],
+        dismiss: dictionary.catalog["components.statusNotificationBar.dismiss"],
+        details: dictionary.catalog["common.general.details"],
+        source: dictionary.catalog["common.general.source"],
+        openRelatedScreen: dictionary.catalog["components.statusNotificationBar.openRelatedScreen"],
+        unreadSuffix: dictionary.catalog["components.statusNotificationBar.unreadSuffix"],
         categories: {
-            all: "الكل",
-            operational: "تشغيلي ومحاسبي",
-            code: "أخطاء برمجية",
-            product: "المنتج والإعداد",
+            all: dictionary.catalog["common.general.all"],
+            operational: dictionary.catalog["components.statusNotificationBar.categoryOperational"],
+            code: dictionary.catalog["components.statusNotificationBar.categoryCode"],
+            product: dictionary.catalog["components.statusNotificationBar.categoryProduct"],
         },
-    },
-    "en-US": {
-        ready: "System ready",
-        centerTitle: "Notification center",
-        openCenter: "Open notification center",
-        closeCenter: "Close notification center",
-        markAllRead: "Mark all as read",
-        clearDismissed: "Clear dismissed",
-        noNotifications: "There are no notifications in this category.",
-        previous: "Previous",
-        next: "Next",
-        dismiss: "Dismiss notification",
-        details: "Details",
-        source: "Source",
-        openRelatedScreen: "Open related screen",
-        unreadSuffix: "unread",
-        categories: {
-            all: "All",
-            operational: "Operations & accounting",
-            code: "Code errors",
-            product: "Product & setup",
-        },
-    },
-};
-
-export function getStatusNotificationCopy(locale: SupportedLocale): StatusNotificationCopy {
-    return copy[locale];
+    };
 }

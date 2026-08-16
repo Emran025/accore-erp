@@ -1,6 +1,6 @@
 "use client";
 
-import { useI18n } from "@/lib/i18n";
+import { catalogText, useI18n } from "@/lib/i18n";
 import { MainLayout } from "@/components/layout";
 import { Button, Column, Dialog, Table, showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -104,7 +104,10 @@ export default function DashboardPage() {
                 const lowStockCount = Array.isArray(d.low_stock_products) ? d.low_stock_products.length : 0;
                 if (lowStockCount > 0) {
                     publishProductNotification({
-                        message: `${i18n.catalog["enterpriseCore.globalDashboard.lowStockAlerts"]}: ${lowStockCount}`,
+                        message: catalogText(i18n, "enterpriseCore.globalDashboard.alertCountNotification", {
+                            value0: i18n.catalog["enterpriseCore.globalDashboard.lowStockAlerts"],
+                            value1: lowStockCount,
+                        }),
                         source: "global-dashboard",
                         action: {
                             href: "/01-enterprise-core/system-overview/dashboard/global-dashboard",
@@ -117,7 +120,10 @@ export default function DashboardPage() {
                 const expiringSoonCount = Array.isArray(d.expiring_products) ? d.expiring_products.length : 0;
                 if (expiringSoonCount > 0) {
                     publishProductNotification({
-                        message: `${i18n.catalog["enterpriseCore.globalDashboard.expiringSoonAlerts"]}: ${expiringSoonCount}`,
+                        message: catalogText(i18n, "enterpriseCore.globalDashboard.alertCountNotification", {
+                            value0: i18n.catalog["enterpriseCore.globalDashboard.expiringSoonAlerts"],
+                            value1: expiringSoonCount,
+                        }),
                         source: "global-dashboard",
                         action: {
                             href: "/01-enterprise-core/system-overview/dashboard/global-dashboard",

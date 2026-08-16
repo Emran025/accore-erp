@@ -64,7 +64,11 @@ export default function FiscalPeriodsPage() {
 
         if (upcomingPeriod) {
           publishProductNotification({
-            message: `${i18n.catalog["finance.fiscalPeriods.periodName"]}: ${upcomingPeriod.period_name} — ${formatDate(upcomingPeriod.end_date)}`,
+            message: catalogText(i18n, "finance.fiscalPeriods.nearingEndNotification", {
+              value0: i18n.catalog["finance.fiscalPeriods.periodName"],
+              value1: upcomingPeriod.period_name,
+              value2: formatDate(upcomingPeriod.end_date),
+            }),
             source: "fiscal-periods",
             action: {
               href: "/03-finance/general-ledger/ledger-core/fiscal-periods",

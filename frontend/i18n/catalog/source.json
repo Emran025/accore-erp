@@ -51632,6 +51632,12 @@
       ]
     },
     {
+      "id": "components.mainlayout.operatingSetupIncompleteWithAction",
+      "source": "{value0} {value1}",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
       "id": "components.mainlayout.operatingSetupIsIncomplete",
       "source": "Operating setup is incomplete:",
       "classification": "review-required",
@@ -51767,6 +51773,18 @@
       ]
     },
     {
+      "id": "components.notificationRuntimeBridge.unexpectedClientRuntimeError",
+      "source": "حدث خطأ غير متوقع أثناء تشغيل التطبيق.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "components.notificationRuntimeBridge.unhandledClientPromiseRejection",
+      "source": "تم رفض وعد في التطبيق دون معالجة.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
       "id": "components.sidebaritem.soon",
       "source": "Soon",
       "classification": "user-facing",
@@ -51855,6 +51873,84 @@
           "context": "Unclassified textual literal"
         }
       ]
+    },
+    {
+      "id": "components.statusNotificationBar.categoryCode",
+      "source": "أخطاء برمجية",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "components.statusNotificationBar.categoryOperational",
+      "source": "التشغيل والمحاسبة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "components.statusNotificationBar.categoryProduct",
+      "source": "المنتج والإعداد",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "components.statusNotificationBar.centerTitle",
+      "source": "مركز الإشعارات",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "components.statusNotificationBar.clearDismissed",
+      "source": "مسح الإشعارات المخفية",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "components.statusNotificationBar.closeCenter",
+      "source": "إغلاق مركز الإشعارات",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "components.statusNotificationBar.dismiss",
+      "source": "إخفاء الإشعار",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "components.statusNotificationBar.markAllRead",
+      "source": "تعليم الكل كمقروء",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "components.statusNotificationBar.noNotifications",
+      "source": "لا توجد إشعارات ضمن هذا التصنيف.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "components.statusNotificationBar.openCenter",
+      "source": "فتح مركز الإشعارات",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "components.statusNotificationBar.openRelatedScreen",
+      "source": "فتح الشاشة ذات الصلة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "components.statusNotificationBar.ready",
+      "source": "النظام جاهز",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "components.statusNotificationBar.unreadSuffix",
+      "source": "غير مقروء",
+      "classification": "user-facing",
+      "occurrences": []
     },
     {
       "id": "components.stepnavigation.nextStep",
@@ -53985,6 +54081,12 @@
           "context": "JSX title"
         }
       ]
+    },
+    {
+      "id": "enterpriseCore.globalDashboard.alertCountNotification",
+      "source": "{value0}: {value1}",
+      "classification": "user-facing",
+      "occurrences": []
     },
     {
       "id": "enterpriseCore.globalDashboard.automaticRestockRequest",
@@ -60465,6 +60567,12 @@
           "context": "Object title"
         }
       ]
+    },
+    {
+      "id": "finance.fiscalPeriods.nearingEndNotification",
+      "source": "{value0}: {value1} — {value2}",
+      "classification": "user-facing",
+      "occurrences": []
     },
     {
       "id": "finance.fiscalPeriods.newFiscalPeriod",

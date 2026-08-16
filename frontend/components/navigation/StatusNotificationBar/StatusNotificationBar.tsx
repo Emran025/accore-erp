@@ -55,8 +55,8 @@ function countUnread(notifications: AppNotification[], category: NotificationCat
 }
 
 export function StatusNotificationBar({ text }: StatusNotificationBarProps) {
-    const { locale } = useI18n();
-    const copy = getStatusNotificationCopy(locale);
+    const { locale, t: i18n } = useI18n();
+    const copy = getStatusNotificationCopy(i18n);
     const rootRef = useRef<HTMLDivElement>(null);
 
     const notifications = useNotificationStore((state) => state.notifications);
@@ -290,7 +290,7 @@ export function StatusNotificationBar({ text }: StatusNotificationBarProps) {
                     <span className="status-notification-summary-text">{summaryText}</span>
                     {unreadTotal > 0 && <span className="status-notification-unread-badge">{unreadTotal}</span>}
                 </button>
-                <span className="status-notification-environment">{locale === "ar-SA" ? "بيئة الاختبار" : "Test environment"}</span>
+                <span className="status-notification-environment">{i18n.catalog["components.environmentindicator.testEnvironment"]}</span>
             </footer>
         </div>
     );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { catalogMessage } from "@/lib/i18n";
 import { publishCodeError } from "@/stores/useNotificationStore";
 
 function getErrorDetails(reason: unknown): string | undefined {
@@ -33,7 +34,10 @@ export function NotificationRuntimeBridge() {
                 .join(" · ");
 
             publishCodeError({
-                message: getErrorMessage(event.error ?? event.message, "Unexpected client runtime error"),
+                message: getErrorMessage(
+                    event.error ?? event.message,
+                    catalogMessage("components.notificationRuntimeBridge.unexpectedClientRuntimeError")
+                ),
                 source: source || "client-runtime",
                 details: getErrorDetails(event.error ?? event.message),
                 dedupeKey: `runtime-error:${event.filename}:${event.lineno}:${event.colno}:${event.message}`,
@@ -41,7 +45,10 @@ export function NotificationRuntimeBridge() {
         };
 
         const onUnhandledRejection = (event: PromiseRejectionEvent) => {
-            const message = getErrorMessage(event.reason, "Unhandled client promise rejection");
+            const message = getErrorMessage(
+                event.reason,
+                catalogMessage("components.notificationRuntimeBridge.unhandledClientPromiseRejection")
+            );
             publishCodeError({
                 message,
                 source: "client-promise",

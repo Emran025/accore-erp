@@ -66,7 +66,10 @@ function isTechnicalValue(value: string): boolean {
         || (!hasArabic && /^(?:(?:\d+(?:\.\d+)?(?:rem|px|em|%))(?:\s+(?:0|\d+(?:\.\d+)?(?:rem|px|em|%)))*|opacity\s+\d+(?:\.\d+)?s\s+ease|alert\s+alert-\{value\d+\}\s+animate-[\w-]+)$/i.test(value))
         || (!hasArabic && /^(?:btn(?:\s|-)\S+|btn-\{value\d+\}|border-radius-\{value\d+\}|\{value\d+\}(?:\s+\{value\d+\})+)$/u.test(value))
         || (!hasArabic && /^\{value\d+\}\/\{value\d+\}$/u.test(value))
-        || (!hasArabic && /^\{value\d+\}(?:\s*[()|—:-]\s*\{value\d+\})*$/u.test(value));
+        || (!hasArabic && /^\{value\d+\}(?:\s*[()|—:-]\s*\{value\d+\})*$/u.test(value))
+        || (!hasArabic && /^(?:line|column) \{value\d+\}$/i.test(value))
+        || (!hasArabic && /^(?:operating-readiness|runtime-error|runtime-rejection|fiscal-period-nearing-end|legacy-error):/i.test(value))
+        || (!hasArabic && /^(?:err|notification)_[a-z0-9_{}-]+$/i.test(value));
 }
 
 function nearestAncestor<T extends Node>(node: Node, predicate: (candidate: Node) => candidate is T): T | undefined {
