@@ -80,6 +80,15 @@ export default function OrganizationalStructurePage() {
   };
 
   useEffect(() => {
+    const shouldOpenSetup =
+      typeof window !== 'undefined' &&
+      new URLSearchParams(window.location.search).get('setup') === '1';
+    if (shouldOpenSetup && readiness && !readiness.ready) {
+      setSetupOpen(true);
+    }
+  }, [readiness]);
+
+  useEffect(() => {
     const loadSetupData = async () => {
       const [nodeResponse, costResponse, profitResponse] = await Promise.all([
         fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES),

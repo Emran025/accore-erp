@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { login } from "@/lib/auth";
 import { LoginForm } from "../components/LoginForm";
+import { useOperatingContextStore } from "@/stores/useOperatingContextStore";
 
 export default function LoginPage() {
     const { t: i18n } = useI18n();
@@ -16,7 +17,13 @@ export default function LoginPage() {
         try {
             const result = await login(username, password);
             if (result.success) {
-                router.push("/01-enterprise-core/system-overview/dashboard/global-dashboard");
+                const readiness = await useOperatingContextStore.getState().loadReadiness();
+                const structureReady = readiness?.structural_readiness?.ready === true;
+                router.push(
+                    structureReady
+                        ? "/01-enterprise-core/system-overview/dashboard/global-dashboard"
+                        : "/01-enterprise-core/organization-governance/org-structure/org-hierarchy?setup=1"
+                );
             }
             return result;
         } catch {
