@@ -94,6 +94,7 @@ Route::group(['prefix' => 'org-integration', 'middleware' => 'can:settings,view'
 // ── 03. Operating Context (OrganizationGovernance)
 Route::group(['prefix' => 'operating-context', 'middleware' => 'can:settings,view'], function () {
     Route::get('/readiness', [OperatingContextController::class, 'readiness'])->name('v2.operating_context.readiness');
+    Route::get('/contexts', [OperatingContextController::class, 'contexts'])->name('v2.operating_context.contexts');
     Route::get('/warehouses', [OperatingContextController::class, 'warehouses'])->name('v2.operating_context.warehouses');
     Route::get('/pos-terminals', [OperatingContextController::class, 'posTerminals'])->name('v2.operating_context.pos_terminals');
     Route::middleware(['can:settings,create', 'throttle:api-write'])->post('/configure', [OperatingContextController::class, 'configure'])->name('v2.operating_context.configure');

@@ -15,6 +15,7 @@ class ConfigureOperatingContextRequest extends FormRequest
     {
         return [
             'org_node_uuid' => 'required|exists:structure_nodes,node_uuid',
+            'system_default' => 'sometimes|boolean',
             'cost_center_id' => 'required|exists:cost_centers,id',
             'profit_center_id' => 'required|exists:profit_centers,id',
             'warehouse' => 'required|array',

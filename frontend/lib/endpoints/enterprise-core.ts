@@ -43,6 +43,7 @@ export interface EnterpriseCoreEndpoints {
   };
   OPERATING_CONTEXT: {
     READINESS: string;
+    CONTEXTS: string;
     CONFIGURE: string;
     WAREHOUSES: string;
     POS_TERMINALS: string;
@@ -125,6 +126,7 @@ export const ENTERPRISE_CORE: EnterpriseCoreEndpoints = {
   },
   OPERATING_CONTEXT: {
     READINESS: '/v2/operating-context/readiness',
+    CONTEXTS: '/v2/operating-context/contexts',
     CONFIGURE: '/v2/operating-context/configure',
     WAREHOUSES: '/v2/operating-context/warehouses',
     POS_TERMINALS: '/v2/operating-context/pos-terminals',

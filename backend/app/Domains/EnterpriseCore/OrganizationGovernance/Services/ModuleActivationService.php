@@ -44,7 +44,9 @@ final class ModuleActivationService
         }
 
         if (in_array($moduleKey, self::OPERATING_CONTEXT_MODULES, true)) {
-            $readiness = $this->operatingContext->readiness($userId);
+            // A module is shared by the organization; only a global default
+            // context proves that every authorized user can resolve a store.
+            $readiness = $this->operatingContext->readiness(null);
             if (! $readiness['ready']) {
                 throw new BusinessLogicException('Complete the operating context before activating this operational module.', 422);
             }

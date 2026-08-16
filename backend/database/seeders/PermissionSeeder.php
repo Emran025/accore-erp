@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\Role;
-use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Module;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\RolePermission;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Module;
+use Illuminate\Database\Seeder;
 
 class PermissionSeeder extends Seeder
 {
@@ -26,8 +26,8 @@ class PermissionSeeder extends Seeder
         $manager = Role::where('role_key', 'manager')->first();
         if ($manager) {
             Module::whereNotIn('module_key', ['settings', 'batch_processing', 'roles_permissions'])->each(function ($module) use ($manager) {
-                $canCreate = !in_array($module->module_key, ['fiscal_periods', 'general_ledger', 'reports', 'audit_trail']);
-                $canEdit = !in_array($module->module_key, ['fiscal_periods', 'general_ledger', 'reports', 'audit_trail', 'journal_vouchers', 'users', 'settings', 'roles_permissions']);
+                $canCreate = ! in_array($module->module_key, ['fiscal_periods', 'general_ledger', 'reports', 'audit_trail']);
+                $canEdit = ! in_array($module->module_key, ['fiscal_periods', 'general_ledger', 'reports', 'audit_trail', 'journal_vouchers', 'users', 'settings', 'roles_permissions']);
                 $canDelete = in_array($module->module_key, ['revenues', 'expenses']);
 
                 RolePermission::updateOrCreate(
@@ -45,9 +45,9 @@ class PermissionSeeder extends Seeder
         // Accountant permissions
         $accountant = Role::where('role_key', 'accountant')->first();
         if ($accountant) {
-            Module::whereNotIn('module_key', ['users', 'settings', 'batch_processing', 'roles_permissions'])->each(function ($module) use ($accountant) {
-                $canCreate = !in_array($module->module_key, ['products', 'fiscal_periods', 'general_ledger', 'reports', 'audit_trail', 'recurring_transactions']);
-                $canEdit = !in_array($module->module_key, ['sales', 'products', 'purchases', 'fiscal_periods', 'general_ledger', 'journal_vouchers', 'reports', 'audit_trail', 'recurring_transactions']);
+            Module::whereNotIn('module_key', ['users', 'settings', 'batch_processing', 'roles_permissions', 'sales'])->each(function ($module) use ($accountant) {
+                $canCreate = ! in_array($module->module_key, ['products', 'fiscal_periods', 'general_ledger', 'reports', 'audit_trail', 'recurring_transactions']);
+                $canEdit = ! in_array($module->module_key, ['sales', 'products', 'purchases', 'fiscal_periods', 'general_ledger', 'journal_vouchers', 'reports', 'audit_trail', 'recurring_transactions']);
 
                 RolePermission::updateOrCreate(
                     ['role_id' => $accountant->id, 'module_id' => $module->id],
@@ -60,7 +60,7 @@ class PermissionSeeder extends Seeder
                 );
             });
         }
-        
+
         // HR Manager permissions
         $hrManager = Role::where('role_key', 'hr_manager')->first();
         if ($hrManager) {
@@ -71,7 +71,7 @@ class PermissionSeeder extends Seeder
                         'can_view' => true,
                         'can_create' => true,
                         'can_edit' => true,
-                        'can_delete' => !in_array($module->module_key, ['dashboard', 'users']),
+                        'can_delete' => ! in_array($module->module_key, ['dashboard', 'users']),
                     ]
                 );
             });
@@ -82,15 +82,15 @@ class PermissionSeeder extends Seeder
         if ($employee) {
             // Employee can view/create requests in these modules (permissions restricted by policy to own data)
             $employeeModules = [
-                'portal', 'leave', 'attendance', 'travel', 'loans', 
-                'communications', 'performance', 'learning', 'benefits', 
-                'ehs', 'wellness', 'knowledge', 'expertise', 'eosb'
+                'portal', 'leave', 'attendance', 'travel', 'loans',
+                'communications', 'performance', 'learning', 'benefits',
+                'ehs', 'wellness', 'knowledge', 'expertise', 'eosb',
             ];
-            
+
             Module::whereIn('module_key', $employeeModules)->each(function ($module) use ($employee) {
                 // Determine if module allows creation by employee (e.g. requests)
                 $canCreate = in_array($module->module_key, ['leave', 'travel', 'loans', 'ehs', 'wellness', 'portal']);
-                
+
                 RolePermission::updateOrCreate(
                     ['role_id' => $employee->id, 'module_id' => $module->id],
                     [

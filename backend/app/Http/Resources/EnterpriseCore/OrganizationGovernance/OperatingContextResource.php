@@ -20,6 +20,7 @@ class OperatingContextResource extends JsonResource
             'profit_center_id' => $this->profit_center_id,
             'status' => $this->status,
             'is_default' => (bool) $this->is_default,
+            'scope' => $this->user_id === null ? 'organization' : 'personal',
             'warehouse' => $this->whenLoaded('warehouse', fn () => [
                 'id' => $this->warehouse?->id,
                 'code' => $this->warehouse?->code,

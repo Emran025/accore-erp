@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\OperatingContext;
 use App\Domains\Finance\ManagementAccounting\Models\CostCenter;
 use App\Domains\Finance\ManagementAccounting\Models\ProfitCenter;
@@ -29,7 +30,43 @@ class OperatingContextApiTest extends TestCase
             ->assertJsonMissingPath('data.checks.0.action');
     }
 
-    public function test_can_configure_an_operating_context_with_warehouse_and_pos(): void
+    public function test_user_can_list_and_switch_between_personal_and_organization_contexts(): void
+    {
+        $firstStore = $this->createReadyOperatingContext($this->authenticatedUser);
+        $secondStore = $this->createReadyOperatingContext($this->authenticatedUser);
+        $firstStore->update(['is_default' => false]);
+        $organizationStore = $this->createReadyOperatingContext(User::factory()->create());
+        $organizationStore->update(['user_id' => null, 'is_default' => true]);
+
+        $listResponse = $this->authGet(route('v2.operating_context.contexts'));
+
+        $this->assertSuccessResponse($listResponse);
+        $listResponse->assertJsonCount(3, 'data')
+            ->assertJsonPath('data.0.id', $secondStore->id)
+            ->assertJsonPath('data.0.scope', 'personal')
+            ->assertJsonPath('data.2.id', $organizationStore->id)
+            ->assertJsonPath('data.2.scope', 'organization');
+
+        $selectPersonalResponse = $this->authPost(
+            route('v2.operating_context.select', ['id' => $firstStore->id])
+        );
+        $this->assertSuccessResponse($selectPersonalResponse);
+        $this->assertDatabaseHas('operating_contexts', ['id' => $firstStore->id, 'is_default' => true]);
+        $this->assertDatabaseHas('operating_contexts', ['id' => $secondStore->id, 'is_default' => false]);
+
+        $selectOrganizationResponse = $this->authPost(
+            route('v2.operating_context.select', ['id' => $organizationStore->id])
+        );
+        $this->assertSuccessResponse($selectOrganizationResponse);
+        $this->assertDatabaseHas('operating_contexts', ['id' => $firstStore->id, 'is_default' => false]);
+        $this->assertDatabaseHas('operating_contexts', ['id' => $organizationStore->id, 'is_default' => true]);
+
+        $readinessResponse = $this->authGet(route('v2.operating_context.readiness'));
+        $this->assertSuccessResponse($readinessResponse);
+        $readinessResponse->assertJsonPath('data.context.id', $organizationStore->id);
+    }
+
+    public function test_can_configure_a_global_operating_context_with_warehouse_and_pos(): void
     {
         $storeNode = $this->createActiveStoreNode($this->authenticatedUser);
         $costCenter = CostCenter::create([
@@ -47,6 +84,7 @@ class OperatingContextApiTest extends TestCase
 
         $response = $this->authPost(route('v2.operating_context.configure'), [
             'org_node_uuid' => $storeNode->node_uuid,
+            'system_default' => true,
             'cost_center_id' => $costCenter->id,
             'profit_center_id' => $profitCenter->id,
             'warehouse' => [
@@ -70,5 +108,6 @@ class OperatingContextApiTest extends TestCase
 
         $context = OperatingContext::query()->firstOrFail();
         $this->assertTrue((bool) $context->is_default);
+        $this->assertNull($context->user_id);
     }
 }

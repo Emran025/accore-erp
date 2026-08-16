@@ -20,6 +20,7 @@ export interface SetupModuleState {
 
 export interface SetupState {
   setup_required: boolean;
+  pending_module_setup: boolean;
   selected_module_keys: string[];
   next_action: 'select_modules' | 'complete_organization_setup' | null;
   pending_module_keys: string[];

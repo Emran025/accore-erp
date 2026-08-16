@@ -405,6 +405,7 @@ class SalesService
                 }
 
                 // Post Invoice GL (currency on GL per SAP FI)
+                $invoiceEntries = $this->withAccountingDimensions($invoiceEntries, $data);
                 $voucherNumber = $this->ledgerService->postTransaction(
                     $invoiceEntries,
                     'invoices',
@@ -436,6 +437,7 @@ class SalesService
                         'description' => "Payment Applied - Invoice #$invoiceNumber",
                     ];
 
+                    $paymentEntries = $this->withAccountingDimensions($paymentEntries, $data);
                     $paymentVoucher = $this->ledgerService->postTransaction(
                         $paymentEntries,
                         'invoices',
@@ -554,6 +556,7 @@ class SalesService
                 }
 
                 // Post GL (currency on GL per SAP FI)
+                $glEntries = $this->withAccountingDimensions($glEntries, $data);
                 $voucherNumber = $this->ledgerService->postTransaction(
                     $glEntries,
                     'invoices',
@@ -586,6 +589,29 @@ class SalesService
 
             return $invoice->id;
         });
+    }
+
+    /**
+     * Applies the trusted operating-context dimensions to every GL line in a
+     * sales posting. LedgerService already persists these dimensions when
+     * present; centralizing them here prevents revenue, tax, cash, COGS and
+     * inventory lines from diverging across the same transaction.
+     *
+     * @param  array<int, array<string, mixed>>  $entries
+     * @param  array<string, mixed>  $data
+     * @return array<int, array<string, mixed>>
+     */
+    private function withAccountingDimensions(array $entries, array $data): array
+    {
+        $dimensions = [
+            'cost_center_id' => $data['cost_center_id'] ?? null,
+            'profit_center_id' => $data['profit_center_id'] ?? null,
+        ];
+
+        return array_map(
+            fn (array $entry): array => array_merge($entry, $dimensions),
+            $entries
+        );
     }
 
     /**

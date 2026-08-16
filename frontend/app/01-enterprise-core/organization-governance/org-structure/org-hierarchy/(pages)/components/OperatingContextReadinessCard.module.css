@@ -1,0 +1,18 @@
+.card {
+  margin-bottom: 1rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.checks {
+  margin-top: 0.75rem;
+}
+
+.selector {
+  max-width: 420px;
+  margin-top: 1rem;
+}

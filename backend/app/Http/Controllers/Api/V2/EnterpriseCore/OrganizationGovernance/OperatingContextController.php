@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\V2\EnterpriseCore\OrganizationGovernance;
 
 use App\Domains\Commercial\SalesLifecycle\Models\PosTerminal;
-use App\Domains\EnterpriseCore\OrganizationGovernance\Models\OperatingContext;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Services\OperatingContextService;
 use App\Domains\SupplyChain\Inventory\Models\Warehouse;
 use App\Http\Controllers\Api\V2\Shared\BaseApiController;
@@ -34,12 +33,23 @@ class OperatingContextController extends Controller
 
     public function configure(ConfigureOperatingContextRequest $request, OperatingContextService $service): JsonResponse
     {
-        $context = $service->configure($request->validated(), $request->user()?->id);
+        $context = $service->configure(
+            $request->validated(),
+            $request->user()?->id,
+            $request->boolean('system_default')
+        );
 
         return $this->successResponse(
             new OperatingContextResource($context),
             'Operating context configured successfully.',
             201
+        );
+    }
+
+    public function contexts(Request $request, OperatingContextService $service): JsonResponse
+    {
+        return $this->successResponse(
+            OperatingContextResource::collection($service->availableContexts($request->user()?->id))
         );
     }
 

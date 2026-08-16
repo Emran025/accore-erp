@@ -56582,6 +56582,21 @@
       ]
     },
     {
+      "id": "enterpriseCore.orgHierarchy.activateReadyModulesAndEnterSystem",
+      "source": "فعّل الوحدات الجاهزة وادخل النظام",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/components/OperatingContextReadinessCard.tsx:activate-ready-modules",
+          "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/components/OperatingContextReadinessCard.tsx",
+          "line": 0,
+          "column": 0,
+          "kind": "catalog-key",
+          "context": "Setup completion action"
+        }
+      ]
+    },
+    {
       "id": "enterpriseCore.orgHierarchy.changeLog",
       "source": "سجل التغييرات",
       "classification": "user-facing",
@@ -56593,6 +56608,21 @@
           "column": 45,
           "kind": "object-property",
           "context": "Object label"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgHierarchy.continueModuleSetup",
+      "source": "إضافة وحدة وتشغيلها",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/components/OperatingContextReadinessCard.tsx:continue-module-setup",
+          "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/components/OperatingContextReadinessCard.tsx",
+          "line": 0,
+          "column": 0,
+          "kind": "catalog-key",
+          "context": "Deferred module setup action"
         }
       ]
     },
@@ -56698,6 +56728,36 @@
           "column": 44,
           "kind": "call-argument",
           "context": "Call showAlert"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgHierarchy.operatingContextScopeOrganization",
+      "source": "سياق المنشأة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx:operating-context-scope-organization",
+          "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx",
+          "line": 0,
+          "column": 0,
+          "kind": "catalog-key",
+          "context": "Operating context selector scope label"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgHierarchy.operatingContextScopePersonal",
+      "source": "سياقي التشغيلي",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx:operating-context-scope-personal",
+          "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx",
+          "line": 0,
+          "column": 0,
+          "kind": "catalog-key",
+          "context": "Operating context selector scope label"
         }
       ]
     },
@@ -56987,6 +57047,21 @@
       ]
     },
     {
+      "id": "enterpriseCore.orgHierarchy.selectedModulesNeedOrganizationalSetup",
+      "source": "لا تزال بعض الوحدات المحددة تحتاج إلى استكمال إعدادها التنظيمي قبل تفعيلها.",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx:selected-modules-pending-alert",
+          "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx",
+          "line": 0,
+          "column": 0,
+          "kind": "catalog-key",
+          "context": "Module activation pending alert"
+        }
+      ]
+    },
+    {
       "id": "enterpriseCore.orgHierarchy.selectActiveCostCenter",
       "source": "اختر مركز تكلفة نشط",
       "classification": "user-facing",
@@ -57013,6 +57088,21 @@
           "column": 27,
           "kind": "jsx-attribute",
           "context": "JSX placeholder"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgHierarchy.selectOperatingContext",
+      "source": "متجر التشغيل الحالي",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx:select-operating-context",
+          "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx",
+          "line": 0,
+          "column": 0,
+          "kind": "catalog-key",
+          "context": "Operating context selector label"
         }
       ]
     },

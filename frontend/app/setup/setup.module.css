@@ -1,0 +1,129 @@
+.shell {
+  --setup-surface: color-mix(in srgb, var(--bg-primary, #ffffff) 94%, #edf5ff);
+  --setup-border: color-mix(in srgb, var(--primary, #145fa4) 20%, transparent);
+  --setup-muted: var(--text-secondary, #66758c);
+  --setup-accent: var(--primary, #145fa4);
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 3vw, 2rem);
+  color: var(--text-primary, #172033);
+  background: linear-gradient(145deg, #edf3ff 0%, #f8fbff 47%, #effaf5 100%);
+}
+
+.card {
+  width: min(100%, 1000px);
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+  border: 1px solid var(--setup-border);
+  border-radius: 1.5rem;
+  background: var(--setup-surface);
+  box-shadow: 0 1.5rem 4.4rem color-mix(in srgb, var(--primary, #145fa4) 13%, transparent);
+}
+
+.header {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 48rem;
+  margin-bottom: 1.75rem;
+}
+
+.kicker {
+  margin: 0;
+  color: var(--setup-accent);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.7rem, 4vw, 2.6rem);
+  line-height: 1.2;
+}
+
+.introduction,
+.notice {
+  margin: 0;
+  color: var(--setup-muted);
+  line-height: 1.8;
+}
+
+.moduleGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.875rem;
+  margin-top: 1.25rem;
+}
+
+.moduleCard {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 0.75rem;
+  min-height: 6rem;
+  padding: 1rem;
+  border: 1px solid var(--border-color, #d6e0ef);
+  border-radius: 0.9rem;
+  cursor: pointer;
+  background: var(--bg-primary, #ffffff);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.moduleCard:hover:not(.moduleCardActive) {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--setup-accent) 55%, transparent);
+}
+
+.moduleCardSelected {
+  border-color: var(--setup-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--setup-accent) 13%, transparent);
+}
+
+.moduleCardActive {
+  border-color: var(--success, #2f8f63);
+  background: color-mix(in srgb, var(--success, #2f8f63) 7%, var(--bg-primary, #ffffff));
+  cursor: default;
+}
+
+.moduleCardBody {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.moduleCardStatus {
+  color: var(--setup-muted);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.actions {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color, #d6e0ef);
+}
+
+.error {
+  margin: 0;
+  color: var(--danger, #b42318);
+  font-weight: 600;
+}
+
+.recoveryCard {
+  max-width: 42rem;
+}
+
+@media (max-width: 42rem) {
+  .card {
+    border-radius: 1rem;
+  }
+
+  .moduleGrid {
+    grid-template-columns: 1fr;
+  }
+}

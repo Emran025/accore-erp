@@ -5,6 +5,7 @@ import { MainLayout } from '@/components/layout';
 import {
   Button,
   Dialog,
+  Input,
   SearchableSelect,
   TabNavigation,
   type SelectOption,
@@ -16,7 +17,9 @@ import { useOperatingContextStore } from '@/stores/useOperatingContextStore';
 import { useSetupStateStore } from '@/stores/useSetupStateStore';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { SetupJourney } from '@/app/setup/components/SetupJourney';
 import { OrganizationalStructure } from './OrganizationalStructure';
+import { OperatingContextReadinessCard } from './components/OperatingContextReadinessCard';
 
 type OrgTab =
   | 'dashboard'
@@ -72,20 +75,8 @@ export default function OrganizationalStructurePage() {
   const [nodes, setNodes] = useState<any[]>([]);
   const [costCenters, setCostCenters] = useState<any[]>([]);
   const [profitCenters, setProfitCenters] = useState<any[]>([]);
-  const { readiness, loadReadiness } = useOperatingContextStore();
-  const readinessLabels: Record<string, string> = {
-    warehouse: i18n.catalog['enterpriseCore.orgHierarchy.readinessWarehouse'],
-    cost_center: i18n.catalog['enterpriseCore.orgHierarchy.readinessCostCenter'],
-    profit_center: i18n.catalog['enterpriseCore.orgHierarchy.readinessProfitCenter'],
-    pos_terminal: i18n.catalog['enterpriseCore.orgHierarchy.readinessPosTerminal'],
-  };
-  const readinessActions: Record<string, string> = {
-    warehouse: i18n.catalog['enterpriseCore.orgHierarchy.readinessActionWarehouse'],
-    cost_center: i18n.catalog['enterpriseCore.orgHierarchy.readinessActionCostCenter'],
-    profit_center: i18n.catalog['enterpriseCore.orgHierarchy.readinessActionProfitCenter'],
-    pos_terminal: i18n.catalog['enterpriseCore.orgHierarchy.readinessActionPosTerminal'],
-  };
-
+  const { readiness, contexts, isSelectingContext, loadReadiness, loadContexts, selectContext } =
+    useOperatingContextStore();
   useEffect(() => {
     const setupMode = new URLSearchParams(window.location.search).get('setup') === '1';
     setIsSetupFlow(setupMode);
@@ -104,10 +95,10 @@ export default function OrganizationalStructurePage() {
       setProfitCenters(
         listFromResponse(profitResponse).filter((center) => center.is_active !== false)
       );
-      await loadReadiness();
+      await Promise.all([loadReadiness(), loadContexts()]);
     };
     loadSetupData();
-  }, [loadReadiness]);
+  }, [loadContexts, loadReadiness]);
 
   const nodeOptions = useMemo<SelectOption[]>(
     () =>
@@ -147,14 +138,27 @@ export default function OrganizationalStructurePage() {
     setSetupForm((current) => ({ ...current, [key]: value }));
   };
 
+  const changeOperatingContext = async (value: string | number | null) => {
+    if (typeof value !== 'number') return;
+
+    const selected = await selectContext(value);
+    if (!selected) {
+      showAlert(
+        'operating-context-alert',
+        i18n.catalog['state.useoperatingcontextstore.unableSelectOperatingContext'],
+        'error'
+      );
+    }
+  };
+
   const activateReadySetupModules = async () => {
     const setupState = await activateReadyModules();
     if (!setupState) return;
 
-    if (setupState.setup_required) {
+    if (setupState.pending_module_setup) {
       showAlert(
         'operating-context-alert',
-        'Some selected modules still need organizational setup before activation.',
+        i18n.catalog['enterpriseCore.orgHierarchy.selectedModulesNeedOrganizationalSetup'],
         'error'
       );
       return;
@@ -165,6 +169,7 @@ export default function OrganizationalStructurePage() {
 
   const configureStore = async () => {
     if (
+      !setupForm.org_node_uuid ||
       !setupForm.cost_center_id ||
       !setupForm.profit_center_id ||
       !setupForm.warehouse_code ||
@@ -188,6 +193,7 @@ export default function OrganizationalStructurePage() {
         method: 'POST',
         body: JSON.stringify({
           org_node_uuid: setupForm.org_node_uuid,
+          system_default: isSetupFlow,
           cost_center_id: setupForm.cost_center_id,
           profit_center_id: setupForm.profit_center_id,
           warehouse: {
@@ -208,7 +214,7 @@ export default function OrganizationalStructurePage() {
         );
         return;
       }
-      await loadReadiness();
+      await Promise.all([loadReadiness(), loadContexts()]);
       setSetupOpen(false);
       showAlert(
         'operating-context-alert',
@@ -231,107 +237,76 @@ export default function OrganizationalStructurePage() {
     <MainLayout allowIncompleteSetup={isSetupFlow}>
       <div id="operating-context-alert" />
       <div className="settings-wrapper animate-fade">
-        <div className="sales-card" style={{ marginBottom: '1rem' }}>
-          <div className="card-header-flex">
-            <div>
-              <h3>{i18n.catalog['enterpriseCore.orgHierarchy.operationalStoreReadiness']}</h3>
-              {readiness?.ready ? (
-                <p>
-                  {i18n.catalog['enterpriseCore.orgHierarchy.readyWarehouseDrivenSalesPurchasing']}
-                </p>
-              ) : (
-                <p>
-                  {(readiness?.missing?.[0]?.key
-                    ? readinessActions[readiness.missing[0].key]
-                    : null) ||
-                    i18n.catalog[
-                      'enterpriseCore.orgHierarchy.configureWarehouseFinancialCentersPosTerminalBeginOperations'
-                    ]}
-                </p>
-              )}
-            </div>
-            <Button
-              variant={readiness?.ready ? 'secondary' : 'primary'}
-              onClick={() => {
-                if (isSetupFlow && readiness?.ready) {
-                  void activateReadySetupModules();
-                  return;
-                }
-                setSetupOpen(true);
-              }}
-              isLoading={isActivatingModules}
-            >
-              {isSetupFlow && readiness?.ready
-                ? 'Activate ready modules and enter the system'
-                : readiness?.ready
-                  ? i18n.catalog['enterpriseCore.orgHierarchy.reviewOperatingContext']
-                  : i18n.catalog['enterpriseCore.orgHierarchy.configureStore']}
-            </Button>
-          </div>
-          {setupError ? <p className="text-error">{setupError}</p> : null}
-          {readiness?.checks?.length ? (
-            <div className="badge-container" style={{ marginTop: '0.75rem' }}>
-              {readiness.checks.map((check) => (
-                <span
-                  key={check.key}
-                  className={`badge ${check.complete ? 'badge-success' : 'badge-warning'}`}
-                >
-                  {readinessLabels[check.key] || i18n.catalog['common.general.readiness']}:{' '}
-                  {check.complete
-                    ? i18n.catalog['enterpriseCore.orgHierarchy.readinessReady']
-                    : i18n.catalog['common.general.required']}
-                </span>
-              ))}
-            </div>
-          ) : null}
-        </div>
-
-        <TabNavigation
-          tabs={[
-            {
-              key: 'dashboard',
-              label: i18n.catalog['common.general.dashboard'],
-              icon: 'dashboard',
-            },
-            {
-              key: 'hierarchy',
-              label: i18n.catalog['common.general.organizationalChart'],
-              icon: 'tree',
-            },
-            {
-              key: 'nodes',
-              label: i18n.catalog['enterpriseCore.orgHierarchy.organizationalUnits'],
-              icon: 'sitemap',
-            },
-            { key: 'links', label: i18n.catalog['common.general.links'], icon: 'link' },
-            { key: 'meta_types', label: i18n.catalog['common.general.typesUnits'], icon: 'cube' },
-            {
-              key: 'topology_rules',
-              label: i18n.catalog['common.general.linkingRules'],
-              icon: 'route',
-            },
-            {
-              key: 'scope_context',
-              label: i18n.catalog['common.general.contextAnalysis'],
-              icon: 'search',
-            },
-            {
-              key: 'integrity',
-              label: i18n.catalog['enterpriseCore.orgHierarchy.structuralSafety'],
-              icon: 'check-shield',
-            },
-            {
-              key: 'change_history',
-              label: i18n.catalog['enterpriseCore.orgHierarchy.changeLog'],
-              icon: 'history',
-            },
-          ]}
-          activeTab={activeTab}
-          onTabChange={(tab) => setActiveTab(tab as OrgTab)}
+        {isSetupFlow ? <SetupJourney activeStep="organization" completedSteps={['scope']} /> : null}
+        <OperatingContextReadinessCard
+          isSetupFlow={isSetupFlow}
+          readiness={readiness}
+          contexts={contexts}
+          isSelectingContext={isSelectingContext}
+          isActivatingModules={isActivatingModules}
+          setupError={setupError}
+          onConfigure={() => setSetupOpen(true)}
+          onStartModuleSetup={() => router.push('/setup?continue=1')}
+          onActivateReadyModules={() => void activateReadySetupModules()}
+          onSelectContext={(value) => void changeOperatingContext(value)}
         />
-        <div>
-          <OrganizationalStructure activeTab={activeTab} />
-        </div>
+
+        {isSetupFlow ? (
+          <OrganizationalStructure activeTab="nodes" isSetupFlow />
+        ) : (
+          <>
+            <TabNavigation
+              tabs={[
+                {
+                  key: 'dashboard',
+                  label: i18n.catalog['common.general.dashboard'],
+                  icon: 'dashboard',
+                },
+                {
+                  key: 'hierarchy',
+                  label: i18n.catalog['common.general.organizationalChart'],
+                  icon: 'tree',
+                },
+                {
+                  key: 'nodes',
+                  label: i18n.catalog['enterpriseCore.orgHierarchy.organizationalUnits'],
+                  icon: 'sitemap',
+                },
+                { key: 'links', label: i18n.catalog['common.general.links'], icon: 'link' },
+                {
+                  key: 'meta_types',
+                  label: i18n.catalog['common.general.typesUnits'],
+                  icon: 'cube',
+                },
+                {
+                  key: 'topology_rules',
+                  label: i18n.catalog['common.general.linkingRules'],
+                  icon: 'route',
+                },
+                {
+                  key: 'scope_context',
+                  label: i18n.catalog['common.general.contextAnalysis'],
+                  icon: 'search',
+                },
+                {
+                  key: 'integrity',
+                  label: i18n.catalog['enterpriseCore.orgHierarchy.structuralSafety'],
+                  icon: 'check-shield',
+                },
+                {
+                  key: 'change_history',
+                  label: i18n.catalog['enterpriseCore.orgHierarchy.changeLog'],
+                  icon: 'history',
+                },
+              ]}
+              activeTab={activeTab}
+              onTabChange={(tab) => setActiveTab(tab as OrgTab)}
+            />
+            <div>
+              <OrganizationalStructure activeTab={activeTab} />
+            </div>
+          </>
+        )}
       </div>
 
       <Dialog
@@ -359,7 +334,7 @@ export default function OrganizationalStructurePage() {
               onChange={(value) =>
                 updateSetupField('org_node_uuid', typeof value === 'string' ? value : null)
               }
-              placeholder={i18n.catalog['enterpriseCore.orgHierarchy.selectOperatingUnitOptional']}
+              placeholder={i18n.catalog['enterpriseCore.orgHierarchy.organizationalUnit']}
             />
           </div>
           <div className="form-group">
@@ -392,7 +367,7 @@ export default function OrganizationalStructurePage() {
             <label htmlFor="warehouse-code">
               {i18n.catalog['enterpriseCore.orgHierarchy.warehouseCode']}
             </label>
-            <input
+            <Input
               id="warehouse-code"
               className="form-control"
               value={setupForm.warehouse_code}
@@ -403,7 +378,7 @@ export default function OrganizationalStructurePage() {
             <label htmlFor="warehouse-name">
               {i18n.catalog['enterpriseCore.orgHierarchy.warehouseName']}
             </label>
-            <input
+            <Input
               id="warehouse-name"
               className="form-control"
               value={setupForm.warehouse_name}
@@ -416,7 +391,7 @@ export default function OrganizationalStructurePage() {
             <label htmlFor="pos-code">
               {i18n.catalog['enterpriseCore.orgHierarchy.posTerminalCode']}
             </label>
-            <input
+            <Input
               id="pos-code"
               className="form-control"
               value={setupForm.pos_code}
@@ -427,7 +402,7 @@ export default function OrganizationalStructurePage() {
             <label htmlFor="pos-name">
               {i18n.catalog['enterpriseCore.orgHierarchy.posTerminalName']}
             </label>
-            <input
+            <Input
               id="pos-name"
               className="form-control"
               value={setupForm.pos_name}

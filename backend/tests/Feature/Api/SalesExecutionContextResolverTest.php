@@ -68,6 +68,19 @@ class SalesExecutionContextResolverTest extends TestCase
         ], $this->authenticatedUser->id);
     }
 
+    public function test_global_context_is_available_to_a_second_authorized_store_user(): void
+    {
+        $setupAdministrator = User::factory()->create();
+        $globalContext = $this->createReadyOperatingContext($setupAdministrator);
+        $globalContext->update(['user_id' => null, 'is_default' => true]);
+        $cashier = User::factory()->create();
+
+        $resolved = app(SalesExecutionContextResolver::class)->resolve([], $cashier->id);
+
+        $this->assertSame($globalContext->id, $resolved['operating_context_id']);
+        $this->assertSame($globalContext->warehouse_id, $resolved['warehouse_id']);
+    }
+
     public function test_user_specific_context_wins_over_a_global_default_for_a_multi_store_user(): void
     {
         $userContext = $this->createReadyOperatingContext($this->authenticatedUser);

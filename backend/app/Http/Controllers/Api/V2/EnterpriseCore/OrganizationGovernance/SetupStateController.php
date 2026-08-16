@@ -95,20 +95,21 @@ class SetupStateController extends Controller
             ->where('is_operational', false)
             ->values();
 
-        // An established installation without setup metadata remains usable.
-        // A clean install has no active business module and must select scope.
-        $requiresSetup = $selectedBusinessModules->isNotEmpty()
-            ? $pending->isNotEmpty()
-            : $activeBusinessModuleCount === 0;
+        // The first-run gate protects only installations with no operational
+        // business module. A later optional module may remain pending without
+        // taking an already operational organization back behind the gate.
+        $hasPendingModuleSetup = $pending->isNotEmpty();
+        $requiresSetup = $activeBusinessModuleCount === 0
+            && ($selectedBusinessModules->isEmpty() || $hasPendingModuleSetup);
+        $nextAction = $hasPendingModuleSetup
+            ? ($selectedBusinessModules->isEmpty() ? 'select_modules' : 'complete_organization_setup')
+            : ($requiresSetup ? 'select_modules' : null);
 
         return [
             'setup_required' => $requiresSetup,
+            'pending_module_setup' => $hasPendingModuleSetup,
             'selected_module_keys' => $this->moduleAvailability->selectedModuleKeys(),
-            'next_action' => ! $requiresSetup
-                ? null
-                : ($selectedBusinessModules->isEmpty()
-                    ? 'select_modules'
-                    : 'complete_organization_setup'),
+            'next_action' => $nextAction,
             'pending_module_keys' => $pending->pluck('module_key')->all(),
             'active_module_keys' => $moduleStates
                 ->where('is_operational', true)

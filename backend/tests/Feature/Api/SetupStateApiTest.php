@@ -60,6 +60,24 @@ class SetupStateApiTest extends TestCase
             ->assertJsonPath('data.next_action', null);
     }
 
+    public function test_operational_installation_remains_usable_while_a_later_module_is_pending_setup(): void
+    {
+        Module::query()->where('module_key', 'sales')->update(['is_active' => true]);
+
+        $response = $this->authPost(route('v2.setup.modules.select'), [
+            'module_keys' => ['sales', 'products'],
+        ]);
+
+        $this->assertSuccessResponse($response);
+        $response->assertJsonPath('data.setup_required', false)
+            ->assertJsonPath('data.pending_module_setup', true)
+            ->assertJsonPath('data.next_action', 'complete_organization_setup')
+            ->assertJsonPath('data.pending_module_keys', ['products'])
+            ->assertJsonPath('data.active_module_keys', fn (array $keys): bool => in_array('sales', $keys, true));
+        $this->assertDatabaseHas('modules', ['module_key' => 'sales', 'is_active' => true]);
+        $this->assertDatabaseHas('modules', ['module_key' => 'products', 'is_active' => false]);
+    }
+
     public function test_activation_keeps_sales_pending_when_operating_context_is_missing(): void
     {
         $this->authPost(route('v2.setup.modules.select'), [
@@ -75,9 +93,25 @@ class SetupStateApiTest extends TestCase
         $this->assertDatabaseHas('modules', ['module_key' => 'sales', 'is_active' => false]);
     }
 
-    public function test_activation_enables_selected_sales_after_store_context_is_ready(): void
+    public function test_activation_keeps_sales_pending_when_only_a_personal_context_is_ready(): void
     {
         $this->createReadyOperatingContext($this->authenticatedUser);
+        $this->authPost(route('v2.setup.modules.select'), [
+            'module_keys' => ['sales'],
+        ])->assertSuccessful();
+
+        $response = $this->authPost(route('v2.setup.modules.activate_ready'));
+
+        $this->assertSuccessResponse($response);
+        $response->assertJsonPath('data.activation.activated', [])
+            ->assertJsonPath('data.state.pending_module_keys', ['sales']);
+        $this->assertDatabaseHas('modules', ['module_key' => 'sales', 'is_active' => false]);
+    }
+
+    public function test_activation_enables_selected_sales_after_global_store_context_is_ready(): void
+    {
+        $this->createReadyOperatingContext($this->authenticatedUser)
+            ->update(['user_id' => null]);
         $this->authPost(route('v2.setup.modules.select'), [
             'module_keys' => ['sales'],
         ])->assertSuccessful();

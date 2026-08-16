@@ -1,4 +1,4 @@
-import { catalogMessage } from "@/lib/i18n";
+import { catalogMessage } from '@/lib/i18n';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { fetchAPI } from '@/lib/api';
@@ -13,6 +13,7 @@ export interface OperatingContext {
   profit_center_id: number | null;
   status: 'draft' | 'ready' | 'suspended';
   is_default: boolean;
+  scope: 'organization' | 'personal';
   warehouse?: {
     id: number;
     code: string;
@@ -40,9 +41,12 @@ export interface OperatingReadiness {
 
 interface OperatingContextState {
   readiness: OperatingReadiness | null;
+  contexts: OperatingContext[];
   isLoading: boolean;
+  isSelectingContext: boolean;
   error: string | null;
   loadReadiness: () => Promise<OperatingReadiness | null>;
+  loadContexts: () => Promise<OperatingContext[]>;
   selectContext: (id: number) => Promise<boolean>;
 }
 
@@ -50,7 +54,9 @@ export const useOperatingContextStore = create<OperatingContextState>()(
   devtools(
     (set) => ({
       readiness: null,
+      contexts: [],
       isLoading: false,
+      isSelectingContext: false,
       error: null,
       loadReadiness: async () => {
         set({ isLoading: true, error: null });
@@ -60,7 +66,8 @@ export const useOperatingContextStore = create<OperatingContextState>()(
           );
           if (!response.success) {
             set({
-              error: response.message || catalogMessage("common.general.unableLoadOperatingReadiness"),
+              error:
+                response.message || catalogMessage('common.general.unableLoadOperatingReadiness'),
               isLoading: false,
             });
             return null;
@@ -69,12 +76,38 @@ export const useOperatingContextStore = create<OperatingContextState>()(
           set({ readiness, isLoading: false });
           return readiness;
         } catch (error) {
-          console.error(catalogMessage("common.general.unableLoadOperatingReadiness"), error);
-          set({ error: catalogMessage("common.general.unableLoadOperatingReadiness"), isLoading: false });
+          console.error(catalogMessage('common.general.unableLoadOperatingReadiness'), error);
+          set({
+            error: catalogMessage('common.general.unableLoadOperatingReadiness'),
+            isLoading: false,
+          });
           return null;
         }
       },
+      loadContexts: async () => {
+        try {
+          const response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.OPERATING_CONTEXT.CONTEXTS);
+          if (!response.success) {
+            set({
+              error:
+                response.message || catalogMessage('common.general.unableLoadOperatingReadiness'),
+            });
+            return [];
+          }
+
+          const responseData = response.data as
+            OperatingContext[] | { data?: OperatingContext[] } | undefined;
+          const contexts = Array.isArray(responseData) ? responseData : (responseData?.data ?? []);
+          set({ contexts });
+          return contexts;
+        } catch (error) {
+          console.error(catalogMessage('common.general.unableLoadOperatingReadiness'), error);
+          set({ error: catalogMessage('common.general.unableLoadOperatingReadiness') });
+          return [];
+        }
+      },
       selectContext: async (id: number) => {
+        set({ isSelectingContext: true, error: null });
         try {
           const response = await fetchAPI(
             API_ENDPOINTS.ENTERPRISE_CORE.OPERATING_CONTEXT.SELECT(id),
@@ -82,12 +115,30 @@ export const useOperatingContextStore = create<OperatingContextState>()(
               method: 'POST',
             }
           );
-          if (!response.success) return false;
-          await useOperatingContextStore.getState().loadReadiness();
+          if (!response.success) {
+            set({
+              error:
+                response.message ||
+                catalogMessage('state.useoperatingcontextstore.unableSelectOperatingContext'),
+            });
+            return false;
+          }
+          await Promise.all([
+            useOperatingContextStore.getState().loadReadiness(),
+            useOperatingContextStore.getState().loadContexts(),
+          ]);
           return true;
         } catch (error) {
-          console.error(catalogMessage("state.useoperatingcontextstore.unableSelectOperatingContext"), error);
+          console.error(
+            catalogMessage('state.useoperatingcontextstore.unableSelectOperatingContext'),
+            error
+          );
+          set({
+            error: catalogMessage('state.useoperatingcontextstore.unableSelectOperatingContext'),
+          });
           return false;
+        } finally {
+          set({ isSelectingContext: false });
         }
       },
     }),

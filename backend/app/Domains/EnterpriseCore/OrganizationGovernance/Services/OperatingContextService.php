@@ -72,9 +72,12 @@ class OperatingContextService
         ];
     }
 
-    public function configure(array $data, ?int $userId): OperatingContext
+    public function configure(array $data, ?int $userId, bool $systemDefault = false): OperatingContext
     {
-        return DB::transaction(function () use ($data, $userId) {
+        return DB::transaction(function () use ($data, $userId, $systemDefault) {
+            // Installation readiness is organization-wide. A later user choice
+            // remains a personal context and must never replace that baseline.
+            $contextUserId = $systemDefault ? null : $userId;
             $warehouseData = Arr::get($data, 'warehouse', []);
             $warehouse = Warehouse::query()->updateOrCreate(
                 ['code' => $warehouseData['code']],
@@ -108,12 +111,12 @@ class OperatingContextService
             );
 
             OperatingContext::query()
-                ->where('user_id', $userId)
+                ->where('user_id', $contextUserId)
                 ->where('is_default', true)
                 ->update(['is_default' => false]);
 
             $context = OperatingContext::query()->updateOrCreate(
-                ['user_id' => $userId, 'pos_terminal_id' => $terminal->id],
+                ['user_id' => $contextUserId, 'pos_terminal_id' => $terminal->id],
                 [
                     'org_node_uuid' => $data['org_node_uuid'] ?? null,
                     'warehouse_id' => $warehouse->id,
@@ -125,7 +128,7 @@ class OperatingContextService
             );
 
             $context->load(['warehouse', 'posTerminal', 'costCenter', 'profitCenter']);
-            $readiness = $this->readiness($userId);
+            $readiness = $this->readiness($contextUserId);
             $context->update([
                 'status' => $readiness['ready'] ? 'ready' : 'draft',
                 'readiness_json' => [
@@ -140,12 +143,53 @@ class OperatingContextService
         });
     }
 
+    /**
+     * Return the selectable contexts for a user. Personal contexts are private
+     * to the user, while only the organization-wide default is shared.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, OperatingContext>
+     */
+    public function availableContexts(?int $userId)
+    {
+        return OperatingContext::query()
+            ->with(['warehouse', 'posTerminal', 'costCenter', 'profitCenter'])
+            ->where('status', 'ready')
+            ->where(function ($query) use ($userId) {
+                if ($userId === null) {
+                    $query->whereNull('user_id')->where('is_default', true);
+
+                    return;
+                }
+
+                $query->where('user_id', $userId)
+                    ->orWhere(function ($globalContext) {
+                        $globalContext->whereNull('user_id')->where('is_default', true);
+                    });
+            })
+            ->orderByRaw('user_id is null')
+            ->orderByDesc('is_default')
+            ->orderBy('id')
+            ->get();
+    }
+
     public function setDefaultContext(int $contextId, ?int $userId): OperatingContext
     {
         return DB::transaction(function () use ($contextId, $userId) {
             $context = OperatingContext::query()
-                ->when($userId !== null, fn ($query) => $query->where('user_id', $userId))
-                ->findOrFail($contextId);
+                ->where('id', $contextId)
+                ->where(function ($query) use ($userId) {
+                    if ($userId === null) {
+                        $query->whereNull('user_id')->where('is_default', true);
+
+                        return;
+                    }
+
+                    $query->where('user_id', $userId)
+                        ->orWhere(function ($globalContext) {
+                            $globalContext->whereNull('user_id')->where('is_default', true);
+                        });
+                })
+                ->firstOrFail();
 
             OperatingContext::query()
                 ->where('user_id', $userId)

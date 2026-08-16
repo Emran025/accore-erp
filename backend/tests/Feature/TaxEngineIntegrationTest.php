@@ -2,32 +2,33 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Domains\Finance\TaxCompliance\Models\TaxAuthority;
-use App\Domains\Finance\TaxCompliance\Models\TaxType;
-use App\Domains\Finance\TaxCompliance\Models\TaxRate;
-use App\Domains\SupplyChain\Inventory\Models\Product;
 use App\Domains\Commercial\CRM\Models\ArCustomer;
 use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
+use App\Domains\Commercial\SalesLifecycle\Services\SalesService;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\OperatingContext;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Setting;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
-use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
-use App\Domains\Commercial\SalesLifecycle\Services\SalesService;
-use App\Domains\Finance\Taxation\Services\TaxCalculator;
+use App\Domains\Finance\TaxCompliance\Models\TaxAuthority;
+use App\Domains\Finance\TaxCompliance\Models\TaxRate;
+use App\Domains\Finance\TaxCompliance\Models\TaxType;
+use App\Domains\SupplyChain\Inventory\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
+use Tests\TestCase;
 
 class TaxEngineIntegrationTest extends TestCase
 {
     use RefreshDatabase;
+
+    private OperatingContext $operatingContext;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->authenticateUser();
-        $this->createReadyOperatingContext($this->authenticatedUser);
+        $this->operatingContext = $this->createReadyOperatingContext($this->authenticatedUser);
 
         // Turn ON the Tax Engine
         Config::set('tax.use_tax_engine', true);
@@ -93,7 +94,7 @@ class TaxEngineIntegrationTest extends TestCase
                     'quantity' => 1,
                     'unit_price' => 1000.00,
                     'unit_type' => 'sub',
-                ]
+                ],
             ],
             'invoice_number' => 'TEST-TAX-001',
         ];
@@ -108,13 +109,15 @@ class TaxEngineIntegrationTest extends TestCase
         $invoice = Invoice::with(['taxLines', 'glEntries', 'items'])->find($invoiceId);
         $this->assertNotNull($invoice);
         $this->assertEquals('TEST-TAX-001', $invoice->invoice_number);
+        $this->assertSame($this->operatingContext->cost_center_id, $invoice->cost_center_id);
+        $this->assertSame($this->operatingContext->profit_center_id, $invoice->profit_center_id);
 
         // Assert Tax Lines Calculation (1000 * 0.15 = 150)
         $this->assertCount(1, $invoice->taxLines);
         $taxLine = $invoice->taxLines->first();
-        $this->assertEquals(0.15, (float)$taxLine->rate);
-        $this->assertEquals(150.00, (float)$taxLine->tax_amount);
-        $this->assertEquals(1000.00, (float)$taxLine->taxable_amount);
+        $this->assertEquals(0.15, (float) $taxLine->rate);
+        $this->assertEquals(150.00, (float) $taxLine->tax_amount);
+        $this->assertEquals(1000.00, (float) $taxLine->taxable_amount);
         $this->assertEquals('VAT', $taxLine->tax_type_code);
 
         // Assert GL Entries (Full AR, Net Sales, Tax, COGS, Inventory)
@@ -125,27 +128,34 @@ class TaxEngineIntegrationTest extends TestCase
         // Inventory = 500 (CR)
 
         $glEntries = GeneralLedger::where('voucher_number', $invoice->voucher_number)->get();
+        $this->assertTrue(
+            $glEntries->every(
+                fn (GeneralLedger $entry): bool => $entry->cost_center_id === $this->operatingContext->cost_center_id
+                    && $entry->profit_center_id === $this->operatingContext->profit_center_id
+            ),
+            'Every sales GL line must inherit the trusted operating context dimensions.'
+        );
 
         // 1. Check AR Entry (Debit)
         $arLedgerEntry = $glEntries->where('account_id', ChartOfAccount::where('account_code', '1120')->first()->id)->first();
         $this->assertNotNull($arLedgerEntry, 'AR entry missing');
         $this->assertEquals('DEBIT', $arLedgerEntry->entry_type);
-        $this->assertEquals(1150.00, (float)$arLedgerEntry->amount);
+        $this->assertEquals(1150.00, (float) $arLedgerEntry->amount);
 
         // 2. Check Sales Entry (Credit)
         $salesLedgerEntry = $glEntries->where('account_id', ChartOfAccount::where('account_code', '4100')->first()->id)->first();
         $this->assertNotNull($salesLedgerEntry, 'Sales entry missing');
         $this->assertEquals('CREDIT', $salesLedgerEntry->entry_type);
-        $this->assertEquals(1000.00, (float)$salesLedgerEntry->amount);
+        $this->assertEquals(1000.00, (float) $salesLedgerEntry->amount);
 
         // 3. Check Tax Entry (Credit)
         $taxLedgerEntry = $glEntries->where('account_id', ChartOfAccount::where('account_code', '2210')->first()->id)->first();
         $this->assertNotNull($taxLedgerEntry, 'Tax entry missing');
         $this->assertEquals('CREDIT', $taxLedgerEntry->entry_type);
-        $this->assertEquals(150.00, (float)$taxLedgerEntry->amount);
+        $this->assertEquals(150.00, (float) $taxLedgerEntry->amount);
 
         // 4. Check Customer Balance Update
-        $this->assertEquals(1150.00, (float)$customer->fresh()->current_balance);
+        $this->assertEquals(1150.00, (float) $customer->fresh()->current_balance);
 
         // Final Document Status
         $this->assertNotEmpty($invoice->voucher_number);
