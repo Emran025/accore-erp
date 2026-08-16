@@ -25,6 +25,11 @@ interface ModuleReadinessResponse {
     blocked_modules: number;
     configuration_ready: boolean;
   };
+  accounting_readiness: {
+    ready: boolean;
+    open_fiscal_period: { ready: boolean; reason_code: string | null };
+    chart_of_accounts: { ready: boolean; active_account_count: number };
+  };
 }
 
 interface DerivedScreenEntry {
@@ -312,6 +317,7 @@ export function ModulesStatus() {
 
   // Navigation describes available screens. The authoritative API determines whether their activated modules are operational.
   const configurationReady = configurationReadiness?.summary.configuration_ready === true;
+  const accountingReady = configurationReadiness?.accounting_readiness.ready === true;
   const allEntries = useMemo(() => deriveModuleData(allDomains, configurationReady), [configurationReady]);
   const domainSummaries = useMemo(() => buildDomainSummaries(allEntries), [allEntries]);
 
@@ -477,11 +483,23 @@ export function ModulesStatus() {
         }
       />
 
-      {!configurationReady && (
+      {configurationReadiness && !configurationReady && (
         <div style={{ margin: "0 0 1rem", padding: "0.9rem 1rem", border: "1px solid rgba(239,68,68,0.35)", borderRadius: 10, background: "rgba(239,68,68,0.06)" }}>
           <strong style={{ color: "#b91c1c" }}>{i18n.catalog["enterpriseCore.modulesstatus.configurationReadiness"]}</strong>
           <p style={{ margin: "0.35rem 0 0", color: "var(--text-secondary)", fontSize: "0.8rem" }}>{i18n.catalog["enterpriseCore.modulesstatus.activatedModulesNeedStructure"]}</p>
           <p style={{ margin: "0.3rem 0 0", color: "var(--text-muted)", fontSize: "0.75rem" }}>{i18n.catalog["enterpriseCore.modulesstatus.completeOrganizationalStructure"]}</p>
+        </div>
+      )}
+      {configurationReadiness && !accountingReady && (
+        <div style={{ margin: "0 0 1rem", padding: "0.9rem 1rem", border: "1px solid rgba(245,158,11,0.4)", borderRadius: 10, background: "rgba(245,158,11,0.07)" }}>
+          <strong style={{ color: "#b45309" }}>{i18n.catalog["enterpriseCore.modulesstatus.accountingReadiness"]}</strong>
+          {!configurationReadiness.accounting_readiness.open_fiscal_period.ready && (
+            <p style={{ margin: "0.35rem 0 0", color: "var(--text-secondary)", fontSize: "0.8rem" }}>{i18n.catalog["enterpriseCore.modulesstatus.openFiscalPeriodRequired"]}</p>
+          )}
+          {!configurationReadiness.accounting_readiness.chart_of_accounts.ready && (
+            <p style={{ margin: "0.3rem 0 0", color: "var(--text-secondary)", fontSize: "0.8rem" }}>{i18n.catalog["enterpriseCore.modulesstatus.chartOfAccountsRequired"]}</p>
+          )}
+          <p style={{ margin: "0.3rem 0 0", color: "var(--text-muted)", fontSize: "0.75rem" }}>{i18n.catalog["enterpriseCore.modulesstatus.completeAccountingSetup"]}</p>
         </div>
       )}
 

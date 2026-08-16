@@ -55769,6 +55769,12 @@
       ]
     },
     {
+      "id": "enterpriseCore.modulesstatus.accountingReadiness",
+      "source": "جاهزية المحاسبة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
       "id": "enterpriseCore.modulesstatus.activatedModulesNeedStructure",
       "source": "الوحدات المفعّلة لا تصبح جاهزة تشغيليًا إلا بعد اكتمال الهيكل التنظيمي والتحقق من سلامته.",
       "classification": "user-facing",
@@ -55783,6 +55789,12 @@
     {
       "id": "enterpriseCore.modulesstatus.blockedModules",
       "source": "الوحدات المحجوبة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.modulesstatus.chartOfAccountsRequired",
+      "source": "يجب تهيئة دليل حسابات نشط قبل تسجيل القيود المالية.",
       "classification": "user-facing",
       "occurrences": []
     },
@@ -55830,6 +55842,12 @@
           "context": "Unclassified textual literal"
         }
       ]
+    },
+    {
+      "id": "enterpriseCore.modulesstatus.completeAccountingSetup",
+      "source": "أكمل الفترة المحاسبية ودليل الحسابات من إعدادات المحاسبة قبل تشغيل الوحدات.",
+      "classification": "user-facing",
+      "occurrences": []
     },
     {
       "id": "enterpriseCore.modulesstatus.completeOrganizationalStructure",
@@ -55887,6 +55905,12 @@
           "context": "Unclassified textual literal"
         }
       ]
+    },
+    {
+      "id": "enterpriseCore.modulesstatus.openFiscalPeriodRequired",
+      "source": "يجب إنشاء فترة محاسبية مفتوحة تغطي تاريخ اليوم قبل تشغيل الوحدات المالية.",
+      "classification": "user-facing",
+      "occurrences": []
     },
     {
       "id": "enterpriseCore.modulesstatus.planned",

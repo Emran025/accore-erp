@@ -5,6 +5,8 @@ namespace App\Domains\EnterpriseCore\OrganizationGovernance\Services;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Module;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\OperatingContext;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\StructureNode;
+use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
+use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 use Illuminate\Support\Collection;
 
 class ModuleReadinessService
@@ -37,14 +39,17 @@ class ModuleReadinessService
 
         $context = $this->defaultContext($userId);
         $operatingStructure = $this->validateOperatingStructure($context, $integrityIssues);
+        $accountingReadiness = $this->accountingReadiness();
         $modules = Module::query()->orderBy('category')->orderBy('sort_order')->get();
 
-        $evaluated = $modules->map(function (Module $module) use ($activeNodeTypes, $integrityIssues, $operatingStructure) {
+        $evaluated = $modules->map(function (Module $module) use ($activeNodeTypes, $integrityIssues, $operatingStructure, $accountingReadiness) {
             $requirements = $module->readiness_requirements ?? $this->defaultRequirements();
             $requiredNodeTypes = array_values($requirements['required_node_types'] ?? []);
             $missingNodeTypes = array_values(array_diff($requiredNodeTypes, $activeNodeTypes));
             $relevantIssues = $this->relevantIntegrityIssues($integrityIssues, $requiredNodeTypes);
             $requiresOperatingContext = (bool) ($requirements['requires_operating_context'] ?? false);
+            $requiresOpenFiscalPeriod = (bool) ($requirements['requires_open_fiscal_period'] ?? false);
+            $requiresChartOfAccounts = (bool) ($requirements['requires_chart_of_accounts'] ?? false);
 
             $reasons = [];
             if (!$module->is_active) {
@@ -59,6 +64,12 @@ class ModuleReadinessService
             if ($requiresOperatingContext && !$operatingStructure['ready']) {
                 $reasons[] = 'operating_context_structure_invalid';
             }
+            if ($requiresOpenFiscalPeriod && !$accountingReadiness['open_fiscal_period']['ready']) {
+                $reasons[] = $accountingReadiness['open_fiscal_period']['reason_code'];
+            }
+            if ($requiresChartOfAccounts && !$accountingReadiness['chart_of_accounts']['ready']) {
+                $reasons[] = 'missing_chart_of_accounts';
+            }
 
             $ready = $module->is_active && $reasons === [];
 
@@ -68,6 +79,8 @@ class ModuleReadinessService
                 'is_active' => (bool) $module->is_active,
                 'requires_org_structure' => (bool) ($requirements['requires_org_structure'] ?? false),
                 'requires_operating_context' => $requiresOperatingContext,
+                'requires_open_fiscal_period' => $requiresOpenFiscalPeriod,
+                'requires_chart_of_accounts' => $requiresChartOfAccounts,
                 'required_node_types' => $requiredNodeTypes,
                 'missing_node_types' => $missingNodeTypes,
                 'integrity_issue_count' => count($relevantIssues),
@@ -90,6 +103,7 @@ class ModuleReadinessService
                 'configuration_ready' => $activeModules->isNotEmpty() && $blockedModules->isEmpty(),
             ],
             'operating_context' => $operatingStructure,
+            'accounting_readiness' => $accountingReadiness,
             'integrity' => [
                 'errors' => count(array_filter($integrityIssues, fn (array $issue) => $issue['type'] === 'ERROR')),
                 'warnings' => count(array_filter($integrityIssues, fn (array $issue) => $issue['type'] === 'WARNING')),
@@ -207,12 +221,50 @@ class ModuleReadinessService
         }));
     }
 
+    private function accountingReadiness(): array
+    {
+        $today = now()->toDateString();
+        $period = FiscalPeriod::query()
+            ->where('start_date', '<=', $today)
+            ->where('end_date', '>=', $today)
+            ->orderByDesc('start_date')
+            ->first();
+
+        $periodReady = $period && !$period->is_closed && !$period->is_locked;
+        $periodReason = !$period
+            ? 'missing_open_fiscal_period'
+            : ($period->is_closed ? 'current_fiscal_period_closed' : ($period->is_locked ? 'current_fiscal_period_locked' : null));
+        $accountCount = ChartOfAccount::query()->where('is_active', true)->count();
+
+        return [
+            'ready' => (bool) $periodReady && $accountCount > 0,
+            'open_fiscal_period' => [
+                'ready' => (bool) $periodReady,
+                'reason_code' => $periodReason,
+                'period' => $period ? [
+                    'id' => $period->id,
+                    'name' => $period->period_name,
+                    'start_date' => $period->start_date,
+                    'end_date' => $period->end_date,
+                    'is_closed' => (bool) $period->is_closed,
+                    'is_locked' => (bool) $period->is_locked,
+                ] : null,
+            ],
+            'chart_of_accounts' => [
+                'ready' => $accountCount > 0,
+                'active_account_count' => $accountCount,
+            ],
+        ];
+    }
+
     private function defaultRequirements(): array
     {
         return [
             'requires_org_structure' => false,
             'required_node_types' => [],
             'requires_operating_context' => false,
+            'requires_open_fiscal_period' => false,
+            'requires_chart_of_accounts' => false,
         ];
     }
 }

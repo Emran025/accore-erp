@@ -14,18 +14,18 @@ return new class extends Migration
         });
 
         $profiles = [
-            'sales' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'CONTROLLING_AREA', 'COST_CENTER', 'PROFIT_CENTER', 'PLANT', 'SALES_ORG'], 'requires_operating_context' => true],
-            'inventory' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'PLANT', 'STORAGE_LOC'], 'requires_operating_context' => false],
-            'purchases' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'CONTROLLING_AREA', 'COST_CENTER', 'PROFIT_CENTER', 'PLANT', 'PURCH_ORG'], 'requires_operating_context' => true],
-            'finance' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'CONTROLLING_AREA', 'COST_CENTER', 'PROFIT_CENTER'], 'requires_operating_context' => false],
-            'projects' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'PROFIT_CENTER', 'WBS_ELEMENT'], 'requires_operating_context' => false],
-            'manufacturing' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'PLANT'], 'requires_operating_context' => false],
-            'assets' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE'], 'requires_operating_context' => false],
-            'hr' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'PERSONNEL_AREA', 'HR_ORG_UNIT'], 'requires_operating_context' => false],
+            'sales' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'CONTROLLING_AREA', 'COST_CENTER', 'PROFIT_CENTER', 'PLANT', 'SALES_ORG'], 'requires_operating_context' => true, 'requires_open_fiscal_period' => true, 'requires_chart_of_accounts' => true],
+            'inventory' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'PLANT', 'STORAGE_LOC'], 'requires_operating_context' => false, 'requires_open_fiscal_period' => true, 'requires_chart_of_accounts' => true],
+            'purchases' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'CONTROLLING_AREA', 'COST_CENTER', 'PROFIT_CENTER', 'PLANT', 'PURCH_ORG'], 'requires_operating_context' => true, 'requires_open_fiscal_period' => true, 'requires_chart_of_accounts' => true],
+            'finance' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'CONTROLLING_AREA', 'COST_CENTER', 'PROFIT_CENTER'], 'requires_operating_context' => false, 'requires_open_fiscal_period' => true, 'requires_chart_of_accounts' => true],
+            'projects' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'PROFIT_CENTER', 'WBS_ELEMENT'], 'requires_operating_context' => false, 'requires_open_fiscal_period' => true, 'requires_chart_of_accounts' => true],
+            'manufacturing' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'PLANT'], 'requires_operating_context' => false, 'requires_open_fiscal_period' => true, 'requires_chart_of_accounts' => true],
+            'assets' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE'], 'requires_operating_context' => false, 'requires_open_fiscal_period' => true, 'requires_chart_of_accounts' => true],
+            'hr' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'PERSONNEL_AREA', 'HR_ORG_UNIT'], 'requires_operating_context' => false, 'requires_open_fiscal_period' => true, 'requires_chart_of_accounts' => true],
         ];
 
         DB::table('modules')->orderBy('id')->each(function (object $module) use ($profiles): void {
-            $requirements = $profiles[$module->category] ?? ['requires_org_structure' => false, 'required_node_types' => [], 'requires_operating_context' => false];
+            $requirements = $profiles[$module->category] ?? ['requires_org_structure' => false, 'required_node_types' => [], 'requires_operating_context' => false, 'requires_open_fiscal_period' => false, 'requires_chart_of_accounts' => false];
             DB::table('modules')->where('id', $module->id)->update([
                 'readiness_requirements' => json_encode($requirements, JSON_THROW_ON_ERROR),
             ]);
