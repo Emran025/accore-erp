@@ -29,6 +29,7 @@ use App\Domains\EnterpriseCore\OrganizationGovernance\Actions\ResolveScopeContex
 use App\Domains\EnterpriseCore\OrganizationGovernance\Actions\GetOrgStatisticsAction;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Actions\RunIntegrityCheckAction;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Actions\GetOrgChangeHistoryAction;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Actions\GetModuleReadinessAction;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Actions\BulkUpdateNodeStatusAction;
 use App\Http\Resources\EnterpriseCore\OrganizationGovernance\StructureNodeResource;
 use App\Http\Resources\EnterpriseCore\OrganizationGovernance\StructureLinkResource;
@@ -156,6 +157,13 @@ class OrgStructureController extends Controller
                 'info'     => count(array_filter($issues, fn($i) => $i['type'] === 'INFO')),
             ]
         ]);
+    }
+
+    // ─── Module Configuration Readiness ─────────────────────────────────
+
+    public function moduleReadiness(GetModuleReadinessAction $action): JsonResponse
+    {
+        return $this->successResponse(['data' => $action->execute(auth()->id())]);
     }
 
     // ─── Change History ─────────────────────────────────────────────────

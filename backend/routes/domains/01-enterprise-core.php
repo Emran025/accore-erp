@@ -111,6 +111,7 @@ use App\Http\Controllers\Api\V2\EnterpriseCore\Automation\SystemTemplateControll
             Route::get('/scope-context/{uuid}', [OrgStructureController::class, 'scopeContext'])->name('v2.org.scope_context');
             Route::get('/statistics', [OrgStructureController::class, 'statistics'])->name('v2.org.statistics');
             Route::get('/integrity-check', [OrgStructureController::class, 'integrityCheck'])->name('v2.org.integrity_check');
+            Route::get('/module-readiness', [OrgStructureController::class, 'moduleReadiness'])->name('v2.org.module_readiness');
             Route::get('/change-history', [OrgStructureController::class, 'changeHistory'])->name('v2.org.change_history');
             Route::middleware(['can:settings,edit', 'throttle:api-critical'])->post('/bulk-status-update', [OrgStructureController::class, 'bulkStatusUpdate'])->name('v2.org.bulk_status');
         });

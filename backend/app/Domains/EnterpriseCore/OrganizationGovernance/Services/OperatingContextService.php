@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\DB;
 
 class OperatingContextService
 {
+    public function __construct(private readonly ModuleReadinessService $moduleReadinessService)
+    {
+    }
+
     public function readiness(?int $userId): array
     {
         $context = OperatingContext::query()
@@ -32,11 +36,13 @@ class OperatingContextService
         $costCenter = $context?->costCenter;
         $profitCenter = $context?->profitCenter;
 
+        $structuralReadiness = $this->moduleReadinessService->validateOperatingStructure($context);
         $checks = [
             $this->check('warehouse', $warehouse !== null && $warehouse->is_active && $warehouse->status === 'active'),
             $this->check('cost_center', $costCenter !== null && $costCenter->is_active),
             $this->check('profit_center', $profitCenter !== null && $profitCenter->is_active),
             $this->check('pos_terminal', $terminal !== null && $terminal->is_active && $terminal->status === 'active'),
+            $this->check('organizational_structure', $structuralReadiness['ready']),
         ];
 
         $missing = collect($checks)->where('complete', false)->values()->all();
@@ -49,6 +55,7 @@ class OperatingContextService
             'checks' => $checks,
             'missing' => $missing,
             'next_action' => $missing[0]['key'] ?? null,
+            'structural_readiness' => $structuralReadiness,
         ];
     }
 
@@ -106,12 +113,16 @@ class OperatingContextService
 
             $context->load(['warehouse', 'posTerminal', 'costCenter', 'profitCenter']);
             $readiness = $this->readiness($userId);
-            $context->update(['readiness_json' => [
-                'ready' => $readiness['ready'],
+            $context->update([
                 'status' => $readiness['status'],
-                'checks' => $readiness['checks'],
-                'missing' => $readiness['missing'],
-            ]]);
+                'readiness_json' => [
+                    'ready' => $readiness['ready'],
+                    'status' => $readiness['status'],
+                    'checks' => $readiness['checks'],
+                    'missing' => $readiness['missing'],
+                    'structural_readiness' => $readiness['structural_readiness'],
+                ],
+            ]);
 
             return $context->fresh(['warehouse', 'posTerminal', 'costCenter', 'profitCenter']);
         });

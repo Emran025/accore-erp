@@ -81,7 +81,23 @@ class ModuleSeeder extends Seeder
             ['module_key' => 'expat_management', 'module_name_ar' => 'إدارة العمالة الأجنبية', 'module_name_en' => 'Expat Management', 'category' => 'hr', 'icon' => 'globe', 'sort_order' => 105],
         ];
 
+        $profiles = [
+            'sales' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'CONTROLLING_AREA', 'COST_CENTER', 'PROFIT_CENTER', 'PLANT', 'SALES_ORG'], 'requires_operating_context' => true],
+            'inventory' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'PLANT', 'STORAGE_LOC'], 'requires_operating_context' => false],
+            'purchases' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'CONTROLLING_AREA', 'COST_CENTER', 'PROFIT_CENTER', 'PLANT', 'PURCH_ORG'], 'requires_operating_context' => true],
+            'finance' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'CONTROLLING_AREA', 'COST_CENTER', 'PROFIT_CENTER'], 'requires_operating_context' => false],
+            'projects' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'PROFIT_CENTER', 'WBS_ELEMENT'], 'requires_operating_context' => false],
+            'manufacturing' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'PLANT'], 'requires_operating_context' => false],
+            'assets' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE'], 'requires_operating_context' => false],
+            'hr' => ['requires_org_structure' => true, 'required_node_types' => ['COMP_CODE', 'PERSONNEL_AREA', 'HR_ORG_UNIT'], 'requires_operating_context' => false],
+        ];
+
         foreach ($modules as $module) {
+            $module['readiness_requirements'] = $profiles[$module['category']] ?? [
+                'requires_org_structure' => false,
+                'required_node_types' => [],
+                'requires_operating_context' => false,
+            ];
             Module::updateOrCreate(
                 ['module_key' => $module['module_key']],
                 $module

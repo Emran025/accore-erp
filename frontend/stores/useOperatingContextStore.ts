@@ -35,6 +35,11 @@ export interface OperatingReadiness {
   checks: Array<{ key: string; complete: boolean; action_key: string | null }>;
   missing: Array<{ key: string; complete: boolean; action_key: string }>;
   next_action: string | null;
+  structural_readiness: {
+    ready: boolean;
+    reason_codes: string[];
+    node_uuids: string[];
+  };
   context: OperatingContext | null;
 }
 

@@ -69,12 +69,14 @@ export default function OrganizationalStructurePage() {
     cost_center: i18n.catalog["enterpriseCore.orgHierarchy.readinessCostCenter"],
     profit_center: i18n.catalog["enterpriseCore.orgHierarchy.readinessProfitCenter"],
     pos_terminal: i18n.catalog["enterpriseCore.orgHierarchy.readinessPosTerminal"],
+    organizational_structure: i18n.catalog["enterpriseCore.orgHierarchy.readinessOrganizationalStructure"],
   };
   const readinessActions: Record<string, string> = {
     warehouse: i18n.catalog["enterpriseCore.orgHierarchy.readinessActionWarehouse"],
     cost_center: i18n.catalog["enterpriseCore.orgHierarchy.readinessActionCostCenter"],
     profit_center: i18n.catalog["enterpriseCore.orgHierarchy.readinessActionProfitCenter"],
     pos_terminal: i18n.catalog["enterpriseCore.orgHierarchy.readinessActionPosTerminal"],
+    organizational_structure: i18n.catalog["enterpriseCore.orgHierarchy.readinessActionOrganizationalStructure"],
   };
 
   useEffect(() => {
@@ -128,6 +130,7 @@ export default function OrganizationalStructurePage() {
 
   const configureStore = async () => {
     if (
+      !setupForm.org_node_uuid ||
       !setupForm.cost_center_id ||
       !setupForm.profit_center_id ||
       !setupForm.warehouse_code ||
@@ -267,6 +270,7 @@ export default function OrganizationalStructurePage() {
                 updateSetupField('org_node_uuid', typeof value === 'string' ? value : null)
               }
               placeholder={i18n.catalog["enterpriseCore.orgHierarchy.selectOperatingUnitOptional"]}
+              required
             />
           </div>
           <div className="form-group">

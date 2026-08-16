@@ -55769,6 +55769,24 @@
       ]
     },
     {
+      "id": "enterpriseCore.modulesstatus.activatedModulesNeedStructure",
+      "source": "الوحدات المفعّلة لا تصبح جاهزة تشغيليًا إلا بعد اكتمال الهيكل التنظيمي والتحقق من سلامته.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.modulesstatus.blocked",
+      "source": "محجوب بسبب الإعداد",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.modulesstatus.blockedModules",
+      "source": "الوحدات المحجوبة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
       "id": "enterpriseCore.modulesstatus.clearFilters",
       "source": "مسح الفلاتر",
       "classification": "review-required",
@@ -55814,6 +55832,12 @@
       ]
     },
     {
+      "id": "enterpriseCore.modulesstatus.completeOrganizationalStructure",
+      "source": "أنشئ الوحدات التنظيمية المطلوبة، اربطها بالهيكل، ثم عالج ملاحظات السلامة قبل تشغيل الوحدات.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
       "id": "enterpriseCore.modulesstatus.completionPercentage",
       "source": "نسبة الإنجاز",
       "classification": "user-facing",
@@ -55827,6 +55851,12 @@
           "context": "Object label"
         }
       ]
+    },
+    {
+      "id": "enterpriseCore.modulesstatus.configurationReadiness",
+      "source": "جاهزية الإعداد",
+      "classification": "user-facing",
+      "occurrences": []
     },
     {
       "id": "enterpriseCore.modulesstatus.field",
@@ -55947,6 +55977,12 @@
           "context": "Object label"
         }
       ]
+    },
+    {
+      "id": "enterpriseCore.modulesstatus.viewStructureConfiguration",
+      "source": "عرض تهيئة الهيكل",
+      "classification": "user-facing",
+      "occurrences": []
     },
     {
       "id": "enterpriseCore.nodeform.addOrganizationalUnit",
@@ -56924,6 +56960,12 @@
       ]
     },
     {
+      "id": "enterpriseCore.orgHierarchy.readinessActionOrganizationalStructure",
+      "source": "أنشئ وربط الوحدات التنظيمية المطلوبة، ثم عالج ملاحظات سلامة الهيكل.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
       "id": "enterpriseCore.orgHierarchy.readinessActionPosTerminal",
       "source": "قم بإنشاء وتفعيل نقطة بيع مرتبطة بالمستودع.",
       "classification": "user-facing",
@@ -56982,6 +57024,12 @@
           "context": "Operating-context readiness banner"
         }
       ]
+    },
+    {
+      "id": "enterpriseCore.orgHierarchy.readinessOrganizationalStructure",
+      "source": "الهيكل التنظيمي",
+      "classification": "user-facing",
+      "occurrences": []
     },
     {
       "id": "enterpriseCore.orgHierarchy.readinessPosTerminal",

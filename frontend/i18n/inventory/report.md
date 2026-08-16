@@ -4,7 +4,7 @@ Generated deterministically by `npm run i18n:inventory`.
 
 | Status | Count |
 |---|---:|
-| technical | 27624 |
+| technical | 27659 |
 
 ## Highest-volume files
 
@@ -35,6 +35,7 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/03-finance/general-ledger/ledger-core/financial-reports/components/BalanceSheetTab.tsx` | 259 |
 | `components/template-editor/TemplateEditor.tsx` | 248 |
 | `app/06-human-capital/services-wellness/employee-services/loans/(pages)/EmployeeLoans.tsx` | 247 |
+| `app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/ModulesStatus.tsx` | 239 |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/ChangeHistoryTab.tsx` | 230 |
 | `app/06-human-capital/talent-recruitment/recruitment/administration/components/PositionsTab.tsx` | 228 |
 | `app/06-human-capital/knowledge-portal/self-service/employee-portal/(pages)/EmployeePortal.tsx` | 227 |
@@ -47,7 +48,6 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/add/page.tsx` | 214 |
 | `app/06-human-capital/time-productivity/attendance-scheduling/biometric/(pages)/BiometricControl.tsx` | 213 |
 | `lib/navigation/commercial.config.ts` | 210 |
-| `app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/ModulesStatus.tsx` | 207 |
 | `app/06-human-capital/services-wellness/employee-services/wellness/(pages)/WellnessModule.tsx` | 203 |
 | `app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/edit/page.tsx` | 202 |
 | `app/01-enterprise-core/system-overview/dashboard/global-dashboard/(pages)/page.tsx` | 193 |
@@ -74,9 +74,9 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/03-finance/general-ledger/ledger-core/fiscal-periods/(pages)/page.tsx` | 152 |
 | `app/06-human-capital/knowledge-portal/self-service/eosb/(pages)/EOSBCalculator.tsx` | 151 |
 | `app/08-assets/asset-lifecycle/fixed-assets/fixed-assets-registry/(pages)/page.tsx` | 149 |
+| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx` | 143 |
 | `app/03-finance/tax-compliance/tax-management/vat-zatca/components/ZatcaSettingsTab.tsx` | 143 |
 | `app/02-commercial/marketing-distribution/representatives/reps-list/(pages)/page.tsx` | 142 |
-| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx` | 141 |
 | `app/03-finance/foreign-exchange/currency-management/currencies/components/CurrencyPolicyTab.tsx` | 140 |
 | `app/03-finance/general-ledger/ledger-core/chart-of-accounts/(pages)/page.tsx` | 140 |
 | `app/06-human-capital/workforce-admin/employee-master/expat-management/(pages)/view/page.tsx` | 138 |

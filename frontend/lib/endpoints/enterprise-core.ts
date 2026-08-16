@@ -33,6 +33,7 @@ export interface EnterpriseCoreEndpoints {
         SCOPE_CONTEXT: (uuid: string) => string;
         STATISTICS: string;
         INTEGRITY_CHECK: string;
+        MODULE_READINESS: string;
         CHANGE_HISTORY: string;
         BULK_STATUS: string;
     };
@@ -110,6 +111,7 @@ export const ENTERPRISE_CORE: EnterpriseCoreEndpoints = {
         SCOPE_CONTEXT: (uuid: string) => `/v2/org-structure/scope-context/${uuid}`,
         STATISTICS: "/v2/org-structure/statistics",
         INTEGRITY_CHECK: "/v2/org-structure/integrity-check",
+        MODULE_READINESS: "/v2/org-structure/module-readiness",
         CHANGE_HISTORY: "/v2/org-structure/change-history",
         BULK_STATUS: "/v2/org-structure/bulk-status-update",
     },

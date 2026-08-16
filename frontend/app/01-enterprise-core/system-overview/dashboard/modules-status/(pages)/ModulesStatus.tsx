@@ -1,11 +1,13 @@
 ﻿"use client";
 
 import { useI18n, catalogText, catalogMessage } from "@/lib/i18n";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PageSubHeader } from "@/components/layout";
 import { Select, Table, KPICardRow } from "@/components/ui";
 import type { Column } from "@/components/ui";
 import { getIcon } from "@/lib/icons";
+import { fetchAPI } from "@/lib/api";
+import { API_ENDPOINTS } from "@/lib/endpoints";
 import { allDomains } from "@/lib/navigation";
 import type { Domain, NavScreen } from "@/types/navigation";
 
@@ -13,7 +15,17 @@ import type { Domain, NavScreen } from "@/types/navigation";
 // Types
 // ─────────────────────────────────────────────────────────────────────────────
 
-type ScreenStatus = "operational" | "in_progress" | "pending";
+type ScreenStatus = "operational" | "blocked" | "in_progress" | "pending";
+
+interface ModuleReadinessResponse {
+  summary: {
+    total_modules: number;
+    active_modules: number;
+    ready_modules: number;
+    blocked_modules: number;
+    configuration_ready: boolean;
+  };
+}
 
 interface DerivedScreenEntry {
   domainId: string;
@@ -38,6 +50,7 @@ interface DomainSummary {
   operational: number;
   inProgress: number;
   pending: number;
+  blocked: number;
   percentage: number;
 }
 
@@ -45,20 +58,20 @@ interface DomainSummary {
 // Status Derivation Logic
 // ─────────────────────────────────────────────────────────────────────────────
 
-function deriveStatus(screen: NavScreen): ScreenStatus {
+function deriveStatus(screen: NavScreen, configurationReady: boolean): ScreenStatus {
   if (screen.status) return screen.status;
   const desc = screen.description;
   if (desc.includes(catalogMessage("common.general.comingSoon")) || desc.includes(catalogMessage("enterpriseCore.modulesstatus.comingSoon")) || desc.includes(catalogMessage("enterpriseCore.modulesstatus.comingSoon.alternative2"))) {
     return "pending";
   }
-  return "operational";
+  return configurationReady ? "operational" : "blocked";
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Data Derivation from Navigation Tree
 // ─────────────────────────────────────────────────────────────────────────────
 
-function deriveModuleData(domains: Domain[]): DerivedScreenEntry[] {
+function deriveModuleData(domains: Domain[], configurationReady: boolean): DerivedScreenEntry[] {
   const entries: DerivedScreenEntry[] = [];
   for (const domain of domains) {
     for (const cap of domain.capabilities) {
@@ -76,7 +89,7 @@ function deriveModuleData(domains: Domain[]): DerivedScreenEntry[] {
             screenTitle: screen.title,
             screenIcon: screen.icon,
             href: screen.href,
-            status: deriveStatus(screen),
+            status: deriveStatus(screen, configurationReady),
           });
         }
       }
@@ -97,12 +110,14 @@ function buildDomainSummaries(entries: DerivedScreenEntry[]): DomainSummary[] {
         operational: 0,
         inProgress: 0,
         pending: 0,
+        blocked: 0,
         percentage: 0,
       });
     }
     const s = map.get(e.domainId)!;
     s.total++;
     if (e.status === "operational") s.operational++;
+    else if (e.status === "blocked") s.blocked++;
     else if (e.status === "in_progress") s.inProgress++;
     else s.pending++;
   }
@@ -118,6 +133,7 @@ function buildDomainSummaries(entries: DerivedScreenEntry[]): DomainSummary[] {
 
 const STATUS_CONFIG: Record<ScreenStatus, { label: string; bg: string; color: string }> = {
   operational: { label: catalogMessage("common.general.operational"),      bg: "rgba(16,185,129,0.12)",  color: "#10b981" },
+  blocked:     { label: catalogMessage("enterpriseCore.modulesstatus.blocked"), bg: "rgba(239,68,68,0.12)", color: "#ef4444" },
   in_progress: { label: catalogMessage("common.general.development"), bg: "rgba(245,158,11,0.12)",  color: "#f59e0b" },
   pending:     { label: catalogMessage("common.general.comingSoon"),      bg: "rgba(148,163,184,0.12)", color: "#94a3b8" },
 };
@@ -254,6 +270,9 @@ function DomainSummaryCard({
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           <span style={{ fontSize: "0.65rem", color: "#10b981", fontWeight: 600 }}>{"✓ "}{summary.operational}</span>
+          {summary.blocked > 0 && (
+            <span style={{ fontSize: "0.65rem", color: "#ef4444", fontWeight: 600 }}>{"! "}{summary.blocked}</span>
+          )}
           {summary.inProgress > 0 && (
             <span style={{ fontSize: "0.65rem", color: "#f59e0b", fontWeight: 600 }}>{"⏱ "}{summary.inProgress}</span>
           )}
@@ -277,9 +296,23 @@ export function ModulesStatus() {
     const { t: i18n } = useI18n();
   const [filterDomain, setFilterDomain] = useState<string>("");
   const [filterStatus, setFilterStatus] = useState<string>("");
+  const [configurationReadiness, setConfigurationReadiness] = useState<ModuleReadinessResponse | null>(null);
 
-  // Derive all data from the navigation tree — no static arrays
-  const allEntries = useMemo(() => deriveModuleData(allDomains), []);
+  useEffect(() => {
+    let active = true;
+    fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.MODULE_READINESS)
+      .then((response) => {
+        if (active && response.success) setConfigurationReadiness(response.data as ModuleReadinessResponse);
+      })
+      .catch(() => {
+        if (active) setConfigurationReadiness(null);
+      });
+    return () => { active = false; };
+  }, []);
+
+  // Navigation describes available screens. The authoritative API determines whether their activated modules are operational.
+  const configurationReady = configurationReadiness?.summary.configuration_ready === true;
+  const allEntries = useMemo(() => deriveModuleData(allDomains, configurationReady), [configurationReady]);
   const domainSummaries = useMemo(() => buildDomainSummaries(allEntries), [allEntries]);
 
   const filteredEntries = useMemo(() => {
@@ -295,14 +328,16 @@ export function ModulesStatus() {
     const operational = allEntries.filter((e) => e.status === "operational").length;
     const inProgress = allEntries.filter((e) => e.status === "in_progress").length;
     const pending = allEntries.filter((e) => e.status === "pending").length;
+    const blocked = allEntries.filter((e) => e.status === "blocked").length;
     const percentage = total === 0 ? 0 : Math.round((operational / total) * 100);
-    return { total, operational, inProgress, pending, percentage, totalDomains: allDomains.length };
+    return { total, operational, inProgress, pending, blocked, percentage, totalDomains: allDomains.length };
   }, [allEntries]);
 
   // ── KPICardRow data ────────────────────────────────────────────────────────
   const kpiCards = [
     { icon: "sitemap"      as const, label: i18n.catalog["enterpriseCore.modulesstatus.totalScreens.alternative2"], value: stats.total,       subtitle: catalogText(i18n, "enterpriseCore.modulesstatus.field", { value0: stats.totalDomains }) },
     { icon: "check-circle" as const, label: i18n.catalog["common.general.operational"],          value: stats.operational,  subtitle: i18n.catalog["enterpriseCore.modulesstatus.readyUse"], color: "#10b981" },
+    { icon: "alert" as const, label: i18n.catalog["enterpriseCore.modulesstatus.blockedModules"], value: stats.blocked, subtitle: i18n.catalog["enterpriseCore.modulesstatus.configurationReadiness"], color: "#ef4444" },
     { icon: "clock"        as const, label: i18n.catalog["common.general.development"],     value: stats.inProgress,   subtitle: i18n.catalog["enterpriseCore.modulesstatus.progress"],    color: "#f59e0b" },
     { icon: "hourglass"    as const, label: i18n.catalog["common.general.comingSoon"],           value: stats.pending,      subtitle: i18n.catalog["enterpriseCore.modulesstatus.planned"],         color: "#94a3b8" },
     { icon: "trending-up"  as const, label: i18n.catalog["enterpriseCore.modulesstatus.completionPercentage"],    value: stats.percentage,   subtitle: i18n.catalog["enterpriseCore.modulesstatus.totalScreens"], color: stats.percentage === 100 ? "#10b981" : "#6366f1" },
@@ -370,7 +405,7 @@ export function ModulesStatus() {
               style={{
                 fontWeight: 600,
                 fontSize: "0.78rem",
-                color: entry.status === "pending" ? "var(--text-muted)" : "var(--text-primary)",
+                color: ["pending", "blocked"].includes(entry.status) ? "var(--text-muted)" : "var(--text-primary)",
               }}
             >
               {entry.screenTitle}
@@ -412,6 +447,7 @@ export function ModulesStatus() {
   const domainOptions = domainSummaries.map((d) => ({ value: d.id, label: d.title }));
   const statusOptions = [
     { value: "operational", label: i18n.catalog["common.general.operational"] },
+    { value: "blocked", label: i18n.catalog["enterpriseCore.modulesstatus.blocked"] },
     { value: "in_progress", label: i18n.catalog["common.general.development"] },
     { value: "pending",     label: i18n.catalog["common.general.comingSoon"] },
   ];
@@ -440,6 +476,14 @@ export function ModulesStatus() {
           </div>
         }
       />
+
+      {!configurationReady && (
+        <div style={{ margin: "0 0 1rem", padding: "0.9rem 1rem", border: "1px solid rgba(239,68,68,0.35)", borderRadius: 10, background: "rgba(239,68,68,0.06)" }}>
+          <strong style={{ color: "#b91c1c" }}>{i18n.catalog["enterpriseCore.modulesstatus.configurationReadiness"]}</strong>
+          <p style={{ margin: "0.35rem 0 0", color: "var(--text-secondary)", fontSize: "0.8rem" }}>{i18n.catalog["enterpriseCore.modulesstatus.activatedModulesNeedStructure"]}</p>
+          <p style={{ margin: "0.3rem 0 0", color: "var(--text-muted)", fontSize: "0.75rem" }}>{i18n.catalog["enterpriseCore.modulesstatus.completeOrganizationalStructure"]}</p>
+        </div>
+      )}
 
       {/* ── KPI Row (pre-built KPICardRow) ──────────────────────────────── */}
       <KPICardRow KPICards={kpiCards} />

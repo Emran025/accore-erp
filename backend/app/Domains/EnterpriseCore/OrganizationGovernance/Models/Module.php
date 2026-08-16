@@ -18,6 +18,7 @@ class Module extends Model
         'icon',
         'sort_order',
         'is_active',
+        'readiness_requirements',
     ];
 
     protected function casts(): array
@@ -25,6 +26,7 @@ class Module extends Model
         return [
             'sort_order' => 'integer',
             'is_active' => 'boolean',
+            'readiness_requirements' => 'array',
         ];
     }
 
