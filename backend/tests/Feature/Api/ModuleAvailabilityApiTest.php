@@ -12,6 +12,8 @@ class ModuleAvailabilityApiTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected bool $usesFreshModuleSetup = true;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -63,5 +65,16 @@ class ModuleAvailabilityApiTest extends TestCase
         $this->assertTrue($availability['is_operational']);
         $this->assertSame('active', $availability['lifecycle']);
         $this->assertSame('none', $availability['remediation']);
+    }
+
+    public function test_permission_middleware_blocks_an_inactive_non_sales_module(): void
+    {
+        Module::query()->where('module_key', 'products')->update(['is_active' => false]);
+
+        $response = $this->authGet(route('v2.inventory.products.index'));
+
+        $response->assertStatus(423)
+            ->assertJsonPath('code', 'MODULE_NOT_OPERATIONAL')
+            ->assertJsonPath('module', 'products');
     }
 }

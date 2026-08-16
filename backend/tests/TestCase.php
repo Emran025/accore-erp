@@ -6,6 +6,7 @@ use App\Domains\Commercial\SalesLifecycle\Models\PosTerminal;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\Role;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\Session;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\User;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Module;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\OperatingContext;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\OrgMetaType;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\StructureNode;
@@ -22,8 +23,13 @@ abstract class TestCase extends BaseTestCase
 {
     use RefreshDatabase;
 
-    protected ?User $authenticatedUser = null;
+        /**
+     * Existing test suites model a migrated operating installation. Fresh
+     * setup tests explicitly override this to exercise the new-install gate.
+     */
+    protected bool $usesFreshModuleSetup = false;
 
+    protected ?User $authenticatedUser = null;
     protected ?string $sessionToken = null;
 
     /**
@@ -35,6 +41,10 @@ abstract class TestCase extends BaseTestCase
 
         // Seed essential data for tests
         $this->seedEssentialData();
+
+        if (! $this->usesFreshModuleSetup) {
+            Module::query()->update(['is_active' => true]);
+        }
     }
 
     /**

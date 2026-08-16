@@ -10,6 +10,8 @@ class SetupStateApiTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected bool $usesFreshModuleSetup = true;
+
     protected function setUp(): void
     {
         parent::setUp();
