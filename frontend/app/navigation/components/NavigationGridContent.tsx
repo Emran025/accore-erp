@@ -6,6 +6,7 @@ import { NavigationCard, NavigationGrid } from "@/components/navigation";
 import { getNavigationGroup, isNavigationGroup, isNavigationLink } from "@/lib/navigation";
 import { canAccess } from "@/lib/auth";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useSetupStateStore } from "@/stores/useSetupStateStore";
 import { Icon } from "@/lib/icons";
 import { Button } from "@/components/ui";
 
@@ -19,6 +20,7 @@ export function NavigationGridContent({ groupId }: NavigationGridContentProps) {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { permissions } = useAuthStore();
+    const { state: setupState } = useSetupStateStore();
 
     // 1. Determine the active group key
     // Priority: Prop > Query Param > Default fallback
@@ -28,6 +30,12 @@ export function NavigationGridContent({ groupId }: NavigationGridContentProps) {
     const activeGroup = rawGroup.endsWith("/") ? rawGroup.slice(0, -1) : rawGroup;
 
     const currentGroup = getNavigationGroup(activeGroup);
+    const isLinkOperational = (module: string) =>
+        Boolean(setupState?.active_module_keys.includes(module));
+    const isItemVisible = (item: typeof currentGroup extends infer T ? T extends { items: (infer I)[] } ? I : never : never): boolean => {
+        if (isNavigationGroup(item)) return item.items.some(isItemVisible);
+        return isNavigationLink(item) && canAccess(permissions, item.module, "view") && isLinkOperational(item.module);
+    };
 
     if (!currentGroup) {
         return (
@@ -53,7 +61,7 @@ export function NavigationGridContent({ groupId }: NavigationGridContentProps) {
 
     return (
         <NavigationGrid>
-            {currentGroup.items.map((item) => {
+            {currentGroup.items.filter(isItemVisible).map((item) => {
                 if (isNavigationGroup(item)) {
                     // Render a folder card
                     return (
@@ -66,7 +74,7 @@ export function NavigationGridContent({ groupId }: NavigationGridContentProps) {
                         />
                     );
                 } else if (isNavigationLink(item)) {
-                    if (!canAccess(permissions, item.module, "view")) return null;
+                    if (!canAccess(permissions, item.module, "view") || !isLinkOperational(item.module)) return null;
                     return (
                         <NavigationCard
                             key={item.href + item.label}

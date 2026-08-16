@@ -7,6 +7,7 @@ import { navigationGroups, NavigationGroup, NavigationLink, getAllNavigationLink
 import { canAccess } from "@/lib/auth";
 import { useUIStore } from "@/stores/useUIStore";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useSetupStateStore } from "@/stores/useSetupStateStore";
 import { SectionHeader } from "./components/SectionHeader";
 import { ContextMenuPortal } from "./components/ContextMenuPortal";
 import { SidebarItem } from "./components/SidebarItem";
@@ -63,6 +64,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
     const pathname = usePathname();
     const router = useRouter();
     const { permissions } = useAuthStore();
+    const { state: setupState } = useSetupStateStore();
 
     const {
         sideNavCollapsed,
@@ -340,12 +342,22 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
         setContextMenu({ x, y, path, type });
     };
 
-    /* ── Get all accessible links flat ── */
+    /* ── Resolve links that are both permitted and operational ── */
+    const isLinkOperational = useCallback(
+        (link: NavigationLink): boolean =>
+            Boolean(setupState?.active_module_keys.includes(link.module)),
+        [setupState]
+    );
+
+    const isLinkAccessible = useCallback(
+        (link: NavigationLink): boolean =>
+            canAccess(permissions, link.module, "view") && isLinkOperational(link),
+        [permissions, isLinkOperational]
+    );
+
     const getAllLinks = useCallback((): NavigationLink[] => {
-        return getAllNavigationLinks(navigationGroups).filter((l) =>
-            canAccess(permissions, l.module, "view")
-        );
-    }, [permissions]);
+        return getAllNavigationLinks(navigationGroups).filter(isLinkAccessible);
+    }, [isLinkAccessible]);
 
     /* ── Find link by path ── */
     const findLink = useCallback(
@@ -442,9 +454,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                             <div className={`sidenav-section-content ${sideNavCollapsed ? "collapsed-mode" : ""}`}>
                                 {(() => {
                                     const renderNavGroup = (group: NavigationGroup, depth = 0): React.ReactNode => {
-                                        const accessibleLinks = getAllNavigationLinks([group]).filter((l) =>
-                                            canAccess(permissions, l.module, "view")
-                                        );
+                                        const accessibleLinks = getAllNavigationLinks([group]).filter(isLinkAccessible);
                                         if (accessibleLinks.length === 0) return null;
 
                                         const isExpanded = expandedFolders.includes(group.key);
@@ -472,7 +482,7 @@ export function SideNavigationBar({ onCollapsedChange, externalMobileOpen, onExt
                                                 {group.items && group.items.length > 0 && isNavigationGroup(group.items[0])
                                                     ? (group.items as NavigationGroup[]).map((childGroup) => renderNavGroup(childGroup, depth + 1))
                                                     : (group.items as NavigationLink[]).map((link) => {
-                                                        if (!canAccess(permissions, link.module, "view")) return null;
+                                                        if (!isLinkAccessible(link)) return null;
                                                         return (
                                                             <SidebarItem
                                                                 key={link.href + link.label}
