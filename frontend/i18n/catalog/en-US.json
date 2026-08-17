@@ -3983,7 +3983,7 @@
     "ui.servicesales.totalServices": "Total services",
     "ui.sessionexpiredmodal.sessionExpiredPleaseLogAgain": "Session expired, please log in again"
   },
-  "generatedAt": "2026-08-17T14:14:50.677Z",
+  "generatedAt": "2026-08-17T14:51:39.759Z",
   "messages": {
     "enterpriseCore.setup.title": "Initial configuration",
     "enterpriseCore.setup.subtitle": "Complete the organizational, operational, and accounting baseline before entering live operations.",
@@ -4043,6 +4043,7 @@
     "enterpriseCore.setup.modules.notSelected": "Not selected",
     "enterpriseCore.setup.modules.pendingReadiness": "Selected — prerequisites incomplete",
     "enterpriseCore.setup.modules.active": "Operational",
-    "enterpriseCore.setup.modules.selectionRequired": "Select at least one business module before leaving setup."
+    "enterpriseCore.setup.modules.selectionRequired": "Select at least one business module before leaving setup.",
+    "enterpriseCore.setup.accounting.recordSummary": "{value0} accounts and {value1} fiscal periods configured"
   }
 }

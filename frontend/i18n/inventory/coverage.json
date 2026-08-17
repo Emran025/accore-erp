@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-08-17T14:27:51.798Z",
-  "filesScanned": 467,
-  "candidatesScanned": 27895,
-  "filesPassing": 467,
+  "generatedAt": "2026-08-17T14:52:17.178Z",
+  "filesScanned": 476,
+  "candidatesScanned": 27883,
+  "filesPassing": 476,
   "filesFailing": 0,
   "files": [
     {
@@ -313,11 +313,11 @@
     },
     {
       "file": "app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/ModulesStatus.tsx",
-      "candidates": 262,
+      "candidates": 220,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 262,
+      "technical": 220,
       "passed": true
     },
     {
@@ -2985,12 +2985,84 @@
       "passed": true
     },
     {
-      "file": "app/setup/page.tsx",
-      "candidates": 199,
+      "file": "app/setup/components/SetupAccountingSection.tsx",
+      "candidates": 26,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 199,
+      "technical": 26,
+      "passed": true
+    },
+    {
+      "file": "app/setup/components/SetupField.tsx",
+      "candidates": 4,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 4,
+      "passed": true
+    },
+    {
+      "file": "app/setup/components/SetupModuleSelection.tsx",
+      "candidates": 14,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 14,
+      "passed": true
+    },
+    {
+      "file": "app/setup/components/SetupOperatingScopeSection.tsx",
+      "candidates": 23,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 23,
+      "passed": true
+    },
+    {
+      "file": "app/setup/components/SetupOrganizationSection.tsx",
+      "candidates": 17,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 17,
+      "passed": true
+    },
+    {
+      "file": "app/setup/components/SetupReadinessSummary.tsx",
+      "candidates": 9,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 9,
+      "passed": true
+    },
+    {
+      "file": "app/setup/components/SetupSection.tsx",
+      "candidates": 5,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 5,
+      "passed": true
+    },
+    {
+      "file": "app/setup/page.tsx",
+      "candidates": 120,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 120,
+      "passed": true
+    },
+    {
+      "file": "app/setup/types.ts",
+      "candidates": 4,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 4,
       "passed": true
     },
     {
@@ -3279,6 +3351,15 @@
       "extracted": 0,
       "approvedExceptions": 0,
       "technical": 72,
+      "passed": true
+    },
+    {
+      "file": "components/readiness/ReadinessNotice.tsx",
+      "candidates": 7,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 7,
       "passed": true
     },
     {

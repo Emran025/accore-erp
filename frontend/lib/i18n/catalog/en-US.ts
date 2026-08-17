@@ -4040,4 +4040,5 @@ export const enCatalog = {
     "enterpriseCore.setup.modules.pendingReadiness": "Selected — prerequisites incomplete",
     "enterpriseCore.setup.modules.active": "Operational",
     "enterpriseCore.setup.modules.selectionRequired": "Select at least one business module before leaving setup.",
+    "enterpriseCore.setup.accounting.recordSummary": "{value0} accounts and {value1} fiscal periods configured",
 } as const;

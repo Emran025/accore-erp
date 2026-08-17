@@ -9,6 +9,8 @@ import { getIcon } from "@/lib/icons";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { allDomains } from "@/lib/navigation";
+import { ReadinessNotice } from "@/components/readiness/ReadinessNotice";
+import styles from "./ModulesStatus.module.css";
 import type { Domain, NavScreen } from "@/types/navigation";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -477,43 +479,43 @@ export function ModulesStatus() {
         title={i18n.catalog["common.general.unitsStatus"]}
         titleIcon="check-circle"
         actions={
-          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <div className={styles.filterControls}>
             <Select
+              className={styles.statusFilter}
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
               options={statusOptions}
               placeholder={i18n.catalog["common.general.allStatuses"]}
-              style={{ minWidth: "160px" }}
             />
             <Select
+              className={styles.domainFilter}
               value={filterDomain}
               onChange={(e) => setFilterDomain(e.target.value)}
               options={domainOptions}
               placeholder={i18n.catalog["common.general.allFields"]}
-              style={{ minWidth: "200px" }}
             />
           </div>
         }
       />
 
       {configurationReadiness && !configurationReady && (
-        <div style={{ margin: "0 0 1rem", padding: "0.9rem 1rem", border: "1px solid rgba(239,68,68,0.35)", borderRadius: 10, background: "rgba(239,68,68,0.06)" }}>
-          <strong style={{ color: "#b91c1c" }}>{i18n.catalog["enterpriseCore.modulesstatus.configurationReadiness"]}</strong>
-          <p style={{ margin: "0.35rem 0 0", color: "var(--text-secondary)", fontSize: "0.8rem" }}>{i18n.catalog["enterpriseCore.modulesstatus.activatedModulesNeedStructure"]}</p>
-          <p style={{ margin: "0.3rem 0 0", color: "var(--text-muted)", fontSize: "0.75rem" }}>{i18n.catalog["enterpriseCore.modulesstatus.completeOrganizationalStructure"]}</p>
-        </div>
+        <ReadinessNotice
+          tone="critical"
+          title={i18n.catalog["enterpriseCore.modulesstatus.configurationReadiness"]}
+          messages={[i18n.catalog["enterpriseCore.modulesstatus.activatedModulesNeedStructure"]]}
+          helper={i18n.catalog["enterpriseCore.modulesstatus.completeOrganizationalStructure"]}
+        />
       )}
       {configurationReadiness && !accountingReady && (
-        <div style={{ margin: "0 0 1rem", padding: "0.9rem 1rem", border: "1px solid rgba(245,158,11,0.4)", borderRadius: 10, background: "rgba(245,158,11,0.07)" }}>
-          <strong style={{ color: "#b45309" }}>{i18n.catalog["enterpriseCore.modulesstatus.accountingReadiness"]}</strong>
-          {!configurationReadiness.accounting_readiness.open_fiscal_period.ready && (
-            <p style={{ margin: "0.35rem 0 0", color: "var(--text-secondary)", fontSize: "0.8rem" }}>{i18n.catalog["enterpriseCore.modulesstatus.openFiscalPeriodRequired"]}</p>
-          )}
-          {!configurationReadiness.accounting_readiness.chart_of_accounts.ready && (
-            <p style={{ margin: "0.3rem 0 0", color: "var(--text-secondary)", fontSize: "0.8rem" }}>{i18n.catalog["enterpriseCore.modulesstatus.chartOfAccountsRequired"]}</p>
-          )}
-          <p style={{ margin: "0.3rem 0 0", color: "var(--text-muted)", fontSize: "0.75rem" }}>{i18n.catalog["enterpriseCore.modulesstatus.completeAccountingSetup"]}</p>
-        </div>
+        <ReadinessNotice
+          tone="warning"
+          title={i18n.catalog["enterpriseCore.modulesstatus.accountingReadiness"]}
+          messages={[
+            ...(!configurationReadiness.accounting_readiness.open_fiscal_period.ready ? [i18n.catalog["enterpriseCore.modulesstatus.openFiscalPeriodRequired"]] : []),
+            ...(!configurationReadiness.accounting_readiness.chart_of_accounts.ready ? [i18n.catalog["enterpriseCore.modulesstatus.chartOfAccountsRequired"]] : []),
+          ]}
+          helper={i18n.catalog["enterpriseCore.modulesstatus.completeAccountingSetup"]}
+        />
       )}
 
       {/* ── KPI Row (pre-built KPICardRow) ──────────────────────────────── */}
@@ -521,14 +523,7 @@ export function ModulesStatus() {
 
       {/* ── Domain Cards Grid ────────────────────────────────────────────── */}
       {!filterDomain && !filterStatus && (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-            gap: "0.75rem",
-            marginBottom: "1.5rem",
-          }}
-        >
+        <div className={styles.domainGrid}>
           {domainSummaries.map((summary, idx) => (
             <DomainSummaryCard
               key={summary.id}
@@ -542,21 +537,19 @@ export function ModulesStatus() {
       )}
 
       {/* ── Filter info bar ──────────────────────────────────────────────── */}
-      <div style={{ marginBottom: "0.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", fontWeight: 600 }}>
-          {i18n.catalog["common.general.view"]}{filteredEntries.length} {i18n.catalog["common.general.notAvailable.alternative2"]}{allEntries.length} {i18n.catalog["enterpriseCore.modulesstatus.screen"]}</span>
+      <div className={styles.filterInfo}>
+        <span className={styles.filterCount}>
+          {i18n.catalog["common.general.view"]}{filteredEntries.length} {i18n.catalog["common.general.notAvailable.alternative2"]}{allEntries.length} {i18n.catalog["enterpriseCore.modulesstatus.screen"]}
+        </span>
         {(filterDomain || filterStatus) && (
           <button
+            type="button"
             onClick={() => { setFilterDomain(""); setFilterStatus(""); }}
-            style={{
-              fontSize: "0.72rem", color: "#6366f1",
-              background: "none", border: "none",
-              cursor: "pointer", fontWeight: 600,
-              display: "flex", alignItems: "center", gap: 4,
-            }}
+            className={styles.clearFilters}
           >
             {getIcon("x", undefined, 12)}
-            {i18n.catalog["enterpriseCore.modulesstatus.clearFilters"]}</button>
+            {i18n.catalog["enterpriseCore.modulesstatus.clearFilters"]}
+          </button>
         )}
       </div>
 

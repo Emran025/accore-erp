@@ -4,7 +4,7 @@ Generated deterministically by `npm run i18n:inventory`.
 
 | Status | Count |
 |---|---:|
-| technical | 27895 |
+| technical | 27883 |
 
 ## Highest-volume files
 
@@ -30,7 +30,6 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/06-human-capital/hr-compliance/compliance-relations/employee-relations/(pages)/EmployeeRelations.tsx` | 280 |
 | `app/01-enterprise-core/automation/recurring/recurring-transactions/(pages)/page.tsx` | 265 |
 | `app/03-finance/management-accounting/cost-profit-centers/cost-centers/(pages)/page.tsx` | 264 |
-| `app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/ModulesStatus.tsx` | 262 |
 | `app/06-human-capital/hr-compliance/compliance-relations/communications/(pages)/CorporateCommunications.tsx` | 262 |
 | `components/ui/OperationalReportsWorkspace.tsx` | 261 |
 | `app/03-finance/general-ledger/ledger-core/financial-reports/components/BalanceSheetTab.tsx` | 259 |
@@ -42,6 +41,7 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/04-supply-chain/inventory/products-inventory/products/(pages)/page.tsx` | 226 |
 | `app/03-finance/tax-compliance/cash-management/journal-vouchers/(pages)/page.tsx` | 223 |
 | `app/03-finance/treasury/cash-management/journal-vouchers/(pages)/page.tsx` | 223 |
+| `app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/ModulesStatus.tsx` | 220 |
 | `app/06-human-capital/performance-development/performance/succession/(pages)/Succession.tsx` | 219 |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/LinksTab.tsx` | 218 |
 | `components/ui/QuotationWorkspace.tsx` | 218 |
@@ -50,7 +50,6 @@ Generated deterministically by `npm run i18n:inventory`.
 | `lib/navigation/commercial.config.ts` | 210 |
 | `app/06-human-capital/services-wellness/employee-services/wellness/(pages)/WellnessModule.tsx` | 203 |
 | `app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/edit/page.tsx` | 202 |
-| `app/setup/page.tsx` | 199 |
 | `app/01-enterprise-core/system-overview/dashboard/global-dashboard/(pages)/page.tsx` | 193 |
 | `lib/navigation/supply-chain.config.ts` | 193 |
 | `app/01-enterprise-core/automation/recurring/batch-processing/(pages)/page.tsx` | 191 |
@@ -95,6 +94,7 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/03-finance/foreign-exchange/currency-management/currencies/components/CurrencyListTab.tsx` | 121 |
 | `app/03-finance/tax-compliance/cash-management/bank-reconciliation/(pages)/page.tsx` | 120 |
 | `app/03-finance/treasury/cash-management/bank-reconciliation/(pages)/page.tsx` | 120 |
+| `app/setup/page.tsx` | 120 |
 | `app/02-commercial/revenue-receivables/revenue-receipts/revenues/(pages)/page.tsx` | 119 |
 | `app/04-supply-chain/procurement/purchase-invoices/purchase-returns/(pages)/page.tsx` | 114 |
 | `components/tax/compliance-editor/FormatEditor.tsx` | 114 |

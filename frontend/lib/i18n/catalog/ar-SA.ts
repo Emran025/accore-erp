@@ -4040,4 +4040,5 @@ export const arCatalog = {
     "enterpriseCore.setup.modules.pendingReadiness": "مختارة — المتطلبات غير مكتملة",
     "enterpriseCore.setup.modules.active": "جاهزة للتشغيل",
     "enterpriseCore.setup.modules.selectionRequired": "اختر وحدة أعمال واحدة على الأقل قبل مغادرة التهيئة.",
+    "enterpriseCore.setup.accounting.recordSummary": "تم إعداد {value0} حسابات و{value1} فترات مالية",
 } as const;

@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-17T14:14:50.632Z",
-  "itemCount": 4040,
+  "generatedAt": "2026-08-17T14:51:39.718Z",
+  "itemCount": 4041,
   "items": [
     {
       "id": "assets.fixedAssetsRegistry.areYouSureYouWantDeleteThisAsset",
@@ -58045,6 +58045,12 @@
     {
       "id": "enterpriseCore.setup.accounting.periodName",
       "source": "اسم الفترة المالية",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.accounting.recordSummary",
+      "source": "تم إعداد {value0} حسابات و{value1} فترات مالية",
       "classification": "user-facing",
       "occurrences": []
     },

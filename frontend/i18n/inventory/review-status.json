@@ -36,5 +36,13 @@
   "app/setup/page.tsx:153:129": "technical",
   "app/setup/page.tsx:154:91": "technical",
   "app/setup/page.tsx:154:107": "technical",
-  "app/setup/page.tsx:154:133": "technical"
+  "app/setup/page.tsx:154:133": "technical",
+  "app/setup/components/SetupSection.tsx:14:83": "technical",
+  "app/setup/page.tsx:110:12": "technical",
+  "app/setup/page.tsx:113:101": "technical",
+  "app/setup/page.tsx:113:117": "technical",
+  "app/setup/page.tsx:113:143": "technical",
+  "app/setup/page.tsx:114:105": "technical",
+  "app/setup/page.tsx:114:121": "technical",
+  "app/setup/page.tsx:114:147": "technical"
 }
