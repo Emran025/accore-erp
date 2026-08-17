@@ -10,7 +10,6 @@ import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { allDomains } from "@/lib/navigation";
 import { ReadinessNotice } from "@/components/readiness/ReadinessNotice";
-import styles from "./ModulesStatus.module.css";
 import type { Domain, NavScreen } from "@/types/navigation";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -479,16 +478,16 @@ export function ModulesStatus() {
         title={i18n.catalog["common.general.unitsStatus"]}
         titleIcon="check-circle"
         actions={
-          <div className={styles.filterControls}>
+          <div className="modules-status-filter-controls">
             <Select
-              className={styles.statusFilter}
+              className="modules-status-filter-status"
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
               options={statusOptions}
               placeholder={i18n.catalog["common.general.allStatuses"]}
             />
             <Select
-              className={styles.domainFilter}
+              className="modules-status-filter-domain"
               value={filterDomain}
               onChange={(e) => setFilterDomain(e.target.value)}
               options={domainOptions}
@@ -523,7 +522,7 @@ export function ModulesStatus() {
 
       {/* ── Domain Cards Grid ────────────────────────────────────────────── */}
       {!filterDomain && !filterStatus && (
-        <div className={styles.domainGrid}>
+        <div className="modules-status-domain-grid">
           {domainSummaries.map((summary, idx) => (
             <DomainSummaryCard
               key={summary.id}
@@ -537,15 +536,15 @@ export function ModulesStatus() {
       )}
 
       {/* ── Filter info bar ──────────────────────────────────────────────── */}
-      <div className={styles.filterInfo}>
-        <span className={styles.filterCount}>
+      <div className="modules-status-filter-info">
+        <span className="modules-status-filter-count">
           {i18n.catalog["common.general.view"]}{filteredEntries.length} {i18n.catalog["common.general.notAvailable.alternative2"]}{allEntries.length} {i18n.catalog["enterpriseCore.modulesstatus.screen"]}
         </span>
         {(filterDomain || filterStatus) && (
           <button
             type="button"
             onClick={() => { setFilterDomain(""); setFilterStatus(""); }}
-            className={styles.clearFilters}
+            className="modules-status-clear-filters"
           >
             {getIcon("x", undefined, 12)}
             {i18n.catalog["enterpriseCore.modulesstatus.clearFilters"]}

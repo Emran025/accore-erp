@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui";
 import { Readiness } from "../types";
-import styles from "../setup.module.css";
 
 interface SetupReadinessSummaryProps {
   title: string;
@@ -32,16 +31,16 @@ export function SetupReadinessSummary({
   onOpenDashboard,
 }: SetupReadinessSummaryProps) {
   const checks = readiness?.checks ?? [];
-  const statusClass = readiness?.ready ? styles.summaryReady : styles.summaryBlocked;
+  const statusClass = readiness?.ready ? "is-ready" : "is-blocked";
 
   return (
-    <header className={`${styles.summary} ${statusClass}`} aria-live="polite">
-      <div className={styles.summaryHeader}>
+    <header className={`sales-card setup-summary ${statusClass}`} aria-live="polite">
+      <div className="setup-summary-header">
         <div>
-          <h1 className={styles.summaryTitle}>{title}</h1>
-          <p className={styles.summaryDescription}>{description}</p>
+          <h1 className="setup-summary-title">{title}</h1>
+          <p className="setup-summary-description">{description}</p>
         </div>
-        <div className={styles.summaryActions}>
+        <div className="setup-actions">
           <Button variant="secondary" type="button" onClick={onRefresh} isLoading={isLoading}>
             {refreshLabel}
           </Button>
@@ -50,11 +49,11 @@ export function SetupReadinessSummary({
           </Button>
         </div>
       </div>
-      <div className={styles.checkList} aria-label={title}>
+      <div className="setup-readiness-checks" aria-label={title}>
         {checks.map((check) => (
           <span
             key={check.key}
-            className={`${styles.checkBadge} ${check.complete ? styles.checkComplete : styles.checkIncomplete}`}
+            className={`badge ${check.complete ? "badge-success" : "badge-warning"}`}
           >
             {readinessLabels[check.key] || check.key}: {check.complete ? completeLabel : incompleteLabel}
           </span>

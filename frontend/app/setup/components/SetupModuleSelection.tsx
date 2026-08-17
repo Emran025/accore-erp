@@ -2,7 +2,6 @@ import { Button } from "@/components/ui";
 import { SupportedLocale } from "@/lib/i18n/types";
 import { SetupModule } from "../types";
 import { SetupSection } from "./SetupSection";
-import styles from "../setup.module.css";
 
 interface SetupModuleSelectionProps {
   locale: SupportedLocale;
@@ -55,22 +54,21 @@ export function SetupModuleSelection({
 
   return (
     <SetupSection id="setup-modules" title={title} description={description}>
-      <fieldset className={styles.moduleGrid} aria-describedby={selectedModuleKeys.length === 0 ? "setup-modules-hint" : undefined}>
-        <legend className={styles.visuallyHidden}>{title}</legend>
-        {businessModules.length === 0 ? <p className={styles.emptyState}>{noRecordsLabel}</p> : null}
+      <fieldset className="setup-module-grid" aria-describedby={selectedModuleKeys.length === 0 ? "setup-modules-hint" : undefined}>
+        <legend className="sr-only">{title}</legend>
+        {businessModules.length === 0 ? <p className="setup-empty-state">{noRecordsLabel}</p> : null}
         {businessModules.map((module) => {
           const selected = selectedModuleKeys.includes(module.module_key);
           return (
-            <label className={styles.moduleCard} key={module.module_key}>
+            <label className="setup-module-card" key={module.module_key}>
               <input
-                className={styles.moduleCheckbox}
                 type="checkbox"
                 checked={selected}
                 onChange={() => onToggle(module.module_key)}
               />
               <span>
-                <strong className={styles.moduleName}>{moduleLabel(module)}</strong>
-                <span className={`${styles.moduleStatus} ${module.is_operational ? styles.moduleOperational : ""}`.trim()}>
+                <strong className="setup-module-name">{moduleLabel(module)}</strong>
+                <span className={`setup-module-status ${module.is_operational ? "is-operational" : ""}`.trim()}>
                   {statusLabel(module)}
                 </span>
               </span>
@@ -78,14 +76,14 @@ export function SetupModuleSelection({
           );
         })}
       </fieldset>
-      <div className={styles.actionRow}>
+      <div className="setup-actions">
         <Button type="button" onClick={onSave} isLoading={isSaving}>
           {saveSelectionLabel}
         </Button>
         <Button type="button" variant="secondary" onClick={onActivate} isLoading={isSaving} disabled={selectedModuleKeys.length === 0}>
           {activateSelectedLabel}
         </Button>
-        {selectedModuleKeys.length === 0 ? <p id="setup-modules-hint" className={styles.helperText}>{selectionRequiredLabel}</p> : null}
+        {selectedModuleKeys.length === 0 ? <p id="setup-modules-hint" className="setup-helper-text">{selectionRequiredLabel}</p> : null}
       </div>
     </SetupSection>
   );

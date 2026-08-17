@@ -4,7 +4,7 @@ Generated deterministically by `npm run i18n:inventory`.
 
 | Status | Count |
 |---|---:|
-| technical | 27883 |
+| technical | 27934 |
 
 ## Highest-volume files
 
@@ -38,10 +38,10 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/ChangeHistoryTab.tsx` | 230 |
 | `app/06-human-capital/talent-recruitment/recruitment/administration/components/PositionsTab.tsx` | 228 |
 | `app/06-human-capital/knowledge-portal/self-service/employee-portal/(pages)/EmployeePortal.tsx` | 227 |
+| `app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/ModulesStatus.tsx` | 226 |
 | `app/04-supply-chain/inventory/products-inventory/products/(pages)/page.tsx` | 226 |
 | `app/03-finance/tax-compliance/cash-management/journal-vouchers/(pages)/page.tsx` | 223 |
 | `app/03-finance/treasury/cash-management/journal-vouchers/(pages)/page.tsx` | 223 |
-| `app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/ModulesStatus.tsx` | 220 |
 | `app/06-human-capital/performance-development/performance/succession/(pages)/Succession.tsx` | 219 |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/LinksTab.tsx` | 218 |
 | `components/ui/QuotationWorkspace.tsx` | 218 |

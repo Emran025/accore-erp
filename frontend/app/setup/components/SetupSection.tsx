@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import styles from "../setup.module.css";
 
 interface SetupSectionProps {
   id: string;
@@ -11,10 +10,10 @@ interface SetupSectionProps {
 
 export function SetupSection({ id, title, description, children, className = "" }: SetupSectionProps) {
   return (
-    <section className={`${styles.section} ${className}`.trim()} aria-labelledby={`${id}-title`}>
-      <header className={styles.sectionHeader}>
-        <h2 id={`${id}-title`} className={styles.sectionTitle}>{title}</h2>
-        <p className={styles.sectionDescription}>{description}</p>
+    <section className={`sales-card setup-section ${className}`.trim()} aria-labelledby={`${id}-title`}>
+      <header className="setup-section-header">
+        <h3 id={`${id}-title`}>{title}</h3>
+        <p className="setup-section-description">{description}</p>
       </header>
       {children}
     </section>

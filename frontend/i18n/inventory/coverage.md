@@ -3,7 +3,7 @@
 | Metric | Value |
 |---|---:|
 | Files scanned | 476 |
-| Candidate literals scanned | 27883 |
+| Candidate literals scanned | 27934 |
 | Files passing | 476 |
 | Files failing | 0 |
 
@@ -45,7 +45,7 @@
 | `app/01-enterprise-core/system-overview/dashboard/global-dashboard/(pages)/page.tsx` | 193 | 0 | 193 | Yes |
 | `app/01-enterprise-core/system-overview/dashboard/global-dashboard/components/ExchangeRatesWidget.tsx` | 40 | 0 | 40 | Yes |
 | `app/01-enterprise-core/system-overview/dashboard/global-dashboard/index.ts` | 1 | 0 | 1 | Yes |
-| `app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/ModulesStatus.tsx` | 220 | 0 | 220 | Yes |
+| `app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/ModulesStatus.tsx` | 226 | 0 | 226 | Yes |
 | `app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/page.tsx` | 5 | 0 | 5 | Yes |
 | `app/01-enterprise-core/system-overview/dashboard/modules-status/index.ts` | 1 | 0 | 1 | Yes |
 | `app/02-commercial/crm/customer-groups-nr/add-customer-group/(pages)/page.tsx` | 9 | 0 | 9 | Yes |
@@ -342,13 +342,13 @@
 | `app/navigation/components/NavigationGridContent.tsx` | 26 | 0 | 26 | Yes |
 | `app/navigation/index.ts` | 1 | 0 | 1 | Yes |
 | `app/page.tsx` | 2 | 0 | 2 | Yes |
-| `app/setup/components/SetupAccountingSection.tsx` | 26 | 0 | 26 | Yes |
+| `app/setup/components/SetupAccountingSection.tsx` | 36 | 0 | 36 | Yes |
 | `app/setup/components/SetupField.tsx` | 4 | 0 | 4 | Yes |
-| `app/setup/components/SetupModuleSelection.tsx` | 14 | 0 | 14 | Yes |
-| `app/setup/components/SetupOperatingScopeSection.tsx` | 23 | 0 | 23 | Yes |
-| `app/setup/components/SetupOrganizationSection.tsx` | 17 | 0 | 17 | Yes |
-| `app/setup/components/SetupReadinessSummary.tsx` | 9 | 0 | 9 | Yes |
-| `app/setup/components/SetupSection.tsx` | 5 | 0 | 5 | Yes |
+| `app/setup/components/SetupModuleSelection.tsx` | 21 | 0 | 21 | Yes |
+| `app/setup/components/SetupOperatingScopeSection.tsx` | 31 | 0 | 31 | Yes |
+| `app/setup/components/SetupOrganizationSection.tsx` | 24 | 0 | 24 | Yes |
+| `app/setup/components/SetupReadinessSummary.tsx` | 17 | 0 | 17 | Yes |
+| `app/setup/components/SetupSection.tsx` | 6 | 0 | 6 | Yes |
 | `app/setup/page.tsx` | 120 | 0 | 120 | Yes |
 | `app/setup/types.ts` | 4 | 0 | 4 | Yes |
 | `components/layout/index.ts` | 2 | 0 | 2 | Yes |
@@ -383,7 +383,7 @@
 | `components/number-range/NumberRangeManager.tsx` | 409 | 0 | 409 | Yes |
 | `components/number-range/types.ts` | 3 | 0 | 3 | Yes |
 | `components/number-range/useNumberRange.ts` | 72 | 0 | 72 | Yes |
-| `components/readiness/ReadinessNotice.tsx` | 7 | 0 | 7 | Yes |
+| `components/readiness/ReadinessNotice.tsx` | 11 | 0 | 11 | Yes |
 | `components/tax/compliance-editor/ComplianceProfileEditor.tsx` | 422 | 0 | 422 | Yes |
 | `components/tax/compliance-editor/FormatEditor.tsx` | 114 | 0 | 114 | Yes |
 | `components/tax/compliance-editor/index.ts` | 5 | 0 | 5 | Yes |

@@ -1,5 +1,3 @@
-import styles from "./ReadinessNotice.module.css";
-
 interface ReadinessNoticeProps {
   tone: "critical" | "warning";
   title: string;
@@ -8,15 +6,15 @@ interface ReadinessNoticeProps {
 }
 
 export function ReadinessNotice({ tone, title, messages, helper }: ReadinessNoticeProps) {
-  const toneClass = tone === "critical" ? styles.critical : styles.warning;
+  const toneClass = tone === "critical" ? "critical" : "warning";
 
   return (
-    <aside className={`${styles.notice} ${toneClass}`} role="status" aria-live="polite">
-      <h2 className={styles.title}>{title}</h2>
-      <div className={styles.messages}>
+    <aside className={`readiness-notice ${toneClass}`} role="status" aria-live="polite">
+      <h2 className="readiness-notice-title">{title}</h2>
+      <div className="readiness-notice-messages">
         {messages.map((message) => <p key={message}>{message}</p>)}
       </div>
-      <p className={styles.helper}>{helper}</p>
+      <p className="readiness-notice-helper">{helper}</p>
     </aside>
   );
 }

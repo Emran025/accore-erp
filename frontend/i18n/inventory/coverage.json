@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-08-17T14:52:17.178Z",
+  "generatedAt": "2026-08-17T15:13:51.451Z",
   "filesScanned": 476,
-  "candidatesScanned": 27883,
+  "candidatesScanned": 27934,
   "filesPassing": 476,
   "filesFailing": 0,
   "files": [
@@ -313,11 +313,11 @@
     },
     {
       "file": "app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/ModulesStatus.tsx",
-      "candidates": 220,
+      "candidates": 226,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 220,
+      "technical": 226,
       "passed": true
     },
     {
@@ -2986,11 +2986,11 @@
     },
     {
       "file": "app/setup/components/SetupAccountingSection.tsx",
-      "candidates": 26,
+      "candidates": 36,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 26,
+      "technical": 36,
       "passed": true
     },
     {
@@ -3004,24 +3004,33 @@
     },
     {
       "file": "app/setup/components/SetupModuleSelection.tsx",
-      "candidates": 14,
+      "candidates": 21,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 14,
+      "technical": 21,
       "passed": true
     },
     {
       "file": "app/setup/components/SetupOperatingScopeSection.tsx",
-      "candidates": 23,
+      "candidates": 31,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 23,
+      "technical": 31,
       "passed": true
     },
     {
       "file": "app/setup/components/SetupOrganizationSection.tsx",
+      "candidates": 24,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 24,
+      "passed": true
+    },
+    {
+      "file": "app/setup/components/SetupReadinessSummary.tsx",
       "candidates": 17,
       "pending": 0,
       "extracted": 0,
@@ -3030,21 +3039,12 @@
       "passed": true
     },
     {
-      "file": "app/setup/components/SetupReadinessSummary.tsx",
-      "candidates": 9,
-      "pending": 0,
-      "extracted": 0,
-      "approvedExceptions": 0,
-      "technical": 9,
-      "passed": true
-    },
-    {
       "file": "app/setup/components/SetupSection.tsx",
-      "candidates": 5,
+      "candidates": 6,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 5,
+      "technical": 6,
       "passed": true
     },
     {
@@ -3355,11 +3355,11 @@
     },
     {
       "file": "components/readiness/ReadinessNotice.tsx",
-      "candidates": 7,
+      "candidates": 11,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 7,
+      "technical": 11,
       "passed": true
     },
     {

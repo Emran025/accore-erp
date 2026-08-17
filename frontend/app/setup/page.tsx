@@ -13,7 +13,6 @@ import { SetupOperatingScopeSection } from "./components/SetupOperatingScopeSect
 import { SetupOrganizationSection } from "./components/SetupOrganizationSection";
 import { SetupReadinessSummary } from "./components/SetupReadinessSummary";
 import { Item, MetaType, OrgNode, Readiness, SetupState } from "./types";
-import styles from "./setup.module.css";
 
 const accountTypes = ["asset", "liability", "equity", "revenue", "expense"] as const;
 type AccountType = (typeof accountTypes)[number];
@@ -239,8 +238,7 @@ export default function SetupPage() {
 
   return (
     <MainLayout requiredModule="settings" requiredAction="view">
-      <main className={styles.page}>
-        <div className={styles.stack}>
+      <main className="settings-wrapper setup-workflow animate-fade">
           <SetupReadinessSummary
             title={i18n.catalog["enterpriseCore.setup.title"]}
             description={i18n.catalog["enterpriseCore.setup.subtitle"]}
@@ -361,7 +359,6 @@ export default function SetupPage() {
             onPosNameChange={setPosName}
             onSave={() => void saveContext()}
           />
-        </div>
       </main>
     </MainLayout>
   );
