@@ -71,12 +71,14 @@ class ModuleReadinessApiTest extends TestCase
             'is_closed' => false,
             'is_locked' => false,
         ]);
-        ChartOfAccount::create([
-            'account_code' => '1000',
-            'account_name' => 'Cash',
-            'account_type' => 'Asset',
-            'is_active' => true,
-        ]);
+        foreach (['asset', 'liability', 'equity', 'revenue', 'expense'] as $index => $type) {
+            ChartOfAccount::create([
+                'account_code' => (string) (1000 + $index * 1000),
+                'account_name' => ucfirst($type),
+                'account_type' => $type,
+                'is_active' => true,
+            ]);
+        }
 
         $ready = $this->authGet(route('v2.org.module_readiness'));
 

@@ -28,7 +28,9 @@ class OperatingContextController extends Controller
             'checks' => $readiness['checks'],
             'missing' => $readiness['missing'],
             'next_action' => $readiness['next_action'],
+            'working_unit_readiness' => $readiness['working_unit_readiness'],
             'structural_readiness' => $readiness['structural_readiness'],
+            'accounting_readiness' => $readiness['accounting_readiness'],
             'context' => $context ? (new OperatingContextResource($context))->resolve($request) : null,
         ]]);
     }

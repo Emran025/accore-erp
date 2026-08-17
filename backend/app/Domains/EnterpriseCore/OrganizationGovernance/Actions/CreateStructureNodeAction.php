@@ -1,14 +1,18 @@
 <?php
+
 namespace App\Domains\EnterpriseCore\OrganizationGovernance\Actions;
 
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\StructureNode;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Services\OrgIntegrationService;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Services\OrgStructureService;
 
 class CreateStructureNodeAction
 {
     public function __construct(
-        private readonly OrgStructureService $orgService
-    ) {}
+        private readonly OrgStructureService $orgService,
+        private readonly OrgIntegrationService $orgIntegration,
+    ) {
+    }
 
     public function execute(array $data): StructureNode
     {
@@ -17,6 +21,18 @@ class CreateStructureNodeAction
         }
 
         $result = $this->orgService->createNodeWithLink($data, $data['link'] ?? null);
-        return $result['node'];
+        $node = $result['node'];
+
+        // The configuration workflow owns the organization first. When the
+        // selected unit is a financial dimension, immediately create and link
+        // its finance record so readiness never accepts an orphaned unit.
+        if ($node->node_type_id === 'COST_CENTER') {
+            $this->orgIntegration->syncOrgNodeToCostCenter($node);
+        }
+        if ($node->node_type_id === 'PROFIT_CENTER') {
+            $this->orgIntegration->syncOrgNodeToProfitCenter($node);
+        }
+
+        return $node->fresh();
     }
 }

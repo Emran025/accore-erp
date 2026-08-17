@@ -100,6 +100,9 @@ class ModuleSeeder extends Seeder
                 'requires_open_fiscal_period' => false,
                 'requires_chart_of_accounts' => false,
             ];
+            if ($module['readiness_requirements']['requires_org_structure']) {
+                $module['readiness_requirements']['requires_working_unit'] = true;
+            }
             Module::updateOrCreate(
                 ['module_key' => $module['module_key']],
                 $module

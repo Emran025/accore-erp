@@ -1,17 +1,17 @@
 {
-  "generatedAt": "2026-08-15T20:13:30.096Z",
-  "filesScanned": 466,
-  "candidatesScanned": 27491,
-  "filesPassing": 466,
+  "generatedAt": "2026-08-17T12:59:42.828Z",
+  "filesScanned": 467,
+  "candidatesScanned": 27855,
+  "filesPassing": 467,
   "filesFailing": 0,
   "files": [
     {
       "file": "app/[...virtual]/page.tsx",
-      "candidates": 2,
+      "candidates": 7,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 2,
+      "technical": 7,
       "passed": true
     },
     {
@@ -133,11 +133,11 @@
     },
     {
       "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx",
-      "candidates": 133,
+      "candidates": 146,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 133,
+      "technical": 146,
       "passed": true
     },
     {
@@ -196,11 +196,11 @@
     },
     {
       "file": "app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/DashboardTab.tsx",
-      "candidates": 122,
+      "candidates": 101,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 122,
+      "technical": 101,
       "passed": true
     },
     {
@@ -286,11 +286,11 @@
     },
     {
       "file": "app/01-enterprise-core/system-overview/dashboard/global-dashboard/(pages)/page.tsx",
-      "candidates": 180,
+      "candidates": 193,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 180,
+      "technical": 193,
       "passed": true
     },
     {
@@ -313,11 +313,11 @@
     },
     {
       "file": "app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/ModulesStatus.tsx",
-      "candidates": 207,
+      "candidates": 262,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 207,
+      "technical": 262,
       "passed": true
     },
     {
@@ -1159,11 +1159,11 @@
     },
     {
       "file": "app/03-finance/general-ledger/ledger-core/fiscal-periods/(pages)/page.tsx",
-      "candidates": 145,
+      "candidates": 152,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 145,
+      "technical": 152,
       "passed": true
     },
     {
@@ -2914,11 +2914,11 @@
     },
     {
       "file": "app/auth/login/(pages)/page.tsx",
-      "candidates": 9,
+      "candidates": 11,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 9,
+      "technical": 11,
       "passed": true
     },
     {
@@ -2985,6 +2985,15 @@
       "passed": true
     },
     {
+      "file": "app/setup/page.tsx",
+      "candidates": 163,
+      "pending": 0,
+      "extracted": 20,
+      "approvedExceptions": 0,
+      "technical": 143,
+      "passed": true
+    },
+    {
       "file": "components/layout/index.ts",
       "candidates": 2,
       "pending": 0,
@@ -2995,11 +3004,20 @@
     },
     {
       "file": "components/layout/MainLayout.tsx",
-      "candidates": 44,
+      "candidates": 54,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 44,
+      "technical": 54,
+      "passed": true
+    },
+    {
+      "file": "components/layout/NotificationRuntimeBridge.tsx",
+      "candidates": 18,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 18,
       "passed": true
     },
     {
@@ -3138,39 +3156,21 @@
       "passed": true
     },
     {
-      "file": "components/navigation/StatusNotificationBar/components/EnvironmentIndicator.tsx",
-      "candidates": 5,
+      "file": "components/navigation/StatusNotificationBar/content.ts",
+      "candidates": 21,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 5,
-      "passed": true
-    },
-    {
-      "file": "components/navigation/StatusNotificationBar/components/StatusIndicator.tsx",
-      "candidates": 6,
-      "pending": 0,
-      "extracted": 0,
-      "approvedExceptions": 0,
-      "technical": 6,
+      "technical": 21,
       "passed": true
     },
     {
       "file": "components/navigation/StatusNotificationBar/StatusNotificationBar.tsx",
-      "candidates": 7,
+      "candidates": 100,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 7,
-      "passed": true
-    },
-    {
-      "file": "components/navigation/StatusNotificationBar/utils.ts",
-      "candidates": 16,
-      "pending": 0,
-      "extracted": 0,
-      "approvedExceptions": 0,
-      "technical": 16,
+      "technical": 100,
       "passed": true
     },
     {
@@ -3391,11 +3391,11 @@
     },
     {
       "file": "components/ui/Alert.tsx",
-      "candidates": 43,
+      "candidates": 19,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 43,
+      "technical": 19,
       "passed": true
     },
     {
@@ -3607,11 +3607,11 @@
     },
     {
       "file": "components/ui/ProductPurchases.tsx",
-      "candidates": 393,
+      "candidates": 394,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 393,
+      "technical": 394,
       "passed": true
     },
     {
@@ -3769,11 +3769,11 @@
     },
     {
       "file": "components/ui/Toast.tsx",
-      "candidates": 11,
+      "candidates": 12,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 11,
+      "technical": 12,
       "passed": true
     },
     {
@@ -3859,11 +3859,11 @@
     },
     {
       "file": "lib/endpoints/enterprise-core.ts",
-      "candidates": 54,
+      "candidates": 55,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 54,
+      "technical": 55,
       "passed": true
     },
     {
@@ -4057,20 +4057,20 @@
     },
     {
       "file": "stores/factories/createCRUDStore.ts",
-      "candidates": 28,
+      "candidates": 30,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 28,
+      "technical": 30,
       "passed": true
     },
     {
       "file": "stores/index.ts",
-      "candidates": 13,
+      "candidates": 14,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 13,
+      "technical": 14,
       "passed": true
     },
     {
@@ -4102,11 +4102,11 @@
     },
     {
       "file": "stores/useErrorStore.ts",
-      "candidates": 12,
+      "candidates": 15,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 12,
+      "technical": 15,
       "passed": true
     },
     {
@@ -4116,6 +4116,15 @@
       "extracted": 0,
       "approvedExceptions": 0,
       "technical": 19,
+      "passed": true
+    },
+    {
+      "file": "stores/useNotificationStore.ts",
+      "candidates": 27,
+      "pending": 0,
+      "extracted": 0,
+      "approvedExceptions": 0,
+      "technical": 27,
       "passed": true
     },
     {

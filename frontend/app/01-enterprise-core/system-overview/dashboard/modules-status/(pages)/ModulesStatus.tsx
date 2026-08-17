@@ -28,8 +28,14 @@ interface ModuleReadinessResponse {
   accounting_readiness: {
     ready: boolean;
     open_fiscal_period: { ready: boolean; reason_code: string | null };
-    chart_of_accounts: { ready: boolean; active_account_count: number };
+    chart_of_accounts: { ready: boolean; reason_code: string | null; active_account_count: number; missing_account_types?: string[] };
   };
+  modules: Array<{
+    module_key: string;
+    status: "ready" | "blocked" | "inactive";
+    ready: boolean;
+    reason_codes: string[];
+  }>;
 }
 
 interface DerivedScreenEntry {
@@ -63,20 +69,23 @@ interface DomainSummary {
 // Status Derivation Logic
 // ─────────────────────────────────────────────────────────────────────────────
 
-function deriveStatus(screen: NavScreen, configurationReady: boolean): ScreenStatus {
-  if (screen.status) return screen.status;
+function deriveStatus(screen: NavScreen, moduleReadiness: ReadonlyMap<string, boolean>): ScreenStatus {
+  // Delivery-state metadata remains valid. Operational status, however, is
+  // always sourced from the backend readiness contract.
+  if (screen.status === "pending" || screen.status === "in_progress") return screen.status;
   const desc = screen.description;
   if (desc.includes(catalogMessage("common.general.comingSoon")) || desc.includes(catalogMessage("enterpriseCore.modulesstatus.comingSoon")) || desc.includes(catalogMessage("enterpriseCore.modulesstatus.comingSoon.alternative2"))) {
     return "pending";
   }
-  return configurationReady ? "operational" : "blocked";
+
+  return screen.module && moduleReadiness.get(screen.module) === true ? "operational" : "blocked";
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Data Derivation from Navigation Tree
 // ─────────────────────────────────────────────────────────────────────────────
 
-function deriveModuleData(domains: Domain[], configurationReady: boolean): DerivedScreenEntry[] {
+function deriveModuleData(domains: Domain[], moduleReadiness: ReadonlyMap<string, boolean>): DerivedScreenEntry[] {
   const entries: DerivedScreenEntry[] = [];
   for (const domain of domains) {
     for (const cap of domain.capabilities) {
@@ -94,7 +103,7 @@ function deriveModuleData(domains: Domain[], configurationReady: boolean): Deriv
             screenTitle: screen.title,
             screenIcon: screen.icon,
             href: screen.href,
-            status: deriveStatus(screen, configurationReady),
+            status: deriveStatus(screen, moduleReadiness),
           });
         }
       }
@@ -318,7 +327,11 @@ export function ModulesStatus() {
   // Navigation describes available screens. The authoritative API determines whether their activated modules are operational.
   const configurationReady = configurationReadiness?.summary.configuration_ready === true;
   const accountingReady = configurationReadiness?.accounting_readiness.ready === true;
-  const allEntries = useMemo(() => deriveModuleData(allDomains, configurationReady), [configurationReady]);
+  const moduleReadiness = useMemo(
+    () => new Map((configurationReadiness?.modules ?? []).map((module) => [module.module_key, module.ready])),
+    [configurationReadiness]
+  );
+  const allEntries = useMemo(() => deriveModuleData(allDomains, moduleReadiness), [moduleReadiness]);
   const domainSummaries = useMemo(() => buildDomainSummaries(allEntries), [allEntries]);
 
   const filteredEntries = useMemo(() => {

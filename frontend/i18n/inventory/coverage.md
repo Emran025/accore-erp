@@ -2,16 +2,16 @@
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 466 |
-| Candidate literals scanned | 27491 |
-| Files passing | 466 |
+| Files scanned | 467 |
+| Candidate literals scanned | 27855 |
+| Files passing | 467 |
 | Files failing | 0 |
 
 ## Per-file verification
 
 | File | Candidates | Pending | Technical | Passed |
 |---|---:|---:|---:|---|
-| `app/[...virtual]/page.tsx` | 2 | 0 | 2 | Yes |
+| `app/[...virtual]/page.tsx` | 7 | 0 | 7 | Yes |
 | `app/[...virtual]/VirtualNavigationClient.tsx` | 40 | 0 | 40 | Yes |
 | `app/01-enterprise-core/automation/recurring/batch-processing/(pages)/page.tsx` | 191 | 0 | 191 | Yes |
 | `app/01-enterprise-core/automation/recurring/batch-processing/index.ts` | 1 | 0 | 1 | Yes |
@@ -25,14 +25,14 @@
 | `app/01-enterprise-core/identity-access/user-management/system-settings/components/StoreSettingsTab.tsx` | 39 | 0 | 39 | Yes |
 | `app/01-enterprise-core/identity-access/user-management/system-settings/index.ts` | 1 | 0 | 1 | Yes |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/OrganizationalStructure.tsx` | 28 | 0 | 28 | Yes |
-| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx` | 133 | 0 | 133 | Yes |
+| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx` | 146 | 0 | 146 | Yes |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/ui/ActionList.tsx` | 27 | 0 | 27 | Yes |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/ui/index.ts` | 18 | 0 | 18 | Yes |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/ui/MetaItem.tsx` | 15 | 0 | 15 | Yes |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/ui/SharedWidgets.tsx` | 64 | 0 | 64 | Yes |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/ui/StatusWidgets.tsx` | 35 | 0 | 35 | Yes |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/ChangeHistoryTab.tsx` | 230 | 0 | 230 | Yes |
-| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/DashboardTab.tsx` | 122 | 0 | 122 | Yes |
+| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/DashboardTab.tsx` | 101 | 0 | 101 | Yes |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/HierarchyTab.tsx` | 173 | 0 | 173 | Yes |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/IntegrityTab.tsx` | 96 | 0 | 96 | Yes |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/LinksTab.tsx` | 218 | 0 | 218 | Yes |
@@ -42,10 +42,10 @@
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/ScopeContextTab.tsx` | 108 | 0 | 108 | Yes |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/TopologyRulesTab.tsx` | 81 | 0 | 81 | Yes |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/index.ts` | 1 | 0 | 1 | Yes |
-| `app/01-enterprise-core/system-overview/dashboard/global-dashboard/(pages)/page.tsx` | 180 | 0 | 180 | Yes |
+| `app/01-enterprise-core/system-overview/dashboard/global-dashboard/(pages)/page.tsx` | 193 | 0 | 193 | Yes |
 | `app/01-enterprise-core/system-overview/dashboard/global-dashboard/components/ExchangeRatesWidget.tsx` | 40 | 0 | 40 | Yes |
 | `app/01-enterprise-core/system-overview/dashboard/global-dashboard/index.ts` | 1 | 0 | 1 | Yes |
-| `app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/ModulesStatus.tsx` | 207 | 0 | 207 | Yes |
+| `app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/ModulesStatus.tsx` | 262 | 0 | 262 | Yes |
 | `app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/page.tsx` | 5 | 0 | 5 | Yes |
 | `app/01-enterprise-core/system-overview/dashboard/modules-status/index.ts` | 1 | 0 | 1 | Yes |
 | `app/02-commercial/crm/customer-groups-nr/add-customer-group/(pages)/page.tsx` | 9 | 0 | 9 | Yes |
@@ -139,7 +139,7 @@
 | `app/03-finance/general-ledger/ledger-core/financial-reports/components/ComparativeTab.tsx` | 56 | 0 | 56 | Yes |
 | `app/03-finance/general-ledger/ledger-core/financial-reports/components/ProfitLossTab.tsx` | 48 | 0 | 48 | Yes |
 | `app/03-finance/general-ledger/ledger-core/financial-reports/index.ts` | 1 | 0 | 1 | Yes |
-| `app/03-finance/general-ledger/ledger-core/fiscal-periods/(pages)/page.tsx` | 145 | 0 | 145 | Yes |
+| `app/03-finance/general-ledger/ledger-core/fiscal-periods/(pages)/page.tsx` | 152 | 0 | 152 | Yes |
 | `app/03-finance/general-ledger/ledger-core/fiscal-periods/index.ts` | 1 | 0 | 1 | Yes |
 | `app/03-finance/general-ledger/ledger-core/general-ledger-book/(pages)/page.tsx` | 161 | 0 | 161 | Yes |
 | `app/03-finance/general-ledger/ledger-core/general-ledger-book/index.ts` | 1 | 0 | 1 | Yes |
@@ -334,7 +334,7 @@
 | `app/06-human-capital/workforce-admin/employee-master/expat-management/index.ts` | 1 | 0 | 1 | Yes |
 | `app/08-assets/asset-lifecycle/fixed-assets/fixed-assets-registry/(pages)/page.tsx` | 149 | 0 | 149 | Yes |
 | `app/08-assets/asset-lifecycle/fixed-assets/fixed-assets-registry/index.ts` | 1 | 0 | 1 | Yes |
-| `app/auth/login/(pages)/page.tsx` | 9 | 0 | 9 | Yes |
+| `app/auth/login/(pages)/page.tsx` | 11 | 0 | 11 | Yes |
 | `app/auth/login/components/LoginForm.tsx` | 32 | 0 | 32 | Yes |
 | `app/auth/login/index.ts` | 1 | 0 | 1 | Yes |
 | `app/layout.tsx` | 23 | 0 | 23 | Yes |
@@ -342,8 +342,10 @@
 | `app/navigation/components/NavigationGridContent.tsx` | 26 | 0 | 26 | Yes |
 | `app/navigation/index.ts` | 1 | 0 | 1 | Yes |
 | `app/page.tsx` | 2 | 0 | 2 | Yes |
+| `app/setup/page.tsx` | 163 | 0 | 143 | Yes |
 | `components/layout/index.ts` | 2 | 0 | 2 | Yes |
-| `components/layout/MainLayout.tsx` | 44 | 0 | 44 | Yes |
+| `components/layout/MainLayout.tsx` | 54 | 0 | 54 | Yes |
+| `components/layout/NotificationRuntimeBridge.tsx` | 18 | 0 | 18 | Yes |
 | `components/layout/PageHeader.tsx` | 29 | 0 | 29 | Yes |
 | `components/navigation/index.ts` | 7 | 0 | 7 | Yes |
 | `components/navigation/NavigationCard.tsx` | 99 | 0 | 99 | Yes |
@@ -359,10 +361,8 @@
 | `components/navigation/SideNavigationBar/components/SidebarItem.tsx` | 16 | 0 | 16 | Yes |
 | `components/navigation/SideNavigationBar/index.ts` | 1 | 0 | 1 | Yes |
 | `components/navigation/SideNavigationBar/SideNavigationBar.tsx` | 103 | 0 | 103 | Yes |
-| `components/navigation/StatusNotificationBar/components/EnvironmentIndicator.tsx` | 5 | 0 | 5 | Yes |
-| `components/navigation/StatusNotificationBar/components/StatusIndicator.tsx` | 6 | 0 | 6 | Yes |
-| `components/navigation/StatusNotificationBar/StatusNotificationBar.tsx` | 7 | 0 | 7 | Yes |
-| `components/navigation/StatusNotificationBar/utils.ts` | 16 | 0 | 16 | Yes |
+| `components/navigation/StatusNotificationBar/content.ts` | 21 | 0 | 21 | Yes |
+| `components/navigation/StatusNotificationBar/StatusNotificationBar.tsx` | 100 | 0 | 100 | Yes |
 | `components/navigation/StepNavigation.tsx` | 53 | 0 | 53 | Yes |
 | `components/navigation/TabNavigation.tsx` | 65 | 0 | 65 | Yes |
 | `components/navigation/TopGlobalBar/components/GlobalMenus.tsx` | 24 | 0 | 24 | Yes |
@@ -387,7 +387,7 @@
 | `components/template-editor/types.ts` | 6 | 0 | 6 | Yes |
 | `components/template-editor/utils.ts` | 60 | 0 | 60 | Yes |
 | `components/ui/ActionButtons.tsx` | 15 | 0 | 15 | Yes |
-| `components/ui/Alert.tsx` | 43 | 0 | 43 | Yes |
+| `components/ui/Alert.tsx` | 19 | 0 | 19 | Yes |
 | `components/ui/BadgeLabel.tsx` | 18 | 0 | 18 | Yes |
 | `components/ui/Button.tsx` | 38 | 0 | 38 | Yes |
 | `components/ui/checkbox.tsx` | 5 | 0 | 5 | Yes |
@@ -411,7 +411,7 @@
 | `components/ui/OperationalReportsWorkspace.tsx` | 261 | 0 | 261 | Yes |
 | `components/ui/Pagination.tsx` | 15 | 0 | 15 | Yes |
 | `components/ui/PasswordInput.tsx` | 37 | 0 | 37 | Yes |
-| `components/ui/ProductPurchases.tsx` | 393 | 0 | 393 | Yes |
+| `components/ui/ProductPurchases.tsx` | 394 | 0 | 394 | Yes |
 | `components/ui/ProductSales.tsx` | 459 | 0 | 459 | Yes |
 | `components/ui/PurchaseReturnDialog.tsx` | 97 | 0 | 97 | Yes |
 | `components/ui/QuotationWorkspace.tsx` | 218 | 0 | 218 | Yes |
@@ -429,7 +429,7 @@
 | `components/ui/Table.tsx` | 19 | 0 | 19 | Yes |
 | `components/ui/Textarea.tsx` | 48 | 0 | 48 | Yes |
 | `components/ui/TextInput.tsx` | 8 | 0 | 8 | Yes |
-| `components/ui/Toast.tsx` | 11 | 0 | 11 | Yes |
+| `components/ui/Toast.tsx` | 12 | 0 | 12 | Yes |
 | `components/ui/Toggle.tsx` | 23 | 0 | 23 | Yes |
 | `components/ui/ToggleGroup.tsx` | 23 | 0 | 23 | Yes |
 | `components/ui/Tooltip.tsx` | 13 | 0 | 13 | Yes |
@@ -439,7 +439,7 @@
 | `lib/endpoints/assets.ts` | 1 | 0 | 1 | Yes |
 | `lib/endpoints/auth.ts` | 3 | 0 | 3 | Yes |
 | `lib/endpoints/commercial.ts` | 41 | 0 | 41 | Yes |
-| `lib/endpoints/enterprise-core.ts` | 54 | 0 | 54 | Yes |
+| `lib/endpoints/enterprise-core.ts` | 55 | 0 | 55 | Yes |
 | `lib/endpoints/finance.ts` | 51 | 0 | 51 | Yes |
 | `lib/endpoints/human-capital.ts` | 128 | 0 | 128 | Yes |
 | `lib/endpoints/index.ts` | 20 | 0 | 20 | Yes |
@@ -461,13 +461,14 @@
 | `lib/navigation/supply-chain.config.ts` | 193 | 0 | 193 | Yes |
 | `lib/settings.ts` | 1 | 0 | 1 | Yes |
 | `lib/utils.ts` | 96 | 0 | 96 | Yes |
-| `stores/factories/createCRUDStore.ts` | 28 | 0 | 28 | Yes |
-| `stores/index.ts` | 13 | 0 | 13 | Yes |
+| `stores/factories/createCRUDStore.ts` | 30 | 0 | 30 | Yes |
+| `stores/index.ts` | 14 | 0 | 14 | Yes |
 | `stores/useAuthStore.ts` | 40 | 0 | 40 | Yes |
 | `stores/useCustomerStore.ts` | 11 | 0 | 11 | Yes |
 | `stores/useEmployeeStore.ts` | 30 | 0 | 30 | Yes |
-| `stores/useErrorStore.ts` | 12 | 0 | 12 | Yes |
+| `stores/useErrorStore.ts` | 15 | 0 | 15 | Yes |
 | `stores/useFinanceStore.ts` | 19 | 0 | 19 | Yes |
+| `stores/useNotificationStore.ts` | 27 | 0 | 27 | Yes |
 | `stores/useOperatingContextStore.ts` | 16 | 0 | 16 | Yes |
 | `stores/usePayrollStore.ts` | 61 | 0 | 61 | Yes |
 | `stores/useProductStore.ts` | 16 | 0 | 16 | Yes |

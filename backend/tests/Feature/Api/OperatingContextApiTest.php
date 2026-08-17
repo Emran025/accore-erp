@@ -5,10 +5,12 @@ namespace Tests\Feature\Api;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\OperatingContext;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\OrgMetaType;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\StructureNode;
+use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
+use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 use App\Domains\Finance\ManagementAccounting\Models\CostCenter;
-use Illuminate\Support\Facades\DB;
 use App\Domains\Finance\ManagementAccounting\Models\ProfitCenter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class OperatingContextApiTest extends TestCase
@@ -21,21 +23,25 @@ class OperatingContextApiTest extends TestCase
         $this->authenticateUser();
     }
 
-    public function test_readiness_reports_missing_operating_prerequisites(): void
+    public function test_readiness_requires_selected_working_unit_and_accounting_baseline(): void
     {
         $response = $this->authGet(route('v2.operating_context.readiness'));
 
         $this->assertSuccessResponse($response);
         $response->assertJsonPath('data.ready', false)
-            ->assertJsonPath('data.next_action', 'warehouse')
-            ->assertJsonPath('data.checks.0.action_key', 'operating_context.readiness.warehouse')
-            ->assertJsonPath('data.checks.4.key', 'organizational_structure')
-            ->assertJsonPath('data.checks.4.complete', false)
+            ->assertJsonPath('data.next_action', 'working_unit')
+            ->assertJsonPath('data.checks.0.action_key', 'operating_context.readiness.working_unit')
+            ->assertJsonPath('data.checks.5.key', 'organizational_structure')
+            ->assertJsonPath('data.checks.5.complete', false)
+            ->assertJsonPath('data.checks.6.key', 'open_fiscal_period')
+            ->assertJsonPath('data.checks.7.key', 'chart_of_accounts')
+            ->assertJsonPath('data.working_unit_readiness.ready', false)
             ->assertJsonPath('data.structural_readiness.ready', false)
+            ->assertJsonPath('data.accounting_readiness.ready', false)
             ->assertJsonMissingPath('data.checks.0.action');
     }
 
-    public function test_can_configure_an_operating_context_with_warehouse_and_pos(): void
+    public function test_can_configure_a_ready_operating_context_only_after_structure_and_accounting_are_complete(): void
     {
         $costCenter = CostCenter::create([
             'code' => 'CC-STORE',
@@ -80,6 +86,22 @@ class OperatingContextApiTest extends TestCase
         DB::table('cost_centers')->where('id', $costCenter->id)->update(['structure_node_uuid' => $costNode->node_uuid]);
         DB::table('profit_centers')->where('id', $profitCenter->id)->update(['structure_node_uuid' => $profitNode->node_uuid]);
 
+        FiscalPeriod::create([
+            'period_name' => 'FY '.now()->year,
+            'start_date' => now()->startOfYear()->toDateString(),
+            'end_date' => now()->endOfYear()->toDateString(),
+            'is_closed' => false,
+            'is_locked' => false,
+        ]);
+        foreach (['asset', 'liability', 'equity', 'revenue', 'expense'] as $index => $type) {
+            ChartOfAccount::create([
+                'account_code' => (string) (1000 + $index * 1000),
+                'account_name' => ucfirst($type),
+                'account_type' => $type,
+                'is_active' => true,
+            ]);
+        }
+
         $response = $this->authPost(route('v2.operating_context.configure'), [
             'org_node_uuid' => $company->node_uuid,
             'cost_center_id' => $costCenter->id,
@@ -105,5 +127,6 @@ class OperatingContextApiTest extends TestCase
 
         $context = OperatingContext::query()->firstOrFail();
         $this->assertTrue((bool) $context->is_default);
+        $this->assertSame('ready', $context->status);
     }
 }

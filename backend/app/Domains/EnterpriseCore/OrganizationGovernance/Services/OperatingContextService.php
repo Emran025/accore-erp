@@ -36,13 +36,18 @@ class OperatingContextService
         $costCenter = $context?->costCenter;
         $profitCenter = $context?->profitCenter;
 
+        $workingUnitReadiness = $this->moduleReadinessService->validateWorkingUnit($context);
         $structuralReadiness = $this->moduleReadinessService->validateOperatingStructure($context);
+        $accountingReadiness = $this->moduleReadinessService->accountingReadiness();
         $checks = [
+            $this->check('working_unit', $workingUnitReadiness['ready']),
             $this->check('warehouse', $warehouse !== null && $warehouse->is_active && $warehouse->status === 'active'),
             $this->check('cost_center', $costCenter !== null && $costCenter->is_active),
             $this->check('profit_center', $profitCenter !== null && $profitCenter->is_active),
             $this->check('pos_terminal', $terminal !== null && $terminal->is_active && $terminal->status === 'active'),
             $this->check('organizational_structure', $structuralReadiness['ready']),
+            $this->check('open_fiscal_period', $accountingReadiness['open_fiscal_period']['ready']),
+            $this->check('chart_of_accounts', $accountingReadiness['chart_of_accounts']['ready']),
         ];
 
         $missing = collect($checks)->where('complete', false)->values()->all();
@@ -55,7 +60,9 @@ class OperatingContextService
             'checks' => $checks,
             'missing' => $missing,
             'next_action' => $missing[0]['key'] ?? null,
+            'working_unit_readiness' => $workingUnitReadiness,
             'structural_readiness' => $structuralReadiness,
+            'accounting_readiness' => $accountingReadiness,
         ];
     }
 
@@ -106,7 +113,9 @@ class OperatingContextService
                     'warehouse_id' => $warehouse->id,
                     'cost_center_id' => $data['cost_center_id'] ?? null,
                     'profit_center_id' => $data['profit_center_id'] ?? null,
-                    'status' => 'ready',
+                    // Status is recalculated from the authoritative readiness
+                    // contract below; configuration submission is never proof of readiness.
+                    'status' => 'draft',
                     'is_default' => true,
                 ]
             );
@@ -120,7 +129,9 @@ class OperatingContextService
                     'status' => $readiness['status'],
                     'checks' => $readiness['checks'],
                     'missing' => $readiness['missing'],
+                    'working_unit_readiness' => $readiness['working_unit_readiness'],
                     'structural_readiness' => $readiness['structural_readiness'],
+                    'accounting_readiness' => $readiness['accounting_readiness'],
                 ],
             ]);
 

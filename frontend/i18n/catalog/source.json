@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-15T20:08:10.333Z",
-  "itemCount": 3942,
+  "generatedAt": "2026-08-17T12:53:56.266Z",
+  "itemCount": 4032,
   "items": [
     {
       "id": "assets.fixedAssetsRegistry.areYouSureYouWantDeleteThisAsset",
@@ -57999,6 +57999,312 @@
           "context": "Unclassified textual literal"
         }
       ]
+    },
+    {
+      "id": "enterpriseCore.setup.accounting.accountCode",
+      "source": "رمز الحساب",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.accounting.accountName",
+      "source": "اسم الحساب",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.accounting.accountType",
+      "source": "نوع الحساب",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.accounting.createAccount",
+      "source": "إنشاء حساب",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.accounting.createPeriod",
+      "source": "إنشاء فترة مالية",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.accounting.description",
+      "source": "أنشئ فترة مالية مفتوحة وحسابات نشطة تغطي الأصول والالتزامات وحقوق الملكية والإيرادات والمصروفات.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.accounting.endDate",
+      "source": "تاريخ النهاية",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.accounting.periodName",
+      "source": "اسم الفترة المالية",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.accounting.startDate",
+      "source": "تاريخ البداية",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.accounting.title",
+      "source": "٢. الأساس المحاسبي",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.accountType.asset",
+      "source": "أصل",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.accountType.equity",
+      "source": "حقوق ملكية",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.accountType.expense",
+      "source": "مصروف",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.accountType.liability",
+      "source": "التزام",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.accountType.revenue",
+      "source": "إيراد",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.check.chartOfAccounts",
+      "source": "دليل الحسابات",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.check.costCenter",
+      "source": "مركز التكلفة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.check.openFiscalPeriod",
+      "source": "فترة مالية مفتوحة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.check.organizationalStructure",
+      "source": "الهيكل التنظيمي",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.check.posTerminal",
+      "source": "نقطة البيع",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.check.profitCenter",
+      "source": "مركز الربح",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.check.warehouse",
+      "source": "المستودع",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.check.workingUnit",
+      "source": "وحدة العمل",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.complete",
+      "source": "مكتمل",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.createdSuccessfully",
+      "source": "تم حفظ التهيئة بنجاح.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.failedToLoad",
+      "source": "تعذر تحميل بيانات التهيئة.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.failedToSave",
+      "source": "تعذر حفظ التهيئة. راجع الحقول المطلوبة والروابط الهيكلية.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.incomplete",
+      "source": "غير مكتمل",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.nodeSummary",
+      "source": "{value0} ({value1})",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.noRecords",
+      "source": "لا توجد سجلات متاحة بعد.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.openDashboard",
+      "source": "فتح لوحة النظام",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.organization.code",
+      "source": "رمز الوحدة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.organization.create",
+      "source": "إنشاء وحدة تنظيمية",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.organization.description",
+      "source": "أنشئ الوحدات التنظيمية التي تحدد الهيكل القانوني والتشغيلي، ثم اختر وحدة عمل صالحة.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.organization.name",
+      "source": "اسم الوحدة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.organization.parent",
+      "source": "الوحدة الأم",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.organization.title",
+      "source": "١. الوحدات التنظيمية",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.organization.type",
+      "source": "نوع الوحدة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.refresh",
+      "source": "تحديث الجاهزية",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.scope.costCenter",
+      "source": "مركز التكلفة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.scope.description",
+      "source": "اختر الوحدة التنظيمية التي سيعمل فيها المستخدم، واربط بها مركز التكلفة ومركز الربح والمستودع ونقطة البيع.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.scope.posCode",
+      "source": "رمز نقطة البيع",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.scope.posName",
+      "source": "اسم نقطة البيع",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.scope.profitCenter",
+      "source": "مركز الربح",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.scope.save",
+      "source": "حفظ سياق التشغيل",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.scope.title",
+      "source": "٣. وحدة العمل وسياق التشغيل",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.scope.warehouseCode",
+      "source": "رمز المستودع",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.scope.warehouseName",
+      "source": "اسم المستودع",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.scope.workingUnit",
+      "source": "وحدة العمل التنظيمية",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.subtitle",
+      "source": "أكمل الأساس التنظيمي والتشغيلي والمحاسبي قبل الانتقال إلى العمليات الفعلية.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.title",
+      "source": "التهيئة الأولية",
+      "classification": "user-facing",
+      "occurrences": []
     },
     {
       "id": "enterpriseCore.statuswidgets.message",

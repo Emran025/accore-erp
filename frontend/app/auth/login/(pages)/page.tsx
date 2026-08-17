@@ -18,11 +18,10 @@ export default function LoginPage() {
             const result = await login(username, password);
             if (result.success) {
                 const readiness = await useOperatingContextStore.getState().loadReadiness();
-                const structureReady = readiness?.structural_readiness?.ready === true;
                 router.push(
-                    structureReady
+                    readiness?.ready === true
                         ? "/01-enterprise-core/system-overview/dashboard/global-dashboard"
-                        : "/01-enterprise-core/organization-governance/org-structure/org-hierarchy?setup=1"
+                        : "/setup"
                 );
             }
             return result;

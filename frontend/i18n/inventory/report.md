@@ -4,7 +4,8 @@ Generated deterministically by `npm run i18n:inventory`.
 
 | Status | Count |
 |---|---:|
-| technical | 27677 |
+| extracted | 20 |
+| technical | 27835 |
 
 ## Highest-volume files
 
@@ -30,10 +31,10 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/06-human-capital/hr-compliance/compliance-relations/employee-relations/(pages)/EmployeeRelations.tsx` | 280 |
 | `app/01-enterprise-core/automation/recurring/recurring-transactions/(pages)/page.tsx` | 265 |
 | `app/03-finance/management-accounting/cost-profit-centers/cost-centers/(pages)/page.tsx` | 264 |
+| `app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/ModulesStatus.tsx` | 262 |
 | `app/06-human-capital/hr-compliance/compliance-relations/communications/(pages)/CorporateCommunications.tsx` | 262 |
 | `components/ui/OperationalReportsWorkspace.tsx` | 261 |
 | `app/03-finance/general-ledger/ledger-core/financial-reports/components/BalanceSheetTab.tsx` | 259 |
-| `app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/ModulesStatus.tsx` | 257 |
 | `components/template-editor/TemplateEditor.tsx` | 248 |
 | `app/06-human-capital/services-wellness/employee-services/loans/(pages)/EmployeeLoans.tsx` | 247 |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/ChangeHistoryTab.tsx` | 230 |
@@ -64,6 +65,7 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/06-human-capital/talent-recruitment/recruitment/administration/components/EmployeePositionTab.tsx` | 171 |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/NodesTab.tsx` | 168 |
 | `app/02-commercial/crm/customer-master/customers-list/(pages)/page.tsx` | 163 |
+| `app/setup/page.tsx` | 163 |
 | `app/03-finance/general-ledger/ledger-core/general-ledger-book/(pages)/page.tsx` | 161 |
 | `app/04-supply-chain/payables-expenses/expense-management/expenses/(pages)/page.tsx` | 161 |
 | `lib/navigation/finance.config.ts` | 161 |
@@ -74,7 +76,7 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/03-finance/general-ledger/ledger-core/fiscal-periods/(pages)/page.tsx` | 152 |
 | `app/06-human-capital/knowledge-portal/self-service/eosb/(pages)/EOSBCalculator.tsx` | 151 |
 | `app/08-assets/asset-lifecycle/fixed-assets/fixed-assets-registry/(pages)/page.tsx` | 149 |
-| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx` | 143 |
+| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/page.tsx` | 146 |
 | `app/03-finance/tax-compliance/tax-management/vat-zatca/components/ZatcaSettingsTab.tsx` | 143 |
 | `app/02-commercial/marketing-distribution/representatives/reps-list/(pages)/page.tsx` | 142 |
 | `app/03-finance/foreign-exchange/currency-management/currencies/components/CurrencyPolicyTab.tsx` | 140 |
@@ -109,7 +111,6 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/02-commercial/sales-governance/templates/template-manager/(pages)/SystemTemplates.tsx` | 101 |
 | `app/03-finance/foreign-exchange/currency-management/currency-positions/(pages)/page.tsx` | 101 |
 | `components/navigation/StatusNotificationBar/StatusNotificationBar.tsx` | 100 |
-| `app/03-finance/audit-compliance/audit-trail/audit-log/(pages)/page.tsx` | 99 |
 
 ## Gate
 
