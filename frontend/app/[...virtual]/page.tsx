@@ -11,6 +11,8 @@ export const dynamicParams = false;
 export function generateStaticParams(): Array<{ virtual: string[] }> {
   const paths = new Map<string, { virtual: string[] }>();
 
+  paths.set("setup", { virtual: ["setup"] });
+
   for (const domain of allDomains) {
     const domainSegment = `${String(domain.order).padStart(2, "0")}-${domain.id}`;
     const domainPath = [domainSegment];

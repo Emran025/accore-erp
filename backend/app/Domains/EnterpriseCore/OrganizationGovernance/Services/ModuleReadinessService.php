@@ -17,6 +17,25 @@ use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
  */
 class ModuleReadinessService
 {
+    public const ONBOARDING_POLICY_VERSION = '2026-08-technology-commerce-v1';
+
+    /**
+     * The default profile supports a small technology retailer or technology
+     * organisation with a physical device store, warehouse, POS, finance, and
+     * purchasing flows. Optional delivery/project/manufacturing capabilities
+     * remain governed by their own module requirements.
+     */
+    public const DEFAULT_ONBOARDING_PROFILE = 'technology_commerce';
+
+    /** @var list<string> */
+    private const FOUNDATION_NODE_TYPES = ['COMP_CODE', 'CONTROLLING_AREA', 'COST_CENTER', 'PROFIT_CENTER'];
+
+    /** @var list<string> */
+    private const CORE_OPERATING_NODE_TYPES = ['PLANT', 'STORAGE_LOC', 'SALES_ORG', 'PURCH_ORG'];
+
+    /** @var list<string> */
+    private const CORE_STARTER_MODULES = ['sales', 'products', 'purchases', 'general_ledger'];
+
     public function __construct(private readonly OrgStructureService $orgStructureService)
     {
     }
@@ -29,6 +48,8 @@ class ModuleReadinessService
         $workingUnit = $this->validateWorkingUnit($context);
         $operatingStructure = $this->validateOperatingStructure($context, $integrityIssues);
         $accountingReadiness = $this->accountingReadiness();
+        $foundation = $this->foundationReadiness($activeNodeTypes, $integrityIssues, $accountingReadiness);
+        $coreOperations = $this->coreOperationsReadiness($context, $activeNodeTypes, $integrityIssues, $operatingStructure);
         $hasActiveStructure = $activeNodeTypes !== [];
         $modules = Module::query()->orderBy('category')->orderBy('sort_order')->get();
 
@@ -108,7 +129,20 @@ class ModuleReadinessService
         $activeModules = $evaluated->where('is_active', true);
         $readyModules = $activeModules->where('ready', true);
         $blockedModules = $activeModules->where('ready', false);
-        $baselineReady = $workingUnit['ready'] && $accountingReadiness['ready'];
+        $baselineReady = $foundation['ready'] && $coreOperations['ready'];
+        $onboarding = [
+            'policy_version' => self::ONBOARDING_POLICY_VERSION,
+            'profile' => self::DEFAULT_ONBOARDING_PROFILE,
+            'baseline_ready' => $baselineReady,
+            'phases' => [
+                'foundation' => $foundation,
+                'core_operations' => $coreOperations,
+            ],
+            'next_phase' => !$foundation['ready']
+                ? 'foundation'
+                : (!$coreOperations['ready'] ? 'core_operations' : 'module_activation'),
+            'starter_module_keys' => self::CORE_STARTER_MODULES,
+        ];
 
         return [
             'summary' => [
@@ -120,8 +154,11 @@ class ModuleReadinessService
                 // blocked until their own scope-specific requirements are met.
                 'configuration_ready' => $baselineReady,
             ],
+            'onboarding' => $onboarding,
             'baseline_readiness' => [
                 'ready' => $baselineReady,
+                'foundation' => $foundation,
+                'core_operations' => $coreOperations,
                 'working_unit' => $workingUnit,
                 'accounting' => $accountingReadiness,
             ],
@@ -284,6 +321,121 @@ class ModuleReadinessService
                 'missing_account_types' => $missingAccountTypes,
             ],
         ];
+    }
+
+    /** @return list<string> */
+    public static function coreStarterModuleKeys(): array
+    {
+        return self::CORE_STARTER_MODULES;
+    }
+
+    /**
+     * Phase 1 validates the legal/financial control plane before a user can
+     * configure live operations. It deliberately requires complete linked
+     * financial dimensions, not merely records with matching labels.
+     */
+    private function foundationReadiness(array $activeNodeTypes, array $integrityIssues, array $accountingReadiness): array
+    {
+        $missingNodeTypes = array_values(array_diff(self::FOUNDATION_NODE_TYPES, $activeNodeTypes));
+        $relevantIssues = $this->relevantIntegrityIssues($integrityIssues, self::FOUNDATION_NODE_TYPES);
+        $reasonCodes = [];
+
+        if ($missingNodeTypes !== []) {
+            $reasonCodes[] = 'missing_foundation_structure';
+        }
+        if ($relevantIssues !== []) {
+            $reasonCodes[] = 'foundation_structure_integrity_failure';
+        }
+        if (!$accountingReadiness['chart_of_accounts']['ready']) {
+            $reasonCodes[] = $accountingReadiness['chart_of_accounts']['reason_code'];
+        }
+        if (!$accountingReadiness['open_fiscal_period']['ready']) {
+            $reasonCodes[] = $accountingReadiness['open_fiscal_period']['reason_code'];
+        }
+
+        $reasonCodes = array_values(array_unique(array_filter($reasonCodes)));
+
+        return [
+            'id' => 'foundation',
+            'ready' => $reasonCodes === [],
+            'required_node_types' => self::FOUNDATION_NODE_TYPES,
+            'missing_node_types' => $missingNodeTypes,
+            'integrity_issue_count' => count($relevantIssues),
+            'reason_codes' => $reasonCodes,
+        ];
+    }
+
+    /**
+     * Phase 2 validates the smallest safe technology-commerce operating scope:
+     * a selected company-linked working unit, financial dimensions, logistics
+     * hierarchy, warehouse, and POS terminal. The organisation can later add
+     * project, manufacturing, and HR structures without reopening this gate.
+     */
+    private function coreOperationsReadiness(?OperatingContext $context, array $activeNodeTypes, array $integrityIssues, array $operatingStructure): array
+    {
+        $missingNodeTypes = array_values(array_diff(self::CORE_OPERATING_NODE_TYPES, $activeNodeTypes));
+        $relevantIssues = $this->relevantIntegrityIssues($integrityIssues, self::CORE_OPERATING_NODE_TYPES);
+        $validNodeTypes = $this->validCoreOperatingNodeTypes($context);
+        $unlinkedNodeTypes = array_values(array_diff(self::CORE_OPERATING_NODE_TYPES, $validNodeTypes));
+        $reasonCodes = [];
+
+        if (!$operatingStructure['ready']) {
+            $reasonCodes = [...$reasonCodes, ...$operatingStructure['reason_codes']];
+        }
+        if ($missingNodeTypes !== []) {
+            $reasonCodes[] = 'missing_core_operating_structure';
+        }
+        if ($unlinkedNodeTypes !== []) {
+            $reasonCodes[] = 'core_operating_structure_not_linked_to_working_company';
+        }
+        if ($relevantIssues !== []) {
+            $reasonCodes[] = 'core_operating_structure_integrity_failure';
+        }
+
+        $reasonCodes = array_values(array_unique(array_filter($reasonCodes)));
+
+        return [
+            'id' => 'core_operations',
+            'ready' => $reasonCodes === [],
+            'required_node_types' => self::CORE_OPERATING_NODE_TYPES,
+            'missing_node_types' => $missingNodeTypes,
+            'unlinked_node_types' => $unlinkedNodeTypes,
+            'integrity_issue_count' => count($relevantIssues),
+            'reason_codes' => $reasonCodes,
+        ];
+    }
+
+    /** @return list<string> */
+    private function validCoreOperatingNodeTypes(?OperatingContext $context): array
+    {
+        if (!$context?->org_node_uuid) {
+            return [];
+        }
+
+        $workingScope = $this->orgStructureService->resolveScopeContext($context->org_node_uuid);
+        $companyUuid = $workingScope['resolved']['COMP_CODE']['node_uuid'] ?? null;
+        if (!$companyUuid) {
+            return [];
+        }
+
+        $valid = [];
+        foreach (self::CORE_OPERATING_NODE_TYPES as $nodeType) {
+            $hasCompanyLinkedNode = StructureNode::query()
+                ->where('node_type_id', $nodeType)
+                ->where('status', 'active')
+                ->get()
+                ->contains(function (StructureNode $node) use ($companyUuid): bool {
+                    $scope = $this->orgStructureService->resolveScopeContext($node->node_uuid);
+
+                    return ($scope['resolved']['COMP_CODE']['node_uuid'] ?? null) === $companyUuid;
+                });
+
+            if ($hasCompanyLinkedNode) {
+                $valid[] = $nodeType;
+            }
+        }
+
+        return $valid;
     }
 
     private function activeNodeTypes(): array

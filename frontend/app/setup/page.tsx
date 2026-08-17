@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { MainLayout } from "@/components/layout";
 import { showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
@@ -11,11 +10,13 @@ import { SetupAccountingSection } from "./components/SetupAccountingSection";
 import { SetupModuleSelection } from "./components/SetupModuleSelection";
 import { SetupOperatingScopeSection } from "./components/SetupOperatingScopeSection";
 import { SetupOrganizationSection } from "./components/SetupOrganizationSection";
+import { SetupPhaseProgress } from "./components/SetupPhaseProgress";
 import { SetupReadinessSummary } from "./components/SetupReadinessSummary";
 import { Item, MetaType, OrgNode, Readiness, SetupState } from "./types";
 
 const accountTypes = ["asset", "liability", "equity", "revenue", "expense"] as const;
 type AccountType = (typeof accountTypes)[number];
+const recordFields = { code: "code", name: "name" } as const;
 
 function listFrom(response: unknown): Item[] {
   const payload = (response as { data?: unknown } | undefined)?.data;
@@ -106,24 +107,48 @@ export default function SetupPage() {
   const activeNodes = useMemo(() => nodes.filter((node) => node.status === "active"), [nodes]);
   const nodeOptions = useMemo(() => activeNodes.map((node) => ({
     value: node.node_uuid,
-    label: `${node.code} — ${node.meta_type?.display_name_ar || node.meta_type?.display_name || node.node_type_id}`,
-  })), [activeNodes]);
+    label: catalogText(i18n, "enterpriseCore.setup.nodeSummary", {
+      value0: node.code,
+      value1: node.meta_type?.display_name_ar || node.meta_type?.display_name || node.node_type_id,
+    }),
+  })), [activeNodes, i18n]);
+  const workingUnitOptions = useMemo(() => activeNodes
+    .filter((node) => node.node_type_id === "COMP_CODE")
+    .map((node) => ({
+      value: node.node_uuid,
+      label: catalogText(i18n, "enterpriseCore.setup.nodeSummary", {
+        value0: node.code,
+        value1: node.meta_type?.display_name_ar || node.meta_type?.display_name || node.node_type_id,
+      }),
+    })), [activeNodes, i18n]);
   const typeOptions = useMemo(() => metaTypes.map((type) => ({ value: type.id, label: type.display_name_ar || type.display_name || type.id })), [metaTypes]);
-  const costOptions = useMemo(() => costCenters.map((center) => ({ value: Number(center.id), label: `${text(center, "code")} — ${text(center, "name")}` })), [costCenters]);
-  const profitOptions = useMemo(() => profitCenters.map((center) => ({ value: Number(center.id), label: `${text(center, "code")} — ${text(center, "name")}` })), [profitCenters]);
+  const costOptions = useMemo(() => costCenters.map((center) => ({
+    value: Number(center.id),
+    label: catalogText(i18n, "enterpriseCore.setup.centerSummary", {
+      value0: text(center, recordFields.code),
+      value1: text(center, recordFields.name),
+    }),
+  })), [costCenters, i18n]);
+  const profitOptions = useMemo(() => profitCenters.map((center) => ({
+    value: Number(center.id),
+    label: catalogText(i18n, "enterpriseCore.setup.centerSummary", {
+      value0: text(center, recordFields.code),
+      value1: text(center, recordFields.name),
+    }),
+  })), [profitCenters, i18n]);
 
-  const callAndReload = async (action: () => Promise<{ success?: boolean; message?: string }>) => {
+  const callAndReload = async <T,>(action: () => Promise<{ success?: boolean; message?: string; data?: T }>): Promise<T | null> => {
     setIsSaving(true);
     try {
       const response = await action();
       if (!response.success) throw new Error(response.message);
       showToast(i18n.catalog["enterpriseCore.setup.createdSuccessfully"], "success");
       await load();
-      return true;
+      return response.data ?? null;
     } catch (error) {
       const message = error instanceof Error && error.message ? error.message : i18n.catalog["enterpriseCore.setup.failedToSave"];
       showToast(message, "error");
-      return false;
+      return null;
     } finally {
       setIsSaving(false);
     }
@@ -135,7 +160,7 @@ export default function SetupPage() {
       return;
     }
     const attributes = { ...nodeAttributes, ...(nodeName.trim() ? { name: nodeName.trim() } : {}) };
-    const saved = await callAndReload(() => fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES, {
+    const saved = await callAndReload<OrgNode>(() => fetchAPI<OrgNode>(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES, {
       method: "POST",
       body: JSON.stringify({
         node_type_id: nodeType,
@@ -146,6 +171,9 @@ export default function SetupPage() {
       }),
     }));
     if (saved) {
+      if (["COST_CENTER", "PROFIT_CENTER"].includes(nodeType)) {
+        await callAndReload(() => fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG_INTEGRATION.SYNC_NODE(saved.node_uuid), { method: "POST" }));
+      }
       setNodeCode("");
       setNodeName("");
       setNodeParent("");
@@ -218,6 +246,9 @@ export default function SetupPage() {
       : [...current, moduleKey]);
   };
 
+  const onboarding = setupState?.onboarding ?? readiness?.onboarding;
+  const canConfigureModules = onboarding?.baseline_ready === true;
+
   const accountTypeLabels: Record<AccountType, string> = {
     asset: i18n.catalog["enterpriseCore.setup.accountType.asset"],
     liability: i18n.catalog["enterpriseCore.setup.accountType.liability"],
@@ -237,129 +268,148 @@ export default function SetupPage() {
   };
 
   return (
-    <MainLayout requiredModule="settings" requiredAction="view">
-      <main className="settings-wrapper setup-workflow animate-fade">
-          <SetupReadinessSummary
-            title={i18n.catalog["enterpriseCore.setup.title"]}
-            description={i18n.catalog["enterpriseCore.setup.subtitle"]}
-            refreshLabel={i18n.catalog["enterpriseCore.setup.refresh"]}
-            openDashboardLabel={i18n.catalog["enterpriseCore.setup.openDashboard"]}
-            completeLabel={i18n.catalog["enterpriseCore.setup.complete"]}
-            incompleteLabel={i18n.catalog["enterpriseCore.setup.incomplete"]}
-            readiness={readiness}
-            readinessLabels={readinessLabels}
-            isLoading={isLoading}
-            canOpenDashboard={readiness?.ready === true && setupState?.setup_required === false}
-            onRefresh={() => void load()}
-            onOpenDashboard={() => router.push("/01-enterprise-core/system-overview/dashboard/global-dashboard")}
-          />
-          <SetupModuleSelection
-            locale={locale}
-            modules={setupState?.modules ?? []}
-            selectedModuleKeys={selectedModuleKeys}
-            title={i18n.catalog["enterpriseCore.setup.modules.title"]}
-            description={i18n.catalog["enterpriseCore.setup.modules.description"]}
-            saveSelectionLabel={i18n.catalog["enterpriseCore.setup.modules.saveSelection"]}
-            activateSelectedLabel={i18n.catalog["enterpriseCore.setup.modules.activateSelected"]}
-            notSelectedLabel={i18n.catalog["enterpriseCore.setup.modules.notSelected"]}
-            pendingReadinessLabel={i18n.catalog["enterpriseCore.setup.modules.pendingReadiness"]}
-            activeLabel={i18n.catalog["enterpriseCore.setup.modules.active"]}
-            selectionRequiredLabel={i18n.catalog["enterpriseCore.setup.modules.selectionRequired"]}
-            noRecordsLabel={i18n.catalog["enterpriseCore.setup.noRecords"]}
-            isSaving={isSaving}
-            onToggle={toggleModule}
-            onSave={() => void saveModuleSelection()}
-            onActivate={() => void activateSelectedModules()}
-          />
-          <SetupOrganizationSection
-            title={i18n.catalog["enterpriseCore.setup.organization.title"]}
-            description={i18n.catalog["enterpriseCore.setup.organization.description"]}
-            createLabel={i18n.catalog["enterpriseCore.setup.organization.create"]}
-            typeLabel={i18n.catalog["enterpriseCore.setup.organization.type"]}
-            codeLabel={i18n.catalog["enterpriseCore.setup.organization.code"]}
-            nameLabel={i18n.catalog["enterpriseCore.setup.organization.name"]}
-            parentLabel={i18n.catalog["enterpriseCore.setup.organization.parent"]}
-            nodeType={nodeType}
-            nodeCode={nodeCode}
-            nodeName={nodeName}
-            nodeParent={nodeParent}
-            nodeAttributes={nodeAttributes}
-            selectedType={selectedType}
-            typeOptions={typeOptions}
-            nodeOptions={nodeOptions}
-            isSaving={isSaving}
-            onNodeTypeChange={(value) => { setNodeType(value); setNodeAttributes({}); }}
-            onNodeCodeChange={setNodeCode}
-            onNodeNameChange={setNodeName}
-            onNodeParentChange={setNodeParent}
-            onNodeAttributeChange={(key, value) => setNodeAttributes((current) => ({ ...current, [key]: value }))}
-            onCreate={() => void createNode()}
-            summary={activeNodes.length
-              ? activeNodes.map((node) => catalogText(i18n, "enterpriseCore.setup.nodeSummary", { value0: node.code, value1: node.node_type_id })).join(" • ")
-              : i18n.catalog["enterpriseCore.setup.noRecords"]}
-          />
-          <SetupAccountingSection
-            title={i18n.catalog["enterpriseCore.setup.accounting.title"]}
-            description={i18n.catalog["enterpriseCore.setup.accounting.description"]}
-            accountCodeLabel={i18n.catalog["enterpriseCore.setup.accounting.accountCode"]}
-            accountNameLabel={i18n.catalog["enterpriseCore.setup.accounting.accountName"]}
-            accountTypeLabel={i18n.catalog["enterpriseCore.setup.accounting.accountType"]}
-            createAccountLabel={i18n.catalog["enterpriseCore.setup.accounting.createAccount"]}
-            periodNameLabel={i18n.catalog["enterpriseCore.setup.accounting.periodName"]}
-            startDateLabel={i18n.catalog["enterpriseCore.setup.accounting.startDate"]}
-            endDateLabel={i18n.catalog["enterpriseCore.setup.accounting.endDate"]}
-            createPeriodLabel={i18n.catalog["enterpriseCore.setup.accounting.createPeriod"]}
-            accountCode={accountCode}
-            accountName={accountName}
-            accountType={accountType}
-            accountTypes={accountTypes}
-            accountTypeLabels={accountTypeLabels}
-            periodName={periodName}
-            periodStart={periodStart}
-            periodEnd={periodEnd}
-            recordSummary={catalogText(i18n, "enterpriseCore.setup.accounting.recordSummary", { value0: accounts.length, value1: periods.length })}
-            isSaving={isSaving}
-            onAccountCodeChange={setAccountCode}
-            onAccountNameChange={setAccountName}
-            onAccountTypeChange={setAccountType}
-            onPeriodNameChange={setPeriodName}
-            onPeriodStartChange={setPeriodStart}
-            onPeriodEndChange={setPeriodEnd}
-            onCreateAccount={() => void createAccount()}
-            onCreatePeriod={() => void createPeriod()}
-          />
-          <SetupOperatingScopeSection
-            title={i18n.catalog["enterpriseCore.setup.scope.title"]}
-            description={i18n.catalog["enterpriseCore.setup.scope.description"]}
-            workingUnitLabel={i18n.catalog["enterpriseCore.setup.scope.workingUnit"]}
-            costCenterLabel={i18n.catalog["enterpriseCore.setup.scope.costCenter"]}
-            profitCenterLabel={i18n.catalog["enterpriseCore.setup.scope.profitCenter"]}
-            warehouseCodeLabel={i18n.catalog["enterpriseCore.setup.scope.warehouseCode"]}
-            warehouseNameLabel={i18n.catalog["enterpriseCore.setup.scope.warehouseName"]}
-            posCodeLabel={i18n.catalog["enterpriseCore.setup.scope.posCode"]}
-            posNameLabel={i18n.catalog["enterpriseCore.setup.scope.posName"]}
-            saveLabel={i18n.catalog["enterpriseCore.setup.scope.save"]}
-            workingUnit={workingUnit}
-            costCenterId={costCenterId}
-            profitCenterId={profitCenterId}
-            warehouseCode={warehouseCode}
-            warehouseName={warehouseName}
-            posCode={posCode}
-            posName={posName}
-            nodeOptions={nodeOptions}
-            costOptions={costOptions}
-            profitOptions={profitOptions}
-            isSaving={isSaving}
-            onWorkingUnitChange={setWorkingUnit}
-            onCostCenterChange={setCostCenterId}
-            onProfitCenterChange={setProfitCenterId}
-            onWarehouseCodeChange={setWarehouseCode}
-            onWarehouseNameChange={setWarehouseName}
-            onPosCodeChange={setPosCode}
-            onPosNameChange={setPosName}
-            onSave={() => void saveContext()}
-          />
-      </main>
-    </MainLayout>
+    <div className="settings-wrapper setup-workflow">
+      <SetupReadinessSummary
+        title={i18n.catalog["enterpriseCore.setup.title"]}
+        description={i18n.catalog["enterpriseCore.setup.subtitle"]}
+        refreshLabel={i18n.catalog["enterpriseCore.setup.refresh"]}
+        openDashboardLabel={i18n.catalog["enterpriseCore.setup.openDashboard"]}
+        completeLabel={i18n.catalog["enterpriseCore.setup.complete"]}
+        incompleteLabel={i18n.catalog["enterpriseCore.setup.incomplete"]}
+        readiness={readiness}
+        readinessLabels={readinessLabels}
+        isLoading={isLoading}
+        canOpenDashboard={readiness?.ready === true && setupState?.setup_required === false}
+        onRefresh={() => void load()}
+        onOpenDashboard={() => router.push("/01-enterprise-core/system-overview/dashboard/global-dashboard")}
+      />
+      <SetupPhaseProgress
+        onboarding={onboarding}
+        foundationTitle={i18n.catalog["enterpriseCore.setup.phase.foundation"]}
+        foundationDescription={i18n.catalog["enterpriseCore.setup.phase.foundationDescription"]}
+        coreOperationsTitle={i18n.catalog["enterpriseCore.setup.phase.coreOperations"]}
+        coreOperationsDescription={i18n.catalog["enterpriseCore.setup.phase.coreOperationsDescription"]}
+        moduleActivationTitle={i18n.catalog["enterpriseCore.setup.phase.moduleActivation"]}
+        moduleActivationDescription={i18n.catalog["enterpriseCore.setup.phase.moduleActivationDescription"]}
+        currentLabel={i18n.catalog["enterpriseCore.setup.phase.current"]}
+        lockedLabel={i18n.catalog["enterpriseCore.setup.phase.locked"]}
+        completeLabel={i18n.catalog["enterpriseCore.setup.complete"]}
+      />
+      <SetupOrganizationSection
+        title={i18n.catalog["enterpriseCore.setup.organization.title"]}
+        description={i18n.catalog["enterpriseCore.setup.organization.description"]}
+        createLabel={i18n.catalog["enterpriseCore.setup.organization.create"]}
+        typeLabel={i18n.catalog["enterpriseCore.setup.organization.type"]}
+        codeLabel={i18n.catalog["enterpriseCore.setup.organization.code"]}
+        nameLabel={i18n.catalog["enterpriseCore.setup.organization.name"]}
+        parentLabel={i18n.catalog["enterpriseCore.setup.organization.parent"]}
+        nodeType={nodeType}
+        nodeCode={nodeCode}
+        nodeName={nodeName}
+        nodeParent={nodeParent}
+        nodeAttributes={nodeAttributes}
+        selectedType={selectedType}
+        typeOptions={typeOptions}
+        nodeOptions={nodeOptions}
+        isSaving={isSaving}
+        onNodeTypeChange={(value) => { setNodeType(value); setNodeAttributes({}); }}
+        onNodeCodeChange={setNodeCode}
+        onNodeNameChange={setNodeName}
+        onNodeParentChange={setNodeParent}
+        onNodeAttributeChange={(key, value) => setNodeAttributes((current) => ({ ...current, [key]: value }))}
+        onCreate={() => void createNode()}
+        summary={activeNodes.length
+          ? activeNodes.map((node) => catalogText(i18n, "enterpriseCore.setup.nodeSummary", { value0: node.code, value1: node.node_type_id })).join(" • ")
+          : i18n.catalog["enterpriseCore.setup.noRecords"]}
+      />
+      <SetupAccountingSection
+        title={i18n.catalog["enterpriseCore.setup.accounting.title"]}
+        description={i18n.catalog["enterpriseCore.setup.accounting.description"]}
+        accountCodeLabel={i18n.catalog["enterpriseCore.setup.accounting.accountCode"]}
+        accountNameLabel={i18n.catalog["enterpriseCore.setup.accounting.accountName"]}
+        accountTypeLabel={i18n.catalog["enterpriseCore.setup.accounting.accountType"]}
+        createAccountLabel={i18n.catalog["enterpriseCore.setup.accounting.createAccount"]}
+        periodNameLabel={i18n.catalog["enterpriseCore.setup.accounting.periodName"]}
+        startDateLabel={i18n.catalog["enterpriseCore.setup.accounting.startDate"]}
+        endDateLabel={i18n.catalog["enterpriseCore.setup.accounting.endDate"]}
+        createPeriodLabel={i18n.catalog["enterpriseCore.setup.accounting.createPeriod"]}
+        accountCode={accountCode}
+        accountName={accountName}
+        accountType={accountType}
+        accountTypes={accountTypes}
+        accountTypeLabels={accountTypeLabels}
+        periodName={periodName}
+        periodStart={periodStart}
+        periodEnd={periodEnd}
+        recordSummary={catalogText(i18n, "enterpriseCore.setup.accounting.recordSummary", { value0: accounts.length, value1: periods.length })}
+        isSaving={isSaving}
+        onAccountCodeChange={setAccountCode}
+        onAccountNameChange={setAccountName}
+        onAccountTypeChange={setAccountType}
+        onPeriodNameChange={setPeriodName}
+        onPeriodStartChange={setPeriodStart}
+        onPeriodEndChange={setPeriodEnd}
+        onCreateAccount={() => void createAccount()}
+        onCreatePeriod={() => void createPeriod()}
+      />
+      <SetupOperatingScopeSection
+        title={i18n.catalog["enterpriseCore.setup.scope.title"]}
+        description={i18n.catalog["enterpriseCore.setup.scope.description"]}
+        foundationComplete={onboarding?.phases.foundation.ready === true}
+        foundationRequiredLabel={i18n.catalog["enterpriseCore.setup.scope.foundationRequired"]}
+        workingUnitLabel={i18n.catalog["enterpriseCore.setup.scope.workingUnit"]}
+        costCenterLabel={i18n.catalog["enterpriseCore.setup.scope.costCenter"]}
+        profitCenterLabel={i18n.catalog["enterpriseCore.setup.scope.profitCenter"]}
+        warehouseCodeLabel={i18n.catalog["enterpriseCore.setup.scope.warehouseCode"]}
+        warehouseNameLabel={i18n.catalog["enterpriseCore.setup.scope.warehouseName"]}
+        posCodeLabel={i18n.catalog["enterpriseCore.setup.scope.posCode"]}
+        posNameLabel={i18n.catalog["enterpriseCore.setup.scope.posName"]}
+        saveLabel={i18n.catalog["enterpriseCore.setup.scope.save"]}
+        workingUnit={workingUnit}
+        costCenterId={costCenterId}
+        profitCenterId={profitCenterId}
+        warehouseCode={warehouseCode}
+        warehouseName={warehouseName}
+        posCode={posCode}
+        posName={posName}
+        nodeOptions={workingUnitOptions}
+        costOptions={costOptions}
+        profitOptions={profitOptions}
+        isSaving={isSaving}
+        onWorkingUnitChange={setWorkingUnit}
+        onCostCenterChange={setCostCenterId}
+        onProfitCenterChange={setProfitCenterId}
+        onWarehouseCodeChange={setWarehouseCode}
+        onWarehouseNameChange={setWarehouseName}
+        onPosCodeChange={setPosCode}
+        onPosNameChange={setPosName}
+        onSave={() => void saveContext()}
+      />
+      <SetupModuleSelection
+        locale={locale}
+        modules={setupState?.modules ?? []}
+        selectedModuleKeys={selectedModuleKeys}
+        coreModuleKeys={onboarding?.starter_module_keys ?? []}
+        canActivate={canConfigureModules}
+        title={i18n.catalog["enterpriseCore.setup.modules.title"]}
+        description={i18n.catalog["enterpriseCore.setup.modules.description"]}
+        coreTitle={i18n.catalog["enterpriseCore.setup.modules.coreTitle"]}
+        coreDescription={i18n.catalog["enterpriseCore.setup.modules.coreDescription"]}
+        optionalTitle={i18n.catalog["enterpriseCore.setup.modules.optionalTitle"]}
+        optionalDescription={i18n.catalog["enterpriseCore.setup.modules.optionalDescription"]}
+        baselineRequiredLabel={i18n.catalog["enterpriseCore.setup.modules.baselineRequired"]}
+        saveSelectionLabel={i18n.catalog["enterpriseCore.setup.modules.saveSelection"]}
+        activateSelectedLabel={i18n.catalog["enterpriseCore.setup.modules.activateSelected"]}
+        notSelectedLabel={i18n.catalog["enterpriseCore.setup.modules.notSelected"]}
+        pendingReadinessLabel={i18n.catalog["enterpriseCore.setup.modules.pendingReadiness"]}
+        activeLabel={i18n.catalog["enterpriseCore.setup.modules.active"]}
+        selectionRequiredLabel={i18n.catalog["enterpriseCore.setup.modules.selectionRequired"]}
+        noRecordsLabel={i18n.catalog["enterpriseCore.setup.noRecords"]}
+        isSaving={isSaving}
+        onToggle={toggleModule}
+        onSave={() => void saveModuleSelection()}
+        onActivate={() => void activateSelectedModules()}
+      />
+    </div>
   );
 }

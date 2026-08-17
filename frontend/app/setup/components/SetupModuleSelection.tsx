@@ -7,8 +7,15 @@ interface SetupModuleSelectionProps {
   locale: SupportedLocale;
   modules: SetupModule[];
   selectedModuleKeys: string[];
+  coreModuleKeys: string[];
+  canActivate: boolean;
   title: string;
   description: string;
+  coreTitle: string;
+  coreDescription: string;
+  optionalTitle: string;
+  optionalDescription: string;
+  baselineRequiredLabel: string;
   saveSelectionLabel: string;
   activateSelectedLabel: string;
   notSelectedLabel: string;
@@ -26,8 +33,15 @@ export function SetupModuleSelection({
   locale,
   modules,
   selectedModuleKeys,
+  coreModuleKeys,
+  canActivate,
   title,
   description,
+  coreTitle,
+  coreDescription,
+  optionalTitle,
+  optionalDescription,
+  baselineRequiredLabel,
   saveSelectionLabel,
   activateSelectedLabel,
   notSelectedLabel,
@@ -41,6 +55,8 @@ export function SetupModuleSelection({
   onActivate,
 }: SetupModuleSelectionProps) {
   const businessModules = modules.filter((module) => !module.is_configuration_module);
+  const coreModules = businessModules.filter((module) => coreModuleKeys.includes(module.module_key));
+  const optionalModules = businessModules.filter((module) => !coreModuleKeys.includes(module.module_key));
 
   const moduleLabel = (module: SetupModule) => locale === "ar-SA"
     ? module.module_name_ar || module.module_name_en || module.module_key
@@ -52,38 +68,61 @@ export function SetupModuleSelection({
     return notSelectedLabel;
   };
 
+  const renderGroup = (groupModules: SetupModule[], required: boolean) => (
+    <fieldset className="setup-module-grid" disabled={!canActivate}>
+      <legend className="sr-only">{required ? coreTitle : optionalTitle}</legend>
+      {groupModules.length === 0 ? <p className="setup-empty-state">{noRecordsLabel}</p> : null}
+      {groupModules.map((module) => {
+        const selected = selectedModuleKeys.includes(module.module_key);
+        const className = [
+          "setup-module-card",
+          required ? "is-required" : "",
+          !canActivate ? "is-disabled" : "",
+        ].filter(Boolean).join(" ");
+
+        return (
+          <label className={className} key={module.module_key}>
+            <input
+              type="checkbox"
+              checked={selected}
+              disabled={!canActivate}
+              onChange={() => onToggle(module.module_key)}
+            />
+            <span>
+              <strong className="setup-module-name">{moduleLabel(module)}</strong>
+              <span className={`setup-module-status ${module.is_operational ? "is-operational" : ""}`.trim()}>
+                {statusLabel(module)}
+              </span>
+            </span>
+          </label>
+        );
+      })}
+    </fieldset>
+  );
+
   return (
     <SetupSection id="setup-modules" title={title} description={description}>
-      <fieldset className="setup-module-grid" aria-describedby={selectedModuleKeys.length === 0 ? "setup-modules-hint" : undefined}>
-        <legend className="sr-only">{title}</legend>
-        {businessModules.length === 0 ? <p className="setup-empty-state">{noRecordsLabel}</p> : null}
-        {businessModules.map((module) => {
-          const selected = selectedModuleKeys.includes(module.module_key);
-          return (
-            <label className="setup-module-card" key={module.module_key}>
-              <input
-                type="checkbox"
-                checked={selected}
-                onChange={() => onToggle(module.module_key)}
-              />
-              <span>
-                <strong className="setup-module-name">{moduleLabel(module)}</strong>
-                <span className={`setup-module-status ${module.is_operational ? "is-operational" : ""}`.trim()}>
-                  {statusLabel(module)}
-                </span>
-              </span>
-            </label>
-          );
-        })}
-      </fieldset>
+      {!canActivate ? <p className="readiness-notice warning">{baselineRequiredLabel}</p> : null}
+      <div className="setup-module-groups">
+        <div className="setup-module-group">
+          <h4 className="setup-module-group-title">{coreTitle}</h4>
+          <p className="setup-module-group-description">{coreDescription}</p>
+          {renderGroup(coreModules, true)}
+        </div>
+        <div className="setup-module-group">
+          <h4 className="setup-module-group-title">{optionalTitle}</h4>
+          <p className="setup-module-group-description">{optionalDescription}</p>
+          {renderGroup(optionalModules, false)}
+        </div>
+      </div>
       <div className="setup-actions">
-        <Button type="button" onClick={onSave} isLoading={isSaving}>
+        <Button type="button" onClick={onSave} isLoading={isSaving} disabled={!canActivate}>
           {saveSelectionLabel}
         </Button>
-        <Button type="button" variant="secondary" onClick={onActivate} isLoading={isSaving} disabled={selectedModuleKeys.length === 0}>
+        <Button type="button" variant="secondary" onClick={onActivate} isLoading={isSaving} disabled={!canActivate || selectedModuleKeys.length === 0}>
           {activateSelectedLabel}
         </Button>
-        {selectedModuleKeys.length === 0 ? <p id="setup-modules-hint" className="setup-helper-text">{selectionRequiredLabel}</p> : null}
+        {canActivate && selectedModuleKeys.length === 0 ? <p id="setup-modules-hint" className="setup-helper-text">{selectionRequiredLabel}</p> : null}
       </div>
     </SetupSection>
   );

@@ -4,7 +4,7 @@ Generated deterministically by `npm run i18n:inventory`.
 
 | Status | Count |
 |---|---:|
-| technical | 27934 |
+| technical | 27993 |
 
 ## Highest-volume files
 
@@ -83,6 +83,7 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/06-human-capital/payroll-benefits/payroll-management/compensation/(pages)/Compensation.tsx` | 137 |
 | `app/06-human-capital/payroll-benefits/payroll-management/benefits/(pages)/Benefits.tsx` | 136 |
 | `app/06-human-capital/talent-recruitment/recruitment/administration/components/RolesTab.tsx` | 136 |
+| `app/setup/page.tsx` | 136 |
 | `app/03-finance/foreign-exchange/currency-management/exchange-rates/(pages)/page.tsx` | 134 |
 | `app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/view/components/BasicInfoTab.tsx` | 131 |
 | `lib/endpoints/human-capital.ts` | 128 |
@@ -94,7 +95,6 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/03-finance/foreign-exchange/currency-management/currencies/components/CurrencyListTab.tsx` | 121 |
 | `app/03-finance/tax-compliance/cash-management/bank-reconciliation/(pages)/page.tsx` | 120 |
 | `app/03-finance/treasury/cash-management/bank-reconciliation/(pages)/page.tsx` | 120 |
-| `app/setup/page.tsx` | 120 |
 | `app/02-commercial/revenue-receivables/revenue-receipts/revenues/(pages)/page.tsx` | 119 |
 | `app/04-supply-chain/procurement/purchase-invoices/purchase-returns/(pages)/page.tsx` | 114 |
 | `components/tax/compliance-editor/FormatEditor.tsx` | 114 |

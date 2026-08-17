@@ -5,8 +5,33 @@ export type ReadinessCheck = {
   complete: boolean;
 };
 
+export type OnboardingPhase = {
+  id: "foundation" | "core_operations";
+  ready: boolean;
+  required_node_types: string[];
+  missing_node_types: string[];
+  unlinked_node_types?: string[];
+  reason_codes: string[];
+};
+
+export type Onboarding = {
+  policy_version: string;
+  profile: string;
+  baseline_ready: boolean;
+  next_phase: "foundation" | "core_operations" | "module_activation";
+  starter_module_keys: string[];
+  starter_bundle_active?: boolean;
+  missing_starter_module_keys?: string[];
+  active_starter_module_keys?: string[];
+  phases: {
+    foundation: OnboardingPhase;
+    core_operations: OnboardingPhase;
+  };
+};
+
 export type Readiness = {
   ready: boolean;
+  onboarding?: Onboarding;
   checks?: ReadinessCheck[];
   missing?: Array<{ key: string }>;
   accounting_readiness?: {
@@ -33,6 +58,7 @@ export type OrgNode = {
 
 export type SetupModule = {
   module_key: string;
+  category?: string;
   module_name_ar?: string | null;
   module_name_en?: string | null;
   is_configuration_module: boolean;
@@ -43,6 +69,7 @@ export type SetupModule = {
 
 export type SetupState = {
   setup_required: boolean;
+  onboarding?: Onboarding;
   selected_module_keys: string[];
   active_module_keys: string[];
   pending_module_keys: string[];

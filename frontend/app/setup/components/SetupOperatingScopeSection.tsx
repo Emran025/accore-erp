@@ -6,6 +6,8 @@ import { SetupSection } from "./SetupSection";
 interface SetupOperatingScopeSectionProps {
   title: string;
   description: string;
+  foundationComplete: boolean;
+  foundationRequiredLabel: string;
   workingUnitLabel: string;
   costCenterLabel: string;
   profitCenterLabel: string;
@@ -38,6 +40,8 @@ interface SetupOperatingScopeSectionProps {
 export function SetupOperatingScopeSection({
   title,
   description,
+  foundationComplete,
+  foundationRequiredLabel,
   workingUnitLabel,
   costCenterLabel,
   profitCenterLabel,
@@ -68,7 +72,9 @@ export function SetupOperatingScopeSection({
 }: SetupOperatingScopeSectionProps) {
   return (
     <SetupSection id="setup-operating-scope" title={title} description={description}>
-      <div className="settings-form-grid setup-form-grid">
+      {!foundationComplete ? <p className="readiness-notice warning">{foundationRequiredLabel}</p> : null}
+      <fieldset className="settings-form-grid setup-form-grid" disabled={!foundationComplete}>
+        <legend className="sr-only">{title}</legend>
         <SetupField id="setup-working-unit" label={workingUnitLabel} required>
           <SearchableSelect id="setup-working-unit" className="setup-select" options={nodeOptions} value={workingUnit} onChange={(value) => onWorkingUnitChange(String(value || ""))} />
         </SetupField>
@@ -90,9 +96,9 @@ export function SetupOperatingScopeSection({
         <SetupField id="setup-pos-name" label={posNameLabel} required>
           <input id="setup-pos-name" className="setup-input" value={posName} onChange={(event) => onPosNameChange(event.target.value)} required />
         </SetupField>
-      </div>
+      </fieldset>
       <div className="setup-actions">
-        <Button type="button" onClick={onSave} isLoading={isSaving}>{saveLabel}</Button>
+        <Button type="button" onClick={onSave} isLoading={isSaving} disabled={!foundationComplete}>{saveLabel}</Button>
       </div>
     </SetupSection>
   );

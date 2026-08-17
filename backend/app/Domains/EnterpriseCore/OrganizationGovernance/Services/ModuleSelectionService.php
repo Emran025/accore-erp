@@ -27,6 +27,12 @@ final class ModuleSelectionService
         'roles_permissions',
     ];
 
+    /**
+     * These modules represent the four mandatory small-business domains:
+     * enterprise core, commercial operations, finance, and supply chain.
+     */
+    public const CORE_STARTER_MODULES = ['sales', 'products', 'purchases', 'general_ledger'];
+
     public function __construct(private readonly ModuleReadinessService $readiness)
     {
     }
@@ -54,7 +60,7 @@ final class ModuleSelectionService
     }
 
     /** @param list<string> $moduleKeys */
-    public function select(array $moduleKeys): array
+    public function select(array $moduleKeys, ?int $userId = null): array
     {
         $knownKeys = Module::query()->pluck('module_key')->all();
         $unknownKeys = array_values(array_diff($moduleKeys, $knownKeys));
@@ -88,18 +94,37 @@ final class ModuleSelectionService
                 ->update(['is_active' => false]);
         });
 
-        return $this->state();
+        return $this->state($userId);
     }
 
     /** @return array{activated: list<string>, pending: array<string, list<string>>} */
     public function activateSelected(?int $userId): array
     {
-        $evaluation = collect($this->readiness->evaluate($userId)['modules'])
-            ->keyBy('module_key');
+        $readiness = $this->readiness->evaluate($userId);
+        $evaluation = collect($readiness['modules'])->keyBy('module_key');
+        $baselineReady = (bool) data_get($readiness, 'onboarding.baseline_ready', false);
+        $selected = $this->selectedModuleKeys();
+        $missingStarterModules = array_values(array_diff(self::CORE_STARTER_MODULES, $selected));
         $activated = [];
         $pending = [];
 
-        foreach ($this->selectedModuleKeys() as $moduleKey) {
+        if (!$baselineReady) {
+            foreach ($selected as $moduleKey) {
+                $pending[$moduleKey] = ['mandatory_baseline_incomplete'];
+            }
+
+            return compact('activated', 'pending');
+        }
+
+        if ($missingStarterModules !== []) {
+            foreach ($selected as $moduleKey) {
+                $pending[$moduleKey] = ['mandatory_core_module_selection_incomplete'];
+            }
+
+            return compact('activated', 'pending');
+        }
+
+        foreach ($selected as $moduleKey) {
             $module = Module::query()->where('module_key', $moduleKey)->first();
             $status = $evaluation->get($moduleKey);
 
@@ -137,7 +162,8 @@ final class ModuleSelectionService
     public function state(?int $userId = null): array
     {
         $selected = $this->selectedModuleKeys();
-        $evaluated = collect($this->readiness->evaluate($userId)['modules']);
+        $readiness = $this->readiness->evaluate($userId);
+        $evaluated = collect($readiness['modules']);
         $moduleNames = Module::query()
             ->get(['module_key', 'module_name_ar', 'module_name_en'])
             ->keyBy('module_key');
@@ -165,11 +191,26 @@ final class ModuleSelectionService
             ->values();
         $activeBusiness = $selectedBusiness->where('is_operational', true)->values();
         $pendingBusiness = $selectedBusiness->where('is_operational', false)->values();
+        $baselineReady = (bool) data_get($readiness, 'onboarding.baseline_ready', false);
+        $missingStarterModules = array_values(array_diff(self::CORE_STARTER_MODULES, $selected));
+        $activeStarterModules = $activeBusiness
+            ->whereIn('module_key', self::CORE_STARTER_MODULES)
+            ->pluck('module_key')
+            ->all();
+        $starterBundleActive = $baselineReady
+            && $missingStarterModules === []
+            && array_values(array_diff(self::CORE_STARTER_MODULES, $activeStarterModules)) === [];
 
         return [
-            // No business operation is permitted until the customer explicitly
-            // selects at least one module and it is operationally ready.
-            'setup_required' => $activeBusiness->isEmpty(),
+            // Core access is only granted after the mandated foundational,
+            // operating, and cross-domain starter-bundle controls are ready.
+            'setup_required' => !$starterBundleActive,
+            'onboarding' => [
+                ...($readiness['onboarding'] ?? []),
+                'starter_bundle_active' => $starterBundleActive,
+                'missing_starter_module_keys' => $missingStarterModules,
+                'active_starter_module_keys' => $activeStarterModules,
+            ],
             'selected_module_keys' => $selected,
             'active_module_keys' => $activeBusiness->pluck('module_key')->all(),
             'pending_module_keys' => $pendingBusiness->pluck('module_key')->all(),
@@ -182,6 +223,6 @@ final class ModuleSelectionService
         $state = $this->state($userId);
         $module = collect($state['modules'])->firstWhere('module_key', $moduleKey);
 
-        return (bool) ($module['is_operational'] ?? false);
+        return (bool) ($module['is_selected'] ?? false) && (bool) ($module['is_operational'] ?? false);
     }
 }

@@ -31,7 +31,7 @@ class SetupStateController extends Controller
         ]);
 
         return $this->successResponse([
-            'data' => $this->modules->select($validated['module_keys']),
+            'data' => $this->modules->select($validated['module_keys'], $request->user()?->id),
         ], 'Module selection saved.');
     }
 
