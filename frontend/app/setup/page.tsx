@@ -9,10 +9,11 @@ import { catalogText, useI18n } from "@/lib/i18n";
 import { SetupAccountingSection } from "./components/SetupAccountingSection";
 import { SetupModuleSelection } from "./components/SetupModuleSelection";
 import { SetupOperatingScopeSection } from "./components/SetupOperatingScopeSection";
-import { SetupOrganizationSection } from "./components/SetupOrganizationSection";
+import { OrganizationArchitectureWorkspace } from "./components/OrganizationArchitectureWorkspace";
+import { OrganizationIntegrity, OrganizationMetaType, OrganizationNodeDraft, OrganizationTopologyRule, OrganizationWorkspaceNode } from "./components/organizationWorkspace.types";
 import { SetupPhaseProgress } from "./components/SetupPhaseProgress";
 import { SetupReadinessSummary } from "./components/SetupReadinessSummary";
-import { Item, MetaType, OrgNode, Readiness, SetupState } from "./types";
+import { Item, Readiness, SetupState } from "./types";
 
 const accountTypes = ["asset", "liability", "equity", "revenue", "expense"] as const;
 type AccountType = (typeof accountTypes)[number];
@@ -39,19 +40,15 @@ export default function SetupPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [readiness, setReadiness] = useState<Readiness | null>(null);
   const [setupState, setSetupState] = useState<SetupState | null>(null);
-  const [nodes, setNodes] = useState<OrgNode[]>([]);
-  const [metaTypes, setMetaTypes] = useState<MetaType[]>([]);
+  const [nodes, setNodes] = useState<OrganizationWorkspaceNode[]>([]);
+  const [metaTypes, setMetaTypes] = useState<OrganizationMetaType[]>([]);
+  const [topologyRules, setTopologyRules] = useState<OrganizationTopologyRule[]>([]);
+  const [organizationIntegrity, setOrganizationIntegrity] = useState<OrganizationIntegrity | null>(null);
   const [costCenters, setCostCenters] = useState<Item[]>([]);
   const [profitCenters, setProfitCenters] = useState<Item[]>([]);
   const [accounts, setAccounts] = useState<Item[]>([]);
   const [periods, setPeriods] = useState<Item[]>([]);
   const [selectedModuleKeys, setSelectedModuleKeys] = useState<string[]>([]);
-
-  const [nodeType, setNodeType] = useState("");
-  const [nodeCode, setNodeCode] = useState("");
-  const [nodeName, setNodeName] = useState("");
-  const [nodeParent, setNodeParent] = useState("");
-  const [nodeAttributes, setNodeAttributes] = useState<Record<string, string>>({});
 
   const [accountCode, setAccountCode] = useState("");
   const [accountName, setAccountName] = useState("");
@@ -71,11 +68,13 @@ export default function SetupPage() {
   const load = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [readinessResponse, setupResponse, nodesResponse, typesResponse, costsResponse, profitsResponse, accountsResponse, periodsResponse] = await Promise.all([
+      const [readinessResponse, setupResponse, nodesResponse, typesResponse, topologyResponse, integrityResponse, costsResponse, profitsResponse, accountsResponse, periodsResponse] = await Promise.all([
         fetchAPI<Readiness>(API_ENDPOINTS.ENTERPRISE_CORE.OPERATING_CONTEXT.READINESS),
         fetchAPI<SetupState>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.STATE),
         fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES),
         fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.META_TYPES),
+        fetchAPI<OrganizationTopologyRule[]>(API_ENDPOINTS.ENTERPRISE_CORE.ORG.TOPOLOGY_RULES),
+        fetchAPI<OrganizationIntegrity>(API_ENDPOINTS.ENTERPRISE_CORE.ORG.INTEGRITY_CHECK),
         fetchAPI(`${API_ENDPOINTS.FINANCE.COST_CENTERS.BASE}?limit=500`),
         fetchAPI(`${API_ENDPOINTS.FINANCE.PROFIT_CENTERS.BASE}?limit=500`),
         fetchAPI(`${API_ENDPOINTS.FINANCE.ACCOUNTS.BASE}?limit=500`),
@@ -86,10 +85,10 @@ export default function SetupPage() {
       const state = setupResponse.success ? setupResponse.data ?? null : null;
       setSetupState(state);
       setSelectedModuleKeys(state?.selected_module_keys ?? []);
-      setNodes(listFrom(nodesResponse) as OrgNode[]);
-      const types = listFrom(typesResponse) as MetaType[];
-      setMetaTypes(types);
-      setNodeType((current) => current || types[0]?.id || "");
+      setNodes(listFrom(nodesResponse) as OrganizationWorkspaceNode[]);
+      setMetaTypes(listFrom(typesResponse) as OrganizationMetaType[]);
+      setTopologyRules(listFrom(topologyResponse) as OrganizationTopologyRule[]);
+      setOrganizationIntegrity(integrityResponse.success ? integrityResponse.data ?? null : null);
       setCostCenters(listFrom(costsResponse).filter((item) => item.is_active !== false));
       setProfitCenters(listFrom(profitsResponse).filter((item) => item.is_active !== false));
       setAccounts(listFrom(accountsResponse).filter((item) => item.is_active !== false));
@@ -103,15 +102,7 @@ export default function SetupPage() {
 
   useEffect(() => { void load(); }, [load]);
 
-  const selectedType = useMemo(() => metaTypes.find((type) => type.id === nodeType), [metaTypes, nodeType]);
   const activeNodes = useMemo(() => nodes.filter((node) => node.status === "active"), [nodes]);
-  const nodeOptions = useMemo(() => activeNodes.map((node) => ({
-    value: node.node_uuid,
-    label: catalogText(i18n, "enterpriseCore.setup.nodeSummary", {
-      value0: node.code,
-      value1: node.meta_type?.display_name_ar || node.meta_type?.display_name || node.node_type_id,
-    }),
-  })), [activeNodes, i18n]);
   const workingUnitOptions = useMemo(() => activeNodes
     .filter((node) => node.node_type_id === "COMP_CODE")
     .map((node) => ({
@@ -121,7 +112,6 @@ export default function SetupPage() {
         value1: node.meta_type?.display_name_ar || node.meta_type?.display_name || node.node_type_id,
       }),
     })), [activeNodes, i18n]);
-  const typeOptions = useMemo(() => metaTypes.map((type) => ({ value: type.id, label: type.display_name_ar || type.display_name || type.id })), [metaTypes]);
   const costOptions = useMemo(() => costCenters.map((center) => ({
     value: Number(center.id),
     label: catalogText(i18n, "enterpriseCore.setup.centerSummary", {
@@ -154,31 +144,13 @@ export default function SetupPage() {
     }
   };
 
-  const createNode = async () => {
-    if (!nodeType || !nodeCode.trim()) {
-      showToast(i18n.catalog["enterpriseCore.setup.failedToSave"], "error");
-      return;
-    }
-    const attributes = { ...nodeAttributes, ...(nodeName.trim() ? { name: nodeName.trim() } : {}) };
-    const saved = await callAndReload<OrgNode>(() => fetchAPI<OrgNode>(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES, {
+  const createOrganizationNode = async (draft: OrganizationNodeDraft): Promise<boolean> => {
+    const saved = await callAndReload<OrganizationWorkspaceNode>(() => fetchAPI<OrganizationWorkspaceNode>(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES, {
       method: "POST",
-      body: JSON.stringify({
-        node_type_id: nodeType,
-        code: nodeCode.trim(),
-        status: "active",
-        attributes,
-        ...(nodeParent ? { link: { target_node_uuid: nodeParent, validate_constraints: true } } : {}),
-      }),
+      body: JSON.stringify({ ...draft, status: "active" }),
     }));
-    if (saved) {
-      if (["COST_CENTER", "PROFIT_CENTER"].includes(nodeType)) {
-        await callAndReload(() => fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG_INTEGRATION.SYNC_NODE(saved.node_uuid), { method: "POST" }));
-      }
-      setNodeCode("");
-      setNodeName("");
-      setNodeParent("");
-      setNodeAttributes({});
-    }
+
+    return saved !== null;
   };
 
   const createAccount = async () => {
@@ -295,32 +267,15 @@ export default function SetupPage() {
         lockedLabel={i18n.catalog["enterpriseCore.setup.phase.locked"]}
         completeLabel={i18n.catalog["enterpriseCore.setup.complete"]}
       />
-      <SetupOrganizationSection
-        title={i18n.catalog["enterpriseCore.setup.organization.title"]}
-        description={i18n.catalog["enterpriseCore.setup.organization.description"]}
-        createLabel={i18n.catalog["enterpriseCore.setup.organization.create"]}
-        typeLabel={i18n.catalog["enterpriseCore.setup.organization.type"]}
-        codeLabel={i18n.catalog["enterpriseCore.setup.organization.code"]}
-        nameLabel={i18n.catalog["enterpriseCore.setup.organization.name"]}
-        parentLabel={i18n.catalog["enterpriseCore.setup.organization.parent"]}
-        nodeType={nodeType}
-        nodeCode={nodeCode}
-        nodeName={nodeName}
-        nodeParent={nodeParent}
-        nodeAttributes={nodeAttributes}
-        selectedType={selectedType}
-        typeOptions={typeOptions}
-        nodeOptions={nodeOptions}
+      <OrganizationArchitectureWorkspace
+        nodes={nodes}
+        metaTypes={metaTypes}
+        topologyRules={topologyRules}
+        integrity={organizationIntegrity}
+        isLoading={isLoading}
         isSaving={isSaving}
-        onNodeTypeChange={(value) => { setNodeType(value); setNodeAttributes({}); }}
-        onNodeCodeChange={setNodeCode}
-        onNodeNameChange={setNodeName}
-        onNodeParentChange={setNodeParent}
-        onNodeAttributeChange={(key, value) => setNodeAttributes((current) => ({ ...current, [key]: value }))}
-        onCreate={() => void createNode()}
-        summary={activeNodes.length
-          ? activeNodes.map((node) => catalogText(i18n, "enterpriseCore.setup.nodeSummary", { value0: node.code, value1: node.node_type_id })).join(" • ")
-          : i18n.catalog["enterpriseCore.setup.noRecords"]}
+        onRefresh={() => void load()}
+        onCreateNode={createOrganizationNode}
       />
       <SetupAccountingSection
         title={i18n.catalog["enterpriseCore.setup.accounting.title"]}
