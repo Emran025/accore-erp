@@ -4032,4 +4032,12 @@ export const arCatalog = {
     "enterpriseCore.setup.check.openFiscalPeriod": "فترة مالية مفتوحة",
     "enterpriseCore.setup.check.chartOfAccounts": "دليل الحسابات",
     "enterpriseCore.setup.nodeSummary": "{value0} ({value1})",
+    "enterpriseCore.setup.modules.title": "٤. اختيار وحدات الأعمال",
+    "enterpriseCore.setup.modules.description": "اختر قدرات الأعمال التي ستشغّلها المنظمة. لا يتم تفعيل الاختيار إلا بعد اكتمال المتطلبات الهيكلية ووحدة العمل والمتطلبات المحاسبية.",
+    "enterpriseCore.setup.modules.saveSelection": "حفظ اختيار الوحدات",
+    "enterpriseCore.setup.modules.activateSelected": "تفعيل الوحدات الجاهزة",
+    "enterpriseCore.setup.modules.notSelected": "غير مختارة",
+    "enterpriseCore.setup.modules.pendingReadiness": "مختارة — المتطلبات غير مكتملة",
+    "enterpriseCore.setup.modules.active": "جاهزة للتشغيل",
+    "enterpriseCore.setup.modules.selectionRequired": "اختر وحدة أعمال واحدة على الأقل قبل مغادرة التهيئة.",
 } as const;

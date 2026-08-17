@@ -37,6 +37,11 @@ export interface EnterpriseCoreEndpoints {
         CHANGE_HISTORY: string;
         BULK_STATUS: string;
     };
+    SETUP: {
+        STATE: string;
+        MODULES: string;
+        ACTIVATE_SELECTED: string;
+    };
     OPERATING_CONTEXT: {
         READINESS: string;
         CONFIGURE: string;
@@ -114,6 +119,11 @@ export const ENTERPRISE_CORE: EnterpriseCoreEndpoints = {
         MODULE_READINESS: "/v2/org-structure/module-readiness",
         CHANGE_HISTORY: "/v2/org-structure/change-history",
         BULK_STATUS: "/v2/org-structure/bulk-status-update",
+    },
+    SETUP: {
+        STATE: "/v2/setup/state",
+        MODULES: "/v2/setup/modules",
+        ACTIVATE_SELECTED: "/v2/setup/activate-selected",
     },
     OPERATING_CONTEXT: {
         READINESS: "/v2/operating-context/readiness",

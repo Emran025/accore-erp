@@ -4032,4 +4032,12 @@ export const enCatalog = {
     "enterpriseCore.setup.check.openFiscalPeriod": "Open fiscal period",
     "enterpriseCore.setup.check.chartOfAccounts": "Chart of accounts",
     "enterpriseCore.setup.nodeSummary": "{value0} ({value1})",
+    "enterpriseCore.setup.modules.title": "4. Select business modules",
+    "enterpriseCore.setup.modules.description": "Select the business capabilities that this organization will operate. A selection is not activated until its structural, working-unit, and accounting prerequisites are complete.",
+    "enterpriseCore.setup.modules.saveSelection": "Save module selection",
+    "enterpriseCore.setup.modules.activateSelected": "Activate ready modules",
+    "enterpriseCore.setup.modules.notSelected": "Not selected",
+    "enterpriseCore.setup.modules.pendingReadiness": "Selected — prerequisites incomplete",
+    "enterpriseCore.setup.modules.active": "Operational",
+    "enterpriseCore.setup.modules.selectionRequired": "Select at least one business module before leaving setup.",
 } as const;

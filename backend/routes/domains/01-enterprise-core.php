@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 // Enterprise Core Controllers (Descending File Tree)
 use App\Http\Controllers\Api\V2\EnterpriseCore\SystemOverview\NumberRangeController;
 use App\Http\Controllers\Api\V2\EnterpriseCore\OrganizationGovernance\{
-    OrgIntegrationController, OrgStructureController, OperatingContextController, AuditTrailController,
+    OrgIntegrationController, OrgStructureController, OperatingContextController, SetupStateController, AuditTrailController,
     AuditLogController, SettingsController
 };
 use App\Http\Controllers\Api\V2\EnterpriseCore\IdentityAccess\{
@@ -93,7 +93,14 @@ use App\Http\Controllers\Api\V2\EnterpriseCore\Automation\SystemTemplateControll
             Route::middleware(['can:settings,edit', 'throttle:api-write'])->post('/{id}/select', [OperatingContextController::class, 'select'])->name('v2.operating_context.select');
         });
 
-        // ── 04. Org Structure (OrganizationGovernance)
+        // ── 04. Setup lifecycle (OrganizationGovernance)
+        Route::group(['prefix' => 'setup', 'middleware' => 'can:settings,view'], function () {
+            Route::get('/state', [SetupStateController::class, 'show'])->name('v2.setup.state');
+            Route::middleware(['can:settings,edit', 'throttle:api-write'])->post('/modules', [SetupStateController::class, 'selectModules'])->name('v2.setup.modules.select');
+            Route::middleware(['can:settings,edit', 'throttle:api-critical'])->post('/activate-selected', [SetupStateController::class, 'activateSelected'])->name('v2.setup.modules.activate_selected');
+        });
+
+        // ── 05. Org Structure (OrganizationGovernance)
         Route::group(['prefix' => 'org-structure', 'middleware' => 'can:settings,view'], function () {
             Route::get('/meta-types', [OrgStructureController::class, 'metaTypes'])->name('v2.org.meta_types');
             Route::get('/topology-rules', [OrgStructureController::class, 'topologyRules'])->name('v2.org.topology_rules');

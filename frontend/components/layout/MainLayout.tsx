@@ -17,6 +17,8 @@ import { useUIStore } from "@/stores/useUIStore";
 import { useOperatingContextStore } from "@/stores/useOperatingContextStore";
 import { NotificationRuntimeBridge } from "./NotificationRuntimeBridge";
 import { publishProductNotification } from "@/stores/useNotificationStore";
+import { fetchAPI } from "@/lib/api";
+import { API_ENDPOINTS } from "@/lib/endpoints";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -54,7 +56,15 @@ export function MainLayout({
         return;
       }
 
-      await loadReadiness();
+      const readinessState = await loadReadiness();
+      const setupResponse = await fetchAPI<{ setup_required: boolean }>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.STATE);
+      const setupRequired = !setupResponse.success || setupResponse.data?.setup_required !== false;
+      const isSetupRoute = typeof window !== "undefined" && window.location.pathname === "/setup";
+
+      if ((!readinessState?.ready || setupRequired) && !isSetupRoute) {
+        router.replace("/setup");
+        return;
+      }
 
       if (requiredModule) {
         const hasAccess = useAuthStore.getState().canAccess(requiredModule, requiredAction);

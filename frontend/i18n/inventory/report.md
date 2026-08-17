@@ -4,8 +4,7 @@ Generated deterministically by `npm run i18n:inventory`.
 
 | Status | Count |
 |---|---:|
-| extracted | 20 |
-| technical | 27835 |
+| technical | 27895 |
 
 ## Highest-volume files
 
@@ -51,6 +50,7 @@ Generated deterministically by `npm run i18n:inventory`.
 | `lib/navigation/commercial.config.ts` | 210 |
 | `app/06-human-capital/services-wellness/employee-services/wellness/(pages)/WellnessModule.tsx` | 203 |
 | `app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/edit/page.tsx` | 202 |
+| `app/setup/page.tsx` | 199 |
 | `app/01-enterprise-core/system-overview/dashboard/global-dashboard/(pages)/page.tsx` | 193 |
 | `lib/navigation/supply-chain.config.ts` | 193 |
 | `app/01-enterprise-core/automation/recurring/batch-processing/(pages)/page.tsx` | 191 |
@@ -65,7 +65,6 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/06-human-capital/talent-recruitment/recruitment/administration/components/EmployeePositionTab.tsx` | 171 |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/NodesTab.tsx` | 168 |
 | `app/02-commercial/crm/customer-master/customers-list/(pages)/page.tsx` | 163 |
-| `app/setup/page.tsx` | 163 |
 | `app/03-finance/general-ledger/ledger-core/general-ledger-book/(pages)/page.tsx` | 161 |
 | `app/04-supply-chain/payables-expenses/expense-management/expenses/(pages)/page.tsx` | 161 |
 | `lib/navigation/finance.config.ts` | 161 |

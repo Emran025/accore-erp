@@ -28,5 +28,13 @@
   "app/setup/page.tsx:248:91": "extracted",
   "app/setup/page.tsx:248:124": "extracted",
   "app/setup/page.tsx:270:160": "extracted",
-  "app/setup/page.tsx:270:259": "extracted"
+  "app/setup/page.tsx:270:259": "extracted",
+  "app/setup/page.tsx:72:180": "technical",
+  "app/setup/page.tsx:150:12": "technical",
+  "app/setup/page.tsx:153:87": "technical",
+  "app/setup/page.tsx:153:103": "technical",
+  "app/setup/page.tsx:153:129": "technical",
+  "app/setup/page.tsx:154:91": "technical",
+  "app/setup/page.tsx:154:107": "technical",
+  "app/setup/page.tsx:154:133": "technical"
 }

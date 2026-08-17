@@ -7,6 +7,15 @@ use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Module;
 
 class ModuleSeeder extends Seeder
 {
+    /** @var list<string> */
+    private const CONFIGURATION_MODULES = [
+        'dashboard',
+        'org_structure',
+        'settings',
+        'users',
+        'roles_permissions',
+    ];
+
     public function run(): void
     {
         $modules = [
@@ -103,10 +112,17 @@ class ModuleSeeder extends Seeder
             if ($module['readiness_requirements']['requires_org_structure']) {
                 $module['readiness_requirements']['requires_working_unit'] = true;
             }
-            Module::updateOrCreate(
-                ['module_key' => $module['module_key']],
-                $module
-            );
+            $record = Module::firstOrNew(['module_key' => $module['module_key']]);
+            $isNewModule = !$record->exists;
+            $record->fill($module);
+
+            // Business modules are selected and activated deliberately during
+            // setup. Configuration modules remain available to finish setup.
+            if ($isNewModule) {
+                $record->is_active = in_array($module['module_key'], self::CONFIGURATION_MODULES, true);
+            }
+
+            $record->save();
         }
     }
 }

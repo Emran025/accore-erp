@@ -9,6 +9,7 @@ use App\Domains\EnterpriseCore\IdentityAccess\Models\Role;
 use App\Domains\EnterpriseCore\IdentityAccess\Models\Session;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Module;
 
 use Carbon\Carbon;
 
@@ -25,6 +26,7 @@ abstract class TestCase extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
+        config()->set('organization.enforce_module_readiness_in_tests', false);
 
         // Seed essential data for tests
         $this->seedEssentialData();
@@ -39,6 +41,11 @@ abstract class TestCase extends BaseTestCase
         (new \Database\Seeders\RoleSeeder())->run();
         (new \Database\Seeders\ModuleSeeder())->run();
         (new \Database\Seeders\PermissionSeeder())->run();
+
+        // Most historic domain tests exercise a migrated, live installation.
+        // Dedicated setup tests explicitly reset lifecycle state and enable the
+        // readiness guard to verify first-run behavior.
+        Module::query()->update(['is_active' => true]);
 
         // Ensure a default admin user exists for created_by FKs
         if (User::count() === 0) {

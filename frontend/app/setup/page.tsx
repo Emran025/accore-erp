@@ -36,6 +36,24 @@ type OrgNode = {
   meta_type?: MetaType;
 };
 
+type SetupModule = {
+  module_key: string;
+  module_name_ar?: string | null;
+  module_name_en?: string | null;
+  is_configuration_module: boolean;
+  is_selected: boolean;
+  is_operational: boolean;
+  lifecycle: "configuration_access" | "not_selected" | "selected_pending_readiness" | "active";
+};
+
+type SetupState = {
+  setup_required: boolean;
+  selected_module_keys: string[];
+  active_module_keys: string[];
+  pending_module_keys: string[];
+  modules: SetupModule[];
+};
+
 function listFrom(response: unknown): Item[] {
   const value = response as { data?: unknown } | undefined;
   const payload = value?.data;
@@ -55,7 +73,7 @@ const inputStyle = { width: "100%", minHeight: 40, borderRadius: 8, border: "1px
 const panelStyle = { padding: "1.15rem", border: "1px solid var(--border-color)", borderRadius: 12, background: "var(--card-bg, var(--bg-color))", marginBottom: "1rem" };
 
 export default function SetupPage() {
-  const { t: i18n } = useI18n();
+  const { t: i18n, locale } = useI18n();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -66,6 +84,8 @@ export default function SetupPage() {
   const [profitCenters, setProfitCenters] = useState<Item[]>([]);
   const [accounts, setAccounts] = useState<Item[]>([]);
   const [periods, setPeriods] = useState<Item[]>([]);
+  const [setupState, setSetupState] = useState<SetupState | null>(null);
+  const [selectedModuleKeys, setSelectedModuleKeys] = useState<string[]>([]);
 
   const [nodeType, setNodeType] = useState("");
   const [nodeCode, setNodeCode] = useState("");
@@ -91,8 +111,9 @@ export default function SetupPage() {
   const load = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [readinessResponse, nodesResponse, typesResponse, costsResponse, profitsResponse, accountsResponse, periodsResponse] = await Promise.all([
+      const [readinessResponse, setupResponse, nodesResponse, typesResponse, costsResponse, profitsResponse, accountsResponse, periodsResponse] = await Promise.all([
         fetchAPI<Readiness>(API_ENDPOINTS.ENTERPRISE_CORE.OPERATING_CONTEXT.READINESS),
+        fetchAPI<SetupState>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.STATE),
         fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES),
         fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.META_TYPES),
         fetchAPI(`${API_ENDPOINTS.FINANCE.COST_CENTERS.BASE}?limit=500`),
@@ -102,6 +123,9 @@ export default function SetupPage() {
       ]);
 
       setReadiness(readinessResponse.success ? readinessResponse.data ?? null : null);
+      const loadedSetupState = setupResponse.success ? setupResponse.data ?? null : null;
+      setSetupState(loadedSetupState);
+      setSelectedModuleKeys(loadedSetupState?.selected_module_keys ?? []);
       setNodes(listFrom(nodesResponse) as OrgNode[]);
       const loadedTypes = listFrom(typesResponse) as MetaType[];
       setMetaTypes(loadedTypes);
@@ -208,6 +232,23 @@ export default function SetupPage() {
     }));
   };
 
+  const saveModuleSelection = async () => {
+    await callAndReload(() => fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.MODULES, {
+      method: "POST",
+      body: JSON.stringify({ module_keys: selectedModuleKeys }),
+    }));
+  };
+
+  const activateSelectedModules = async () => {
+    await callAndReload(() => fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.ACTIVATE_SELECTED, { method: "POST" }));
+  };
+
+  const toggleModule = (moduleKey: string) => {
+    setSelectedModuleKeys((current) => current.includes(moduleKey)
+      ? current.filter((key) => key !== moduleKey)
+      : [...current, moduleKey]);
+  };
+
   const accountTypes = ["asset", "liability", "equity", "revenue", "expense"] as const;
   const accountTypeLabels: Record<(typeof accountTypes)[number], string> = {
     asset: i18n.catalog["enterpriseCore.setup.accountType.asset"],
@@ -239,7 +280,7 @@ export default function SetupPage() {
             </div>
             <div style={{ display: "flex", gap: "0.5rem" }}>
               <Button variant="secondary" onClick={() => void load()} isLoading={isLoading}>{i18n.catalog["enterpriseCore.setup.refresh"]}</Button>
-              <Button disabled={!readiness?.ready} onClick={() => router.push("/01-enterprise-core/system-overview/dashboard/global-dashboard")}>{i18n.catalog["enterpriseCore.setup.openDashboard"]}</Button>
+              <Button disabled={!readiness?.ready || setupState?.setup_required !== false} onClick={() => router.push("/01-enterprise-core/system-overview/dashboard/global-dashboard")}>{i18n.catalog["enterpriseCore.setup.openDashboard"]}</Button>
             </div>
           </div>
           <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "1rem" }}>
@@ -250,6 +291,32 @@ export default function SetupPage() {
             ))}
           </div>
         </div>
+
+        <section style={panelStyle}>
+          <h3 style={{ marginTop: 0 }}>{i18n.catalog["enterpriseCore.setup.modules.title"]}</h3>
+          <p style={{ color: "var(--text-secondary)" }}>{i18n.catalog["enterpriseCore.setup.modules.description"]}</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "0.65rem" }}>
+            {(setupState?.modules ?? []).filter((module) => !module.is_configuration_module).map((module) => {
+              const label = locale === "ar-SA" ? module.module_name_ar || module.module_name_en || module.module_key : module.module_name_en || module.module_name_ar || module.module_key;
+              const status = module.is_operational
+                ? i18n.catalog["enterpriseCore.setup.modules.active"]
+                : (selectedModuleKeys.includes(module.module_key)
+                  ? i18n.catalog["enterpriseCore.setup.modules.pendingReadiness"]
+                  : i18n.catalog["enterpriseCore.setup.modules.notSelected"]);
+              return (
+                <label key={module.module_key} style={{ display: "flex", gap: "0.65rem", alignItems: "flex-start", padding: "0.7rem", border: "1px solid var(--border-color)", borderRadius: 8, cursor: "pointer" }}>
+                  <input type="checkbox" checked={selectedModuleKeys.includes(module.module_key)} onChange={() => toggleModule(module.module_key)} />
+                  <span><strong style={{ display: "block" }}>{label}</strong><small style={{ color: module.is_operational ? "var(--success-color)" : "var(--text-muted)" }}>{status}</small></span>
+                </label>
+              );
+            })}
+          </div>
+          <div style={{ display: "flex", gap: "0.65rem", alignItems: "center", flexWrap: "wrap", marginTop: "0.85rem" }}>
+            <Button onClick={() => void saveModuleSelection()} isLoading={isSaving}>{i18n.catalog["enterpriseCore.setup.modules.saveSelection"]}</Button>
+            <Button variant="secondary" onClick={() => void activateSelectedModules()} isLoading={isSaving} disabled={selectedModuleKeys.length === 0}>{i18n.catalog["enterpriseCore.setup.modules.activateSelected"]}</Button>
+            {selectedModuleKeys.length === 0 ? <small style={{ color: "var(--warning-color)" }}>{i18n.catalog["enterpriseCore.setup.modules.selectionRequired"]}</small> : null}
+          </div>
+        </section>
 
         <section style={panelStyle}>
           <h3 style={{ marginTop: 0 }}>{i18n.catalog["enterpriseCore.setup.organization.title"]}</h3>

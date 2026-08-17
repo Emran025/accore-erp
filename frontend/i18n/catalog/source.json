@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-17T12:53:56.266Z",
-  "itemCount": 4032,
+  "generatedAt": "2026-08-17T14:14:50.632Z",
+  "itemCount": 4040,
   "items": [
     {
       "id": "assets.fixedAssetsRegistry.areYouSureYouWantDeleteThisAsset",
@@ -58165,6 +58165,54 @@
     {
       "id": "enterpriseCore.setup.incomplete",
       "source": "غير مكتمل",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.modules.activateSelected",
+      "source": "تفعيل الوحدات الجاهزة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.modules.active",
+      "source": "جاهزة للتشغيل",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.modules.description",
+      "source": "اختر قدرات الأعمال التي ستشغّلها المنظمة. لا يتم تفعيل الاختيار إلا بعد اكتمال المتطلبات الهيكلية ووحدة العمل والمتطلبات المحاسبية.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.modules.notSelected",
+      "source": "غير مختارة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.modules.pendingReadiness",
+      "source": "مختارة — المتطلبات غير مكتملة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.modules.saveSelection",
+      "source": "حفظ اختيار الوحدات",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.modules.selectionRequired",
+      "source": "اختر وحدة أعمال واحدة على الأقل قبل مغادرة التهيئة.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.modules.title",
+      "source": "٤. اختيار وحدات الأعمال",
       "classification": "user-facing",
       "occurrences": []
     },

@@ -3,7 +3,7 @@
 | Metric | Value |
 |---|---:|
 | Files scanned | 467 |
-| Candidate literals scanned | 27855 |
+| Candidate literals scanned | 27895 |
 | Files passing | 467 |
 | Files failing | 0 |
 
@@ -334,17 +334,17 @@
 | `app/06-human-capital/workforce-admin/employee-master/expat-management/index.ts` | 1 | 0 | 1 | Yes |
 | `app/08-assets/asset-lifecycle/fixed-assets/fixed-assets-registry/(pages)/page.tsx` | 149 | 0 | 149 | Yes |
 | `app/08-assets/asset-lifecycle/fixed-assets/fixed-assets-registry/index.ts` | 1 | 0 | 1 | Yes |
-| `app/auth/login/(pages)/page.tsx` | 11 | 0 | 11 | Yes |
+| `app/auth/login/(pages)/page.tsx` | 13 | 0 | 13 | Yes |
 | `app/auth/login/components/LoginForm.tsx` | 32 | 0 | 32 | Yes |
 | `app/auth/login/index.ts` | 1 | 0 | 1 | Yes |
-| `app/layout.tsx` | 23 | 0 | 23 | Yes |
+| `app/layout.tsx` | 17 | 0 | 17 | Yes |
 | `app/navigation/(pages)/page.tsx` | 8 | 0 | 8 | Yes |
 | `app/navigation/components/NavigationGridContent.tsx` | 26 | 0 | 26 | Yes |
 | `app/navigation/index.ts` | 1 | 0 | 1 | Yes |
 | `app/page.tsx` | 2 | 0 | 2 | Yes |
-| `app/setup/page.tsx` | 163 | 0 | 143 | Yes |
+| `app/setup/page.tsx` | 199 | 0 | 199 | Yes |
 | `components/layout/index.ts` | 2 | 0 | 2 | Yes |
-| `components/layout/MainLayout.tsx` | 54 | 0 | 54 | Yes |
+| `components/layout/MainLayout.tsx` | 59 | 0 | 59 | Yes |
 | `components/layout/NotificationRuntimeBridge.tsx` | 18 | 0 | 18 | Yes |
 | `components/layout/PageHeader.tsx` | 29 | 0 | 29 | Yes |
 | `components/navigation/index.ts` | 7 | 0 | 7 | Yes |
@@ -439,7 +439,7 @@
 | `lib/endpoints/assets.ts` | 1 | 0 | 1 | Yes |
 | `lib/endpoints/auth.ts` | 3 | 0 | 3 | Yes |
 | `lib/endpoints/commercial.ts` | 41 | 0 | 41 | Yes |
-| `lib/endpoints/enterprise-core.ts` | 55 | 0 | 55 | Yes |
+| `lib/endpoints/enterprise-core.ts` | 58 | 0 | 58 | Yes |
 | `lib/endpoints/finance.ts` | 51 | 0 | 51 | Yes |
 | `lib/endpoints/human-capital.ts` | 128 | 0 | 128 | Yes |
 | `lib/endpoints/index.ts` | 20 | 0 | 20 | Yes |

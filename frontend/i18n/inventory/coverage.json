@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-08-17T12:59:42.828Z",
+  "generatedAt": "2026-08-17T14:27:51.798Z",
   "filesScanned": 467,
-  "candidatesScanned": 27855,
+  "candidatesScanned": 27895,
   "filesPassing": 467,
   "filesFailing": 0,
   "files": [
@@ -2914,11 +2914,11 @@
     },
     {
       "file": "app/auth/login/(pages)/page.tsx",
-      "candidates": 11,
+      "candidates": 13,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 11,
+      "technical": 13,
       "passed": true
     },
     {
@@ -2941,11 +2941,11 @@
     },
     {
       "file": "app/layout.tsx",
-      "candidates": 23,
+      "candidates": 17,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 23,
+      "technical": 17,
       "passed": true
     },
     {
@@ -2986,11 +2986,11 @@
     },
     {
       "file": "app/setup/page.tsx",
-      "candidates": 163,
+      "candidates": 199,
       "pending": 0,
-      "extracted": 20,
+      "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 143,
+      "technical": 199,
       "passed": true
     },
     {
@@ -3004,11 +3004,11 @@
     },
     {
       "file": "components/layout/MainLayout.tsx",
-      "candidates": 54,
+      "candidates": 59,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 54,
+      "technical": 59,
       "passed": true
     },
     {
@@ -3859,11 +3859,11 @@
     },
     {
       "file": "lib/endpoints/enterprise-core.ts",
-      "candidates": 55,
+      "candidates": 58,
       "pending": 0,
       "extracted": 0,
       "approvedExceptions": 0,
-      "technical": 55,
+      "technical": 58,
       "passed": true
     },
     {

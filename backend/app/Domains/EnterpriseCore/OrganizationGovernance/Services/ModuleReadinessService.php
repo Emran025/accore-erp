@@ -80,7 +80,11 @@ class ModuleReadinessService
             }
 
             $reasons = array_values(array_unique(array_filter($reasons)));
-            $ready = (bool) $module->is_active && $reasons === [];
+            $requirementsSatisfied = array_values(array_filter(
+                $reasons,
+                static fn (string $reason): bool => $reason !== 'module_inactive'
+            )) === [];
+            $ready = (bool) $module->is_active && $requirementsSatisfied;
 
             return [
                 'module_key' => $module->module_key,
@@ -95,6 +99,7 @@ class ModuleReadinessService
                 'missing_node_types' => $missingNodeTypes,
                 'integrity_issue_count' => count($relevantIssues),
                 'status' => !$module->is_active ? 'inactive' : ($ready ? 'ready' : 'blocked'),
+                'requirements_satisfied' => $requirementsSatisfied,
                 'ready' => $ready,
                 'reason_codes' => $reasons,
             ];
