@@ -56,7 +56,21 @@ export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
             <p className="mt-4 leading-7 text-slate-300">
               {catalogMessage('platform.product.serverRuntimeUnavailableDescription')}
             </p>
-            <p className="mt-6 rounded-lg border border-slate-700 bg-slate-950/70 p-4 text-sm leading-6 text-slate-400">
+            <dl className="mt-6 space-y-3 rounded-lg border border-slate-700 bg-slate-950/70 p-4 text-sm leading-6 text-slate-300">
+              <div>
+                <dt className="font-semibold text-slate-100">
+                  {catalogMessage('platform.product.serverRuntimeFailedComponent')}
+                </dt>
+                <dd>{catalogMessage('platform.product.serverRuntimeApiComponent')}</dd>
+              </div>
+              <div>
+                <dt className="font-semibold text-slate-100">
+                  {catalogMessage('platform.product.serverRuntimeRecommendedAction')}
+                </dt>
+                <dd>{catalogMessage('platform.product.serverRuntimeApiAction')}</dd>
+              </div>
+            </dl>
+            <p className="mt-4 rounded-lg border border-slate-700 bg-slate-950/70 p-4 text-sm leading-6 text-slate-400">
               {catalogMessage('platform.product.serverRuntimeUnavailableNextStep')}
             </p>
           </>

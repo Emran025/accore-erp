@@ -7,7 +7,13 @@
 
 use std::fmt;
 
+mod operations;
 mod platform;
+pub use operations::{
+    BackupOperator, BackupRecord, BackupRetentionPolicy, BackupSchedule, BackupSupervisor, ComponentHealth,
+    ComponentHealthState, HealthComponent, OperationalAuditEvent, OperationalEventKind,
+    OperationalHealthReport,
+};
 pub use platform::{
     LaunchdAdapter, PlatformKind, ServiceRegistration, ServiceRegistrationAdapter, SystemdAdapter,
     WindowsScmAdapter,

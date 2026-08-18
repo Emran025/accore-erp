@@ -20,7 +20,7 @@ This runbook defines the policies and procedures for database backup, point-in-t
 
 ## Scope & Applicability
 
-This policy applies to the primary accore ERP PostgreSQL database instance, including all schemas created by the 142 managed migration files under `backend/database/migrations/`. It encompasses all environments: production, staging, and development. Migration-managed schema changes are subject to the same backup discipline as operational data.
+This policy applies to the private **AccoreDB** MySQL-compatible runtime, including schemas created by Laravel migrations under `backend/database/migrations/`. It covers the packaged Server production environment and its isolated restore-validation environment. Migration-managed schema changes are subject to the same backup discipline as operational data.
 
 ## Procedure
 
@@ -28,22 +28,20 @@ This policy applies to the primary accore ERP PostgreSQL database instance, incl
 
 1. All schema changes MUST be expressed as numbered Laravel migration files in `backend/database/migrations/`. Direct schema modifications via SQL executed outside the migration system are prohibited.
 2. Before executing any migration in production, the DBA confirms that a verified database backup exists dated within the current maintenance window.
-3. Migrations are applied using `php artisan migrate --force` from the backend working directory. The `migrations` table in PostgreSQL records the name and batch of every applied migration, providing a schema Audit Trail.
+3. Migrations are applied using the packaged Laravel runtime under maintenance after a verified backup checkpoint. The `migrations` table in AccoreDB records the name and batch of every applied migration, providing a schema audit trail.
 4. Rollback migrations (`php artisan migrate:rollback`) are available for development and staging environments. In production, rollback is permitted only under explicit DBA authorization, as it may conflict with Financial Immutability constraints where financial data resides in migrated tables.
 
 **Backup Execution** <!-- [ASSUMPTION] -->
 
-5. Full logical backups of the PostgreSQL database are scheduled using `pg_dump` with the `--format=custom` flag to enable selective restoration.
-6. Backups are stored in an encrypted, off-instance location with a minimum retention period of 30 days.
-7. Incremental point-in-time recovery (PITR) is enabled via PostgreSQL Write-Ahead Log (WAL) archiving to support granular recovery objectives. <!-- [ASSUMPTION] -->
+5. Full logical backups are created through the packaged AccoreDB runtime and are immediately restored into the isolated `restore-validation` root for an integrity probe.
+6. Backups are stored in an approved durable location with a minimum retention period of 30 days; the 14 newest restore points are protected from rotation.
+7. Backup verification is successful only after export, isolated restore, integrity probe, and validation cleanup complete. Failed or unverified backups are retained for investigation.
 
 ```mermaid
 flowchart TD
-  PG["PostgreSQL Database"] --> WAL["WAL Archiving (PITR)"]
-  PG --> FD["Full Dump (pg_dump)"]
-  FD --> S3["Encrypted Backup Storage"]
-  WAL --> S3
-  S3 --> V["Scheduled Verification Restore"]
+  DB["Private AccoreDB Runtime"] --> FD["Logical Backup Export"]
+  FD --> S["Durable Backup Store"]
+  S --> V["Isolated Restore Validation"]
   V -->|"Success"| OK["Backup Confirmed Valid"]
   V -->|"Failure"| ALT["Escalate to DBA"]
   MIG["Migrations Table"] --> AT["Schema Audit Trail"]
@@ -52,14 +50,14 @@ flowchart TD
 ## Monitoring & Verification
 
 - Backup job completion status is verified against the backup storage manifest after each scheduled run.
-- A test restoration is performed monthly to a non-production environment to validate recoverability. <!-- [ASSUMPTION] -->
+- An isolated restore verification is performed immediately for a new backup and at least every seven days thereafter to validate recoverability.
 - The `migrations` table in the production database is queried post-deployment to confirm all expected migration batches are present: `SELECT batch, COUNT(*) FROM migrations GROUP BY batch ORDER BY batch`.
 - Backup file size anomalies (greater than 20% deviation from the rolling average) trigger an alert for DBA investigation.
 
 ## Failure Recovery
 
 1. If a backup job fails, the DBA is notified immediately and the failure is logged in the operations incident register.
-2. If schema corruption is detected, the database is restored from the most recent verified backup. WAL-based PITR is applied to minimize data loss window.
+2. If schema corruption is detected, the database is restored from the most recent verified backup through the packaged AccoreDB runtime; the isolated validation directory is never copied over production data.
 3. If a migration failure leaves the schema in a partially applied state, the DBA executes `php artisan migrate:status` to identify the failed migration and either corrects the migration file or manually resolves the schema state before re-running.
 4. The incident is documented with root cause, recovery action, and time-to-recovery for audit purposes.
 
@@ -77,6 +75,4 @@ flowchart TD
 
 ## Assumptions & Open Questions
 
-<!-- [ASSUMPTION] --> Backup scheduling and WAL archiving are assumed to be configured at the infrastructure level. Explicit backup tooling configuration is not present in the observed repository files.
-<!-- [ASSUMPTION] --> Monthly verification restore targets a non-production environment provisioned for that purpose; this environment is not defined in the observed repository configuration.
-<!-- [ASSUMPTION] --> Encrypted off-instance storage is provided by the hosting platform or cloud provider; no backup destination configuration is present in the repository.
+The production backup destination and any off-instance replication remain deployment-specific. They must preserve the retention and isolated-validation invariants described here without placing customer data in release caches or runtime binary directories.
