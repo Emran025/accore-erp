@@ -1,6 +1,7 @@
 import { catalogMessage, getActiveLocale } from '@/lib/i18n';
 import { API_ENDPOINTS } from './endpoints';
-import { API_BASE, PRODUCT_FLAVOR, requiresVerifiedServerProfile } from './product-flavor';
+import { API_BASE, PRODUCT_FLAVOR } from './product-flavor';
+import { getRuntimeClientApiBase } from './connection/client-connection';
 export {
   formatDate,
   escapeHtml,
@@ -83,11 +84,17 @@ export function createApiRequestHeaders(options?: FetchOptions): Record<string, 
   return headers;
 }
 
+function activeApiBase(): string | undefined {
+  return PRODUCT_FLAVOR === 'client' ? getRuntimeClientApiBase() : API_BASE;
+}
+
 export async function fetchAPI<T = unknown>(
   action: string,
   options?: FetchOptions
 ): Promise<APIResponse<T>> {
-  if (!API_BASE || requiresVerifiedServerProfile()) {
+  const apiBase = activeApiBase();
+
+  if (!apiBase) {
     return {
       success: false,
       message: catalogMessage('platform.product.serverProfileRequiredApiMessage'),
@@ -131,7 +138,7 @@ export async function fetchAPI<T = unknown>(
 
     // Laravel uses RESTful paths.
     // Ensure we don't have double slashes if action is empty
-    const url = cleanAction ? `${API_BASE}/${cleanAction}` : API_BASE;
+    const url = cleanAction ? `${apiBase}/${cleanAction}` : apiBase;
 
     const response = await fetch(url as string, fetchOptions);
 

@@ -3,7 +3,7 @@ import './globals.css';
 import React from 'react';
 import { SessionExpiredModal } from '@/components/ui/SessionExpiredModal';
 import { LocaleProvider, catalogMessage, DEFAULT_LOCALE, getLocaleMetadata } from '@/lib/i18n';
-import { ProductConnectionGate } from '@/components/platform/ProductConnectionGate';
+import { ClientConnectionGate } from '@/components/platform/ClientConnectionGate';
 import { ServerRuntimeGate } from '@/components/platform/ServerRuntimeGate';
 
 export const metadata: Metadata = {
@@ -27,9 +27,9 @@ export default function RootLayout({
       </head>
       <body>
         <LocaleProvider>
-          <ProductConnectionGate>
+          <ClientConnectionGate>
             <ServerRuntimeGate>{children}</ServerRuntimeGate>
-          </ProductConnectionGate>
+          </ClientConnectionGate>
           <SessionExpiredModal />
         </LocaleProvider>
       </body>

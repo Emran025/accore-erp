@@ -112,7 +112,7 @@ function getCallName(node: Node): string | undefined {
 
 function classify(node: Node, value: string): { kind: CandidateKind; classification: CandidateClassification; context: string } | null {
     const isSemanticLocaleKey = /^[a-z][A-Za-z0-9]*(?:\.[a-z][A-Za-z0-9]*){2,}(?:\.alternative\d+)?$/.test(value);
-    if (value === "use client" || /^text_[a-f0-9]{12}$/i.test(value) || isSemanticLocaleKey) {
+    if (value === "use client" || /^text_[a-f0-9]{12}$/i.test(value) || value.startsWith("desktop.error.") || isSemanticLocaleKey) {
         return { kind: "string-literal", classification: "technical", context: "Localization runtime syntax" };
     }
     const binary = nearestAncestor(node, Node.isBinaryExpression);
