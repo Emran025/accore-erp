@@ -1,4 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
+import { writeProtectedDesktopCredentials } from './desktop-credential-vault';
 
 export const CLIENT_CONNECTION_PROFILE_STORAGE_KEY = [
   'accore',
@@ -283,8 +284,8 @@ function mapEnrollmentFailure(response: DesktopEnrollmentResponse): PairingError
 
 /**
  * One trusted verification path shared by manual, QR, and pairing-file inputs.
- * The server access token remains in memory only; persistent encrypted token
- * storage is deliberately deferred to Issue #50.
+ * Device and refresh credentials are persisted only through the encrypted
+ * desktop vault; the public connection profile contains no secret material.
  */
 export async function verifyAndPairClient(
   candidate: PairingCandidate
@@ -385,6 +386,13 @@ export async function verifyAndPairClient(
     deviceId: enrollment.device.id,
   };
 
+  await writeProtectedDesktopCredentials({
+    schemaVersion: 1,
+    deviceAccessToken: enrollment.device_access_token,
+    deviceId: enrollment.device.id,
+    refreshToken: null,
+    refreshExpiresAt: null,
+  });
   await persistClientConnectionProfile(profile);
   return profile;
 }

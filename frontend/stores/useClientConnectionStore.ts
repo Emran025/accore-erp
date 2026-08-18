@@ -1,6 +1,7 @@
 'use client';
 
 import { create } from 'zustand';
+import { clearProtectedDesktopCredentials } from '@/lib/connection/desktop-credential-vault';
 import {
   type ClientConnectionProfile,
   type PairingCandidate,
@@ -29,13 +30,6 @@ interface ClientConnectionState {
 }
 
 function clearClientSensitiveState(): void {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('user');
-    localStorage.removeItem('userPermissions');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('sessionToken');
-  }
-
   useAuthStore.setState({
     user: null,
     permissions: [],
@@ -90,6 +84,7 @@ export const useClientConnectionStore = create<ClientConnectionState>((set, get)
   },
 
   removeProfile: async () => {
+    await clearProtectedDesktopCredentials();
     await removeClientConnectionProfile();
     clearClientSensitiveState();
     set({ profile: null, status: 'profile-required', error: null });

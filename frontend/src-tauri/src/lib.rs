@@ -1,10 +1,26 @@
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub mod client_connection;
+pub mod credential_key;
 pub mod distribution;
 pub mod product;
 
 fn application_builder() -> tauri::Builder<tauri::Wry> {
     tauri::Builder::default().setup(|app| {
+        #[cfg(not(feature = "server-product"))]
+        {
+            use tauri::Manager;
+
+            let salt_path = app
+                .path()
+                .app_local_data_dir()
+                .map_err(|error| format!("failed to resolve Stronghold salt path: {error}"))?
+                .join("stronghold-salt-v1");
+
+            app.handle().plugin(
+                tauri_plugin_stronghold::Builder::with_argon2(&salt_path).build(),
+            )?;
+        }
+
         if cfg!(debug_assertions) {
             app.handle().plugin(
                 tauri_plugin_log::Builder::default()
@@ -33,6 +49,7 @@ pub fn run() {
             client_connection::read_client_connection_profile,
             client_connection::write_client_connection_profile,
             client_connection::remove_client_connection_profile,
+            credential_key::desktop_credential_vault_key,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Accore Client or development build");
