@@ -75,6 +75,7 @@ Production deployment and governance:
 - **[Audit Trails and Security Logging](./Operations/Audit_Trails_And_Security_Logging.md)** — Compliance logging
 - **[Production Environment Governance](./Operations/Production_Environment_Governance.md)** — Environment management
 - **[Post Closure Financial Discrepancies](./Operations/Post_Closure_Financial_Discrepancies.md)** — Period closure handling
+- **[Accore Artifact Contract and Shared Runtime Cache](./Operations/Accore_Artifact_Contract_And_Cache.md)** — Signed release manifest, immutable artifact verification, resumable cache, and offline import
 
 ### 6. System (`docs/System/`)
 
