@@ -1,13 +1,7 @@
-//! Distribution primitives for self-contained Accore Server and Client releases.
+//! Desktop bridge to the reusable verified installer core.
 //!
-//! This module intentionally owns only immutable release artifacts. Customer data,
-//! runtime secrets, API tokens, and database files are never valid cache objects.
+//! Installer state, trust checks, caching, recovery journals, and diagnostic
+//! redaction live in `accore-installer-core` so setup tools cannot drift from
+//! the desktop product's release contract.
 
-mod artifact_contract;
-mod cache;
-
-pub use artifact_contract::{
-    sha256_hex, verify_sha256, ArtifactDescriptor, ArtifactKind, Compatibility, DistributionError,
-    ProductFlavor, ReleaseManifest, TrustedReleaseKey,
-};
-pub use cache::{ArtifactCache, CacheImportResult, CacheObject};
+pub use accore_installer_core::*;
