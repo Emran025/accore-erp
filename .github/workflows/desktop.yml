@@ -85,17 +85,30 @@ jobs:
         working-directory: frontend
         run: npm ci
 
+      - name: Generate updater configuration for signed release
+        if: startsWith(github.ref, 'refs/tags/desktop-v')
+        working-directory: frontend
+        env:
+          ACCORE_TAURI_UPDATER_PUBLIC_KEY: ${{ secrets.ACCORE_TAURI_UPDATER_PUBLIC_KEY }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: >-
+          node scripts/create-tauri-updater-release-config.mjs
+          ${{ matrix.flavor }}
+          src-tauri/tauri.release.generated.conf.json
+
       - name: Build and upload desktop artifacts
         uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
           ACCORE_PRODUCT_FLAVOR: ${{ matrix.flavor }}
           NEXT_PUBLIC_ACCORE_PRODUCT_FLAVOR: ${{ matrix.flavor }}
           NEXT_PUBLIC_ACCORE_SERVER_API_BASE: ${{ matrix.flavor == 'server' && 'http://127.0.0.1:8765/api' || '' }}
         with:
           projectPath: frontend
           tauriScript: npm run tauri
-          args: --config src-tauri/tauri.${{ matrix.flavor }}.conf.json --features ${{ matrix.feature }} ${{ matrix.args }}
+          args: --config src-tauri/tauri.${{ matrix.flavor }}.conf.json --features ${{ matrix.feature }} ${{ matrix.args }} ${{ startsWith(github.ref, 'refs/tags/desktop-v') && '--config src-tauri/tauri.release.generated.conf.json' || '' }}
           uploadWorkflowArtifacts: true
           workflowArtifactNamePattern: "accore-${{ matrix.flavor }}-[platform]-[arch]-[bundle]"
 
@@ -108,12 +121,29 @@ jobs:
       contents: write
 
     steps:
+      - name: Checkout release metadata generator
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js for manifest generation
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
       - name: Download desktop artifacts
         uses: actions/download-artifact@v4
         with:
           pattern: "accore-*-*"
           path: release-assets
           merge-multiple: true
+
+      - name: Generate signed release manifests
+        env:
+          ACCORE_RELEASE_TAG: ${{ github.ref_name }}
+          ACCORE_SOURCE_REVISION: ${{ github.sha }}
+          ACCORE_MANIFEST_KEY_ID: ${{ secrets.ACCORE_MANIFEST_KEY_ID }}
+          ACCORE_MANIFEST_PRIVATE_KEY: ${{ secrets.ACCORE_MANIFEST_PRIVATE_KEY }}
+          ACCORE_RELEASE_BASE_URL: https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}
+        run: node frontend/scripts/create-release-manifests.mjs release-assets release-manifests
 
       - name: Create GitHub release and upload installers
         uses: softprops/action-gh-release@v2
@@ -123,4 +153,6 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: Accore ERP ${{ github.ref_name }}
           generate_release_notes: true
-          files: release-assets/**
+          files: |
+            release-assets/**
+            release-manifests/**

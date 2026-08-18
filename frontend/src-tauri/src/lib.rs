@@ -6,6 +6,9 @@ pub mod product;
 
 fn application_builder() -> tauri::Builder<tauri::Wry> {
     tauri::Builder::default().setup(|app| {
+        app.handle()
+            .plugin(tauri_plugin_updater::Builder::new().build())?;
+
         #[cfg(not(feature = "server-product"))]
         {
             use tauri::Manager;

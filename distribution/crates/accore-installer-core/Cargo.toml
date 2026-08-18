@@ -9,9 +9,10 @@ repository = "https://github.com/Emran025/accore-erp"
 
 [dependencies]
 base64 = "0.22"
-# Keeps the transitive Ed25519 dependency compatible with the local Rust 1.75 test toolchain.
+# Keeps transitive cryptography compatible with the local Rust 1.75 test toolchain
+# while satisfying the Rustls minimum required by signed Tauri updater downloads.
 base64ct = "=1.6.0"
-zeroize = "=1.6.0"
+zeroize = "=1.8.2"
 ed25519-dalek = { version = "=2.1.1", features = ["rand_core"] }
 semver = { version = "1.0", features = ["serde"] }
 serde = { version = "1.0", features = ["derive"] }

@@ -12,6 +12,7 @@ mod lifecycle;
 mod manifest;
 mod package;
 mod progress;
+mod release;
 mod support;
 
 pub use cache::{ArtifactCache, CacheImportResult, CacheObject};
@@ -33,6 +34,10 @@ pub use manifest::{
 };
 pub use progress::{
     InstallProgressEvent, InstallStage, InstallerProgressReporter, ProgressSnapshot,
+};
+pub use release::{
+    ReleaseLedger, ReleaseLedgerEntry, ServerReleaseError, ServerReleasePlan,
+    ServerReleasePlatform, ServerReleaseState, ServerReleaseTransaction,
 };
 pub use support::{
     redact_diagnostic_text, write_redacted_support_bundle, SupportBundleError, SupportBundleInput,

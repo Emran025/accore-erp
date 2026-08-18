@@ -30,6 +30,7 @@ log = "0.4"
 tauri = { version = "2.10.0", features = [] }
 tauri-plugin-log = "2"
 tauri-plugin-stronghold = "2.3.1"
+tauri-plugin-updater = "2.10.0"
 keyring = { version = "4.1.6", features = ["v1"] }
 rand = "0.8"
 base64 = "0.22"

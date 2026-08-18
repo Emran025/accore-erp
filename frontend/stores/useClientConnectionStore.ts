@@ -9,6 +9,7 @@ import {
   readClientConnectionProfile,
   removeClientConnectionProfile,
   verifyAndPairClient,
+  verifyClientConnectionPolicy,
 } from '@/lib/connection/client-connection';
 import { useAuthStore } from '@/stores/useAuthStore';
 
@@ -51,15 +52,19 @@ export const useClientConnectionStore = create<ClientConnectionState>((set, get)
 
     try {
       const profile = await readClientConnectionProfile();
-      set({
-        profile,
-        status: profile ? 'ready' : 'profile-required',
-      });
-    } catch {
+      if (!profile) {
+        set({ profile: null, status: 'profile-required' });
+        return;
+      }
+
+      await verifyClientConnectionPolicy(profile);
+      set({ profile, status: 'ready' });
+    } catch (error) {
+      clearClientSensitiveState();
       set({
         profile: null,
         status: 'error',
-        error: new PairingError('unexpected_response'),
+        error: error instanceof PairingError ? error : new PairingError('unexpected_response'),
       });
     }
   },

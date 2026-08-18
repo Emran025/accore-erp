@@ -23,3 +23,6 @@ TestResults.xml
 
 # Rust build output
 **/target/
+
+# Generated only for signed Tauri release builds; contains the public update trust root.
+frontend/src-tauri/tauri.release.generated.conf.json

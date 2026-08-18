@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const credentialVault = vi.hoisted(() => ({
   ensureProtectedDesktopCredentialStore: vi.fn(),
+  readProtectedDesktopCredentials: vi.fn(),
   writeProtectedDesktopCredentials: vi.fn(),
 }));
 
@@ -13,6 +14,7 @@ import {
   parsePairingPayload,
   removeClientConnectionProfile,
   verifyAndPairClient,
+  verifyClientConnectionPolicy,
 } from '@/lib/connection/client-connection';
 
 const certificateFingerprint = 'a'.repeat(64);
@@ -36,6 +38,7 @@ function jsonResponse(payload: unknown, status = 200): Response {
 afterEach(async () => {
   vi.unstubAllGlobals();
   credentialVault.ensureProtectedDesktopCredentialStore.mockReset();
+  credentialVault.readProtectedDesktopCredentials.mockReset();
   credentialVault.writeProtectedDesktopCredentials.mockReset();
   localStorage.clear();
   await removeClientConnectionProfile();
@@ -129,6 +132,51 @@ describe('client connection pairing contract', () => {
     expect(persisted).toContain('server-001');
     expect(persisted).not.toContain('temporary-device-access-token');
     expect(persisted).not.toContain(candidate().enrollmentEvidence);
+  });
+
+  it('blocks a previously paired Client when Server policy requires an update', async () => {
+    const profile = {
+      apiBase: candidate().apiBase,
+      serverId: candidate().serverId,
+      serverName: 'Verified Accore Server',
+      certificateFingerprint,
+      apiContract: 'desktop-v1',
+      verifiedAt: '2026-08-18T00:00:00.000Z',
+      deviceId: '11111111-1111-4111-8111-111111111111',
+    };
+    credentialVault.readProtectedDesktopCredentials.mockResolvedValue({
+      schemaVersion: 1,
+      deviceId: profile.deviceId,
+      deviceAccessToken: 'vault-only-device-token',
+      refreshToken: null,
+      refreshExpiresAt: null,
+    });
+    const fetch = vi.fn().mockResolvedValue(
+      jsonResponse({
+        success: true,
+        desktop: {
+          device: { status: 'active' },
+          compatibility: { status: 'update_required', minimum_client_version: '0.2.0' },
+        },
+      })
+    );
+    vi.stubGlobal('fetch', fetch);
+
+    await expect(verifyClientConnectionPolicy(profile)).rejects.toMatchObject({
+      code: 'update_required',
+    });
+    expect(fetch).toHaveBeenCalledWith(
+      'https://server.example.test/api/v1/desktop/policy',
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          'X-Accore-Device-Id': profile.deviceId,
+          'X-Accore-Device-Token': 'vault-only-device-token',
+        }),
+      })
+    );
+    expect(localStorage.getItem(CLIENT_CONNECTION_PROFILE_STORAGE_KEY) ?? '').not.toContain(
+      'vault-only-device-token'
+    );
   });
 
   it('rejects an endpoint whose bootstrap certificate binding differs from the pairing data', async () => {
