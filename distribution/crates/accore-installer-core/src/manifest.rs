@@ -27,6 +27,7 @@ pub enum ProductFlavor {
 pub enum ArtifactKind {
     Bootstrapper,
     DesktopApplication,
+    ServerAgent,
     ApiRuntime,
     DatabaseRuntime,
     MigrationBundle,
@@ -310,6 +311,20 @@ fn validate_artifact(
             artifact.id
         )));
     }
+    if product == ProductFlavor::Client
+        && matches!(
+            artifact.kind,
+            ArtifactKind::ServerAgent
+                | ArtifactKind::ApiRuntime
+                | ArtifactKind::DatabaseRuntime
+                | ArtifactKind::MigrationBundle
+        )
+    {
+        return Err(DistributionError::InvalidManifest(format!(
+            "client artifact {} cannot contain a server runtime component",
+            artifact.id
+        )));
+    }
     if artifact.size_bytes == 0 {
         return Err(DistributionError::InvalidManifest(format!(
             "artifact {} must declare a non-zero size",
@@ -531,6 +546,23 @@ mod tests {
             manifest.validate(),
             Err(DistributionError::InvalidManifest(_))
         ));
+    }
+
+    #[test]
+    fn rejects_server_runtime_components_in_client_manifest() {
+        let mut manifest = unsigned_manifest();
+        for kind in [
+            ArtifactKind::ServerAgent,
+            ArtifactKind::ApiRuntime,
+            ArtifactKind::DatabaseRuntime,
+            ArtifactKind::MigrationBundle,
+        ] {
+            manifest.artifacts[0].kind = kind;
+            assert!(matches!(
+                manifest.validate(),
+                Err(DistributionError::InvalidManifest(message)) if message.contains("server runtime component")
+            ));
+        }
     }
 
     #[test]

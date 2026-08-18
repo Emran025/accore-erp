@@ -8,7 +8,9 @@
 mod cache;
 mod engine;
 mod journal;
+mod lifecycle;
 mod manifest;
+mod package;
 mod progress;
 mod support;
 
@@ -20,6 +22,11 @@ pub use journal::{
     InstallationJournal, JournalError, JournalRecord, JournalStage, RecoveryAction,
     StageCheckpoint,
 };
+pub use lifecycle::{
+    CustomerDataDisposition, MaintenanceOperation, MaintenancePlan,
+    NonInteractiveAdministration, SecretInput,
+};
+pub use package::AccorePackage;
 pub use manifest::{
     sha256_hex, verify_sha256, ArtifactDescriptor, ArtifactKind, Compatibility, DistributionError,
     ProductFlavor, ReleaseManifest, TrustedReleaseKey,
