@@ -45,7 +45,7 @@
   "app/setup/page.tsx:114:105": "technical",
   "app/setup/page.tsx:114:121": "technical",
   "app/setup/page.tsx:114:147": "technical",
-  "app/setup/components/SetupSection.tsx:13:90": "technical",
+  "app/setup/components/SetupSection.tsx:13:90": "approved-exception",
   "app/setup/page.tsx:109:12": "technical",
   "app/setup/page.tsx:112:101": "technical",
   "app/setup/page.tsx:112:117": "technical",
