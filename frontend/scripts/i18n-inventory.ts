@@ -6,12 +6,22 @@ type CandidateKind = "jsx-text" | "jsx-attribute" | "object-property" | "call-ar
 type CandidateClassification = "user-facing" | "review-required" | "technical";
 type CandidateStatus = "pending" | "extracted" | "approved-exception" | "technical";
 
+interface ApprovedException {
+    path: string;
+    line?: number;
+    column?: number;
+    value?: string;
+    jsxAttribute?: string;
+    reason: string;
+}
+
 interface InventoryPolicy {
     include: string[];
     exclude: string[];
     userFacingJsxAttributes: string[];
     userFacingObjectProperties: string[];
     userFacingCallNames: string[];
+    approvedExceptions: ApprovedException[];
 }
 
 interface Candidate {
@@ -185,6 +195,21 @@ function templateSource(node: Node): string {
     );
 }
 
+function isDocumentedApprovedException(candidate: Pick<Candidate, "file" | "line" | "column" | "value">, node: Node): boolean {
+    const jsxAttribute = nearestAncestor(node, Node.isJsxAttribute);
+    const attributeName = jsxAttribute ? jsxAttributeName(jsxAttribute) : undefined;
+    return policy.approvedExceptions.some((exception) => {
+        const targetsCandidate = exception.line !== undefined || exception.column !== undefined || exception.value !== undefined || exception.jsxAttribute !== undefined;
+        return targetsCandidate
+            && exception.path === candidate.file
+            && (exception.line === undefined || exception.line === candidate.line)
+            && (exception.column === undefined || exception.column === candidate.column)
+            && (exception.value === undefined || exception.value === candidate.value)
+            && (exception.jsxAttribute === undefined || exception.jsxAttribute === attributeName)
+            && exception.reason.trim().length > 0;
+    });
+}
+
 function candidateFromNode(node: Node, value: string, sourceFile: SourceFile): Candidate | null {
     const normalized = value.replace(/\s+/g, " ").trim();
     if (!normalized) return null;
@@ -193,18 +218,28 @@ function candidateFromNode(node: Node, value: string, sourceFile: SourceFile): C
     const position = sourceFile.getLineAndColumnAtPos(node.getStart());
     const file = path.relative(root, sourceFile.getFilePath()).replace(/\\/g, "/");
     const id = `${file}:${position.line}:${position.column}`;
-    return {
+    const documentedException = isDocumentedApprovedException({
+        file,
+        line: position.line,
+        column: position.column,
+        value: normalized,
+    }, node);
+    const candidate: Candidate = {
         id,
         file,
         line: position.line,
         column: position.column,
         kind: result.kind,
         classification: result.classification,
-        status: existingStatuses[id] ?? (result.classification === "technical" ? "technical" : "pending"),
+        status: existingStatuses[id] ?? (documentedException ? "approved-exception" : result.classification === "technical" ? "technical" : "pending"),
         value: normalized,
         context: result.context,
         suggestedKey: suggestedKey(file, position.line, normalized),
     };
+    if (candidate.status === "approved-exception" && !documentedException) {
+        throw new Error(`Missing documented approved exception for ${candidate.id}`);
+    }
+    return candidate;
 }
 
 function collectFromSource(sourceFile: SourceFile): Candidate[] {

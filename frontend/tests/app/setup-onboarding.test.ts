@@ -52,15 +52,23 @@ describe("standalone phased setup onboarding", () => {
     expect(workspace).toContain("labelForAttribute(attribute.attribute_key)");
     expect(workspace).toContain("readableAttributeFallback");
     expect(workspace).not.toContain("{attribute.attribute_key}{attribute.is_mandatory");
-    expect(englishCatalog).toContain('"enterpriseCore.orgWorkspace.attribute.countryCode": "Country / region code"');
-    expect(englishCatalog).toContain('"enterpriseCore.orgWorkspace.attribute.fiscalYearVariant": "Fiscal year variant"');
-    expect(arabicCatalog).toContain('"enterpriseCore.orgWorkspace.attribute.countryCode": "رمز الدولة أو الإقليم"');
-    expect(arabicCatalog).toContain('"enterpriseCore.orgWorkspace.attribute.fiscalYearVariant": "نموذج السنة المالية"');
+    expect(englishCatalog).toMatch(
+      /['"]enterpriseCore\.orgWorkspace\.attribute\.countryCode['"]:\s*['"]Country \/ region code['"]/
+    );
+    expect(englishCatalog).toMatch(
+      /['"]enterpriseCore\.orgWorkspace\.attribute\.fiscalYearVariant['"]:\s*['"]Fiscal year variant['"]/
+    );
+    expect(arabicCatalog).toMatch(
+      /['"]enterpriseCore\.orgWorkspace\.attribute\.countryCode['"]:\s*['"]رمز الدولة أو الإقليم['"]/
+    );
+    expect(arabicCatalog).toMatch(
+      /['"]enterpriseCore\.orgWorkspace\.attribute\.fiscalYearVariant['"]:\s*['"]نموذج السنة المالية['"]/
+    );
   });
 
   it("emits setup in the static catch-all parameter set", () => {
     const virtualRoute = source("app/[...virtual]/page.tsx");
 
-    expect(virtualRoute).toContain('paths.set("setup", { virtual: ["setup"] })');
+    expect(virtualRoute).toMatch(/paths\.set\(["']setup["'], \{ virtual: \[["']setup["']\] \}\)/);
   });
 });
