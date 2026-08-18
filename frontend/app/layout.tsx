@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import React from "react";
-import { SessionExpiredModal } from "@/components/ui/SessionExpiredModal";
-import { LocaleProvider, catalogMessage, DEFAULT_LOCALE, getLocaleMetadata } from "@/lib/i18n";
+import type { Metadata } from 'next';
+import './globals.css';
+import React from 'react';
+import { SessionExpiredModal } from '@/components/ui/SessionExpiredModal';
+import { LocaleProvider, catalogMessage, DEFAULT_LOCALE, getLocaleMetadata } from '@/lib/i18n';
+import { ProductConnectionGate } from '@/components/platform/ProductConnectionGate';
 
 export const metadata: Metadata = {
-  title: catalogMessage("shared.layout.acorSystem"),
-  description: catalogMessage("shared.layout.akorManagementAccountingSystem"),
+  title: catalogMessage('shared.layout.acorSystem'),
+  description: catalogMessage('shared.layout.akorManagementAccountingSystem'),
 };
 
 export default function RootLayout({
@@ -25,7 +26,7 @@ export default function RootLayout({
       </head>
       <body>
         <LocaleProvider>
-          {children}
+          <ProductConnectionGate>{children}</ProductConnectionGate>
           <SessionExpiredModal />
         </LocaleProvider>
       </body>

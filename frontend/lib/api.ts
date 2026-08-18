@@ -1,5 +1,6 @@
-import { catalogMessage, getActiveLocale } from "@/lib/i18n";
-import { API_ENDPOINTS } from "./endpoints";
+import { catalogMessage, getActiveLocale } from '@/lib/i18n';
+import { API_ENDPOINTS } from './endpoints';
+import { API_BASE, PRODUCT_FLAVOR, requiresVerifiedServerProfile } from './product-flavor';
 export {
   formatDate,
   escapeHtml,
@@ -7,22 +8,22 @@ export {
   getRoleBadgeClass,
   getArabicDate,
   generateBarcode,
-  generateQRCode
-} from "./utils";
+  generateQRCode,
+} from './utils';
 
-const getApiBase = () => {
-  const envBase = process.env.NEXT_PUBLIC_API_BASE;
-  if (!envBase || envBase === 'undefined' || envBase === 'null') {
-    return 'http://127.0.0.1:8000/api';
-  }
-  return envBase;
-};
+const AUTH_ENDPOINT_SEGMENTS = [
+  'v2/check',
+  'v2/login',
+  'v2/logout',
+  'auth/check',
+  'auth/login',
+  'auth/logout',
+] as const;
 
-const API_BASE = getApiBase();
-const AUTH_ENDPOINT_SEGMENTS = ["v2/check", "v2/login", "v2/logout", "auth/check", "auth/login", "auth/logout"] as const;
-
-if (!process.env.NEXT_PUBLIC_API_BASE || process.env.NEXT_PUBLIC_API_BASE === 'undefined') {
-  console.warn(catalogMessage("platform.api.nextPublicApiBaseIsNotDefinedIsUndefinedUsingFallback") + API_BASE);
+if (!API_BASE && PRODUCT_FLAVOR !== 'client') {
+  console.warn(
+    catalogMessage('platform.api.nextPublicApiBaseIsNotDefinedIsUndefinedUsingFallback')
+  );
 }
 
 /**
@@ -59,7 +60,7 @@ export interface FetchOptions {
 /**
  * Core utility for making authenticated requests to the Laravel backend.
  * Handles API base URL resolution, CSRF/Session token injection, and unified error handling.
- * 
+ *
  * @param action The API endpoint path (relative to the base API URL)
  * @param options Configuration for the fetch request
  * @returns A promise resolving to the standard APIResponse structure
@@ -67,8 +68,8 @@ export interface FetchOptions {
 export function createApiRequestHeaders(options?: FetchOptions): Record<string, string> {
   const activeLocale = getActiveLocale();
   const headers: Record<string, string> = {
-    'Content-Type': "application/json",
-    'Accept': "application/json",
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
     'Accept-Language': activeLocale,
     'X-Accore-Locale': activeLocale,
     ...options?.headers,
@@ -85,8 +86,14 @@ export function createApiRequestHeaders(options?: FetchOptions): Record<string, 
 export async function fetchAPI<T = unknown>(
   action: string,
   options?: FetchOptions
-): Promise<APIResponse<T>>
-{
+): Promise<APIResponse<T>> {
+  if (!API_BASE || requiresVerifiedServerProfile()) {
+    return {
+      success: false,
+      message: catalogMessage('platform.product.serverProfileRequiredApiMessage'),
+    };
+  }
+
   const headers = createApiRequestHeaders(options);
 
   const fetchOptions: RequestInit = {
@@ -101,18 +108,21 @@ export async function fetchAPI<T = unknown>(
 
   try {
     const cleanAction = action
-      .replace(/^\//, "") // Remove leading slash
-      .replace(/^api\//, "") // Remove api/ prefix
-      .replace(/^\?/, ""); // Remove leading ? if any
+      .replace(/^\//, '') // Remove leading slash
+      .replace(/^api\//, '') // Remove api/ prefix
+      .replace(/^\?/, ''); // Remove leading ? if any
 
     const isAuthEndpoint = AUTH_ENDPOINT_SEGMENTS.some((segment) => cleanAction.includes(segment));
 
     // --- Fast Fail block: Stop all network requests if session is already expired ---
     if (typeof window !== 'undefined') {
       try {
-        const { useAuthStore } = await import("@/stores/useAuthStore");
+        const { useAuthStore } = await import('@/stores/useAuthStore');
         if (useAuthStore.getState().sessionExpired && !isAuthEndpoint) {
-          return { success: false, message: catalogMessage("platform.api.unauthorizedSessionExpired") };
+          return {
+            success: false,
+            message: catalogMessage('platform.api.unauthorizedSessionExpired'),
+          };
         }
       } catch (e) {
         // ignore dynamic import errors
@@ -129,18 +139,24 @@ export async function fetchAPI<T = unknown>(
       if (typeof window !== 'undefined') {
         if (!isAuthEndpoint) {
           try {
-            const { useAuthStore } = await import("@/stores/useAuthStore");
+            const { useAuthStore } = await import('@/stores/useAuthStore');
             const isStillAuth = await useAuthStore.getState().checkAuth(true); // Force sync
             if (!isStillAuth) {
               useAuthStore.getState().setSessionExpired(true);
             }
           } catch (e) {
-             const { useAuthStore } = await import("@/stores/useAuthStore");
-             useAuthStore.getState().setSessionExpired(true);
+            const { useAuthStore } = await import('@/stores/useAuthStore');
+            useAuthStore.getState().setSessionExpired(true);
           }
         }
       }
-      return { success: false, message: response.status === 403 ? catalogMessage("platform.api.accessDeniedPermissionsSynchronized") : catalogMessage("platform.api.unauthorized") };
+      return {
+        success: false,
+        message:
+          response.status === 403
+            ? catalogMessage('platform.api.accessDeniedPermissionsSynchronized')
+            : catalogMessage('platform.api.unauthorized'),
+      };
     }
 
     if (!response.ok) {
@@ -148,21 +164,25 @@ export async function fetchAPI<T = unknown>(
         const errData = await response.json();
         return {
           success: false,
-          message: errData.message || catalogMessage("common.general.httpError", { value0: response.status }),
+          message:
+            errData.message ||
+            catalogMessage('common.general.httpError', { value0: response.status }),
         };
       } catch {
-        return { success: false, message: catalogMessage("common.general.httpError", { value0: response.status }) };
+        return {
+          success: false,
+          message: catalogMessage('common.general.httpError', { value0: response.status }),
+        };
       }
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error(catalogMessage("platform.api.apiError"), error);
-    return { success: false, message: catalogMessage("platform.api.connectionErrorPleaseTryAgain") };
+    console.error(catalogMessage('platform.api.apiError'), error);
+    return {
+      success: false,
+      message: catalogMessage('platform.api.connectionErrorPleaseTryAgain'),
+    };
   }
 }
-
-
-
-

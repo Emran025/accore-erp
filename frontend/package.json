@@ -7,14 +7,18 @@
     "build": "next build",
     "start": "next start -p 5000 -H 0.0.0.0",
     "lint": "eslint",
-    "format": "prettier --write .",
+    "format": "prettier --write --ignore-unknown .",
     "test": "vitest run",
     "i18n:inventory": "tsx scripts/i18n-inventory.ts",
     "i18n:check": "tsx scripts/i18n-inventory.ts --check",
     "i18n:coverage": "tsx scripts/i18n-verify-coverage.ts --check",
     "tauri": "tauri",
     "desktop:dev": "tauri dev",
-    "desktop:build": "tauri build"
+    "desktop:build": "tauri build",
+    "desktop:server:dev": "cross-env ACCORE_PRODUCT_FLAVOR=server NEXT_PUBLIC_ACCORE_PRODUCT_FLAVOR=server NEXT_PUBLIC_ACCORE_SERVER_API_BASE=http://127.0.0.1:8765/api tauri dev --config src-tauri/tauri.server.conf.json --features server-product",
+    "desktop:client:dev": "cross-env ACCORE_PRODUCT_FLAVOR=client NEXT_PUBLIC_ACCORE_PRODUCT_FLAVOR=client tauri dev --config src-tauri/tauri.client.conf.json --features client-product",
+    "desktop:server:build": "cross-env ACCORE_PRODUCT_FLAVOR=server NEXT_PUBLIC_ACCORE_PRODUCT_FLAVOR=server NEXT_PUBLIC_ACCORE_SERVER_API_BASE=http://127.0.0.1:8765/api tauri build --config src-tauri/tauri.server.conf.json --features server-product",
+    "desktop:client:build": "cross-env ACCORE_PRODUCT_FLAVOR=client NEXT_PUBLIC_ACCORE_PRODUCT_FLAVOR=client tauri build --config src-tauri/tauri.client.conf.json --features client-product"
   },
   "dependencies": {
     "@types/qrcode": "^1.5.6",
@@ -29,6 +33,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@tauri-apps/cli": "^2.10.0",
+    "cross-env": "^7.0.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
