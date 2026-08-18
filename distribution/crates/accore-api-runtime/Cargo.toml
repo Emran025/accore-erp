@@ -1,0 +1,10 @@
+[package]
+name = "accore-api-runtime"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+description = "Self-contained FrankenPHP Laravel runtime contract for Accore Server"
+license = "MIT"
+repository = "https://github.com/Emran025/accore-erp"
+
+[dependencies]
