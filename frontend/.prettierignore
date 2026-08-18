@@ -1,0 +1,2 @@
+# Windows icon containers are binary resources, not source files.
+**/*.ico

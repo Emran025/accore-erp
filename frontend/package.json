@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start -p 5000 -H 0.0.0.0",
     "lint": "eslint",
-    "format": "prettier --write .",
+    "format": "prettier --write --ignore-unknown .",
     "test": "vitest run",
     "i18n:inventory": "tsx scripts/i18n-inventory.ts",
     "i18n:check": "tsx scripts/i18n-inventory.ts --check",
