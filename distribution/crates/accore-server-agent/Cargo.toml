@@ -1,0 +1,10 @@
+[package]
+name = "accore-server-agent"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+description = "Accore Server local service supervisor and protected management channel"
+license = "MIT"
+repository = "https://github.com/Emran025/accore-erp"
+
+[dependencies]

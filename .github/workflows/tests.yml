@@ -7,6 +7,20 @@ on:
     branches: [master, main, develop]
 
 jobs:
+  distribution-rust-tests:
+    name: Distribution Rust tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Test Accore Server Agent
+        working-directory: distribution/crates/accore-server-agent
+        run: cargo test --locked
+
   laravel-tests:
     runs-on: ubuntu-latest
 
