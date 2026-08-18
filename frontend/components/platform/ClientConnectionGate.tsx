@@ -38,6 +38,7 @@ const PAIRING_METHOD_KEYS = {
 
 const CONNECTION_ERROR_KEYS = {
   certificate_mismatch: 'platform.connection.error.certificateMismatch',
+  credential_storage_failed: 'platform.connection.error.credentialStorageFailed',
   device_revoked: 'platform.connection.error.deviceRevoked',
   enrollment_rejected: 'platform.connection.error.enrollmentRejected',
   incompatible_server: 'platform.connection.error.incompatibleServer',

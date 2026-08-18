@@ -87,9 +87,20 @@ export function resolveClientConnectionState(
   return apiBase ? { kind: 'ready', apiBase } : { kind: 'profile-required' };
 }
 
-export const PRODUCT_FLAVOR = resolveProductFlavor();
-export const API_BASE = resolveApiBase();
-export const CLIENT_CONNECTION_STATE = resolveClientConnectionState();
+// Next.js replaces direct NEXT_PUBLIC_* references in browser bundles. Do not pass
+// the dynamic process.env object here: it is not populated in a static Tauri asset.
+const COMPILED_PRODUCT_ENVIRONMENT: ProductBuildEnvironment = {
+  NEXT_PUBLIC_ACCORE_PRODUCT_FLAVOR: process.env.NEXT_PUBLIC_ACCORE_PRODUCT_FLAVOR,
+  NEXT_PUBLIC_API_BASE: process.env.NEXT_PUBLIC_API_BASE,
+  NEXT_PUBLIC_ACCORE_CLIENT_API_BASE: process.env.NEXT_PUBLIC_ACCORE_CLIENT_API_BASE,
+  NEXT_PUBLIC_ACCORE_CLIENT_PROFILE_VERIFIED: process.env.NEXT_PUBLIC_ACCORE_CLIENT_PROFILE_VERIFIED,
+  NEXT_PUBLIC_ACCORE_SERVER_API_BASE: process.env.NEXT_PUBLIC_ACCORE_SERVER_API_BASE,
+  NODE_ENV: process.env.NODE_ENV,
+};
+
+export const PRODUCT_FLAVOR = resolveProductFlavor(COMPILED_PRODUCT_ENVIRONMENT);
+export const API_BASE = resolveApiBase(COMPILED_PRODUCT_ENVIRONMENT);
+export const CLIENT_CONNECTION_STATE = resolveClientConnectionState(COMPILED_PRODUCT_ENVIRONMENT);
 
 export function isClientRelease(): boolean {
   return PRODUCT_FLAVOR === 'client';

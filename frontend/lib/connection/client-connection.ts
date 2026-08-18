@@ -1,5 +1,8 @@
 import { invoke } from '@tauri-apps/api/core';
-import { writeProtectedDesktopCredentials } from './desktop-credential-vault';
+import {
+  ensureProtectedDesktopCredentialStore,
+  writeProtectedDesktopCredentials,
+} from './desktop-credential-vault';
 
 export const CLIENT_CONNECTION_PROFILE_STORAGE_KEY = [
   'accore',
@@ -34,6 +37,7 @@ export type PairingFailureCode =
   | 'server_unreachable'
   | 'server_identity_mismatch'
   | 'certificate_mismatch'
+  | 'credential_storage_failed'
   | 'incompatible_server'
   | 'update_required'
   | 'enrollment_rejected'
@@ -290,6 +294,12 @@ function mapEnrollmentFailure(response: DesktopEnrollmentResponse): PairingError
 export async function verifyAndPairClient(
   candidate: PairingCandidate
 ): Promise<ClientConnectionProfile> {
+  try {
+    await ensureProtectedDesktopCredentialStore();
+  } catch {
+    throw pairingError('credential_storage_failed');
+  }
+
   const bootstrapResponse = await fetchPairing(desktopUrl(candidate.apiBase, 'bootstrap'), {
     method: 'GET',
     headers: pairingHeaders(),
@@ -386,13 +396,20 @@ export async function verifyAndPairClient(
     deviceId: enrollment.device.id,
   };
 
-  await writeProtectedDesktopCredentials({
-    schemaVersion: 1,
-    deviceAccessToken: enrollment.device_access_token,
-    deviceId: enrollment.device.id,
-    refreshToken: null,
-    refreshExpiresAt: null,
-  });
+  try {
+    await writeProtectedDesktopCredentials({
+      schemaVersion: 1,
+      deviceAccessToken: enrollment.device_access_token,
+      deviceId: enrollment.device.id,
+      refreshToken: null,
+      refreshExpiresAt: null,
+    });
+  } catch {
+    // A paired device is not usable until its credential bundle is durably
+    // encrypted. Never fall back to browser storage or an unprotected token.
+    throw pairingError('credential_storage_failed');
+  }
+
   await persistClientConnectionProfile(profile);
   return profile;
 }

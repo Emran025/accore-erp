@@ -1,4 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
+const credentialVault = vi.hoisted(() => ({
+  ensureProtectedDesktopCredentialStore: vi.fn(),
+  writeProtectedDesktopCredentials: vi.fn(),
+}));
+
+vi.mock('@/lib/connection/desktop-credential-vault', () => credentialVault);
 import {
   CLIENT_CONNECTION_PROFILE_STORAGE_KEY,
   PairingError,
@@ -28,11 +35,26 @@ function jsonResponse(payload: unknown, status = 200): Response {
 
 afterEach(async () => {
   vi.unstubAllGlobals();
+  credentialVault.ensureProtectedDesktopCredentialStore.mockReset();
+  credentialVault.writeProtectedDesktopCredentials.mockReset();
   localStorage.clear();
   await removeClientConnectionProfile();
 });
 
 describe('client connection pairing contract', () => {
+  it('requires encrypted credential storage before contacting a server', async () => {
+    credentialVault.ensureProtectedDesktopCredentialStore.mockRejectedValueOnce(
+      new Error('credential store unavailable')
+    );
+    const fetch = vi.fn();
+    vi.stubGlobal('fetch', fetch);
+
+    await expect(verifyAndPairClient(candidate())).rejects.toMatchObject({
+      code: 'credential_storage_failed',
+    });
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
   it('accepts a normal HTTPS API base and rejects production HTTP endpoints', () => {
     expect(normalizeClientApiBase('https://server.example.test/api/')).toBe(
       'https://server.example.test/api'
