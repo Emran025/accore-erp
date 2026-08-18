@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import {
   ensureProtectedDesktopCredentialStore,
+  readProtectedDesktopCredentials,
   writeProtectedDesktopCredentials,
 } from './desktop-credential-vault';
 
@@ -270,6 +271,48 @@ async function fetchPairing(url: string, init: RequestInit): Promise<Response> {
     return await fetch(url, init);
   } catch {
     throw pairingError('server_unreachable');
+  }
+}
+
+/**
+ * Checks a paired device on every Client start before exposing ERP routes.
+ * The device access token stays in the encrypted vault and is never added to
+ * the persisted public connection profile or to application state.
+ */
+export async function verifyClientConnectionPolicy(
+  profile: ClientConnectionProfile
+): Promise<void> {
+  let credentials;
+  try {
+    credentials = await readProtectedDesktopCredentials();
+  } catch {
+    throw pairingError('credential_storage_failed');
+  }
+
+  if (!credentials || credentials.deviceId !== profile.deviceId) {
+    throw pairingError('device_revoked');
+  }
+
+  const policyResponse = await fetchPairing(desktopUrl(profile.apiBase, 'policy'), {
+    method: 'GET',
+    headers: {
+      ...pairingHeaders(),
+      'X-Accore-Device-Id': credentials.deviceId,
+      'X-Accore-Device-Token': credentials.deviceAccessToken,
+    },
+  });
+  const policy = await responseJson<DesktopPolicyResponse>(policyResponse);
+
+  if (policy.message_key === 'desktop.error.device_revoked') {
+    throw pairingError('device_revoked');
+  }
+
+  if (
+    !policyResponse.ok ||
+    !policy.success ||
+    policy.desktop?.compatibility?.status === 'update_required'
+  ) {
+    throw pairingError('update_required');
   }
 }
 
