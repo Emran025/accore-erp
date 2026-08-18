@@ -43,6 +43,21 @@ describe("standalone phased setup onboarding", () => {
     expect(workspace).toContain("extensions");
   });
 
+  it("resolves organizational attribute keys to bilingual professional labels", () => {
+    const workspace = source("app/setup/components/OrganizationArchitectureWorkspace.tsx");
+    const englishCatalog = source("lib/i18n/catalog/en-US.ts");
+    const arabicCatalog = source("lib/i18n/catalog/ar-SA.ts");
+
+    expect(workspace).toContain("ATTRIBUTE_LABEL_KEYS");
+    expect(workspace).toContain("labelForAttribute(attribute.attribute_key)");
+    expect(workspace).toContain("readableAttributeFallback");
+    expect(workspace).not.toContain("{attribute.attribute_key}{attribute.is_mandatory");
+    expect(englishCatalog).toContain('"enterpriseCore.orgWorkspace.attribute.countryCode": "Country / region code"');
+    expect(englishCatalog).toContain('"enterpriseCore.orgWorkspace.attribute.fiscalYearVariant": "Fiscal year variant"');
+    expect(arabicCatalog).toContain('"enterpriseCore.orgWorkspace.attribute.countryCode": "رمز الدولة أو الإقليم"');
+    expect(arabicCatalog).toContain('"enterpriseCore.orgWorkspace.attribute.fiscalYearVariant": "نموذج السنة المالية"');
+  });
+
   it("emits setup in the static catch-all parameter set", () => {
     const virtualRoute = source("app/[...virtual]/page.tsx");
 

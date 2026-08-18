@@ -12,7 +12,7 @@ export type OrganizationWorkspaceNode = OrgNode & {
   incoming_links?: OrganizationLink[];
 };
 
-export type OrganizationMetaType = MetaType & {
+export type OrganizationMetaType = Omit<MetaType, "attributes"> & {
   level_domain?: string;
   description?: string;
   attributes?: Array<{ attribute_key: string; is_mandatory: boolean; attribute_type?: string }>;

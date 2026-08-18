@@ -1,7 +1,7 @@
 import { Button, SearchableSelect } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { catalogText, useI18n } from "@/lib/i18n";
+import { catalogText, type CatalogKey, useI18n } from "@/lib/i18n";
 import { getIcon } from "@/lib/icons";
 import { useEffect, useMemo, useState } from "react";
 import { OrganizationIntegrity, OrganizationMetaType, OrganizationNodeDraft, OrganizationTopologyRule, OrganizationWorkspaceNode, OrganizationWorkspacePhase } from "./organizationWorkspace.types";
@@ -39,6 +39,43 @@ const DOMAIN_ICON: Record<string, string> = {
   Project: "clipboard-list",
 };
 
+const ATTRIBUTE_LABEL_KEYS: Readonly<Record<string, CatalogKey>> = {
+  address: "enterpriseCore.orgWorkspace.attribute.address",
+  buyer_name: "enterpriseCore.orgWorkspace.attribute.buyerName",
+  chart_of_accounts_id: "enterpriseCore.orgWorkspace.attribute.chartOfAccountsId",
+  city: "enterpriseCore.orgWorkspace.attribute.city",
+  cost_center_category: "enterpriseCore.orgWorkspace.attribute.costCenterCategory",
+  country_code: "enterpriseCore.orgWorkspace.attribute.countryCode",
+  currency_id: "enterpriseCore.orgWorkspace.attribute.currencyId",
+  default_language: "enterpriseCore.orgWorkspace.attribute.defaultLanguage",
+  factory_calendar_id: "enterpriseCore.orgWorkspace.attribute.factoryCalendarId",
+  fiscal_year_variant: "enterpriseCore.orgWorkspace.attribute.fiscalYearVariant",
+  headcount: "enterpriseCore.orgWorkspace.attribute.headcount",
+  job_family: "enterpriseCore.orgWorkspace.attribute.jobFamily",
+  language: "enterpriseCore.orgWorkspace.attribute.language",
+  manager: "enterpriseCore.orgWorkspace.attribute.manager",
+  name: "enterpriseCore.orgWorkspace.attribute.name",
+  pay_scale_area: "enterpriseCore.orgWorkspace.attribute.payScaleArea",
+  pay_scale_type: "enterpriseCore.orgWorkspace.attribute.payScaleType",
+  profit_center_group: "enterpriseCore.orgWorkspace.attribute.profitCenterGroup",
+  project_id: "enterpriseCore.orgWorkspace.attribute.projectId",
+  public_holiday_calendar: "enterpriseCore.orgWorkspace.attribute.publicHolidayCalendar",
+  responsible_cost_center: "enterpriseCore.orgWorkspace.attribute.responsibleCostCenter",
+  responsible_person: "enterpriseCore.orgWorkspace.attribute.responsiblePerson",
+  risk_category: "enterpriseCore.orgWorkspace.attribute.riskCategory",
+  telephone: "enterpriseCore.orgWorkspace.attribute.telephone",
+  vacancy_status: "enterpriseCore.orgWorkspace.attribute.vacancyStatus",
+  valuation_grouping: "enterpriseCore.orgWorkspace.attribute.valuationGrouping",
+};
+
+function readableAttributeFallback(attributeKey: string): string {
+  return attributeKey
+    .split("_")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 function nodeName(node: OrganizationWorkspaceNode): string {
   const name = node.attributes_json?.name;
   return typeof name === "string" && name.trim() ? name : node.code;
@@ -70,6 +107,16 @@ export function OrganizationArchitectureWorkspace({
     if (!type) return typeId;
     return locale === "ar-SA" ? type.display_name_ar || type.display_name : type.display_name;
   };
+
+  const labelForAttribute = (attributeKey: string) => {
+    const catalogKey = ATTRIBUTE_LABEL_KEYS[attributeKey];
+    if (catalogKey) return i18n.catalog[catalogKey];
+    return catalogText(i18n, "enterpriseCore.orgWorkspace.attribute.unknown", {
+      value0: readableAttributeFallback(attributeKey),
+    });
+  };
+
+  const inputTypeForAttribute = (attributeType?: string) => attributeType === "integer" ? "number" : "text";
 
   const domainForType = (typeId: string) => metaTypes.find((item) => item.id === typeId)?.level_domain || "";
   const selectedType = metaTypes.find((item) => item.id === selectedTypeId);
@@ -418,10 +465,11 @@ export function OrganizationArchitectureWorkspace({
               ) : null}
               {(selectedType.attributes ?? []).filter((attribute) => attribute.attribute_key !== "name").map((attribute) => (
                 <label key={attribute.attribute_key} className="form-group" htmlFor={attribute.attribute_key}>
-                  <span>{attribute.attribute_key}{attribute.is_mandatory ? " *" : ""}</span>
+                  <span>{labelForAttribute(attribute.attribute_key)}{attribute.is_mandatory ? " *" : ""}</span>
                   <input
                     id={attribute.attribute_key}
                     className="setup-input"
+                    type={inputTypeForAttribute(attribute.attribute_type)}
                     value={attributes[attribute.attribute_key] || ""}
                     required={attribute.is_mandatory}
                     onChange={(event) => setAttributes((current) => ({ ...current, [attribute.attribute_key]: event.target.value }))}

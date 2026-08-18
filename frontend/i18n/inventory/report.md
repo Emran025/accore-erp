@@ -4,7 +4,7 @@ Generated deterministically by `npm run i18n:inventory`.
 
 | Status | Count |
 |---|---:|
-| technical | 28187 |
+| technical | 28218 |
 
 ## Highest-volume files
 
@@ -35,6 +35,7 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/03-finance/general-ledger/ledger-core/financial-reports/components/BalanceSheetTab.tsx` | 259 |
 | `components/template-editor/TemplateEditor.tsx` | 248 |
 | `app/06-human-capital/services-wellness/employee-services/loans/(pages)/EmployeeLoans.tsx` | 247 |
+| `app/setup/components/OrganizationArchitectureWorkspace.tsx` | 232 |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/ChangeHistoryTab.tsx` | 230 |
 | `app/06-human-capital/talent-recruitment/recruitment/administration/components/PositionsTab.tsx` | 228 |
 | `app/06-human-capital/knowledge-portal/self-service/employee-portal/(pages)/EmployeePortal.tsx` | 227 |
@@ -50,7 +51,6 @@ Generated deterministically by `npm run i18n:inventory`.
 | `lib/navigation/commercial.config.ts` | 210 |
 | `app/06-human-capital/services-wellness/employee-services/wellness/(pages)/WellnessModule.tsx` | 203 |
 | `app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/edit/page.tsx` | 202 |
-| `app/setup/components/OrganizationArchitectureWorkspace.tsx` | 201 |
 | `app/01-enterprise-core/system-overview/dashboard/global-dashboard/(pages)/page.tsx` | 193 |
 | `lib/navigation/supply-chain.config.ts` | 193 |
 | `app/01-enterprise-core/automation/recurring/batch-processing/(pages)/page.tsx` | 191 |
