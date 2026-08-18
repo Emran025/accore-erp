@@ -3538,6 +3538,7 @@ export const enCatalog = {
     "platform.connection.verifiedAt": "Last verified",
     "platform.connection.verifyAndPair": "Verify and pair this device",
     "platform.connection.error.certificateMismatch": "The server certificate fingerprint does not match the approved pairing data.",
+    "platform.connection.error.credentialStorageFailed": "The server was verified, but the device credential could not be saved in the encrypted operating-system credential store. Enable the credential service on this device and pair again with a new code.",
     "platform.connection.error.deviceRevoked": "This device has been revoked by the server administrator.",
     "platform.connection.error.enrollmentRejected": "The server rejected the enrollment evidence. Request a new pairing code.",
     "platform.connection.error.incompatibleServer": "The server does not provide the supported desktop contract.",

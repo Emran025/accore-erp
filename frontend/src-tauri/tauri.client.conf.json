@@ -1,6 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Accore Client",
+  "mainBinaryName": "accore-client",
   "identifier": "com.accore.erp.client",
   "app": {
     "windows": [

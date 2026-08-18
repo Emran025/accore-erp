@@ -66,6 +66,13 @@ function isProtectedCredentialBundle(value: unknown): value is ProtectedDesktopC
   );
 }
 
+export async function ensureProtectedDesktopCredentialStore(): Promise<void> {
+  if (!isTauriRuntime()) return;
+
+  // Probe the OS keychain and Stronghold before an enrollment code is consumed.
+  await desktopVaultStore();
+}
+
 export async function readProtectedDesktopCredentials(): Promise<ProtectedDesktopCredentials | null> {
   if (!isTauriRuntime()) return memoryCredentials;
 
