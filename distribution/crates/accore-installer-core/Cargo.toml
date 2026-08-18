@@ -1,0 +1,19 @@
+[package]
+name = "accore-installer-core"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+description = "Verified, recoverable installation primitives for Accore releases"
+license = "MIT"
+repository = "https://github.com/Emran025/accore-erp"
+
+[dependencies]
+base64 = "0.22"
+# Keeps the transitive Ed25519 dependency compatible with the local Rust 1.75 test toolchain.
+base64ct = "=1.6.0"
+zeroize = "=1.6.0"
+ed25519-dalek = { version = "=2.1.1", features = ["rand_core"] }
+semver = { version = "1.0", features = ["serde"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.10"

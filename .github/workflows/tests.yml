@@ -17,6 +17,10 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Test Accore Installer Core
+        working-directory: distribution/crates/accore-installer-core
+        run: cargo test --locked
+
       - name: Test Accore Server Agent
         working-directory: distribution/crates/accore-server-agent
         run: cargo test --locked

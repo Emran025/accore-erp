@@ -9,9 +9,7 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 
-use super::{
-    artifact_contract::verify_sha256, ArtifactDescriptor, DistributionError, ProductFlavor,
-};
+use crate::{verify_sha256, ArtifactDescriptor, DistributionError, ProductFlavor};
 
 const CACHE_SCHEMA_VERSION: u16 = 1;
 const LOCK_WAIT: Duration = Duration::from_secs(30);
@@ -424,7 +422,7 @@ mod tests {
     use semver::Version;
 
     use super::*;
-    use crate::distribution::{sha256_hex, ArtifactKind, Compatibility};
+    use crate::{sha256_hex, ArtifactKind, Compatibility};
 
     fn test_root(name: &str) -> PathBuf {
         let path = std::env::temp_dir().join(format!(
