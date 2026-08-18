@@ -15,19 +15,43 @@ permissions:
 
 jobs:
   build-desktop:
-    name: Build desktop (${{ matrix.platform }})
+    name: Build desktop (${{ matrix.flavor }} / ${{ matrix.platform }})
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - platform: ubuntu-22.04
+            flavor: server
+            feature: server-product
+            args: ""
+          - platform: ubuntu-22.04
+            flavor: client
+            feature: client-product
             args: ""
           - platform: windows-latest
+            flavor: server
+            feature: server-product
+            args: ""
+          - platform: windows-latest
+            flavor: client
+            feature: client-product
             args: ""
           - platform: macos-latest
+            flavor: server
+            feature: server-product
             args: "--target aarch64-apple-darwin"
           - platform: macos-latest
+            flavor: client
+            feature: client-product
+            args: "--target aarch64-apple-darwin"
+          - platform: macos-latest
+            flavor: server
+            feature: server-product
+            args: "--target x86_64-apple-darwin"
+          - platform: macos-latest
+            flavor: client
+            feature: client-product
             args: "--target x86_64-apple-darwin"
 
     steps:
@@ -65,12 +89,15 @@ jobs:
         uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACCORE_PRODUCT_FLAVOR: ${{ matrix.flavor }}
+          NEXT_PUBLIC_ACCORE_PRODUCT_FLAVOR: ${{ matrix.flavor }}
+          NEXT_PUBLIC_ACCORE_SERVER_API_BASE: ${{ matrix.flavor == 'server' && 'http://127.0.0.1:8765/api' || '' }}
         with:
           projectPath: frontend
           tauriScript: npm run tauri
-          args: ${{ matrix.args }}
+          args: --config src-tauri/tauri.${{ matrix.flavor }}.conf.json --features ${{ matrix.feature }} ${{ matrix.args }}
           uploadWorkflowArtifacts: true
-          workflowArtifactNamePattern: "accore-erp-[platform]-[arch]-[bundle]"
+          workflowArtifactNamePattern: "accore-${{ matrix.flavor }}-[platform]-[arch]-[bundle]"
 
   release-desktop:
     name: Create desktop release
@@ -84,7 +111,7 @@ jobs:
       - name: Download desktop artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: "accore-erp-*"
+          pattern: "accore-*-*"
           path: release-assets
           merge-multiple: true
 

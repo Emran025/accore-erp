@@ -1,0 +1,22 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Accore Client",
+  "identifier": "com.accore.erp.client",
+  "app": {
+    "windows": [
+      {
+        "title": "Accore Client",
+        "width": 1100,
+        "height": 760,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' asset: data: https:; connect-src 'self'"
+    }
+  },
+  "bundle": {
+    "icon": ["icons/flavors/accore-client.png"]
+  }
+}
