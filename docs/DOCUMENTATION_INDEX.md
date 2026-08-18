@@ -1,7 +1,7 @@
 # Documentation Index - accore ERP System
 
 > **Complete Documentation Suite for Enterprise Resource Planning System**
-> **Version:** 3.0 | **Last Updated:** March 28, 2026
+> **Version:** 3.1 | **Last Updated:** August 18, 2026
 
 Welcome to the comprehensive documentation for the accore ERP System. This index provides quick access to all documentation resources for our enterprise-grade ERP solution.
 
@@ -21,6 +21,10 @@ Core system design patterns and technical philosophy:
 - **[Event Bus and Domain Events](./Architecture/Event_Bus_And_Domain_Events.md)** — Event-driven architecture
 - **[Transaction Management and Idempotency](./Architecture/Transaction_Management_And_Idempotency.md)** — Financial transaction safety
 - **[Multi-Tenancy Architecture](./Architecture/Multi_Tenancy_Architecture.md)** — Tenant isolation design
+- **[ADR-004: Self-Contained Distribution Platform](./Architecture/ADR-004-accore-self-contained-distribution-platform.md)** — Server/Client product flavours and supported-platform boundary
+- **[ADR-005: Private AccoreDB Runtime](./Architecture/ADR-005-accoredb-private-runtime.md)** — Database isolation, persistent data, upgrade, and restore boundary
+- **[ADR-006: Client–Server Trust](./Architecture/ADR-006-client-server-trust-and-network-boundary.md)** — Pairing, TLS, device enrolment, and network exposure policy
+- **[ADR-007: Release Signing and Server Lifecycle](./Architecture/ADR-007-release-signing-service-lifecycle-and-recovery.md)** — Service authority, signed releases, migration, and recovery policy
 - **User Experience** — [Philosophy](./Architecture/UserExperience/01_Philosophy_and_Vision.md) | [Shell](./Architecture/UserExperience/02_Shell_Architecture.md) | [Domains](./Architecture/UserExperience/03_Enterprise_Domain_Map.md) | [Visual](./Architecture/UserExperience/04_Visual_Design_System.md) | [Technical](./Architecture/UserExperience/05_Technical_Implementation.md)
 
 ### 2. API (`docs/API/`)
@@ -75,6 +79,9 @@ Production deployment and governance:
 - **[Audit Trails and Security Logging](./Operations/Audit_Trails_And_Security_Logging.md)** — Compliance logging
 - **[Production Environment Governance](./Operations/Production_Environment_Governance.md)** — Environment management
 - **[Post Closure Financial Discrepancies](./Operations/Post_Closure_Financial_Discrepancies.md)** — Period closure handling
+- **[Accore Server Lifecycle and Recovery Policy](./Operations/Accore_Server_Lifecycle_And_Recovery_Policy.md)** — Service ownership, health gates, backups, and recovery actions
+- **[Accore Server and Client Distribution Plan](./Operations/Accore_Server_Client_Distribution_Plan.md)** — Proposed self-contained distribution architecture
+- **[Accore Distribution GitHub Issues](./Operations/Accore_Distribution_GitHub_Issues.md)** — Delivery epic and linked implementation work
 
 ### 6. System (`docs/System/`)
 
