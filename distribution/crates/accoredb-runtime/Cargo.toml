@@ -1,0 +1,10 @@
+[package]
+name = "accoredb-runtime"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+description = "Private durable MySQL-compatible runtime contract for Accore Server"
+license = "MIT"
+repository = "https://github.com/Emran025/accore-erp"
+
+[dependencies]

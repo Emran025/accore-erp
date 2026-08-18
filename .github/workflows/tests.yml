@@ -21,6 +21,10 @@ jobs:
         working-directory: distribution/crates/accore-installer-core
         run: cargo test --locked
 
+      - name: Test AccoreDB Runtime
+        working-directory: distribution/crates/accoredb-runtime
+        run: cargo test --locked
+
       - name: Test Accore Server Agent
         working-directory: distribution/crates/accore-server-agent
         run: cargo test --locked
