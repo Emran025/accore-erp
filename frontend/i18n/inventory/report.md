@@ -5,7 +5,7 @@ Generated deterministically by `npm run i18n:inventory`.
 | Status | Count |
 |---|---:|
 | approved-exception | 1 |
-| technical | 28218 |
+| technical | 28304 |
 
 ## Highest-volume files
 

@@ -4,6 +4,7 @@ import React from 'react';
 import { SessionExpiredModal } from '@/components/ui/SessionExpiredModal';
 import { LocaleProvider, catalogMessage, DEFAULT_LOCALE, getLocaleMetadata } from '@/lib/i18n';
 import { ProductConnectionGate } from '@/components/platform/ProductConnectionGate';
+import { ServerRuntimeGate } from '@/components/platform/ServerRuntimeGate';
 
 export const metadata: Metadata = {
   title: catalogMessage('shared.layout.acorSystem'),
@@ -26,7 +27,9 @@ export default function RootLayout({
       </head>
       <body>
         <LocaleProvider>
-          <ProductConnectionGate>{children}</ProductConnectionGate>
+          <ProductConnectionGate>
+            <ServerRuntimeGate>{children}</ServerRuntimeGate>
+          </ProductConnectionGate>
           <SessionExpiredModal />
         </LocaleProvider>
       </body>
