@@ -2,19 +2,20 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Http\Request;
+use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
+use App\Domains\EnterpriseCore\DesktopDistribution\Models\DesktopDistributionAuditEvent;
+use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\HumanCapital\PayrollBenefits\Services\SalaryCalculatorInterface;
 use App\Domains\HumanCapital\PayrollBenefits\Services\SalaryCalculatorService;
-use App\Domains\Commercial\SalesLifecycle\Models\Invoice;
-use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use App\Domains\SupplyChain\Procurement\Models\Purchase;
 use App\Policies\InvoicePolicy;
 use App\Policies\JournalVoucherPolicy;
 use App\Policies\PurchasePolicy;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,16 +34,17 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         \Illuminate\Database\Eloquent\Factories\Factory::guessFactoryNamesUsing(function (string $modelName) {
-            return 'Database\\Factories\\' . class_basename($modelName) . 'Factory';
+            return 'Database\\Factories\\'.class_basename($modelName).'Factory';
         });
 
         \Illuminate\Support\Facades\URL::resolveMissingNamedRoutesUsing(function (string $name, array $parameters, bool $absolute) {
             if (str_starts_with($name, 'api.')) {
-                $v2Name = 'v2.' . substr($name, 4);
+                $v2Name = 'v2.'.substr($name, 4);
                 if (\Illuminate\Support\Facades\Route::has($v2Name)) {
                     return route($v2Name, $parameters, $absolute);
                 }
             }
+
             return null;
         });
 
@@ -83,17 +85,17 @@ class AppServiceProvider extends ServiceProvider
             if (isset($actionMap[$action])) {
                 $mappedAction = $actionMap[$action];
                 $permissions = \App\Domains\EnterpriseCore\IdentityAccess\Services\PermissionService::loadPermissions($user->role_id);
-                
+
                 if (isset($permissions[$module][$mappedAction])) {
                     return (bool) $permissions[$module][$mappedAction];
                 }
-                
+
                 // Also check wildcard permission if set in PermissionService
                 if (isset($permissions['*'][$mappedAction])) {
                     return (bool) $permissions['*'][$mappedAction];
                 }
             }
-            
+
             return null;
         });
     }
@@ -185,6 +187,64 @@ class AppServiceProvider extends ServiceProvider
                     return response()->json([
                         'success' => false,
                         'message' => 'Report generation rate limit reached. Please wait.',
+                        'retry_after' => $headers['Retry-After'] ?? 60,
+                    ], 429, $headers);
+                });
+        });
+
+        // Desktop bootstrap is intentionally narrow but public, keyed by network origin.
+        RateLimiter::for('desktop-bootstrap', function (Request $request) {
+            return Limit::perMinute(30)
+                ->by('desktop-bootstrap:'.$request->ip())
+                ->response(function (Request $request, array $headers) {
+                    DesktopDistributionAuditEvent::query()->create([
+                        'event_type' => 'desktop.bootstrap',
+                        'outcome' => 'rate_limited',
+                        'ip_address' => $request->ip(),
+                    ]);
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Too many desktop bootstrap requests. Please wait before trying again.',
+                        'retry_after' => $headers['Retry-After'] ?? 60,
+                    ], 429, $headers);
+                });
+        });
+
+        // Enrollment consumes one-time evidence and must remain resistant to probing.
+        RateLimiter::for('desktop-enroll', function (Request $request) {
+            return Limit::perMinute(5)
+                ->by('desktop-enroll:'.$request->ip())
+                ->response(function (Request $request, array $headers) {
+                    DesktopDistributionAuditEvent::query()->create([
+                        'event_type' => 'desktop.enrollment',
+                        'outcome' => 'rate_limited',
+                        'ip_address' => $request->ip(),
+                    ]);
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Too many desktop enrollment attempts. Please wait before trying again.',
+                        'retry_after' => $headers['Retry-After'] ?? 60,
+                    ], 429, $headers);
+                });
+        });
+
+        // Policy is authenticated by the device token and keyed by its presented identity.
+        RateLimiter::for('desktop-policy', function (Request $request) {
+            return Limit::perMinute(60)
+                ->by('desktop-policy:'.($request->header('X-Accore-Device-Id') ?: $request->ip()))
+                ->response(function (Request $request, array $headers) {
+                    DesktopDistributionAuditEvent::query()->create([
+                        'event_type' => 'desktop.policy',
+                        'outcome' => 'rate_limited',
+                        'ip_address' => $request->ip(),
+                        'context' => ['device_id' => $request->header('X-Accore-Device-Id')],
+                    ]);
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Too many desktop policy requests. Please wait before trying again.',
                         'retry_after' => $headers['Retry-After'] ?? 60,
                     ], 429, $headers);
                 });
