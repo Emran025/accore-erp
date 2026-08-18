@@ -82,3 +82,37 @@ jobs:
           DB_DATABASE: accore_test
           DB_USERNAME: root
           DB_PASSWORD: ""
+
+  distribution-acceptance-certification:
+    name: Distribution acceptance certification
+    needs: [distribution-rust-tests, laravel-tests]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run distribution acceptance certification
+        env:
+          ACCORE_ACCEPTANCE_EVIDENCE_DIR: ${{ github.workspace }}/acceptance-evidence
+        run: bash distribution/scripts/run-acceptance-certification.sh
+
+      - name: Upload acceptance evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: distribution-acceptance-${{ github.sha }}
+          path: acceptance-evidence/distribution-acceptance.md
+          if-no-files-found: error
