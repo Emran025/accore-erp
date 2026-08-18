@@ -1,0 +1,17 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "client-vault",
+  "description": "Allows Accore Client to manage encrypted desktop credentials in Stronghold.",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "stronghold:allow-initialize",
+    "stronghold:allow-create-client",
+    "stronghold:allow-load-client",
+    "stronghold:allow-get-store-record",
+    "stronghold:allow-save-store-record",
+    "stronghold:allow-remove-store-record",
+    "stronghold:allow-save"
+  ]
+}

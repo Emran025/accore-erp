@@ -2,6 +2,7 @@ import { catalogMessage, getActiveLocale } from '@/lib/i18n';
 import { API_ENDPOINTS } from './endpoints';
 import { API_BASE, PRODUCT_FLAVOR } from './product-flavor';
 import { getRuntimeClientApiBase } from './connection/client-connection';
+import { getInMemoryAccessToken } from './connection/desktop-credential-vault';
 export {
   formatDate,
   escapeHtml,
@@ -16,6 +17,8 @@ const AUTH_ENDPOINT_SEGMENTS = [
   'v2/check',
   'v2/login',
   'v2/logout',
+  'v2/refresh',
+  'v2/revoke',
   'auth/check',
   'auth/login',
   'auth/logout',
@@ -56,6 +59,8 @@ export interface FetchOptions {
   body?: string;
   /** Custom headers to include */
   headers?: Record<string, string>;
+  /** Prevent session-recovery recursion for auth lifecycle endpoints. */
+  skipSessionRecovery?: boolean;
 }
 
 /**
@@ -76,10 +81,8 @@ export function createApiRequestHeaders(options?: FetchOptions): Record<string, 
     ...options?.headers,
   };
 
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('sessionToken');
-    if (token) headers['X-Session-Token'] = token;
-  }
+  const token = getInMemoryAccessToken();
+  if (token) headers['X-Session-Token'] = token;
 
   return headers;
 }
@@ -122,7 +125,7 @@ export async function fetchAPI<T = unknown>(
     const isAuthEndpoint = AUTH_ENDPOINT_SEGMENTS.some((segment) => cleanAction.includes(segment));
 
     // --- Fast Fail block: Stop all network requests if session is already expired ---
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && !options?.skipSessionRecovery) {
       try {
         const { useAuthStore } = await import('@/stores/useAuthStore');
         if (useAuthStore.getState().sessionExpired && !isAuthEndpoint) {
@@ -144,7 +147,7 @@ export async function fetchAPI<T = unknown>(
 
     if (response.status === 401 || response.status === 403) {
       if (typeof window !== 'undefined') {
-        if (!isAuthEndpoint) {
+        if (!isAuthEndpoint && !options?.skipSessionRecovery) {
           try {
             const { useAuthStore } = await import('@/stores/useAuthStore');
             const isStillAuth = await useAuthStore.getState().checkAuth(true); // Force sync
