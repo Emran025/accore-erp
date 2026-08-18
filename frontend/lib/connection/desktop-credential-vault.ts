@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { appLocalDataDir } from '@tauri-apps/api/path';
 import { Client, Stronghold } from '@tauri-apps/plugin-stronghold';
+import { isClientRelease } from '@/lib/product-flavor';
 
 const VAULT_FILE_NAME = ['accore', 'client', 'credentials', 'v1'].join('-').concat('.hold');
 const VAULT_CLIENT_NAME = 'accore-client-session-v1';
@@ -19,6 +20,12 @@ let inMemoryAccessToken: string | null = null;
 
 function isTauriRuntime(): boolean {
   return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
+}
+
+function usesClientCredentialVault(): boolean {
+  // Server Desktop never receives the Client-only Stronghold capability or
+  // keychain command. Its local login must proceed without a device vault.
+  return isTauriRuntime() && isClientRelease();
 }
 
 function encoder(): TextEncoder {
@@ -67,14 +74,14 @@ function isProtectedCredentialBundle(value: unknown): value is ProtectedDesktopC
 }
 
 export async function ensureProtectedDesktopCredentialStore(): Promise<void> {
-  if (!isTauriRuntime()) return;
+  if (!usesClientCredentialVault()) return;
 
   // Probe the OS keychain and Stronghold before an enrollment code is consumed.
   await desktopVaultStore();
 }
 
 export async function readProtectedDesktopCredentials(): Promise<ProtectedDesktopCredentials | null> {
-  if (!isTauriRuntime()) return memoryCredentials;
+  if (!usesClientCredentialVault()) return memoryCredentials;
 
   const { store } = await desktopVaultStore();
   const payload = await store.get(VAULT_RECORD_KEY);
@@ -97,7 +104,7 @@ export async function readProtectedDesktopCredentials(): Promise<ProtectedDeskto
 export async function writeProtectedDesktopCredentials(
   credentials: ProtectedDesktopCredentials
 ): Promise<void> {
-  if (!isTauriRuntime()) {
+  if (!usesClientCredentialVault()) {
     memoryCredentials = credentials;
     return;
   }
@@ -111,7 +118,7 @@ export async function clearProtectedDesktopCredentials(): Promise<void> {
   inMemoryAccessToken = null;
   memoryCredentials = null;
 
-  if (!isTauriRuntime()) return;
+  if (!usesClientCredentialVault()) return;
 
   const { stronghold, store } = await desktopVaultStore();
   await store.remove(VAULT_RECORD_KEY);
