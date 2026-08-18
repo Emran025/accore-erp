@@ -1,4 +1,5 @@
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub mod client_connection;
 pub mod distribution;
 pub mod product;
 
@@ -27,7 +28,12 @@ pub fn run() {
 
     #[cfg(not(feature = "server-product"))]
     application_builder()
-        .invoke_handler(tauri::generate_handler![product::product_runtime_profile])
+        .invoke_handler(tauri::generate_handler![
+            product::product_runtime_profile,
+            client_connection::read_client_connection_profile,
+            client_connection::write_client_connection_profile,
+            client_connection::remove_client_connection_profile,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running Accore Client or development build");
 }
