@@ -302,7 +302,7 @@ Use a scope to identify the affected module or layer. Scopes are lowercase and m
 - Do not end the description with a period.
 - Capitalise the first letter of the description.
 - If the commit introduces a breaking change, the footer must include `BREAKING CHANGE: <explanation>`.
-- Reference related issues in the footer: `Closes #42`, `Fixes #108`.
+- Reference the canonical agent task record in the footer when the commit belongs to managed work: `Task: ACC-042`. Do not use issue-closing keywords for team task tracking.
 
 ### Examples
 
@@ -353,7 +353,7 @@ For the full commit guidelines document, see [COMMIT_GUIDELINES.md](COMMIT_GUIDE
 
 - Fill out the Pull Request template completely. Every field is mandatory.
 - Provide a clear statement of purpose explaining **what** the change does and **why** it is necessary.
-- Reference related issue numbers.
+- Reference the canonical agent task record path and immutable task ID when the change belongs to managed work. Do not use GitHub Issues as the team task tracker.
 - Describe how a reviewer can test the change locally, including specific commands, endpoints, or UI paths.
 - If the change modifies the API surface, include example request/response payloads.
 - If the change modifies the UI, include screenshots or a brief textual description of the visual change.
@@ -550,6 +550,9 @@ For the full commit guidelines document, see [COMMIT_GUIDELINES.md](COMMIT_GUIDE
 ---
 
 ## 15. Issue Reporting
+
+> GitHub Issues remain an optional intake channel for external bug reports and questions. They are not the execution system for the agent team. Team plans, assignments, review evidence, revisions, and final decisions are tracked only in [`.github/agent-workflow/README.md`](agent-workflow/README.md) and its versioned task records.
+
 
 ### Bug Reports
 
