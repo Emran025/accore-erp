@@ -31,3 +31,11 @@ Attempting to switch the Next development process from Client to Server on the s
 ## Server review follow-up
 
 After making development asset paths relative and restarting from a clean `.next`, the browser still rendered the legacy Client profile screen while the process environment contained Server values. The browser console contained no runtime errors. The visual issue is therefore not accepted as evidence of a Server UI defect or fix; the next investigation must inspect product-flavor compilation and application routing in the served bundle.
+
+## Bundled Cairo verification — initial visual pass
+
+The Client pairing screen was reopened from a clean development build after replacing the external Google Fonts import with bundled Cairo WOFF2 assets. Arabic labels, headings, controls, and explanatory text rendered with the expected Cairo-style Arabic forms while the application remained fully usable. A browser font-face inspection is being completed separately to prove the local resource and computed CSS contract.
+
+## Bundled Cairo verification — browser evidence
+
+Browser inspection confirmed the computed body font stack as `Cairo, Outfit, sans-serif`. `document.fonts.check('400 16px Cairo')` returned true, with both Cairo variable faces in the `loaded` state. The browser resource timing list contained only the application-local assets `/fonts/cairo-arabic-variable.woff2` and `/fonts/cairo-latin-variable.woff2` for Cairo; no external Google Fonts resource was involved.
