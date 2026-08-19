@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 import React from 'react';
 import { SessionExpiredModal } from '@/components/ui/SessionExpiredModal';
-import { LocaleProvider, catalogMessage, DEFAULT_LOCALE, getLocaleMetadata } from '@/lib/i18n';
+import { catalogMessage, DEFAULT_LOCALE, getLocaleMetadata } from '@/lib/i18n';
+import { LocaleProvider } from '@/lib/i18n/LocaleProvider';
 import { ClientConnectionGate } from '@/components/platform/ClientConnectionGate';
 import { ServerRuntimeGate } from '@/components/platform/ServerRuntimeGate';
 
