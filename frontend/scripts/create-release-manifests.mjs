@@ -87,18 +87,28 @@ async function writeTauriUpdaterManifest(product, files, destination, generatedA
     throw new Error(`no signed ${product} updater artifacts were found`);
   }
 
-  const platforms = {};
+  const candidatesByPlatform = {};
   for (const signaturePath of signedArtifacts) {
     const artifactPath = signaturePath.slice(0, -4);
     const platform = updaterPlatformFromName(basename(artifactPath));
-    if (platform in platforms) {
-      throw new Error(`duplicate ${product} updater artifact for ${platform}`);
-    }
-    platforms[platform] = {
+    const candidate = {
+      artifactPath,
       signature: (await readFile(signaturePath, 'utf8')).trim(),
       url: `${releaseBaseUrl}/${encodeURIComponent(basename(artifactPath))}`,
     };
+    (candidatesByPlatform[platform] ??= []).push(candidate);
   }
+
+  const platforms = Object.fromEntries(
+    Object.entries(candidatesByPlatform).map(([platform, candidates]) => {
+      const [selected] = candidates.sort(
+        (left, right) =>
+          updaterArtifactPriority(left.artifactPath) - updaterArtifactPriority(right.artifactPath) ||
+          basename(left.artifactPath).localeCompare(basename(right.artifactPath))
+      );
+      return [platform, { signature: selected.signature, url: selected.url }];
+    })
+  );
 
   const updater = {
     version: releaseVersion,
@@ -154,6 +164,15 @@ function updaterPlatformFromName(name) {
   if (lower.endsWith('.exe') || lower.endsWith('.msi')) return `windows-${architecture}`;
   if (lower.includes('.app.tar.gz')) return `darwin-${architecture}`;
   throw new Error(`unsupported updater artifact ${name}`);
+}
+
+function updaterArtifactPriority(path) {
+  const name = basename(path).toLowerCase();
+  if (name.endsWith('-setup.exe') || name.endsWith('.appimage') || name.endsWith('.app.tar.gz')) {
+    return 0;
+  }
+  if (name.endsWith('.msi')) return 1;
+  return 2;
 }
 
 function isDesktopInstaller(file) {
