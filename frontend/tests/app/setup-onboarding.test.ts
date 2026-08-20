@@ -66,6 +66,23 @@ describe("standalone phased setup onboarding", () => {
     );
   });
 
+  it("loads organizational currencies and chart-of-account references from live financial records", () => {
+    const page = source("app/setup/page.tsx");
+    const workspace = source("app/setup/components/OrganizationArchitectureWorkspace.tsx");
+    const englishCatalog = source("lib/i18n/catalog/en-US.ts");
+    const arabicCatalog = source("lib/i18n/catalog/ar-SA.ts");
+
+    expect(page).toContain("FINANCE.FOREIGN_EXCHANGE.CURRENCIES.BASE");
+    expect(page).toContain("organizationReferenceOptions");
+    expect(page).toContain("currency_id: currencies.map");
+    expect(page).toContain("chart_of_accounts_id: accounts.map");
+    expect(workspace).toContain("referenceOptionsByAttribute");
+    expect(workspace).toContain("SearchableSelect");
+    expect(workspace).toContain("referenceHelpForAttribute");
+    expect(englishCatalog).toContain("Only active currencies defined in Currency Management are offered");
+    expect(arabicCatalog).toContain("لا يستخدم النظام قائمة عملات افتراضية");
+  });
+
   it("emits setup in the static catch-all parameter set", () => {
     const virtualRoute = source("app/[...virtual]/page.tsx");
 

@@ -46,6 +46,7 @@ export default function SetupPage() {
   const [organizationIntegrity, setOrganizationIntegrity] = useState<OrganizationIntegrity | null>(null);
   const [costCenters, setCostCenters] = useState<Item[]>([]);
   const [profitCenters, setProfitCenters] = useState<Item[]>([]);
+  const [currencies, setCurrencies] = useState<Item[]>([]);
   const [accounts, setAccounts] = useState<Item[]>([]);
   const [periods, setPeriods] = useState<Item[]>([]);
   const [selectedModuleKeys, setSelectedModuleKeys] = useState<string[]>([]);
@@ -68,7 +69,7 @@ export default function SetupPage() {
   const load = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [readinessResponse, setupResponse, nodesResponse, typesResponse, topologyResponse, integrityResponse, costsResponse, profitsResponse, accountsResponse, periodsResponse] = await Promise.all([
+      const [readinessResponse, setupResponse, nodesResponse, typesResponse, topologyResponse, integrityResponse, costsResponse, profitsResponse, currenciesResponse, accountsResponse, periodsResponse] = await Promise.all([
         fetchAPI<Readiness>(API_ENDPOINTS.ENTERPRISE_CORE.OPERATING_CONTEXT.READINESS),
         fetchAPI<SetupState>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.STATE),
         fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES),
@@ -77,6 +78,7 @@ export default function SetupPage() {
         fetchAPI<OrganizationIntegrity>(API_ENDPOINTS.ENTERPRISE_CORE.ORG.INTEGRITY_CHECK),
         fetchAPI(`${API_ENDPOINTS.FINANCE.COST_CENTERS.BASE}?limit=500`),
         fetchAPI(`${API_ENDPOINTS.FINANCE.PROFIT_CENTERS.BASE}?limit=500`),
+        fetchAPI(API_ENDPOINTS.FINANCE.FOREIGN_EXCHANGE.CURRENCIES.BASE),
         fetchAPI(`${API_ENDPOINTS.FINANCE.ACCOUNTS.BASE}?limit=500`),
         fetchAPI(`${API_ENDPOINTS.FINANCE.FISCAL_PERIODS.BASE}?limit=500`),
       ]);
@@ -91,6 +93,7 @@ export default function SetupPage() {
       setOrganizationIntegrity(integrityResponse.success ? integrityResponse.data ?? null : null);
       setCostCenters(listFrom(costsResponse).filter((item) => item.is_active !== false));
       setProfitCenters(listFrom(profitsResponse).filter((item) => item.is_active !== false));
+      setCurrencies(listFrom(currenciesResponse).filter((item) => item.is_active !== false));
       setAccounts(listFrom(accountsResponse).filter((item) => item.is_active !== false));
       setPeriods(listFrom(periodsResponse));
     } catch {
@@ -126,6 +129,18 @@ export default function SetupPage() {
       value1: text(center, recordFields.name),
     }),
   })), [profitCenters, i18n]);
+  const organizationReferenceOptions = useMemo(() => ({
+    currency_id: currencies.map((currency) => ({
+      value: Number(currency.id),
+      label: [text(currency, "code"), text(currency, "name")].filter(Boolean).join(" — "),
+      subtitle: text(currency, "symbol"),
+    })),
+    chart_of_accounts_id: accounts.map((account) => ({
+      value: Number(account.id),
+      label: [text(account, "account_code"), text(account, "account_name")].filter(Boolean).join(" — "),
+      subtitle: text(account, "account_type"),
+    })),
+  }), [accounts, currencies]);
 
   const callAndReload = async <T,>(action: () => Promise<{ success?: boolean; message?: string; data?: T }>): Promise<T | null> => {
     setIsSaving(true);
@@ -274,6 +289,8 @@ export default function SetupPage() {
         integrity={organizationIntegrity}
         isLoading={isLoading}
         isSaving={isSaving}
+        referenceOptionsByAttribute={organizationReferenceOptions}
+        isReferenceDataLoading={isLoading}
         onRefresh={() => void load()}
         onCreateNode={createOrganizationNode}
       />

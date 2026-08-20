@@ -90977,6 +90977,48 @@
       ]
     },
     {
+      "id": "enterpriseCore.orgWorkspace.reference.chartOfAccounts.empty",
+      "source": "لا توجد حسابات نشطة بعد. أنشئ الحسابات في شجرة الحسابات ثم عُد لإكمال هذه الوحدة.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.reference.chartOfAccounts.help",
+      "source": "اختر مرجعًا قائمًا من شجرة الحسابات؛ تعرض القائمة رمز الحساب واسمه ونوعه لتوضيح الاختيار.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.reference.currency.empty",
+      "source": "لا توجد عملة نشطة بعد. عرّف العملة المطلوبة من إدارة العملات ثم عُد لإكمال هذه الوحدة.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.reference.currency.help",
+      "source": "تُعرض العملات النشطة المعرّفة في إدارة العملات فقط؛ لا يستخدم النظام قائمة عملات افتراضية.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.reference.loading",
+      "source": "جارٍ تحميل البيانات المرجعية…",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.reference.noResults",
+      "source": "لا توجد نتائج مطابقة في السجل",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.reference.placeholder",
+      "source": "ابحث واختر من السجل",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
       "id": "ui.sessionexpiredmodal.sessionExpiredPleaseLogAgain",
       "source": "إنتهت الجلسة، يرجى تسجيل الدخول مرة أخرى",
       "classification": "review-required",

@@ -13,6 +13,8 @@ interface OrganizationArchitectureWorkspaceProps {
   integrity: OrganizationIntegrity | null;
   isLoading: boolean;
   isSaving: boolean;
+  referenceOptionsByAttribute: Partial<Record<ReferenceAttributeKey, ReferenceOption[]>>;
+  isReferenceDataLoading: boolean;
   onRefresh: () => void;
   onCreateNode: (draft: OrganizationNodeDraft) => Promise<boolean>;
 }
@@ -20,6 +22,13 @@ interface OrganizationArchitectureWorkspaceProps {
 type TreeNode = {
   node: OrganizationWorkspaceNode;
   children: TreeNode[];
+};
+
+type ReferenceAttributeKey = "currency_id" | "chart_of_accounts_id";
+type ReferenceOption = {
+  value: string | number;
+  label: string;
+  subtitle?: string;
 };
 
 const PHASE_REQUIREMENTS: Record<OrganizationWorkspacePhase, string[]> = {
@@ -88,6 +97,8 @@ export function OrganizationArchitectureWorkspace({
   integrity,
   isLoading,
   isSaving,
+  referenceOptionsByAttribute,
+  isReferenceDataLoading,
   onRefresh,
   onCreateNode,
 }: OrganizationArchitectureWorkspaceProps) {
@@ -114,6 +125,17 @@ export function OrganizationArchitectureWorkspace({
     return catalogText(i18n, "enterpriseCore.orgWorkspace.attribute.unknown", {
       value0: readableAttributeFallback(attributeKey),
     });
+  };
+
+  const referenceHelpForAttribute = (attributeKey: ReferenceAttributeKey, hasOptions: boolean) => {
+    if (attributeKey === "currency_id") {
+      return hasOptions
+        ? i18n.catalog["enterpriseCore.orgWorkspace.reference.currency.help"]
+        : i18n.catalog["enterpriseCore.orgWorkspace.reference.currency.empty"];
+    }
+    return hasOptions
+      ? i18n.catalog["enterpriseCore.orgWorkspace.reference.chartOfAccounts.help"]
+      : i18n.catalog["enterpriseCore.orgWorkspace.reference.chartOfAccounts.empty"];
   };
 
   const inputTypeForAttribute = (attributeType?: string) => attributeType === "integer" ? "number" : "text";
@@ -275,7 +297,7 @@ export function OrganizationArchitectureWorkspace({
   const selectedNodeRules = selectedNode ? topologyRules.filter((rule) => rule.source_node_type_id === selectedNode.node_type_id || rule.target_node_type_id === selectedNode.node_type_id) : [];
 
   return (
-    <section className="org-workspace sales-card" aria-labelledby="org-workspace-title">
+    <section className="org-workspace" aria-labelledby="org-workspace-title">
       <header className="org-workspace-hero">
         <div>
           <span className="org-workspace-eyebrow">{i18n.catalog["enterpriseCore.orgWorkspace.eyebrow"]}</span>
@@ -463,19 +485,45 @@ export function OrganizationArchitectureWorkspace({
                   />
                 </label>
               ) : null}
-              {(selectedType.attributes ?? []).filter((attribute) => attribute.attribute_key !== "name").map((attribute) => (
-                <label key={attribute.attribute_key} className="form-group" htmlFor={attribute.attribute_key}>
-                  <span>{labelForAttribute(attribute.attribute_key)}{attribute.is_mandatory ? " *" : ""}</span>
-                  <input
-                    id={attribute.attribute_key}
-                    className="setup-input"
-                    type={inputTypeForAttribute(attribute.attribute_type)}
-                    value={attributes[attribute.attribute_key] || ""}
-                    required={attribute.is_mandatory}
-                    onChange={(event) => setAttributes((current) => ({ ...current, [attribute.attribute_key]: event.target.value }))}
-                  />
-                </label>
-              ))}
+              {(selectedType.attributes ?? []).filter((attribute) => attribute.attribute_key !== "name").map((attribute) => {
+                const referenceKey = attribute.attribute_key as ReferenceAttributeKey;
+                const referenceOptions = referenceOptionsByAttribute[referenceKey];
+                const isReferenceAttribute = referenceOptions !== undefined;
+                const hasReferenceOptions = (referenceOptions?.length ?? 0) > 0;
+
+                return (
+                  <label key={attribute.attribute_key} className="form-group" htmlFor={attribute.attribute_key}>
+                    <span>{labelForAttribute(attribute.attribute_key)}{attribute.is_mandatory ? " *" : ""}</span>
+                    {isReferenceAttribute ? (
+                      <>
+                        <SearchableSelect
+                          id={attribute.attribute_key}
+                          className="setup-select"
+                          value={attributes[attribute.attribute_key] || ""}
+                          options={referenceOptions}
+                          required={attribute.is_mandatory}
+                          disabled={isReferenceDataLoading || !hasReferenceOptions}
+                          placeholder={isReferenceDataLoading ? i18n.catalog["enterpriseCore.orgWorkspace.reference.loading"] : i18n.catalog["enterpriseCore.orgWorkspace.reference.placeholder"]}
+                          noResultsText={i18n.catalog["enterpriseCore.orgWorkspace.reference.noResults"]}
+                          onChange={(value) => setAttributes((current) => ({ ...current, [attribute.attribute_key]: value === null ? "" : String(value) }))}
+                        />
+                        <small className={`org-workspace-reference-help ${hasReferenceOptions ? "" : "is-actionable"}`}>
+                          {referenceHelpForAttribute(referenceKey, hasReferenceOptions)}
+                        </small>
+                      </>
+                    ) : (
+                      <input
+                        id={attribute.attribute_key}
+                        className="setup-input"
+                        type={inputTypeForAttribute(attribute.attribute_type)}
+                        value={attributes[attribute.attribute_key] || ""}
+                        required={attribute.is_mandatory}
+                        onChange={(event) => setAttributes((current) => ({ ...current, [attribute.attribute_key]: event.target.value }))}
+                      />
+                    )}
+                  </label>
+                );
+              })}
             </div>
             <div className="org-workspace-composer-footer">
               <p>{validParentNodes.length ? i18n.catalog["enterpriseCore.orgWorkspace.composer.parentHelper"] : i18n.catalog["enterpriseCore.orgWorkspace.composer.rootHelper"]}</p>

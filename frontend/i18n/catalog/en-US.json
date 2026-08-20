@@ -4044,6 +4044,13 @@
     "enterpriseCore.setup.modules.pendingReadiness": "Selected — prerequisites incomplete",
     "enterpriseCore.setup.modules.active": "Operational",
     "enterpriseCore.setup.modules.selectionRequired": "Select at least one business module before leaving setup.",
-    "enterpriseCore.setup.accounting.recordSummary": "{value0} accounts and {value1} fiscal periods configured"
+    "enterpriseCore.setup.accounting.recordSummary": "{value0} accounts and {value1} fiscal periods configured",
+    "enterpriseCore.orgWorkspace.reference.chartOfAccounts.empty": "No active accounts exist yet. Create the required accounts in the chart of accounts, then return to complete this unit.",
+    "enterpriseCore.orgWorkspace.reference.chartOfAccounts.help": "Select an existing reference from the chart of accounts; the list shows each account code, name, and type for a clear choice.",
+    "enterpriseCore.orgWorkspace.reference.currency.empty": "No active currency exists yet. Define the required currency in Currency Management, then return to complete this unit.",
+    "enterpriseCore.orgWorkspace.reference.currency.help": "Only active currencies defined in Currency Management are offered; no default currency list is used.",
+    "enterpriseCore.orgWorkspace.reference.loading": "Loading reference data…",
+    "enterpriseCore.orgWorkspace.reference.noResults": "No matching record was found",
+    "enterpriseCore.orgWorkspace.reference.placeholder": "Search and select from the register"
   }
 }
