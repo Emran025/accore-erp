@@ -3,6 +3,7 @@
 namespace App\Domains\SupplyChain\Inventory\Actions;
 
 use App\Domains\EnterpriseCore\Automation\Services\TelescopeService;
+use App\Domains\SupplyChain\Inventory\Models\Product;
 use App\Domains\SupplyChain\Inventory\Models\ProductImportBatch;
 use App\Domains\SupplyChain\Inventory\Services\ProductImportPolicy;
 use Illuminate\Support\Facades\DB;
@@ -39,33 +40,43 @@ class ImportProductsAction
         }
 
         $batchId = ProductImportPolicy::batchId($context);
-        $batch = ProductImportBatch::query()->where('batch_id', $batchId)->first();
-        if ($batch?->status === 'committed') {
-            $products = ProductImportBatch::query()->whereKey($batch->id)->firstOrFail()->product_ids ?? [];
-            return [
-                'products' => \App\Domains\SupplyChain\Inventory\Models\Product::query()->whereIn('id', $products)->get()->all(),
-                'batch_id' => $batchId,
-                'replayed' => true,
-            ];
-        }
+        $batch = DB::transaction(function () use ($batchId, $context, $normalizedRows, $requiredApprovalFieldIds): ProductImportBatch {
+            $batch = ProductImportBatch::query()->lockForUpdate()->where('batch_id', $batchId)->first();
+            if ($batch?->status === 'committed') return $batch;
+            if ($batch?->status === 'processing') {
+                throw ValidationException::withMessages([
+                    'batch_id' => 'This import batch is already being processed.',
+                ]);
+            }
 
-        $batch = DB::transaction(function () use ($batchId, $context, $normalizedRows): ProductImportBatch {
-            return ProductImportBatch::query()->lockForUpdate()->firstOrCreate(
-                ['batch_id' => $batchId],
-                [
+            if (!$batch) {
+                $batch = new ProductImportBatch([
+                    'batch_id' => $batchId,
                     'source_file' => $context['source_file'] ?? null,
-                    'status' => 'pending',
                     'row_count' => count($normalizedRows),
                     'approval_field_ids' => $requiredApprovalFieldIds,
                     'created_by' => auth()->id() ?? session('user_id'),
-                ]
-            );
+                ]);
+            }
+
+            $batch->fill([
+                'source_file' => $context['source_file'] ?? $batch->source_file,
+                'status' => 'processing',
+                'row_count' => count($normalizedRows),
+                'approval_field_ids' => $requiredApprovalFieldIds,
+                'failure_reason' => null,
+            ])->save();
+
+            return $batch->fresh();
         });
 
-        if ($batch->status !== 'pending') {
-            throw ValidationException::withMessages([
-                'batch_id' => 'This import batch is already being processed or has been rejected.',
-            ]);
+        if ($batch->status === 'committed') {
+            $products = $batch->product_ids ?? [];
+            return [
+                'products' => Product::query()->whereIn('id', $products)->get()->all(),
+                'batch_id' => $batchId,
+                'replayed' => true,
+            ];
         }
 
         $auditContext = [
@@ -75,28 +86,41 @@ class ImportProductsAction
             'row_count' => count($normalizedRows),
         ];
 
-        return DB::transaction(function () use ($normalizedRows, $batch, $batchId, $auditContext): array {
-            $products = [];
-            foreach ($normalizedRows as $row) {
-                $products[] = $this->createProductAction->execute($row);
-            }
+        try {
+            return DB::transaction(function () use ($normalizedRows, $batch, $batchId, $auditContext): array {
+                $products = [];
+                foreach ($normalizedRows as $row) {
+                    $products[] = $this->createProductAction->execute($row);
+                }
 
-            $batch->update([
-                'status' => 'committed',
-                'product_ids' => array_map(static fn ($product): int => (int) $product->id, $products),
-                'committed_at' => now(),
+                $batch->update([
+                    'status' => 'committed',
+                    'product_ids' => array_map(static fn ($product): int => (int) $product->id, $products),
+                    'committed_at' => now(),
+                ]);
+
+                TelescopeService::logOperation('IMPORT', 'products', null, null, [
+                    ...$auditContext,
+                    'outcome' => 'committed',
+                ]);
+
+                return [
+                    'products' => $products,
+                    'batch_id' => $batchId,
+                    'replayed' => false,
+                ];
+            });
+        } catch (\Throwable $exception) {
+            ProductImportBatch::query()->whereKey($batch->id)->update([
+                'status' => 'failed',
+                'failure_reason' => mb_substr($exception->getMessage(), 0, 1000),
             ]);
-
-            TelescopeService::logOperation('IMPORT', 'products', null, null, [
+            TelescopeService::logOperation('IMPORT_FAILED', 'products', null, null, [
                 ...$auditContext,
-                'outcome' => 'committed',
+                'outcome' => 'failed',
+                'reason' => mb_substr($exception->getMessage(), 0, 1000),
             ]);
-
-            return [
-                'products' => $products,
-                'batch_id' => $batchId,
-                'replayed' => false,
-            ];
-        });
+            throw $exception;
+        }
     }
 }
