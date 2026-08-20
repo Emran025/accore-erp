@@ -86,6 +86,7 @@ jobs:
         with:
           php-version: '8.3'
           tools: composer
+          extensions: fileinfo
 
       - name: Install production Laravel dependencies for Server Desktop
         if: matrix.flavor == 'server'
