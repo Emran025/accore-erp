@@ -151,14 +151,8 @@ jobs:
             $dumpProbe = Join-Path $dataRoot 'backups\bootstrap-dump-probe.sql'
             $dumpClientConfig = Join-Path $dataRoot 'backups\.bootstrap-dump-probe.cnf'
             $dump = Join-Path $runtimeRoot 'mariadb-11.4.9-winx64\bin\mariadb-dump.exe'
-            @"
-[client]
-protocol=tcp
-host=127.0.0.1
-port=3307
-user=root
-password=$($agentConfig.databaseRootPassword)
-"@ | Set-Content -LiteralPath $dumpClientConfig -NoNewline
+            $dumpClientContents = "[client]`nprotocol=tcp`nhost=127.0.0.1`nport=3307`nuser=root`npassword=$($agentConfig.databaseRootPassword)`n"
+            Set-Content -LiteralPath $dumpClientConfig -Value $dumpClientContents -NoNewline
             $dumpOutput = & $dump "--defaults-extra-file=$dumpClientConfig" --single-transaction --skip-lock-tables --routines --events --triggers --databases $agentConfig.databaseName "--result-file=$dumpProbe" 2>&1
             if ($LASTEXITCODE -ne 0) {
               $dumpOutput | ForEach-Object { Write-Host $_ }
