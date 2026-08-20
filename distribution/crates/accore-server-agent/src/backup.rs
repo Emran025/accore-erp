@@ -408,6 +408,25 @@ impl BackupOperator for WindowsMariaDbBackupOperator {
             let validation_result = (|| {
                 wait_for_port(BACKUP_VALIDATION_PORT, VALIDATION_TIMEOUT_MESSAGE)
                     .map_err(|error| backup_error("wait for isolated restore database", error))?;
+                let database = &self.config.database_name;
+                let password = &self.config.database_password;
+                let principal_sql = format!(
+                    "CREATE DATABASE IF NOT EXISTS `{database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; \
+                     CREATE USER IF NOT EXISTS 'accore_app'@'localhost' IDENTIFIED BY '{password}'; \
+                     CREATE USER IF NOT EXISTS 'accore_app'@'127.0.0.1' IDENTIFIED BY '{password}'; \
+                     GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP, REFERENCES, CREATE TEMPORARY TABLES, LOCK TABLES, CREATE VIEW, SHOW VIEW ON `{database}`.* TO 'accore_app'@'localhost'; \
+                     GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP, REFERENCES, CREATE TEMPORARY TABLES, LOCK TABLES, CREATE VIEW, SHOW VIEW ON `{database}`.* TO 'accore_app'@'127.0.0.1'; \
+                     FLUSH PRIVILEGES;"
+                );
+                run_checked(
+                    Command::new(mariadb_bin(&self.config, "mariadb.exe"))
+                        .arg(format!("--defaults-file={}", client_config.display()))
+                        .arg(format!("--execute={principal_sql}")),
+                    "provision isolated restore validation view definer",
+                )
+                .map_err(|error| {
+                    backup_error("provision isolated restore validation view definer", error)
+                })?;
                 let archive_file = File::open(&archive).map_err(|error| {
                     backup_io_error("open compressed backup for restore validation", error)
                 })?;
