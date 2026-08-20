@@ -89,7 +89,7 @@ export function resolveClientConnectionState(
 
 // Next.js replaces direct NEXT_PUBLIC_* references in browser bundles. Do not pass
 // the dynamic process.env object here: it is not populated in a static Tauri asset.
-const COMPILED_PRODUCT_ENVIRONMENT: ProductBuildEnvironment = {
+export const COMPILED_PRODUCT_ENVIRONMENT: ProductBuildEnvironment = {
   NEXT_PUBLIC_ACCORE_PRODUCT_FLAVOR: process.env.NEXT_PUBLIC_ACCORE_PRODUCT_FLAVOR,
   NEXT_PUBLIC_API_BASE: process.env.NEXT_PUBLIC_API_BASE,
   NEXT_PUBLIC_ACCORE_CLIENT_API_BASE: process.env.NEXT_PUBLIC_ACCORE_CLIENT_API_BASE,

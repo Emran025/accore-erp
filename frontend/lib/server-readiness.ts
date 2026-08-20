@@ -1,4 +1,5 @@
 import {
+  COMPILED_PRODUCT_ENVIRONMENT,
   resolveApiBase,
   resolveProductFlavor,
   type ProductBuildEnvironment,
@@ -11,7 +12,7 @@ export type ServerReadinessState =
   | { kind: 'unavailable'; healthUrl: string };
 
 export function resolveServerHealthUrl(
-  environment: ProductBuildEnvironment = process.env
+  environment: ProductBuildEnvironment = COMPILED_PRODUCT_ENVIRONMENT
 ): string | undefined {
   if (resolveProductFlavor(environment) !== 'server') return undefined;
 
@@ -26,7 +27,7 @@ export function resolveServerHealthUrl(
 }
 
 export function initialServerReadiness(
-  environment: ProductBuildEnvironment = process.env
+  environment: ProductBuildEnvironment = COMPILED_PRODUCT_ENVIRONMENT
 ): ServerReadinessState {
   const healthUrl = resolveServerHealthUrl(environment);
   return healthUrl ? { kind: 'checking', healthUrl } : { kind: 'not-server' };
@@ -34,7 +35,7 @@ export function initialServerReadiness(
 
 export function resolveServerReadiness(
   healthy: boolean,
-  environment: ProductBuildEnvironment = process.env
+  environment: ProductBuildEnvironment = COMPILED_PRODUCT_ENVIRONMENT
 ): ServerReadinessState {
   const healthUrl = resolveServerHealthUrl(environment);
   if (!healthUrl) return { kind: 'not-server' };
