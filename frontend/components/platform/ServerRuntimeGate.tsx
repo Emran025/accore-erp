@@ -22,6 +22,7 @@ import {
   requestServerBackup,
   startServerRuntime,
   type ServerBackupStatus,
+  type ServerRuntimeComponent,
   type ServerRuntimeStatus,
 } from '@/lib/server-runtime';
 import {
@@ -36,19 +37,19 @@ interface ServerRuntimeGateProps {
 
 function RuntimeShell({ children }: { children: ReactNode }) {
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#f3f4f6] px-4 py-6 text-slate-900 sm:px-6">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_top,rgba(85,102,129,0.16),transparent_65%)]" />
-      <section className="relative w-full max-w-2xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_28px_70px_rgba(35,48,69,0.14)]">
-        <header className="bg-gradient-to-l from-[#233045] via-[#30374c] to-[#556681] px-7 py-7 text-white sm:px-10">
-          <div className="flex items-center gap-4">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-inset ring-white/20">
-              <Server className="h-6 w-6 text-cyan-100" aria-hidden="true" />
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#f4f5f7] px-4 py-6 text-slate-900 sm:px-6">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(ellipse_at_top,rgba(85,102,129,0.13),transparent_68%)]" />
+      <section className="relative w-full max-w-3xl overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-[0_20px_55px_rgba(35,48,69,0.12)]">
+        <header className="bg-gradient-to-l from-[#233045] via-[#30374c] to-[#556681] px-5 py-4 text-white sm:px-7">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 ring-1 ring-inset ring-white/20">
+              <Server className="h-5 w-5 text-cyan-100" aria-hidden="true" />
             </span>
             <div>
-              <p className="text-xs font-bold tracking-[0.16em] text-slate-200">
+              <p className="text-[11px] font-bold tracking-[0.14em] text-slate-200">
                 {catalogMessage('platform.product.server')}
               </p>
-              <p className="mt-1 text-sm leading-6 text-slate-100/80">
+              <p className="mt-0.5 text-xs leading-5 text-slate-100/80">
                 {catalogMessage('platform.product.serverRuntimeApiComponent')}
               </p>
             </div>
@@ -261,6 +262,15 @@ export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
   );
   const isChecking = readiness.kind === 'checking' || isRuntimeProgressing;
   const runtimeDetail = runtimeStatus?.detail;
+  const componentRows: Array<[string, ServerRuntimeComponent | undefined]> = [
+    [catalogMessage('platform.product.serverRuntimeDatabaseComponent'), runtimeStatus?.database],
+    [catalogMessage('platform.product.serverRuntimeApiComponent'), runtimeStatus?.api],
+    [catalogMessage('platform.product.serverRuntimeQueueComponent'), runtimeStatus?.queue],
+  ];
+  const refreshRuntime = async () => {
+    const status = await readServerRuntimeStatus();
+    if (status) setRuntimeStatus(status);
+  };
   const startRuntime = async () => {
     setIsStarting(true);
     try {
@@ -275,21 +285,21 @@ export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
       <div
         aria-busy={isChecking}
         aria-labelledby="server-runtime-readiness-title"
-        className="px-7 py-9 sm:px-10 sm:py-11"
+        className="px-5 py-6 sm:px-7 sm:py-7"
         data-testid={isChecking ? 'server-runtime-checking' : 'server-runtime-unavailable'}
       >
         {isChecking ? (
-          <div className="mx-auto max-w-md text-center">
-            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-[#30374c]">
-              <LoaderCircle className="h-7 w-7 animate-spin" aria-hidden="true" />
+          <div className="mx-auto max-w-lg text-center">
+            <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-[#30374c]">
+              <LoaderCircle className="h-5 w-5 animate-spin" aria-hidden="true" />
             </span>
             <h1
               id="server-runtime-readiness-title"
-              className="mt-6 text-2xl font-extrabold tracking-tight text-slate-900"
+              className="mt-4 text-xl font-extrabold tracking-tight text-slate-900"
             >
               {catalogMessage('platform.product.serverRuntimeChecking')}
             </h1>
-            <p className="mt-3 text-sm leading-6 text-slate-500">
+            <p className="mt-2 text-sm leading-6 text-slate-500">
               <span className="inline-flex items-center gap-2">
                 <Activity className="h-4 w-4 text-emerald-600" aria-hidden="true" />
                 {catalogMessage('platform.product.serverRuntimeApiComponent')}
@@ -297,79 +307,77 @@ export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
             </p>
           </div>
         ) : (
-          <div>
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-100">
-              <CircleAlert className="h-6 w-6" aria-hidden="true" />
-            </span>
-            <h1
-              id="server-runtime-readiness-title"
-              className="mt-5 text-2xl font-extrabold tracking-tight text-slate-900"
-            >
-              {catalogMessage('platform.product.serverRuntimeUnavailableTitle')}
-            </h1>
-            <p className="mt-3 max-w-xl text-sm leading-7 text-slate-600">
-              {catalogMessage('platform.product.serverRuntimeUnavailableDescription')}
-            </p>
-            {runtimeDetail ? (
-              <p className="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-mono text-xs leading-6 text-slate-700">
-                {runtimeDetail}
-              </p>
-            ) : null}
-
-            <dl className="mt-7 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                <dt className="flex items-center gap-2 text-sm font-bold text-slate-800">
-                  <Activity className="h-4 w-4 text-[#556681]" aria-hidden="true" />
-                  {catalogMessage('platform.product.serverRuntimeFailedComponent')}
-                </dt>
-                <dd className="mt-3 text-sm leading-6 text-slate-600">
-                  {catalogMessage('platform.product.serverRuntimeApiComponent')}
-                </dd>
-              </div>
-              <div className="rounded-2xl border border-amber-100 bg-amber-50/70 p-5">
-                <dt className="flex items-center gap-2 text-sm font-bold text-slate-800">
-                  <Wrench className="h-4 w-4 text-amber-700" aria-hidden="true" />
-                  {catalogMessage('platform.product.serverRuntimeRecommendedAction')}
-                </dt>
-                <dd className="mt-3 text-sm leading-6 text-slate-600">
-                  {catalogMessage('platform.product.serverRuntimeApiAction')}
-                </dd>
-              </div>
-            </dl>
-
-            <div className="mt-5 rounded-2xl border border-blue-100 bg-blue-50/70 p-5">
+          <div className="mx-auto max-w-2xl">
+            <div className="flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex items-start gap-3">
-                <ShieldCheck
-                  className="mt-0.5 h-5 w-5 shrink-0 text-[#556681]"
-                  aria-hidden="true"
-                />
-                <p className="text-sm leading-7 text-slate-700">
-                  {catalogMessage('platform.product.serverRuntimeUnavailableNextStep')}
-                </p>
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-100">
+                  <CircleAlert className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <div>
+                  <h1 id="server-runtime-readiness-title" className="text-xl font-extrabold tracking-tight text-slate-900">
+                    {catalogMessage('platform.product.serverRuntimeUnavailableTitle')}
+                  </h1>
+                  <p className="mt-1 max-w-xl text-sm leading-6 text-slate-600">
+                    {catalogMessage('platform.product.serverRuntimeUnavailableDescription')}
+                  </p>
+                </div>
               </div>
+              <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700">
+                <ShieldCheck className="h-3.5 w-3.5 text-[#556681]" aria-hidden="true" />
+                {catalogMessage('platform.product.serverRuntimeServiceContinuity')}
+              </span>
             </div>
 
-            <button
-              type="button"
-              className="mt-7 inline-flex items-center justify-center gap-2 rounded-xl bg-[#30374c] px-5 py-3 text-sm font-extrabold text-white shadow-[0_10px_22px_rgba(48,55,76,0.2)] transition hover:-translate-y-0.5 hover:bg-[#233045] focus:outline-none focus:ring-4 focus:ring-[#8192a5]/35"
-              onClick={() => window.location.reload()}
-            >
-              <RefreshCw className="h-4 w-4" aria-hidden="true" />
-              {catalogMessage('platform.connection.retry')}
-            </button>
-            {runtimeStatus?.runtimePresent ? (
+            <dl className="mt-5 grid gap-2 sm:grid-cols-3">
+              {componentRows.map(([label, status]) => (
+                <div key={label} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
+                  <dt className="text-xs font-bold text-slate-800">{label}</dt>
+                  <dd className="mt-1 truncate text-xs leading-5 text-slate-500" title={status?.detail}>
+                    {status?.detail ?? catalogMessage('platform.product.serverRuntimeUnavailableNextStep')}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+
+            <div className="mt-4 rounded-xl border border-amber-100 bg-amber-50/70 px-4 py-3">
+              <p className="flex items-start gap-2 text-sm leading-6 text-slate-700">
+                <Wrench className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" aria-hidden="true" />
+                {catalogMessage('platform.product.serverRuntimeApiAction')}
+              </p>
+            </div>
+
+            {runtimeDetail ? (
+              <details className="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
+                <summary className="cursor-pointer text-xs font-bold text-slate-700">
+                  {catalogMessage('platform.product.serverRuntimeTechnicalDetail')}
+                </summary>
+                <p className="mt-2 break-words font-mono text-[11px] leading-5 text-slate-600">{runtimeDetail}</p>
+              </details>
+            ) : null}
+
+            <div className="mt-5 flex flex-wrap gap-2">
               <button
                 type="button"
-                className="ml-3 mt-7 inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-extrabold text-slate-800 transition hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
-                onClick={() => void startRuntime()}
-                disabled={isStarting}
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-extrabold text-slate-800 transition hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200"
+                onClick={() => void refreshRuntime()}
               >
-                <Server className="h-4 w-4" aria-hidden="true" />
-                {isStarting
-                  ? catalogMessage('platform.product.serverRuntimeChecking')
-                  : catalogMessage('platform.product.serverRuntimeRecommendedAction')}
+                <RefreshCw className="h-4 w-4" aria-hidden="true" />
+                {catalogMessage('platform.product.serverRuntimeRefreshStatus')}
               </button>
-            ) : null}
+              {runtimeStatus?.runtimePresent ? (
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#30374c] px-4 py-2.5 text-sm font-extrabold text-white shadow-[0_8px_18px_rgba(48,55,76,0.18)] transition hover:bg-[#233045] focus:outline-none focus:ring-4 focus:ring-[#8192a5]/35 disabled:cursor-not-allowed disabled:opacity-60"
+                  onClick={() => void startRuntime()}
+                  disabled={isStarting}
+                >
+                  <Server className="h-4 w-4" aria-hidden="true" />
+                  {isStarting
+                    ? catalogMessage('platform.product.serverRuntimeChecking')
+                    : catalogMessage('platform.product.serverRuntimeRecommendedAction')}
+                </button>
+              ) : null}
+            </div>
           </div>
         )}
       </div>

@@ -5,7 +5,7 @@ Generated deterministically by `npm run i18n:inventory`.
 | Status | Count |
 |---|---:|
 | approved-exception | 3 |
-| technical | 29391 |
+| technical | 29394 |
 
 ## Highest-volume files
 
@@ -92,10 +92,10 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/view/components/BasicInfoTab.tsx` | 131 |
 | `lib/endpoints/human-capital.ts` | 128 |
 | `app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/view/components/FinancialTab.tsx` | 126 |
+| `components/platform/ServerRuntimeGate.tsx` | 126 |
 | `app/02-commercial/crm/customer-master/customer-ledger/components/LedgerTable.tsx` | 124 |
 | `app/04-supply-chain/supplier-sourcing/supplier-master/supplier-ledger/components/LedgerTable.tsx` | 124 |
 | `app/03-finance/foreign-exchange/currency-management/fx-operations/(pages)/page.tsx` | 123 |
-| `components/platform/ServerRuntimeGate.tsx` | 123 |
 | `app/02-commercial/revenue-receivables/revenue-receipts/receipt-vouchers/(pages)/page.tsx` | 122 |
 | `app/03-finance/foreign-exchange/currency-management/currencies/components/CurrencyListTab.tsx` | 121 |
 | `app/03-finance/tax-compliance/cash-management/bank-reconciliation/(pages)/page.tsx` | 120 |
