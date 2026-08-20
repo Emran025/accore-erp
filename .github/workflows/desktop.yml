@@ -149,14 +149,24 @@ jobs:
             if ($privateAcl.Access.IdentityReference.Value -match 'Users') { throw 'Agent configuration grants an ordinary Users ACL entry' }
             $agentConfig = Get-Content $agentConfigPath -Raw | ConvertFrom-Json
             $dumpProbe = Join-Path $dataRoot 'backups\bootstrap-dump-probe.sql'
+            $dumpClientConfig = Join-Path $dataRoot 'backups\.bootstrap-dump-probe.cnf'
             $dump = Join-Path $runtimeRoot 'mariadb-11.4.9-winx64\bin\mariadb-dump.exe'
-            $dumpOutput = & $dump --no-defaults --protocol=tcp --host=127.0.0.1 --port=3307 --user=root "--password=$($agentConfig.databaseRootPassword)" --single-transaction --skip-lock-tables --routines --events --triggers --databases $agentConfig.databaseName "--result-file=$dumpProbe" 2>&1
+            @"
+[client]
+protocol=tcp
+host=127.0.0.1
+port=3307
+user=root
+password=$($agentConfig.databaseRootPassword)
+"@ | Set-Content -LiteralPath $dumpClientConfig -NoNewline
+            $dumpOutput = & $dump "--defaults-extra-file=$dumpClientConfig" --single-transaction --skip-lock-tables --routines --events --triggers --databases $agentConfig.databaseName "--result-file=$dumpProbe" 2>&1
             if ($LASTEXITCODE -ne 0) {
               $dumpOutput | ForEach-Object { Write-Host $_ }
               throw "Embedded mariadb-dump probe exited with $LASTEXITCODE"
             }
             if (-not (Test-Path $dumpProbe) -or (Get-Item $dumpProbe).Length -le 0) { throw 'Embedded mariadb-dump probe did not create an SQL artifact' }
             Remove-Item $dumpProbe -Force
+            Remove-Item $dumpClientConfig -Force
             & $agent request-backup --config $agentConfigPath
             if ($LASTEXITCODE -ne 0) { throw "Protected backup request exited with $LASTEXITCODE" }
             $backupDeadline = (Get-Date).AddMinutes(5)
