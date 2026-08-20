@@ -278,6 +278,9 @@ impl BackupOperator for WindowsMariaDbBackupOperator {
         self.write_client_config(&client_config, DATABASE_PORT, self.root_password())?;
 
         let result = (|| {
+            let dump_output = File::create(&sql_staging).map_err(|error| {
+                backup_io_error("create MariaDB backup SQL staging file", error)
+            })?;
             run_checked(
                 Command::new(mariadb_bin(&self.config, "mariadb-dump.exe"))
                     .arg(format!("--defaults-extra-file={}", client_config.display()))
@@ -290,7 +293,7 @@ impl BackupOperator for WindowsMariaDbBackupOperator {
                         "--databases",
                     ])
                     .arg(&self.config.database_name)
-                    .arg(format!("--result-file={}", sql_staging.display())),
+                    .stdout(Stdio::from(dump_output)),
                 "create protected MariaDB logical backup",
             )
             .map_err(|error| backup_error("create protected MariaDB logical backup", error))?;

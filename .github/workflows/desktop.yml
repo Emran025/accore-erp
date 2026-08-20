@@ -147,20 +147,6 @@ jobs:
             if (Test-Path $runtimeEnv) { throw 'Runtime package contains a forbidden Laravel environment file' }
             $privateAcl = Get-Acl (Join-Path $dataRoot 'agent-config.json')
             if ($privateAcl.Access.IdentityReference.Value -match 'Users') { throw 'Agent configuration grants an ordinary Users ACL entry' }
-            $agentConfig = Get-Content $agentConfigPath -Raw | ConvertFrom-Json
-            $dumpProbe = Join-Path $dataRoot 'backups\bootstrap-dump-probe.sql'
-            $dumpClientConfig = Join-Path $dataRoot 'backups\.bootstrap-dump-probe.cnf'
-            $dump = Join-Path $runtimeRoot 'mariadb-11.4.9-winx64\bin\mariadb-dump.exe'
-            $dumpClientContents = "[client]`nprotocol=tcp`nhost=127.0.0.1`nport=3307`nuser=root`npassword=$($agentConfig.databaseRootPassword)`n"
-            Set-Content -LiteralPath $dumpClientConfig -Value $dumpClientContents -NoNewline
-            $dumpOutput = & $dump "--defaults-extra-file=$dumpClientConfig" --single-transaction --skip-lock-tables --routines --events --triggers --databases $agentConfig.databaseName "--result-file=$dumpProbe" 2>&1
-            if ($LASTEXITCODE -ne 0) {
-              $dumpOutput | ForEach-Object { Write-Host $_ }
-              throw "Embedded mariadb-dump probe exited with $LASTEXITCODE"
-            }
-            if (-not (Test-Path $dumpProbe) -or (Get-Item $dumpProbe).Length -le 0) { throw 'Embedded mariadb-dump probe did not create an SQL artifact' }
-            Remove-Item $dumpProbe -Force
-            Remove-Item $dumpClientConfig -Force
             & $agent request-backup --config $agentConfigPath
             if ($LASTEXITCODE -ne 0) { throw "Protected backup request exited with $LASTEXITCODE" }
             $backupDeadline = (Get-Date).AddMinutes(5)
