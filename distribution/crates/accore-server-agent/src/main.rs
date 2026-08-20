@@ -319,9 +319,9 @@ fn provision_database_principal(config: &RuntimeConfig) -> Result<(), String> {
         Command::new(mariadb_bin(config, "mariadb.exe"))
             .args(["--no-defaults", "--protocol=tcp", "--host=127.0.0.1"])
             .arg(format!("--port={DATABASE_PORT}"))
-            .args(["--user=root", "--execute"])
+            .arg("--user=root")
             .arg(format!("--password={source_root_password}"))
-            .arg(statements.join(" ")),
+            .arg(format!("--execute={}", statements.join(" "))),
         "provision ACCORE database principal",
     )?;
     if !marker.exists() {
