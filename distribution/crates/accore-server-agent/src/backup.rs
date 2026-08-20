@@ -106,6 +106,12 @@ impl BackupRuntime {
             );
         };
         if latest.verified_at_unix.is_none() {
+            if let Some(failure) = &self.last_failure {
+                return component(
+                    "attention",
+                    format!("latest backup requires isolated restore review: {failure}"),
+                );
+            }
             return component(
                 "attention",
                 "latest backup exists but isolated restore validation has not succeeded",
