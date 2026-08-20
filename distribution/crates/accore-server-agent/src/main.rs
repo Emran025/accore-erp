@@ -359,14 +359,12 @@ fn start_database(config: &RuntimeConfig) -> Result<Child, String> {
 
 fn provision_application(config: &RuntimeConfig) -> Result<(), String> {
     let storage = config.data_root.join("laravel-storage");
-    let cache = config.data_root.join("laravel-cache");
     for path in [
         storage.join("app/public"),
         storage.join("framework/cache/data"),
         storage.join("framework/sessions"),
         storage.join("framework/views"),
         storage.join("logs"),
-        cache,
     ] {
         fs::create_dir_all(path)
             .map_err(|error| format!("create durable Laravel runtime directory: {error}"))?;
@@ -382,9 +380,7 @@ fn provision_application(config: &RuntimeConfig) -> Result<(), String> {
     }
 
     let mut migrate = application_command(config, ["php-cli", "artisan", "migrate", "--force"]);
-    run_checked(&mut migrate, "run Laravel migrations")?;
-    let mut cache = application_command(config, ["php-cli", "artisan", "config:cache"]);
-    run_checked(&mut cache, "cache Laravel configuration")
+    run_checked(&mut migrate, "run Laravel migrations")
 }
 
 fn start_api(config: &RuntimeConfig) -> Result<Child, String> {
@@ -448,12 +444,6 @@ fn application_environment(config: &RuntimeConfig) -> Vec<(&'static str, String)
         .display()
         .to_string()
         .replace('\\', "/");
-    let config_cache = config
-        .data_root
-        .join("laravel-cache/config.php")
-        .display()
-        .to_string()
-        .replace('\\', "/");
     vec![
         ("APP_NAME", "ACCORE ERP".into()),
         ("APP_ENV", "production".into()),
@@ -461,7 +451,6 @@ fn application_environment(config: &RuntimeConfig) -> Vec<(&'static str, String)
         ("APP_DEBUG", "false".into()),
         ("APP_URL", format!("http://127.0.0.1:{API_PORT}")),
         ("LARAVEL_STORAGE_PATH", storage),
-        ("APP_CONFIG_CACHE", config_cache),
         ("PHPRC", config.runtime_root.display().to_string()),
         ("LOG_CHANNEL", "single".into()),
         ("LOG_LEVEL", "info".into()),
