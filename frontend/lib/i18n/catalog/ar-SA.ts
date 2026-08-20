@@ -4164,6 +4164,8 @@ export const arCatalog = {
     "enterpriseCore.orgWorkspace.reference.chartOfAccounts.help": "اختر مرجعًا قائمًا من شجرة الحسابات؛ تعرض القائمة رمز الحساب واسمه ونوعه لتوضيح الاختيار.",
     "enterpriseCore.orgWorkspace.reference.currency.empty": "لا توجد عملة نشطة بعد. عرّف العملة المطلوبة من إدارة العملات ثم عُد لإكمال هذه الوحدة.",
     "enterpriseCore.orgWorkspace.reference.currency.help": "تُعرض العملات النشطة المعرّفة في إدارة العملات فقط؛ لا يستخدم النظام قائمة عملات افتراضية.",
+    "enterpriseCore.orgWorkspace.reference.factoryCalendar.empty": "لا توجد تقاويم مصنع نشطة بعد. عرّف تقويم تشغيل معتمدًا ثم عُد لإكمال هذه المنشأة.",
+    "enterpriseCore.orgWorkspace.reference.factoryCalendar.help": "اختر تقويم مصنع نشطًا يطابق بلد المنشأة؛ لا يسمح النظام بإدخال رمز تقويم حر.",
     "enterpriseCore.orgWorkspace.reference.loading": "جارٍ تحميل البيانات المرجعية…",
     "enterpriseCore.orgWorkspace.reference.noResults": "لا توجد نتائج مطابقة في السجل",
     "enterpriseCore.orgWorkspace.reference.placeholder": "ابحث واختر من السجل",

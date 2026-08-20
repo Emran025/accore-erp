@@ -4049,6 +4049,8 @@
     "enterpriseCore.orgWorkspace.reference.chartOfAccounts.help": "Select an existing reference from the chart of accounts; the list shows each account code, name, and type for a clear choice.",
     "enterpriseCore.orgWorkspace.reference.currency.empty": "No active currency exists yet. Define the required currency in Currency Management, then return to complete this unit.",
     "enterpriseCore.orgWorkspace.reference.currency.help": "Only active currencies defined in Currency Management are offered; no default currency list is used.",
+    "enterpriseCore.orgWorkspace.reference.factoryCalendar.empty": "No active factory calendar exists yet. Define an approved operating calendar, then return to complete this plant.",
+    "enterpriseCore.orgWorkspace.reference.factoryCalendar.help": "Select an active factory calendar for the plant country; arbitrary calendar codes are not accepted.",
     "enterpriseCore.orgWorkspace.reference.loading": "Loading reference data…",
     "enterpriseCore.orgWorkspace.reference.noResults": "No matching record was found",
     "enterpriseCore.orgWorkspace.reference.placeholder": "Search and select from the register"

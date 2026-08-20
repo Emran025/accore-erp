@@ -47,6 +47,7 @@ export default function SetupPage() {
   const [costCenters, setCostCenters] = useState<Item[]>([]);
   const [profitCenters, setProfitCenters] = useState<Item[]>([]);
   const [currencies, setCurrencies] = useState<Item[]>([]);
+  const [factoryCalendars, setFactoryCalendars] = useState<Item[]>([]);
   const [accounts, setAccounts] = useState<Item[]>([]);
   const [periods, setPeriods] = useState<Item[]>([]);
   const [selectedModuleKeys, setSelectedModuleKeys] = useState<string[]>([]);
@@ -69,7 +70,7 @@ export default function SetupPage() {
   const load = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [readinessResponse, setupResponse, nodesResponse, typesResponse, topologyResponse, integrityResponse, costsResponse, profitsResponse, currenciesResponse, accountsResponse, periodsResponse] = await Promise.all([
+      const [readinessResponse, setupResponse, nodesResponse, typesResponse, topologyResponse, integrityResponse, costsResponse, profitsResponse, currenciesResponse, factoryCalendarsResponse, accountsResponse, periodsResponse] = await Promise.all([
         fetchAPI<Readiness>(API_ENDPOINTS.ENTERPRISE_CORE.OPERATING_CONTEXT.READINESS),
         fetchAPI<SetupState>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.STATE),
         fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES),
@@ -79,6 +80,7 @@ export default function SetupPage() {
         fetchAPI(`${API_ENDPOINTS.FINANCE.COST_CENTERS.BASE}?limit=500`),
         fetchAPI(`${API_ENDPOINTS.FINANCE.PROFIT_CENTERS.BASE}?limit=500`),
         fetchAPI(API_ENDPOINTS.FINANCE.FOREIGN_EXCHANGE.CURRENCIES.BASE),
+        fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.FACTORY_CALENDARS),
         fetchAPI(`${API_ENDPOINTS.FINANCE.ACCOUNTS.BASE}?limit=500`),
         fetchAPI(`${API_ENDPOINTS.FINANCE.FISCAL_PERIODS.BASE}?limit=500`),
       ]);
@@ -94,6 +96,7 @@ export default function SetupPage() {
       setCostCenters(listFrom(costsResponse).filter((item) => item.is_active !== false));
       setProfitCenters(listFrom(profitsResponse).filter((item) => item.is_active !== false));
       setCurrencies(listFrom(currenciesResponse).filter((item) => item.is_active !== false));
+      setFactoryCalendars(listFrom(factoryCalendarsResponse).filter((item) => item.is_active !== false));
       setAccounts(listFrom(accountsResponse).filter((item) => item.is_active !== false));
       setPeriods(listFrom(periodsResponse));
     } catch {
@@ -140,7 +143,12 @@ export default function SetupPage() {
       label: [text(account, "account_code"), text(account, "account_name")].filter(Boolean).join(" — "),
       subtitle: text(account, "account_type"),
     })),
-  }), [accounts, currencies]);
+    factory_calendar_id: factoryCalendars.map((calendar) => ({
+      value: Number(calendar.id),
+      label: [text(calendar, "code"), text(calendar, locale === "ar-SA" ? "name_ar" : "name")].filter(Boolean).join(" — "),
+      subtitle: [text(calendar, "country_code"), text(calendar, "time_zone")].filter(Boolean).join(" · "),
+    })),
+  }), [accounts, currencies, factoryCalendars, locale]);
 
   const callAndReload = async <T,>(action: () => Promise<{ success?: boolean; message?: string; data?: T }>): Promise<T | null> => {
     setIsSaving(true);

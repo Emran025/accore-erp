@@ -26,6 +26,7 @@ export interface EnterpriseCoreEndpoints {
     ORG: {
         META_TYPES: string;
         TOPOLOGY_RULES: string;
+        FACTORY_CALENDARS: string;
         NODES: string;
         NODE: (uuid: string) => string;
         LINKS: string;
@@ -109,6 +110,7 @@ export const ENTERPRISE_CORE: EnterpriseCoreEndpoints = {
     ORG: {
         META_TYPES: "/v2/org-structure/meta-types",
         TOPOLOGY_RULES: "/v2/org-structure/topology-rules",
+        FACTORY_CALENDARS: "/v2/org-structure/factory-calendars",
         NODES: "/v2/org-structure/nodes",
         NODE: (uuid: string) => `/v2/org-structure/nodes/${uuid}`,
         LINKS: "/v2/org-structure/links",

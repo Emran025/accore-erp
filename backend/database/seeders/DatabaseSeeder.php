@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             CurrencySeeder::class,
             CurrencyPolicySeeder::class,
+            FactoryCalendarSeeder::class,
         ]);
     }
 }

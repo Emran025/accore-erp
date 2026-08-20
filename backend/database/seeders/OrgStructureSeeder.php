@@ -362,7 +362,7 @@ class OrgStructureSeeder extends Seeder
             ['org_meta_type_id' => 'COST_CENTER', 'attribute_key' => 'cost_center_category', 'attribute_type' => 'string', 'is_mandatory' => false, 'sort_order' => 3],
 
             // ── Plant ──
-            ['org_meta_type_id' => 'PLANT', 'attribute_key' => 'factory_calendar_id', 'attribute_type' => 'string', 'is_mandatory' => true, 'sort_order' => 1],
+            ['org_meta_type_id' => 'PLANT', 'attribute_key' => 'factory_calendar_id', 'attribute_type' => 'reference', 'is_mandatory' => true, 'sort_order' => 1],
             ['org_meta_type_id' => 'PLANT', 'attribute_key' => 'country_code', 'attribute_type' => 'string', 'is_mandatory' => true, 'sort_order' => 2],
             ['org_meta_type_id' => 'PLANT', 'attribute_key' => 'name', 'attribute_type' => 'string', 'is_mandatory' => false, 'sort_order' => 3],
             ['org_meta_type_id' => 'PLANT', 'attribute_key' => 'address', 'attribute_type' => 'json', 'is_mandatory' => false, 'sort_order' => 4],
@@ -378,7 +378,7 @@ class OrgStructureSeeder extends Seeder
             // ── Shipping Point ──
             ['org_meta_type_id' => 'SHIPPING_POINT', 'attribute_key' => 'name', 'attribute_type' => 'string', 'is_mandatory' => false, 'sort_order' => 1],
             ['org_meta_type_id' => 'SHIPPING_POINT', 'attribute_key' => 'country_code', 'attribute_type' => 'string', 'is_mandatory' => false, 'sort_order' => 2],
-            ['org_meta_type_id' => 'SHIPPING_POINT', 'attribute_key' => 'factory_calendar_id', 'attribute_type' => 'string', 'is_mandatory' => false, 'sort_order' => 3],
+            ['org_meta_type_id' => 'SHIPPING_POINT', 'attribute_key' => 'factory_calendar_id', 'attribute_type' => 'reference', 'is_mandatory' => false, 'sort_order' => 3],
 
             // ── Loading Point ──
             ['org_meta_type_id' => 'LOADING_POINT', 'attribute_key' => 'name', 'attribute_type' => 'string', 'is_mandatory' => false, 'sort_order' => 1],

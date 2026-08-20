@@ -3,10 +3,13 @@
 namespace App\Domains\EnterpriseCore\OrganizationGovernance\Services;
 
 use App\Domains\HumanCapital\WorkforceAdmin\Models\OrgChangeHistory;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\FactoryCalendar;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\OrgMetaType;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\StructureLink;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\StructureNode;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\TopologyRule;
+use App\Domains\Finance\ForeignExchange\Models\Currency;
+use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -119,6 +122,26 @@ class OrgStructureService
             if ($value === null || $value === '') {
                 $errors[] = "Mandatory attribute '{$key}' is missing.";
             }
+        }
+
+        $calendarId = data_get($attributes, 'factory_calendar_id');
+        if ($calendarId !== null && $calendarId !== '') {
+            $calendar = FactoryCalendar::active()->find($calendarId);
+            if (!$calendar) {
+                $errors[] = 'The selected factory calendar does not exist or is inactive.';
+            } elseif (($countryCode = data_get($attributes, 'country_code')) && strcasecmp($calendar->country_code, (string) $countryCode) !== 0) {
+                $errors[] = 'The selected factory calendar must match the plant country.';
+            }
+        }
+
+        $currencyId = data_get($attributes, 'currency_id');
+        if ($currencyId !== null && $currencyId !== '' && !Currency::active()->whereKey($currencyId)->exists()) {
+            $errors[] = 'The selected currency does not exist or is inactive.';
+        }
+
+        $chartOfAccountsId = data_get($attributes, 'chart_of_accounts_id');
+        if ($chartOfAccountsId !== null && $chartOfAccountsId !== '' && !ChartOfAccount::query()->whereKey($chartOfAccountsId)->where('is_active', true)->exists()) {
+            $errors[] = 'The selected chart-of-accounts reference does not exist or is inactive.';
         }
 
         if (!empty($errors)) {

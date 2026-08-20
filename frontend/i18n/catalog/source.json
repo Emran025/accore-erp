@@ -91001,6 +91001,18 @@
       "occurrences": []
     },
     {
+      "id": "enterpriseCore.orgWorkspace.reference.factoryCalendar.empty",
+      "source": "لا توجد تقاويم مصنع نشطة بعد. عرّف تقويم تشغيل معتمدًا ثم عُد لإكمال هذه المنشأة.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.reference.factoryCalendar.help",
+      "source": "اختر تقويم مصنع نشطًا يطابق بلد المنشأة؛ لا يسمح النظام بإدخال رمز تقويم حر.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
       "id": "enterpriseCore.orgWorkspace.reference.loading",
       "source": "جارٍ تحميل البيانات المرجعية…",
       "classification": "user-facing",

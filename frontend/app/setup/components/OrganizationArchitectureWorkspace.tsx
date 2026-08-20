@@ -24,7 +24,7 @@ type TreeNode = {
   children: TreeNode[];
 };
 
-type ReferenceAttributeKey = "currency_id" | "chart_of_accounts_id";
+type ReferenceAttributeKey = "currency_id" | "chart_of_accounts_id" | "factory_calendar_id";
 type ReferenceOption = {
   value: string | number;
   label: string;
@@ -128,6 +128,11 @@ export function OrganizationArchitectureWorkspace({
   };
 
   const referenceHelpForAttribute = (attributeKey: ReferenceAttributeKey, hasOptions: boolean) => {
+    if (attributeKey === "factory_calendar_id") {
+      return hasOptions
+        ? i18n.catalog["enterpriseCore.orgWorkspace.reference.factoryCalendar.help"]
+        : i18n.catalog["enterpriseCore.orgWorkspace.reference.factoryCalendar.empty"];
+    }
     if (attributeKey === "currency_id") {
       return hasOptions
         ? i18n.catalog["enterpriseCore.orgWorkspace.reference.currency.help"]

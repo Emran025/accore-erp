@@ -83,6 +83,20 @@ describe("standalone phased setup onboarding", () => {
     expect(arabicCatalog).toContain("لا يستخدم النظام قائمة عملات افتراضية");
   });
 
+  it("loads factory calendars from controlled reference data for plants", () => {
+    const page = source("app/setup/page.tsx");
+    const workspace = source("app/setup/components/OrganizationArchitectureWorkspace.tsx");
+    const englishCatalog = source("lib/i18n/catalog/en-US.ts");
+    const arabicCatalog = source("lib/i18n/catalog/ar-SA.ts");
+
+    expect(page).toContain("ORG.FACTORY_CALENDARS");
+    expect(page).toContain("factory_calendar_id: factoryCalendars.map");
+    expect(workspace).toContain('"factory_calendar_id"');
+    expect(workspace).toContain("reference.factoryCalendar.help");
+    expect(englishCatalog).toContain("arbitrary calendar codes are not accepted");
+    expect(arabicCatalog).toContain("لا يسمح النظام بإدخال رمز تقويم حر");
+  });
+
   it("emits setup in the static catch-all parameter set", () => {
     const virtualRoute = source("app/[...virtual]/page.tsx");
 

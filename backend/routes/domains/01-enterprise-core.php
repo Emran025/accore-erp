@@ -104,6 +104,7 @@ use App\Http\Controllers\Api\V2\EnterpriseCore\Automation\SystemTemplateControll
         Route::group(['prefix' => 'org-structure', 'middleware' => 'can:settings,view'], function () {
             Route::get('/meta-types', [OrgStructureController::class, 'metaTypes'])->name('v2.org.meta_types');
             Route::get('/topology-rules', [OrgStructureController::class, 'topologyRules'])->name('v2.org.topology_rules');
+            Route::get('/factory-calendars', [OrgStructureController::class, 'factoryCalendars'])->name('v2.org.factory_calendars');
             Route::get('/nodes', [OrgStructureController::class, 'nodes'])->name('v2.org.nodes');
             Route::get('/nodes/{uuid}', [OrgStructureController::class, 'showNode'])->name('v2.org.nodes.show');
             Route::middleware(['can:settings,create', 'throttle:api-write'])->post('/nodes', [OrgStructureController::class, 'storeNode'])->name('v2.org.nodes.store');

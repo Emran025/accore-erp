@@ -35,6 +35,7 @@ use App\Http\Resources\EnterpriseCore\OrganizationGovernance\StructureNodeResour
 use App\Http\Resources\EnterpriseCore\OrganizationGovernance\StructureLinkResource;
 use App\Http\Resources\EnterpriseCore\OrganizationGovernance\OrgMetaTypeResource;
 use App\Http\Resources\EnterpriseCore\OrganizationGovernance\TopologyRuleResource;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\FactoryCalendar;
 
 /**
  * Organizational Structure Configuration Engine API.
@@ -62,6 +63,17 @@ class OrgStructureController extends Controller
     {
         $rules = $action->execute();
         return $this->successResponse(TopologyRuleResource::collection($rules));
+    }
+
+    public function factoryCalendars(): JsonResponse
+    {
+        $calendars = FactoryCalendar::query()
+            ->active()
+            ->orderBy('country_code')
+            ->orderBy('code')
+            ->get();
+
+        return $this->successResponse($calendars);
     }
 
     // ─── Nodes ──────────────────────────────────────────────────────────
