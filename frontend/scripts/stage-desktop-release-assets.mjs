@@ -38,8 +38,7 @@ console.log(`Staged ${stagedNames.size} publishable desktop assets in ${destinat
 
 function isPublishableReleaseAsset(file) {
   const name = basename(file).toLowerCase();
-  const belongsToAccoreProduct = /accore[ _-](server|client)/i.test(basename(file));
-  if (!belongsToAccoreProduct) return false;
+  if (!productFromAssetName(name)) return false;
 
   return (
     name.endsWith('.appimage') ||
@@ -57,6 +56,11 @@ function isPublishableReleaseAsset(file) {
     name.endsWith('.app.tar.gz') ||
     name.endsWith('.app.tar.gz.sig')
   );
+}
+
+function productFromAssetName(name) {
+  const match = /accore(?:[ ._-]+erp)?[ ._-]+(server|client)(?:[ ._-]+desktop)?/i.exec(name);
+  return match?.[1].toLowerCase() ?? null;
 }
 
 function normalizeAssetName(sourceFile) {
