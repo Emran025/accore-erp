@@ -531,10 +531,16 @@ fn run_checked(command: &mut Command, description: &str) -> Result<(), String> {
     if output.status.success() {
         Ok(())
     } else {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        let diagnostic = if stderr.trim().is_empty() {
+            stdout.trim()
+        } else {
+            stderr.trim()
+        };
         Err(format!(
             "{description} exited with {}: {}",
-            output.status,
-            String::from_utf8_lossy(&output.stderr)
+            output.status, diagnostic
         ))
     }
 }
