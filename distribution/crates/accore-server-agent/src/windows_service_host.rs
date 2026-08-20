@@ -77,6 +77,19 @@ pub fn uninstall_service() -> Result<(), String> {
 }
 
 #[cfg(windows)]
+pub fn stop_service() -> Result<(), String> {
+    let manager = ServiceManager::local_computer(None::<&str>, ServiceManagerAccess::CONNECT)
+        .map_err(|error| format!("open Windows Service Control Manager: {error}"))?;
+    let service = manager
+        .open_service(SERVICE_NAME, ServiceAccess::STOP)
+        .map_err(|error| format!("open ACCORE Server Agent service: {error}"))?;
+    service
+        .stop()
+        .map(|_| ())
+        .map_err(|error| format!("stop ACCORE Server Agent service: {error}"))
+}
+
+#[cfg(windows)]
 pub fn run_service(config_path: String) -> Result<(), String> {
     std::env::set_var("ACCORE_SERVER_AGENT_CONFIG", config_path);
     service_dispatcher::start(SERVICE_NAME, ffi_service_main)
@@ -162,6 +175,7 @@ fn service_main(_arguments: Vec<OsString>) {
 }
 
 #[cfg(not(windows))]
+#[allow(dead_code)]
 pub fn install_service(_config_path: String) -> Result<(), String> {
     Err("Windows Service installation is supported only on Windows".into())
 }
@@ -172,4 +186,8 @@ pub fn uninstall_service() -> Result<(), String> {
 #[cfg(not(windows))]
 pub fn run_service(_config_path: String) -> Result<(), String> {
     Err("Windows Service dispatch is supported only on Windows".into())
+}
+#[cfg(not(windows))]
+pub fn stop_service() -> Result<(), String> {
+    Err("Windows Service control is supported only on Windows".into())
 }

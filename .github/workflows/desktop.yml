@@ -80,6 +80,18 @@ jobs:
         working-directory: frontend
         run: npm ci
 
+      - name: Set up PHP build tooling for Server Desktop
+        if: matrix.flavor == 'server'
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+
+      - name: Install production Laravel dependencies for Server Desktop
+        if: matrix.flavor == 'server'
+        working-directory: backend
+        run: composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
+
       - name: Prepare verified Server Desktop runtime
         if: matrix.flavor == 'server'
         working-directory: frontend

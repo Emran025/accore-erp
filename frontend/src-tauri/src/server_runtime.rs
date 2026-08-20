@@ -1,8 +1,8 @@
-use std::{env, fs, path::PathBuf, process::Command, thread, time::Duration};
+use std::{env, fs, path::PathBuf, thread, time::Duration};
 
-use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
-use rand::RngCore;
 use serde::{Deserialize, Serialize};
+#[cfg(windows)]
+use std::process::Command;
 use tauri::{AppHandle, Manager};
 
 const AGENT_BINARY: &str = "accore-server-agent-x86_64-pc-windows-msvc.exe";
@@ -27,16 +27,6 @@ pub struct RuntimeComponentSnapshot {
     pub detail: String,
 }
 
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-struct AgentConfiguration {
-    runtime_root: PathBuf,
-    data_root: PathBuf,
-    app_key: String,
-    database_password: String,
-    database_name: String,
-}
-
 #[tauri::command]
 pub fn server_runtime_status(app: AppHandle) -> Result<ServerRuntimeSnapshot, String> {
     let paths = RuntimePaths::resolve(&app)?;
@@ -53,7 +43,7 @@ pub fn server_runtime_status(app: AppHandle) -> Result<ServerRuntimeSnapshot, St
         ));
     }
 
-    let status_path = paths.data_root.join("runtime-status.json");
+    let status_path = paths.status_root.join("runtime-status.json");
     if !status_path.is_file() {
         return Ok(unavailable("local server is not initialized", true));
     }
@@ -84,31 +74,12 @@ pub fn server_runtime_start(app: AppHandle) -> Result<ServerRuntimeSnapshot, Str
         ));
     }
 
-    fs::create_dir_all(&paths.data_root)
-        .map_err(|error| format!("create durable runtime data directory: {error}"))?;
-    let config_path = paths.data_root.join("agent-config.json");
-    if !config_path.is_file() {
-        let configuration = AgentConfiguration {
-            runtime_root: paths.runtime_root.clone(),
-            data_root: paths.data_root.clone(),
-            app_key: random_secret("base64:"),
-            database_password: random_secret(""),
-            database_name: "accore".into(),
-        };
-        fs::write(
-            &config_path,
-            serde_json::to_vec_pretty(&configuration)
-                .map_err(|error| format!("serialize agent configuration: {error}"))?,
-        )
-        .map_err(|error| format!("write agent configuration: {error}"))?;
-    }
-
     let current = server_runtime_status(app.clone())?;
     if matches!(current.state.as_str(), "ready" | "bootstrapping") {
         return Ok(current);
     }
 
-    start_windows_service_agent(&paths.agent_binary, &config_path)?;
+    start_windows_service_agent(&paths.agent_binary)?;
 
     for _ in 0..10 {
         thread::sleep(Duration::from_millis(250));
@@ -123,16 +94,12 @@ pub fn server_runtime_start(app: AppHandle) -> Result<ServerRuntimeSnapshot, Str
     ))
 }
 
-fn start_windows_service_agent(
-    agent_binary: &std::path::Path,
-    config_path: &std::path::Path,
-) -> Result<(), String> {
+fn start_windows_service_agent(agent_binary: &std::path::Path) -> Result<(), String> {
     #[cfg(windows)]
     {
         let executable = agent_binary.display().to_string().replace('"', "\"\"");
-        let configuration = config_path.display().to_string().replace('"', "\"\"");
         let install_command = format!(
-            "Start-Process -FilePath \"{executable}\" -ArgumentList 'install','--config','{configuration}' -Verb RunAs -Wait"
+            "Start-Process -FilePath \"{executable}\" -ArgumentList 'install' -Verb RunAs -Wait"
         );
         let result = Command::new("powershell.exe")
             .args([
@@ -153,7 +120,7 @@ fn start_windows_service_agent(
 
     #[cfg(not(windows))]
     {
-        let _ = (agent_binary, config_path);
+        let _ = agent_binary;
         Err(
             "self-contained Server Desktop service installation is supported only on Windows x64"
                 .into(),
@@ -164,24 +131,19 @@ fn start_windows_service_agent(
 #[tauri::command]
 pub fn server_runtime_stop(app: AppHandle) -> Result<ServerRuntimeSnapshot, String> {
     let paths = RuntimePaths::resolve(&app)?;
-    let config_path = paths.data_root.join("agent-config.json");
-    if !config_path.is_file() {
+    if !paths.status_root.join("runtime-status.json").is_file() {
         return Ok(unavailable(
             "local server is not initialized",
             paths.runtime_root.exists(),
         ));
     }
-    Command::new(&paths.agent_binary)
-        .args(["stop", "--config"])
-        .arg(config_path)
-        .output()
-        .map_err(|error| format!("request ordered server shutdown: {error}"))?;
+    stop_windows_service_agent(&paths.agent_binary)?;
     Ok(server_runtime_status(app)?)
 }
 
 struct RuntimePaths {
     runtime_root: PathBuf,
-    data_root: PathBuf,
+    status_root: PathBuf,
     agent_binary: PathBuf,
 }
 
@@ -200,10 +162,15 @@ impl RuntimePaths {
             )
             .join("ACCORE ERP")
             .join("Server");
+        let status_root = data_root
+            .parent()
+            .map(PathBuf::from)
+            .unwrap_or_else(|| data_root.clone())
+            .join("Server Status");
         Ok(Self {
             runtime_root: resource_root.join(RUNTIME_RELATIVE_PATH),
             agent_binary: resource_root.join("binaries").join(AGENT_BINARY),
-            data_root,
+            status_root,
         })
     }
 }
@@ -228,9 +195,28 @@ fn unavailable(detail: impl Into<String>, runtime_present: bool) -> ServerRuntim
         updated_at: None,
     }
 }
+fn stop_windows_service_agent(agent_binary: &std::path::Path) -> Result<(), String> {
+    #[cfg(windows)]
+    {
+        let executable = agent_binary.display().to_string().replace('"', "\"\"");
+        let stop_command = format!(
+            "Start-Process -FilePath \"{executable}\" -ArgumentList 'stop' -Verb RunAs -Wait"
+        );
+        let result = Command::new("powershell.exe")
+            .args(["-NoProfile", "-NonInteractive", "-Command", &stop_command])
+            .status()
+            .map_err(|error| format!("request elevated Server Agent shutdown: {error}"))?;
+        if !result.success() {
+            return Err(format!(
+                "elevated Server Agent shutdown exited with {result}"
+            ));
+        }
+        Ok(())
+    }
 
-fn random_secret(prefix: &str) -> String {
-    let mut bytes = [0u8; 32];
-    rand::thread_rng().fill_bytes(&mut bytes);
-    format!("{prefix}{}", URL_SAFE_NO_PAD.encode(bytes))
+    #[cfg(not(windows))]
+    {
+        let _ = agent_binary;
+        Err("self-contained Server Desktop service control is supported only on Windows x64".into())
+    }
 }

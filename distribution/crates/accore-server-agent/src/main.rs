@@ -9,6 +9,10 @@ use std::{
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
+#[cfg(windows)]
+use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
+#[cfg(windows)]
+use rand::{rngs::OsRng, RngCore};
 use serde::{Deserialize, Serialize};
 
 mod windows_service_host;
@@ -18,13 +22,17 @@ const API_PORT: u16 = 8765;
 const READINESS_TIMEOUT: Duration = Duration::from_secs(90);
 const MAX_RESTART_ATTEMPTS: u8 = 3;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct RuntimeConfig {
     runtime_root: PathBuf,
     data_root: PathBuf,
     app_key: String,
     database_password: String,
+    #[serde(default)]
+    database_root_password: String,
+    #[serde(default)]
+    database_root_password_legacy_blank: bool,
     database_name: String,
 }
 
@@ -75,22 +83,60 @@ fn main() {
 fn execute() -> Result<(), String> {
     let mut arguments = env::args().skip(1);
     let command = arguments.next().ok_or(
-        "usage: accore-server-agent <run|service|install|uninstall|status|stop> --config <path>",
+        "usage: accore-server-agent <run|service|install|uninstall|status|stop> [--config <path>]",
     )?;
+
+    match command.as_str() {
+        "install" => install_embedded_service(),
+        "uninstall" => windows_service_host::uninstall_service(),
+        "stop" => windows_service_host::stop_service(),
+        "run" | "service" | "status" => {
+            let config_path = read_config_argument(&mut arguments)?;
+            match command.as_str() {
+                "run" => execute_with_config(Path::new(&config_path)),
+                "service" => windows_service_host::run_service(config_path),
+                "status" => print_status(&load_config(Path::new(&config_path))?),
+                _ => unreachable!(),
+            }
+        }
+        _ => Err(format!("unsupported command {command}")),
+    }
+}
+
+fn read_config_argument(arguments: &mut impl Iterator<Item = String>) -> Result<String, String> {
     let flag = arguments.next().ok_or("missing --config")?;
     let config_path = arguments.next().ok_or("missing config path")?;
     if flag != "--config" {
-        return Err("usage: accore-server-agent <run|service|install|uninstall|status|stop> --config <path>".into());
+        return Err("usage: accore-server-agent <run|service|status> --config <path>".into());
+    }
+    Ok(config_path)
+}
+
+fn install_embedded_service() -> Result<(), String> {
+    #[cfg(windows)]
+    {
+        let config_path = default_config_path()?;
+        let mut config = embedded_runtime_config()?;
+        if config_path.is_file() {
+            let existing = load_config(&config_path)?;
+            config.app_key = existing.app_key;
+            config.database_password = existing.database_password;
+            if existing.database_root_password.is_empty() {
+                config.database_root_password_legacy_blank = true;
+            } else {
+                config.database_root_password = existing.database_root_password;
+            }
+            config.database_name = existing.database_name;
+        }
+        ensure_layout(&config)?;
+        harden_runtime_data_access(&config)?;
+        write_config(&config_path, &config)?;
+        windows_service_host::install_service(config_path.display().to_string())
     }
 
-    match command.as_str() {
-        "run" => execute_with_config(Path::new(&config_path)),
-        "service" => windows_service_host::run_service(config_path),
-        "install" => windows_service_host::install_service(config_path),
-        "uninstall" => windows_service_host::uninstall_service(),
-        "status" => print_status(&load_config(Path::new(&config_path))?),
-        "stop" => request_stop_for_config(Path::new(&config_path)),
-        _ => Err(format!("unsupported command {command}")),
+    #[cfg(not(windows))]
+    {
+        Err("self-contained Server Desktop installation is supported only on Windows x64".into())
     }
 }
 
@@ -140,25 +186,31 @@ fn run_components(config: &RuntimeConfig, status: &mut RuntimeStatus) -> Result<
     let mut queue = None;
     let result = (|| {
         initialise_database(config)?;
+        ensure_port_is_free(DATABASE_PORT, "MariaDB")?;
         status.database = component("starting", "starting MariaDB on loopback");
         write_status(config, status)?;
         database = Some(start_database(config)?);
         wait_for_port(DATABASE_PORT, "MariaDB")?;
+        ensure_child_is_running(database.as_mut().expect("database child exists"), "MariaDB")?;
         provision_database_principal(config)?;
         status.database = component("ready", "MariaDB is ready on 127.0.0.1:3307");
         write_status(config, status)?;
 
         provision_application(config)?;
+        ensure_port_is_free(API_PORT, "ACCORE API")?;
         status.api = component("starting", "starting FrankenPHP API on loopback");
         write_status(config, status)?;
         api = Some(start_api(config)?);
         wait_for_http_ok(API_PORT, "/up", "ACCORE API")?;
+        ensure_child_is_running(api.as_mut().expect("API child exists"), "ACCORE API")?;
         status.api = component("ready", "API is ready on http://127.0.0.1:8765/up");
         write_status(config, status)?;
 
         status.queue = component("starting", "starting Laravel queue worker");
         write_status(config, status)?;
         queue = Some(start_queue(config)?);
+        thread::sleep(Duration::from_millis(250));
+        ensure_child_is_running(queue.as_mut().expect("queue child exists"), "queue worker")?;
         status.queue = component("ready", "queue worker is running");
         status.state = "ready".into();
         status.detail = "all local server components are ready".into();
@@ -214,7 +266,10 @@ fn initialise_database(config: &RuntimeConfig) -> Result<(), String> {
     }
     let installer = mariadb_bin(config, "mariadb-install-db.exe");
     run_checked(
-        Command::new(installer).arg(format!("--datadir={}", database_data(config).display())),
+        Command::new(installer)
+            .arg(format!("--datadir={}", database_data(config).display()))
+            .arg(format!("--password={}", config.database_root_password))
+            .arg(format!("--port={DATABASE_PORT}")),
         "initialize MariaDB data directory",
     )?;
     File::create(marker)
@@ -227,28 +282,56 @@ fn provision_database_principal(config: &RuntimeConfig) -> Result<(), String> {
         .data_root
         .join("accoredb")
         .join(".principal-provisioned");
-    if marker.exists() {
+    let root_marker = config
+        .data_root
+        .join("accoredb")
+        .join(".root-credential-provisioned");
+    if marker.exists() && root_marker.exists() {
         return Ok(());
     }
     let database = &config.database_name;
     let password = &config.database_password;
-    let sql = format!(
-        "CREATE DATABASE IF NOT EXISTS `{database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; \
-         CREATE USER IF NOT EXISTS 'accore_app'@'localhost' IDENTIFIED BY '{password}'; \
-         CREATE USER IF NOT EXISTS 'accore_app'@'127.0.0.1' IDENTIFIED BY '{password}'; \
-         GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP, REFERENCES, CREATE TEMPORARY TABLES, LOCK TABLES ON `{database}`.* TO 'accore_app'@'localhost'; \
-         GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP, REFERENCES, CREATE TEMPORARY TABLES, LOCK TABLES ON `{database}`.* TO 'accore_app'@'127.0.0.1'; \
-         FLUSH PRIVILEGES;"
-    );
+    let mut statements = Vec::new();
+    if !root_marker.exists() {
+        statements.push(format!(
+            "ALTER USER 'root'@'localhost' IDENTIFIED BY '{}'; \
+             DELETE FROM mysql.global_priv WHERE User = ''; \
+             DROP DATABASE IF EXISTS test;",
+            config.database_root_password
+        ));
+    }
+    if !marker.exists() {
+        statements.push(format!(
+            "CREATE DATABASE IF NOT EXISTS `{database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; \
+             CREATE USER IF NOT EXISTS 'accore_app'@'localhost' IDENTIFIED BY '{password}'; \
+             CREATE USER IF NOT EXISTS 'accore_app'@'127.0.0.1' IDENTIFIED BY '{password}'; \
+             GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP, REFERENCES, CREATE TEMPORARY TABLES, LOCK TABLES ON `{database}`.* TO 'accore_app'@'localhost'; \
+             GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP, REFERENCES, CREATE TEMPORARY TABLES, LOCK TABLES ON `{database}`.* TO 'accore_app'@'127.0.0.1';"
+        ));
+    }
+    statements.push("FLUSH PRIVILEGES;".into());
+    let source_root_password = if config.database_root_password_legacy_blank {
+        ""
+    } else {
+        &config.database_root_password
+    };
     run_checked(
         Command::new(mariadb_bin(config, "mariadb.exe"))
-            .args(["--protocol=tcp", "--host=127.0.0.1"])
+            .args(["--no-defaults", "--protocol=tcp", "--host=127.0.0.1"])
             .arg(format!("--port={DATABASE_PORT}"))
             .args(["--user=root", "--execute"])
-            .arg(sql),
+            .arg(format!("--password={source_root_password}"))
+            .arg(statements.join(" ")),
         "provision ACCORE database principal",
     )?;
-    File::create(marker).map_err(|error| format!("write database principal marker: {error}"))?;
+    if !marker.exists() {
+        File::create(marker)
+            .map_err(|error| format!("write database principal marker: {error}"))?;
+    }
+    if !root_marker.exists() {
+        File::create(root_marker)
+            .map_err(|error| format!("write root credential marker: {error}"))?;
+    }
     Ok(())
 }
 
@@ -256,6 +339,11 @@ fn start_database(config: &RuntimeConfig) -> Result<Child, String> {
     let log = File::create(log_path(config, "mariadb.log"))
         .map_err(|error| format!("open MariaDB log: {error}"))?;
     Command::new(mariadb_bin(config, "mariadbd.exe"))
+        .arg("--no-defaults")
+        .arg(format!(
+            "--basedir={}",
+            config.runtime_root.join("mariadb-11.4.9-winx64").display()
+        ))
         .arg(format!("--datadir={}", database_data(config).display()))
         .arg("--bind-address=127.0.0.1")
         .arg(format!("--port={DATABASE_PORT}"))
@@ -357,6 +445,15 @@ fn wait_for_port(port: u16, component: &str) -> Result<(), String> {
     ))
 }
 
+fn ensure_port_is_free(port: u16, component: &str) -> Result<(), String> {
+    if TcpStream::connect(("127.0.0.1", port)).is_ok() {
+        return Err(format!(
+            "{component} cannot start because 127.0.0.1:{port} is already in use by another local process"
+        ));
+    }
+    Ok(())
+}
+
 fn wait_for_http_ok(port: u16, path: &str, component: &str) -> Result<(), String> {
     let started = std::time::Instant::now();
     while started.elapsed() < READINESS_TIMEOUT {
@@ -405,6 +502,10 @@ fn child_exit(child: &mut Child, component: &str) -> Option<String> {
     }
 }
 
+fn ensure_child_is_running(child: &mut Child, component: &str) -> Result<(), String> {
+    child_exit(child, component).map_or(Ok(()), Err)
+}
+
 fn terminate(child: &mut Child) {
     let _ = child.kill();
     let _ = child.wait();
@@ -432,11 +533,13 @@ fn write_status(config: &RuntimeConfig, status: &RuntimeStatus) -> Result<(), St
     fs::rename(&temporary, &destination).map_err(|error| format!("publish runtime status: {error}"))
 }
 
+#[cfg(windows)]
 fn request_stop(config: &RuntimeConfig) -> Result<(), String> {
     fs::write(config.data_root.join("control.stop"), "requested\n")
         .map_err(|error| format!("request runtime stop: {error}"))
 }
 
+#[cfg(windows)]
 fn request_stop_for_config(path: &Path) -> Result<(), String> {
     request_stop(&load_config(path)?)
 }
@@ -457,6 +560,7 @@ fn ensure_layout(config: &RuntimeConfig) -> Result<(), String> {
         config.data_root.join("laravel-storage"),
         config.data_root.join("logs"),
         config.data_root.join("backups"),
+        public_status_root(config),
     ] {
         fs::create_dir_all(path).map_err(|error| format!("create runtime directory: {error}"))?;
     }
@@ -480,7 +584,7 @@ fn frankenphp(config: &RuntimeConfig) -> PathBuf {
     config.runtime_root.join("frankenphp.exe")
 }
 fn status_path(config: &RuntimeConfig) -> PathBuf {
-    config.data_root.join("runtime-status.json")
+    public_status_root(config).join("runtime-status.json")
 }
 fn log_path(config: &RuntimeConfig, name: &str) -> PathBuf {
     config.data_root.join("logs").join(name)
@@ -498,9 +602,145 @@ fn now() -> u64 {
         .unwrap_or_default()
 }
 
+#[cfg(windows)]
+fn default_config_path() -> Result<PathBuf, String> {
+    let program_data = env::var_os("PROGRAMDATA")
+        .map(PathBuf::from)
+        .ok_or("PROGRAMDATA is not available")?;
+    Ok(program_data
+        .join("ACCORE ERP")
+        .join("Server")
+        .join("agent-config.json"))
+}
+
+#[cfg(windows)]
+fn embedded_runtime_config() -> Result<RuntimeConfig, String> {
+    let executable =
+        env::current_exe().map_err(|error| format!("resolve Agent executable: {error}"))?;
+    let resource_root = executable
+        .parent()
+        .and_then(Path::parent)
+        .ok_or("resolve packaged resource root from Agent executable")?;
+    let runtime_root = resource_root.join("resources/server-runtime/windows-x86_64");
+    if !runtime_root.join("frankenphp.exe").is_file()
+        || !runtime_root
+            .join("mariadb-11.4.9-winx64/bin/mariadbd.exe")
+            .is_file()
+    {
+        return Err(
+            "verified Server Desktop runtime resources are missing beside the Agent".into(),
+        );
+    }
+    let config_path = default_config_path()?;
+    let data_root = config_path
+        .parent()
+        .ok_or("resolve Server Desktop data root")?
+        .to_path_buf();
+    Ok(RuntimeConfig {
+        runtime_root,
+        data_root,
+        app_key: random_secret("base64:"),
+        database_password: random_secret(""),
+        database_root_password: random_secret(""),
+        database_root_password_legacy_blank: false,
+        database_name: "accore".into(),
+    })
+}
+
+#[cfg(windows)]
+fn harden_runtime_data_access(config: &RuntimeConfig) -> Result<(), String> {
+    apply_windows_acl(&config.data_root, false)?;
+    apply_windows_acl(&public_status_root(config), true)
+}
+
+#[cfg(windows)]
+fn apply_windows_acl(path: &Path, permit_users_read: bool) -> Result<(), String> {
+    let mut command = Command::new("icacls.exe");
+    command.arg(path).args([
+        "/inheritance:r",
+        "/grant:r",
+        "SYSTEM:(OI)(CI)F",
+        "/grant:r",
+        "Administrators:(OI)(CI)F",
+    ]);
+    if permit_users_read {
+        command.args(["/grant:r", "Users:(OI)(CI)RX"]);
+    }
+    command.args(["/t", "/c", "/q"]);
+    run_checked(
+        &mut command,
+        "harden Server Desktop runtime data permissions",
+    )
+}
+
+#[cfg(windows)]
+fn random_secret(prefix: &str) -> String {
+    let mut bytes = [0u8; 32];
+    OsRng.fill_bytes(&mut bytes);
+    format!("{prefix}{}", URL_SAFE_NO_PAD.encode(bytes))
+}
+
+fn public_status_root(config: &RuntimeConfig) -> PathBuf {
+    config
+        .data_root
+        .parent()
+        .map(Path::to_path_buf)
+        .unwrap_or_else(|| config.data_root.clone())
+        .join("Server Status")
+}
+
+#[cfg(windows)]
+fn write_config(path: &Path, config: &RuntimeConfig) -> Result<(), String> {
+    let temporary = path.with_extension("json.partial");
+    let payload = serde_json::to_vec_pretty(config)
+        .map_err(|error| format!("serialize Agent configuration: {error}"))?;
+    fs::write(&temporary, payload)
+        .map_err(|error| format!("write Agent configuration: {error}"))?;
+    fs::rename(&temporary, path).map_err(|error| format!("publish Agent configuration: {error}"))
+}
+
 fn load_config(path: &Path) -> Result<RuntimeConfig, String> {
     serde_json::from_slice(
         &fs::read(path).map_err(|error| format!("read runtime config: {error}"))?,
     )
     .map_err(|error| format!("parse runtime config: {error}"))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn config() -> RuntimeConfig {
+        RuntimeConfig {
+            runtime_root: PathBuf::from("C:/Program Files/ACCORE ERP Server Desktop/runtime"),
+            data_root: PathBuf::from("C:/ProgramData/ACCORE ERP/Server"),
+            app_key: "base64:test".into(),
+            database_password: "application-password".into(),
+            database_root_password: "root-password".into(),
+            database_root_password_legacy_blank: false,
+            database_name: "accore".into(),
+        }
+    }
+
+    #[test]
+    fn status_is_published_outside_the_private_secret_root() {
+        let config = config();
+        let status = status_path(&config);
+        assert_ne!(status.parent(), Some(config.data_root.as_path()));
+        assert!(status.ends_with("Server Status/runtime-status.json"));
+    }
+
+    #[test]
+    fn legacy_configuration_without_root_password_remains_readable_for_hardening() {
+        let legacy = r#"{
+          "runtimeRoot":"C:/runtime",
+          "dataRoot":"C:/data",
+          "appKey":"base64:test",
+          "databasePassword":"application-password",
+          "databaseName":"accore"
+        }"#;
+        let parsed: RuntimeConfig = serde_json::from_str(legacy).expect("legacy config parses");
+        assert!(parsed.database_root_password.is_empty());
+        assert!(!parsed.database_root_password_legacy_blank);
+    }
 }

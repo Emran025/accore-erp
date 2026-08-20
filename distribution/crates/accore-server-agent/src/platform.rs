@@ -16,9 +16,9 @@ pub struct ServiceRegistration {
     pub control_endpoint: LocalControlEndpoint,
 }
 
-/// OS-specific registration metadata. An installer invokes the operating system's
-/// native registration API with this data; it never falls back to a user-level
-/// background process, so the Agent outlives the Server Desktop application.
+/// OS-specific registration metadata retained for future packaging work. Only the
+/// Windows SCM path is currently wired to a shipped self-contained Server Desktop
+/// runtime; launchd and systemd descriptors are not executable support claims.
 pub trait ServiceRegistrationAdapter {
     fn platform(&self) -> PlatformKind;
     fn registration(&self, executable: &str) -> ServiceRegistration;
@@ -90,7 +90,7 @@ mod tests {
     use crate::LocalControlEndpoint;
 
     #[test]
-    fn every_platform_registers_a_boot_service_and_local_only_control_channel() {
+    fn registration_descriptors_preserve_local_only_contracts_for_future_platforms() {
         for registration in [
             WindowsScmAdapter.registration("agent"),
             LaunchdAdapter.registration("agent"),

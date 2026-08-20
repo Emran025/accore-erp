@@ -52,6 +52,7 @@ for (const executable of ['frankenphp.exe', 'php.exe']) {
 }
 
 const applicationRoot = join(destinationRoot, 'app');
+await assertFile(join(repositoryRoot, 'backend', 'vendor', 'autoload.php'));
 await cp(join(repositoryRoot, 'backend'), applicationRoot, {
   recursive: true,
   filter: (source) => {
