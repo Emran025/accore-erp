@@ -1,5 +1,6 @@
 import { catalogMessage } from "@/lib/i18n";
 import { TemplateField } from "@/components/template-editor/types";
+import { importCopy } from "@/lib/i18n/import-copy";
 
 export const SYSTEM_APPROVED_KEYS: TemplateField[] = [
     // Common
@@ -42,11 +43,11 @@ export const SYSTEM_APPROVED_KEYS: TemplateField[] = [
     { key: "payment_date", description: catalogMessage("common.general.voucherDate"), type: "date", templateTypes: ["payment_note"] },
     { key: "payee_name", description: catalogMessage("commercial.templatesData.recipientName"), type: "string", templateTypes: ["payment_note"] },
     // Inventory reports
-    { key: "inventory_items", description: "Inventory item rows", type: "list", templateTypes: ["inventory_report"] },
-    { key: "inventory_quantity", description: "Available inventory quantity", type: "number", templateTypes: ["inventory_report"] },
-    { key: "inventory_value", description: "Estimated inventory value", type: "number", templateTypes: ["inventory_report"] },
-    { key: "inventory_cost_price", description: "Inventory cost price", type: "number", templateTypes: ["inventory_report"] },
-    { key: "inventory_class", description: "Product, service, or raw-material class", type: "string", templateTypes: ["inventory_report"] }
+    { key: "inventory_items", description: importCopy("records"), type: "list", templateTypes: ["inventory_report"] },
+    { key: "inventory_quantity", description: importCopy("inventory"), type: "number", templateTypes: ["inventory_report"] },
+    { key: "inventory_value", description: importCopy("inventoryReport"), type: "number", templateTypes: ["inventory_report"] },
+    { key: "inventory_cost_price", description: importCopy("reportTemplate"), type: "number", templateTypes: ["inventory_report"] },
+    { key: "inventory_class", description: importCopy("classFirst"), type: "string", templateTypes: ["inventory_report"] }
 ];
 
 export const SYSTEM_MOCK_CONTEXT: Record<string, any> = {
@@ -96,7 +97,7 @@ export const templateTypeLabels: Record<string, string> = {
     purchase_order: catalogMessage("commercial.templatesData.purchaseOrder"),
     customer_statement: catalogMessage("common.general.customerAccountStatement"),
     payment_note: catalogMessage("commercial.templatesData.paymentDisbursementVoucher"),
-    inventory_report: "Inventory report",
+    inventory_report: importCopy("inventoryReport"),
     other_system: catalogMessage("common.general.other")
 };
 

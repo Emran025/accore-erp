@@ -1,6 +1,7 @@
 "use client";
 
 import { useI18n, catalogMessage } from "@/lib/i18n";
+import { importCopy } from "@/lib/i18n/import-copy";
 import { MainLayout } from "@/components/layout";
 import { Button, DocumentPreview, SelectOption, showAlert } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -353,8 +354,8 @@ export function OperationalReportsWorkspace({ domain }: { domain: ReportDomain }
                     <div><p className="operational-report-overline">{i18n.catalog["ui.operationalreports.defaultTemplate"]}</p><h2>{selected.title}</h2><p>{selected.description}</p></div>
                     {selected.requiresParty && <label className="operational-party-picker"><span>{selected.requiresParty === "customer" ? i18n.catalog["common.general.customer"] : i18n.catalog["common.general.supplier"]}</span><select value={partyId} onChange={(event) => setPartyId(event.target.value)}><option value="">{i18n.catalog["common.general.select"]}{selected.requiresParty === "customer" ? i18n.catalog["common.general.customer"] : i18n.catalog["common.general.supplier"]}</option>{partyOptions.map((party) => <option key={party.value} value={party.value}>{party.label}</option>)}</select></label>}
                     {selectedKey === "inventory-balance" && <div className="inventory-report-template-controls">
-                        <label><span>Report template</span><select value={inventoryTemplateId} onChange={(event) => setInventoryTemplateId(event.target.value)}><option value="">Default inventory layout</option>{inventoryTemplates.map((template) => <option key={template.id} value={template.id}>{template.template_name_ar || template.template_name_en || template.template_key || `Template ${template.id}`}</option>)}</select></label>
-                        <div className="inventory-report-field-picker"><span>Visible fields</span><div>{inventoryColumns.map((column) => <label key={column.key}><input type="checkbox" checked={inventoryColumnKeys.includes(column.key)} onChange={() => setInventoryColumnKeys((current) => current.includes(column.key) ? current.filter((key) => key !== column.key) : [...current, column.key])} />{column.label}</label>)}</div></div>
+                        <label><span>{importCopy("reportTemplate")}</span><select value={inventoryTemplateId} onChange={(event) => setInventoryTemplateId(event.target.value)}><option value="">{importCopy("defaultInventoryLayout")}</option>{inventoryTemplates.map((template) => <option key={template.id} value={template.id}>{template.template_name_ar || template.template_name_en || template.template_key || importCopy("template", { value0: template.id })}</option>)}</select></label>
+                        <div className="inventory-report-field-picker"><span>{importCopy("visibleFields")}</span><div>{inventoryColumns.map((column) => <label key={column.key}><input type="checkbox" checked={inventoryColumnKeys.includes(column.key)} onChange={() => setInventoryColumnKeys((current) => current.includes(column.key) ? current.filter((key) => key !== column.key) : [...current, column.key])} />{column.label}</label>)}</div></div>
                     </div>}
                     <Button variant="primary" icon="eye" onClick={createReport} disabled={isLoading}>{isLoading ? i18n.catalog["ui.operationalreports.preparingReport"] : i18n.catalog["ui.operationalreports.previewReport"]}</Button>
                 </section>

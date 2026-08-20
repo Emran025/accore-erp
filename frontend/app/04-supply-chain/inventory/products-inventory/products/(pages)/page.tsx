@@ -1,6 +1,7 @@
 "use client";
 
 import { useI18n } from "@/lib/i18n";
+import { importCopy, productImportAliases } from "@/lib/i18n/import-copy";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Column, ConfirmDialog, DataImportWorkspace, Dialog, NumberInput, SearchableSelect, Table, showToast } from "@/components/ui";
 import type { ImportField, ImportRow } from "@/components/ui";
@@ -179,21 +180,21 @@ export default function ProductsPage() {
     };
 
     const importFields: ImportField[] = [
-        { id: "name", label: i18n.catalog["common.general.productName.alternative2"], aliases: ["product name", "name", "اسم المنتج"], type: "text", required: true, group: "identity" },
-        { id: "barcode", label: i18n.catalog["common.general.barcode"], aliases: ["barcode", "sku", "item code", "باركود"], type: "text", group: "identity" },
-        { id: "item_type", label: i18n.catalog["supplyChain.products.itemType"], aliases: ["item type", "class", "type", "نوع الصنف"], type: "class", required: true, group: "classification" },
-        { id: "category_id", label: i18n.catalog["common.general.category"], aliases: ["category", "category id", "التصنيف"], type: "text", group: "classification" },
-        { id: "purchase_price", label: i18n.catalog["supplyChain.products.purchasePrice"], aliases: ["purchase price", "cost", "سعر الشراء"], type: "number", group: "commercial" },
-        { id: "unit_price", label: i18n.catalog["supplyChain.products.salePrice"], aliases: ["selling price", "sale price", "unit price", "سعر البيع"], type: "number", required: true, group: "commercial" },
-        { id: "minimum_profit_margin", label: i18n.catalog["supplyChain.products.profitMargin.alternative2"], aliases: ["profit margin", "margin", "هامش الربح"], type: "number", group: "commercial" },
-        { id: "unit_name", label: i18n.catalog["common.general.unit.alternative2"], aliases: ["unit", "unit name", "الوحدة"], type: "text", group: "inventory" },
-        { id: "items_per_unit", label: i18n.catalog["supplyChain.products.unitsBox"], aliases: ["units per package", "items per unit", "عدد الوحدات"], type: "number", group: "inventory" },
-        { id: "stock_quantity", label: i18n.catalog["common.general.currentInventory"], aliases: ["stock", "quantity", "inventory", "المخزون"], type: "number", group: "inventory" },
-        { id: "low_stock_threshold", label: i18n.catalog["supplyChain.products.minimumOrder"], aliases: ["minimum stock", "reorder level", "حد إعادة الطلب"], type: "number", group: "inventory" },
-        { id: "inventory_control", label: i18n.catalog["supplyChain.products.inventoryTracking"], aliases: ["inventory control", "track inventory", "تتبع المخزون"], type: "boolean", group: "inventory", dependsOn: "item_type" },
-        { id: "sellable", label: i18n.catalog["supplyChain.products.sellable"], aliases: ["sellable", "for sale", "قابل للبيع"], type: "boolean", group: "classification", dependsOn: "item_type" },
-        { id: "taxable", label: i18n.catalog["common.general.taxable"], aliases: ["taxable", "vat", "خاضع للضريبة"], type: "boolean", group: "additional" },
-        { id: "description", label: i18n.catalog["common.general.description.alternative2"], aliases: ["description", "notes", "الوصف"], type: "text", group: "additional" },
+        { id: "name", label: i18n.catalog["common.general.productName.alternative2"], aliases: productImportAliases.name, type: "text", required: true, group: "identity" },
+        { id: "barcode", label: i18n.catalog["common.general.barcode"], aliases: productImportAliases.barcode, type: "text", group: "identity" },
+        { id: "item_type", label: i18n.catalog["supplyChain.products.itemType"], aliases: productImportAliases.itemType, type: "class", required: true, group: "classification" },
+        { id: "category_id", label: i18n.catalog["common.general.category"], aliases: productImportAliases.category, type: "text", group: "classification" },
+        { id: "purchase_price", label: i18n.catalog["supplyChain.products.purchasePrice"], aliases: productImportAliases.purchasePrice, type: "number", group: "commercial" },
+        { id: "unit_price", label: i18n.catalog["supplyChain.products.salePrice"], aliases: productImportAliases.unitPrice, type: "number", required: true, group: "commercial" },
+        { id: "minimum_profit_margin", label: i18n.catalog["supplyChain.products.profitMargin.alternative2"], aliases: productImportAliases.profitMargin, type: "number", group: "commercial" },
+        { id: "unit_name", label: i18n.catalog["common.general.unit.alternative2"], aliases: productImportAliases.unitName, type: "text", group: "inventory" },
+        { id: "items_per_unit", label: i18n.catalog["supplyChain.products.unitsBox"], aliases: productImportAliases.itemsPerUnit, type: "number", group: "inventory" },
+        { id: "stock_quantity", label: i18n.catalog["common.general.currentInventory"], aliases: productImportAliases.stock, type: "number", group: "inventory" },
+        { id: "low_stock_threshold", label: i18n.catalog["supplyChain.products.minimumOrder"], aliases: productImportAliases.lowStock, type: "number", group: "inventory" },
+        { id: "inventory_control", label: i18n.catalog["supplyChain.products.inventoryTracking"], aliases: productImportAliases.inventoryControl, type: "boolean", group: "inventory", dependsOn: "item_type" },
+        { id: "sellable", label: i18n.catalog["supplyChain.products.sellable"], aliases: productImportAliases.sellable, type: "boolean", group: "classification", dependsOn: "item_type" },
+        { id: "taxable", label: i18n.catalog["common.general.taxable"], aliases: productImportAliases.taxable, type: "boolean", group: "additional" },
+        { id: "description", label: i18n.catalog["common.general.description.alternative2"], aliases: productImportAliases.description, type: "text", group: "additional" },
     ];
 
     const importProducts = async (rows: ImportRow[]) => {
@@ -220,9 +221,9 @@ export default function ProductsPage() {
             };
         });
         const response = await fetchAPI(API_ENDPOINTS.SUPPLY_CHAIN.PRODUCT_IMPORT, { method: "POST", body: JSON.stringify({ rows: normalizedRows }) });
-        if (!response.success) throw new Error(response.message || "The product import failed.");
+        if (!response.success) throw new Error(response.message || importCopy("importFailed"));
         await loadProducts(1, searchTerm);
-        return { imported: normalizedRows.length, message: "Validated records were created through the same inventory workflow used by manual entry." };
+        return { imported: normalizedRows.length, message: importCopy("readyForImport") };
     };
 
     const addCategory = async () => {
@@ -356,7 +357,7 @@ export default function ProductsPage() {
                         canAccess(permissions, "products", "create") && (
                             <>
                                 <Button variant="secondary" icon="upload" onClick={() => setImportDialog(true)}>
-                                    Import items
+                                    {importCopy("importItemsButton")}
                                 </Button>
                                 <Button variant="primary" icon="plus" onClick={openAddDialog}>
                                     {i18n.catalog["common.general.addProduct"]}
@@ -378,10 +379,10 @@ export default function ProductsPage() {
                 />
             </div>
 
-            <Dialog isOpen={importDialog} onClose={() => setImportDialog(false)} title="Import products and inventory" maxWidth="1400px">
+            <Dialog isOpen={importDialog} onClose={() => setImportDialog(false)} title={importCopy("inventoryReport")} maxWidth="1400px">
                 <DataImportWorkspace
-                    title="Product and inventory import studio"
-                    subtitle="Bridge an external spreadsheet to the internal item model, reveal dependent fields only when they matter, and verify every record before writing it."
+                    title={importCopy("reusableBridge")}
+                    subtitle={importCopy("linkClassDescription")}
                     fields={importFields}
                     onImport={importProducts}
                     onClose={() => setImportDialog(false)}
