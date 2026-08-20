@@ -21,6 +21,7 @@
   "bundle": {
     "icon": [
       "icons/flavors/accore-client.png",
+      "icons/flavors/accore-client.icns",
       "icons/flavors/accore-client.ico"
     ]
   }
