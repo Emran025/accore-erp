@@ -15,14 +15,17 @@ use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
 use rand::{rngs::OsRng, RngCore};
 use serde::{Deserialize, Serialize};
 
+mod backup;
 mod windows_service_host;
 
 const DATABASE_PORT: u16 = 3307;
 const API_PORT: u16 = 8765;
+const BACKUP_VALIDATION_PORT: u16 = 3308;
 const READINESS_TIMEOUT: Duration = Duration::from_secs(90);
 const MAX_RESTART_ATTEMPTS: u8 = 3;
+const BACKUP_INTERVAL_SECONDS: u64 = 6 * 60 * 60;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct RuntimeConfig {
     runtime_root: PathBuf,
@@ -51,6 +54,7 @@ struct RuntimeStatus {
     database: ComponentStatus,
     api: ComponentStatus,
     queue: ComponentStatus,
+    backup: ComponentStatus,
     updated_at: u64,
 }
 
@@ -62,6 +66,7 @@ impl RuntimeStatus {
             database: component("pending", "not started"),
             api: component("pending", "not started"),
             queue: component("pending", "not started"),
+            backup: component("pending", "backup policy not yet active"),
             updated_at: now(),
         }
     }
@@ -83,19 +88,20 @@ fn main() {
 fn execute() -> Result<(), String> {
     let mut arguments = env::args().skip(1);
     let command = arguments.next().ok_or(
-        "usage: accore-server-agent <run|service|install|uninstall|status|stop> [--config <path>]",
+        "usage: accore-server-agent <run|service|install|uninstall|status|stop|request-backup> [--config <path>]",
     )?;
 
     match command.as_str() {
         "install" => install_embedded_service(),
         "uninstall" => windows_service_host::uninstall_service(),
         "stop" => windows_service_host::stop_service(),
-        "run" | "service" | "status" => {
+        "run" | "service" | "status" | "request-backup" => {
             let config_path = read_config_argument(&mut arguments)?;
             match command.as_str() {
                 "run" => execute_with_config(Path::new(&config_path)),
                 "service" => windows_service_host::run_service(config_path),
                 "status" => print_status(&load_config(Path::new(&config_path))?),
+                "request-backup" => request_backup_for_config(Path::new(&config_path)),
                 _ => unreachable!(),
             }
         }
@@ -146,12 +152,13 @@ fn execute_with_config(path: &Path) -> Result<(), String> {
 
 fn run(config: RuntimeConfig) -> Result<(), String> {
     ensure_layout(&config)?;
+    let mut backup = backup::BackupRuntime::open(&config)?;
     let mut status = RuntimeStatus::bootstrapping("preparing durable local runtime");
     write_status(&config, &status)?;
 
     let mut restart_attempts = 0;
     loop {
-        match run_components(&config, &mut status) {
+        match run_components(&config, &mut status, &mut backup) {
             Ok(()) => return Ok(()),
             Err(error) => {
                 restart_attempts += 1;
@@ -180,7 +187,11 @@ fn run(config: RuntimeConfig) -> Result<(), String> {
     }
 }
 
-fn run_components(config: &RuntimeConfig, status: &mut RuntimeStatus) -> Result<(), String> {
+fn run_components(
+    config: &RuntimeConfig,
+    status: &mut RuntimeStatus,
+    backup: &mut backup::BackupRuntime,
+) -> Result<(), String> {
     let mut database = None;
     let mut api = None;
     let mut queue = None;
@@ -212,6 +223,7 @@ fn run_components(config: &RuntimeConfig, status: &mut RuntimeStatus) -> Result<
         thread::sleep(Duration::from_millis(250));
         ensure_child_is_running(queue.as_mut().expect("queue child exists"), "queue worker")?;
         status.queue = component("ready", "queue worker is running");
+        status.backup = backup.component_status();
         status.state = "ready".into();
         status.detail = "all local server components are ready".into();
         status.updated_at = now();
@@ -230,8 +242,18 @@ fn run_components(config: &RuntimeConfig, status: &mut RuntimeStatus) -> Result<
                 status.queue = component("stopped", "queue stopped");
                 status.api = component("stopped", "API stopped");
                 status.database = component("stopped", "MariaDB stopped");
+                status.backup = component(
+                    "pending",
+                    "backup policy paused while local server is stopped",
+                );
                 write_status(config, status)?;
                 return Ok(());
+            }
+
+            if let Some(next_backup_status) = backup.maintain(backup_requested(config)) {
+                status.backup = next_backup_status;
+                status.updated_at = now();
+                write_status(config, status)?;
             }
 
             if let Some(reason) =
@@ -286,9 +308,6 @@ fn provision_database_principal(config: &RuntimeConfig) -> Result<(), String> {
         .data_root
         .join("accoredb")
         .join(".root-credential-provisioned");
-    if marker.exists() && root_marker.exists() {
-        return Ok(());
-    }
     let database = &config.database_name;
     let password = &config.database_password;
     let mut statements = Vec::new();
@@ -300,15 +319,15 @@ fn provision_database_principal(config: &RuntimeConfig) -> Result<(), String> {
             config.database_root_password
         ));
     }
-    if !marker.exists() {
-        statements.push(format!(
-            "CREATE DATABASE IF NOT EXISTS `{database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; \
-             CREATE USER IF NOT EXISTS 'accore_app'@'localhost' IDENTIFIED BY '{password}'; \
-             CREATE USER IF NOT EXISTS 'accore_app'@'127.0.0.1' IDENTIFIED BY '{password}'; \
-             GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP, REFERENCES, CREATE TEMPORARY TABLES, LOCK TABLES, CREATE VIEW, SHOW VIEW ON `{database}`.* TO 'accore_app'@'localhost'; \
-             GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP, REFERENCES, CREATE TEMPORARY TABLES, LOCK TABLES, CREATE VIEW, SHOW VIEW ON `{database}`.* TO 'accore_app'@'127.0.0.1';"
-        ));
-    }
+    statements.push(format!(
+        "CREATE DATABASE IF NOT EXISTS `{database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; \
+         CREATE USER IF NOT EXISTS 'accore_app'@'localhost' IDENTIFIED BY '{password}'; \
+         CREATE USER IF NOT EXISTS 'accore_app'@'127.0.0.1' IDENTIFIED BY '{password}'; \
+         ALTER USER 'accore_app'@'localhost' IDENTIFIED BY '{password}'; \
+         ALTER USER 'accore_app'@'127.0.0.1' IDENTIFIED BY '{password}'; \
+         GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP, REFERENCES, CREATE TEMPORARY TABLES, LOCK TABLES, CREATE VIEW, SHOW VIEW ON `{database}`.* TO 'accore_app'@'localhost'; \
+         GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP, REFERENCES, CREATE TEMPORARY TABLES, LOCK TABLES, CREATE VIEW, SHOW VIEW ON `{database}`.* TO 'accore_app'@'127.0.0.1';"
+    ));
     statements.push("FLUSH PRIVILEGES;".into());
     let source_root_password = if config.database_root_password_legacy_blank {
         ""
@@ -585,8 +604,24 @@ fn request_stop_for_config(path: &Path) -> Result<(), String> {
     request_stop(&load_config(path)?)
 }
 
+fn request_backup_for_config(path: &Path) -> Result<(), String> {
+    let config = load_config(path)?;
+    fs::write(config.data_root.join("control.backup"), "requested\n")
+        .map_err(|error| format!("request protected backup: {error}"))
+}
+
 fn stop_requested(config: &RuntimeConfig) -> bool {
     let path = config.data_root.join("control.stop");
+    if path.exists() {
+        let _ = fs::remove_file(path);
+        true
+    } else {
+        false
+    }
+}
+
+fn backup_requested(config: &RuntimeConfig) -> bool {
+    let path = config.data_root.join("control.backup");
     if path.exists() {
         let _ = fs::remove_file(path);
         true
@@ -658,11 +693,10 @@ fn default_config_path() -> Result<PathBuf, String> {
 fn embedded_runtime_config() -> Result<RuntimeConfig, String> {
     let executable =
         env::current_exe().map_err(|error| format!("resolve Agent executable: {error}"))?;
-    let resource_root = executable
+    let installation_root = executable
         .parent()
-        .and_then(Path::parent)
-        .ok_or("resolve packaged resource root from Agent executable")?;
-    let runtime_root = resource_root.join("resources/server-runtime/windows-x86_64");
+        .ok_or("resolve Server Desktop installation root from Agent executable")?;
+    let runtime_root = packaged_runtime_root(installation_root);
     if !runtime_root.join("frankenphp.exe").is_file()
         || !runtime_root
             .join("mariadb-11.4.9-winx64/bin/mariadbd.exe")
@@ -730,6 +764,10 @@ fn public_status_root(config: &RuntimeConfig) -> PathBuf {
         .join("Server Status")
 }
 
+fn packaged_runtime_root(installation_root: &Path) -> PathBuf {
+    installation_root.join("resources/server-runtime/windows-x86_64")
+}
+
 #[cfg(windows)]
 fn write_config(path: &Path, config: &RuntimeConfig) -> Result<(), String> {
     let temporary = path.with_extension("json.partial");
@@ -783,5 +821,14 @@ mod tests {
         let parsed: RuntimeConfig = serde_json::from_str(legacy).expect("legacy config parses");
         assert!(parsed.database_root_password.is_empty());
         assert!(!parsed.database_root_password_legacy_blank);
+    }
+
+    #[test]
+    fn packaged_runtime_root_matches_the_msi_resource_layout() {
+        let installation_root = PathBuf::from("C:/Program Files/ACCORE ERP Server Desktop");
+        assert_eq!(
+            packaged_runtime_root(&installation_root),
+            installation_root.join("resources/server-runtime/windows-x86_64")
+        );
     }
 }

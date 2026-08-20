@@ -9,9 +9,11 @@ repository = "https://github.com/Emran025/accore-erp"
 
 [dependencies]
 base64 = "0.22"
+flate2 = "1.0"
 rand = "0.8"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+sha2 = "0.10"
 
 [target.'cfg(windows)'.dependencies]
 windows-service = "0.8"

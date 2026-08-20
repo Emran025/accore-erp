@@ -10,6 +10,7 @@ fn application_builder() -> tauri::Builder<tauri::Wry> {
     tauri::Builder::default().setup(|app| {
         app.handle()
             .plugin(tauri_plugin_updater::Builder::new().build())?;
+        app.handle().plugin(tauri_plugin_process::init())?;
 
         #[cfg(not(feature = "server-product"))]
         {
@@ -45,6 +46,9 @@ pub fn run() {
             server_runtime::server_runtime_status,
             server_runtime::server_runtime_start,
             server_runtime::server_runtime_stop,
+            server_runtime::server_backup_status,
+            server_runtime::trigger_server_backup,
+            server_runtime::prepare_server_desktop_update,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Accore Server");

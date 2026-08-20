@@ -113,10 +113,15 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $agent = Resolve-Path 'frontend/src-tauri/binaries/accore-server-agent-x86_64-pc-windows-msvc.exe'
+          $agentSource = Resolve-Path 'frontend/src-tauri/binaries/accore-server-agent-x86_64-pc-windows-msvc.exe'
+          $agent = Join-Path (Resolve-Path 'frontend/src-tauri') 'accore-server-agent.exe'
+          Copy-Item $agentSource $agent -Force
           $runtimeRoot = Resolve-Path 'frontend/src-tauri/resources/server-runtime/windows-x86_64'
           $dataRoot = Join-Path $env:ProgramData 'ACCORE ERP\Server'
           $statusPath = Join-Path $env:ProgramData 'ACCORE ERP\Server Status\runtime-status.json'
+          $backupStatusPath = Join-Path $env:ProgramData 'ACCORE ERP\Server Status\backup-status.json'
+          $backupManifestPath = Join-Path $dataRoot 'backups\manifest.json'
+          $agentConfigPath = Join-Path $dataRoot 'agent-config.json'
           $runtimeEnv = 'frontend/src-tauri/resources/server-runtime/windows-x86_64/app/.env'
           try {
             $env:PHPRC = $runtimeRoot
@@ -142,6 +147,21 @@ jobs:
             if (Test-Path $runtimeEnv) { throw 'Runtime package contains a forbidden Laravel environment file' }
             $privateAcl = Get-Acl (Join-Path $dataRoot 'agent-config.json')
             if ($privateAcl.Access.IdentityReference.Value -match 'Users') { throw 'Agent configuration grants an ordinary Users ACL entry' }
+            & $agent request-backup --config $agentConfigPath
+            if ($LASTEXITCODE -ne 0) { throw "Protected backup request exited with $LASTEXITCODE" }
+            $backupDeadline = (Get-Date).AddMinutes(5)
+            $backupManifest = $null
+            do {
+              Start-Sleep -Seconds 2
+              if (Test-Path $backupManifestPath) {
+                $backupManifest = Get-Content $backupManifestPath -Raw | ConvertFrom-Json
+              }
+            } while (($null -eq $backupManifest -or $backupManifest.records.Count -lt 1 -or $null -eq $backupManifest.records[0].verifiedAtUnix) -and (Get-Date) -lt $backupDeadline)
+            if ($null -eq $backupManifest -or $backupManifest.records.Count -lt 1) { throw 'Agent did not publish a protected backup manifest' }
+            if ($backupManifest.records[0].verifiedAtUnix -eq $null) { throw 'Latest protected backup was not verified through isolated restore validation' }
+            $backupArchive = Join-Path (Join-Path $dataRoot 'backups') $backupManifest.records[0].artifact
+            if (-not (Test-Path $backupArchive) -or (Get-Item $backupArchive).Length -le 0) { throw 'Protected compressed backup archive is missing or empty' }
+            if (-not (Test-Path $backupStatusPath)) { throw 'Agent did not publish redacted public backup status' }
             & $agent stop
             if ($LASTEXITCODE -ne 0) { throw "Agent stop exited with $LASTEXITCODE" }
             $stopDeadline = (Get-Date).AddMinutes(1)
@@ -153,6 +173,7 @@ jobs:
           }
           finally {
             & $agent uninstall
+            Remove-Item $agent -Force -ErrorAction SilentlyContinue
             Remove-Item (Join-Path $env:ProgramData 'ACCORE ERP') -Recurse -Force -ErrorAction SilentlyContinue
           }
 

@@ -127,6 +127,9 @@ function classify(node: Node, value: string): { kind: CandidateKind; classificat
     if (Node.isImportDeclaration(propertyKey) || Node.isExportDeclaration(propertyKey)) {
         return { kind: "string-literal", classification: "technical", context: "Module specifier" };
     }
+    if (Node.isCallExpression(propertyKey) && propertyKey.getExpression().getKind() === SyntaxKind.ImportKeyword) {
+        return { kind: "string-literal", classification: "technical", context: "Dynamic module specifier" };
+    }
     const technicalCall = nearestAncestor(node, Node.isCallExpression);
     if (technicalCall && getCallName(technicalCall) === "importCopy") {
       return { kind: "call-argument", classification: "technical", context: "Localization runtime syntax" };

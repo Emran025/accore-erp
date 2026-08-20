@@ -186,6 +186,21 @@ impl<O: BackupOperator> BackupSupervisor<O> {
         }
     }
 
+    /// Rehydrates durable restore-point metadata after an Agent restart. Audit history
+    /// is deliberately persisted separately as an append-only protected log.
+    pub fn with_records(
+        operator: O,
+        policy: BackupRetentionPolicy,
+        records: Vec<BackupRecord>,
+    ) -> Self {
+        Self {
+            operator,
+            policy,
+            records,
+            audit: Vec::new(),
+        }
+    }
+
     pub fn records(&self) -> &[BackupRecord] {
         &self.records
     }

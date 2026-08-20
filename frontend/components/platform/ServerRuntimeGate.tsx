@@ -18,9 +18,17 @@ import {
 } from '@/lib/server-readiness';
 import {
   readServerRuntimeStatus,
+  readServerBackupStatus,
+  requestServerBackup,
   startServerRuntime,
+  type ServerBackupStatus,
   type ServerRuntimeStatus,
 } from '@/lib/server-runtime';
+import {
+  checkSignedServerDesktopUpdate,
+  installSignedServerDesktopUpdate,
+  type SignedServerDesktopUpdate,
+} from '@/lib/server-desktop-updater';
 
 interface ServerRuntimeGateProps {
   children: ReactNode;
@@ -49,6 +57,138 @@ function RuntimeShell({ children }: { children: ReactNode }) {
         {children}
       </section>
     </main>
+  );
+}
+
+function ServerOperationsPanel() {
+  const [backupStatus, setBackupStatus] = useState<ServerBackupStatus | null>(null);
+  const [update, setUpdate] = useState<SignedServerDesktopUpdate | null>(null);
+  const [isBackingUp, setIsBackingUp] = useState(false);
+  const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
+  const [isInstallingUpdate, setIsInstallingUpdate] = useState(false);
+  const [operationFailed, setOperationFailed] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const refresh = async () => {
+      const status = await readServerBackupStatus();
+      if (active && status) setBackupStatus(status);
+    };
+    void refresh();
+    const interval = window.setInterval(() => void refresh(), 5_000);
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+    };
+  }, []);
+
+  const requestBackup = async () => {
+    setIsBackingUp(true);
+    setOperationFailed(false);
+    try {
+      const status = await requestServerBackup();
+      if (!status) {
+        setOperationFailed(true);
+        return;
+      }
+      setBackupStatus({
+        ...status,
+        state: 'pending',
+        detail: catalogMessage('platform.product.serverBackupRequested'),
+      });
+    } catch {
+      setOperationFailed(true);
+    } finally {
+      setIsBackingUp(false);
+    }
+  };
+
+  const checkUpdate = async () => {
+    setIsCheckingUpdate(true);
+    setOperationFailed(false);
+    try {
+      setUpdate(await checkSignedServerDesktopUpdate());
+    } catch {
+      setOperationFailed(true);
+    } finally {
+      setIsCheckingUpdate(false);
+    }
+  };
+
+  const installUpdate = async () => {
+    setIsInstallingUpdate(true);
+    setOperationFailed(false);
+    try {
+      await installSignedServerDesktopUpdate();
+    } catch {
+      setOperationFailed(true);
+      setIsInstallingUpdate(false);
+    }
+  };
+
+  return (
+    <aside className="fixed bottom-4 right-4 z-40 w-[min(26rem,calc(100vw-2rem))] rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-[0_18px_45px_rgba(35,48,69,0.18)] backdrop-blur">
+      <div className="flex items-center gap-2 text-sm font-extrabold text-slate-900">
+        <ShieldCheck className="h-4 w-4 text-[#556681]" aria-hidden="true" />
+        {catalogMessage('platform.product.serverOperationsTitle')}
+      </div>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <section className="rounded-xl bg-slate-50 p-3">
+          <p className="text-xs font-bold text-slate-800">
+            {catalogMessage('platform.product.serverBackupTitle')}
+          </p>
+          <p className="mt-1 min-h-10 text-xs leading-5 text-slate-600" aria-live="polite">
+            {backupStatus?.detail ?? catalogMessage('platform.product.serverBackupUnavailable')}
+          </p>
+          <button
+            type="button"
+            className="mt-3 inline-flex w-full items-center justify-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-800 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+            onClick={() => void requestBackup()}
+            disabled={isBackingUp || isInstallingUpdate}
+          >
+            {isBackingUp
+              ? catalogMessage('platform.product.serverBackupRequested')
+              : catalogMessage('platform.product.serverBackupCreate')}
+          </button>
+        </section>
+        <section className="rounded-xl bg-slate-50 p-3">
+          <p className="text-xs font-bold text-slate-800">
+            {catalogMessage('platform.product.serverUpdateTitle')}
+          </p>
+          <p className="mt-1 min-h-10 text-xs leading-5 text-slate-600" aria-live="polite">
+            {update
+              ? `${catalogMessage('platform.product.serverUpdateAvailable')}: ${update.version}`
+              : catalogMessage('platform.product.serverUpdateNone')}
+          </p>
+          {update ? (
+            <button
+              type="button"
+              className="mt-3 inline-flex w-full items-center justify-center rounded-lg bg-[#30374c] px-3 py-2 text-xs font-bold text-white transition hover:bg-[#233045] disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={() => void installUpdate()}
+              disabled={isInstallingUpdate || isBackingUp}
+            >
+              {isInstallingUpdate
+                ? catalogMessage('platform.product.serverUpdateInstalling')
+                : catalogMessage('platform.product.serverUpdateInstall')}
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="mt-3 inline-flex w-full items-center justify-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-800 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={() => void checkUpdate()}
+              disabled={isCheckingUpdate || isBackingUp}
+            >
+              {catalogMessage('platform.product.serverUpdateCheck')}
+            </button>
+          )}
+        </section>
+      </div>
+      {operationFailed ? (
+        <p className="mt-3 text-xs leading-5 text-rose-700">
+          {catalogMessage('platform.product.serverOperationRetry')}
+        </p>
+      ) : null}
+    </aside>
   );
 }
 
@@ -106,7 +246,15 @@ export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
     return () => controller.abort();
   }, [readiness]);
 
-  if (readiness.kind === 'not-server' || readiness.kind === 'ready') return <>{children}</>;
+  if (readiness.kind === 'not-server') return <>{children}</>;
+  if (readiness.kind === 'ready') {
+    return (
+      <>
+        {children}
+        <ServerOperationsPanel />
+      </>
+    );
+  }
 
   const isRuntimeProgressing = ['bootstrapping', 'recovering', 'stopping'].includes(
     runtimeStatus?.state ?? ''

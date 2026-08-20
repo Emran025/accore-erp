@@ -12,8 +12,18 @@ export interface ServerRuntimeStatus {
   database: ServerRuntimeComponent;
   api: ServerRuntimeComponent;
   queue: ServerRuntimeComponent;
+  backup: ServerRuntimeComponent;
   runtimePresent: boolean;
   updatedAt: number | null;
+}
+
+export interface ServerBackupStatus {
+  state: string;
+  detail: string;
+  retainedRestorePoints: number;
+  lastBackupAtUnix: number | null;
+  lastVerifiedAtUnix: number | null;
+  updatedAtUnix: number | null;
 }
 
 export function isServerDesktopRuntime(): boolean {
@@ -33,6 +43,33 @@ export async function startServerRuntime(): Promise<ServerRuntimeStatus | null> 
   if (!isServerDesktopRuntime()) return null;
   try {
     return await invoke<ServerRuntimeStatus>('server_runtime_start');
+  } catch {
+    return null;
+  }
+}
+
+export async function readServerBackupStatus(): Promise<ServerBackupStatus | null> {
+  if (!isServerDesktopRuntime()) return null;
+  try {
+    return await invoke<ServerBackupStatus>('server_backup_status');
+  } catch {
+    return null;
+  }
+}
+
+export async function requestServerBackup(): Promise<ServerBackupStatus | null> {
+  if (!isServerDesktopRuntime()) return null;
+  try {
+    return await invoke<ServerBackupStatus>('trigger_server_backup');
+  } catch {
+    return null;
+  }
+}
+
+export async function prepareServerDesktopUpdate(): Promise<ServerRuntimeStatus | null> {
+  if (!isServerDesktopRuntime()) return null;
+  try {
+    return await invoke<ServerRuntimeStatus>('prepare_server_desktop_update');
   } catch {
     return null;
   }
