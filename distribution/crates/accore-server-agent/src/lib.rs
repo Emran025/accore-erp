@@ -10,9 +10,9 @@ use std::fmt;
 mod operations;
 mod platform;
 pub use operations::{
-    BackupOperator, BackupRecord, BackupRetentionPolicy, BackupSchedule, BackupSupervisor, ComponentHealth,
-    ComponentHealthState, HealthComponent, OperationalAuditEvent, OperationalEventKind,
-    OperationalHealthReport,
+    BackupOperator, BackupRecord, BackupRetentionPolicy, BackupSchedule, BackupSupervisor,
+    ComponentHealth, ComponentHealthState, HealthComponent, OperationalAuditEvent,
+    OperationalEventKind, OperationalHealthReport,
 };
 pub use platform::{
     LaunchdAdapter, PlatformKind, ServiceRegistration, ServiceRegistrationAdapter, SystemdAdapter,
@@ -81,16 +81,25 @@ pub enum AgentError {
     Unauthorized,
     DependencyUnavailable(ManagedService),
     RestartBudgetExhausted,
-    ServiceFailure { service: ManagedService, detail: String },
+    ServiceFailure {
+        service: ManagedService,
+        detail: String,
+    },
 }
 
 impl fmt::Display for AgentError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Unauthorized => write!(formatter, "local lifecycle command is not authorized"),
-            Self::DependencyUnavailable(service) => write!(formatter, "required dependency is unavailable: {service:?}"),
-            Self::RestartBudgetExhausted => write!(formatter, "API restart budget has been exhausted"),
-            Self::ServiceFailure { service, detail } => write!(formatter, "{service:?} failed: {detail}"),
+            Self::DependencyUnavailable(service) => {
+                write!(formatter, "required dependency is unavailable: {service:?}")
+            }
+            Self::RestartBudgetExhausted => {
+                write!(formatter, "API restart budget has been exhausted")
+            }
+            Self::ServiceFailure { service, detail } => {
+                write!(formatter, "{service:?} failed: {detail}")
+            }
         }
     }
 }
@@ -111,8 +120,14 @@ pub trait RuntimeController {
 /// accidental remote lifecycle exposure by construction.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum LocalControlEndpoint {
-    WindowsNamedPipe { name: String, administrators_only: bool },
-    UnixSocket { path: String, mode: u16 },
+    WindowsNamedPipe {
+        name: String,
+        administrators_only: bool,
+    },
+    UnixSocket {
+        path: String,
+        mode: u16,
+    },
 }
 
 impl LocalControlEndpoint {
@@ -135,8 +150,18 @@ impl LocalControlEndpoint {
 
     pub fn allows(&self, identity: LocalIdentity, command: AgentCommand) -> bool {
         match command {
-            AgentCommand::Status => matches!(identity, LocalIdentity::SystemService | LocalIdentity::LocalAdministrator | LocalIdentity::ServerDesktop),
-            AgentCommand::Start | AgentCommand::Stop => matches!(identity, LocalIdentity::SystemService | LocalIdentity::LocalAdministrator | LocalIdentity::ServerDesktop),
+            AgentCommand::Status => matches!(
+                identity,
+                LocalIdentity::SystemService
+                    | LocalIdentity::LocalAdministrator
+                    | LocalIdentity::ServerDesktop
+            ),
+            AgentCommand::Start | AgentCommand::Stop => matches!(
+                identity,
+                LocalIdentity::SystemService
+                    | LocalIdentity::LocalAdministrator
+                    | LocalIdentity::ServerDesktop
+            ),
         }
     }
 }
@@ -164,7 +189,12 @@ impl<C: RuntimeController> ServerAgent<C> {
         &self.status
     }
 
-    pub fn execute(&mut self, endpoint: &LocalControlEndpoint, identity: LocalIdentity, command: AgentCommand) -> Result<AgentStatus, AgentError> {
+    pub fn execute(
+        &mut self,
+        endpoint: &LocalControlEndpoint,
+        identity: LocalIdentity,
+        command: AgentCommand,
+    ) -> Result<AgentStatus, AgentError> {
         if !endpoint.allows(identity, command) {
             return Err(AgentError::Unauthorized);
         }
@@ -200,7 +230,11 @@ impl<C: RuntimeController> ServerAgent<C> {
         }
         self.status.api.restart_attempts += 1;
         self.start_and_wait(ManagedService::Api)?;
-        self.status.health = if self.status.queue.state == ServiceState::Ready { AgentHealth::Healthy } else { AgentHealth::Degraded };
+        self.status.health = if self.status.queue.state == ServiceState::Ready {
+            AgentHealth::Healthy
+        } else {
+            AgentHealth::Degraded
+        };
         Ok(())
     }
 
@@ -228,15 +262,22 @@ impl<C: RuntimeController> ServerAgent<C> {
 
     fn start_and_wait(&mut self, service: ManagedService) -> Result<(), AgentError> {
         match service {
-            ManagedService::Api if self.status.database.state != ServiceState::Ready => return Err(AgentError::DependencyUnavailable(ManagedService::Database)),
-            ManagedService::Queue if self.status.api.state != ServiceState::Ready => return Err(AgentError::DependencyUnavailable(ManagedService::Api)),
+            ManagedService::Api if self.status.database.state != ServiceState::Ready => {
+                return Err(AgentError::DependencyUnavailable(ManagedService::Database))
+            }
+            ManagedService::Queue if self.status.api.state != ServiceState::Ready => {
+                return Err(AgentError::DependencyUnavailable(ManagedService::Api))
+            }
             _ => {}
         }
         self.set_state(service, ServiceState::Starting, "starting");
         self.controller.start(service)?;
         if !self.controller.is_ready(service)? {
             self.set_state(service, ServiceState::Unhealthy, "readiness gate failed");
-            return Err(AgentError::ServiceFailure { service, detail: "readiness gate failed".into() });
+            return Err(AgentError::ServiceFailure {
+                service,
+                detail: "readiness gate failed".into(),
+            });
         }
         self.set_state(service, ServiceState::Ready, "ready");
         Ok(())
@@ -251,12 +292,27 @@ impl<C: RuntimeController> ServerAgent<C> {
     }
 
     fn refresh_health(&mut self) -> Result<(), AgentError> {
-        for service in [ManagedService::Database, ManagedService::Api, ManagedService::Queue] {
-            if self.service_status(service).state == ServiceState::Ready && !self.controller.is_ready(service)? {
+        for service in [
+            ManagedService::Database,
+            ManagedService::Api,
+            ManagedService::Queue,
+        ] {
+            if self.service_status(service).state == ServiceState::Ready
+                && !self.controller.is_ready(service)?
+            {
                 self.set_state(service, ServiceState::Unhealthy, "health check failed");
             }
         }
-        self.status.health = if self.status.database.state == ServiceState::Unhealthy { AgentHealth::Unhealthy } else if [self.status.api.state, self.status.queue.state].iter().all(|state| *state == ServiceState::Ready) { AgentHealth::Healthy } else { AgentHealth::Degraded };
+        self.status.health = if self.status.database.state == ServiceState::Unhealthy {
+            AgentHealth::Unhealthy
+        } else if [self.status.api.state, self.status.queue.state]
+            .iter()
+            .all(|state| *state == ServiceState::Ready)
+        {
+            AgentHealth::Healthy
+        } else {
+            AgentHealth::Degraded
+        };
         Ok(())
     }
 
@@ -268,7 +324,12 @@ impl<C: RuntimeController> ServerAgent<C> {
         }
     }
 
-    fn set_state(&mut self, service: ManagedService, state: ServiceState, detail: impl Into<String>) {
+    fn set_state(
+        &mut self,
+        service: ManagedService,
+        state: ServiceState,
+        detail: impl Into<String>,
+    ) {
         let target = match service {
             ManagedService::Database => &mut self.status.database,
             ManagedService::Api => &mut self.status.api,
@@ -280,7 +341,12 @@ impl<C: RuntimeController> ServerAgent<C> {
 }
 
 fn status(service: ManagedService) -> ServiceStatus {
-    ServiceStatus { service, state: ServiceState::Stopped, restart_attempts: 0, detail: "not started".into() }
+    ServiceStatus {
+        service,
+        state: ServiceState::Stopped,
+        restart_attempts: 0,
+        detail: "not started".into(),
+    }
 }
 
 #[cfg(test)]
@@ -295,14 +361,32 @@ mod tests {
     }
 
     impl FakeRuntime {
-        fn new() -> Self { Self { ready: BTreeMap::new(), calls: VecDeque::new() } }
+        fn new() -> Self {
+            Self {
+                ready: BTreeMap::new(),
+                calls: VecDeque::new(),
+            }
+        }
     }
 
     impl RuntimeController for FakeRuntime {
-        fn start(&mut self, service: ManagedService) -> Result<(), AgentError> { self.calls.push_back(format!("start:{service:?}")); self.ready.insert(service, true); Ok(()) }
-        fn stop(&mut self, service: ManagedService) -> Result<(), AgentError> { self.calls.push_back(format!("stop:{service:?}")); self.ready.insert(service, false); Ok(()) }
-        fn drain_queue(&mut self) -> Result<(), AgentError> { self.calls.push_back("drain:Queue".into()); Ok(()) }
-        fn is_ready(&mut self, service: ManagedService) -> Result<bool, AgentError> { Ok(self.ready.get(&service).copied().unwrap_or(false)) }
+        fn start(&mut self, service: ManagedService) -> Result<(), AgentError> {
+            self.calls.push_back(format!("start:{service:?}"));
+            self.ready.insert(service, true);
+            Ok(())
+        }
+        fn stop(&mut self, service: ManagedService) -> Result<(), AgentError> {
+            self.calls.push_back(format!("stop:{service:?}"));
+            self.ready.insert(service, false);
+            Ok(())
+        }
+        fn drain_queue(&mut self) -> Result<(), AgentError> {
+            self.calls.push_back("drain:Queue".into());
+            Ok(())
+        }
+        fn is_ready(&mut self, service: ManagedService) -> Result<bool, AgentError> {
+            Ok(self.ready.get(&service).copied().unwrap_or(false))
+        }
     }
 
     #[test]
@@ -310,7 +394,18 @@ mod tests {
         let mut agent = ServerAgent::new(FakeRuntime::new());
         agent.start_all().unwrap();
         agent.graceful_shutdown().unwrap();
-        assert_eq!(agent.controller.calls.into_iter().collect::<Vec<_>>(), vec!["start:Database", "start:Api", "start:Queue", "drain:Queue", "stop:Queue", "stop:Api", "stop:Database"]);
+        assert_eq!(
+            agent.controller.calls.into_iter().collect::<Vec<_>>(),
+            vec![
+                "start:Database",
+                "start:Api",
+                "start:Queue",
+                "drain:Queue",
+                "stop:Queue",
+                "stop:Api",
+                "stop:Database"
+            ]
+        );
     }
 
     #[test]
@@ -326,7 +421,9 @@ mod tests {
     fn database_failure_stops_dependent_services() {
         let mut agent = ServerAgent::new(FakeRuntime::new());
         agent.start_all().unwrap();
-        agent.handle_database_failure("health probe failed").unwrap();
+        agent
+            .handle_database_failure("health probe failed")
+            .unwrap();
         assert_eq!(agent.status().health, AgentHealth::Unhealthy);
         assert_eq!(agent.status().api.state, ServiceState::Stopped);
         assert_eq!(agent.status().queue.state, ServiceState::Stopped);
@@ -336,7 +433,17 @@ mod tests {
     fn local_endpoint_rejects_untrusted_users() {
         let endpoint = LocalControlEndpoint::platform_default();
         let mut agent = ServerAgent::new(FakeRuntime::new());
-        assert_eq!(agent.execute(&endpoint, LocalIdentity::UnprivilegedUser, AgentCommand::Start), Err(AgentError::Unauthorized));
-        assert_eq!(agent.execute(&endpoint, LocalIdentity::RemotePeer, AgentCommand::Status), Err(AgentError::Unauthorized));
+        assert_eq!(
+            agent.execute(
+                &endpoint,
+                LocalIdentity::UnprivilegedUser,
+                AgentCommand::Start
+            ),
+            Err(AgentError::Unauthorized)
+        );
+        assert_eq!(
+            agent.execute(&endpoint, LocalIdentity::RemotePeer, AgentCommand::Status),
+            Err(AgentError::Unauthorized)
+        );
     }
 }

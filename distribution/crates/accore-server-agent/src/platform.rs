@@ -27,7 +27,9 @@ pub trait ServiceRegistrationAdapter {
 #[derive(Debug, Default)]
 pub struct WindowsScmAdapter;
 impl ServiceRegistrationAdapter for WindowsScmAdapter {
-    fn platform(&self) -> PlatformKind { PlatformKind::Windows }
+    fn platform(&self) -> PlatformKind {
+        PlatformKind::Windows
+    }
     fn registration(&self, executable: &str) -> ServiceRegistration {
         ServiceRegistration {
             service_name: "AccoreServerAgent".into(),
@@ -45,7 +47,9 @@ impl ServiceRegistrationAdapter for WindowsScmAdapter {
 #[derive(Debug, Default)]
 pub struct LaunchdAdapter;
 impl ServiceRegistrationAdapter for LaunchdAdapter {
-    fn platform(&self) -> PlatformKind { PlatformKind::MacOs }
+    fn platform(&self) -> PlatformKind {
+        PlatformKind::MacOs
+    }
     fn registration(&self, executable: &str) -> ServiceRegistration {
         ServiceRegistration {
             service_name: "im.accore.server-agent".into(),
@@ -63,7 +67,9 @@ impl ServiceRegistrationAdapter for LaunchdAdapter {
 #[derive(Debug, Default)]
 pub struct SystemdAdapter;
 impl ServiceRegistrationAdapter for SystemdAdapter {
-    fn platform(&self) -> PlatformKind { PlatformKind::Linux }
+    fn platform(&self) -> PlatformKind {
+        PlatformKind::Linux
+    }
     fn registration(&self, executable: &str) -> ServiceRegistration {
         ServiceRegistration {
             service_name: "accore-server-agent.service".into(),
@@ -92,7 +98,10 @@ mod tests {
         ] {
             assert!(registration.starts_at_boot);
             match registration.control_endpoint {
-                LocalControlEndpoint::WindowsNamedPipe { administrators_only, .. } => assert!(administrators_only),
+                LocalControlEndpoint::WindowsNamedPipe {
+                    administrators_only,
+                    ..
+                } => assert!(administrators_only),
                 LocalControlEndpoint::UnixSocket { mode, .. } => assert_eq!(mode, 0o600),
             }
         }

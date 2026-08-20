@@ -16,6 +16,11 @@ import {
   resolveServerReadiness,
   type ServerReadinessState,
 } from '@/lib/server-readiness';
+import {
+  readServerRuntimeStatus,
+  startServerRuntime,
+  type ServerRuntimeStatus,
+} from '@/lib/server-runtime';
 
 interface ServerRuntimeGateProps {
   children: ReactNode;
@@ -49,6 +54,42 @@ function RuntimeShell({ children }: { children: ReactNode }) {
 
 export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
   const [readiness, setReadiness] = useState<ServerReadinessState>(() => initialServerReadiness());
+  const [runtimeStatus, setRuntimeStatus] = useState<ServerRuntimeStatus | null>(null);
+  const [isStarting, setIsStarting] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    void readServerRuntimeStatus().then((status) => {
+      if (active) setRuntimeStatus(status);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (
+      !runtimeStatus ||
+      !['bootstrapping', 'recovering', 'stopping'].includes(runtimeStatus.state)
+    ) {
+      return;
+    }
+
+    let active = true;
+    const refreshStatus = () => {
+      void readServerRuntimeStatus().then((status) => {
+        if (!active || !status) return;
+        setRuntimeStatus(status);
+        if (status.state === 'ready') setReadiness(initialServerReadiness());
+      });
+    };
+    const interval = window.setInterval(refreshStatus, 2_000);
+    refreshStatus();
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+    };
+  }, [runtimeStatus]);
 
   useEffect(() => {
     if (readiness.kind !== 'checking') return;
@@ -67,7 +108,20 @@ export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
 
   if (readiness.kind === 'not-server' || readiness.kind === 'ready') return <>{children}</>;
 
-  const isChecking = readiness.kind === 'checking';
+  const isRuntimeProgressing = ['bootstrapping', 'recovering', 'stopping'].includes(
+    runtimeStatus?.state ?? ''
+  );
+  const isChecking = readiness.kind === 'checking' || isRuntimeProgressing;
+  const runtimeDetail = runtimeStatus?.detail;
+  const startRuntime = async () => {
+    setIsStarting(true);
+    try {
+      const status = await startServerRuntime();
+      if (status) setRuntimeStatus(status);
+    } finally {
+      setIsStarting(false);
+    }
+  };
   return (
     <RuntimeShell>
       <div
@@ -108,6 +162,11 @@ export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
             <p className="mt-3 max-w-xl text-sm leading-7 text-slate-600">
               {catalogMessage('platform.product.serverRuntimeUnavailableDescription')}
             </p>
+            {runtimeDetail ? (
+              <p className="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-mono text-xs leading-6 text-slate-700">
+                {runtimeDetail}
+              </p>
+            ) : null}
 
             <dl className="mt-7 grid gap-4 sm:grid-cols-2">
               <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
@@ -150,6 +209,19 @@ export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
               <RefreshCw className="h-4 w-4" aria-hidden="true" />
               {catalogMessage('platform.connection.retry')}
             </button>
+            {runtimeStatus?.runtimePresent ? (
+              <button
+                type="button"
+                className="ml-3 mt-7 inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-extrabold text-slate-800 transition hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
+                onClick={() => void startRuntime()}
+                disabled={isStarting}
+              >
+                <Server className="h-4 w-4" aria-hidden="true" />
+                {isStarting
+                  ? catalogMessage('platform.product.serverRuntimeChecking')
+                  : catalogMessage('platform.product.serverRuntimeRecommendedAction')}
+              </button>
+            ) : null}
           </div>
         )}
       </div>

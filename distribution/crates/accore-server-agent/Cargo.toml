@@ -8,3 +8,8 @@ license = "MIT"
 repository = "https://github.com/Emran025/accore-erp"
 
 [dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[target.'cfg(windows)'.dependencies]
+windows-service = "0.8"

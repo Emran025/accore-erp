@@ -3,6 +3,8 @@ pub mod client_connection;
 pub mod credential_key;
 pub mod distribution;
 pub mod product;
+#[cfg(feature = "server-product")]
+pub mod server_runtime;
 
 fn application_builder() -> tauri::Builder<tauri::Wry> {
     tauri::Builder::default().setup(|app| {
@@ -19,9 +21,8 @@ fn application_builder() -> tauri::Builder<tauri::Wry> {
                 .map_err(|error| format!("failed to resolve Stronghold salt path: {error}"))?
                 .join("stronghold-salt-v1");
 
-            app.handle().plugin(
-                tauri_plugin_stronghold::Builder::with_argon2(&salt_path).build(),
-            )?;
+            app.handle()
+                .plugin(tauri_plugin_stronghold::Builder::with_argon2(&salt_path).build())?;
         }
 
         if cfg!(debug_assertions) {
@@ -41,6 +42,9 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             product::product_runtime_profile,
             product::server_runtime_configuration,
+            server_runtime::server_runtime_status,
+            server_runtime::server_runtime_start,
+            server_runtime::server_runtime_stop,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Accore Server");

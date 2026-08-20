@@ -1,6 +1,6 @@
 [package]
 name = "accore-desktop"
-version = "1.0.1"
+version = "1.1.0"
 description = "ACCORE ERP Desktop application"
 authors = ["Accore ERP Contributors"]
 license = "MIT"
@@ -19,11 +19,14 @@ tauri-build = { version = "2.5.4", features = [] }
 
 [features]
 default = []
-server-product = []
+server-product = ["dep:accore-server-agent", "dep:accore-api-runtime", "dep:accoredb-runtime"]
 client-product = []
 
 [dependencies]
 accore-installer-core = { path = "../../distribution/crates/accore-installer-core" }
+accore-server-agent = { path = "../../distribution/crates/accore-server-agent", optional = true }
+accore-api-runtime = { path = "../../distribution/crates/accore-api-runtime", optional = true }
+accoredb-runtime = { path = "../../distribution/crates/accoredb-runtime", optional = true }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4"

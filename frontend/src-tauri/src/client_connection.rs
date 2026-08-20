@@ -97,7 +97,9 @@ mod tests {
         };
 
         let serialized = serde_json::to_value(profile).expect("profile should serialize");
-        let object = serialized.as_object().expect("profile should serialize to an object");
+        let object = serialized
+            .as_object()
+            .expect("profile should serialize to an object");
 
         assert!(object.contains_key("apiBase"));
         assert!(object.contains_key("deviceId"));

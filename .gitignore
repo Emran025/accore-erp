@@ -26,3 +26,8 @@ TestResults.xml
 
 # Generated only for signed Tauri release builds; contains the public update trust root.
 frontend/src-tauri/tauri.release.generated.conf.json
+
+# Generated Server Desktop package payload and its platform-specific Agent sidecar.
+# CI rebuilds these from pinned sources for every Windows Server Desktop release.
+frontend/src-tauri/resources/
+frontend/src-tauri/binaries/
