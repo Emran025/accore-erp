@@ -91,7 +91,7 @@ describe("standalone phased setup onboarding", () => {
 
     expect(page).toContain("ORG.FACTORY_CALENDARS");
     expect(page).toContain("factory_calendar_id: factoryCalendars.map");
-    expect(workspace).toContain('"factory_calendar_id"');
+    expect(workspace).toMatch(/ReferenceAttributeKey\s*=\s*[^;]*['"]factory_calendar_id['"]/);
     expect(workspace).toContain("reference.factoryCalendar.help");
     expect(englishCatalog).toContain("arbitrary calendar codes are not accepted");
     expect(arabicCatalog).toContain("لا يسمح النظام بإدخال رمز تقويم حر");
