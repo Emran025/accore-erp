@@ -127,6 +127,9 @@ function classify(node: Node, value: string): { kind: CandidateKind; classificat
         return { kind: "string-literal", classification: "technical", context: "Module specifier" };
     }
     const technicalCall = nearestAncestor(node, Node.isCallExpression);
+    if (technicalCall && getCallName(technicalCall) === "importCopy") {
+        return { kind: "call-argument", classification: "technical", context: "Localization runtime syntax" };
+    }
     if (technicalCall && getCallName(technicalCall) === "parseFromString") {
         const argumentIndex = technicalCall.getArguments().findIndex((argument) => argument === node || argument.getDescendants().includes(node));
         if (argumentIndex === 1) return { kind: "string-literal", classification: "technical", context: "DOM parser MIME type" };

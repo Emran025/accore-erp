@@ -1,6 +1,7 @@
 "use client";
 
 import { useI18n, catalogMessage } from "@/lib/i18n";
+import { importCopy } from "@/lib/i18n/import-copy";
 import { MainLayout } from "@/components/layout";
 import { Button, DocumentPreview, SelectOption, showAlert } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -44,12 +45,22 @@ interface ReportPayload {
     summary: Array<{ label: string; value: string; emphasis?: boolean }>;
     note?: string;
     partyName?: string;
+    templateId?: string;
+    fieldKeys?: string[];
 }
 
 interface Party {
     id: number;
     name: string;
     code?: string;
+}
+
+interface InventoryTemplate {
+    id: number;
+    template_name_ar?: string;
+    template_name_en?: string;
+    template_key?: string;
+    template_type?: string;
 }
 
 const reportDefinitions: ReportDefinition[] = [
@@ -151,7 +162,7 @@ function downloadCsv(payload: ReportPayload): void {
 }
 
 function reportHtml(payload: ReportPayload): string {
-    const tableRows = payload.rows.map((row, index) => catalogMessage("ui.operationalreports.notAvailable", { value0: payload.columns.map((column) => {
+    const tableRows = payload.rows.map((row) => catalogMessage("ui.operationalreports.notAvailable", { value0: payload.columns.map((column) => {
             const value = column.numeric ? amount(column.value(row)) : column.value(row);
             return `<td class="${column.numeric ? "numeric" : ""}">${escapeHtml(value)}</td>`;
         }).join("") })).join("");
@@ -169,6 +180,9 @@ export function OperationalReportsWorkspace({ domain }: { domain: ReportDomain }
     const [partyId, setPartyId] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [payload, setPayload] = useState<ReportPayload | null>(null);
+    const [inventoryTemplates, setInventoryTemplates] = useState<InventoryTemplate[]>([]);
+    const [inventoryTemplateId, setInventoryTemplateId] = useState("");
+    const [inventoryColumnKeys, setInventoryColumnKeys] = useState<string[]>(inventoryColumns.map((column) => column.key));
 
     const selected = definitions.find((report) => report.key === selectedKey) ?? definitions[0];
 
@@ -187,7 +201,17 @@ export function OperationalReportsWorkspace({ domain }: { domain: ReportDomain }
     }, [domain]);
 
     useEffect(() => { loadParties(); }, [loadParties]);
-    useEffect(() => { setPartyId(""); setPayload(null); }, [selectedKey]);
+    useEffect(() => {
+        if (selectedKey !== "inventory-balance") return;
+        fetchAPI(API_ENDPOINTS.PLATFORM.AUTOMATION.TEMPLATES.byType("inventory_report"))
+            .then((response) => setInventoryTemplates(unwrapList(response.data) as unknown as InventoryTemplate[]))
+            .catch(() => setInventoryTemplates([]));
+    }, [selectedKey]);
+    useEffect(() => {
+        setPartyId("");
+        setPayload(null);
+        if (selectedKey !== "inventory-balance") setInventoryTemplateId("");
+    }, [selectedKey]);
 
     const buildPayload = useCallback((definition: ReportDefinition, raw: unknown, party?: Party): ReportPayload => {
         const list = unwrapList(raw);
@@ -230,7 +254,7 @@ export function OperationalReportsWorkspace({ domain }: { domain: ReportDomain }
         if (definition.key === "inventory-balance") {
             const rows = list.map((item) => {
                 const quantity = numberValue(item.stock_quantity ?? item.quantity ?? item.available_quantity);
-                const cost = numberValue(item.purchase_price ?? item.cost_price ?? item.unit_price);
+                const cost = numberValue(item.weighted_average_cost ?? item.purchase_price ?? item.cost_price ?? item.unit_price);
                 return {
                     reference: item.barcode || item.code || item.id || "—",
                     item: item.name || item.product_name || "—",
@@ -241,7 +265,8 @@ export function OperationalReportsWorkspace({ domain }: { domain: ReportDomain }
                 };
             });
             const totalValue = rows.reduce((sum, row) => sum + numberValue(row.value), 0);
-            return { title: definition.title, subtitle: i18n.catalog["ui.operationalreports.quantityBalanceEstimatedValueBasedProductData"], recordLabel: definition.title, rows, columns: inventoryColumns, summary: [
+            const selectedColumns = inventoryColumns.filter((column) => inventoryColumnKeys.includes(column.key));
+            return { title: definition.title, subtitle: i18n.catalog["ui.operationalreports.quantityBalanceEstimatedValueBasedProductData"], recordLabel: definition.title, rows, columns: selectedColumns, templateId: inventoryTemplateId || undefined, fieldKeys: selectedColumns.map((column) => column.key), summary: [
                 { label: i18n.catalog["common.general.numberItems.alternative2"], value: String(rows.length) },
                 { label: i18n.catalog["ui.operationalreports.totalQuantity"], value: String(rows.reduce((sum, row) => sum + numberValue(row.quantity), 0)) },
                 { label: i18n.catalog["ui.operationalreports.estimatedInventoryValue"], value: amount(totalValue), emphasis: true },
@@ -276,9 +301,13 @@ export function OperationalReportsWorkspace({ domain }: { domain: ReportDomain }
             { label: i18n.catalog["ui.operationalreports.numberDocuments"], value: String(rows.length) },
             { label: isReturn ? i18n.catalog["common.general.totalReturns"] : i18n.catalog["ui.operationalreports.totalActivity"], value: amount(rows.reduce((sum, row) => sum + numberValue(row.amount), 0)), emphasis: true },
         ] };
-    }, []);
+    }, [i18n.catalog, inventoryColumnKeys, inventoryTemplateId]);
 
     const createReport = async () => {
+        if (selectedKey === "inventory-balance" && inventoryColumnKeys.length === 0) {
+            showAlert("operational-report-alerts", importCopy("selectAtLeastOneField"), "error");
+            return;
+        }
         if (selected.requiresParty && !partyId) {
             showAlert("operational-report-alerts", i18n.catalog["ui.operationalreports.pleaseSelectCustomerSupplierBeforeCreatingAccountStatement"], "error");
             return;
@@ -330,6 +359,10 @@ export function OperationalReportsWorkspace({ domain }: { domain: ReportDomain }
                 <section className="sales-card operational-report-builder">
                     <div><p className="operational-report-overline">{i18n.catalog["ui.operationalreports.defaultTemplate"]}</p><h2>{selected.title}</h2><p>{selected.description}</p></div>
                     {selected.requiresParty && <label className="operational-party-picker"><span>{selected.requiresParty === "customer" ? i18n.catalog["common.general.customer"] : i18n.catalog["common.general.supplier"]}</span><select value={partyId} onChange={(event) => setPartyId(event.target.value)}><option value="">{i18n.catalog["common.general.select"]}{selected.requiresParty === "customer" ? i18n.catalog["common.general.customer"] : i18n.catalog["common.general.supplier"]}</option>{partyOptions.map((party) => <option key={party.value} value={party.value}>{party.label}</option>)}</select></label>}
+                    {selectedKey === "inventory-balance" && <div className="inventory-report-template-controls">
+                        <label><span>{importCopy("reportTemplate")}</span><select value={inventoryTemplateId} onChange={(event) => setInventoryTemplateId(event.target.value)}><option value="">{importCopy("defaultInventoryLayout")}</option>{inventoryTemplates.map((template) => <option key={template.id} value={template.id}>{template.template_name_ar || template.template_name_en || template.template_key || importCopy("template", { value0: template.id })}</option>)}</select></label>
+                        <div className="inventory-report-field-picker"><span>{importCopy("visibleFields")}</span><div>{inventoryColumns.map((column) => <label key={column.key}><input type="checkbox" checked={inventoryColumnKeys.includes(column.key)} onChange={() => setInventoryColumnKeys((current) => current.includes(column.key) ? current.filter((key) => key !== column.key) : [...current, column.key])} />{column.label}</label>)}</div></div>
+                    </div>}
                     <Button variant="primary" icon="eye" onClick={createReport} disabled={isLoading}>{isLoading ? i18n.catalog["ui.operationalreports.preparingReport"] : i18n.catalog["ui.operationalreports.previewReport"]}</Button>
                 </section>
             </section>

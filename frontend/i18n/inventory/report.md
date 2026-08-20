@@ -4,8 +4,8 @@ Generated deterministically by `npm run i18n:inventory`.
 
 | Status | Count |
 |---|---:|
-| approved-exception | 1 |
-| technical | 28304 |
+| approved-exception | 3 |
+| technical | 29163 |
 
 ## Highest-volume files
 
@@ -29,19 +29,20 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/03-finance/management-accounting/cost-profit-centers/profit-centers/(pages)/page.tsx` | 283 |
 | `app/06-human-capital/workforce-admin/employee-master/employees-list/components/DocumentsTab.tsx` | 282 |
 | `app/06-human-capital/hr-compliance/compliance-relations/employee-relations/(pages)/EmployeeRelations.tsx` | 280 |
+| `components/ui/OperationalReportsWorkspace.tsx` | 277 |
 | `app/01-enterprise-core/automation/recurring/recurring-transactions/(pages)/page.tsx` | 265 |
 | `app/03-finance/management-accounting/cost-profit-centers/cost-centers/(pages)/page.tsx` | 264 |
 | `app/06-human-capital/hr-compliance/compliance-relations/communications/(pages)/CorporateCommunications.tsx` | 262 |
-| `components/ui/OperationalReportsWorkspace.tsx` | 261 |
 | `app/03-finance/general-ledger/ledger-core/financial-reports/components/BalanceSheetTab.tsx` | 259 |
+| `app/04-supply-chain/inventory/products-inventory/products/(pages)/page.tsx` | 258 |
 | `components/template-editor/TemplateEditor.tsx` | 248 |
 | `app/06-human-capital/services-wellness/employee-services/loans/(pages)/EmployeeLoans.tsx` | 247 |
+| `components/ui/DataImportWorkspace.tsx` | 238 |
 | `app/setup/components/OrganizationArchitectureWorkspace.tsx` | 232 |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/ChangeHistoryTab.tsx` | 230 |
 | `app/06-human-capital/talent-recruitment/recruitment/administration/components/PositionsTab.tsx` | 228 |
 | `app/06-human-capital/knowledge-portal/self-service/employee-portal/(pages)/EmployeePortal.tsx` | 227 |
 | `app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/ModulesStatus.tsx` | 226 |
-| `app/04-supply-chain/inventory/products-inventory/products/(pages)/page.tsx` | 226 |
 | `app/03-finance/tax-compliance/cash-management/journal-vouchers/(pages)/page.tsx` | 223 |
 | `app/03-finance/treasury/cash-management/journal-vouchers/(pages)/page.tsx` | 223 |
 | `app/06-human-capital/performance-development/performance/succession/(pages)/Succession.tsx` | 219 |
@@ -51,6 +52,7 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/06-human-capital/time-productivity/attendance-scheduling/biometric/(pages)/BiometricControl.tsx` | 213 |
 | `lib/navigation/commercial.config.ts` | 210 |
 | `app/06-human-capital/services-wellness/employee-services/wellness/(pages)/WellnessModule.tsx` | 203 |
+| `app/02-commercial/sales-governance/templates/template-manager/(pages)/templates-data.ts` | 202 |
 | `app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/edit/page.tsx` | 202 |
 | `app/01-enterprise-core/system-overview/dashboard/global-dashboard/(pages)/page.tsx` | 193 |
 | `lib/navigation/supply-chain.config.ts` | 193 |
@@ -61,9 +63,9 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/06-human-capital/payroll-benefits/payroll-management/payroll-components/(pages)/PayrollComponents.tsx` | 181 |
 | `app/06-human-capital/time-productivity/attendance-scheduling/leave/(pages)/LeaveRequests.tsx` | 181 |
 | `app/03-finance/tax-compliance/tax-management/vat-zatca/components/GovernmentFeesTab.tsx` | 179 |
-| `app/02-commercial/sales-governance/templates/template-manager/(pages)/templates-data.ts` | 175 |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/HierarchyTab.tsx` | 173 |
 | `app/06-human-capital/talent-recruitment/recruitment/administration/components/EmployeePositionTab.tsx` | 171 |
+| `components/platform/ClientConnectionGate.tsx` | 171 |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/NodesTab.tsx` | 168 |
 | `app/02-commercial/crm/customer-master/customers-list/(pages)/page.tsx` | 163 |
 | `app/03-finance/general-ledger/ledger-core/general-ledger-book/(pages)/page.tsx` | 161 |
@@ -98,6 +100,7 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/03-finance/tax-compliance/cash-management/bank-reconciliation/(pages)/page.tsx` | 120 |
 | `app/03-finance/treasury/cash-management/bank-reconciliation/(pages)/page.tsx` | 120 |
 | `app/02-commercial/revenue-receivables/revenue-receipts/revenues/(pages)/page.tsx` | 119 |
+| `lib/connection/client-connection.ts` | 117 |
 | `app/04-supply-chain/procurement/purchase-invoices/purchase-returns/(pages)/page.tsx` | 114 |
 | `components/tax/compliance-editor/FormatEditor.tsx` | 114 |
 | `app/04-supply-chain/supplier-sourcing/supplier-master/supplier-ledger/(pages)/page.tsx` | 113 |
@@ -108,9 +111,6 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/02-commercial/marketing-distribution/representatives/reps-ledger/components/LedgerTable.tsx` | 108 |
 | `app/06-human-capital/workforce-admin/employee-master/employee-assets/(pages)/view/page.tsx` | 103 |
 | `components/navigation/SideNavigationBar/SideNavigationBar.tsx` | 103 |
-| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/DashboardTab.tsx` | 101 |
-| `app/02-commercial/sales-governance/templates/template-manager/(pages)/SystemTemplates.tsx` | 101 |
-| `app/03-finance/foreign-exchange/currency-management/currency-positions/(pages)/page.tsx` | 101 |
 
 ## Gate
 

@@ -22,6 +22,7 @@ Route::group(['prefix' => 'inventory', 'middleware' => 'can:products,view'], fun
     Route::group(['prefix' => 'products'], function () {
         Route::get('/', [ProductsController::class, 'index'])->name('v2.inventory.products.index');
         Route::middleware(['can:products,create', 'throttle:api-write'])->post('/', [ProductsController::class, 'store'])->name('v2.inventory.products.store');
+        Route::middleware(['can:products,create', 'throttle:api-critical'])->post('/import', [ProductsController::class, 'import'])->name('v2.inventory.products.import');
         Route::middleware(['can:products,edit', 'throttle:api-write'])->put('/{id}', [ProductsController::class, 'update'])->name('v2.inventory.products.update');
         Route::middleware(['can:products,delete', 'throttle:api-delete'])->delete('/{id}', [ProductsController::class, 'destroy'])->name('v2.inventory.products.destroy');
     });

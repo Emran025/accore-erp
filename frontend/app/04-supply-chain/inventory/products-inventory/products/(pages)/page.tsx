@@ -1,13 +1,16 @@
 "use client";
 
 import { useI18n } from "@/lib/i18n";
+import { importCopy, productImportAliases } from "@/lib/i18n/import-copy";
 import { MainLayout, PageSubHeader } from "@/components/layout";
-import { ActionButtons, Button, Column, ConfirmDialog, Dialog, NumberInput, SearchableSelect, Table, showToast } from "@/components/ui";
+import { ActionButtons, Button, Column, ConfirmDialog, DataImportWorkspace, Dialog, NumberInput, SearchableSelect, Table, showToast } from "@/components/ui";
+import type { ImportCommitContext, ImportRow } from "@/components/ui";
+import { buildProductImportFields, applyProductClassPolicy, getProductApprovalRequirements, isProductFieldVisible, PRODUCT_IMPORT_SCHEMA_VERSION } from "@/lib/imports/product-field-registry";
 import { TextInput } from "@/components/ui/TextInput";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/select";
 import { fetchAPI } from "@/lib/api";
-import { Permission, User, canAccess, checkAuth, getStoredPermissions, getStoredUser } from "@/lib/auth";
+import { Permission, canAccess, checkAuth, getStoredPermissions } from "@/lib/auth";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { formatCurrency } from "@/lib/utils";
 import { useProductStore } from "@/stores/useProductStore";
@@ -17,7 +20,6 @@ import { Category, Product } from "./types";
 
 export default function ProductsPage() {
     const { t: i18n } = useI18n();
-    const [user, setUser] = useState<User | null>(null);
     const [permissions, setPermissions] = useState<Permission[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
 
@@ -42,10 +44,11 @@ export default function ProductsPage() {
         } catch (e) {
             console.error(i18n.catalog["supplyChain.products.errorLoadingCategories"], e);
         }
-    }, []);
+    }, [i18n.catalog]);
 
     // Dialogs
     const [productDialog, setProductDialog] = useState(false);
+    const [importDialog, setImportDialog] = useState(false);
     const [categoryDialog, setCategoryDialog] = useState(false);
     const [viewDialog, setViewDialog] = useState(false);
     const [confirmDialog, setConfirmDialog] = useState(false);
@@ -77,7 +80,6 @@ export default function ProductsPage() {
         const init = async () => {
             const authenticated = await checkAuth();
             if (!authenticated) return;
-            setUser(getStoredUser());
             setPermissions(getStoredPermissions());
             await Promise.all([loadProducts(), loadCategories()]);
         };
@@ -153,7 +155,7 @@ export default function ProductsPage() {
 
         const payload = {
             name: formData.name,
-            barcode: formData.barcode,
+            catalog_code: formData.barcode,
             category_id: parseInt(formData.category_id),
             unit_price: parseFloat(formData.selling_price),
             minimum_profit_margin: parseFloat(formData.profit_margin) || 0,
@@ -169,11 +171,74 @@ export default function ProductsPage() {
             taxable: formData.taxable,
         };
 
-        const success = await saveProduct(payload, selectedProduct?.id);
+        const success = await saveProduct(applyProductClassPolicy(payload, new Set(Object.keys(payload))), selectedProduct?.id);
         if (success) {
             setProductDialog(false);
             await loadProducts(currentPage, searchTerm);
         }
+    };
+
+    const importFields = buildProductImportFields({
+        name: i18n.catalog["common.general.productName.alternative2"],
+        barcode: i18n.catalog["common.general.barcode"],
+        itemType: i18n.catalog["supplyChain.products.itemType"],
+        category: i18n.catalog["common.general.category"],
+        purchasePrice: i18n.catalog["supplyChain.products.purchasePrice"],
+        salePrice: i18n.catalog["supplyChain.products.salePrice"],
+        profitMargin: i18n.catalog["supplyChain.products.profitMargin.alternative2"],
+        unitName: i18n.catalog["common.general.unit.alternative2"],
+        unitsPerPackage: i18n.catalog["supplyChain.products.unitsBox"],
+        currentInventory: i18n.catalog["common.general.currentInventory"],
+        minimumStock: i18n.catalog["supplyChain.products.minimumOrder"],
+        inventoryTracking: i18n.catalog["supplyChain.products.inventoryTracking"],
+        sellable: i18n.catalog["supplyChain.products.sellable"],
+        taxable: i18n.catalog["common.general.taxable"],
+        description: i18n.catalog["common.general.description.alternative2"],
+    }, productImportAliases);
+
+    const importProducts = async (rows: ImportRow[], context: ImportCommitContext) => {
+        const normalizedRows = rows.map((row) => {
+            const rawCategory = String(row.category_id || "").trim();
+            const category = categories.find((item) => String(item.id) === rawCategory || item.name.trim().toLocaleLowerCase() === rawCategory.toLocaleLowerCase());
+            if (rawCategory !== "" && !category) {
+                throw new Error(importCopy("unknownCategory", { value0: rawCategory }));
+            }
+            return applyProductClassPolicy({
+                name: String(row.name || "").trim(),
+                catalog_code: String(row.barcode || "").trim(),
+                category_id: category?.id ?? null,
+                unit_price: Number(row.unit_price || 0),
+                minimum_profit_margin: Number(row.minimum_profit_margin || 0),
+                stock_quantity: Number(row.stock_quantity || 0),
+                low_stock_threshold: Number(row.low_stock_threshold || 10),
+                unit_name: String(row.unit_name || "piece"),
+                items_per_unit: Number(row.items_per_unit || 1),
+                sub_unit_name: String(row.sub_unit_name || "piece"),
+                purchase_price: Number(row.purchase_price || 0),
+                description: String(row.description || ""),
+                item_type: row.item_type,
+                sellable: row.sellable,
+                inventory_control: row.inventory_control,
+                taxable: row.taxable,
+            }, new Set(Object.keys(row)));
+        });
+        const response = await fetchAPI(API_ENDPOINTS.SUPPLY_CHAIN.PRODUCT_IMPORT, { method: "POST", body: JSON.stringify({
+            rows: normalizedRows,
+            batch_id: context.batchId,
+            schema_version: context.schemaVersion,
+            source_file: context.sourceFile,
+            approval_acknowledged: context.approvalAcknowledged,
+            approval_field_ids: context.approvalFieldIds.map((fieldId) => fieldId === "barcode" ? "catalog_code" : fieldId),
+        }) });
+        if (!response.success) throw new Error(response.message || importCopy("importFailed"));
+        await loadProducts(1, searchTerm);
+        const result = response as { products?: unknown[]; batch_id?: string; replayed?: boolean };
+        return {
+            imported: Array.isArray(result.products) ? result.products.length : normalizedRows.length,
+            batchId: result.batch_id,
+            replayed: Boolean(result.replayed),
+            message: result.replayed ? importCopy("batchReplayed") : importCopy("readyForImport"),
+        };
     };
 
     const addCategory = async () => {
@@ -305,12 +370,14 @@ export default function ProductsPage() {
                     }
                     actions={
                         canAccess(permissions, "products", "create") && (
-                            <Button
-                                variant="primary"
-                                icon="plus"
-                                onClick={openAddDialog}
-                            >
-                                {i18n.catalog["common.general.addProduct"]}</Button>
+                            <>
+                                <Button variant="secondary" icon="upload" onClick={() => setImportDialog(true)}>
+                                    {importCopy("importItemsButton")}
+                                </Button>
+                                <Button variant="primary" icon="plus" onClick={openAddDialog}>
+                                    {i18n.catalog["common.general.addProduct"]}
+                                </Button>
+                            </>
                         )
                     }
                 />
@@ -326,6 +393,19 @@ export default function ProductsPage() {
                     }}
                 />
             </div>
+
+            <Dialog isOpen={importDialog} onClose={() => setImportDialog(false)} title={importCopy("inventoryReport")} maxWidth="1400px">
+                <DataImportWorkspace
+                    title={importCopy("reusableBridge")}
+                    subtitle={importCopy("linkClassDescription")}
+                    fields={importFields}
+                    schemaVersion={PRODUCT_IMPORT_SCHEMA_VERSION}
+                    onImport={importProducts}
+                    approvalRequirements={getProductApprovalRequirements}
+                    isFieldVisible={isProductFieldVisible}
+                    onClose={() => setImportDialog(false)}
+                />
+            </Dialog>
 
             {/* Product Dialog */}
             <Dialog
@@ -390,7 +470,7 @@ export default function ProductsPage() {
                             label={i18n.catalog["supplyChain.products.itemType"]}
                             value={formData.item_type}
                             onChange={(e) => {
-                                const val = e.target.value as any;
+                                const val = e.target.value;
                                 setFormData({
                                     ...formData,
                                     item_type: val,

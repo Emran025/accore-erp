@@ -12,6 +12,7 @@ class ProductResource extends JsonResource
     public function toArray($request): array
     {
         $unitPrice = (float) ($this->selling_price ?? $this->unit_price ?? 0);
+        $costPrice = (float) ($this->wac ?? $this->weighted_average_cost ?? 0);
         $stockQty  = (int) ($this->stock_quantity ?? 0);
         $minStock  = (int) ($this->low_stock_threshold ?? 0);
         $creator   = $this->created_by_name ?? $this->createdBy?->full_name;
@@ -27,6 +28,8 @@ class ProductResource extends JsonResource
             'taxable'                 => (bool)($this->taxable ?? true),
             'inventory_control'       => (bool)($this->inventory_control ?? true),
             'sellable'                => (bool)($this->sellable ?? true),
+            'catalog_code'             => $this->catalog_code,
+            'barcode'                  => $this->catalog_code,
             'name'                    => LocalizedValue::resolve($this->resource, 'name') ?? ($this->product_name ?? $this->name),
             'name_ar'                 => $nameTranslations['ar'],
             'name_en'                 => $nameTranslations['en'],
@@ -47,8 +50,10 @@ class ProductResource extends JsonResource
             'selling_price'           => $unitPrice, // Frontend interface alias
             'minimum_profit_margin'   => (float) ($this->minimum_profit_margin ?? 0),
             'profit_margin'           => (float) ($this->minimum_profit_margin ?? 0), // Frontend interface alias
-            'weighted_average_cost'   => (float) ($this->wac ?? $this->weighted_average_cost ?? 0),
-            'latest_purchase_price'   => (float) ($this->last_purchase_price ?? $this->weighted_average_cost ?? 0),
+            'weighted_average_cost'   => $costPrice,
+            'cost_price'              => $costPrice,
+            'purchase_price'          => $costPrice,
+            'latest_purchase_price'   => (float) ($this->last_purchase_price ?? $costPrice),
 
             // Stock & Inventory
             'stock_quantity'          => $stockQty,
@@ -82,5 +87,4 @@ class ProductResource extends JsonResource
         ];
     }
 }
-
 

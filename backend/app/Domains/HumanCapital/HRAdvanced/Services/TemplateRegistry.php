@@ -48,6 +48,11 @@ class TemplateRegistry
             'label_en' => 'Payment Note',
             'module'   => 'accounting',
         ],
+        'inventory_report'   => [
+            'label_ar' => 'تقرير المخزون',
+            'label_en' => 'Inventory Report',
+            'module'   => 'supply_chain',
+        ],
         // HR Document Templates
         'employee_certificate' => [
             'label_ar' => 'شهادة موظف',
@@ -157,6 +162,13 @@ class TemplateRegistry
             'payee_name'       => ['type' => 'string', 'description_ar' => 'اسم المستلم', 'description_en' => 'Payee Name'],
             'amount'           => ['type' => 'number', 'description_ar' => 'المبلغ', 'description_en' => 'Amount'],
             'payment_method'  => ['type' => 'string', 'description_ar' => 'طريقة الدفع', 'description_en' => 'Payment Method'],
+        ],
+        'inventory_report' => [
+            'inventory_items'       => ['type' => 'array', 'description_ar' => 'صفوف المخزون', 'description_en' => 'Inventory Items'],
+            'inventory_quantity'    => ['type' => 'number', 'description_ar' => 'الكمية المتاحة', 'description_en' => 'Available Inventory Quantity'],
+            'inventory_value'       => ['type' => 'number', 'description_ar' => 'قيمة المخزون التقديرية', 'description_en' => 'Estimated Inventory Value'],
+            'inventory_cost_price'  => ['type' => 'number', 'description_ar' => 'سعر التكلفة', 'description_en' => 'Inventory Cost Price'],
+            'inventory_class'       => ['type' => 'string', 'description_ar' => 'تصنيف الصنف', 'description_en' => 'Inventory Class'],
         ],
         'employee_certificate' => [
             'employee_name'      => ['type' => 'string', 'description_ar' => 'اسم الموظف', 'description_en' => 'Employee Name'],
