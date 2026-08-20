@@ -75,6 +75,7 @@ function isTechnicalValue(value: string): boolean {
         || (!hasArabic && /(?:translate[XYZ]?\(|scale[XYZ]?\(|rotate\(|skew[XY]?\(|matrix\(|calc\()/i.test(value))
         || (!hasArabic && /^(?:(?:\d+(?:\.\d+)?(?:rem|px|em|%))(?:\s+(?:0|\d+(?:\.\d+)?(?:rem|px|em|%)))*|opacity\s+\d+(?:\.\d+)?s\s+ease|alert\s+alert-\{value\d+\}\s+animate-[\w-]+)$/i.test(value))
         || (!hasArabic && /^(?:btn(?:\s|-)\S+|btn-\{value\d+\}|border-radius-\{value\d+\}|\{value\d+\}(?:\s+\{value\d+\})+)$/u.test(value))
+        || /^[—·•…]+$/u.test(value)
         || (!hasArabic && /^\{value\d+\}\/\{value\d+\}$/u.test(value))
         || (!hasArabic && /^\{value\d+\}(?:\s*[()|—:-]\s*\{value\d+\})*$/u.test(value))
         || (!hasArabic && /^(?:line|column) \{value\d+\}$/i.test(value))
@@ -128,7 +129,11 @@ function classify(node: Node, value: string): { kind: CandidateKind; classificat
     }
     const technicalCall = nearestAncestor(node, Node.isCallExpression);
     if (technicalCall && getCallName(technicalCall) === "importCopy") {
-        return { kind: "call-argument", classification: "technical", context: "Localization runtime syntax" };
+      return { kind: "call-argument", classification: "technical", context: "Localization runtime syntax" };
+    }
+    if (technicalCall && getCallName(technicalCall) === "text") {
+        const argumentIndex = technicalCall.getArguments().findIndex((argument) => argument === node || argument.getDescendants().includes(node));
+        if (argumentIndex >= 1) return { kind: "call-argument", classification: "technical", context: "Data field selector" };
     }
     if (technicalCall && getCallName(technicalCall) === "parseFromString") {
         const argumentIndex = technicalCall.getArguments().findIndex((argument) => argument === node || argument.getDescendants().includes(node));
@@ -151,6 +156,9 @@ function classify(node: Node, value: string): { kind: CandidateKind; classificat
     const property = nearestAncestor(node, Node.isPropertyAssignment);
     const name = property ? propertyName(property) : undefined;
     if (name && policy.userFacingObjectProperties.includes(name)) {
+        if (isTechnicalValue(value)) {
+            return { kind: "object-property", classification: "technical", context: `Technical object ${name}` };
+        }
         return { kind: "object-property", classification: "user-facing", context: `Object ${name}` };
     }
 
