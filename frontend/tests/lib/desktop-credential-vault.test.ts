@@ -46,10 +46,15 @@ describe('desktop credential vault product isolation', () => {
     await expect(ensureProtectedDesktopCredentialStore()).resolves.toBeUndefined();
     await expect(readProtectedDesktopCredentials()).resolves.toBeNull();
 
-    await writeProtectedDesktopCredentials({
+    const credentials = {
+      schemaVersion: 1 as const,
+      deviceAccessToken: 'test-device-access-token',
+      deviceId: 'test-device-id',
       refreshToken: 'test-refresh-token',
       refreshExpiresAt: null,
-    });
+    };
+    await writeProtectedDesktopCredentials(credentials);
+    await expect(readProtectedDesktopCredentials()).resolves.toEqual(credentials);
     await clearProtectedDesktopCredentials();
 
     expect(tauriCore.invoke).not.toHaveBeenCalled();
