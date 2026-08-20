@@ -57,6 +57,7 @@ pub struct BackupRuntime {
     supervisor: BackupSupervisor<WindowsMariaDbBackupOperator>,
     schedule: BackupSchedule,
     catalog_error: Option<String>,
+    last_failure: Option<String>,
     audit_cursor: usize,
 }
 
@@ -77,6 +78,7 @@ impl BackupRuntime {
                 interval_seconds: crate::BACKUP_INTERVAL_SECONDS,
             },
             catalog_error,
+            last_failure: None,
             audit_cursor: 0,
         };
         runtime.publish_public_status(runtime.component_status())?;
@@ -92,6 +94,12 @@ impl BackupRuntime {
         }
         let records = self.supervisor.records();
         let Some(latest) = records.iter().max_by_key(|record| record.created_at_unix) else {
+            if let Some(failure) = &self.last_failure {
+                return component(
+                    "attention",
+                    format!("latest protected backup did not complete: {failure}"),
+                );
+            }
             return component(
                 "attention",
                 "no verified local restore point has been created yet",
@@ -136,7 +144,9 @@ impl BackupRuntime {
             .and_then(|()| self.supervisor.enforce_retention(current_time));
 
         if let Err(error) = &outcome {
-            append_backup_failure_diagnostic(&self.config, error);
+            let failure = sanitized_backup_failure_detail(&self.config, error);
+            self.last_failure = Some(failure.clone());
+            append_backup_failure_diagnostic(&self.config, &failure);
             append_safe_audit(
                 &self.config,
                 "Backup",
@@ -144,6 +154,8 @@ impl BackupRuntime {
                 current_time,
                 &format!("backup:{backup_id}; {}", safe_error_summary(error)),
             );
+        } else {
+            self.last_failure = None;
         }
         if let Err(error) = self.persist_manifest() {
             self.catalog_error = Some(error);
@@ -575,7 +587,7 @@ fn append_safe_audit(
         .and_then(|mut file| file.write_all(line.as_bytes()));
 }
 
-fn append_backup_failure_diagnostic(config: &RuntimeConfig, error: &AgentError) {
+fn sanitized_backup_failure_detail(config: &RuntimeConfig, error: &AgentError) -> String {
     let mut detail = format!("{error:?}");
     for secret in [
         config.app_key.as_str(),
@@ -586,6 +598,10 @@ fn append_backup_failure_diagnostic(config: &RuntimeConfig, error: &AgentError) 
             detail = detail.replace(secret, "[redacted]");
         }
     }
+    detail.chars().take(640).collect()
+}
+
+fn append_backup_failure_diagnostic(config: &RuntimeConfig, detail: &str) {
     let line = format!("{} backup failure: {detail}\n", now());
     let _ = OpenOptions::new()
         .create(true)
