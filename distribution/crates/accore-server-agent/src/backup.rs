@@ -283,7 +283,7 @@ impl BackupOperator for WindowsMariaDbBackupOperator {
             })?;
             run_checked(
                 Command::new(mariadb_bin(&self.config, "mariadb-dump.exe"))
-                    .arg(format!("--defaults-extra-file={}", client_config.display()))
+                    .arg(format!("--defaults-file={}", client_config.display()))
                     .args([
                         "--single-transaction",
                         "--skip-lock-tables",
@@ -420,7 +420,7 @@ impl BackupOperator for WindowsMariaDbBackupOperator {
                 })?;
                 let mut restore = Command::new(mariadb_bin(&self.config, "mariadb.exe"));
                 restore
-                    .arg(format!("--defaults-extra-file={}", client_config.display()))
+                    .arg(format!("--defaults-file={}", client_config.display()))
                     .stdin(Stdio::from(input));
                 run_checked(
                     &mut restore,
@@ -435,7 +435,7 @@ impl BackupOperator for WindowsMariaDbBackupOperator {
 
                 let mut query = Command::new(mariadb_bin(&self.config, "mariadb.exe"));
                 query
-                    .arg(format!("--defaults-extra-file={}", client_config.display()))
+                    .arg(format!("--defaults-file={}", client_config.display()))
                     .arg(format!("--database={}", self.config.database_name))
                     .arg("--execute=SELECT 1 AS accore_restore_validation");
                 run_checked(&mut query, "query isolated restored MariaDB database").map_err(
