@@ -65,23 +65,31 @@ function productFromAssetName(name) {
 
 function normalizeAssetName(sourceFile) {
   const name = basename(sourceFile).replaceAll(' ', '.');
-  const target = releaseTargetFromAssetName(name);
+  const target = releaseTargetFromAssetName(name, sourceFile);
   if (!target) return name;
 
   const architecturePattern = /[_.-](aarch64|arm64|x86_64|x64|amd64)(?=[_.-])/i;
-  if (!architecturePattern.test(name)) {
-    throw new Error(`could not determine architecture for desktop release asset ${name}`);
+  if (architecturePattern.test(name)) {
+    return name.replace(
+      architecturePattern,
+      `_${target.platform}_${target.architecture}`
+    );
   }
 
-  return name.replace(
-    architecturePattern,
-    `_${target.platform}_${target.architecture}`
-  );
+  if (name.toLowerCase().endsWith('.app.tar.gz') || name.toLowerCase().endsWith('.app.tar.gz.sig')) {
+    return name.replace(
+      /\.app\.tar\.gz(\.sig)?$/i,
+      `_${target.platform}_${target.architecture}.app.tar.gz$1`
+    );
+  }
+
+  throw new Error(`could not determine architecture placement for desktop release asset ${name}`);
 }
 
-function releaseTargetFromAssetName(name) {
+function releaseTargetFromAssetName(name, sourceFile) {
   const installerName = name.replace(/\.sig$/i, '').toLowerCase();
-  const architecture = installerName.includes('aarch64') || installerName.includes('arm64')
+  const architectureSource = `${installerName} ${sourceFile.toLowerCase()}`;
+  const architecture = architectureSource.includes('aarch64') || architectureSource.includes('arm64')
     ? 'aarch64'
     : 'x86_64';
 
