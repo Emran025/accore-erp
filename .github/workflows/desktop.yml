@@ -84,7 +84,7 @@ jobs:
         if: matrix.flavor == 'server'
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: "8.3"
           tools: composer
           extensions: fileinfo
 
@@ -107,6 +107,47 @@ jobs:
           cargo build --manifest-path distribution/crates/accore-server-agent/Cargo.toml --release
           New-Item -ItemType Directory -Force -Path frontend/src-tauri/binaries | Out-Null
           Copy-Item distribution/crates/accore-server-agent/target/release/accore-server-agent.exe frontend/src-tauri/binaries/accore-server-agent-x86_64-pc-windows-msvc.exe
+
+      - name: Smoke test self-contained Server Desktop runtime
+        if: matrix.flavor == 'server'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $agent = Resolve-Path 'frontend/src-tauri/binaries/accore-server-agent-x86_64-pc-windows-msvc.exe'
+          $dataRoot = Join-Path $env:ProgramData 'ACCORE ERP\Server'
+          $statusPath = Join-Path $env:ProgramData 'ACCORE ERP\Server Status\runtime-status.json'
+          $runtimeEnv = 'frontend/src-tauri/resources/server-runtime/windows-x86_64/app/.env'
+          try {
+            & $agent install
+            if ($LASTEXITCODE -ne 0) { throw "Agent installation exited with $LASTEXITCODE" }
+            $deadline = (Get-Date).AddMinutes(3)
+            $status = $null
+            while ((Get-Date) -lt $deadline) {
+              if (Test-Path $statusPath) {
+                $status = Get-Content $statusPath -Raw | ConvertFrom-Json
+                if ($status.state -eq 'ready') { break }
+                if ($status.state -eq 'unhealthy') { throw "Server Agent reported unhealthy: $($status.detail)" }
+              }
+              Start-Sleep -Seconds 2
+            }
+            if ($null -eq $status -or $status.state -ne 'ready') { throw 'Server Agent did not become ready within three minutes' }
+            if ($status.database.state -ne 'ready' -or $status.api.state -ne 'ready' -or $status.queue.state -ne 'ready') { throw 'Not every Server Desktop component reached ready state' }
+            if (Test-Path $runtimeEnv) { throw 'Runtime package contains a forbidden Laravel environment file' }
+            $privateAcl = Get-Acl (Join-Path $dataRoot 'agent-config.json')
+            if ($privateAcl.Access.IdentityReference.Value -match 'Users') { throw 'Agent configuration grants an ordinary Users ACL entry' }
+            & $agent stop
+            if ($LASTEXITCODE -ne 0) { throw "Agent stop exited with $LASTEXITCODE" }
+            $stopDeadline = (Get-Date).AddMinutes(1)
+            do {
+              Start-Sleep -Seconds 2
+              $status = Get-Content $statusPath -Raw | ConvertFrom-Json
+            } while ($status.state -ne 'stopped' -and (Get-Date) -lt $stopDeadline)
+            if ($status.state -ne 'stopped') { throw 'Server Agent did not complete ordered shutdown' }
+          }
+          finally {
+            & $agent uninstall
+            Remove-Item (Join-Path $env:ProgramData 'ACCORE ERP') -Recurse -Force -ErrorAction SilentlyContinue
+          }
 
       - name: Generate updater configuration for signed release
         if: startsWith(github.ref, 'refs/tags/desktop-v')

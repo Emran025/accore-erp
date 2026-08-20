@@ -358,18 +358,28 @@ fn start_database(config: &RuntimeConfig) -> Result<Child, String> {
 }
 
 fn provision_application(config: &RuntimeConfig) -> Result<(), String> {
-    let env_path = app_root(config).join(".env");
-    let storage_path = config
-        .data_root
-        .join("laravel-storage")
-        .display()
-        .to_string()
-        .replace('\\', "/");
-    let body = format!(
-        "APP_NAME=ACCORE ERP\nAPP_ENV=production\nAPP_KEY={}\nAPP_DEBUG=false\nAPP_URL=http://127.0.0.1:{API_PORT}\nLARAVEL_STORAGE_PATH={storage_path}\nLOG_CHANNEL=single\nLOG_LEVEL=info\nDB_CONNECTION=mysql\nDB_HOST=127.0.0.1\nDB_PORT={DATABASE_PORT}\nDB_DATABASE={}\nDB_USERNAME=accore_app\nDB_PASSWORD={}\nSESSION_DRIVER=file\nCACHE_STORE=file\nQUEUE_CONNECTION=database\n",
-        config.app_key, config.database_name, config.database_password
-    );
-    fs::write(env_path, body).map_err(|error| format!("write Laravel environment: {error}"))?;
+    let storage = config.data_root.join("laravel-storage");
+    let cache = config.data_root.join("laravel-cache");
+    for path in [
+        storage.join("app/public"),
+        storage.join("framework/cache/data"),
+        storage.join("framework/sessions"),
+        storage.join("framework/views"),
+        storage.join("logs"),
+        cache,
+    ] {
+        fs::create_dir_all(path)
+            .map_err(|error| format!("create durable Laravel runtime directory: {error}"))?;
+    }
+    match fs::remove_file(app_root(config).join(".env")) {
+        Ok(()) => {}
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+        Err(error) => {
+            return Err(format!(
+                "remove legacy packaged Laravel environment: {error}"
+            ))
+        }
+    }
 
     let mut migrate = application_command(config, ["php-cli", "artisan", "migrate", "--force"]);
     run_checked(&mut migrate, "run Laravel migrations")?;
@@ -386,7 +396,7 @@ fn start_api(config: &RuntimeConfig) -> Result<Child, String> {
         .arg(config.runtime_root.join("Caddyfile"))
         .current_dir(app_root(config))
         .env("ACCORE_APP_ROOT", app_root(config))
-        .env("APP_ENV", "production")
+        .envs(application_environment(config))
         .stdout(Stdio::from(
             log.try_clone()
                 .map_err(|error| format!("clone API log: {error}"))?,
@@ -427,8 +437,43 @@ fn application_command<const N: usize>(config: &RuntimeConfig, arguments: [&str;
     command
         .args(arguments)
         .current_dir(app_root(config))
-        .env("APP_ENV", "production");
+        .envs(application_environment(config));
     command
+}
+
+fn application_environment(config: &RuntimeConfig) -> Vec<(&'static str, String)> {
+    let storage = config
+        .data_root
+        .join("laravel-storage")
+        .display()
+        .to_string()
+        .replace('\\', "/");
+    let config_cache = config
+        .data_root
+        .join("laravel-cache/config.php")
+        .display()
+        .to_string()
+        .replace('\\', "/");
+    vec![
+        ("APP_NAME", "ACCORE ERP".into()),
+        ("APP_ENV", "production".into()),
+        ("APP_KEY", config.app_key.clone()),
+        ("APP_DEBUG", "false".into()),
+        ("APP_URL", format!("http://127.0.0.1:{API_PORT}")),
+        ("LARAVEL_STORAGE_PATH", storage),
+        ("APP_CONFIG_CACHE", config_cache),
+        ("LOG_CHANNEL", "single".into()),
+        ("LOG_LEVEL", "info".into()),
+        ("DB_CONNECTION", "mysql".into()),
+        ("DB_HOST", "127.0.0.1".into()),
+        ("DB_PORT", DATABASE_PORT.to_string()),
+        ("DB_DATABASE", config.database_name.clone()),
+        ("DB_USERNAME", "accore_app".into()),
+        ("DB_PASSWORD", config.database_password.clone()),
+        ("SESSION_DRIVER", "file".into()),
+        ("CACHE_STORE", "file".into()),
+        ("QUEUE_CONNECTION", "database".into()),
+    ]
 }
 
 fn wait_for_port(port: u16, component: &str) -> Result<(), String> {
