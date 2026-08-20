@@ -179,6 +179,16 @@ jobs:
                 Get-Content $diagnosticPath -Raw
               }
             }
+            $auditPath = Join-Path $dataRoot 'operations-audit.jsonl'
+            if (Test-Path $auditPath) {
+              Write-Host '--- operations-audit.jsonl, last 80 lines ---'
+              Get-Content $auditPath -Tail 80
+            }
+            $backupsPath = Join-Path $dataRoot 'backups'
+            if (Test-Path $backupsPath) {
+              Write-Host '--- protected backup artifact names and sizes ---'
+              Get-ChildItem $backupsPath -File | Where-Object { $_.Name -notmatch '^\.' } | Select-Object Name, Length
+            }
             $logsPath = Join-Path $dataRoot 'logs'
             if (Test-Path $logsPath) {
               Get-ChildItem $logsPath -File | ForEach-Object {
