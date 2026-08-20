@@ -149,7 +149,7 @@ function isTauriUpdaterSignature(file) {
   const name = basename(file).toLowerCase();
   return (
     name.endsWith('.sig') &&
-    /accore[ _-](server|client)/i.test(name) &&
+    /accore[ ._-](server|client)/i.test(name) &&
     (name.endsWith('.appimage.sig') ||
       name.endsWith('.exe.sig') ||
       name.endsWith('.msi.sig') ||
@@ -179,14 +179,14 @@ function isDesktopInstaller(file) {
   const extension = extname(file).toLowerCase();
   return (
     ['.deb', '.rpm', '.appimage', '.msi', '.exe', '.dmg'].includes(extension) &&
-    /accore[ _-](server|client)/i.test(basename(file))
+    /accore[ ._-](server|client)/i.test(basename(file))
   );
 }
 
 function classifyProduct(file) {
   const name = basename(file).toLowerCase();
-  if (name.includes('accore server') || name.includes('accore-server')) return 'server';
-  if (name.includes('accore client') || name.includes('accore-client')) return 'client';
+  if (/accore[ ._-]server/.test(name)) return 'server';
+  if (/accore[ ._-]client/.test(name)) return 'client';
   throw new Error(`cannot identify product for ${file}`);
 }
 

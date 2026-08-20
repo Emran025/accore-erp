@@ -159,7 +159,12 @@ jobs:
         with:
           pattern: "accore-*-assets"
           path: release-assets
-          merge-multiple: true
+
+      - name: Stage publishable desktop release assets
+        run: >-
+          node frontend/scripts/stage-desktop-release-assets.mjs
+          release-assets
+          release-publish-assets
 
       - name: Generate signed release manifests
         env:
@@ -168,7 +173,7 @@ jobs:
           ACCORE_MANIFEST_KEY_ID: ${{ secrets.ACCORE_MANIFEST_KEY_ID }}
           ACCORE_MANIFEST_PRIVATE_KEY: ${{ secrets.ACCORE_MANIFEST_PRIVATE_KEY }}
           ACCORE_RELEASE_BASE_URL: https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}
-        run: node frontend/scripts/create-release-manifests.mjs release-assets release-manifests
+        run: node frontend/scripts/create-release-manifests.mjs release-publish-assets release-manifests
 
       - name: Create GitHub release and upload installers
         uses: softprops/action-gh-release@v2
@@ -179,5 +184,5 @@ jobs:
           name: Accore ERP ${{ github.ref_name }}
           generate_release_notes: true
           files: |
-            release-assets/**
+            release-publish-assets/**
             release-manifests/**
