@@ -5,7 +5,7 @@ Generated deterministically by `npm run i18n:inventory`.
 | Status | Count |
 |---|---:|
 | approved-exception | 1 |
-| technical | 29057 |
+| technical | 29154 |
 
 ## Highest-volume files
 
@@ -23,23 +23,24 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/06-human-capital/services-wellness/employee-services/ehs/(pages)/EhsModule.tsx` | 328 |
 | `app/06-human-capital/performance-development/performance/learning/(pages)/Learning.tsx` | 318 |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/NodeFormPanel.tsx` | 316 |
-| `app/04-supply-chain/inventory/products-inventory/products/(pages)/page.tsx` | 302 |
 | `lib/navigation/human-capital.config.ts` | 295 |
 | `app/06-human-capital/knowledge-portal/self-service/expertise/(pages)/KnowledgeBase.tsx` | 288 |
 | `app/06-human-capital/knowledge-portal/self-service/knowledge-base/(pages)/KnowledgeBase.tsx` | 288 |
 | `app/03-finance/management-accounting/cost-profit-centers/profit-centers/(pages)/page.tsx` | 283 |
 | `app/06-human-capital/workforce-admin/employee-master/employees-list/components/DocumentsTab.tsx` | 282 |
 | `app/06-human-capital/hr-compliance/compliance-relations/employee-relations/(pages)/EmployeeRelations.tsx` | 280 |
-| `components/ui/OperationalReportsWorkspace.tsx` | 273 |
+| `components/ui/OperationalReportsWorkspace.tsx` | 277 |
 | `app/01-enterprise-core/automation/recurring/recurring-transactions/(pages)/page.tsx` | 265 |
 | `app/03-finance/management-accounting/cost-profit-centers/cost-centers/(pages)/page.tsx` | 264 |
 | `app/06-human-capital/hr-compliance/compliance-relations/communications/(pages)/CorporateCommunications.tsx` | 262 |
 | `app/03-finance/general-ledger/ledger-core/financial-reports/components/BalanceSheetTab.tsx` | 259 |
+| `app/04-supply-chain/inventory/products-inventory/products/(pages)/page.tsx` | 258 |
 | `components/template-editor/TemplateEditor.tsx` | 248 |
 | `app/06-human-capital/services-wellness/employee-services/loans/(pages)/EmployeeLoans.tsx` | 247 |
 | `app/setup/components/OrganizationArchitectureWorkspace.tsx` | 232 |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/ChangeHistoryTab.tsx` | 230 |
 | `app/06-human-capital/talent-recruitment/recruitment/administration/components/PositionsTab.tsx` | 228 |
+| `components/ui/DataImportWorkspace.tsx` | 228 |
 | `app/06-human-capital/knowledge-portal/self-service/employee-portal/(pages)/EmployeePortal.tsx` | 227 |
 | `app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/ModulesStatus.tsx` | 226 |
 | `app/03-finance/tax-compliance/cash-management/journal-vouchers/(pages)/page.tsx` | 223 |
@@ -50,7 +51,6 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/add/page.tsx` | 214 |
 | `app/06-human-capital/time-productivity/attendance-scheduling/biometric/(pages)/BiometricControl.tsx` | 213 |
 | `lib/navigation/commercial.config.ts` | 210 |
-| `components/ui/DataImportWorkspace.tsx` | 209 |
 | `app/06-human-capital/services-wellness/employee-services/wellness/(pages)/WellnessModule.tsx` | 203 |
 | `app/02-commercial/sales-governance/templates/template-manager/(pages)/templates-data.ts` | 202 |
 | `app/06-human-capital/workforce-admin/employee-master/employees-list/(pages)/edit/page.tsx` | 202 |

@@ -78,3 +78,14 @@
 .inventory-report-field-picker label { align-items: center; background: #fff; border: 1px solid #dce8ec; border-radius: 6px; color: #4f6877; display: flex; font-size: .7rem; gap: .25rem; padding: .34rem .42rem; }
 .inventory-report-field-picker input { accent-color: var(--primary-color); }
 @media (max-width: 900px) { .inventory-report-template-controls { grid-template-columns: 1fr; width: auto; } }
+
+.data-import-mapping-badge { border-radius: 999px; display: inline-block; font-size: .62rem; font-weight: 700; margin-inline-start: .45rem; padding: .16rem .38rem; }
+.data-import-mapping-badge.mapped { background: #eaf7ef; color: #2a7b4d; }
+.data-import-mapping-badge.unresolved { background: #fff3e8; color: #b25f2b; }
+.data-import-mapping-badge.conflict { background: #fdeceb; color: #b43f3f; }
+.data-import-approval-panel { align-items: flex-start; background: linear-gradient(135deg, #fffaf0, #fffdf8); border: 1px solid #ebd9ae; border-radius: 11px; display: flex; gap: 1rem; justify-content: space-between; margin-top: 1rem; padding: .9rem 1rem; }
+.data-import-approval-panel h3 { color: #795b18; font-size: .86rem; margin: .2rem 0; }
+.data-import-approval-panel p { color: #806d43; font-size: .72rem; margin: .2rem 0; }
+.data-import-approval-panel > label { align-items: flex-start; color: #66521d; display: flex; font-size: .75rem; gap: .4rem; max-width: 280px; }
+.data-import-approval-panel input { accent-color: #b78622; margin-top: .15rem; }
+@media (max-width: 640px) { .data-import-approval-panel { flex-direction: column; } }

@@ -14,6 +14,11 @@ class ImportProductsRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'batch_id' => ['nullable', 'uuid'],
+            'source_file' => ['nullable', 'string', 'max:255'],
+            'approval_acknowledged' => ['required', 'accepted'],
+            'approval_field_ids' => ['nullable', 'array'],
+            'approval_field_ids.*' => ['string', 'max:100'],
             'rows' => ['required', 'array', 'min:1', 'max:1000'],
             'rows.*' => ['required', 'array'],
             'rows.*.name' => ['required', 'string', 'max:255'],

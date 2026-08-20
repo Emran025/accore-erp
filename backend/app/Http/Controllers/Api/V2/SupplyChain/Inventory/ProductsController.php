@@ -41,8 +41,11 @@ class ProductsController extends Controller
     public function import(ImportProductsRequest $request, ImportProductsAction $action): JsonResponse
     {
         try {
-            $products = $action->execute($request->validated('rows'));
-            return $this->successResponse(ProductResource::collection($products), 'Products imported successfully', 201);
+            $result = $action->execute($request->validated('rows'), $request->validated());
+            return $this->successResponse([
+                'products' => ProductResource::collection($result['products']),
+                'batch_id' => $result['batch_id'],
+            ], 'Products imported successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }

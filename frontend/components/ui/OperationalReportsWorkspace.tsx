@@ -45,6 +45,8 @@ interface ReportPayload {
     summary: Array<{ label: string; value: string; emphasis?: boolean }>;
     note?: string;
     partyName?: string;
+    templateId?: string;
+    fieldKeys?: string[];
 }
 
 interface Party {
@@ -264,7 +266,7 @@ export function OperationalReportsWorkspace({ domain }: { domain: ReportDomain }
             });
             const totalValue = rows.reduce((sum, row) => sum + numberValue(row.value), 0);
             const selectedColumns = inventoryColumns.filter((column) => inventoryColumnKeys.includes(column.key));
-            return { title: definition.title, subtitle: i18n.catalog["ui.operationalreports.quantityBalanceEstimatedValueBasedProductData"], recordLabel: definition.title, rows, columns: selectedColumns.length ? selectedColumns : inventoryColumns, summary: [
+            return { title: definition.title, subtitle: i18n.catalog["ui.operationalreports.quantityBalanceEstimatedValueBasedProductData"], recordLabel: definition.title, rows, columns: selectedColumns, templateId: inventoryTemplateId || undefined, fieldKeys: selectedColumns.map((column) => column.key), summary: [
                 { label: i18n.catalog["common.general.numberItems.alternative2"], value: String(rows.length) },
                 { label: i18n.catalog["ui.operationalreports.totalQuantity"], value: String(rows.reduce((sum, row) => sum + numberValue(row.quantity), 0)) },
                 { label: i18n.catalog["ui.operationalreports.estimatedInventoryValue"], value: amount(totalValue), emphasis: true },
@@ -299,9 +301,13 @@ export function OperationalReportsWorkspace({ domain }: { domain: ReportDomain }
             { label: i18n.catalog["ui.operationalreports.numberDocuments"], value: String(rows.length) },
             { label: isReturn ? i18n.catalog["common.general.totalReturns"] : i18n.catalog["ui.operationalreports.totalActivity"], value: amount(rows.reduce((sum, row) => sum + numberValue(row.amount), 0)), emphasis: true },
         ] };
-    }, [inventoryColumnKeys]);
+    }, [inventoryColumnKeys, inventoryTemplateId]);
 
     const createReport = async () => {
+        if (selectedKey === "inventory-balance" && inventoryColumnKeys.length === 0) {
+            showAlert("operational-report-alerts", importCopy("selectAtLeastOneField"), "error");
+            return;
+        }
         if (selected.requiresParty && !partyId) {
             showAlert("operational-report-alerts", i18n.catalog["ui.operationalreports.pleaseSelectCustomerSupplierBeforeCreatingAccountStatement"], "error");
             return;

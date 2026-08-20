@@ -4,7 +4,8 @@ import { useI18n } from "@/lib/i18n";
 import { importCopy, productImportAliases } from "@/lib/i18n/import-copy";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Column, ConfirmDialog, DataImportWorkspace, Dialog, NumberInput, SearchableSelect, Table, showToast } from "@/components/ui";
-import type { ImportField, ImportRow } from "@/components/ui";
+import type { ImportCommitContext, ImportRow } from "@/components/ui";
+import { buildProductImportFields, applyProductClassPolicy, getProductApprovalRequirements, isProductFieldVisible } from "@/lib/imports/product-field-registry";
 import { TextInput } from "@/components/ui/TextInput";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/select";
@@ -172,36 +173,36 @@ export default function ProductsPage() {
             taxable: formData.taxable,
         };
 
-        const success = await saveProduct(payload, selectedProduct?.id);
+        const success = await saveProduct(applyProductClassPolicy(payload, new Set(Object.keys(payload))), selectedProduct?.id);
         if (success) {
             setProductDialog(false);
             await loadProducts(currentPage, searchTerm);
         }
     };
 
-    const importFields: ImportField[] = [
-        { id: "name", label: i18n.catalog["common.general.productName.alternative2"], aliases: productImportAliases.name, type: "text", required: true, group: "identity" },
-        { id: "barcode", label: i18n.catalog["common.general.barcode"], aliases: productImportAliases.barcode, type: "text", group: "identity" },
-        { id: "item_type", label: i18n.catalog["supplyChain.products.itemType"], aliases: productImportAliases.itemType, type: "class", required: true, group: "classification" },
-        { id: "category_id", label: i18n.catalog["common.general.category"], aliases: productImportAliases.category, type: "text", group: "classification" },
-        { id: "purchase_price", label: i18n.catalog["supplyChain.products.purchasePrice"], aliases: productImportAliases.purchasePrice, type: "number", group: "commercial" },
-        { id: "unit_price", label: i18n.catalog["supplyChain.products.salePrice"], aliases: productImportAliases.unitPrice, type: "number", required: true, group: "commercial" },
-        { id: "minimum_profit_margin", label: i18n.catalog["supplyChain.products.profitMargin.alternative2"], aliases: productImportAliases.profitMargin, type: "number", group: "commercial" },
-        { id: "unit_name", label: i18n.catalog["common.general.unit.alternative2"], aliases: productImportAliases.unitName, type: "text", group: "inventory" },
-        { id: "items_per_unit", label: i18n.catalog["supplyChain.products.unitsBox"], aliases: productImportAliases.itemsPerUnit, type: "number", group: "inventory" },
-        { id: "stock_quantity", label: i18n.catalog["common.general.currentInventory"], aliases: productImportAliases.stock, type: "number", group: "inventory" },
-        { id: "low_stock_threshold", label: i18n.catalog["supplyChain.products.minimumOrder"], aliases: productImportAliases.lowStock, type: "number", group: "inventory" },
-        { id: "inventory_control", label: i18n.catalog["supplyChain.products.inventoryTracking"], aliases: productImportAliases.inventoryControl, type: "boolean", group: "inventory", dependsOn: "item_type" },
-        { id: "sellable", label: i18n.catalog["supplyChain.products.sellable"], aliases: productImportAliases.sellable, type: "boolean", group: "classification", dependsOn: "item_type" },
-        { id: "taxable", label: i18n.catalog["common.general.taxable"], aliases: productImportAliases.taxable, type: "boolean", group: "additional" },
-        { id: "description", label: i18n.catalog["common.general.description.alternative2"], aliases: productImportAliases.description, type: "text", group: "additional" },
-    ];
+    const importFields = buildProductImportFields({
+        name: i18n.catalog["common.general.productName.alternative2"],
+        barcode: i18n.catalog["common.general.barcode"],
+        itemType: i18n.catalog["supplyChain.products.itemType"],
+        category: i18n.catalog["common.general.category"],
+        purchasePrice: i18n.catalog["supplyChain.products.purchasePrice"],
+        salePrice: i18n.catalog["supplyChain.products.salePrice"],
+        profitMargin: i18n.catalog["supplyChain.products.profitMargin.alternative2"],
+        unitName: i18n.catalog["common.general.unit.alternative2"],
+        unitsPerPackage: i18n.catalog["supplyChain.products.unitsBox"],
+        currentInventory: i18n.catalog["common.general.currentInventory"],
+        minimumStock: i18n.catalog["supplyChain.products.minimumOrder"],
+        inventoryTracking: i18n.catalog["supplyChain.products.inventoryTracking"],
+        sellable: i18n.catalog["supplyChain.products.sellable"],
+        taxable: i18n.catalog["common.general.taxable"],
+        description: i18n.catalog["common.general.description.alternative2"],
+    }, productImportAliases);
 
-    const importProducts = async (rows: ImportRow[]) => {
+    const importProducts = async (rows: ImportRow[], context: ImportCommitContext) => {
         const normalizedRows = rows.map((row) => {
             const rawCategory = String(row.category_id || "").trim();
             const category = categories.find((item) => String(item.id) === rawCategory || item.name.trim().toLocaleLowerCase() === rawCategory.toLocaleLowerCase());
-            return {
+            return applyProductClassPolicy({
                 name: String(row.name || "").trim(),
                 catalog_code: String(row.barcode || "").trim(),
                 category_id: category?.id || (rawCategory !== "" && Number.isFinite(Number(rawCategory)) ? Number(rawCategory) : null),
@@ -218,9 +219,15 @@ export default function ProductsPage() {
                 sellable: row.sellable,
                 inventory_control: row.inventory_control,
                 taxable: row.taxable,
-            };
+            }, new Set(Object.keys(row)));
         });
-        const response = await fetchAPI(API_ENDPOINTS.SUPPLY_CHAIN.PRODUCT_IMPORT, { method: "POST", body: JSON.stringify({ rows: normalizedRows }) });
+        const response = await fetchAPI(API_ENDPOINTS.SUPPLY_CHAIN.PRODUCT_IMPORT, { method: "POST", body: JSON.stringify({
+            rows: normalizedRows,
+            batch_id: context.batchId,
+            source_file: context.sourceFile,
+            approval_acknowledged: context.approvalAcknowledged,
+            approval_field_ids: context.approvalFieldIds.map((fieldId) => fieldId === "barcode" ? "catalog_code" : fieldId),
+        }) });
         if (!response.success) throw new Error(response.message || importCopy("importFailed"));
         await loadProducts(1, searchTerm);
         return { imported: normalizedRows.length, message: importCopy("readyForImport") };
@@ -385,6 +392,8 @@ export default function ProductsPage() {
                     subtitle={importCopy("linkClassDescription")}
                     fields={importFields}
                     onImport={importProducts}
+                    approvalRequirements={getProductApprovalRequirements}
+                    isFieldVisible={isProductFieldVisible}
                     onClose={() => setImportDialog(false)}
                 />
             </Dialog>
