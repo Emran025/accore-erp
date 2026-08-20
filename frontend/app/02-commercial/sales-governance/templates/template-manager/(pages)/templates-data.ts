@@ -40,7 +40,13 @@ export const SYSTEM_APPROVED_KEYS: TemplateField[] = [
     // Payment Note
     { key: "payment_number", description: catalogMessage("common.general.voucherNumber"), type: "string", templateTypes: ["payment_note"] },
     { key: "payment_date", description: catalogMessage("common.general.voucherDate"), type: "date", templateTypes: ["payment_note"] },
-    { key: "payee_name", description: catalogMessage("commercial.templatesData.recipientName"), type: "string", templateTypes: ["payment_note"] }
+    { key: "payee_name", description: catalogMessage("commercial.templatesData.recipientName"), type: "string", templateTypes: ["payment_note"] },
+    // Inventory reports
+    { key: "inventory_items", description: "Inventory item rows", type: "list", templateTypes: ["inventory_report"] },
+    { key: "inventory_quantity", description: "Available inventory quantity", type: "number", templateTypes: ["inventory_report"] },
+    { key: "inventory_value", description: "Estimated inventory value", type: "number", templateTypes: ["inventory_report"] },
+    { key: "inventory_cost_price", description: "Inventory cost price", type: "number", templateTypes: ["inventory_report"] },
+    { key: "inventory_class", description: "Product, service, or raw-material class", type: "string", templateTypes: ["inventory_report"] }
 ];
 
 export const SYSTEM_MOCK_CONTEXT: Record<string, any> = {
@@ -75,7 +81,12 @@ export const SYSTEM_MOCK_CONTEXT: Record<string, any> = {
     transactions: [],
     payment_number: "PN-2026-002",
     payment_date: "2026-02-21",
-    payee_name: catalogMessage("commercial.templatesData.quickMaintenanceCompany")
+    payee_name: catalogMessage("commercial.templatesData.quickMaintenanceCompany"),
+    inventory_items: [],
+    inventory_quantity: "1250",
+    inventory_value: "345000",
+    inventory_cost_price: "275.00",
+    inventory_class: "product"
 };
 
 export const templateTypeLabels: Record<string, string> = {
@@ -85,6 +96,7 @@ export const templateTypeLabels: Record<string, string> = {
     purchase_order: catalogMessage("commercial.templatesData.purchaseOrder"),
     customer_statement: catalogMessage("common.general.customerAccountStatement"),
     payment_note: catalogMessage("commercial.templatesData.paymentDisbursementVoucher"),
+    inventory_report: "Inventory report",
     other_system: catalogMessage("common.general.other")
 };
 
@@ -95,6 +107,7 @@ export const templateTypeBadgeClass: Record<string, string> = {
     purchase_order: "badge-warning",
     customer_statement: "badge-purple",
     payment_note: "badge-rose",
+    inventory_report: "badge-info",
     other_system: "badge-secondary"
 };
 

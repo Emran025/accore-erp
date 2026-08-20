@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Api\V2\SupplyChain\Inventory;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SupplyChain\Inventory\ListProductsRequest;
 use App\Http\Requests\SupplyChain\Inventory\StoreProductRequest;
+use App\Http\Requests\SupplyChain\Inventory\ImportProductsRequest;
 use App\Http\Requests\SupplyChain\Inventory\UpdateProductRequest;
 use App\Http\Requests\SupplyChain\Inventory\DeleteProductRequest;
 use App\Domains\SupplyChain\Inventory\Actions\ListProductsAction;
 use App\Domains\SupplyChain\Inventory\Actions\CreateProductAction;
+use App\Domains\SupplyChain\Inventory\Actions\ImportProductsAction;
 use App\Domains\SupplyChain\Inventory\Actions\UpdateProductAction;
 use App\Domains\SupplyChain\Inventory\Actions\DeleteProductAction;
 use Illuminate\Http\JsonResponse;
@@ -31,6 +33,16 @@ class ProductsController extends Controller
         try {
             $product = $action->execute($request->validated());
             return $this->successResponse(new ProductResource($product), 'Product created successfully', 201);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
+    }
+
+    public function import(ImportProductsRequest $request, ImportProductsAction $action): JsonResponse
+    {
+        try {
+            $products = $action->execute($request->validated('rows'));
+            return $this->successResponse(ProductResource::collection($products), 'Products imported successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }

@@ -50,6 +50,8 @@ export { InvoiceDetailsDialog } from "./InvoiceDetailsDialog";
 export { SessionExpiredModal } from "./SessionExpiredModal";
 export { ProductSales } from "./ProductSales";
 export { OperationalReportsWorkspace } from "./OperationalReportsWorkspace";
+export { DataImportWorkspace } from "./DataImportWorkspace";
+export type { ImportField, ImportFieldType, ImportRow, ImportResult } from "./DataImportWorkspace";
 export { ProductPurchases } from "./ProductPurchases";
 export { QuotationWorkspace } from "./QuotationWorkspace";
 export { ServiceSales } from "./ServiceSales";

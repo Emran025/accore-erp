@@ -27,6 +27,8 @@ class ProductResource extends JsonResource
             'taxable'                 => (bool)($this->taxable ?? true),
             'inventory_control'       => (bool)($this->inventory_control ?? true),
             'sellable'                => (bool)($this->sellable ?? true),
+            'catalog_code'             => $this->catalog_code,
+            'barcode'                  => $this->catalog_code,
             'name'                    => LocalizedValue::resolve($this->resource, 'name') ?? ($this->product_name ?? $this->name),
             'name_ar'                 => $nameTranslations['ar'],
             'name_en'                 => $nameTranslations['en'],

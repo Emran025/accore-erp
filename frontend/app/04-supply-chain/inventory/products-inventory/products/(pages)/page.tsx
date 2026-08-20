@@ -2,7 +2,8 @@
 
 import { useI18n } from "@/lib/i18n";
 import { MainLayout, PageSubHeader } from "@/components/layout";
-import { ActionButtons, Button, Column, ConfirmDialog, Dialog, NumberInput, SearchableSelect, Table, showToast } from "@/components/ui";
+import { ActionButtons, Button, Column, ConfirmDialog, DataImportWorkspace, Dialog, NumberInput, SearchableSelect, Table, showToast } from "@/components/ui";
+import type { ImportField, ImportRow } from "@/components/ui";
 import { TextInput } from "@/components/ui/TextInput";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/select";
@@ -46,6 +47,7 @@ export default function ProductsPage() {
 
     // Dialogs
     const [productDialog, setProductDialog] = useState(false);
+    const [importDialog, setImportDialog] = useState(false);
     const [categoryDialog, setCategoryDialog] = useState(false);
     const [viewDialog, setViewDialog] = useState(false);
     const [confirmDialog, setConfirmDialog] = useState(false);
@@ -153,7 +155,7 @@ export default function ProductsPage() {
 
         const payload = {
             name: formData.name,
-            barcode: formData.barcode,
+            catalog_code: formData.barcode,
             category_id: parseInt(formData.category_id),
             unit_price: parseFloat(formData.selling_price),
             minimum_profit_margin: parseFloat(formData.profit_margin) || 0,
@@ -174,6 +176,53 @@ export default function ProductsPage() {
             setProductDialog(false);
             await loadProducts(currentPage, searchTerm);
         }
+    };
+
+    const importFields: ImportField[] = [
+        { id: "name", label: i18n.catalog["common.general.productName.alternative2"], aliases: ["product name", "name", "اسم المنتج"], type: "text", required: true, group: "identity" },
+        { id: "barcode", label: i18n.catalog["common.general.barcode"], aliases: ["barcode", "sku", "item code", "باركود"], type: "text", group: "identity" },
+        { id: "item_type", label: i18n.catalog["supplyChain.products.itemType"], aliases: ["item type", "class", "type", "نوع الصنف"], type: "class", required: true, group: "classification" },
+        { id: "category_id", label: i18n.catalog["common.general.category"], aliases: ["category", "category id", "التصنيف"], type: "text", group: "classification" },
+        { id: "purchase_price", label: i18n.catalog["supplyChain.products.purchasePrice"], aliases: ["purchase price", "cost", "سعر الشراء"], type: "number", group: "commercial" },
+        { id: "unit_price", label: i18n.catalog["supplyChain.products.salePrice"], aliases: ["selling price", "sale price", "unit price", "سعر البيع"], type: "number", required: true, group: "commercial" },
+        { id: "minimum_profit_margin", label: i18n.catalog["supplyChain.products.profitMargin.alternative2"], aliases: ["profit margin", "margin", "هامش الربح"], type: "number", group: "commercial" },
+        { id: "unit_name", label: i18n.catalog["common.general.unit.alternative2"], aliases: ["unit", "unit name", "الوحدة"], type: "text", group: "inventory" },
+        { id: "items_per_unit", label: i18n.catalog["supplyChain.products.unitsBox"], aliases: ["units per package", "items per unit", "عدد الوحدات"], type: "number", group: "inventory" },
+        { id: "stock_quantity", label: i18n.catalog["common.general.currentInventory"], aliases: ["stock", "quantity", "inventory", "المخزون"], type: "number", group: "inventory" },
+        { id: "low_stock_threshold", label: i18n.catalog["supplyChain.products.minimumOrder"], aliases: ["minimum stock", "reorder level", "حد إعادة الطلب"], type: "number", group: "inventory" },
+        { id: "inventory_control", label: i18n.catalog["supplyChain.products.inventoryTracking"], aliases: ["inventory control", "track inventory", "تتبع المخزون"], type: "boolean", group: "inventory", dependsOn: "item_type" },
+        { id: "sellable", label: i18n.catalog["supplyChain.products.sellable"], aliases: ["sellable", "for sale", "قابل للبيع"], type: "boolean", group: "classification", dependsOn: "item_type" },
+        { id: "taxable", label: i18n.catalog["common.general.taxable"], aliases: ["taxable", "vat", "خاضع للضريبة"], type: "boolean", group: "additional" },
+        { id: "description", label: i18n.catalog["common.general.description.alternative2"], aliases: ["description", "notes", "الوصف"], type: "text", group: "additional" },
+    ];
+
+    const importProducts = async (rows: ImportRow[]) => {
+        const normalizedRows = rows.map((row) => {
+            const rawCategory = String(row.category_id || "").trim();
+            const category = categories.find((item) => String(item.id) === rawCategory || item.name.trim().toLocaleLowerCase() === rawCategory.toLocaleLowerCase());
+            return {
+                name: String(row.name || "").trim(),
+                catalog_code: String(row.barcode || "").trim(),
+                category_id: category?.id || (rawCategory !== "" && Number.isFinite(Number(rawCategory)) ? Number(rawCategory) : null),
+                unit_price: Number(row.unit_price || 0),
+                minimum_profit_margin: Number(row.minimum_profit_margin || 0),
+                stock_quantity: Number(row.stock_quantity || 0),
+                low_stock_threshold: Number(row.low_stock_threshold || 10),
+                unit_name: String(row.unit_name || "piece"),
+                items_per_unit: Number(row.items_per_unit || 1),
+                sub_unit_name: String(row.sub_unit_name || "piece"),
+                purchase_price: Number(row.purchase_price || 0),
+                description: String(row.description || ""),
+                item_type: row.item_type,
+                sellable: row.sellable,
+                inventory_control: row.inventory_control,
+                taxable: row.taxable,
+            };
+        });
+        const response = await fetchAPI(API_ENDPOINTS.SUPPLY_CHAIN.PRODUCT_IMPORT, { method: "POST", body: JSON.stringify({ rows: normalizedRows }) });
+        if (!response.success) throw new Error(response.message || "The product import failed.");
+        await loadProducts(1, searchTerm);
+        return { imported: normalizedRows.length, message: "Validated records were created through the same inventory workflow used by manual entry." };
     };
 
     const addCategory = async () => {
@@ -305,12 +354,14 @@ export default function ProductsPage() {
                     }
                     actions={
                         canAccess(permissions, "products", "create") && (
-                            <Button
-                                variant="primary"
-                                icon="plus"
-                                onClick={openAddDialog}
-                            >
-                                {i18n.catalog["common.general.addProduct"]}</Button>
+                            <>
+                                <Button variant="secondary" icon="upload" onClick={() => setImportDialog(true)}>
+                                    Import items
+                                </Button>
+                                <Button variant="primary" icon="plus" onClick={openAddDialog}>
+                                    {i18n.catalog["common.general.addProduct"]}
+                                </Button>
+                            </>
                         )
                     }
                 />
@@ -326,6 +377,16 @@ export default function ProductsPage() {
                     }}
                 />
             </div>
+
+            <Dialog isOpen={importDialog} onClose={() => setImportDialog(false)} title="Import products and inventory" maxWidth="1400px">
+                <DataImportWorkspace
+                    title="Product and inventory import studio"
+                    subtitle="Bridge an external spreadsheet to the internal item model, reveal dependent fields only when they matter, and verify every record before writing it."
+                    fields={importFields}
+                    onImport={importProducts}
+                    onClose={() => setImportDialog(false)}
+                />
+            </Dialog>
 
             {/* Product Dialog */}
             <Dialog

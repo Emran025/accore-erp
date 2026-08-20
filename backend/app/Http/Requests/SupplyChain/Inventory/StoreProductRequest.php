@@ -15,6 +15,10 @@ class StoreProductRequest extends FormRequest
     {
         return [
             'name' => 'nullable|string|max:255',
+            'item_type' => 'nullable|in:product,service,raw_material',
+            'taxable' => 'nullable|boolean',
+            'inventory_control' => 'nullable|boolean',
+            'sellable' => 'nullable|boolean',
             'name_ar' => 'nullable|string|max:255|required_without_all:name,name_en',
             'name_en' => 'nullable|string|max:255',
             'description' => 'nullable|string',
@@ -32,6 +36,7 @@ class StoreProductRequest extends FormRequest
             'sub_unit_name_ar' => 'nullable|string|max:50',
             'sub_unit_name_en' => 'nullable|string|max:50',
             'sku' => 'nullable|string|max:100|unique:products,sku',
+            'catalog_code' => 'nullable|string|max:100|unique:products,catalog_code',
             'price' => 'nullable|numeric|min:0',
             'purchase_price' => 'nullable|numeric|min:0',
             'low_stock_threshold' => 'nullable|integer|min:0',

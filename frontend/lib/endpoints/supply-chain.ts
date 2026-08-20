@@ -1,5 +1,6 @@
 export interface SupplyChainEndpoints {
     PRODUCTS: string;
+    PRODUCT_IMPORT: string;
     CATEGORIES: string;
     BATCH: string;
     PERIODIC: {
@@ -11,6 +12,7 @@ export interface SupplyChainEndpoints {
 
 export const SUPPLY_CHAIN: SupplyChainEndpoints = {
     PRODUCTS: "/v2/inventory/products",
+    PRODUCT_IMPORT: "/v2/inventory/products/import",
     CATEGORIES: "/v2/inventory/categories",
     BATCH: "/v2/batch",
     PERIODIC: {

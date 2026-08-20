@@ -1,5 +1,6 @@
 /* Font Import */
 @import "tailwindcss";
+@import "../components/ui/data-import-workspace.css";
 
 /* Cairo is bundled with the desktop application: no runtime font request is required. */
 @font-face {
