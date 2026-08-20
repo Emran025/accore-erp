@@ -65,23 +65,40 @@ function productFromAssetName(name) {
 
 function normalizeAssetName(sourceFile) {
   const name = basename(sourceFile).replaceAll(' ', '.');
-  const lower = name.toLowerCase();
+  const target = releaseTargetFromAssetName(name);
+  if (!target) return name;
 
-  if (lower.endsWith('.app.tar.gz') || lower.endsWith('.app.tar.gz.sig')) {
-    const architecture = architectureFromPath(sourceFile);
-    return name.replace(/\.app\.tar\.gz(\.sig)?$/i, `_${architecture}.app.tar.gz$1`);
+  const architecturePattern = /[_.-](aarch64|arm64|x86_64|x64|amd64)(?=[_.-])/i;
+  if (!architecturePattern.test(name)) {
+    throw new Error(`could not determine architecture for desktop release asset ${name}`);
   }
 
-  return name;
+  return name.replace(
+    architecturePattern,
+    `_${target.platform}_${target.architecture}`
+  );
 }
 
-function architectureFromPath(file) {
-  const lower = file.toLowerCase();
-  if (lower.includes('aarch64') || lower.includes('arm64')) return 'aarch64';
-  if (lower.includes('x86_64') || lower.includes('x64') || lower.includes('amd64')) {
-    return 'x86_64';
+function releaseTargetFromAssetName(name) {
+  const installerName = name.replace(/\.sig$/i, '').toLowerCase();
+  const architecture = installerName.includes('aarch64') || installerName.includes('arm64')
+    ? 'aarch64'
+    : 'x86_64';
+
+  if (
+    installerName.endsWith('.appimage') ||
+    installerName.endsWith('.deb') ||
+    installerName.endsWith('.rpm')
+  ) {
+    return { platform: 'linux', architecture };
   }
-  throw new Error(`could not determine macOS architecture for ${file}`);
+  if (installerName.endsWith('.exe') || installerName.endsWith('.msi')) {
+    return { platform: 'windows', architecture };
+  }
+  if (installerName.endsWith('.dmg') || installerName.endsWith('.app.tar.gz')) {
+    return { platform: 'macos', architecture };
+  }
+  return null;
 }
 
 async function findFiles(root) {
