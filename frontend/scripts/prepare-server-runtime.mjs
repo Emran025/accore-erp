@@ -50,6 +50,15 @@ for (const executable of ['mariadbd.exe', 'mariadb.exe', 'mariadb-install-db.exe
 for (const executable of ['frankenphp.exe', 'php.exe']) {
   await assertFile(join(destinationRoot, executable));
 }
+const phpExtensions = ['curl', 'fileinfo', 'mbstring', 'mysqli', 'openssl', 'pdo_mysql', 'zip'];
+for (const extension of phpExtensions) {
+  await assertFile(join(destinationRoot, 'ext', `php_${extension}.dll`));
+}
+const phpProductionIni = await readFile(join(destinationRoot, 'php.ini-production'), 'utf8');
+await writeFile(
+  join(destinationRoot, 'php.ini'),
+  `${phpProductionIni}\n; ACCORE Server Desktop embedded runtime extensions\nextension_dir = "ext"\n${phpExtensions.map((extension) => `extension=${extension}`).join('\n')}\n`
+);
 
 const applicationRoot = join(destinationRoot, 'app');
 await assertFile(join(repositoryRoot, 'backend', 'vendor', 'autoload.php'));

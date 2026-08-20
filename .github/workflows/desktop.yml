@@ -114,10 +114,14 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $agent = Resolve-Path 'frontend/src-tauri/binaries/accore-server-agent-x86_64-pc-windows-msvc.exe'
+          $runtimeRoot = Resolve-Path 'frontend/src-tauri/resources/server-runtime/windows-x86_64'
           $dataRoot = Join-Path $env:ProgramData 'ACCORE ERP\Server'
           $statusPath = Join-Path $env:ProgramData 'ACCORE ERP\Server Status\runtime-status.json'
           $runtimeEnv = 'frontend/src-tauri/resources/server-runtime/windows-x86_64/app/.env'
           try {
+            $env:PHPRC = $runtimeRoot
+            $phpModules = & (Join-Path $runtimeRoot 'frankenphp.exe') php-cli -m
+            if ($LASTEXITCODE -ne 0 -or $phpModules -notcontains 'pdo_mysql') { throw 'Embedded FrankenPHP did not load the required pdo_mysql extension' }
             & $agent install
             if ($LASTEXITCODE -ne 0) { throw "Agent installation exited with $LASTEXITCODE" }
             $deadline = (Get-Date).AddMinutes(3)

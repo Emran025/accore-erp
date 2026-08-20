@@ -462,6 +462,7 @@ fn application_environment(config: &RuntimeConfig) -> Vec<(&'static str, String)
         ("APP_URL", format!("http://127.0.0.1:{API_PORT}")),
         ("LARAVEL_STORAGE_PATH", storage),
         ("APP_CONFIG_CACHE", config_cache),
+        ("PHPRC", config.runtime_root.display().to_string()),
         ("LOG_CHANNEL", "single".into()),
         ("LOG_LEVEL", "info".into()),
         ("DB_CONNECTION", "mysql".into()),
