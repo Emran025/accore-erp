@@ -287,6 +287,7 @@ impl BackupOperator for WindowsMariaDbBackupOperator {
                     .args([
                         "--single-transaction",
                         "--skip-lock-tables",
+                        "--no-tablespaces",
                         "--routines",
                         "--events",
                         "--triggers",
