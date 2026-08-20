@@ -20,8 +20,16 @@ class CreateProductAction
             $data = LocalizedValue::normaliseInput($data, $attribute);
         }
         $data['created_by'] = auth()->id() ?? session('user_id');
+        $initialQuantity = (int) ($data['stock_quantity'] ?? 0);
+        $initialUnitCost = (float) ($data['weighted_average_cost'] ?? 0);
+        if ($initialUnitCost <= 0) {
+            $initialUnitCost = (float) ($data['purchase_price'] ?? 0);
+        }
+        if ($initialQuantity > 0) {
+            $data['weighted_average_cost'] = $initialUnitCost;
+        }
 
-        return DB::transaction(function () use ($data) {
+        return DB::transaction(function () use ($data, $initialQuantity, $initialUnitCost) {
             $product = Product::create($data);
 
             // CRITICAL FIX: If product is created with initial stock, we MUST create a costing layer
@@ -30,9 +38,9 @@ class CreateProductAction
                 $this->costingService->recordPurchase(
                     $product->id,
                     0, // Reference ID 0 for initialization
-                    $product->stock_quantity,
-                    0, // Cost is unknown at this point unless weighted_average_cost is provided
-                    0,
+                    $initialQuantity,
+                    $initialUnitCost,
+                    $initialQuantity * $initialUnitCost,
                     'FIFO',
                     'initial_stock',
                     $product->id

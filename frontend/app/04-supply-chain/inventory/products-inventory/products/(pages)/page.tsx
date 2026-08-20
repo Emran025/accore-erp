@@ -10,7 +10,7 @@ import { TextInput } from "@/components/ui/TextInput";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/select";
 import { fetchAPI } from "@/lib/api";
-import { Permission, User, canAccess, checkAuth, getStoredPermissions, getStoredUser } from "@/lib/auth";
+import { Permission, canAccess, checkAuth, getStoredPermissions } from "@/lib/auth";
 import { API_ENDPOINTS } from "@/lib/endpoints";
 import { formatCurrency } from "@/lib/utils";
 import { useProductStore } from "@/stores/useProductStore";
@@ -20,7 +20,6 @@ import { Category, Product } from "./types";
 
 export default function ProductsPage() {
     const { t: i18n } = useI18n();
-    const [user, setUser] = useState<User | null>(null);
     const [permissions, setPermissions] = useState<Permission[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
 
@@ -45,7 +44,7 @@ export default function ProductsPage() {
         } catch (e) {
             console.error(i18n.catalog["supplyChain.products.errorLoadingCategories"], e);
         }
-    }, []);
+    }, [i18n.catalog]);
 
     // Dialogs
     const [productDialog, setProductDialog] = useState(false);
@@ -81,7 +80,6 @@ export default function ProductsPage() {
         const init = async () => {
             const authenticated = await checkAuth();
             if (!authenticated) return;
-            setUser(getStoredUser());
             setPermissions(getStoredPermissions());
             await Promise.all([loadProducts(), loadCategories()]);
         };
@@ -202,10 +200,13 @@ export default function ProductsPage() {
         const normalizedRows = rows.map((row) => {
             const rawCategory = String(row.category_id || "").trim();
             const category = categories.find((item) => String(item.id) === rawCategory || item.name.trim().toLocaleLowerCase() === rawCategory.toLocaleLowerCase());
+            if (rawCategory !== "" && !category) {
+                throw new Error(importCopy("unknownCategory", { value0: rawCategory }));
+            }
             return applyProductClassPolicy({
                 name: String(row.name || "").trim(),
                 catalog_code: String(row.barcode || "").trim(),
-                category_id: category?.id || (rawCategory !== "" && Number.isFinite(Number(rawCategory)) ? Number(rawCategory) : null),
+                category_id: category?.id ?? null,
                 unit_price: Number(row.unit_price || 0),
                 minimum_profit_margin: Number(row.minimum_profit_margin || 0),
                 stock_quantity: Number(row.stock_quantity || 0),
@@ -231,7 +232,13 @@ export default function ProductsPage() {
         }) });
         if (!response.success) throw new Error(response.message || importCopy("importFailed"));
         await loadProducts(1, searchTerm);
-        return { imported: normalizedRows.length, message: importCopy("readyForImport") };
+        const result = response as { products?: unknown[]; batch_id?: string; replayed?: boolean };
+        return {
+            imported: Array.isArray(result.products) ? result.products.length : normalizedRows.length,
+            batchId: result.batch_id,
+            replayed: Boolean(result.replayed),
+            message: result.replayed ? importCopy("batchReplayed") : importCopy("readyForImport"),
+        };
     };
 
     const addCategory = async () => {
@@ -463,7 +470,7 @@ export default function ProductsPage() {
                             label={i18n.catalog["supplyChain.products.itemType"]}
                             value={formData.item_type}
                             onChange={(e) => {
-                                const val = e.target.value as any;
+                                const val = e.target.value;
                                 setFormData({
                                     ...formData,
                                     item_type: val,

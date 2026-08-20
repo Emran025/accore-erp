@@ -162,7 +162,7 @@ function downloadCsv(payload: ReportPayload): void {
 }
 
 function reportHtml(payload: ReportPayload): string {
-    const tableRows = payload.rows.map((row, index) => catalogMessage("ui.operationalreports.notAvailable", { value0: payload.columns.map((column) => {
+    const tableRows = payload.rows.map((row) => catalogMessage("ui.operationalreports.notAvailable", { value0: payload.columns.map((column) => {
             const value = column.numeric ? amount(column.value(row)) : column.value(row);
             return `<td class="${column.numeric ? "numeric" : ""}">${escapeHtml(value)}</td>`;
         }).join("") })).join("");
@@ -254,7 +254,7 @@ export function OperationalReportsWorkspace({ domain }: { domain: ReportDomain }
         if (definition.key === "inventory-balance") {
             const rows = list.map((item) => {
                 const quantity = numberValue(item.stock_quantity ?? item.quantity ?? item.available_quantity);
-                const cost = numberValue(item.purchase_price ?? item.cost_price ?? item.unit_price);
+                const cost = numberValue(item.weighted_average_cost ?? item.purchase_price ?? item.cost_price ?? item.unit_price);
                 return {
                     reference: item.barcode || item.code || item.id || "—",
                     item: item.name || item.product_name || "—",
@@ -301,7 +301,7 @@ export function OperationalReportsWorkspace({ domain }: { domain: ReportDomain }
             { label: i18n.catalog["ui.operationalreports.numberDocuments"], value: String(rows.length) },
             { label: isReturn ? i18n.catalog["common.general.totalReturns"] : i18n.catalog["ui.operationalreports.totalActivity"], value: amount(rows.reduce((sum, row) => sum + numberValue(row.amount), 0)), emphasis: true },
         ] };
-    }, [inventoryColumnKeys, inventoryTemplateId]);
+    }, [i18n.catalog, inventoryColumnKeys, inventoryTemplateId]);
 
     const createReport = async () => {
         if (selectedKey === "inventory-balance" && inventoryColumnKeys.length === 0) {

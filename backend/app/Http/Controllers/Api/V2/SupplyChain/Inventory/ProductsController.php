@@ -45,6 +45,7 @@ class ProductsController extends Controller
             return $this->successResponse([
                 'products' => ProductResource::collection($result['products']),
                 'batch_id' => $result['batch_id'],
+                'replayed' => $result['replayed'],
             ], 'Products imported successfully', 201);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);

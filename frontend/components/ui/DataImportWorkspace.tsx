@@ -6,7 +6,7 @@ export type { ImportApprovalRequirement, ImportCommitContext, ImportField, Impor
 import { Button } from "./Button";
 import { Select } from "./select";
 import { showToast } from "./Toast";
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import * as XLSX from "xlsx";
 
 interface ParsedSource {
@@ -168,19 +168,21 @@ export function DataImportWorkspace({ title, subtitle, fields, onImport, onClose
     const [isDragging, setIsDragging] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [result, setResult] = useState<ImportResult | null>(null);
+    const [batchId, setBatchId] = useState<string | null>(null);
     const [approvalAccepted, setApprovalAccepted] = useState(false);
     const [reviewSearch, setReviewSearch] = useState("");
     const [reviewPage, setReviewPage] = useState(0);
     const normalizeRow = normalizeRowOverride ?? defaultNormalizeRow;
     const validateRow = validateRowOverride ?? defaultValidateRow;
-    const isFieldVisible = isFieldVisibleOverride ?? ((field: ImportField, currentRows: readonly ImportRow[]) => {
+    const isFieldVisible = useCallback((field: ImportField, currentRows: readonly ImportRow[]) => {
+        if (isFieldVisibleOverride) return isFieldVisibleOverride(field, currentRows);
         if (!field.dependsOn || !field.dependsOnValues?.length || currentRows.length === 0) return true;
         return currentRows.some((row) => field.dependsOnValues?.includes(String(row[field.dependsOn as string] ?? "")));
-    });
+    }, [isFieldVisibleOverride]);
 
     const visibleFields = useMemo(() => fields.filter((field) => {
         return isFieldVisible(field, rows);
-    }), [fields, rows]);
+    }), [fields, isFieldVisible, rows]);
     const approvalItems = useMemo(() => approvalRequirements?.(rows, fields) ?? [], [approvalRequirements, fields, rows]);
     const approvalRequired = approvalItems.some((requirement) => requirement.level === "required");
     const filteredReviewRows = useMemo(() => {
@@ -196,13 +198,16 @@ export function DataImportWorkspace({ title, subtitle, fields, onImport, onClose
         try {
             setIsLoading(true);
             const parsed = await parseWorkbook(file);
-            const limitedRows = parsed.rows.slice(0, maxRows);
+            if (parsed.rows.length > maxRows) {
+                throw new Error(importCopy("rowLimitExceeded", { value0: maxRows, value1: parsed.rows.length }));
+            }
             const nextMapping = autoMap(parsed.headers, fields);
-            const nextRows = limitedRows.map((row) => normalizeRow(row, nextMapping, fields));
-            setSource({ ...parsed, rows: limitedRows });
+            const nextRows = parsed.rows.map((row) => normalizeRow(row, nextMapping, fields));
+            setSource(parsed);
             setMapping(nextMapping);
             setMappingAudit(mappingDecisions(parsed.headers, fields, nextMapping));
             setRows(nextRows);
+            setBatchId(crypto.randomUUID());
             setRowErrors(nextRows.map((row) => validateRow(row, fields)));
             setResult(null);
             setReviewSearch("");
@@ -221,12 +226,14 @@ export function DataImportWorkspace({ title, subtitle, fields, onImport, onClose
         setMapping(nextMapping);
         setMappingAudit(mappingDecisions(source.headers, fields, nextMapping, Object.keys(nextMapping).find((key) => nextMapping[key] !== mapping[key])));
         setRows(nextRows);
+        setBatchId(crypto.randomUUID());
         setApprovalAccepted(false);
         setRowErrors(nextRows.map((row) => validateRow(row, fields)));
     };
 
     const updateRow = (rowIndex: number, field: ImportField, value: string) => {
         setApprovalAccepted(false);
+        setBatchId(crypto.randomUUID());
         setRows((current) => current.map((row, index) => {
             if (index !== rowIndex) return row;
             const next = { ...row };
@@ -243,6 +250,10 @@ export function DataImportWorkspace({ title, subtitle, fields, onImport, onClose
     };
 
     const goToReview = () => {
+        if (mappingDecisions(source?.headers ?? [], fields, mapping).some((decision) => decision.status === "conflict")) {
+            showToast(importCopy("resolveMappingConflicts"), "error");
+            return;
+        }
         const errors = rows.map((row) => validateRow(row, fields));
         setRowErrors(errors);
         if (errors.some((item) => item.length)) {
@@ -265,8 +276,10 @@ export function DataImportWorkspace({ title, subtitle, fields, onImport, onClose
         }
         try {
             setIsLoading(true);
+            const stableBatchId = batchId ?? crypto.randomUUID();
+            if (!batchId) setBatchId(stableBatchId);
             const importResult = await onImport(rows, {
-                batchId: crypto.randomUUID(),
+                batchId: stableBatchId,
                 schemaVersion,
                 sourceFile: source?.fileName,
                 approvalAcknowledged: approvalAccepted,

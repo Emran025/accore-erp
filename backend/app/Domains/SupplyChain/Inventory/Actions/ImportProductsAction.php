@@ -29,6 +29,11 @@ class ImportProductsAction
 
         ProductImportPolicy::validateCoherence($normalizedRows);
 
+        $catalogCodes = array_values(array_unique(array_filter(array_map(
+            static fn (array $row): string => trim((string) ($row['catalog_code'] ?? '')),
+            $normalizedRows
+        ), static fn (string $catalogCode): bool => $catalogCode !== '')));
+
         $requiredApprovalFieldIds = ProductImportPolicy::requiredApprovalFieldIds($normalizedRows);
         $acknowledgedFieldIds = array_values(array_unique(array_map('strval', $context['approval_field_ids'] ?? [])));
         $missingApprovalFieldIds = array_values(array_diff($requiredApprovalFieldIds, $acknowledgedFieldIds));
@@ -43,7 +48,7 @@ class ImportProductsAction
         $schemaVersion = trim((string) ($context['schema_version'] ?? ProductImportPolicy::CURRENT_SCHEMA_VERSION));
         ProductImportPolicy::assertSupportedSchemaVersion($schemaVersion);
         $approvalDigest = ProductImportPolicy::approvalDigest($normalizedRows, $requiredApprovalFieldIds, $schemaVersion);
-        $batch = DB::transaction(function () use ($batchId, $context, $normalizedRows, $requiredApprovalFieldIds, $schemaVersion, $approvalDigest): ProductImportBatch {
+        $batch = DB::transaction(function () use ($batchId, $context, $normalizedRows, $catalogCodes, $requiredApprovalFieldIds, $schemaVersion, $approvalDigest): ProductImportBatch {
             $batch = ProductImportBatch::query()->lockForUpdate()->where('batch_id', $batchId)->first();
             if ($batch?->status === 'committed') {
                 if (!hash_equals((string) $batch->approval_digest, $approvalDigest)) {
@@ -54,6 +59,15 @@ class ImportProductsAction
             if ($batch?->status === 'processing') {
                 throw ValidationException::withMessages([
                     'batch_id' => 'This import batch is already being processed.',
+                ]);
+            }
+
+            $existingCatalogCodes = $catalogCodes === []
+                ? []
+                : Product::query()->whereIn('catalog_code', $catalogCodes)->pluck('catalog_code')->all();
+            if ($existingCatalogCodes !== []) {
+                throw ValidationException::withMessages([
+                    'rows' => 'Product catalog codes already exist: '.implode(', ', $existingCatalogCodes).'.',
                 ]);
             }
 
