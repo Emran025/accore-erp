@@ -282,8 +282,16 @@ return new class extends Migration
                 SELECT product_id,
                     MAX(purchase_date)  AS last_purchase_date,
                     MAX(expiry_date)    AS last_expiry_date,
-                    SUBSTRING_INDEX(GROUP_CONCAT(invoice_price ORDER BY purchase_date DESC SEPARATOR ','), ',', 1) + 0 AS last_purchase_price,
-                    SUBSTRING_INDEX(GROUP_CONCAT(supplier_id   ORDER BY purchase_date DESC SEPARATOR ','), ',', 1) + 0 AS last_supplier_id
+                    SUBSTRING_INDEX(
+                        GROUP_CONCAT(invoice_price ORDER BY purchase_date DESC SEPARATOR ',') COLLATE utf8mb4_unicode_ci,
+                        _utf8mb4',' COLLATE utf8mb4_unicode_ci,
+                        1
+                    ) + 0 AS last_purchase_price,
+                    SUBSTRING_INDEX(
+                        GROUP_CONCAT(supplier_id ORDER BY purchase_date DESC SEPARATOR ',') COLLATE utf8mb4_unicode_ci,
+                        _utf8mb4',' COLLATE utf8mb4_unicode_ci,
+                        1
+                    ) + 0 AS last_supplier_id
                 FROM purchases GROUP BY product_id
             ) lp ON lp.product_id = p.id
             LEFT JOIN ap_suppliers lp_sup ON lp_sup.id = lp.last_supplier_id
