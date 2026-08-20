@@ -1,6 +1,7 @@
 import { importClassAliases, importCopy } from "@/lib/i18n/import-copy";
 import type { ImportApprovalRequirement, ImportField, ImportRow } from "./import-model";
 
+export const PRODUCT_IMPORT_SCHEMA_VERSION = "product-import.v1";
 export type ProductClass = "product" | "service" | "raw_material";
 
 export interface ProductFieldLabels {

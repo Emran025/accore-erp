@@ -33,6 +33,7 @@ export interface ImportApprovalRequirement {
 
 export interface ImportCommitContext {
     batchId: string;
+    schemaVersion: string;
     sourceFile?: string;
     approvalAcknowledged: boolean;
     approvalFieldIds: readonly string[];

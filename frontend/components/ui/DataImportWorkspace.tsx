@@ -22,6 +22,7 @@ interface DataImportWorkspaceProps {
     onImport: (rows: ImportRow[], context: ImportCommitContext) => Promise<ImportResult>;
     onClose: () => void;
     maxRows?: number;
+    schemaVersion?: string;
     approvalRequirements?: (rows: ImportRow[], fields: readonly ImportField[]) => ImportApprovalRequirement[];
     normalizeRow?: ImportNormalizer;
     validateRow?: ImportValidator;
@@ -156,7 +157,7 @@ const FIELD_GROUPS: Array<{ key: ImportField["group"]; label: string }> = [
     { key: "additional", label: importCopy("additional") },
 ];
 
-export function DataImportWorkspace({ title, subtitle, fields, onImport, onClose, maxRows = 1000, approvalRequirements, normalizeRow: normalizeRowOverride, validateRow: validateRowOverride, isFieldVisible: isFieldVisibleOverride }: DataImportWorkspaceProps) {
+export function DataImportWorkspace({ title, subtitle, fields, onImport, onClose, maxRows = 1000, schemaVersion = "import.v1", approvalRequirements, normalizeRow: normalizeRowOverride, validateRow: validateRowOverride, isFieldVisible: isFieldVisibleOverride }: DataImportWorkspaceProps) {
     const inputRef = useRef<HTMLInputElement>(null);
     const [activeStep, setActiveStep] = useState(0);
     const [source, setSource] = useState<ParsedSource | null>(null);
@@ -168,6 +169,8 @@ export function DataImportWorkspace({ title, subtitle, fields, onImport, onClose
     const [isLoading, setIsLoading] = useState(false);
     const [result, setResult] = useState<ImportResult | null>(null);
     const [approvalAccepted, setApprovalAccepted] = useState(false);
+    const [reviewSearch, setReviewSearch] = useState("");
+    const [reviewPage, setReviewPage] = useState(0);
     const normalizeRow = normalizeRowOverride ?? defaultNormalizeRow;
     const validateRow = validateRowOverride ?? defaultValidateRow;
     const isFieldVisible = isFieldVisibleOverride ?? ((field: ImportField, currentRows: readonly ImportRow[]) => {
@@ -180,6 +183,13 @@ export function DataImportWorkspace({ title, subtitle, fields, onImport, onClose
     }), [fields, rows]);
     const approvalItems = useMemo(() => approvalRequirements?.(rows, fields) ?? [], [approvalRequirements, fields, rows]);
     const approvalRequired = approvalItems.some((requirement) => requirement.level === "required");
+    const filteredReviewRows = useMemo(() => {
+        const query = reviewSearch.trim().toLocaleLowerCase();
+        return rows.map((row, index) => ({ row, index })).filter(({ row }) => !query || [row.name, row.item_type, row.barcode, row.description].some((value) => textValue(value).toLocaleLowerCase().includes(query)));
+    }, [reviewSearch, rows]);
+    const reviewPageSize = 25;
+    const reviewPageCount = Math.max(1, Math.ceil(filteredReviewRows.length / reviewPageSize));
+    const reviewRows = filteredReviewRows.slice(reviewPage * reviewPageSize, (reviewPage + 1) * reviewPageSize);
 
     const readFile = async (file?: File) => {
         if (!file) return;
@@ -195,6 +205,8 @@ export function DataImportWorkspace({ title, subtitle, fields, onImport, onClose
             setRows(nextRows);
             setRowErrors(nextRows.map((row) => validateRow(row, fields)));
             setResult(null);
+            setReviewSearch("");
+            setReviewPage(0);
             setActiveStep(1);
         } catch (error) {
             showToast(error instanceof Error ? error.message : importCopy("readFileFailed"), "error");
@@ -209,10 +221,12 @@ export function DataImportWorkspace({ title, subtitle, fields, onImport, onClose
         setMapping(nextMapping);
         setMappingAudit(mappingDecisions(source.headers, fields, nextMapping, Object.keys(nextMapping).find((key) => nextMapping[key] !== mapping[key])));
         setRows(nextRows);
+        setApprovalAccepted(false);
         setRowErrors(nextRows.map((row) => validateRow(row, fields)));
     };
 
     const updateRow = (rowIndex: number, field: ImportField, value: string) => {
+        setApprovalAccepted(false);
         setRows((current) => current.map((row, index) => {
             if (index !== rowIndex) return row;
             const next = { ...row };
@@ -253,6 +267,7 @@ export function DataImportWorkspace({ title, subtitle, fields, onImport, onClose
             setIsLoading(true);
             const importResult = await onImport(rows, {
                 batchId: crypto.randomUUID(),
+                schemaVersion,
                 sourceFile: source?.fileName,
                 approvalAcknowledged: approvalAccepted,
                 approvalFieldIds: approvalItems.flatMap((requirement) => requirement.fieldIds),
@@ -347,9 +362,11 @@ export function DataImportWorkspace({ title, subtitle, fields, onImport, onClose
             {activeStep === 2 && source && (
                 <div className="data-import-review-panel">
                     <div className="data-import-review-summary"><div><span className="data-import-eyebrow">{importCopy("integrityCheckpoint")}</span><h3>{importCopy("reviewItems")}</h3><p>{importCopy("reviewItemsDescription")}</p></div><div className="data-import-class-summary">{Object.entries(classSummary).map(([key, value]) => <span key={key}><strong>{value}</strong>{key.replace("_", " ")}</span>)}</div></div>
-                    <div className="data-import-gallery">{rows.slice(0, 6).map((row, index) => <article className={`data-import-product-card ${rowErrors[index]?.length ? "has-errors" : ""}`} key={`${textValue(row.name)}-${index}`}><div className="data-import-card-topline"><span>{textValue(row.item_type).replace("_", " ")}</span><small>{importCopy("row")} {index + 2}</small></div><h4>{textValue(row.name) || importCopy("unnamedItem")}</h4><div className="data-import-card-meta"><span>{textValue(row.unit_name) || importCopy("piece")}</span><span>{Number(row.stock_quantity || 0)} {importCopy("inStock")}</span></div><strong>{Number(row.unit_price || 0).toFixed(2)}</strong>{rowErrors[index]?.length ? <div className="data-import-error-text">{rowErrors[index].join(" · ")}</div> : <div className="data-import-success-text">{importCopy("readyForImport")}</div>}</article>)}</div>
-                    <div className="data-import-raw-heading"><div><span className="data-import-eyebrow">{importCopy("rawValues")}</span><h3>{importCopy("correctFields")}</h3></div><span>{rows.length > 6 ? importCopy("showingFirst", { value0: rows.length }) : importCopy("records", { value0: rows.length })}</span></div>
-                    <div className="data-import-raw-table-wrap"><table className="data-import-raw-table"><thead><tr><th>{importCopy("row")}</th>{visibleFields.map((field) => <th key={field.id}>{field.label}</th>)}</tr></thead><tbody>{rows.slice(0, 6).map((row, rowIndex) => <tr key={rowIndex}><td>{rowIndex + 2}</td>{visibleFields.map((field) => <td key={field.id}>{field.type === "boolean" ? <select value={row[field.id] ? "true" : "false"} onChange={(event) => updateRow(rowIndex, field, event.target.value)}><option value="true">{importCopy("yes")}</option><option value="false">{importCopy("no")}</option></select> : <input value={textValue(row[field.id])} type={field.type === "number" ? "number" : "text"} onChange={(event) => updateRow(rowIndex, field, event.target.value)} />}</td>)}</tr>)}</tbody></table></div>
+                    <div className="data-import-review-toolbar"><label><span>{importCopy("searchImportedRecords")}</span><input value={reviewSearch} onChange={(event) => { setReviewSearch(event.target.value); setReviewPage(0); }} placeholder={importCopy("searchImportedRecords")} /></label><span>{importCopy("filteredRecords", { value0: filteredReviewRows.length })}</span></div>
+                    <div className="data-import-gallery">{reviewRows.slice(0, 6).map(({ row, index }) => <article className={`data-import-product-card ${rowErrors[index]?.length ? "has-errors" : ""}`} key={`${textValue(row.name)}-${index}`}><div className="data-import-card-topline"><span>{textValue(row.item_type).replace("_", " ")}</span><small>{importCopy("row")} {index + 2}</small></div><h4>{textValue(row.name) || importCopy("unnamedItem")}</h4><div className="data-import-card-meta"><span>{textValue(row.unit_name) || importCopy("piece")}</span><span>{Number(row.stock_quantity || 0)} {importCopy("inStock")}</span></div><strong>{Number(row.unit_price || 0).toFixed(2)}</strong>{rowErrors[index]?.length ? <div className="data-import-error-text">{rowErrors[index].join(" · ")}</div> : <div className="data-import-success-text">{importCopy("readyForImport")}</div>}</article>)}</div>
+                    <div className="data-import-raw-heading"><div><span className="data-import-eyebrow">{importCopy("rawValues")}</span><h3>{importCopy("correctFields")}</h3></div><span>{importCopy("records", { value0: filteredReviewRows.length })}</span></div>
+                    <div className="data-import-raw-table-wrap"><table className="data-import-raw-table"><thead><tr><th>{importCopy("row")}</th>{visibleFields.map((field) => <th key={field.id}>{field.label}</th>)}</tr></thead><tbody>{reviewRows.map(({ row, index }) => <tr key={index}><td>{index + 2}</td>{visibleFields.map((field) => <td key={field.id}>{field.type === "boolean" ? <select value={row[field.id] ? "true" : "false"} onChange={(event) => updateRow(index, field, event.target.value)}><option value="true">{importCopy("yes")}</option><option value="false">{importCopy("no")}</option></select> : <input value={textValue(row[field.id])} type={field.type === "number" ? "number" : "text"} onChange={(event) => updateRow(index, field, event.target.value)} />}</td>)}</tr>)}</tbody></table></div>
+                    <div className="data-import-pagination"><Button variant="secondary" onClick={() => setReviewPage((page) => Math.max(0, page - 1))} disabled={reviewPage === 0}>{importCopy("previousRows")}</Button><span>{reviewPage + 1} / {reviewPageCount}</span><Button variant="secondary" onClick={() => setReviewPage((page) => Math.min(reviewPageCount - 1, page + 1))} disabled={reviewPage >= reviewPageCount - 1}>{importCopy("nextRows")}</Button></div>
                     {approvalItems.length > 0 && <div className="data-import-approval-panel"><div><span className="data-import-eyebrow">{importCopy("approvalCheckpoint")}</span><h3>{importCopy("approvalDescription")}</h3>{approvalItems.map((requirement) => <p key={requirement.key}>{requirement.label}: {requirement.fieldIds.map((fieldId) => fields.find((field) => field.id === fieldId)?.label || fieldId).join(" · ")}</p>)}</div><label><input type="checkbox" checked={approvalAccepted} onChange={(event) => setApprovalAccepted(event.target.checked)} />{importCopy("acknowledgeApproval")}</label></div>}
                     <div className="data-import-actions"><Button variant="secondary" onClick={() => setActiveStep(1)}>{importCopy("backToMapping")}</Button><Button variant="primary" onClick={() => void commitImport()} disabled={isLoading || (approvalRequired && !approvalAccepted)}>{isLoading ? importCopy("importing") : importCopy("importItems", { value0: rows.length })}</Button></div>
                 </div>

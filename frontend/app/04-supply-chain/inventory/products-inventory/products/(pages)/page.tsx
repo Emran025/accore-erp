@@ -5,7 +5,7 @@ import { importCopy, productImportAliases } from "@/lib/i18n/import-copy";
 import { MainLayout, PageSubHeader } from "@/components/layout";
 import { ActionButtons, Button, Column, ConfirmDialog, DataImportWorkspace, Dialog, NumberInput, SearchableSelect, Table, showToast } from "@/components/ui";
 import type { ImportCommitContext, ImportRow } from "@/components/ui";
-import { buildProductImportFields, applyProductClassPolicy, getProductApprovalRequirements, isProductFieldVisible } from "@/lib/imports/product-field-registry";
+import { buildProductImportFields, applyProductClassPolicy, getProductApprovalRequirements, isProductFieldVisible, PRODUCT_IMPORT_SCHEMA_VERSION } from "@/lib/imports/product-field-registry";
 import { TextInput } from "@/components/ui/TextInput";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/select";
@@ -224,6 +224,7 @@ export default function ProductsPage() {
         const response = await fetchAPI(API_ENDPOINTS.SUPPLY_CHAIN.PRODUCT_IMPORT, { method: "POST", body: JSON.stringify({
             rows: normalizedRows,
             batch_id: context.batchId,
+            schema_version: context.schemaVersion,
             source_file: context.sourceFile,
             approval_acknowledged: context.approvalAcknowledged,
             approval_field_ids: context.approvalFieldIds.map((fieldId) => fieldId === "barcode" ? "catalog_code" : fieldId),
@@ -391,6 +392,7 @@ export default function ProductsPage() {
                     title={importCopy("reusableBridge")}
                     subtitle={importCopy("linkClassDescription")}
                     fields={importFields}
+                    schemaVersion={PRODUCT_IMPORT_SCHEMA_VERSION}
                     onImport={importProducts}
                     approvalRequirements={getProductApprovalRequirements}
                     isFieldVisible={isProductFieldVisible}

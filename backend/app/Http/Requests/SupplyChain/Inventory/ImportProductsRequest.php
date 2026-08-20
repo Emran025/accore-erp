@@ -3,6 +3,7 @@
 namespace App\Http\Requests\SupplyChain\Inventory;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ImportProductsRequest extends FormRequest
 {
@@ -15,6 +16,7 @@ class ImportProductsRequest extends FormRequest
     {
         return [
             'batch_id' => ['nullable', 'uuid'],
+            'schema_version' => ['nullable', 'string', 'max:40', 'in:product-import.v1'],
             'source_file' => ['nullable', 'string', 'max:255'],
             'approval_acknowledged' => ['required', 'accepted'],
             'approval_field_ids' => ['nullable', 'array'],
@@ -23,7 +25,7 @@ class ImportProductsRequest extends FormRequest
             'rows.*' => ['required', 'array'],
             'rows.*.name' => ['required', 'string', 'max:255'],
             'rows.*.description' => ['nullable', 'string'],
-            'rows.*.catalog_code' => ['nullable', 'string', 'max:100'],
+            'rows.*.catalog_code' => ['nullable', 'string', 'max:150', 'distinct:strict', Rule::unique('products', 'catalog_code')],
             'rows.*.category_id' => ['nullable', 'integer', 'exists:categories,id'],
             'rows.*.unit_price' => ['required', 'numeric', 'min:0'],
             'rows.*.purchase_price' => ['nullable', 'numeric', 'min:0'],

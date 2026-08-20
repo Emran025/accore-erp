@@ -4,8 +4,8 @@ Generated deterministically by `npm run i18n:inventory`.
 
 | Status | Count |
 |---|---:|
-| approved-exception | 1 |
-| technical | 29154 |
+| approved-exception | 3 |
+| technical | 29163 |
 
 ## Highest-volume files
 
@@ -37,10 +37,10 @@ Generated deterministically by `npm run i18n:inventory`.
 | `app/04-supply-chain/inventory/products-inventory/products/(pages)/page.tsx` | 258 |
 | `components/template-editor/TemplateEditor.tsx` | 248 |
 | `app/06-human-capital/services-wellness/employee-services/loans/(pages)/EmployeeLoans.tsx` | 247 |
+| `components/ui/DataImportWorkspace.tsx` | 238 |
 | `app/setup/components/OrganizationArchitectureWorkspace.tsx` | 232 |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/ChangeHistoryTab.tsx` | 230 |
 | `app/06-human-capital/talent-recruitment/recruitment/administration/components/PositionsTab.tsx` | 228 |
-| `components/ui/DataImportWorkspace.tsx` | 228 |
 | `app/06-human-capital/knowledge-portal/self-service/employee-portal/(pages)/EmployeePortal.tsx` | 227 |
 | `app/01-enterprise-core/system-overview/dashboard/modules-status/(pages)/ModulesStatus.tsx` | 226 |
 | `app/03-finance/tax-compliance/cash-management/journal-vouchers/(pages)/page.tsx` | 223 |

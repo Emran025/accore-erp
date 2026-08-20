@@ -27,6 +27,8 @@
     { "path": "lib/icons.tsx", "reason": "Icon aliases and SVG metadata are technical identifiers." },
     { "path": "lib/api.ts", "reason": "Transport and developer diagnostics are not user-facing copy." },
     { "path": "app/setup/components/SetupSection.tsx", "jsxAttribute": "aria-labelledby", "value": "{value0}-title", "reason": "The dynamic aria-labelledby value joins a technical section identifier to its heading identifier and is not displayed interface copy." },
-    { "path": "stores/**", "reason": "Store candidates remain in inventory but require semantic classification before any migration." }
+    { "path": "stores/**", "reason": "Store candidates remain in inventory but require semantic classification before any migration." },
+    { "path": "components/ui/DataImportWorkspace.tsx", "value": "import.v1", "reason": "Reusable importer protocol fallback; not displayed interface copy." },
+    { "path": "lib/imports/product-field-registry.ts", "value": "product-import.v1", "reason": "Canonical import schema identifier used for migration compatibility; not displayed interface copy." }
   ]
 }

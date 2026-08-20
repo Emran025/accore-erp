@@ -7,6 +7,16 @@ use Illuminate\Validation\ValidationException;
 
 final class ProductImportPolicy
 {
+    public const CURRENT_SCHEMA_VERSION = 'product-import.v1';
+
+    /** @throws ValidationException */
+    public static function assertSupportedSchemaVersion(string $schemaVersion): void
+    {
+        if (!in_array($schemaVersion, [self::CURRENT_SCHEMA_VERSION], true)) {
+            throw ValidationException::withMessages(['schema_version' => 'The requested product import schema is not supported.']);
+        }
+    }
+
     /** @var array<string, array<string, mixed>> */
     private const CLASS_POLICIES = [
         'product' => [
@@ -60,6 +70,18 @@ final class ProductImportPolicy
             'raw_material', 'rawmaterial' => 'raw_material',
             default => 'product',
         };
+    }
+
+    /** @param array<int, array<string, mixed>> $rows */
+    public static function approvalDigest(array $rows, array $approvalFieldIds, string $schemaVersion = self::CURRENT_SCHEMA_VERSION): string
+    {
+        $payload = [
+            'schema_version' => $schemaVersion,
+            'approval_field_ids' => array_values($approvalFieldIds),
+            'rows' => array_values($rows),
+        ];
+
+        return hash('sha256', json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR));
     }
 
     /** @param array<int, array<string, mixed>> $rows */

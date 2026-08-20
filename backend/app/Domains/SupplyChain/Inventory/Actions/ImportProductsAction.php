@@ -40,9 +40,17 @@ class ImportProductsAction
         }
 
         $batchId = ProductImportPolicy::batchId($context);
-        $batch = DB::transaction(function () use ($batchId, $context, $normalizedRows, $requiredApprovalFieldIds): ProductImportBatch {
+        $schemaVersion = trim((string) ($context['schema_version'] ?? ProductImportPolicy::CURRENT_SCHEMA_VERSION));
+        ProductImportPolicy::assertSupportedSchemaVersion($schemaVersion);
+        $approvalDigest = ProductImportPolicy::approvalDigest($normalizedRows, $requiredApprovalFieldIds, $schemaVersion);
+        $batch = DB::transaction(function () use ($batchId, $context, $normalizedRows, $requiredApprovalFieldIds, $schemaVersion, $approvalDigest): ProductImportBatch {
             $batch = ProductImportBatch::query()->lockForUpdate()->where('batch_id', $batchId)->first();
-            if ($batch?->status === 'committed') return $batch;
+            if ($batch?->status === 'committed') {
+                if (!hash_equals((string) $batch->approval_digest, $approvalDigest)) {
+                    throw ValidationException::withMessages(['batch_id' => 'The reviewed payload does not match the committed batch.']);
+                }
+                return $batch;
+            }
             if ($batch?->status === 'processing') {
                 throw ValidationException::withMessages([
                     'batch_id' => 'This import batch is already being processed.',
@@ -52,6 +60,8 @@ class ImportProductsAction
             if (!$batch) {
                 $batch = new ProductImportBatch([
                     'batch_id' => $batchId,
+                    'schema_version' => $schemaVersion,
+                    'approval_digest' => $approvalDigest,
                     'source_file' => $context['source_file'] ?? null,
                     'row_count' => count($normalizedRows),
                     'approval_field_ids' => $requiredApprovalFieldIds,
@@ -60,7 +70,11 @@ class ImportProductsAction
             }
 
             $batch->fill([
+                'schema_version' => $schemaVersion,
+                'approval_digest' => $approvalDigest,
                 'source_file' => $context['source_file'] ?? $batch->source_file,
+                'approved_by' => auth()->id() ?? session('user_id'),
+                'approved_at' => now(),
                 'status' => 'processing',
                 'row_count' => count($normalizedRows),
                 'approval_field_ids' => $requiredApprovalFieldIds,
@@ -81,6 +95,8 @@ class ImportProductsAction
 
         $auditContext = [
             'batch_id' => $batchId,
+            'schema_version' => $schemaVersion,
+            'approval_digest' => $approvalDigest,
             'source_file' => $context['source_file'] ?? null,
             'approval_field_ids' => $requiredApprovalFieldIds,
             'row_count' => count($normalizedRows),
