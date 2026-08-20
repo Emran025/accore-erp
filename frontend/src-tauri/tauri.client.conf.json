@@ -1,12 +1,12 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "Accore Client",
+  "productName": "ACCORE ERP Client Desktop",
   "mainBinaryName": "accore-client",
   "identifier": "com.accore.erp.client",
   "app": {
     "windows": [
       {
-        "title": "Accore Client",
+        "title": "ACCORE ERP Client Desktop",
         "width": 1100,
         "height": 760,
         "resizable": true,
