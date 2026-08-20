@@ -136,6 +136,7 @@ impl BackupRuntime {
             .and_then(|()| self.supervisor.enforce_retention(current_time));
 
         if let Err(error) = &outcome {
+            append_backup_failure_diagnostic(&self.config, error);
             append_safe_audit(
                 &self.config,
                 "Backup",
@@ -571,6 +572,25 @@ fn append_safe_audit(
         .create(true)
         .append(true)
         .open(config.data_root.join("operations-audit.jsonl"))
+        .and_then(|mut file| file.write_all(line.as_bytes()));
+}
+
+fn append_backup_failure_diagnostic(config: &RuntimeConfig, error: &AgentError) {
+    let mut detail = format!("{error:?}");
+    for secret in [
+        config.app_key.as_str(),
+        config.database_password.as_str(),
+        config.database_root_password.as_str(),
+    ] {
+        if !secret.is_empty() {
+            detail = detail.replace(secret, "[redacted]");
+        }
+    }
+    let line = format!("{} backup failure: {detail}\n", now());
+    let _ = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(config.data_root.join("logs").join("backup.log"))
         .and_then(|mut file| file.write_all(line.as_bytes()));
 }
 
