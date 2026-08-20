@@ -20,7 +20,7 @@ const config = {
   },
   plugins: {
     updater: {
-      pubkey: Buffer.from(publicKey, 'utf8').toString('base64'),
+      pubkey: publicKey,
       endpoints: [
         `https://github.com/${repository}/releases/latest/download/accore-${product}-updater.json`,
       ],
