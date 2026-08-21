@@ -1,6 +1,6 @@
 use std::{
     env,
-    fs::{self, File},
+    fs::{self, File, OpenOptions},
     io::{Read, Write},
     net::TcpStream,
     path::{Path, PathBuf},
@@ -208,7 +208,7 @@ fn run_components(
         status.database = component("ready", "MariaDB is ready on 127.0.0.1:3307");
         write_status(config, status)?;
 
-        provision_application(config)?;
+        provision_application(config, status)?;
         ensure_port_is_free(API_PORT, "ACCORE API")?;
         status.api = component("starting", "starting FrankenPHP API on loopback");
         write_status(config, status)?;
@@ -377,7 +377,7 @@ fn start_database(config: &RuntimeConfig) -> Result<Child, String> {
         .map_err(|error| format!("start MariaDB: {error}"))
 }
 
-fn provision_application(config: &RuntimeConfig) -> Result<(), String> {
+fn provision_application(config: &RuntimeConfig, status: &mut RuntimeStatus) -> Result<(), String> {
     let storage = config.data_root.join("laravel-storage");
     for path in [
         storage.join("app/public"),
@@ -399,16 +399,29 @@ fn provision_application(config: &RuntimeConfig) -> Result<(), String> {
         }
     }
 
+    let provisioning_log = log_path(config, "provisioning.log");
+    File::create(&provisioning_log)
+        .map_err(|error| format!("reset Laravel provisioning log: {error}"))?;
+
+    status.detail = "applying required Laravel migrations".into();
+    write_status(config, status)?;
     let mut migrate = application_command(config, ["php-cli", "artisan", "migrate", "--force"]);
-    run_checked(&mut migrate, "run Laravel migrations")?;
-    run_desktop_seed_revisions(config)
+    run_checked_logged(&mut migrate, "run Laravel migrations", &provisioning_log)?;
+
+    status.detail = "applying pending ACCORE desktop seed revisions".into();
+    write_status(config, status)?;
+    run_desktop_seed_revisions(config, &provisioning_log)
 }
 
-fn run_desktop_seed_revisions(config: &RuntimeConfig) -> Result<(), String> {
+fn run_desktop_seed_revisions(config: &RuntimeConfig, provisioning_log: &Path) -> Result<(), String> {
     let seed_state_path = config.data_root.join("desktop-seed-state.json");
     let mut seed = application_command(config, ["php-cli", "artisan", "accore:desktop:seed"]);
     seed.arg("--state-path").arg(seed_state_path);
-    run_checked(&mut seed, "apply pending ACCORE desktop seed revisions")
+    run_checked_logged(
+        &mut seed,
+        "apply pending ACCORE desktop seed revisions",
+        provisioning_log,
+    )
 }
 
 fn start_api(config: &RuntimeConfig) -> Result<Child, String> {
@@ -559,6 +572,36 @@ fn run_checked(command: &mut Command, description: &str) -> Result<(), String> {
         Err(format!(
             "{description} exited with {}: {}",
             output.status, diagnostic
+        ))
+    }
+}
+
+fn run_checked_logged(
+    command: &mut Command,
+    description: &str,
+    log_path: &Path,
+) -> Result<(), String> {
+    let mut log = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(log_path)
+        .map_err(|error| format!("open Laravel provisioning log: {error}"))?;
+    writeln!(log, "\n=== {description} ===")
+        .map_err(|error| format!("write Laravel provisioning log header: {error}"))?;
+    let stdout = log
+        .try_clone()
+        .map_err(|error| format!("clone Laravel provisioning log: {error}"))?;
+    command.stdout(Stdio::from(stdout)).stderr(Stdio::from(log));
+
+    let status = command
+        .status()
+        .map_err(|error| format!("{description}: {error}"))?;
+    if status.success() {
+        Ok(())
+    } else {
+        Err(format!(
+            "{description} exited with {status}; inspect {}",
+            log_path.display()
         ))
     }
 }
