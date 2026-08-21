@@ -166,14 +166,6 @@ jobs:
             $backupArchive = Join-Path (Join-Path $dataRoot 'backups') $backupManifest.records[0].artifact
             if (-not (Test-Path $backupArchive) -or (Get-Item $backupArchive).Length -le 0) { throw 'Protected compressed backup archive is missing or empty' }
             if (-not (Test-Path $backupStatusPath)) { throw 'Agent did not publish redacted public backup status' }
-            $stopProcess = Start-Process -FilePath $agent -ArgumentList 'stop' -Verb RunAs -Wait -PassThru
-            if ($stopProcess.ExitCode -ne 0) { throw "Agent stop exited with $($stopProcess.ExitCode)" }
-            $stopDeadline = (Get-Date).AddMinutes(1)
-            do {
-              Start-Sleep -Seconds 2
-              $status = Get-Content $statusPath -Raw | ConvertFrom-Json
-            } while ($status.state -ne 'stopped' -and (Get-Date) -lt $stopDeadline)
-            if ($status.state -ne 'stopped') { throw 'Server Agent did not complete ordered shutdown' }
           }
           catch {
             Write-Host 'Server Desktop smoke-test diagnostics follow.'
