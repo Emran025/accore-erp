@@ -80,6 +80,10 @@ jobs:
         working-directory: frontend
         run: npm ci
 
+      - name: Verify flavor-specific NSIS icons
+        working-directory: frontend
+        run: npm run desktop:verify-flavor-icons -- ${{ matrix.flavor }}
+
       - name: Set up PHP build tooling for Server Desktop
         if: matrix.flavor == 'server'
         uses: shivammathur/setup-php@v2

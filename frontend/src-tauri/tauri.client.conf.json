@@ -23,6 +23,11 @@
       "icons/flavors/accore-client.png",
       "icons/flavors/accore-client.icns",
       "icons/flavors/accore-client.ico"
-    ]
+    ],
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/flavors/accore-client.ico"
+      }
+    }
   }
 }

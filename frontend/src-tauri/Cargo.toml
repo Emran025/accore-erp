@@ -1,6 +1,6 @@
 [package]
 name = "accore-desktop"
-version = "1.1.3"
+version = "1.1.4"
 description = "ACCORE ERP Desktop application"
 authors = ["Accore ERP Contributors"]
 license = "MIT"

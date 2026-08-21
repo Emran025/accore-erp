@@ -42,15 +42,13 @@ pub struct ServerBackupSnapshot {
 #[tauri::command]
 pub fn server_runtime_status(app: AppHandle) -> Result<ServerRuntimeSnapshot, String> {
     let paths = RuntimePaths::resolve(&app)?;
-    if !paths.runtime_root.join("frankenphp.exe").is_file()
-        || !paths
-            .runtime_root
-            .join("mariadb-11.4.9-winx64/bin/mariadbd.exe")
-            .is_file()
-        || !paths.agent_binary.is_file()
-    {
+    let missing_resources = paths.missing_resources();
+    if !missing_resources.is_empty() {
         return Ok(unavailable(
-            "required self-contained runtime resources are not installed",
+            format!(
+                "required self-contained runtime resource(s) are missing: {}",
+                missing_resources.join(", ")
+            ),
             false,
         ));
     }
@@ -71,17 +69,13 @@ pub fn server_runtime_status(app: AppHandle) -> Result<ServerRuntimeSnapshot, St
 #[tauri::command]
 pub fn server_runtime_start(app: AppHandle) -> Result<ServerRuntimeSnapshot, String> {
     let paths = RuntimePaths::resolve(&app)?;
-    if !paths.agent_binary.is_file() {
-        return Ok(unavailable("ACCORE Server Agent is not installed", false));
-    }
-    if !paths.runtime_root.join("frankenphp.exe").is_file()
-        || !paths
-            .runtime_root
-            .join("mariadb-11.4.9-winx64/bin/mariadbd.exe")
-            .is_file()
-    {
+    let missing_resources = paths.missing_resources();
+    if !missing_resources.is_empty() {
         return Ok(unavailable(
-            "runtime package verification has not completed",
+            format!(
+                "runtime package verification failed; missing: {}",
+                missing_resources.join(", ")
+            ),
             false,
         ));
     }
@@ -201,10 +195,32 @@ struct RuntimePaths {
 
 impl RuntimePaths {
     fn resolve(app: &AppHandle) -> Result<Self, String> {
-        let resource_root = app
+        let tauri_resource_root = app
             .path()
             .resource_dir()
             .map_err(|error| format!("resolve packaged resource directory: {error}"))?;
+        let executable_root = env::current_exe()
+            .map_err(|error| format!("resolve Server Desktop executable: {error}"))?
+            .parent()
+            .map(PathBuf::from)
+            .ok_or("resolve Server Desktop installation root from executable")?;
+        let executable_resource_root = executable_root.join("resources");
+        let executable_runtime_root = executable_resource_root.join(RUNTIME_RELATIVE_PATH);
+        let tauri_runtime_root = tauri_resource_root.join(RUNTIME_RELATIVE_PATH);
+        let runtime_root = if required_runtime_files_exist(&executable_runtime_root) {
+            executable_runtime_root
+        } else {
+            tauri_runtime_root
+        };
+        let executable_agent = executable_root.join(AGENT_BINARY);
+        let agent_binary = if executable_agent.is_file() {
+            executable_agent
+        } else {
+            tauri_resource_root
+                .parent()
+                .ok_or("resolve Server Desktop installation root from resource directory")?
+                .join(AGENT_BINARY)
+        };
         let data_root = env::var_os("PROGRAMDATA")
             .map(PathBuf::from)
             .unwrap_or(
@@ -220,15 +236,37 @@ impl RuntimePaths {
             .unwrap_or_else(|| data_root.clone())
             .join("Server Status");
         Ok(Self {
-            runtime_root: resource_root.join(RUNTIME_RELATIVE_PATH),
+            runtime_root,
             config_path: data_root.join("agent-config.json"),
-            agent_binary: resource_root
-                .parent()
-                .ok_or("resolve Server Desktop installation root from resource directory")?
-                .join(AGENT_BINARY),
+            agent_binary,
             status_root,
         })
     }
+
+    fn missing_resources(&self) -> Vec<&'static str> {
+        let mut missing = Vec::new();
+        if !self.runtime_root.join("frankenphp.exe").is_file() {
+            missing.push("embedded FrankenPHP runtime");
+        }
+        if !self
+            .runtime_root
+            .join("mariadb-11.4.9-winx64/bin/mariadbd.exe")
+            .is_file()
+        {
+            missing.push("embedded MariaDB runtime");
+        }
+        if !self.agent_binary.is_file() {
+            missing.push("ACCORE Server Agent");
+        }
+        missing
+    }
+}
+
+fn required_runtime_files_exist(runtime_root: &std::path::Path) -> bool {
+    runtime_root.join("frankenphp.exe").is_file()
+        && runtime_root
+            .join("mariadb-11.4.9-winx64/bin/mariadbd.exe")
+            .is_file()
 }
 
 fn unavailable(detail: impl Into<String>, runtime_present: bool) -> ServerRuntimeSnapshot {
