@@ -166,8 +166,8 @@ jobs:
             $backupArchive = Join-Path (Join-Path $dataRoot 'backups') $backupManifest.records[0].artifact
             if (-not (Test-Path $backupArchive) -or (Get-Item $backupArchive).Length -le 0) { throw 'Protected compressed backup archive is missing or empty' }
             if (-not (Test-Path $backupStatusPath)) { throw 'Agent did not publish redacted public backup status' }
-            & $agent stop
-            if ($LASTEXITCODE -ne 0) { throw "Agent stop exited with $LASTEXITCODE" }
+            $stopProcess = Start-Process -FilePath $agent -ArgumentList 'stop' -Verb RunAs -Wait -PassThru
+            if ($stopProcess.ExitCode -ne 0) { throw "Agent stop exited with $($stopProcess.ExitCode)" }
             $stopDeadline = (Get-Date).AddMinutes(1)
             do {
               Start-Sleep -Seconds 2
