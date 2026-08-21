@@ -42,5 +42,8 @@ ed25519-dalek = { version = "2.1", features = ["rand_core"] }
 semver = { version = "1.0", features = ["serde"] }
 sha2 = "0.10"
 
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = ["Win32_UI_Shell", "Win32_UI_WindowsAndMessaging"] }
+
 [profile.dev.package.scrypt]
 opt-level = 3

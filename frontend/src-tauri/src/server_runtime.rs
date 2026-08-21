@@ -2,8 +2,20 @@ use std::{env, fs, path::PathBuf, thread, time::Duration};
 
 use serde::{Deserialize, Serialize};
 #[cfg(windows)]
-use std::process::Command;
+use std::{
+    ffi::OsStr,
+    os::windows::ffi::OsStrExt,
+    path::Path,
+    ptr,
+};
 use tauri::{AppHandle, Manager};
+#[cfg(windows)]
+use windows_sys::Win32::{
+    UI::{
+        Shell::ShellExecuteW,
+        WindowsAndMessaging::SW_HIDE,
+    },
+};
 
 const AGENT_BINARY: &str = "accore-server-agent.exe";
 const RUNTIME_RELATIVE_PATH: &str = "server-runtime/windows-x86_64";
@@ -108,25 +120,7 @@ pub fn server_runtime_start(app: AppHandle) -> Result<ServerRuntimeSnapshot, Str
 fn start_windows_service_agent(agent_binary: &std::path::Path) -> Result<(), String> {
     #[cfg(windows)]
     {
-        let executable = agent_binary.display().to_string().replace('"', "\"\"");
-        let install_command = format!(
-            "Start-Process -FilePath \"{executable}\" -ArgumentList 'install' -Verb RunAs -Wait"
-        );
-        let result = Command::new("powershell.exe")
-            .args([
-                "-NoProfile",
-                "-NonInteractive",
-                "-Command",
-                &install_command,
-            ])
-            .status()
-            .map_err(|error| format!("request elevated Server Agent installation: {error}"))?;
-        if !result.success() {
-            return Err(format!(
-                "elevated Server Agent installation exited with {result}"
-            ));
-        }
-        return Ok(());
+        return launch_elevated_agent(agent_binary, "install", "install or start the Server Agent");
     }
 
     #[cfg(not(windows))]
@@ -322,30 +316,8 @@ fn request_windows_service_backup(
 ) -> Result<(), String> {
     #[cfg(windows)]
     {
-        let executable = agent_binary.display().to_string().replace('"', "\"\"");
-        let arguments = format!(
-            "request-backup --config \"{}\"",
-            config_path.display().to_string().replace('"', "\"\"")
-        );
-        let request_command = format!(
-            "Start-Process -FilePath \"{executable}\" -ArgumentList '{}' -Verb RunAs -Wait",
-            arguments.replace('\'', "''")
-        );
-        let result = Command::new("powershell.exe")
-            .args([
-                "-NoProfile",
-                "-NonInteractive",
-                "-Command",
-                &request_command,
-            ])
-            .status()
-            .map_err(|error| format!("request elevated protected backup: {error}"))?;
-        if !result.success() {
-            return Err(format!(
-                "elevated protected backup request exited with {result}"
-            ));
-        }
-        return Ok(());
+        let arguments = agent_arguments("request-backup", Some(config_path));
+        return launch_elevated_agent(agent_binary, &arguments, "request a protected backup");
     }
 
     #[cfg(not(windows))]
@@ -358,20 +330,7 @@ fn request_windows_service_backup(
 fn stop_windows_service_agent(agent_binary: &std::path::Path) -> Result<(), String> {
     #[cfg(windows)]
     {
-        let executable = agent_binary.display().to_string().replace('"', "\"\"");
-        let stop_command = format!(
-            "Start-Process -FilePath \"{executable}\" -ArgumentList 'stop' -Verb RunAs -Wait"
-        );
-        let result = Command::new("powershell.exe")
-            .args(["-NoProfile", "-NonInteractive", "-Command", &stop_command])
-            .status()
-            .map_err(|error| format!("request elevated Server Agent shutdown: {error}"))?;
-        if !result.success() {
-            return Err(format!(
-                "elevated Server Agent shutdown exited with {result}"
-            ));
-        }
-        Ok(())
+        launch_elevated_agent(agent_binary, "stop", "stop the Server Agent")
     }
 
     #[cfg(not(windows))]
@@ -379,6 +338,47 @@ fn stop_windows_service_agent(agent_binary: &std::path::Path) -> Result<(), Stri
         let _ = agent_binary;
         Err("self-contained Server Desktop service control is supported only on Windows x64".into())
     }
+}
+
+fn agent_arguments(command: &str, config_path: Option<&std::path::Path>) -> String {
+    let Some(config_path) = config_path else {
+        return command.into();
+    };
+    format!(
+        "{command} --config \"{}\"",
+        config_path.display().to_string().replace('"', "\\\"")
+    )
+}
+
+#[cfg(windows)]
+fn launch_elevated_agent(
+    agent_binary: &Path,
+    arguments: &str,
+    operation: &str,
+) -> Result<(), String> {
+    fn wide(value: &OsStr) -> Vec<u16> {
+        value.encode_wide().chain(std::iter::once(0)).collect()
+    }
+
+    let verb = wide(OsStr::new("runas"));
+    let executable = wide(agent_binary.as_os_str());
+    let arguments = wide(OsStr::new(arguments));
+    let result = unsafe {
+        ShellExecuteW(
+            0,
+            verb.as_ptr(),
+            executable.as_ptr(),
+            arguments.as_ptr(),
+            ptr::null(),
+            SW_HIDE,
+        )
+    };
+    if result <= 32 {
+        return Err(format!(
+            "could not {operation} without a visible console; approve the Windows elevation prompt and retry (ShellExecute result {result})"
+        ));
+    }
+    Ok(())
 }
 
 #[cfg(test)]
@@ -403,5 +403,19 @@ mod tests {
         assert_eq!(status.state, "ready");
         assert!(status.runtime_present);
         assert_eq!(status.updated_at, Some(1787315152));
+    }
+
+    #[test]
+    fn backup_agent_arguments_quote_the_private_configuration_path() {
+        let arguments = agent_arguments(
+            "request-backup",
+            Some(std::path::Path::new(
+                "C:/ProgramData/ACCORE ERP/Server/agent-config.json",
+            )),
+        );
+        assert_eq!(
+            arguments,
+            "request-backup --config \"C:/ProgramData/ACCORE ERP/Server/agent-config.json\""
+        );
     }
 }
