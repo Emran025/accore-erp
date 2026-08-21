@@ -1,6 +1,6 @@
 use std::{
     env,
-    fs::{self, File},
+    fs::{self, File, OpenOptions},
     io::{Read, Write},
     net::TcpStream,
     path::{Path, PathBuf},
@@ -88,20 +88,21 @@ fn main() {
 fn execute() -> Result<(), String> {
     let mut arguments = env::args().skip(1);
     let command = arguments.next().ok_or(
-        "usage: accore-server-agent <run|service|install|uninstall|status|stop|request-backup> [--config <path>]",
+        "usage: accore-server-agent <run|service|install|uninstall|status|stop|request-backup|seed-baseline> [--config <path>]",
     )?;
 
     match command.as_str() {
         "install" => install_embedded_service(),
         "uninstall" => windows_service_host::uninstall_service(),
         "stop" => windows_service_host::stop_service(),
-        "run" | "service" | "status" | "request-backup" => {
+        "run" | "service" | "status" | "request-backup" | "seed-baseline" => {
             let config_path = read_config_argument(&mut arguments)?;
             match command.as_str() {
                 "run" => execute_with_config(Path::new(&config_path)),
                 "service" => windows_service_host::run_service(config_path),
                 "status" => print_status(&load_config(Path::new(&config_path))?),
                 "request-backup" => request_backup_for_config(Path::new(&config_path)),
+                "seed-baseline" => recover_baseline_seed_for_config(Path::new(&config_path)),
                 _ => unreachable!(),
             }
         }
@@ -207,7 +208,7 @@ fn run_components(
         status.database = component("ready", "MariaDB is ready on 127.0.0.1:3307");
         write_status(config, status)?;
 
-        provision_application(config)?;
+        provision_application(config, status)?;
         ensure_port_is_free(API_PORT, "ACCORE API")?;
         status.api = component("starting", "starting FrankenPHP API on loopback");
         write_status(config, status)?;
@@ -376,7 +377,7 @@ fn start_database(config: &RuntimeConfig) -> Result<Child, String> {
         .map_err(|error| format!("start MariaDB: {error}"))
 }
 
-fn provision_application(config: &RuntimeConfig) -> Result<(), String> {
+fn provision_application(config: &RuntimeConfig, status: &mut RuntimeStatus) -> Result<(), String> {
     let storage = config.data_root.join("laravel-storage");
     for path in [
         storage.join("app/public"),
@@ -398,8 +399,29 @@ fn provision_application(config: &RuntimeConfig) -> Result<(), String> {
         }
     }
 
+    let provisioning_log = log_path(config, "provisioning.log");
+    File::create(&provisioning_log)
+        .map_err(|error| format!("reset Laravel provisioning log: {error}"))?;
+
+    status.detail = "applying required Laravel migrations".into();
+    write_status(config, status)?;
     let mut migrate = application_command(config, ["php-cli", "artisan", "migrate", "--force"]);
-    run_checked(&mut migrate, "run Laravel migrations")
+    run_checked_logged(&mut migrate, "run Laravel migrations", &provisioning_log)?;
+
+    status.detail = "applying pending ACCORE desktop seed revisions".into();
+    write_status(config, status)?;
+    run_desktop_seed_revisions(config, &provisioning_log)
+}
+
+fn run_desktop_seed_revisions(config: &RuntimeConfig, provisioning_log: &Path) -> Result<(), String> {
+    let seed_state_path = config.data_root.join("desktop-seed-state.json");
+    let mut seed = application_command(config, ["php-cli", "artisan", "accore:desktop:seed"]);
+    seed.arg("--state-path").arg(seed_state_path);
+    run_checked_logged(
+        &mut seed,
+        "apply pending ACCORE desktop seed revisions",
+        provisioning_log,
+    )
 }
 
 fn start_api(config: &RuntimeConfig) -> Result<Child, String> {
@@ -554,6 +576,36 @@ fn run_checked(command: &mut Command, description: &str) -> Result<(), String> {
     }
 }
 
+fn run_checked_logged(
+    command: &mut Command,
+    description: &str,
+    log_path: &Path,
+) -> Result<(), String> {
+    let mut log = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(log_path)
+        .map_err(|error| format!("open Laravel provisioning log: {error}"))?;
+    writeln!(log, "\n=== {description} ===")
+        .map_err(|error| format!("write Laravel provisioning log header: {error}"))?;
+    let stdout = log
+        .try_clone()
+        .map_err(|error| format!("clone Laravel provisioning log: {error}"))?;
+    command.stdout(Stdio::from(stdout)).stderr(Stdio::from(log));
+
+    let status = command
+        .status()
+        .map_err(|error| format!("{description}: {error}"))?;
+    if status.success() {
+        Ok(())
+    } else {
+        Err(format!(
+            "{description} exited with {status}; inspect {}",
+            log_path.display()
+        ))
+    }
+}
+
 fn child_exit(child: &mut Child, component: &str) -> Option<String> {
     match child.try_wait() {
         Ok(Some(status)) => Some(format!("{component} exited unexpectedly with {status}")),
@@ -608,6 +660,58 @@ fn request_backup_for_config(path: &Path) -> Result<(), String> {
     let config = load_config(path)?;
     fs::write(config.data_root.join("control.backup"), "requested\n")
         .map_err(|error| format!("request protected backup: {error}"))
+}
+
+fn recover_baseline_seed_for_config(path: &Path) -> Result<(), String> {
+    let config = load_config(path)?;
+    let user_count = database_scalar_count(&config, "SELECT COUNT(*) FROM users;")?;
+    if user_count > 0 {
+        println!("baseline seed recovery skipped: {user_count} user account(s) already exist");
+        return Ok(());
+    }
+
+    let mut seed = application_command(&config, ["php-cli", "artisan", "db:seed", "--force"]);
+    run_checked(&mut seed, "apply guarded ACCORE baseline seed")?;
+
+    let active_admin_count = database_scalar_count(
+        &config,
+        "SELECT COUNT(*) FROM users WHERE username = 'admin' AND is_active = 1;",
+    )?;
+    if active_admin_count != 1 {
+        return Err("guarded baseline seed completed without creating one active administrator".into());
+    }
+
+    println!("baseline seed recovery completed: active administrator account is ready");
+    Ok(())
+}
+
+fn database_scalar_count(config: &RuntimeConfig, query: &str) -> Result<u64, String> {
+    let output = Command::new(mariadb_bin(config, "mariadb.exe"))
+        .args(["--no-defaults", "--protocol=tcp", "--host=127.0.0.1"])
+        .arg(format!("--port={DATABASE_PORT}"))
+        .arg("--user=accore_app")
+        .arg(format!("--password={}", config.database_password))
+        .args(["--batch", "--skip-column-names"])
+        .arg(format!("--database={}", config.database_name))
+        .arg(format!("--execute={query}"))
+        .output()
+        .map_err(|error| format!("query local ACCORE database: {error}"))?;
+    if !output.status.success() {
+        return Err(format!(
+            "query local ACCORE database exited with {}: {}",
+            output.status,
+            String::from_utf8_lossy(&output.stderr).trim()
+        ));
+    }
+    let raw = String::from_utf8(output.stdout)
+        .map_err(|error| format!("decode local ACCORE database count: {error}"))?;
+    parse_database_count(&raw)
+}
+
+fn parse_database_count(raw: &str) -> Result<u64, String> {
+    raw.trim()
+        .parse::<u64>()
+        .map_err(|error| format!("parse local ACCORE database count '{raw}': {error}"))
 }
 
 fn stop_requested(config: &RuntimeConfig) -> bool {
@@ -830,5 +934,16 @@ mod tests {
             packaged_runtime_root(&installation_root),
             installation_root.join("resources/server-runtime/windows-x86_64")
         );
+    }
+
+    #[test]
+    fn guarded_seed_recovery_accepts_a_numeric_user_count() {
+        assert_eq!(parse_database_count("0\n").expect("zero users parses"), 0);
+        assert_eq!(parse_database_count("12\n").expect("existing users parse"), 12);
+    }
+
+    #[test]
+    fn guarded_seed_recovery_rejects_a_non_numeric_user_count() {
+        assert!(parse_database_count("not-a-count\n").is_err());
     }
 }
