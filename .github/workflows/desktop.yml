@@ -151,8 +151,9 @@ jobs:
             if (Test-Path $runtimeEnv) { throw 'Runtime package contains a forbidden Laravel environment file' }
             $privateAcl = Get-Acl (Join-Path $dataRoot 'agent-config.json')
             if ($privateAcl.Access.IdentityReference.Value -match 'Users') { throw 'Agent configuration grants an ordinary Users ACL entry' }
-            & $agent request-backup --config $agentConfigPath
-            if ($LASTEXITCODE -ne 0) { throw "Protected backup request exited with $LASTEXITCODE" }
+            $backupArguments = "request-backup --config `"$agentConfigPath`""
+            $backupProcess = Start-Process -FilePath $agent -ArgumentList $backupArguments -Verb RunAs -Wait -PassThru
+            if ($backupProcess.ExitCode -ne 0) { throw "Protected backup request exited with $($backupProcess.ExitCode)" }
             $backupDeadline = (Get-Date).AddMinutes(5)
             $backupManifest = $null
             do {
