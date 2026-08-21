@@ -94,7 +94,7 @@ fn execute() -> Result<(), String> {
     match command.as_str() {
         "install" => install_embedded_service(),
         "uninstall" => windows_service_host::uninstall_service(),
-        "stop" => stop_embedded_service(),
+        "stop" => windows_service_host::stop_service(),
         "run" | "service" | "status" | "request-backup" | "seed-baseline" => {
             let config_path = read_config_argument(&mut arguments)?;
             match command.as_str() {
@@ -108,18 +108,6 @@ fn execute() -> Result<(), String> {
         }
         _ => Err(format!("unsupported command {command}")),
     }
-}
-
-#[cfg(windows)]
-fn stop_embedded_service() -> Result<(), String> {
-    let config_path = default_config_path()?;
-    request_stop_for_config(&config_path)?;
-    windows_service_host::stop_service()
-}
-
-#[cfg(not(windows))]
-fn stop_embedded_service() -> Result<(), String> {
-    windows_service_host::stop_service()
 }
 
 fn read_config_argument(arguments: &mut impl Iterator<Item = String>) -> Result<String, String> {
@@ -965,22 +953,5 @@ mod tests {
     #[test]
     fn guarded_seed_recovery_rejects_a_non_numeric_user_count() {
         assert!(parse_database_count("not-a-count\n").is_err());
-    }
-
-    #[cfg(windows)]
-    #[test]
-    fn privileged_stop_request_is_written_inside_the_private_data_root() {
-        let root = std::env::temp_dir().join(format!("accore-stop-request-{}", now()));
-        let mut config = config();
-        config.data_root = root.clone();
-        fs::create_dir_all(&root).expect("temporary data root is created");
-
-        request_stop(&config).expect("privileged stop request is written");
-        assert_eq!(
-            fs::read_to_string(root.join("control.stop")).expect("stop request is readable"),
-            "requested\n"
-        );
-
-        let _ = fs::remove_dir_all(root);
     }
 }
