@@ -365,7 +365,7 @@ fn launch_elevated_agent(
     let arguments = wide(OsStr::new(arguments));
     let result = unsafe {
         ShellExecuteW(
-            0,
+            ptr::null_mut(),
             verb.as_ptr(),
             executable.as_ptr(),
             arguments.as_ptr(),
