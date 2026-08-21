@@ -23,7 +23,7 @@ const sources = [
   {
     id: 'frankenphp',
     url: 'https://github.com/php/frankenphp/releases/download/v1.12.7/frankenphp-windows-x86_64.zip',
-    sha256: 'b07a653c6fd108b48fe9e595678a51e7a17ba6825940df4a30759de6f8ebf153',
+    sha256: '0e51be0fc93e3cbccc70c520e04892d3a6d9f206a995c3d6668bea889d025570',
     archive: 'frankenphp-windows-x86_64.zip',
   },
   {

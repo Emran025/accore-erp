@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
-const flavor = process.argv[2];
+const flavor = process.argv.slice(2).find((argument) => argument !== '--');
 const configurations = {
   client: {
     config: 'src-tauri/tauri.client.conf.json',
@@ -31,10 +31,15 @@ if (nsis?.installerIcon !== target.ico) {
     `${flavor} NSIS installerIcon must reference ${target.ico}`,
   );
 }
+if (nsis?.uninstallerIcon !== target.ico) {
+  throw new Error(
+    `${flavor} NSIS uninstallerIcon must reference ${target.ico}`,
+  );
+}
 
 const ico = await readFile(resolve('src-tauri', target.ico));
 if (ico.length < 22 || ico.readUInt16LE(0) !== 0 || ico.readUInt16LE(2) !== 1 || ico.readUInt16LE(4) < 1) {
   throw new Error(`${flavor} installer icon is not a valid ICO resource: ${target.ico}`);
 }
 
-console.log(`verified ${flavor} NSIS installer icon: ${target.ico}`);
+console.log(`verified ${flavor} NSIS installer and uninstaller icons: ${target.ico}`);

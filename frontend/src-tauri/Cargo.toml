@@ -1,6 +1,6 @@
 [package]
 name = "accore-desktop"
-version = "1.1.4"
+version = "1.1.5"
 description = "ACCORE ERP Desktop application"
 authors = ["Accore ERP Contributors"]
 license = "MIT"
@@ -15,7 +15,7 @@ name = "app_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "2.5.4", features = [] }
+tauri-build = { version = "2.6.3", features = [] }
 
 [features]
 default = []

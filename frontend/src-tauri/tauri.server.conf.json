@@ -32,7 +32,8 @@
     ],
     "windows": {
       "nsis": {
-        "installerIcon": "icons/flavors/accore-server.ico"
+        "installerIcon": "icons/flavors/accore-server.ico",
+        "uninstallerIcon": "icons/flavors/accore-server.ico"
       }
     }
   }
