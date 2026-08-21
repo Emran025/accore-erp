@@ -5,8 +5,8 @@ use serde::{Deserialize, Serialize};
 use std::process::Command;
 use tauri::{AppHandle, Manager};
 
-const AGENT_BINARY: &str = "accore-server-agent-x86_64-pc-windows-msvc.exe";
-const RUNTIME_RELATIVE_PATH: &str = "resources/server-runtime/windows-x86_64";
+const AGENT_BINARY: &str = "accore-server-agent.exe";
+const RUNTIME_RELATIVE_PATH: &str = "server-runtime/windows-x86_64";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -16,6 +16,7 @@ pub struct ServerRuntimeSnapshot {
     pub database: RuntimeComponentSnapshot,
     pub api: RuntimeComponentSnapshot,
     pub queue: RuntimeComponentSnapshot,
+    pub backup: RuntimeComponentSnapshot,
     pub runtime_present: bool,
     pub updated_at: Option<u64>,
 }
@@ -25,6 +26,17 @@ pub struct ServerRuntimeSnapshot {
 pub struct RuntimeComponentSnapshot {
     pub state: String,
     pub detail: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ServerBackupSnapshot {
+    pub state: String,
+    pub detail: String,
+    pub retained_restore_points: usize,
+    pub last_backup_at_unix: Option<u64>,
+    pub last_verified_at_unix: Option<u64>,
+    pub updated_at_unix: Option<u64>,
 }
 
 #[tauri::command]
@@ -141,8 +153,48 @@ pub fn server_runtime_stop(app: AppHandle) -> Result<ServerRuntimeSnapshot, Stri
     Ok(server_runtime_status(app)?)
 }
 
+#[tauri::command]
+pub fn server_backup_status(app: AppHandle) -> Result<ServerBackupSnapshot, String> {
+    let paths = RuntimePaths::resolve(&app)?;
+    server_backup_status_from_paths(&paths)
+}
+
+#[tauri::command]
+pub fn trigger_server_backup(app: AppHandle) -> Result<ServerBackupSnapshot, String> {
+    let paths = RuntimePaths::resolve(&app)?;
+    let status = server_runtime_status(app)?;
+    if status.state != "ready" {
+        return Err(
+            "a protected backup can be requested only when the local server is ready".into(),
+        );
+    }
+    request_windows_service_backup(&paths.agent_binary, &paths.config_path)?;
+    server_backup_status_from_paths(&paths)
+}
+
+#[tauri::command]
+pub fn prepare_server_desktop_update(app: AppHandle) -> Result<ServerRuntimeSnapshot, String> {
+    let paths = RuntimePaths::resolve(&app)?;
+    let current = server_runtime_status(app.clone())?;
+    if current.state != "ready" {
+        return Err(
+            "signed update installation is blocked until the local server reports ready".into(),
+        );
+    }
+    stop_windows_service_agent(&paths.agent_binary)?;
+    for _ in 0..180 {
+        thread::sleep(Duration::from_millis(500));
+        let status = server_runtime_status(app.clone())?;
+        if status.state == "stopped" {
+            return Ok(status);
+        }
+    }
+    Err("local server did not confirm ordered shutdown before update installation".into())
+}
+
 struct RuntimePaths {
     runtime_root: PathBuf,
+    config_path: PathBuf,
     status_root: PathBuf,
     agent_binary: PathBuf,
 }
@@ -169,7 +221,11 @@ impl RuntimePaths {
             .join("Server Status");
         Ok(Self {
             runtime_root: resource_root.join(RUNTIME_RELATIVE_PATH),
-            agent_binary: resource_root.join("binaries").join(AGENT_BINARY),
+            config_path: data_root.join("agent-config.json"),
+            agent_binary: resource_root
+                .parent()
+                .ok_or("resolve Server Desktop installation root from resource directory")?
+                .join(AGENT_BINARY),
             status_root,
         })
     }
@@ -191,10 +247,71 @@ fn unavailable(detail: impl Into<String>, runtime_present: bool) -> ServerRuntim
             state: "unavailable".into(),
             detail: "not running".into(),
         },
+        backup: RuntimeComponentSnapshot {
+            state: "unavailable".into(),
+            detail: "not initialized".into(),
+        },
         runtime_present,
         updated_at: None,
     }
 }
+fn server_backup_status_from_paths(paths: &RuntimePaths) -> Result<ServerBackupSnapshot, String> {
+    let path = paths.status_root.join("backup-status.json");
+    if !path.is_file() {
+        return Ok(ServerBackupSnapshot {
+            state: "unavailable".into(),
+            detail: "backup policy has not published a status yet".into(),
+            retained_restore_points: 0,
+            last_backup_at_unix: None,
+            last_verified_at_unix: None,
+            updated_at_unix: None,
+        });
+    }
+    serde_json::from_slice(
+        &fs::read(path).map_err(|error| format!("read server backup status: {error}"))?,
+    )
+    .map_err(|error| format!("parse server backup status: {error}"))
+}
+
+fn request_windows_service_backup(
+    agent_binary: &std::path::Path,
+    config_path: &std::path::Path,
+) -> Result<(), String> {
+    #[cfg(windows)]
+    {
+        let executable = agent_binary.display().to_string().replace('"', "\"\"");
+        let arguments = format!(
+            "request-backup --config \"{}\"",
+            config_path.display().to_string().replace('"', "\"\"")
+        );
+        let request_command = format!(
+            "Start-Process -FilePath \"{executable}\" -ArgumentList '{}' -Verb RunAs -Wait",
+            arguments.replace('\'', "''")
+        );
+        let result = Command::new("powershell.exe")
+            .args([
+                "-NoProfile",
+                "-NonInteractive",
+                "-Command",
+                &request_command,
+            ])
+            .status()
+            .map_err(|error| format!("request elevated protected backup: {error}"))?;
+        if !result.success() {
+            return Err(format!(
+                "elevated protected backup request exited with {result}"
+            ));
+        }
+        return Ok(());
+    }
+
+    #[cfg(not(windows))]
+    {
+        let _ = (agent_binary, config_path);
+        Err("self-contained Server Desktop backup is supported only on Windows x64".into())
+    }
+}
+
 fn stop_windows_service_agent(agent_binary: &std::path::Path) -> Result<(), String> {
     #[cfg(windows)]
     {
