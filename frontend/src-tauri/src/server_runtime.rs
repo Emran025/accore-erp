@@ -373,9 +373,13 @@ fn launch_elevated_agent(
             SW_HIDE,
         )
     };
-    if result <= 32 {
+    // ShellExecuteW returns an HINSTANCE (a raw pointer in windows-sys). Its
+    // documented error contract uses the numeric range 0..=32, so convert the
+    // opaque handle to its integer representation before inspecting it.
+    let result_code = result as usize;
+    if result_code <= 32 {
         return Err(format!(
-            "could not {operation} without a visible console; approve the Windows elevation prompt and retry (ShellExecute result {result})"
+            "could not {operation} without a visible console; approve the Windows elevation prompt and retry (ShellExecute result {result_code})"
         ));
     }
     Ok(())
