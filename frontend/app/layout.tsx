@@ -5,6 +5,7 @@ import { SessionExpiredModal } from '@/components/ui/SessionExpiredModal';
 import { catalogMessage, DEFAULT_LOCALE, getLocaleMetadata } from '@/lib/i18n';
 import { LocaleProvider } from '@/lib/i18n/LocaleProvider';
 import { ClientConnectionGate } from '@/components/platform/ClientConnectionGate';
+import { ClientDesktopAutoUpdater } from '@/components/platform/ClientDesktopAutoUpdater';
 import { DesktopInteractionPolicy } from '@/components/platform/DesktopInteractionPolicy';
 import { ServerRuntimeGate } from '@/components/platform/ServerRuntimeGate';
 
@@ -28,6 +29,7 @@ export default function RootLayout({
       <body>
         <LocaleProvider>
           <DesktopInteractionPolicy />
+          <ClientDesktopAutoUpdater />
           <ClientConnectionGate>
             <ServerRuntimeGate>{children}</ServerRuntimeGate>
           </ClientConnectionGate>
