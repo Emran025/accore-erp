@@ -17,6 +17,7 @@ pub struct ServerRuntimeSnapshot {
     pub api: RuntimeComponentSnapshot,
     pub queue: RuntimeComponentSnapshot,
     pub backup: RuntimeComponentSnapshot,
+    #[serde(default)]
     pub runtime_present: bool,
     pub updated_at: Option<u64>,
 }
@@ -60,7 +61,11 @@ pub fn server_runtime_status(app: AppHandle) -> Result<ServerRuntimeSnapshot, St
 
     let raw =
         fs::read(&status_path).map_err(|error| format!("read server runtime status: {error}"))?;
-    let mut status: ServerRuntimeSnapshot = serde_json::from_slice(&raw)
+    parse_published_runtime_snapshot(&raw)
+}
+
+fn parse_published_runtime_snapshot(raw: &[u8]) -> Result<ServerRuntimeSnapshot, String> {
+    let mut status: ServerRuntimeSnapshot = serde_json::from_slice(raw)
         .map_err(|error| format!("parse server runtime status: {error}"))?;
     status.runtime_present = true;
     Ok(status)
@@ -373,5 +378,30 @@ fn stop_windows_service_agent(agent_binary: &std::path::Path) -> Result<(), Stri
     {
         let _ = agent_binary;
         Err("self-contained Server Desktop service control is supported only on Windows x64".into())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn accepts_a_ready_agent_snapshot_without_bridge_only_runtime_presence() {
+        let status = parse_published_runtime_snapshot(
+            br#"{
+              "state":"ready",
+              "detail":"all local server components are ready",
+              "database":{"state":"ready","detail":"MariaDB is ready"},
+              "api":{"state":"ready","detail":"API is ready"},
+              "queue":{"state":"ready","detail":"queue worker is running"},
+              "backup":{"state":"ready","detail":"restore point is verified"},
+              "updatedAt":1787315152
+            }"#,
+        )
+        .expect("published Agent snapshots omit runtimePresent but must remain readable");
+
+        assert_eq!(status.state, "ready");
+        assert!(status.runtime_present);
+        assert_eq!(status.updated_at, Some(1787315152));
     }
 }
