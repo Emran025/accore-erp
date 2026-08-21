@@ -4,11 +4,20 @@ import {
   prepareServerDesktopUpdate,
   startServerRuntime,
 } from '@/lib/server-runtime';
+import {
+  installSignedDesktopUpdate,
+  type DesktopUpdateProgress,
+  type SignedDesktopUpdateResult,
+} from '@/lib/desktop-auto-updater';
 
 export interface SignedServerDesktopUpdate {
   version: string;
   body: string | null;
   date: string | null;
+}
+
+export interface InstallSignedServerDesktopUpdateOptions {
+  onProgress?: (progress: DesktopUpdateProgress) => void;
 }
 
 export async function checkSignedServerDesktopUpdate(): Promise<SignedServerDesktopUpdate | null> {
@@ -28,30 +37,38 @@ export async function checkSignedServerDesktopUpdate(): Promise<SignedServerDesk
 }
 
 /**
- * The updater plugin validates Tauri's signed release metadata and artifact before
- * installation. The Agent is stopped first and restarted if download or handoff fails.
+ * Downloads and verifies a signed update before the managed local service is
+ * stopped. The service restarts if the installer cannot take ownership after the
+ * ordered shutdown, avoiding downtime from a failed update handoff.
  */
-export async function installSignedServerDesktopUpdate(): Promise<void> {
+export async function installSignedServerDesktopUpdate(
+  options: InstallSignedServerDesktopUpdateOptions = {}
+): Promise<SignedDesktopUpdateResult> {
   if (PRODUCT_FLAVOR !== 'server') {
     throw new Error(catalogMessage('platform.product.serverUpdateServerOnly'));
   }
-  const { check } = await import('@tauri-apps/plugin-updater');
-  const update = await check();
-  if (!update) {
-    throw new Error(catalogMessage('platform.product.serverUpdateUnavailable'));
-  }
 
-  const stopped = await prepareServerDesktopUpdate();
-  if (stopped?.state !== 'stopped') {
-    throw new Error(catalogMessage('platform.product.serverUpdateShutdown'));
-  }
-
+  let serviceStopped = false;
   try {
-    await update.downloadAndInstall();
-    const { relaunch } = await import('@tauri-apps/plugin-process');
-    await relaunch();
+    return await installSignedDesktopUpdate({
+      onProgress: options.onProgress,
+      beforeInstall: async () => {
+        options.onProgress?.({ phase: 'preparing' });
+        const stopped = await prepareServerDesktopUpdate();
+        if (stopped?.state !== 'stopped') {
+          throw new Error(catalogMessage('platform.product.serverUpdateShutdown'));
+        }
+        serviceStopped = true;
+      },
+      onInstallHandoff: () => {
+        serviceStopped = false;
+      },
+    });
   } catch (error) {
-    await startServerRuntime();
+    if (serviceStopped) {
+      options.onProgress?.({ phase: 'recovering' });
+      await startServerRuntime();
+    }
     throw error;
   }
 }
