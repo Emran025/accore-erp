@@ -24,6 +24,12 @@ const config = {
       endpoints: [
         `https://github.com/${repository}/releases/latest/download/accore-${product}-updater.json`,
       ],
+      windows: {
+        // ACCORE Desktop is installed per user under LOCALAPPDATA. Quiet activation
+        // therefore preserves Tauri's signature verification without showing the
+        // NSIS setup window after the managed service has been stopped safely.
+        installMode: 'quiet',
+      },
     },
   },
 };

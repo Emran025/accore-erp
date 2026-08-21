@@ -153,6 +153,8 @@ fn execute_with_config(path: &Path) -> Result<(), String> {
 
 fn run(config: RuntimeConfig) -> Result<(), String> {
     ensure_layout(&config)?;
+    #[cfg(windows)]
+    harden_runtime_data_access(&config)?;
     let mut backup = backup::BackupRuntime::open(&config)?;
     let mut status = RuntimeStatus::bootstrapping("preparing durable local runtime");
     write_status(&config, &status)?;
