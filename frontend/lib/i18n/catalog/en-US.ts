@@ -3522,6 +3522,7 @@ export const enCatalog = {
     "platform.product.serverRuntimeTechnicalDetail": "Technical detail",
     "platform.product.serverRuntimeRefreshStatus": "Refresh status",
     "platform.product.serverRuntimeServiceContinuity": "The local server runs as a Windows service and continues after this window closes.",
+    "platform.product.serverRuntimeStartService": "Start local service",
     "platform.product.serverOperationsTitle": "Server operations",
     "platform.product.serverBackupTitle": "Protected backups",
     "platform.product.serverBackupCreate": "Create protected backup",

@@ -374,7 +374,7 @@ export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
                   <Server className="h-4 w-4" aria-hidden="true" />
                   {isStarting
                     ? catalogMessage('platform.product.serverRuntimeChecking')
-                    : catalogMessage('platform.product.serverRuntimeRecommendedAction')}
+                    : catalogMessage('platform.product.serverRuntimeStartService')}
                 </button>
               ) : null}
             </div>

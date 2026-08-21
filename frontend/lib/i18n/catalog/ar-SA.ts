@@ -3522,6 +3522,7 @@ export const arCatalog = {
     "platform.product.serverRuntimeTechnicalDetail": "التفاصيل التقنية",
     "platform.product.serverRuntimeRefreshStatus": "تحديث الحالة",
     "platform.product.serverRuntimeServiceContinuity": "يعمل الخادم المحلي كخدمة Windows ويستمر بعد إغلاق هذه النافذة.",
+    "platform.product.serverRuntimeStartService": "تشغيل الخدمة المحلية",
     "platform.product.serverOperationsTitle": "عمليات الخادم",
     "platform.product.serverBackupTitle": "النسخ الاحتياطية المحمية",
     "platform.product.serverBackupCreate": "إنشاء نسخة احتياطية محمية",
