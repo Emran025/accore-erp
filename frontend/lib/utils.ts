@@ -360,3 +360,29 @@ export function isArabic(text: string | null | undefined): boolean {
   return arabicPattern.test(text);
 }
 
+export type InputTextDirection = "ltr" | "rtl";
+
+/**
+ * Determines text direction from the first strong Unicode letter.
+ *
+ * Right-to-left scripts (including Arabic, Persian, Hebrew, Syriac, and
+ * Thaana) are rendered RTL. Any other letter begins an LTR run. Digits and
+ * punctuation preserve the supplied fallback so structured values remain
+ * stable while a user starts typing.
+ */
+export function getTextDirection(
+  text: string | null | undefined,
+  fallback: InputTextDirection = "ltr",
+): InputTextDirection {
+  if (!text) return fallback;
+
+  const rtlCharacter = /[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/;
+  const letter = /\p{L}/u;
+
+  for (const character of text) {
+    if (rtlCharacter.test(character)) return "rtl";
+    if (letter.test(character)) return "ltr";
+  }
+
+  return fallback;
+}

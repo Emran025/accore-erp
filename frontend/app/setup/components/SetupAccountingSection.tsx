@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui";
+import { getTextDirection } from "@/lib/utils";
 import { SetupField } from "./SetupField";
 import { SetupSection } from "./SetupSection";
 
@@ -69,10 +70,10 @@ export function SetupAccountingSection({
     <SetupSection id="setup-accounting" title={title} description={description}>
       <div className="settings-form-grid setup-form-grid">
         <SetupField id="setup-account-code" label={accountCodeLabel} required>
-          <input id="setup-account-code" className="setup-input" value={accountCode} onChange={(event) => onAccountCodeChange(event.target.value)} required />
+          <input id="setup-account-code" className="setup-input" dir="ltr" value={accountCode} onChange={(event) => onAccountCodeChange(event.target.value)} required />
         </SetupField>
         <SetupField id="setup-account-name" label={accountNameLabel} required>
-          <input id="setup-account-name" className="setup-input" value={accountName} onChange={(event) => onAccountNameChange(event.target.value)} required />
+          <input id="setup-account-name" className="setup-input" dir={getTextDirection(accountName, "rtl")} value={accountName} onChange={(event) => onAccountNameChange(event.target.value)} required />
         </SetupField>
         <SetupField id="setup-account-type" label={accountTypeLabel}>
           <select id="setup-account-type" className="setup-input" value={accountType} onChange={(event) => onAccountTypeChange(event.target.value as AccountType)}>
@@ -85,7 +86,7 @@ export function SetupAccountingSection({
       </div>
       <div className="settings-form-grid setup-form-grid">
         <SetupField id="setup-period-name" label={periodNameLabel} required>
-          <input id="setup-period-name" className="setup-input" value={periodName} onChange={(event) => onPeriodNameChange(event.target.value)} required />
+          <input id="setup-period-name" className="setup-input" dir={getTextDirection(periodName, "rtl")} value={periodName} onChange={(event) => onPeriodNameChange(event.target.value)} required />
         </SetupField>
         <SetupField id="setup-period-start" label={startDateLabel} required>
           <input id="setup-period-start" className="setup-input" type="date" value={periodStart} onChange={(event) => onPeriodStartChange(event.target.value)} required />

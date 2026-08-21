@@ -331,7 +331,8 @@ class OrgStructureSeeder extends Seeder
             ['org_meta_type_id' => 'COMP_CODE', 'attribute_key' => 'country_code', 'attribute_type' => 'string', 'is_mandatory' => false, 'sort_order' => 3],
             ['org_meta_type_id' => 'COMP_CODE', 'attribute_key' => 'name', 'attribute_type' => 'string', 'is_mandatory' => false, 'sort_order' => 4],
             ['org_meta_type_id' => 'COMP_CODE', 'attribute_key' => 'city', 'attribute_type' => 'string', 'is_mandatory' => false, 'sort_order' => 5],
-            ['org_meta_type_id' => 'COMP_CODE', 'attribute_key' => 'fiscal_year_variant', 'attribute_type' => 'string', 'is_mandatory' => false, 'sort_order' => 6],
+            ['org_meta_type_id' => 'COMP_CODE', 'attribute_key' => 'language', 'attribute_type' => 'string', 'is_mandatory' => false, 'sort_order' => 6],
+            ['org_meta_type_id' => 'COMP_CODE', 'attribute_key' => 'fiscal_year_variant', 'attribute_type' => 'string', 'is_mandatory' => false, 'sort_order' => 7],
 
             // ── Controlling Area ──
             ['org_meta_type_id' => 'CONTROLLING_AREA', 'attribute_key' => 'currency_id', 'attribute_type' => 'string', 'is_mandatory' => false, 'sort_order' => 1],

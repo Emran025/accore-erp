@@ -20,6 +20,7 @@ use Illuminate\Validation\ValidationException;
  */
 class OrgStructureService
 {
+    private const PRIMARY_GENERAL_LEDGER_REFERENCE = 'ACCORE-PRIMARY-GL';
     // ─── Change History ─────────────────────────────────────────────────
 
     /**
@@ -140,8 +141,27 @@ class OrgStructureService
         }
 
         $chartOfAccountsId = data_get($attributes, 'chart_of_accounts_id');
-        if ($chartOfAccountsId !== null && $chartOfAccountsId !== '' && !ChartOfAccount::query()->whereKey($chartOfAccountsId)->where('is_active', true)->exists()) {
+        if ($chartOfAccountsId === self::PRIMARY_GENERAL_LEDGER_REFERENCE) {
+            $requiredTypes = ['asset', 'liability', 'equity', 'revenue', 'expense'];
+            $activeTypes = ChartOfAccount::query()->where('is_active', true)->pluck('account_type')
+                ->map(fn ($type) => strtolower((string) $type))->unique()->all();
+            if (array_diff($requiredTypes, $activeTypes) !== []) {
+                $errors[] = 'The primary general ledger is incomplete and cannot yet be assigned to a company code.';
+            }
+        } elseif ($chartOfAccountsId !== null && $chartOfAccountsId !== '' && !ChartOfAccount::query()->whereKey($chartOfAccountsId)->where('is_active', true)->exists()) {
             $errors[] = 'The selected chart-of-accounts reference does not exist or is inactive.';
+        }
+
+        $fiscalYearVariant = data_get($attributes, 'fiscal_year_variant');
+        if ($fiscalYearVariant !== null && $fiscalYearVariant !== '' && $fiscalYearVariant !== 'K4') {
+            $errors[] = 'Only the K4 calendar-year structure is available during the current setup workflow.';
+        }
+
+        foreach (['language', 'default_language'] as $languageAttribute) {
+            $language = data_get($attributes, $languageAttribute);
+            if ($language !== null && $language !== '' && !in_array($language, ['ar-SA', 'en-US'], true)) {
+                $errors[] = "The {$languageAttribute} must be one of the supported ACCORE locales.";
+            }
         }
 
         if (!empty($errors)) {

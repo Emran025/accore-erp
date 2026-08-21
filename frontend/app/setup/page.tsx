@@ -18,6 +18,7 @@ import { Item, Readiness, SetupState } from "./types";
 const accountTypes = ["asset", "liability", "equity", "revenue", "expense"] as const;
 type AccountType = (typeof accountTypes)[number];
 const recordFields = { code: "code", name: "name" } as const;
+const PRIMARY_GENERAL_LEDGER_REFERENCE = "ACCORE-PRIMARY-GL";
 
 function listFrom(response: unknown): Item[] {
   const payload = (response as { data?: unknown } | undefined)?.data;
@@ -138,17 +139,22 @@ export default function SetupPage() {
       label: [text(currency, "code"), text(currency, "name")].filter(Boolean).join(" — "),
       subtitle: text(currency, "symbol"),
     })),
-    chart_of_accounts_id: accounts.map((account) => ({
-      value: Number(account.id),
-      label: [text(account, "account_code"), text(account, "account_name")].filter(Boolean).join(" — "),
-      subtitle: text(account, "account_type"),
-    })),
+    chart_of_accounts_id: (() => {
+      const activeTypes = new Set(accounts.map((account) => text(account, "account_type").toLowerCase()));
+      const hasGovernedLedger = accountTypes.every((type) => activeTypes.has(type));
+      if (!hasGovernedLedger) return [];
+      return [{
+        value: PRIMARY_GENERAL_LEDGER_REFERENCE,
+        label: i18n.catalog["enterpriseCore.orgWorkspace.reference.chartOfAccounts.primary"],
+        subtitle: catalogText(i18n, "enterpriseCore.orgWorkspace.reference.chartOfAccounts.summary", { value0: accounts.length, value1: activeTypes.size }),
+      }];
+    })(),
     factory_calendar_id: factoryCalendars.map((calendar) => ({
       value: Number(calendar.id),
       label: [text(calendar, "code"), text(calendar, locale === "ar-SA" ? "name_ar" : "name")].filter(Boolean).join(" — "),
       subtitle: [text(calendar, "country_code"), text(calendar, "time_zone")].filter(Boolean).join(" · "),
     })),
-  }), [accounts, currencies, factoryCalendars, locale]);
+  }), [accounts, currencies, factoryCalendars, i18n, locale]);
 
   const callAndReload = async <T,>(action: () => Promise<{ success?: boolean; message?: string; data?: T }>): Promise<T | null> => {
     setIsSaving(true);

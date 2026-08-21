@@ -4,6 +4,7 @@ import { useI18n } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { getIcon } from "@/lib/icons";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useRouter } from "next/navigation";
 
 function formatElapsed(seconds: number): string {
     const hrs = Math.floor(seconds / 3600)
@@ -21,6 +22,7 @@ function formatElapsed(seconds: number): string {
 export function GlobalMeta() {
     const { t: i18n } = useI18n();
     const { user } = useAuthStore();
+    const router = useRouter();
 
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
     const [now, setNow] = useState<Date | null>(null);
@@ -60,6 +62,7 @@ export function GlobalMeta() {
                     type="button"
                     className="top-global-icon-btn"
                     aria-label={i18n.catalog["components.globalmeta.settings"]}
+                    onClick={() => router.push("/01-enterprise-core/identity-access/user-management/system-settings")}
                 >
                     {getIcon("settings")}
                 </button>
@@ -92,4 +95,3 @@ export function GlobalMeta() {
         </div>
     );
 }
-

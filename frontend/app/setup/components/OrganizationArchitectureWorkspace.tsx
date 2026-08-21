@@ -1,8 +1,9 @@
 import { Button, SearchableSelect } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { catalogText, type CatalogKey, useI18n } from "@/lib/i18n";
+import { catalogText, getLocaleRegistry, type CatalogKey, useI18n } from "@/lib/i18n";
 import { getIcon } from "@/lib/icons";
+import { getTextDirection } from "@/lib/utils";
 import { useEffect, useMemo, useState } from "react";
 import { OrganizationIntegrity, OrganizationMetaType, OrganizationNodeDraft, OrganizationTopologyRule, OrganizationWorkspaceNode, OrganizationWorkspacePhase } from "./organizationWorkspace.types";
 
@@ -77,6 +78,13 @@ const ATTRIBUTE_LABEL_KEYS: Readonly<Record<string, CatalogKey>> = {
   valuation_grouping: "enterpriseCore.orgWorkspace.attribute.valuationGrouping",
 };
 
+const CALENDAR_YEAR_VARIANT = "K4";
+const SUPPORTED_LANGUAGE_OPTIONS = Object.values(getLocaleRegistry()).map((item) => ({
+  value: item.code,
+  label: item.nativeName,
+  subtitle: item.displayName,
+}));
+
 function readableAttributeFallback(attributeKey: string): string {
   return attributeKey
     .split("_")
@@ -144,6 +152,7 @@ export function OrganizationArchitectureWorkspace({
   };
 
   const inputTypeForAttribute = (attributeType?: string) => attributeType === "integer" ? "number" : "text";
+  const defaultTextDirection = locale === "ar-SA" ? "rtl" : "ltr";
 
   const domainForType = (typeId: string) => metaTypes.find((item) => item.id === typeId)?.level_domain || "";
   const selectedType = metaTypes.find((item) => item.id === selectedTypeId);
@@ -472,11 +481,11 @@ export function OrganizationArchitectureWorkspace({
             <div className="settings-form-grid setup-form-grid">
               <label className="form-group" htmlFor="org-workspace-code">
                 <span>{i18n.catalog["enterpriseCore.orgWorkspace.composer.code"]}</span>
-                <input id="org-workspace-code" className="setup-input" value={nodeCode} onChange={(event) => setNodeCode(event.target.value)} required />
+                <input id="org-workspace-code" className="setup-input" dir="ltr" value={nodeCode} onChange={(event) => setNodeCode(event.target.value)} required />
               </label>
               <label className="form-group" htmlFor="org-workspace-name">
                 <span>{i18n.catalog["enterpriseCore.orgWorkspace.composer.name"]}</span>
-                <input id="org-workspace-name" className="setup-input" value={nodeNameValue} onChange={(event) => setNodeNameValue(event.target.value)} />
+                <input id="org-workspace-name" className="setup-input" dir={getTextDirection(nodeNameValue, defaultTextDirection)} value={nodeNameValue} onChange={(event) => setNodeNameValue(event.target.value)} />
               </label>
               {validParentNodes.length ? (
                 <label className="form-group" htmlFor="org-workspace-parent">
@@ -516,12 +525,47 @@ export function OrganizationArchitectureWorkspace({
                           {referenceHelpForAttribute(referenceKey, hasReferenceOptions)}
                         </small>
                       </>
+                    ) : attribute.attribute_key === "fiscal_year_variant" ? (
+                      <>
+                        <select
+                          id={attribute.attribute_key}
+                          className="setup-input"
+                          value={attributes[attribute.attribute_key] || ""}
+                          required={attribute.is_mandatory}
+                          onChange={(event) => setAttributes((current) => ({ ...current, [attribute.attribute_key]: event.target.value }))}
+                        >
+                          <option value="">{i18n.catalog["enterpriseCore.orgWorkspace.fiscalYearVariant.placeholder"]}</option>
+                          <option value={CALENDAR_YEAR_VARIANT}>{i18n.catalog["enterpriseCore.orgWorkspace.fiscalYearVariant.calendarYear"]}</option>
+                        </select>
+                        <small className="org-workspace-reference-help">
+                          {i18n.catalog["enterpriseCore.orgWorkspace.fiscalYearVariant.help"]}
+                        </small>
+                      </>
+                    ) : attribute.attribute_key === "language" || attribute.attribute_key === "default_language" ? (
+                      <>
+                        <select
+                          id={attribute.attribute_key}
+                          className="setup-input"
+                          value={attributes[attribute.attribute_key] || ""}
+                          required={attribute.is_mandatory}
+                          onChange={(event) => setAttributes((current) => ({ ...current, [attribute.attribute_key]: event.target.value }))}
+                        >
+                          <option value="">{i18n.catalog["enterpriseCore.orgWorkspace.companyLanguage.placeholder"]}</option>
+                          {SUPPORTED_LANGUAGE_OPTIONS.map((option) => (
+                            <option key={option.value} value={option.value}>{option.label} — {option.subtitle}</option>
+                          ))}
+                        </select>
+                        <small className="org-workspace-reference-help">
+                          {i18n.catalog["enterpriseCore.orgWorkspace.companyLanguage.help"]}
+                        </small>
+                      </>
                     ) : (
                       <input
                         id={attribute.attribute_key}
                         className="setup-input"
                         type={inputTypeForAttribute(attribute.attribute_type)}
                         value={attributes[attribute.attribute_key] || ""}
+                        dir={attribute.attribute_type === "integer" ? "ltr" : getTextDirection(attributes[attribute.attribute_key] || "", defaultTextDirection)}
                         required={attribute.is_mandatory}
                         onChange={(event) => setAttributes((current) => ({ ...current, [attribute.attribute_key]: event.target.value }))}
                       />

@@ -52,7 +52,7 @@ The system distinguishes between **Definition** (creating the nodes) and **Assig
 ┌────────────────────────────────────────────────────────────────────────────────┐
 | id        | level_domain | Mandatory Attributes (via Org_Meta_Type_Attributes) |
 |-----------|--------------|-----------------------------------------------------|
-| COMP_CODE | Financial    | currency_id, chart_of_accounts_id                   |
+| COMP_CODE | Financial    | currency_id, chart_of_accounts_id, language, fiscal_year_variant |
 | PLANT     | Logistics    | factory_calendar_id, country_code                   |
 | BUS_AREA  | Financial    | (none)                                              |
 | PURCH_ORG | Logistics    | (optional: company_code_id or plant_id)             |
@@ -244,7 +244,7 @@ BEFORE_DELETE ON Structure_Nodes:
       "name": "Riyadh Manufacturing Plant",
       "country_code": "SA",
       "factory_calendar_id": "SA-TH",
-      "language": "AR",
+      "language": "ar-SA",
       "address": {
         "street": "Industrial Area 1",
         "city": "Riyadh",
@@ -298,7 +298,7 @@ BEFORE_DELETE ON Structure_Nodes:
       "name": "Riyadh Manufacturing Plant",
       "country_code": "SA",
       "factory_calendar_id": "SA-TH",
-      "language": "AR",
+      "language": "ar-SA",
       "address": { "street": "Industrial Area 1", "city": "Riyadh", "postal_code": "12345" }
     },
     "status": "active"

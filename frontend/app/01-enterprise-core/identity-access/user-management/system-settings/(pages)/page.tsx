@@ -9,17 +9,19 @@ import { InvoiceSettingsTab } from "../components/InvoiceSettingsTab";
 import { SecurityTab } from "../components/SecurityTab";
 import { SessionsTab } from "../components/SessionsTab";
 import { StoreSettingsTab } from "../components/StoreSettingsTab";
+import { ApplicationLanguageSettingsTab } from "../components/ApplicationLanguageSettingsTab";
 
 
 export default function SettingsPage() {
     const { t: i18n } = useI18n();
-  const [activeTab, setActiveTab] = useState("store");
+  const [activeTab, setActiveTab] = useState("language");
 
   return (
     <MainLayout requiredModule="settings">
       <div className="settings-wrapper animate-fade">
         <TabNavigation
           tabs={[
+            { key: "language", label: i18n.catalog["enterpriseCore.systemSettings.applicationLanguage"], icon: "fa-language" },
             { key: "store", label: i18n.catalog["common.general.storeInformation"], icon: "fa-store" },
             { key: "invoice", label: i18n.catalog["common.general.invoiceSettings"], icon: "fa-file-invoice" },
             { key: "security", label: i18n.catalog["enterpriseCore.systemSettings.accountSecurity"], icon: "fa-lock" },
@@ -31,6 +33,7 @@ export default function SettingsPage() {
 
         <div style={{ marginTop: "1rem", }}>
           {activeTab === "store" && <StoreSettingsTab />}
+          {activeTab === "language" && <ApplicationLanguageSettingsTab />}
           {activeTab === "invoice" && <InvoiceSettingsTab />}
           {activeTab === "security" && <SecurityTab />}
           {activeTab === "sessions" && <SessionsTab />}

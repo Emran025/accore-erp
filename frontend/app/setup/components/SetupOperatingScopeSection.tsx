@@ -1,4 +1,5 @@
 import { Button, SearchableSelect } from "@/components/ui";
+import { getTextDirection } from "@/lib/utils";
 import { SelectOption } from "../types";
 import { SetupField } from "./SetupField";
 import { SetupSection } from "./SetupSection";
@@ -85,16 +86,16 @@ export function SetupOperatingScopeSection({
           <SearchableSelect id="setup-profit-center" className="setup-select" options={profitOptions} value={profitCenterId} onChange={(value) => onProfitCenterChange(typeof value === "number" ? value : null)} />
         </SetupField>
         <SetupField id="setup-warehouse-code" label={warehouseCodeLabel} required>
-          <input id="setup-warehouse-code" className="setup-input" value={warehouseCode} onChange={(event) => onWarehouseCodeChange(event.target.value)} required />
+          <input id="setup-warehouse-code" className="setup-input" dir="ltr" value={warehouseCode} onChange={(event) => onWarehouseCodeChange(event.target.value)} required />
         </SetupField>
         <SetupField id="setup-warehouse-name" label={warehouseNameLabel} required>
-          <input id="setup-warehouse-name" className="setup-input" value={warehouseName} onChange={(event) => onWarehouseNameChange(event.target.value)} required />
+          <input id="setup-warehouse-name" className="setup-input" dir={getTextDirection(warehouseName, "rtl")} value={warehouseName} onChange={(event) => onWarehouseNameChange(event.target.value)} required />
         </SetupField>
         <SetupField id="setup-pos-code" label={posCodeLabel} required>
-          <input id="setup-pos-code" className="setup-input" value={posCode} onChange={(event) => onPosCodeChange(event.target.value)} required />
+          <input id="setup-pos-code" className="setup-input" dir="ltr" value={posCode} onChange={(event) => onPosCodeChange(event.target.value)} required />
         </SetupField>
         <SetupField id="setup-pos-name" label={posNameLabel} required>
-          <input id="setup-pos-name" className="setup-input" value={posName} onChange={(event) => onPosNameChange(event.target.value)} required />
+          <input id="setup-pos-name" className="setup-input" dir={getTextDirection(posName, "rtl")} value={posName} onChange={(event) => onPosNameChange(event.target.value)} required />
         </SetupField>
       </fieldset>
       <div className="setup-actions">

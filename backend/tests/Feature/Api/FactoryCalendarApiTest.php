@@ -149,6 +149,58 @@ class FactoryCalendarApiTest extends TestCase
         $this->assertAccountingReferenceValidationFails($service, '999999', '999999');
     }
 
+    public function test_company_code_can_assign_only_a_complete_primary_general_ledger_and_k4_structure(): void
+    {
+        OrgMetaType::create([
+            'id' => 'COMP_CODE',
+            'display_name' => 'Company Code',
+            'display_name_ar' => 'رمز الشركة',
+            'level_domain' => 'Financial',
+            'is_assignable' => true,
+        ]);
+        foreach (['currency_id', 'chart_of_accounts_id'] as $index => $attributeKey) {
+            OrgMetaTypeAttribute::create([
+                'org_meta_type_id' => 'COMP_CODE',
+                'attribute_key' => $attributeKey,
+                'attribute_type' => 'reference',
+                'is_mandatory' => true,
+                'sort_order' => $index + 1,
+            ]);
+        }
+
+        $currency = Currency::create([
+            'code' => 'SAR',
+            'name' => 'Saudi Riyal',
+            'symbol' => 'SAR',
+            'is_active' => true,
+        ]);
+        foreach (['asset', 'liability', 'equity', 'revenue', 'expense'] as $index => $type) {
+            ChartOfAccount::create([
+                'account_code' => (string) (1000 + $index),
+                'account_name' => ucfirst($type),
+                'account_type' => $type,
+                'is_active' => true,
+            ]);
+        }
+
+        $service = app(OrgStructureService::class);
+        $service->validateNodeAttributes('COMP_CODE', [
+            'currency_id' => (string) $currency->id,
+            'chart_of_accounts_id' => 'ACCORE-PRIMARY-GL',
+            'fiscal_year_variant' => 'K4',
+            'language' => 'ar-SA',
+        ]);
+        $this->addToAssertionCount(1);
+
+        $this->expectException(ValidationException::class);
+        $service->validateNodeAttributes('COMP_CODE', [
+            'currency_id' => (string) $currency->id,
+            'chart_of_accounts_id' => 'ACCORE-PRIMARY-GL',
+            'fiscal_year_variant' => 'K4',
+            'language' => 'fa-IR',
+        ]);
+    }
+
     private function assertCalendarValidationFails(OrgStructureService $service, string $calendarId, string $countryCode): void
     {
         try {

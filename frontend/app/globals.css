@@ -2019,6 +2019,31 @@ tbody tr:hover {
   flex-direction: column;
 }
 
+.application-language-settings { display: grid; gap: 1.25rem; padding: 1.35rem; }
+.application-language-settings-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.application-language-settings-header h3 { margin: 0.2rem 0 0.4rem; color: var(--text-primary); font-size: 1.05rem; }
+.application-language-settings-header p, .application-language-boundary { max-width: 46rem; margin: 0; color: var(--text-secondary); font-size: 0.82rem; line-height: 1.65; }
+.application-language-settings-eyebrow { color: var(--primary-color); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.application-language-current { min-width: 9rem; padding: 0.65rem 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--primary-subtle); }
+.application-language-current span, .application-language-current strong { display: block; }
+.application-language-current span { color: var(--text-muted); font-size: 0.66rem; }
+.application-language-current strong { margin-top: 0.15rem; color: var(--text-primary); font-size: 0.84rem; }
+.application-language-choice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0.75rem; }
+.application-language-choice { display: grid; grid-template-columns: 1fr auto; gap: 0.25rem 0.75rem; min-height: 7rem; padding: 0.9rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--surface-white); color: inherit; cursor: pointer; text-align: start; transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease; }
+.application-language-choice:hover { border-color: var(--primary-color); box-shadow: var(--shadow-sm); transform: translateY(-1px); }
+.application-language-choice.is-active { border-color: var(--primary-color); background: var(--primary-subtle); box-shadow: inset 0 0 0 1px var(--primary-color); }
+.application-language-choice-native { color: var(--text-primary); font-size: 1rem; font-weight: 800; }
+.application-language-choice-name { align-self: center; color: var(--text-muted); font-size: 0.7rem; }
+.application-language-choice-direction { align-self: start; color: var(--primary-color); font-size: 0.64rem; font-weight: 800; letter-spacing: 0.06em; }
+.application-language-choice-status { grid-column: 1 / -1; color: var(--text-secondary); font-size: 0.72rem; }
+.application-language-boundary { padding: 0.8rem 0.9rem; border-inline-start: 3px solid var(--primary-color); background: var(--surface-soft); }
+@media (max-width: 640px) { .application-language-settings-header { flex-direction: column; } .application-language-current { width: 100%; } }
+
+.setup-top-utility { display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; width: min(100%, 1180px); margin: 0 auto 0.85rem; color: var(--text-muted); font-size: 0.72rem; }
+.setup-top-utility-action { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.5rem 0.7rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--surface-white); color: var(--text-secondary); cursor: pointer; font: inherit; font-weight: 700; }
+.setup-top-utility-action:hover { border-color: var(--primary-color); color: var(--primary-color); }
+.setup-application-settings { width: min(100%, 1180px); margin: 0 auto 1rem; }
+
 .page-tap-nav {
   display: flex;
   flex-direction: row;
