@@ -113,8 +113,7 @@ fn execute() -> Result<(), String> {
 #[cfg(windows)]
 fn stop_embedded_service() -> Result<(), String> {
     let config_path = default_config_path()?;
-    request_stop_for_config(&config_path)?;
-    windows_service_host::stop_service()
+    request_stop_for_config(&config_path)
 }
 
 #[cfg(not(windows))]
