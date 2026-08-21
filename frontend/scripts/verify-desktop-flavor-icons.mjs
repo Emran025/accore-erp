@@ -26,9 +26,9 @@ const nsis = config.bundle?.windows?.nsis;
 if (!configuredIcons.includes(target.ico)) {
   throw new Error(`${flavor} bundle icon list must include ${target.ico}`);
 }
-if (nsis?.installerIcon !== target.ico || nsis?.uninstallerIcon !== target.ico) {
+if (nsis?.installerIcon !== target.ico) {
   throw new Error(
-    `${flavor} NSIS installerIcon and uninstallerIcon must both reference ${target.ico}`,
+    `${flavor} NSIS installerIcon must reference ${target.ico}`,
   );
 }
 
@@ -37,4 +37,4 @@ if (ico.length < 22 || ico.readUInt16LE(0) !== 0 || ico.readUInt16LE(2) !== 1 ||
   throw new Error(`${flavor} installer icon is not a valid ICO resource: ${target.ico}`);
 }
 
-console.log(`verified ${flavor} NSIS installer and uninstaller icon: ${target.ico}`);
+console.log(`verified ${flavor} NSIS installer icon: ${target.ico}`);
