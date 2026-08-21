@@ -151,6 +151,14 @@ fn execute_with_config(path: &Path) -> Result<(), String> {
     run(load_config(path)?)
 }
 
+#[cfg(windows)]
+fn execute_service_with_config(path: &Path) -> Result<(), String> {
+    let config = load_config(path)?;
+    ensure_layout(&config)?;
+    harden_runtime_data_access(&config)?;
+    run(config)
+}
+
 fn run(config: RuntimeConfig) -> Result<(), String> {
     ensure_layout(&config)?;
     let mut backup = backup::BackupRuntime::open(&config)?;

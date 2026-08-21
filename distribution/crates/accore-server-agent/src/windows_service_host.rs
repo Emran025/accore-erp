@@ -127,7 +127,7 @@ fn service_main(_arguments: Vec<OsString>) {
     let config = std::env::var("ACCORE_SERVER_AGENT_CONFIG").ok();
     let mut worker = config.as_ref().map(|config| {
         let worker_config = config.clone();
-        std::thread::spawn(move || super::execute_with_config(Path::new(&worker_config)))
+        std::thread::spawn(move || super::execute_service_with_config(Path::new(&worker_config)))
     });
 
     loop {

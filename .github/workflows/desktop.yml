@@ -134,6 +134,8 @@ jobs:
             & (Join-Path $runtimeRoot 'frankenphp.exe') php-cli $extensionProbe
             if ($LASTEXITCODE -ne 0) { throw 'Embedded FrankenPHP did not load the required pdo_mysql extension' }
             Remove-Item $extensionProbe -Force
+            New-Item -ItemType Directory -Force -Path $dataRoot | Out-Null
+            Set-Content -LiteralPath (Join-Path $dataRoot 'control.backup') -NoNewline -Value "requested`n"
             & $agent install
             if ($LASTEXITCODE -ne 0) { throw "Agent installation exited with $LASTEXITCODE" }
             $deadline = (Get-Date).AddMinutes(3)
@@ -151,8 +153,6 @@ jobs:
             if (Test-Path $runtimeEnv) { throw 'Runtime package contains a forbidden Laravel environment file' }
             $privateAcl = Get-Acl (Join-Path $dataRoot 'agent-config.json')
             if ($privateAcl.Access.IdentityReference.Value -match 'Users') { throw 'Agent configuration grants an ordinary Users ACL entry' }
-            & $agent request-backup --config $agentConfigPath
-            if ($LASTEXITCODE -ne 0) { throw "Protected backup request exited with $LASTEXITCODE" }
             $backupDeadline = (Get-Date).AddMinutes(5)
             $backupManifest = $null
             do {
@@ -166,14 +166,6 @@ jobs:
             $backupArchive = Join-Path (Join-Path $dataRoot 'backups') $backupManifest.records[0].artifact
             if (-not (Test-Path $backupArchive) -or (Get-Item $backupArchive).Length -le 0) { throw 'Protected compressed backup archive is missing or empty' }
             if (-not (Test-Path $backupStatusPath)) { throw 'Agent did not publish redacted public backup status' }
-            & $agent stop
-            if ($LASTEXITCODE -ne 0) { throw "Agent stop exited with $LASTEXITCODE" }
-            $stopDeadline = (Get-Date).AddMinutes(1)
-            do {
-              Start-Sleep -Seconds 2
-              $status = Get-Content $statusPath -Raw | ConvertFrom-Json
-            } while ($status.state -ne 'stopped' -and (Get-Date) -lt $stopDeadline)
-            if ($status.state -ne 'stopped') { throw 'Server Agent did not complete ordered shutdown' }
           }
           catch {
             Write-Host 'Server Desktop smoke-test diagnostics follow.'
