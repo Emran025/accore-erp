@@ -14,6 +14,7 @@ import { catalogMessage } from '@/lib/i18n';
 import {
   initialServerReadiness,
   resolveServerReadiness,
+  SERVER_HEALTH_CHECK_TIMEOUT_MS,
   type ServerReadinessState,
 } from '@/lib/server-readiness';
 import {
@@ -198,10 +199,15 @@ export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
   const [runtimeStatus, setRuntimeStatus] = useState<ServerRuntimeStatus | null>(null);
   const [isStarting, setIsStarting] = useState(false);
 
+  const applyRuntimeStatus = (status: ServerRuntimeStatus) => {
+    setRuntimeStatus(status);
+    setReadiness(resolveServerReadiness(status.state === 'ready'));
+  };
+
   useEffect(() => {
     let active = true;
     void readServerRuntimeStatus().then((status) => {
-      if (active) setRuntimeStatus(status);
+      if (active && status) applyRuntimeStatus(status);
     });
     return () => {
       active = false;
@@ -209,10 +215,7 @@ export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
   }, []);
 
   useEffect(() => {
-    if (
-      !runtimeStatus ||
-      !['bootstrapping', 'recovering', 'stopping'].includes(runtimeStatus.state)
-    ) {
+    if (!runtimeStatus?.runtimePresent || runtimeStatus.state === 'ready') {
       return;
     }
 
@@ -220,8 +223,7 @@ export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
     const refreshStatus = () => {
       void readServerRuntimeStatus().then((status) => {
         if (!active || !status) return;
-        setRuntimeStatus(status);
-        if (status.state === 'ready') setReadiness(initialServerReadiness());
+        applyRuntimeStatus(status);
       });
     };
     const interval = window.setInterval(refreshStatus, 2_000);
@@ -230,21 +232,31 @@ export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
       active = false;
       window.clearInterval(interval);
     };
-  }, [runtimeStatus]);
+  }, [runtimeStatus?.runtimePresent, runtimeStatus?.state]);
 
   useEffect(() => {
     if (readiness.kind !== 'checking') return;
 
     const controller = new AbortController();
+    const timeout = window.setTimeout(
+      () => controller.abort(),
+      SERVER_HEALTH_CHECK_TIMEOUT_MS
+    );
     void fetch(readiness.healthUrl, { cache: 'no-store', signal: controller.signal })
       .then((response) => {
         if (!controller.signal.aborted) setReadiness(resolveServerReadiness(response.ok));
       })
       .catch(() => {
         if (!controller.signal.aborted) setReadiness(resolveServerReadiness(false));
+      })
+      .finally(() => {
+        window.clearTimeout(timeout);
       });
 
-    return () => controller.abort();
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
   }, [readiness]);
 
   if (readiness.kind === 'not-server') return <>{children}</>;
@@ -269,13 +281,24 @@ export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
   ];
   const refreshRuntime = async () => {
     const status = await readServerRuntimeStatus();
-    if (status) setRuntimeStatus(status);
+    if (status) applyRuntimeStatus(status);
   };
   const startRuntime = async () => {
     setIsStarting(true);
     try {
       const status = await startServerRuntime();
-      if (status) setRuntimeStatus(status);
+      if (!status) return;
+
+      applyRuntimeStatus(status);
+      if (status.state === 'ready') return;
+
+      for (let attempt = 0; attempt < 15; attempt += 1) {
+        await new Promise((resolve) => window.setTimeout(resolve, 2_000));
+        const nextStatus = await readServerRuntimeStatus();
+        if (!nextStatus) continue;
+        applyRuntimeStatus(nextStatus);
+        if (nextStatus.state === 'ready') return;
+      }
     } finally {
       setIsStarting(false);
     }

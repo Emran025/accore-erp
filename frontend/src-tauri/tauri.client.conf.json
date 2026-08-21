@@ -26,7 +26,8 @@
     ],
     "windows": {
       "nsis": {
-        "installerIcon": "icons/flavors/accore-client.ico"
+        "installerIcon": "icons/flavors/accore-client.ico",
+        "uninstallerIcon": "icons/flavors/accore-client.ico"
       }
     }
   }

@@ -3,6 +3,7 @@ import {
   initialServerReadiness,
   resolveServerHealthUrl,
   resolveServerReadiness,
+  SERVER_HEALTH_CHECK_TIMEOUT_MS,
 } from '@/lib/server-readiness';
 
 describe('server readiness contract', () => {
@@ -25,5 +26,10 @@ describe('server readiness contract', () => {
     });
     expect(blocksProtectedServerRoutes(resolveServerReadiness(false, server))).toBe(true);
     expect(blocksProtectedServerRoutes(resolveServerReadiness(true, server))).toBe(false);
+  });
+
+  it('bounds an unresolved loopback health probe so the operations gate can expose recovery actions', () => {
+    expect(SERVER_HEALTH_CHECK_TIMEOUT_MS).toBeGreaterThan(0);
+    expect(SERVER_HEALTH_CHECK_TIMEOUT_MS).toBeLessThanOrEqual(10_000);
   });
 });

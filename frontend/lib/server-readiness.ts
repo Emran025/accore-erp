@@ -5,6 +5,8 @@ import {
   type ProductBuildEnvironment,
 } from '@/lib/product-flavor';
 
+export const SERVER_HEALTH_CHECK_TIMEOUT_MS = 5_000;
+
 export type ServerReadinessState =
   | { kind: 'not-server' }
   | { kind: 'checking'; healthUrl: string }
