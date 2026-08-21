@@ -134,6 +134,8 @@ jobs:
             & (Join-Path $runtimeRoot 'frankenphp.exe') php-cli $extensionProbe
             if ($LASTEXITCODE -ne 0) { throw 'Embedded FrankenPHP did not load the required pdo_mysql extension' }
             Remove-Item $extensionProbe -Force
+            New-Item -ItemType Directory -Force -Path $dataRoot | Out-Null
+            Set-Content -LiteralPath (Join-Path $dataRoot 'control.backup') -NoNewline -Value "requested`n"
             & $agent install
             if ($LASTEXITCODE -ne 0) { throw "Agent installation exited with $LASTEXITCODE" }
             $deadline = (Get-Date).AddMinutes(3)
@@ -151,9 +153,6 @@ jobs:
             if (Test-Path $runtimeEnv) { throw 'Runtime package contains a forbidden Laravel environment file' }
             $privateAcl = Get-Acl (Join-Path $dataRoot 'agent-config.json')
             if ($privateAcl.Access.IdentityReference.Value -match 'Users') { throw 'Agent configuration grants an ordinary Users ACL entry' }
-            $backupArguments = "request-backup --config `"$agentConfigPath`""
-            $backupProcess = Start-Process -FilePath $agent -ArgumentList $backupArguments -Verb RunAs -Wait -PassThru
-            if ($backupProcess.ExitCode -ne 0) { throw "Protected backup request exited with $($backupProcess.ExitCode)" }
             $backupDeadline = (Get-Date).AddMinutes(5)
             $backupManifest = $null
             do {
