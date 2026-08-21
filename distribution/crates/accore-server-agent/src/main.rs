@@ -88,20 +88,21 @@ fn main() {
 fn execute() -> Result<(), String> {
     let mut arguments = env::args().skip(1);
     let command = arguments.next().ok_or(
-        "usage: accore-server-agent <run|service|install|uninstall|status|stop|request-backup> [--config <path>]",
+        "usage: accore-server-agent <run|service|install|uninstall|status|stop|request-backup|seed-baseline> [--config <path>]",
     )?;
 
     match command.as_str() {
         "install" => install_embedded_service(),
         "uninstall" => windows_service_host::uninstall_service(),
         "stop" => windows_service_host::stop_service(),
-        "run" | "service" | "status" | "request-backup" => {
+        "run" | "service" | "status" | "request-backup" | "seed-baseline" => {
             let config_path = read_config_argument(&mut arguments)?;
             match command.as_str() {
                 "run" => execute_with_config(Path::new(&config_path)),
                 "service" => windows_service_host::run_service(config_path),
                 "status" => print_status(&load_config(Path::new(&config_path))?),
                 "request-backup" => request_backup_for_config(Path::new(&config_path)),
+                "seed-baseline" => recover_baseline_seed_for_config(Path::new(&config_path)),
                 _ => unreachable!(),
             }
         }
@@ -399,7 +400,15 @@ fn provision_application(config: &RuntimeConfig) -> Result<(), String> {
     }
 
     let mut migrate = application_command(config, ["php-cli", "artisan", "migrate", "--force"]);
-    run_checked(&mut migrate, "run Laravel migrations")
+    run_checked(&mut migrate, "run Laravel migrations")?;
+    run_desktop_seed_revisions(config)
+}
+
+fn run_desktop_seed_revisions(config: &RuntimeConfig) -> Result<(), String> {
+    let seed_state_path = config.data_root.join("desktop-seed-state.json");
+    let mut seed = application_command(config, ["php-cli", "artisan", "accore:desktop:seed"]);
+    seed.arg("--state-path").arg(seed_state_path);
+    run_checked(&mut seed, "apply pending ACCORE desktop seed revisions")
 }
 
 fn start_api(config: &RuntimeConfig) -> Result<Child, String> {
@@ -608,6 +617,58 @@ fn request_backup_for_config(path: &Path) -> Result<(), String> {
     let config = load_config(path)?;
     fs::write(config.data_root.join("control.backup"), "requested\n")
         .map_err(|error| format!("request protected backup: {error}"))
+}
+
+fn recover_baseline_seed_for_config(path: &Path) -> Result<(), String> {
+    let config = load_config(path)?;
+    let user_count = database_scalar_count(&config, "SELECT COUNT(*) FROM users;")?;
+    if user_count > 0 {
+        println!("baseline seed recovery skipped: {user_count} user account(s) already exist");
+        return Ok(());
+    }
+
+    let mut seed = application_command(&config, ["php-cli", "artisan", "db:seed", "--force"]);
+    run_checked(&mut seed, "apply guarded ACCORE baseline seed")?;
+
+    let active_admin_count = database_scalar_count(
+        &config,
+        "SELECT COUNT(*) FROM users WHERE username = 'admin' AND is_active = 1;",
+    )?;
+    if active_admin_count != 1 {
+        return Err("guarded baseline seed completed without creating one active administrator".into());
+    }
+
+    println!("baseline seed recovery completed: active administrator account is ready");
+    Ok(())
+}
+
+fn database_scalar_count(config: &RuntimeConfig, query: &str) -> Result<u64, String> {
+    let output = Command::new(mariadb_bin(config, "mariadb.exe"))
+        .args(["--no-defaults", "--protocol=tcp", "--host=127.0.0.1"])
+        .arg(format!("--port={DATABASE_PORT}"))
+        .arg("--user=accore_app")
+        .arg(format!("--password={}", config.database_password))
+        .args(["--batch", "--skip-column-names"])
+        .arg(format!("--database={}", config.database_name))
+        .arg(format!("--execute={query}"))
+        .output()
+        .map_err(|error| format!("query local ACCORE database: {error}"))?;
+    if !output.status.success() {
+        return Err(format!(
+            "query local ACCORE database exited with {}: {}",
+            output.status,
+            String::from_utf8_lossy(&output.stderr).trim()
+        ));
+    }
+    let raw = String::from_utf8(output.stdout)
+        .map_err(|error| format!("decode local ACCORE database count: {error}"))?;
+    parse_database_count(&raw)
+}
+
+fn parse_database_count(raw: &str) -> Result<u64, String> {
+    raw.trim()
+        .parse::<u64>()
+        .map_err(|error| format!("parse local ACCORE database count '{raw}': {error}"))
 }
 
 fn stop_requested(config: &RuntimeConfig) -> bool {
@@ -830,5 +891,16 @@ mod tests {
             packaged_runtime_root(&installation_root),
             installation_root.join("resources/server-runtime/windows-x86_64")
         );
+    }
+
+    #[test]
+    fn guarded_seed_recovery_accepts_a_numeric_user_count() {
+        assert_eq!(parse_database_count("0\n").expect("zero users parses"), 0);
+        assert_eq!(parse_database_count("12\n").expect("existing users parse"), 12);
+    }
+
+    #[test]
+    fn guarded_seed_recovery_rejects_a_non_numeric_user_count() {
+        assert!(parse_database_count("not-a-count\n").is_err());
     }
 }
