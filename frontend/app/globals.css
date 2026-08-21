@@ -5568,7 +5568,10 @@ body.nav-sidebar-is-collapsed .sidebar-toggle-btn {
    navigation shell so it remains usable while the side navigation is visible.
    ─────────────────────────────────────────────────────────────────────── */
 .status-notification-root {
-  position: relative;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 1200;
   flex-shrink: 0;
   isolation: isolate;
@@ -5675,7 +5678,7 @@ body.nav-sidebar-is-collapsed .sidebar-toggle-btn {
   display: grid;
   width: min(58rem, calc(100vw - 1.5rem));
   max-height: min(38rem, calc(100vh - 4rem));
-  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto minmax(0, 1fr);
   overflow: hidden;
   color: var(--text-primary);
   background: var(--surface-white);
@@ -5700,6 +5703,118 @@ body.nav-sidebar-is-collapsed .sidebar-toggle-btn {
   padding: 0.85rem 1rem;
   background: var(--bg-color);
   border-bottom: 1px solid var(--border-color);
+}
+
+.status-notification-server-operations {
+  background: color-mix(in srgb, var(--primary-subtle) 42%, var(--surface-white));
+  border-bottom: 1px solid var(--border-color);
+}
+
+.status-notification-server-operations-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  list-style: none;
+}
+
+.status-notification-server-operations-summary::-webkit-details-marker { display: none; }
+
+.status-notification-server-operations-summary-title,
+.status-notification-server-operation-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.76rem;
+  font-weight: 750;
+}
+
+.status-notification-server-operations-summary-state {
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  font-weight: 650;
+  text-align: end;
+}
+
+.status-notification-server-operations-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+  padding: 0 1rem 0.85rem;
+}
+
+.status-notification-server-operation-card {
+  min-width: 0;
+  padding: 0.7rem;
+  background: var(--surface-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+}
+
+.status-notification-server-operation-heading { color: var(--text-primary); }
+
+.status-notification-server-operation-detail {
+  min-height: 2.5rem;
+  margin: 0.45rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.status-notification-server-operation-button {
+  display: inline-flex;
+  width: 100%;
+  min-height: 2rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.65rem;
+  padding: 0.35rem 0.55rem;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 750;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.status-notification-server-operation-button:hover,
+.status-notification-server-operation-button:focus-visible {
+  border-color: var(--text-light);
+  outline: none;
+}
+
+.status-notification-server-operation-button:disabled {
+  color: var(--text-light);
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.status-notification-server-update-progress {
+  height: 0.35rem;
+  margin-top: 0.55rem;
+  overflow: hidden;
+  background: var(--border-color);
+  border-radius: 999px;
+}
+
+.status-notification-server-update-progress > span {
+  display: block;
+  height: 100%;
+  background: var(--primary-color);
+  border-radius: inherit;
+  transition: width 180ms ease-out;
+}
+
+.status-notification-server-operation-error {
+  margin: 0 1rem 0.85rem;
+  color: #b42318;
+  font-size: 0.72rem;
+  line-height: 1.45;
 }
 
 .status-notification-center-title {
@@ -7257,7 +7372,7 @@ body.nav-sidebar-is-collapsed .sidebar-toggle-btn {
 
 /* Standalone pre-operational onboarding shell */
 .setup-shell, .setup-access-gate { min-height: 100vh; background: linear-gradient(145deg, var(--bg-color) 0%, var(--primary-subtle) 100%); }
-.setup-shell { padding: clamp(1rem, 3vw, 2.5rem); }
+.setup-shell { padding: clamp(1rem, 3vw, 2.5rem); padding-block-end: 3.5rem; }
 .setup-shell .settings-wrapper.setup-workflow { padding-top: 0; }
 .setup-access-gate { display: grid; place-items: center; padding: 1.5rem; }
 .setup-access-gate-panel { display: grid; justify-items: center; gap: 0.9rem; min-width: min(100%, 20rem); padding: 2rem; border: 1px solid var(--border-color); border-radius: var(--radius-lg); background: var(--surface-white); box-shadow: var(--shadow-md); color: var(--text-secondary); }

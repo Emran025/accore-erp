@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode, useCallback, useEffect, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import {
   Activity,
   CircleAlert,
@@ -19,15 +19,10 @@ import {
 } from '@/lib/server-readiness';
 import {
   readServerRuntimeStatus,
-  readServerBackupStatus,
-  requestServerBackup,
   startServerRuntime,
-  type ServerBackupStatus,
   type ServerRuntimeComponent,
   type ServerRuntimeStatus,
 } from '@/lib/server-runtime';
-import { installSignedServerDesktopUpdate } from '@/lib/server-desktop-updater';
-import { type DesktopUpdateProgress } from '@/lib/desktop-auto-updater';
 
 interface ServerRuntimeGateProps {
   children: ReactNode;
@@ -59,157 +54,46 @@ function RuntimeShell({ children }: { children: ReactNode }) {
   );
 }
 
-function ServerOperationsPanel() {
-  const [backupStatus, setBackupStatus] = useState<ServerBackupStatus | null>(null);
-  const [updateProgress, setUpdateProgress] = useState<DesktopUpdateProgress | null>(null);
-  const [isBackingUp, setIsBackingUp] = useState(false);
-  const [isInstallingUpdate, setIsInstallingUpdate] = useState(false);
-  const [backupFailed, setBackupFailed] = useState(false);
-  const [updateFailed, setUpdateFailed] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-    const refresh = async () => {
-      const status = await readServerBackupStatus();
-      if (active && status) setBackupStatus(status);
-    };
-    void refresh();
-    const interval = window.setInterval(() => void refresh(), 5_000);
-    return () => {
-      active = false;
-      window.clearInterval(interval);
-    };
-  }, []);
-
-  const requestBackup = async () => {
-    setIsBackingUp(true);
-    setBackupFailed(false);
-    try {
-      const status = await requestServerBackup();
-      if (!status) {
-        setBackupFailed(true);
-        return;
-      }
-      setBackupStatus({
-        ...status,
-        state: 'pending',
-        detail: catalogMessage('platform.product.serverBackupRequested'),
-      });
-    } catch {
-      setBackupFailed(true);
-    } finally {
-      setIsBackingUp(false);
-    }
-  };
-
-  const installUpdate = useCallback(async () => {
-    setIsInstallingUpdate(true);
-    setUpdateFailed(false);
-    try {
-      await installSignedServerDesktopUpdate({ onProgress: setUpdateProgress });
-    } catch {
-      setUpdateFailed(true);
-    } finally {
-      setIsInstallingUpdate(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void installUpdate();
-  }, [installUpdate]);
-
-  const updateDetail = (() => {
-    switch (updateProgress?.phase) {
-      case 'checking':
-        return catalogMessage('platform.product.serverUpdateChecking');
-      case 'available':
-        return catalogMessage('platform.product.serverUpdateAvailableVersion', {
-          version: updateProgress.version,
-        });
-      case 'downloading': {
-        const percentage =
-          updateProgress.totalBytes && updateProgress.downloadedBytes !== undefined
-            ? Math.min(100, Math.round((updateProgress.downloadedBytes / updateProgress.totalBytes) * 100))
-            : undefined;
-        return percentage === undefined
-          ? catalogMessage('platform.product.serverUpdateDownloading')
-          : catalogMessage('platform.product.serverUpdateDownloadingProgress', { percentage });
-      }
-      case 'preparing':
-        return catalogMessage('platform.product.serverUpdatePreparing');
-      case 'installing':
-      case 'relaunching':
-        return catalogMessage('platform.product.serverUpdateInstalling');
-      case 'recovering':
-        return catalogMessage('platform.product.serverUpdateRecovering');
-      case 'up-to-date':
-      default:
-        return catalogMessage('platform.product.serverUpdateNone');
-    }
-  })();
-
-  return (
-    <aside className="fixed bottom-4 right-4 z-40 w-[min(26rem,calc(100vw-2rem))] rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-[0_18px_45px_rgba(35,48,69,0.18)] backdrop-blur">
-      <div className="flex items-center gap-2 text-sm font-extrabold text-slate-900">
-        <ShieldCheck className="h-4 w-4 text-[#556681]" aria-hidden="true" />
-        {catalogMessage('platform.product.serverOperationsTitle')}
-      </div>
-      <div className="mt-3 grid gap-3 sm:grid-cols-2">
-        <section className="rounded-xl bg-slate-50 p-3">
-          <p className="text-xs font-bold text-slate-800">
-            {catalogMessage('platform.product.serverBackupTitle')}
-          </p>
-          <p className="mt-1 min-h-10 text-xs leading-5 text-slate-600" aria-live="polite">
-            {backupStatus?.detail ?? catalogMessage('platform.product.serverBackupUnavailable')}
-          </p>
-          <button
-            type="button"
-            className="mt-3 inline-flex w-full items-center justify-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-800 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
-            onClick={() => void requestBackup()}
-            disabled={isBackingUp || isInstallingUpdate}
-          >
-            {isBackingUp
-              ? catalogMessage('platform.product.serverBackupRequested')
-              : catalogMessage('platform.product.serverBackupCreate')}
-          </button>
-        </section>
-        <section className="rounded-xl bg-slate-50 p-3">
-          <p className="text-xs font-bold text-slate-800">
-            {catalogMessage('platform.product.serverUpdateTitle')}
-          </p>
-          <p className="mt-1 min-h-10 text-xs leading-5 text-slate-600" aria-live="polite">
-            {updateDetail}
-          </p>
-          <button
-            type="button"
-            className="mt-3 inline-flex w-full items-center justify-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-800 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
-            onClick={() => void installUpdate()}
-            disabled={isInstallingUpdate || isBackingUp}
-          >
-            {isInstallingUpdate
-              ? catalogMessage('platform.product.serverUpdateInstalling')
-              : catalogMessage('platform.product.serverUpdateCheck')}
-          </button>
-        </section>
-      </div>
-      {backupFailed || updateFailed ? (
-        <p className="mt-3 text-xs leading-5 text-rose-700">
-          {catalogMessage('platform.product.serverOperationRetry')}
-        </p>
-      ) : null}
-    </aside>
-  );
+export function shouldAutomaticallyStartRuntime(
+  status: ServerRuntimeStatus | null,
+  hasAttemptedAutoStart: boolean
+): boolean {
+  return Boolean(status?.runtimePresent && status.state !== 'ready' && !hasAttemptedAutoStart);
 }
 
 export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
   const [readiness, setReadiness] = useState<ServerReadinessState>(() => initialServerReadiness());
   const [runtimeStatus, setRuntimeStatus] = useState<ServerRuntimeStatus | null>(null);
   const [isStarting, setIsStarting] = useState(false);
+  const [autoStartFailed, setAutoStartFailed] = useState(false);
+  const hasAttemptedAutoStart = useRef(false);
 
-  const applyRuntimeStatus = (status: ServerRuntimeStatus) => {
+  const applyRuntimeStatus = useCallback((status: ServerRuntimeStatus) => {
     setRuntimeStatus(status);
     setReadiness(resolveServerReadiness(status.state === 'ready'));
-  };
+  }, []);
+
+  const startRuntime = useCallback(async (): Promise<boolean> => {
+    setIsStarting(true);
+    try {
+      const status = await startServerRuntime();
+      if (!status) return false;
+
+      applyRuntimeStatus(status);
+      if (status.state === 'ready') return true;
+
+      for (let attempt = 0; attempt < 15; attempt += 1) {
+        await new Promise((resolve) => window.setTimeout(resolve, 2_000));
+        const nextStatus = await readServerRuntimeStatus();
+        if (!nextStatus) continue;
+        applyRuntimeStatus(nextStatus);
+        if (nextStatus.state === 'ready') return true;
+      }
+      return false;
+    } finally {
+      setIsStarting(false);
+    }
+  }, [applyRuntimeStatus]);
 
   useEffect(() => {
     let active = true;
@@ -219,7 +103,7 @@ export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [applyRuntimeStatus]);
 
   useEffect(() => {
     if (!runtimeStatus?.runtimePresent || runtimeStatus.state === 'ready') {
@@ -239,7 +123,18 @@ export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
       active = false;
       window.clearInterval(interval);
     };
-  }, [runtimeStatus?.runtimePresent, runtimeStatus?.state]);
+  }, [applyRuntimeStatus, runtimeStatus?.runtimePresent, runtimeStatus?.state]);
+
+  useEffect(() => {
+    if (!shouldAutomaticallyStartRuntime(runtimeStatus, hasAttemptedAutoStart.current)) {
+      return;
+    }
+
+    hasAttemptedAutoStart.current = true;
+    void startRuntime().then((started) => {
+      if (!started) setAutoStartFailed(true);
+    });
+  }, [runtimeStatus?.runtimePresent, runtimeStatus?.state, startRuntime]);
 
   useEffect(() => {
     if (readiness.kind !== 'checking') return;
@@ -268,18 +163,13 @@ export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
 
   if (readiness.kind === 'not-server') return <>{children}</>;
   if (readiness.kind === 'ready') {
-    return (
-      <>
-        {children}
-        <ServerOperationsPanel />
-      </>
-    );
+    return <>{children}</>;
   }
 
   const isRuntimeProgressing = ['bootstrapping', 'recovering', 'stopping'].includes(
     runtimeStatus?.state ?? ''
   );
-  const isChecking = readiness.kind === 'checking' || isRuntimeProgressing;
+  const isChecking = readiness.kind === 'checking' || isRuntimeProgressing || isStarting;
   const runtimeDetail = runtimeStatus?.detail;
   const componentRows: Array<[string, ServerRuntimeComponent | undefined]> = [
     [catalogMessage('platform.product.serverRuntimeDatabaseComponent'), runtimeStatus?.database],
@@ -289,26 +179,6 @@ export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
   const refreshRuntime = async () => {
     const status = await readServerRuntimeStatus();
     if (status) applyRuntimeStatus(status);
-  };
-  const startRuntime = async () => {
-    setIsStarting(true);
-    try {
-      const status = await startServerRuntime();
-      if (!status) return;
-
-      applyRuntimeStatus(status);
-      if (status.state === 'ready') return;
-
-      for (let attempt = 0; attempt < 15; attempt += 1) {
-        await new Promise((resolve) => window.setTimeout(resolve, 2_000));
-        const nextStatus = await readServerRuntimeStatus();
-        if (!nextStatus) continue;
-        applyRuntimeStatus(nextStatus);
-        if (nextStatus.state === 'ready') return;
-      }
-    } finally {
-      setIsStarting(false);
-    }
   };
   return (
     <RuntimeShell>
@@ -394,11 +264,16 @@ export function ServerRuntimeGate({ children }: ServerRuntimeGateProps) {
                 <RefreshCw className="h-4 w-4" aria-hidden="true" />
                 {catalogMessage('platform.product.serverRuntimeRefreshStatus')}
               </button>
-              {runtimeStatus?.runtimePresent ? (
+              {runtimeStatus?.runtimePresent && autoStartFailed ? (
                 <button
                   type="button"
                   className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#30374c] px-4 py-2.5 text-sm font-extrabold text-white shadow-[0_8px_18px_rgba(48,55,76,0.18)] transition hover:bg-[#233045] focus:outline-none focus:ring-4 focus:ring-[#8192a5]/35 disabled:cursor-not-allowed disabled:opacity-60"
-                  onClick={() => void startRuntime()}
+                  onClick={() => {
+                    setAutoStartFailed(false);
+                    void startRuntime().then((started) => {
+                      if (!started) setAutoStartFailed(true);
+                    });
+                  }}
                   disabled={isStarting}
                 >
                   <Server className="h-4 w-4" aria-hidden="true" />

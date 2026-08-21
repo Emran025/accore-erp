@@ -1,6 +1,9 @@
 import { createHash, sign } from 'node:crypto';
 import { readdir, readFile, stat, writeFile, mkdir } from 'node:fs/promises';
-import { basename, extname, join, resolve } from 'node:path';
+import { basename, dirname, extname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const frontendRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 const [assetsDirectory, outputDirectory] = process.argv.slice(2);
 if (!assetsDirectory || !outputDirectory) {
@@ -22,6 +25,7 @@ const releaseVersion = tag.replace(/^desktop-v/, '');
 if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.test(releaseVersion)) {
   throw new Error(`desktop tag ${tag} does not contain a semantic version`);
 }
+await assertReleaseVersionMatchesDesktopSources(releaseVersion);
 
 const sourceRevision = process.env.ACCORE_SOURCE_REVISION;
 if (!/^[0-9a-f]{40,64}$/i.test(sourceRevision)) {
@@ -103,7 +107,8 @@ async function writeTauriUpdaterManifest(product, files, destination, generatedA
     Object.entries(candidatesByPlatform).map(([platform, candidates]) => {
       const [selected] = candidates.sort(
         (left, right) =>
-          updaterArtifactPriority(left.artifactPath) - updaterArtifactPriority(right.artifactPath) ||
+          updaterArtifactPriority(left.artifactPath) -
+            updaterArtifactPriority(right.artifactPath) ||
           basename(left.artifactPath).localeCompare(basename(right.artifactPath))
       );
       return [platform, { signature: selected.signature, url: selected.url }];
@@ -232,4 +237,25 @@ async function findFiles(root) {
     else if ((await stat(path)).isFile()) files.push(path);
   }
   return files;
+}
+
+async function assertReleaseVersionMatchesDesktopSources(releaseVersion) {
+  const [packageRaw, tauriRaw, cargoRaw] = await Promise.all([
+    readFile(join(frontendRoot, 'package.json'), 'utf8'),
+    readFile(join(frontendRoot, 'src-tauri', 'tauri.conf.json'), 'utf8'),
+    readFile(join(frontendRoot, 'src-tauri', 'Cargo.toml'), 'utf8'),
+  ]);
+  const packageVersion = JSON.parse(packageRaw).version;
+  const tauriVersion = JSON.parse(tauriRaw).version;
+  const cargoVersion = /^version\s*=\s*"([^"]+)"/m.exec(cargoRaw)?.[1];
+  const sources = { package: packageVersion, tauri: tauriVersion, cargo: cargoVersion };
+  const mismatchedSources = Object.entries(sources)
+    .filter(([, version]) => version !== releaseVersion)
+    .map(([source, version]) => `${source}=${version ?? 'missing'}`);
+
+  if (mismatchedSources.length > 0) {
+    throw new Error(
+      `desktop tag ${tag} must match embedded package versions; found ${mismatchedSources.join(', ')}`
+    );
+  }
 }
