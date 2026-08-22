@@ -237,6 +237,12 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
+          $dataRoot = Join-Path $env:ProgramData 'ACCORE ERP'
+          if (Test-Path $dataRoot) {
+            & takeown.exe /F $dataRoot /R /D Y | Out-Null
+            & icacls.exe $dataRoot /grant "$($env:USERNAME):(OI)(CI)F" /T /C /Q | Out-Null
+            Remove-Item $dataRoot -Recurse -Force
+          }
           $installer = Get-ChildItem -Path 'frontend/src-tauri/target' -Recurse -File -Filter '*Headless*setup.exe' | Select-Object -First 1
           if ($null -eq $installer) { throw 'Headless NSIS installer was not produced' }
           $installerProcess = Start-Process -FilePath $installer.FullName -ArgumentList @('/S') -Wait -PassThru
@@ -261,8 +267,8 @@ jobs:
           if ($null -eq $status -or $status.state -ne 'ready') { throw 'Headless service did not report ready status within three minutes' }
           if (Get-Process -Name 'accore-server-headless' -ErrorAction SilentlyContinue) { throw 'Headless installer unexpectedly launched a desktop process' }
 
-          $dataRoot = Join-Path $env:ProgramData 'ACCORE ERP\Server'
-          $sentinel = Join-Path $dataRoot 'headless-uninstall-preservation-sentinel.txt'
+          $serverDataRoot = Join-Path $dataRoot 'Server'
+          $sentinel = Join-Path $serverDataRoot 'headless-uninstall-preservation-sentinel.txt'
           Set-Content -LiteralPath $sentinel -NoNewline -Value 'preserve'
           $uninstaller = Get-ChildItem -Path $env:ProgramFiles -Recurse -File -Filter 'uninstall.exe' | Where-Object { $_.FullName -match 'ACCORE ERP Server Headless' } | Select-Object -First 1
           if ($null -eq $uninstaller) { throw 'Headless uninstaller was not registered in Program Files' }
@@ -270,7 +276,9 @@ jobs:
           if ($uninstallerProcess.ExitCode -ne 0) { throw "Headless silent uninstaller exited with $($uninstallerProcess.ExitCode)" }
           if (-not (Test-Path $sentinel)) { throw 'Headless uninstaller removed durable customer data' }
           if (Get-Service -Name ACCOREServerAgent -ErrorAction SilentlyContinue) { throw 'Headless uninstaller left the Agent service registered' }
-          Remove-Item (Join-Path $env:ProgramData 'ACCORE ERP') -Recurse -Force -ErrorAction SilentlyContinue
+          & takeown.exe /F $dataRoot /R /D Y | Out-Null
+          & icacls.exe $dataRoot /grant "$($env:USERNAME):(OI)(CI)F" /T /C /Q | Out-Null
+          Remove-Item $dataRoot -Recurse -Force -ErrorAction SilentlyContinue
 
       - name: Upload desktop installers and updater signatures
         if: startsWith(github.ref, 'refs/tags/desktop-v')
