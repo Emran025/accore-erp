@@ -51,10 +51,14 @@ await writeFile(
 console.log(`Prepared verified Server Desktop runtime for ${target} in ${destinationRoot}`);
 
 async function stageFrankenPhp() {
-  const binaryPath = await downloadVerified(definition.frankenPhp);
-  const destination = join(destinationRoot, definition.layout.frankenPhp);
-  await cp(binaryPath, destination);
-  if (process.platform !== 'win32') await chmod(destination, 0o755);
+  const sourcePath = await downloadVerified(definition.frankenPhp);
+  if (definition.frankenPhp.format) {
+    await extractArchive(sourcePath, destinationRoot, definition.frankenPhp.format);
+  } else {
+    const destination = join(destinationRoot, definition.layout.frankenPhp);
+    await cp(sourcePath, destination);
+    if (process.platform !== 'win32') await chmod(destination, 0o755);
+  }
 }
 
 async function stageMariaDb() {
@@ -254,6 +258,7 @@ function getTargets() {
       url: 'https://github.com/php/frankenphp/releases/download/v1.12.7/frankenphp-windows-x86_64.zip',
       sha256: 'c382cf6169d5175c30d918ba7a09d6eb8601c6c339470e7fbb87f0b40d9bf254',
       archive: 'frankenphp-windows-x86_64.zip',
+      format: 'zip',
     },
     mariadb: {
       id: 'mariadb',
