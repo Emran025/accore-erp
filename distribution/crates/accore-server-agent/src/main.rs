@@ -30,7 +30,9 @@ const BACKUP_VALIDATION_PORT: u16 = 3308;
 const READINESS_TIMEOUT: Duration = Duration::from_secs(90);
 const MAX_RESTART_ATTEMPTS: u8 = 3;
 const BACKUP_INTERVAL_SECONDS: u64 = 6 * 60 * 60;
-const PUBLIC_STATUS_READ_PRINCIPAL: &str = "Authenticated Users:(OI)(CI)RX";
+// Use the well-known SID rather than a localized account name. `icacls` accepts
+// numerical SIDs when prefixed with `*`; S-1-5-11 is Authenticated Users.
+const PUBLIC_STATUS_READ_PRINCIPAL: &str = "*S-1-5-11:(OI)(CI)RX";
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -1277,7 +1279,7 @@ mod tests {
 
     #[test]
     fn public_status_acl_includes_authenticated_desktop_clients() {
-        assert_eq!(PUBLIC_STATUS_READ_PRINCIPAL, "Authenticated Users:(OI)(CI)RX");
+        assert_eq!(PUBLIC_STATUS_READ_PRINCIPAL, "*S-1-5-11:(OI)(CI)RX");
     }
 
     #[test]
