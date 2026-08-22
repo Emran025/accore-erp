@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { createReadStream, createWriteStream } from 'node:fs';
-import { chmod, cp, mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
+import { chmod, cp, mkdir, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
@@ -148,12 +148,32 @@ async function buildMariaDbFromSource(source) {
     });
   }
   await run('cmake', cmakeArgs, buildEnvironment);
+  if (process.platform === 'darwin') await removeCommandLineToolsIncludes(buildRoot);
   await run(
     'cmake',
     ['--build', buildRoot, '--parallel', process.env.ACCORE_RUNTIME_BUILD_JOBS ?? '3', '--verbose'],
     buildEnvironment
   );
   await run('cmake', ['--install', buildRoot], buildEnvironment);
+}
+
+async function removeCommandLineToolsIncludes(root) {
+  const entries = await readdir(root, { withFileTypes: true });
+  for (const entry of entries) {
+    const path = join(root, entry.name);
+    if (entry.isDirectory()) {
+      await removeCommandLineToolsIncludes(path);
+      continue;
+    }
+    if (!entry.isFile() || !entry.name.endsWith('.make')) continue;
+
+    const contents = await readFile(path, 'utf8');
+    const sanitized = contents.replaceAll(
+      /-I\/Library\/Developer\/CommandLineTools\/SDKs\/[^\s]+\/usr\/include/g,
+      ''
+    );
+    if (sanitized !== contents) await writeFile(path, sanitized);
+  }
 }
 
 async function stageApplication() {
