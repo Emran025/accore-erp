@@ -9,9 +9,7 @@ use std::{
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
-#[cfg(windows)]
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
-#[cfg(windows)]
 use rand::{rngs::OsRng, RngCore};
 #[cfg(windows)]
 use windows_sys::Win32::{
@@ -28,6 +26,7 @@ use server_instance::{
 
 mod backup;
 mod server_instance;
+mod unix_service_host;
 mod windows_service_host;
 
 const DATABASE_PORT: u16 = 3307;
@@ -166,7 +165,7 @@ fn execute() -> Result<(), String> {
             let config_path = read_config_argument(&mut arguments)?;
             match command.as_str() {
                 "run" => execute_with_config(Path::new(&config_path)),
-                "service" => windows_service_host::run_service(config_path),
+                "service" => run_platform_service(config_path),
                 "status" => print_status(&load_config(Path::new(&config_path))?),
                 "request-backup" => request_backup_for_config(Path::new(&config_path)),
                 "seed-baseline" => recover_baseline_seed_for_config(Path::new(&config_path)),
@@ -181,8 +180,110 @@ fn stop_embedded_service() -> Result<(), String> {
     #[cfg(windows)]
     {
         require_elevated_lifecycle()?;
+        return windows_service_host::stop_service();
     }
-    windows_service_host::stop_service()
+
+    #[cfg(not(windows))]
+    {
+        unix_service_host::stop_service()
+    }
+}
+
+fn run_platform_service(config_path: String) -> Result<(), String> {
+    #[cfg(windows)]
+    {
+        return windows_service_host::run_service(config_path);
+    }
+
+    #[cfg(not(windows))]
+    {
+        execute_with_config(Path::new(&config_path))
+    }
+}
+
+#[cfg(not(windows))]
+fn install_unix_embedded_service(owner: ServerProductFlavor) -> Result<(), String> {
+    let config_path = default_config_path()?;
+    let existing_manifest = load_server_instance(&config_path)?;
+    if config_path.is_file()
+        && existing_manifest.is_none()
+        && owner == ServerProductFlavor::ServerHeadless
+    {
+        return Err("a legacy Server Desktop instance exists without a server-instance manifest; migrate or transition it explicitly before installing Server Headless".into());
+    }
+    match decide_installation(existing_manifest.as_ref(), owner)? {
+        InstallationDecision::AttachAsDesktopManager => {
+            return Err("a Server Headless-owned instance must be attached with the explicit attach operation".into())
+        }
+        InstallationDecision::ClaimOrUpdate => {}
+    }
+
+    let mut config = embedded_runtime_config()?;
+    if config_path.is_file() {
+        carry_durable_configuration(&mut config, load_config(&config_path)?);
+    }
+    ensure_layout(&config)?;
+    harden_runtime_data_access(&config)?;
+    write_config(&config_path, &config)?;
+    let manifest = write_server_instance(&config, owner, &config_path, existing_manifest)?;
+    let operation_id = new_operation_id();
+    write_public_receipt(
+        &config,
+        &PublicServerInstanceReceipt::transitioning(&manifest, owner, operation_id.clone(), now()),
+    )?;
+    unix_service_host::reconcile_service(
+        &config_path,
+        &config.data_root,
+        &public_status_root(&config),
+    )?;
+    write_public_instance_receipt(&config, &manifest, operation_id)
+}
+
+#[cfg(not(windows))]
+fn transition_unix_embedded_service(
+    from: ServerProductFlavor,
+    to: ServerProductFlavor,
+) -> Result<(), String> {
+    let config_path = default_config_path()?;
+    let existing = load_server_instance(&config_path)?
+        .ok_or("cannot transition a server instance without a server-instance manifest")?;
+    match decide_transition(Some(&existing), from, to)? {
+        TransitionDecision::UpdateOwner => {}
+    }
+    let config = load_config(&config_path)?;
+    ensure_layout(&config)?;
+    harden_runtime_data_access(&config)?;
+    let operation_id = new_operation_id();
+    write_public_receipt(
+        &config,
+        &PublicServerInstanceReceipt::transitioning(&existing, to, operation_id.clone(), now()),
+    )?;
+    let manifest = write_server_instance(&config, to, &config_path, Some(existing))?;
+    unix_service_host::reconcile_service(
+        &config_path,
+        &config.data_root,
+        &public_status_root(&config),
+    )?;
+    write_public_instance_receipt(&config, &manifest, operation_id)
+}
+
+#[cfg(not(windows))]
+fn uninstall_unix_embedded_service(owner: ServerProductFlavor) -> Result<(), String> {
+    let config_path = default_config_path()?;
+    let manifest = load_server_instance(&config_path)?
+        .ok_or("cannot remove a server instance without a server-instance manifest")?;
+    match decide_uninstall(Some(&manifest), owner)? {
+        UninstallDecision::PassivePackageRemoval => Ok(()),
+        UninstallDecision::ActiveRemoval => {
+            let config = load_config(&config_path)?;
+            request_stop(&config)?;
+            unix_service_host::uninstall_service()?;
+            write_public_receipt(
+                &config,
+                &PublicServerInstanceReceipt::removed(&manifest, new_operation_id()),
+            )
+        }
+    }
 }
 
 #[cfg(windows)]
@@ -299,7 +400,7 @@ fn install_embedded_service(owner: ServerProductFlavor) -> Result<(), String> {
 
     #[cfg(not(windows))]
     {
-        Err("self-contained Server Desktop installation is supported only on Windows x64".into())
+        install_unix_embedded_service(owner)
     }
 }
 
@@ -318,8 +419,12 @@ fn attach_embedded_service(owner: ServerProductFlavor) -> Result<(), String> {
 
     #[cfg(not(windows))]
     {
-        let _ = owner;
-        Err("self-contained Server Desktop attachment is supported only on Windows x64".into())
+        match decide_installation(load_server_instance(&default_config_path()?)?.as_ref(), owner)? {
+            InstallationDecision::AttachAsDesktopManager => unix_service_host::start_service(),
+            InstallationDecision::ClaimOrUpdate => Err(
+                "attach is permitted only for Server Desktop against an active Server Headless-owned instance".into(),
+            ),
+        }
     }
 }
 
@@ -351,8 +456,7 @@ fn transition_embedded_service(
 
     #[cfg(not(windows))]
     {
-        let _ = (from, to);
-        Err("self-contained Server Desktop transition is supported only on Windows x64".into())
+        transition_unix_embedded_service(from, to)
     }
 }
 
@@ -382,8 +486,7 @@ fn uninstall_embedded_service(owner: ServerProductFlavor) -> Result<(), String> 
 
     #[cfg(not(windows))]
     {
-        let _ = owner;
-        Err("self-contained Server Desktop removal is supported only on Windows x64".into())
+        uninstall_unix_embedded_service(owner)
     }
 }
 
@@ -550,7 +653,7 @@ fn initialise_database(config: &RuntimeConfig) -> Result<(), String> {
     if marker.exists() {
         return Ok(());
     }
-    let installer = mariadb_bin(config, "mariadb-install-db.exe");
+    let installer = mariadb_install_db(config);
     run_checked(
         Command::new(installer)
             .arg(format!("--datadir={}", database_data(config).display()))
@@ -599,7 +702,7 @@ fn provision_database_principal(config: &RuntimeConfig) -> Result<(), String> {
         &config.database_root_password
     };
     run_checked(
-        Command::new(mariadb_bin(config, "mariadb.exe"))
+        Command::new(mariadb_bin(config, mariadb_name()))
             .args(["--no-defaults", "--protocol=tcp", "--host=127.0.0.1"])
             .arg(format!("--port={DATABASE_PORT}"))
             .arg("--user=root")
@@ -621,11 +724,11 @@ fn provision_database_principal(config: &RuntimeConfig) -> Result<(), String> {
 fn start_database(config: &RuntimeConfig) -> Result<Child, String> {
     let log = File::create(log_path(config, "mariadb.log"))
         .map_err(|error| format!("open MariaDB log: {error}"))?;
-    Command::new(mariadb_bin(config, "mariadbd.exe"))
+    Command::new(mariadb_bin(config, mariadbd_name()))
         .arg("--no-defaults")
         .arg(format!(
             "--basedir={}",
-            config.runtime_root.join("mariadb-11.4.9-winx64").display()
+            config.runtime_root.join(mariadb_root_name()).display()
         ))
         .arg(format!("--datadir={}", database_data(config).display()))
         .arg("--bind-address=127.0.0.1")
@@ -944,13 +1047,11 @@ fn write_status(config: &RuntimeConfig, status: &RuntimeStatus) -> Result<(), St
     write_public_json_atomically(&status_path(config), status, "runtime status")
 }
 
-#[cfg(windows)]
 fn request_stop(config: &RuntimeConfig) -> Result<(), String> {
     fs::write(config.data_root.join("control.stop"), "requested\n")
         .map_err(|error| format!("request runtime stop: {error}"))
 }
 
-#[cfg(windows)]
 fn request_stop_for_config(path: &Path) -> Result<(), String> {
     request_stop(&load_config(path)?)
 }
@@ -985,7 +1086,7 @@ fn recover_baseline_seed_for_config(path: &Path) -> Result<(), String> {
 }
 
 fn database_scalar_count(config: &RuntimeConfig, query: &str) -> Result<u64, String> {
-    let output = Command::new(mariadb_bin(config, "mariadb.exe"))
+    let output = Command::new(mariadb_bin(config, mariadb_name()))
         .args(["--no-defaults", "--protocol=tcp", "--host=127.0.0.1"])
         .arg(format!("--port={DATABASE_PORT}"))
         .arg("--user=accore_app")
@@ -1053,14 +1154,58 @@ fn database_data(config: &RuntimeConfig) -> PathBuf {
     config.data_root.join("accoredb").join("data")
 }
 fn mariadb_bin(config: &RuntimeConfig, name: &str) -> PathBuf {
-    config
-        .runtime_root
-        .join("mariadb-11.4.9-winx64")
-        .join("bin")
-        .join(name)
+    config.runtime_root.join(mariadb_root_name()).join("bin").join(name)
 }
 fn frankenphp(config: &RuntimeConfig) -> PathBuf {
-    config.runtime_root.join("frankenphp.exe")
+    config.runtime_root.join(frankenphp_name())
+}
+fn frankenphp_name() -> &'static str {
+    #[cfg(windows)]
+    { "frankenphp.exe" }
+    #[cfg(not(windows))]
+    { "frankenphp" }
+}
+fn mariadb_root_name() -> &'static str {
+    #[cfg(windows)]
+    { "mariadb-11.4.9-winx64" }
+    #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
+    { "mariadb-11.4.9-linux-systemd-x86_64" }
+    #[cfg(target_os = "macos")]
+    { "mariadb" }
+    #[cfg(not(any(windows, all(target_os = "linux", target_arch = "x86_64"), target_os = "macos")))]
+    { compile_error!("unsupported ACCORE Server MariaDB target") }
+}
+fn mariadbd_name() -> &'static str {
+    #[cfg(windows)]
+    { "mariadbd.exe" }
+    #[cfg(not(windows))]
+    { "mariadbd" }
+}
+fn mariadb_name() -> &'static str {
+    #[cfg(windows)]
+    { "mariadb.exe" }
+    #[cfg(not(windows))]
+    { "mariadb" }
+}
+fn mariadb_install_db(config: &RuntimeConfig) -> PathBuf {
+    #[cfg(target_os = "linux")]
+    {
+        return config
+            .runtime_root
+            .join(mariadb_root_name())
+            .join("scripts")
+            .join("mariadb-install-db");
+    }
+
+    #[cfg(not(target_os = "linux"))]
+    mariadb_bin(
+        config,
+        if cfg!(windows) {
+            "mariadb-install-db.exe"
+        } else {
+            "mariadb-install-db"
+        },
+    )
 }
 fn status_path(config: &RuntimeConfig) -> PathBuf {
     public_status_root(config).join("runtime-status.json")
@@ -1117,10 +1262,11 @@ fn write_public_json_atomically<T: Serialize>(
     write_json_atomically(path, value, description)?;
     #[cfg(windows)]
     apply_windows_public_file_acl(path)?;
+    #[cfg(not(windows))]
+    unix_service_host::make_public_status_file(path)?;
     Ok(())
 }
 
-#[cfg(windows)]
 fn write_server_instance(
     config: &RuntimeConfig,
     owner: ServerProductFlavor,
@@ -1184,7 +1330,6 @@ fn apply_public_instance_identity(config: &RuntimeConfig, status: &mut RuntimeSt
     }
 }
 
-#[cfg(windows)]
 fn new_operation_id() -> String {
     format!("operation-{}", random_secret(""))
 }
@@ -1202,18 +1347,34 @@ fn carry_durable_configuration(target: &mut RuntimeConfig, existing: RuntimeConf
     }
 }
 
-#[cfg(windows)]
 fn default_config_path() -> Result<PathBuf, String> {
-    let program_data = env::var_os("PROGRAMDATA")
-        .map(PathBuf::from)
-        .ok_or("PROGRAMDATA is not available")?;
-    Ok(program_data
-        .join("ACCORE ERP")
-        .join("Server")
-        .join("agent-config.json"))
+    #[cfg(windows)]
+    {
+        let program_data = env::var_os("PROGRAMDATA")
+            .map(PathBuf::from)
+            .ok_or("PROGRAMDATA is not available")?;
+        return Ok(program_data
+            .join("ACCORE ERP")
+            .join("Server")
+            .join("agent-config.json"));
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        return Ok(PathBuf::from("/var/lib/accore-erp/server/agent-config.json"));
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        return Ok(PathBuf::from(
+            "/Library/Application Support/ACCORE ERP/Server/agent-config.json",
+        ));
+    }
+
+    #[cfg(not(any(windows, target_os = "linux", target_os = "macos")))]
+    Err("this platform is not supported by the embedded ACCORE Server runtime".into())
 }
 
-#[cfg(windows)]
 fn embedded_runtime_config() -> Result<RuntimeConfig, String> {
     let executable =
         env::current_exe().map_err(|error| format!("resolve Agent executable: {error}"))?;
@@ -1221,14 +1382,8 @@ fn embedded_runtime_config() -> Result<RuntimeConfig, String> {
         .parent()
         .ok_or("resolve Server Desktop installation root from Agent executable")?;
     let runtime_root = packaged_runtime_root(installation_root);
-    if !runtime_root.join("frankenphp.exe").is_file()
-        || !runtime_root
-            .join("mariadb-11.4.9-winx64/bin/mariadbd.exe")
-            .is_file()
-    {
-        return Err(
-            "verified Server Desktop runtime resources are missing beside the Agent".into(),
-        );
+    if !required_runtime_files_exist(&runtime_root) {
+        return Err("verified Server Desktop runtime resources are missing beside the Agent".into());
     }
     let config_path = default_config_path()?;
     let data_root = config_path
@@ -1247,10 +1402,17 @@ fn embedded_runtime_config() -> Result<RuntimeConfig, String> {
     })
 }
 
-#[cfg(windows)]
 fn harden_runtime_data_access(config: &RuntimeConfig) -> Result<(), String> {
-    apply_windows_acl(&config.data_root, false)?;
-    apply_windows_acl(&public_status_root(config), true)
+    #[cfg(windows)]
+    {
+        apply_windows_acl(&config.data_root, false)?;
+        return apply_windows_acl(&public_status_root(config), true);
+    }
+
+    #[cfg(not(windows))]
+    {
+        unix_service_host::harden_runtime_data(&config.data_root, &public_status_root(config))
+    }
 }
 
 #[cfg(windows)]
@@ -1361,7 +1523,6 @@ fn apply_windows_public_file_acl(path: &Path) -> Result<(), String> {
     apply_windows_acl_entry(path, true, false)
 }
 
-#[cfg(windows)]
 fn random_secret(prefix: &str) -> String {
     let mut bytes = [0u8; 32];
     OsRng.fill_bytes(&mut bytes);
@@ -1378,10 +1539,31 @@ fn public_status_root(config: &RuntimeConfig) -> PathBuf {
 }
 
 fn packaged_runtime_root(installation_root: &Path) -> PathBuf {
-    installation_root.join("resources/server-runtime/windows-x86_64")
+    installation_root.join("resources/server-runtime").join(runtime_target())
 }
 
-#[cfg(windows)]
+fn runtime_target() -> &'static str {
+    #[cfg(windows)]
+    { "windows-x86_64" }
+    #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
+    { "linux-x86_64" }
+    #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
+    { "macos-aarch64" }
+    #[cfg(all(target_os = "macos", target_arch = "x86_64"))]
+    { "macos-x86_64" }
+    #[cfg(not(any(windows, all(target_os = "linux", target_arch = "x86_64"), all(target_os = "macos", target_arch = "aarch64"), all(target_os = "macos", target_arch = "x86_64"))))]
+    { compile_error!("unsupported ACCORE Server runtime target") }
+}
+
+fn required_runtime_files_exist(runtime_root: &Path) -> bool {
+    runtime_root.join(frankenphp_name()).is_file()
+        && runtime_root
+            .join(mariadb_root_name())
+            .join("bin")
+            .join(mariadbd_name())
+            .is_file()
+}
+
 fn write_config(path: &Path, config: &RuntimeConfig) -> Result<(), String> {
     let temporary = path.with_extension("json.partial");
     let payload = serde_json::to_vec_pretty(config)
@@ -1469,11 +1651,11 @@ mod tests {
     }
 
     #[test]
-    fn packaged_runtime_root_matches_the_msi_resource_layout() {
-        let installation_root = PathBuf::from("C:/Program Files/ACCORE ERP Server Desktop");
+    fn packaged_runtime_root_matches_the_current_platform_resource_layout() {
+        let installation_root = PathBuf::from("/opt/accore-erp/server");
         assert_eq!(
             packaged_runtime_root(&installation_root),
-            installation_root.join("resources/server-runtime/windows-x86_64")
+            installation_root.join("resources/server-runtime").join(runtime_target())
         );
     }
 

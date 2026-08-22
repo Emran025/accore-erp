@@ -20,7 +20,7 @@
   },
   "bundle": {
     "resources": [
-      "resources/server-runtime/windows-x86_64"
+      "resources/server-runtime"
     ],
     "externalBin": [
       "binaries/accore-server-agent"
