@@ -119,7 +119,7 @@ jobs:
           Copy-Item distribution/crates/accore-server-agent/target/release/accore-server-agent.exe frontend/src-tauri/binaries/accore-server-agent-x86_64-pc-windows-msvc.exe
 
       - name: Smoke test self-contained Server Desktop runtime
-        if: matrix.flavor == 'server'
+        if: matrix.artifact == 'server-windows-x64'
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
