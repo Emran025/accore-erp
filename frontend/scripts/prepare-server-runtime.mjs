@@ -112,6 +112,9 @@ async function buildMariaDbFromSource(source) {
     '-DWITH_SSL=system',
     '-DWITH_ZLIB=system',
   ];
+  if (process.platform === 'darwin' && process.env.SDKROOT) {
+    cmakeArgs.push(`-DCMAKE_OSX_SYSROOT=${process.env.SDKROOT}`);
+  }
   await run('cmake', cmakeArgs, { CMAKE_PREFIX_PATH: process.env.CMAKE_PREFIX_PATH ?? '' });
   await run('cmake', ['--build', buildRoot, '--parallel', process.env.ACCORE_RUNTIME_BUILD_JOBS ?? '3']);
   await run('cmake', ['--install', buildRoot]);
