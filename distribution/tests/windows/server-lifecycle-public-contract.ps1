@@ -57,6 +57,23 @@ function Get-ServiceMetadata {
   Get-CimInstance Win32_Service -Filter "Name='$serviceName'"
 }
 
+function Write-PublicPathDiagnostics {
+  param([Parameter(Mandatory = $true)][string]$Path)
+  try {
+    if (-not (Test-Path -LiteralPath $Path)) {
+      Write-Host "--- $Path is not present ---"
+      return
+    }
+    Write-Host "--- $Path ---"
+    Get-Content -LiteralPath $Path -Raw
+  }
+  catch {
+    Write-Host "--- $Path could not be read: $($_.Exception.Message) ---"
+    Write-Host "--- public ACL metadata for $Path ---"
+    & icacls.exe $Path 2>&1 | ForEach-Object { Write-Host $_ }
+  }
+}
+
 try {
   Assert-Contract -Condition (Test-Path -LiteralPath $Agent) -Message "Agent binary is missing: $Agent"
   Assert-Contract -Condition (-not (Get-Service -Name $serviceName -ErrorAction SilentlyContinue)) -Message 'Worker is not fresh: ACCORE Server Agent service already exists'
@@ -113,17 +130,17 @@ try {
   Write-Host 'Server lifecycle public contract passed without reading or deleting private ProgramData files.'
 }
 catch {
+  $originalFailure = $_
   Write-Host 'Server lifecycle public contract diagnostics follow.'
+  Write-Host "--- original contract failure: $($originalFailure.Exception.Message) ---"
+  Write-Host "--- current identity: $([Security.Principal.WindowsIdentity]::GetCurrent().Name) ---"
   foreach ($path in @($statusPath, $receiptPath)) {
-    if (Test-Path -LiteralPath $path) {
-      Write-Host "--- $path ---"
-      Get-Content -LiteralPath $path -Raw
-    }
+    Write-PublicPathDiagnostics -Path $path
   }
   $service = Get-ServiceMetadata
   if ($null -ne $service) {
     Write-Host '--- SCM public service metadata ---'
     $service | Select-Object Name, State, StartMode, PathName | Format-List | Out-String | Write-Host
   }
-  throw
+  throw $originalFailure
 }
