@@ -90,6 +90,7 @@ struct ComponentStatus {
 struct RuntimeStatus {
     state: String,
     detail: String,
+    server_id: String,
     database: ComponentStatus,
     api: ComponentStatus,
     queue: ComponentStatus,
@@ -98,10 +99,11 @@ struct RuntimeStatus {
 }
 
 impl RuntimeStatus {
-    fn bootstrapping(detail: impl Into<String>) -> Self {
+    fn bootstrapping(config: &RuntimeConfig, detail: impl Into<String>) -> Self {
         Self {
             state: "bootstrapping".into(),
             detail: detail.into(),
+            server_id: config.server_id.clone(),
             database: component("pending", "not started"),
             api: component("pending", "not started"),
             queue: component("pending", "not started"),
@@ -370,7 +372,7 @@ fn execute_service_with_config(path: &Path) -> Result<(), String> {
 fn run(config: RuntimeConfig) -> Result<(), String> {
     ensure_layout(&config)?;
     let mut backup = backup::BackupRuntime::open(&config)?;
-    let mut status = RuntimeStatus::bootstrapping("preparing durable local runtime");
+    let mut status = RuntimeStatus::bootstrapping(&config, "preparing durable local runtime");
     write_status(&config, &status)?;
 
     let mut restart_attempts = 0;
