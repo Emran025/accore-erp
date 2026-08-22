@@ -7,6 +7,7 @@ return [
      */
     'server_id' => env('ACCORE_SERVER_ID', 'accore-server-local'),
     'server_name' => env('ACCORE_SERVER_NAME', 'Accore Server'),
+    'public_api_base' => env('ACCORE_DESKTOP_PUBLIC_API_BASE'),
     'api_contract' => 'desktop-v1',
     'minimum_client_version' => env('ACCORE_MINIMUM_CLIENT_VERSION', '0.1.0'),
     'enrollment_mode' => env('ACCORE_DESKTOP_ENROLLMENT_MODE', 'evidence'),

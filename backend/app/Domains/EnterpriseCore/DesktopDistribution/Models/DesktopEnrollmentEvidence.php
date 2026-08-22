@@ -12,6 +12,7 @@ class DesktopEnrollmentEvidence extends Model
         'token_hash',
         'label',
         'issued_by',
+        'purpose',
         'expires_at',
         'used_at',
         'revoked_at',

@@ -84,6 +84,7 @@ for (const product of ['server', 'client']) {
 async function writeTauriUpdaterManifest(product, files, destination, generatedAt) {
   const signedArtifacts = files
     .filter(isTauriUpdaterSignature)
+    .filter((signaturePath) => !isHeadlessServerAsset(signaturePath.slice(0, -4)))
     .filter((signaturePath) => classifyProduct(signaturePath.slice(0, -4)) === product)
     .sort((left, right) => left.localeCompare(right));
 
@@ -132,9 +133,11 @@ async function descriptor(file, product) {
   const name = basename(file);
   const { os, architecture } = platformFromName(name);
   const bundleFormat = bundleFormatFromName(name);
+  const headless = isHeadlessServerAsset(file);
+  const deployment = headless ? 'headless' : 'desktop';
   return {
-    id: `${product}-desktop-${os}-${architecture}-${bundleFormat}`,
-    kind: 'desktop_application',
+    id: `${product}-${deployment}-${os}-${architecture}-${bundleFormat}`,
+    kind: headless ? 'headless_server' : 'desktop_application',
     product,
     version: releaseVersion,
     os,
@@ -192,6 +195,11 @@ function classifyProduct(file) {
   const product = productFromAssetName(basename(file));
   if (product) return product;
   throw new Error(`cannot identify product for ${file}`);
+}
+
+function isHeadlessServerAsset(file) {
+  const name = basename(file).toLowerCase();
+  return productFromAssetName(name) === 'server' && /[._ -]headless(?:[._ -]|$)/i.test(name);
 }
 
 function productFromAssetName(name) {

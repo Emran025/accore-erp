@@ -20,6 +20,7 @@ tauri-build = { version = "2.6.3", features = [] }
 [features]
 default = []
 server-product = ["dep:accore-server-agent", "dep:accore-api-runtime", "dep:accoredb-runtime"]
+headless-server-product = []
 client-product = []
 
 [dependencies]

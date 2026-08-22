@@ -1,0 +1,33 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "ACCORE ERP Server Headless",
+  "mainBinaryName": "accore-server-headless",
+  "identifier": "com.accore.erp.server.headless",
+  "app": {
+    "windows": [],
+    "security": {
+      "capabilities": ["default"],
+      "csp": "default-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' asset: data:"
+    }
+  },
+  "bundle": {
+    "resources": ["resources/server-runtime/windows-x86_64"],
+    "externalBin": ["binaries/accore-server-agent"],
+    "icon": [
+      "icons/flavors/accore-server.png",
+      "icons/flavors/accore-server.icns",
+      "icons/flavors/accore-server.ico"
+    ],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "skip"
+      },
+      "nsis": {
+        "installMode": "perMachine",
+        "installerIcon": "icons/flavors/accore-server.ico",
+        "uninstallerIcon": "icons/flavors/accore-server.ico",
+        "installerHooks": "windows/headless-installer-hooks.nsh"
+      }
+    }
+  }
+}

@@ -37,6 +37,43 @@ struct RuntimeConfig {
     #[serde(default)]
     database_root_password_legacy_blank: bool,
     database_name: String,
+    #[serde(default)]
+    server_id: String,
+    #[serde(default = "default_server_name")]
+    server_name: String,
+    #[serde(default)]
+    public_api_base: String,
+    #[serde(default)]
+    certificate_fingerprint: String,
+    #[serde(default)]
+    direct_tls_enabled: bool,
+    #[serde(default)]
+    allowed_remote_addresses: Vec<String>,
+    #[serde(default)]
+    tls_certificate_path: String,
+    #[serde(default)]
+    tls_private_key_path: String,
+    #[serde(default = "default_direct_tls_port")]
+    direct_tls_port: u16,
+}
+
+#[derive(Debug, Default, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct InstallResponse {
+    #[serde(default)]
+    server_name: Option<String>,
+    #[serde(default)]
+    public_api_base: Option<String>,
+    #[serde(default)]
+    certificate_fingerprint: Option<String>,
+    #[serde(default)]
+    tls_certificate_path: Option<String>,
+    #[serde(default)]
+    tls_private_key_path: Option<String>,
+    #[serde(default)]
+    allowed_remote_addresses: Option<Vec<String>>,
+    #[serde(default)]
+    direct_tls_port: Option<u16>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -92,10 +129,10 @@ fn execute() -> Result<(), String> {
     )?;
 
     match command.as_str() {
-        "install" => install_embedded_service(),
-        "uninstall" => windows_service_host::uninstall_service(),
+        "install" => install_embedded_service(read_install_response(&mut arguments)?),
+        "uninstall" => uninstall_embedded_service(),
         "stop" => windows_service_host::stop_service(),
-        "run" | "service" | "status" | "request-backup" | "seed-baseline" => {
+        "run" | "service" | "status" | "request-backup" | "seed-baseline" | "issue-initial-pairing" => {
             let config_path = read_config_argument(&mut arguments)?;
             match command.as_str() {
                 "run" => execute_with_config(Path::new(&config_path)),
@@ -103,11 +140,32 @@ fn execute() -> Result<(), String> {
                 "status" => print_status(&load_config(Path::new(&config_path))?),
                 "request-backup" => request_backup_for_config(Path::new(&config_path)),
                 "seed-baseline" => recover_baseline_seed_for_config(Path::new(&config_path)),
+                "issue-initial-pairing" => issue_initial_pairing_for_config(Path::new(&config_path), false),
                 _ => unreachable!(),
             }
         }
         _ => Err(format!("unsupported command {command}")),
     }
+}
+
+fn read_install_response(arguments: &mut impl Iterator<Item = String>) -> Result<InstallResponse, String> {
+    let Some(flag) = arguments.next() else {
+        return Ok(InstallResponse::default());
+    };
+    if flag != "--response-file" {
+        return Err("usage: accore-server-agent install [--response-file <path>]".into());
+    }
+    let path = arguments.next().ok_or("missing response file path")?;
+    if arguments.next().is_some() {
+        return Err("usage: accore-server-agent install [--response-file <path>]".into());
+    }
+
+    let response: InstallResponse = serde_json::from_slice(
+        &fs::read(&path).map_err(|error| format!("read non-interactive response file: {error}"))?,
+    )
+    .map_err(|error| format!("parse non-interactive response file: {error}"))?;
+    validate_install_response(&response)?;
+    Ok(response)
 }
 
 fn read_config_argument(arguments: &mut impl Iterator<Item = String>) -> Result<String, String> {
@@ -119,7 +177,119 @@ fn read_config_argument(arguments: &mut impl Iterator<Item = String>) -> Result<
     Ok(config_path)
 }
 
-fn install_embedded_service() -> Result<(), String> {
+fn default_server_name() -> String {
+    "ACCORE ERP Server".into()
+}
+
+fn default_direct_tls_port() -> u16 {
+    8766
+}
+
+fn validate_install_response(response: &InstallResponse) -> Result<(), String> {
+    if let Some(name) = &response.server_name {
+        if name.trim().is_empty() || name.trim().len() > 120 {
+            return Err("serverName must contain between 1 and 120 visible characters".into());
+        }
+    }
+
+    match (
+        &response.public_api_base,
+        &response.certificate_fingerprint,
+        &response.tls_certificate_path,
+        &response.tls_private_key_path,
+        &response.allowed_remote_addresses,
+        &response.direct_tls_port,
+    ) {
+        (None, None, None, None, None, None) => Ok(()),
+        (Some(api_base), Some(fingerprint), Some(certificate_path), Some(private_key_path), Some(addresses), direct_tls_port) => {
+            let normalized_api_base = api_base.trim();
+            if !normalized_api_base.starts_with("https://")
+                || normalized_api_base
+                    .chars()
+                    .any(|character| matches!(character, '?' | '#' | '@' | ' '))
+            {
+                return Err("publicApiBase must be a canonical https endpoint without credentials, query, fragment, or spaces".into());
+            }
+            if fingerprint.trim().len() != 64
+                || !fingerprint.trim().bytes().all(|byte| byte.is_ascii_hexdigit())
+            {
+                return Err("certificateFingerprint must contain exactly 64 hexadecimal characters".into());
+            }
+            if certificate_path.trim().is_empty() || private_key_path.trim().is_empty() {
+                return Err("TLS certificate and private key paths must both be provided".into());
+            }
+            if addresses.is_empty() || addresses.iter().any(|address| !is_safe_firewall_address(address)) {
+                return Err("allowedRemoteAddresses must contain explicit IP addresses or CIDR ranges only".into());
+            }
+            let port = direct_tls_port.unwrap_or(default_direct_tls_port());
+            if port < 1024 || matches!(port, DATABASE_PORT | BACKUP_VALIDATION_PORT | API_PORT) {
+                return Err("directTlsPort must be an unreserved non-privileged TCP port".into());
+            }
+            Ok(())
+        }
+        _ => Err("remote publishing requires publicApiBase, certificateFingerprint, TLS certificate, TLS private key, and allowedRemoteAddresses together".into()),
+    }
+}
+
+fn is_safe_firewall_address(value: &str) -> bool {
+    let candidate = value.trim();
+    !candidate.is_empty()
+        && candidate.len() <= 64
+        && candidate
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit() || matches!(byte, b'.' | b':' | b'/' | b'*'))
+}
+
+fn apply_install_response(config: &mut RuntimeConfig, response: InstallResponse) -> Result<(), String> {
+    validate_install_response(&response)?;
+    if let Some(name) = response.server_name {
+        config.server_name = name.trim().into();
+    }
+    if let (
+        Some(api_base),
+        Some(fingerprint),
+        Some(certificate_path),
+        Some(private_key_path),
+        Some(addresses),
+    ) = (
+        response.public_api_base,
+        response.certificate_fingerprint,
+        response.tls_certificate_path,
+        response.tls_private_key_path,
+        response.allowed_remote_addresses,
+    ) {
+        let tls_root = config.data_root.join("tls");
+        fs::create_dir_all(&tls_root)
+            .map_err(|error| format!("create protected TLS directory: {error}"))?;
+        let certificate_destination = tls_root.join("server-certificate.pem");
+        let private_key_destination = tls_root.join("server-private-key.pem");
+        copy_private_file(Path::new(&certificate_path), &certificate_destination, "TLS certificate")?;
+        copy_private_file(Path::new(&private_key_path), &private_key_destination, "TLS private key")?;
+
+        #[cfg(windows)]
+        apply_windows_acl(&tls_root, false)?;
+        config.public_api_base = api_base.trim_end_matches('/').into();
+        config.certificate_fingerprint = fingerprint.trim().to_ascii_lowercase();
+        config.direct_tls_enabled = true;
+        config.allowed_remote_addresses = addresses;
+        config.tls_certificate_path = certificate_destination.display().to_string();
+        config.tls_private_key_path = private_key_destination.display().to_string();
+        config.direct_tls_port = response.direct_tls_port.unwrap_or(default_direct_tls_port());
+    }
+    Ok(())
+}
+
+fn copy_private_file(source: &Path, destination: &Path, label: &str) -> Result<(), String> {
+    if !source.is_file() {
+        return Err(format!("{label} source file does not exist"));
+    }
+    if source != destination {
+        fs::copy(source, destination).map_err(|error| format!("copy {label} into protected storage: {error}"))?;
+    }
+    Ok(())
+}
+
+fn install_embedded_service(response: InstallResponse) -> Result<(), String> {
     #[cfg(windows)]
     {
         let config_path = default_config_path()?;
@@ -134,11 +304,43 @@ fn install_embedded_service() -> Result<(), String> {
                 config.database_root_password = existing.database_root_password;
             }
             config.database_name = existing.database_name;
+            if !existing.server_id.is_empty() {
+                config.server_id = existing.server_id;
+            }
+            config.server_name = existing.server_name;
+            config.public_api_base = existing.public_api_base;
+            config.certificate_fingerprint = existing.certificate_fingerprint;
+            config.direct_tls_enabled = existing.direct_tls_enabled;
+            config.allowed_remote_addresses = existing.allowed_remote_addresses;
+            config.tls_certificate_path = existing.tls_certificate_path;
+            config.tls_private_key_path = existing.tls_private_key_path;
+            config.direct_tls_port = existing.direct_tls_port;
         }
+        apply_install_response(&mut config, response)?;
         ensure_layout(&config)?;
         harden_runtime_data_access(&config)?;
         write_config(&config_path, &config)?;
+        sync_remote_firewall_rule(&config)?;
         windows_service_host::install_service(config_path.display().to_string())
+    }
+
+    #[cfg(not(windows))]
+    {
+        Err("self-contained Server Desktop installation is supported only on Windows x64".into())
+    }
+}
+
+fn uninstall_embedded_service() -> Result<(), String> {
+    #[cfg(windows)]
+    {
+        if let Ok(path) = default_config_path() {
+            if path.is_file() {
+                if let Ok(config) = load_config(&path) {
+                    let _ = remove_remote_firewall_rule(&config);
+                }
+            }
+        }
+        windows_service_host::uninstall_service()
     }
 
     #[cfg(not(windows))]
@@ -406,6 +608,7 @@ fn provision_application(config: &RuntimeConfig, status: &mut RuntimeStatus) -> 
             ))
         }
     }
+    write_caddy_configuration(config)?;
 
     let provisioning_log = log_path(config, "provisioning.log");
     File::create(&provisioning_log)
@@ -418,7 +621,8 @@ fn provision_application(config: &RuntimeConfig, status: &mut RuntimeStatus) -> 
 
     status.detail = "applying pending ACCORE desktop seed revisions".into();
     write_status(config, status)?;
-    run_desktop_seed_revisions(config, &provisioning_log)
+    run_desktop_seed_revisions(config, &provisioning_log)?;
+    issue_initial_pairing_for_config_data(config, true)
 }
 
 fn run_desktop_seed_revisions(config: &RuntimeConfig, provisioning_log: &Path) -> Result<(), String> {
@@ -438,7 +642,7 @@ fn start_api(config: &RuntimeConfig) -> Result<Child, String> {
     let mut command = Command::new(frankenphp(config));
     command
         .args(["run", "--config"])
-        .arg(config.runtime_root.join("Caddyfile"))
+        .arg(caddy_configuration_path(config))
         .current_dir(app_root(config))
         .env("ACCORE_APP_ROOT", app_root(config))
         .envs(application_environment(config))
@@ -450,6 +654,36 @@ fn start_api(config: &RuntimeConfig) -> Result<Child, String> {
     command
         .spawn()
         .map_err(|error| format!("start FrankenPHP API: {error}"))
+}
+
+fn caddy_configuration_path(config: &RuntimeConfig) -> PathBuf {
+    config.data_root.join("Caddyfile")
+}
+
+fn caddy_path(path: &Path) -> String {
+    path.display().to_string().replace('\\', "/")
+}
+
+fn write_caddy_configuration(config: &RuntimeConfig) -> Result<(), String> {
+    let app_root = caddy_path(&app_root(config));
+    let mut configuration = format!(
+        "{{\n  auto_https off\n  admin off\n  frankenphp\n}}\n\nhttp://127.0.0.1:{API_PORT} {{\n  root * {app_root}/public\n  encode zstd gzip\n  php_server\n}}\n"
+    );
+
+    if config.direct_tls_enabled {
+        if config.tls_certificate_path.is_empty() || config.tls_private_key_path.is_empty() {
+            return Err("direct TLS is enabled without protected certificate material".into());
+        }
+        let certificate = caddy_path(Path::new(&config.tls_certificate_path));
+        let private_key = caddy_path(Path::new(&config.tls_private_key_path));
+        configuration.push_str(&format!(
+            "\nhttps://0.0.0.0:{} {{\n  tls \"{}\" \"{}\"\n  root * {}/public\n  encode zstd gzip\n  php_server\n}}\n",
+            config.direct_tls_port, certificate, private_key, app_root
+        ));
+    }
+
+    fs::write(caddy_configuration_path(config), configuration)
+        .map_err(|error| format!("write generated Caddy configuration: {error}"))
 }
 
 fn start_queue(config: &RuntimeConfig) -> Result<Child, String> {
@@ -493,12 +727,21 @@ fn application_environment(config: &RuntimeConfig) -> Vec<(&'static str, String)
         .display()
         .to_string()
         .replace('\\', "/");
+    let app_url = if config.direct_tls_enabled {
+        config.public_api_base.clone()
+    } else {
+        format!("http://127.0.0.1:{API_PORT}")
+    };
     vec![
         ("APP_NAME", "ACCORE ERP".into()),
         ("APP_ENV", "production".into()),
         ("APP_KEY", config.app_key.clone()),
         ("APP_DEBUG", "false".into()),
-        ("APP_URL", format!("http://127.0.0.1:{API_PORT}")),
+        ("APP_URL", app_url),
+        ("ACCORE_SERVER_ID", config.server_id.clone()),
+        ("ACCORE_SERVER_NAME", config.server_name.clone()),
+        ("ACCORE_DESKTOP_PUBLIC_API_BASE", config.public_api_base.clone()),
+        ("ACCORE_SERVER_CERTIFICATE_FINGERPRINT", config.certificate_fingerprint.clone()),
         ("LARAVEL_STORAGE_PATH", storage),
         ("PHPRC", config.runtime_root.display().to_string()),
         ("LOG_CHANNEL", "single".into()),
@@ -693,6 +936,45 @@ fn recover_baseline_seed_for_config(path: &Path) -> Result<(), String> {
     Ok(())
 }
 
+fn issue_initial_pairing_for_config(path: &Path, only_if_missing: bool) -> Result<(), String> {
+    issue_initial_pairing_for_config_data(&load_config(path)?, only_if_missing)
+}
+
+fn issue_initial_pairing_for_config_data(config: &RuntimeConfig, only_if_missing: bool) -> Result<(), String> {
+    if config.public_api_base.is_empty() || config.certificate_fingerprint.is_empty() {
+        return Ok(());
+    }
+
+    let enrollment_root = config.data_root.join("enrollment");
+    let package_path = enrollment_root.join("initial-primary.accorepair");
+    let marker_path = enrollment_root.join(".initial-primary-issued");
+    if only_if_missing && (marker_path.exists() || package_path.exists()) {
+        return Ok(());
+    }
+
+    fs::create_dir_all(&enrollment_root)
+        .map_err(|error| format!("create protected enrollment directory: {error}"))?;
+    let mut command = application_command(
+        config,
+        [
+            "php-cli",
+            "artisan",
+            "accore:desktop:issue-enrollment-evidence",
+            "--purpose=primary_claim",
+            "--label=initial-headless-primary",
+            "--expires-in=60",
+        ],
+    );
+    command.arg(format!("--output={}", package_path.display()));
+    run_checked(&mut command, "issue initial Client Desktop pairing package")?;
+    File::create(&marker_path)
+        .map_err(|error| format!("write initial pairing marker: {error}"))?;
+
+    #[cfg(windows)]
+    apply_windows_acl(&enrollment_root, false)?;
+    Ok(())
+}
+
 fn database_scalar_count(config: &RuntimeConfig, query: &str) -> Result<u64, String> {
     let output = Command::new(mariadb_bin(config, "mariadb.exe"))
         .args(["--no-defaults", "--protocol=tcp", "--host=127.0.0.1"])
@@ -831,6 +1113,15 @@ fn embedded_runtime_config() -> Result<RuntimeConfig, String> {
         database_root_password: random_secret(""),
         database_root_password_legacy_blank: false,
         database_name: "accore".into(),
+        server_id: format!("accore-server-{}", random_secret("")),
+        server_name: default_server_name(),
+        public_api_base: String::new(),
+        certificate_fingerprint: String::new(),
+        direct_tls_enabled: false,
+        allowed_remote_addresses: Vec::new(),
+        tls_certificate_path: String::new(),
+        tls_private_key_path: String::new(),
+        direct_tls_port: default_direct_tls_port(),
     })
 }
 
@@ -838,6 +1129,59 @@ fn embedded_runtime_config() -> Result<RuntimeConfig, String> {
 fn harden_runtime_data_access(config: &RuntimeConfig) -> Result<(), String> {
     apply_windows_acl(&config.data_root, false)?;
     apply_windows_acl(&public_status_root(config), true)
+}
+
+#[cfg(windows)]
+fn remote_firewall_rule_name() -> &'static str {
+    "ACCORE ERP Server TLS API"
+}
+
+#[cfg(windows)]
+fn remove_remote_firewall_rule(_config: &RuntimeConfig) -> Result<(), String> {
+    let status = Command::new("netsh.exe")
+        .args([
+            "advfirewall",
+            "firewall",
+            "delete",
+            "rule",
+            &format!("name={}", remote_firewall_rule_name()),
+        ])
+        .status()
+        .map_err(|error| format!("remove ACCORE TLS firewall rule: {error}"))?;
+    if status.success() || status.code() == Some(1) {
+        Ok(())
+    } else {
+        Err(format!("remove ACCORE TLS firewall rule exited with {status}"))
+    }
+}
+
+#[cfg(windows)]
+fn sync_remote_firewall_rule(config: &RuntimeConfig) -> Result<(), String> {
+    remove_remote_firewall_rule(config)?;
+    if !config.direct_tls_enabled {
+        return Ok(());
+    }
+    if config.allowed_remote_addresses.is_empty() {
+        return Err("direct TLS cannot create a firewall rule without allowed remote addresses".into());
+    }
+
+    let remote_addresses = config.allowed_remote_addresses.join(",");
+    run_checked(
+        Command::new("netsh.exe").args([
+            "advfirewall",
+            "firewall",
+            "add",
+            "rule",
+            &format!("name={}", remote_firewall_rule_name()),
+            "dir=in",
+            "action=allow",
+            "protocol=TCP",
+            &format!("localport={}", config.direct_tls_port),
+            &format!("remoteip={remote_addresses}"),
+            "profile=any",
+        ]),
+        "create ACCORE TLS firewall rule",
+    )
 }
 
 #[cfg(windows)]
@@ -910,6 +1254,15 @@ mod tests {
             database_root_password: "root-password".into(),
             database_root_password_legacy_blank: false,
             database_name: "accore".into(),
+            server_id: "accore-server-test".into(),
+            server_name: default_server_name(),
+            public_api_base: String::new(),
+            certificate_fingerprint: String::new(),
+            direct_tls_enabled: false,
+            allowed_remote_addresses: Vec::new(),
+            tls_certificate_path: String::new(),
+            tls_private_key_path: String::new(),
+            direct_tls_port: default_direct_tls_port(),
         }
     }
 
@@ -953,5 +1306,33 @@ mod tests {
     #[test]
     fn guarded_seed_recovery_rejects_a_non_numeric_user_count() {
         assert!(parse_database_count("not-a-count\n").is_err());
+    }
+
+    #[test]
+    fn non_interactive_response_requires_complete_remote_trust_material() {
+        assert!(validate_install_response(&InstallResponse {
+            server_name: Some("Remote ACCORE".into()),
+            public_api_base: Some("https://erp.example.test/api".into()),
+            certificate_fingerprint: Some("a".repeat(64)),
+            tls_certificate_path: Some("C:/secure/server.crt".into()),
+            tls_private_key_path: Some("C:/secure/server.key".into()),
+            allowed_remote_addresses: Some(vec!["203.0.113.0/24".into()]),
+            direct_tls_port: Some(9443),
+        })
+        .is_ok());
+        assert!(validate_install_response(&InstallResponse {
+            server_name: None,
+            public_api_base: Some("http://erp.example.test/api".into()),
+            certificate_fingerprint: Some("a".repeat(64)),
+            ..Default::default()
+        })
+        .is_err());
+        assert!(validate_install_response(&InstallResponse {
+            server_name: None,
+            public_api_base: Some("https://erp.example.test/api".into()),
+            certificate_fingerprint: None,
+            ..Default::default()
+        })
+        .is_err());
     }
 }

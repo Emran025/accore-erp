@@ -12,7 +12,10 @@ fn application_builder() -> tauri::Builder<tauri::Wry> {
             .plugin(tauri_plugin_updater::Builder::new().build())?;
         app.handle().plugin(tauri_plugin_process::init())?;
 
-        #[cfg(not(feature = "server-product"))]
+        #[cfg(all(
+            not(feature = "server-product"),
+            not(feature = "headless-server-product")
+        ))]
         {
             use tauri::Manager;
 
@@ -38,6 +41,14 @@ fn application_builder() -> tauri::Builder<tauri::Wry> {
 }
 
 pub fn run() {
+    #[cfg(feature = "headless-server-product")]
+    {
+        // The Headless package is installed and supervised exclusively by the
+        // Windows Service Agent. Its bundled executable intentionally has no
+        // Tauri window or web workflow to launch.
+        return;
+    }
+
     #[cfg(feature = "server-product")]
     application_builder()
         .invoke_handler(tauri::generate_handler![
@@ -53,7 +64,10 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running Accore Server");
 
-    #[cfg(not(feature = "server-product"))]
+    #[cfg(all(
+        not(feature = "server-product"),
+        not(feature = "headless-server-product")
+    ))]
     application_builder()
         .invoke_handler(tauri::generate_handler![
             product::product_runtime_profile,

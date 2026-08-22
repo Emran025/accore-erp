@@ -81,6 +81,7 @@ class DesktopDistributionApiTest extends TestCase
             ->assertJsonPath('success', true)
             ->assertJsonPath('device.id', $payload['device_id'])
             ->assertJsonPath('device.status', 'active')
+            ->assertJsonPath('device.is_primary', false)
             ->assertJsonStructure(['device_access_token']);
 
         $accessToken = $response->json('device_access_token');
@@ -103,6 +104,36 @@ class DesktopDistributionApiTest extends TestCase
         $this->assertNotNull(
             DB::table('desktop_enrollment_evidences')->where('token_hash', hash('sha256', $evidence))->value('used_at'),
         );
+    }
+
+    public function test_first_primary_claim_marks_exactly_one_device_as_the_administration_device(): void
+    {
+        $primaryEvidence = $this->desktopDistribution->issueEnrollmentEvidence(
+            label: 'initial-headless-primary',
+            purpose: 'primary_claim',
+        );
+        $primaryPayload = $this->payload($primaryEvidence);
+
+        $primary = $this->postJson('/api/v1/desktop/enroll', $primaryPayload);
+
+        $primary->assertCreated()
+            ->assertJsonPath('device.is_primary', true);
+        $this->assertDatabaseHas('desktop_devices', [
+            'device_id' => $primaryPayload['device_id'],
+            'is_primary' => true,
+        ]);
+
+        $secondaryEvidence = $this->desktopDistribution->issueEnrollmentEvidence(
+            label: 'unexpected-second-primary',
+            purpose: 'primary_claim',
+        );
+        $secondary = $this->postJson('/api/v1/desktop/enroll', $this->payload($secondaryEvidence, [
+            'device_id' => '66666666-6666-4666-8666-666666666666',
+        ]));
+
+        $secondary->assertForbidden()
+            ->assertJsonPath('message_key', 'desktop.error.enrollment_evidence_rejected');
+        $this->assertDatabaseCount('desktop_devices', 1);
     }
 
     public function test_revoked_evidence_is_rejected_without_creating_a_device(): void

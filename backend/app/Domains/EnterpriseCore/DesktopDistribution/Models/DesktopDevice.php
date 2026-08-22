@@ -16,6 +16,7 @@ class DesktopDevice extends Model
         'public_key_fingerprint',
         'certificate_fingerprint',
         'access_token_hash',
+        'is_primary',
         'enrolled_at',
         'last_seen_at',
         'revoked_at',
@@ -29,6 +30,7 @@ class DesktopDevice extends Model
     protected function casts(): array
     {
         return [
+            'is_primary' => 'boolean',
             'enrolled_at' => 'datetime',
             'last_seen_at' => 'datetime',
             'revoked_at' => 'datetime',

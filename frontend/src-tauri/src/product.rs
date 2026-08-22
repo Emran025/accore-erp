@@ -1,5 +1,9 @@
-#[cfg(all(feature = "server-product", feature = "client-product"))]
-compile_error!("server-product and client-product must never be enabled together");
+#[cfg(any(
+    all(feature = "server-product", feature = "client-product"),
+    all(feature = "headless-server-product", feature = "client-product"),
+    all(feature = "server-product", feature = "headless-server-product"),
+))]
+compile_error!("server-product, headless-server-product, and client-product must never be enabled together");
 
 use serde::Serialize;
 

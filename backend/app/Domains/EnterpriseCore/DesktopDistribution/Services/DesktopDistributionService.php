@@ -58,18 +58,25 @@ class DesktopDistributionService
         ?string $label = null,
         ?string $issuedBy = null,
         ?CarbonInterface $expiresAt = null,
+        string $purpose = 'standard',
     ): string {
+        if (! in_array($purpose, ['standard', 'primary_claim'], true)) {
+            throw new \InvalidArgumentException('Unsupported desktop enrollment evidence purpose.');
+        }
+
         $evidence = Str::random(72);
 
         DesktopEnrollmentEvidence::query()->create([
             'token_hash' => hash('sha256', $evidence),
             'label' => $label,
             'issued_by' => $issuedBy ?: 'local-administrator',
+            'purpose' => $purpose,
             'expires_at' => $expiresAt ?: now()->addMinutes((int) config('desktop_distribution.enrollment_evidence_ttl_minutes')),
         ]);
 
         $this->audit('desktop.enrollment_evidence.issued', 'success', null, null, [
             'label' => $label,
+            'purpose' => $purpose,
         ]);
 
         return $evidence;
@@ -136,6 +143,15 @@ class DesktopDistributionService
                 return ['status' => $existingDevice->isRevoked() ? 'device_revoked' : 'device_already_enrolled'];
             }
 
+            $isPrimaryClaim = $evidence->purpose === 'primary_claim';
+            if ($isPrimaryClaim && DesktopDevice::query()->where('is_primary', true)->exists()) {
+                $this->audit('desktop.enrollment', 'primary_device_already_claimed', $ipAddress, null, [
+                    'device_id' => $payload['device_id'],
+                ]);
+
+                return ['status' => 'evidence_rejected'];
+            }
+
             // Claim the evidence under the same database lock that creates the device,
             // preventing concurrent replay from consuming it more than once.
             $evidence->forceFill(['used_at' => now()])->save();
@@ -151,6 +167,7 @@ class DesktopDistributionService
                     ? strtolower($payload['certificate_fingerprint'])
                     : null,
                 'access_token_hash' => Hash::make($accessToken),
+                'is_primary' => $isPrimaryClaim,
                 'enrolled_at' => now(),
                 'last_seen_at' => now(),
             ]);
@@ -159,6 +176,7 @@ class DesktopDistributionService
                 'device_id' => $device->device_id,
                 'platform' => $device->platform,
                 'client_version' => $device->client_version,
+                'is_primary' => $device->is_primary,
             ]);
 
             return [

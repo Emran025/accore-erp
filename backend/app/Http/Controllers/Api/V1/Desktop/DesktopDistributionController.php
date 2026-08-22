@@ -41,6 +41,7 @@ class DesktopDistributionController extends Controller
                 'device' => [
                     'id' => $result['device']->device_id,
                     'status' => 'active',
+                    'is_primary' => (bool) $result['device']->is_primary,
                     'enrolled_at' => $result['device']->enrolled_at?->toIso8601String(),
                 ],
                 // This token is returned exactly once. Only its slow hash is stored.
