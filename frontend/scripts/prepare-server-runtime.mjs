@@ -122,6 +122,8 @@ async function buildMariaDbFromSource(source) {
       cmakeArgs.push(
         `-DCMAKE_C_COMPILER=${process.env.CC}`,
         `-DCMAKE_CXX_COMPILER=${process.env.CXX}`,
+        '-DCMAKE_C_STANDARD_INCLUDE_DIRECTORIES=',
+        '-DCMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES=',
         '-DCMAKE_VERBOSE_MAKEFILE=ON'
       );
     }
@@ -139,6 +141,9 @@ async function buildMariaDbFromSource(source) {
       CPLUS_INCLUDE_PATH: '',
       OBJC_INCLUDE_PATH: '',
       LIBRARY_PATH: '',
+      CMAKE_INCLUDE_PATH: '',
+      CMAKE_LIBRARY_PATH: '',
+      CMAKE_FRAMEWORK_PATH: '',
       SDKROOT: macSdkRoot ?? '',
     });
   }
