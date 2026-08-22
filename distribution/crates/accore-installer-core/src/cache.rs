@@ -362,6 +362,7 @@ impl Drop for CacheLock {
 fn product_name(product: ProductFlavor) -> &'static str {
     match product {
         ProductFlavor::Server => "server",
+        ProductFlavor::ServerHeadless => "server-headless",
         ProductFlavor::Client => "client",
     }
 }
@@ -455,6 +456,13 @@ mod tests {
             },
             dependencies: vec![],
         }
+    }
+
+    #[test]
+    fn server_headless_uses_a_distinct_cache_namespace() {
+        assert_eq!(product_name(ProductFlavor::Server), "server");
+        assert_eq!(product_name(ProductFlavor::ServerHeadless), "server-headless");
+        assert_eq!(product_name(ProductFlavor::Client), "client");
     }
 
     #[test]
