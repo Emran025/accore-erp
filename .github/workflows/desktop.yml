@@ -130,11 +130,32 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $agentSource = Resolve-Path 'frontend/src-tauri/binaries/accore-server-agent-x86_64-pc-windows-msvc.exe'
           $agent = Join-Path (Resolve-Path 'frontend/src-tauri') 'accore-server-agent.exe'
+          $publicStatusRoot = Join-Path $env:ProgramData 'ACCORE ERP\Server Status'
+          $lifecycleScript = (Resolve-Path 'distribution/tests/windows/server-lifecycle-public-contract.ps1').Path
           Copy-Item $agentSource $agent -Force
           try {
-            & distribution/tests/windows/server-lifecycle-public-contract.ps1 `
-              -Agent $agent `
-              -PublicStatusRoot (Join-Path $env:ProgramData 'ACCORE ERP\Server Status')
+            & $agent claim --owner server-desktop
+            if ($LASTEXITCODE -eq 0) {
+              throw 'Non-elevated claim unexpectedly succeeded'
+            }
+            if (Get-Service -Name ACCOREServerAgent -ErrorAction SilentlyContinue) {
+              throw 'Non-elevated claim created an SCM service before elevation was verified'
+            }
+            if (Test-Path -LiteralPath $publicStatusRoot) {
+              throw 'Non-elevated claim created public Server Status data before elevation was verified'
+            }
+
+            $arguments = @(
+              '-NoProfile',
+              '-ExecutionPolicy', 'Bypass',
+              '-File', "`"$lifecycleScript`"",
+              '-Agent', "`"$agent`"",
+              '-PublicStatusRoot', "`"$publicStatusRoot`""
+            )
+            $elevated = Start-Process -FilePath 'pwsh.exe' -Verb RunAs -WindowStyle Hidden -ArgumentList $arguments -Wait -PassThru
+            if ($elevated.ExitCode -ne 0) {
+              throw "Elevated Server lifecycle public contract exited with $($elevated.ExitCode)"
+            }
           }
           finally {
             Remove-Item $agent -Force -ErrorAction SilentlyContinue

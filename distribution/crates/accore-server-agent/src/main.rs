@@ -13,6 +13,12 @@ use std::{
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
 #[cfg(windows)]
 use rand::{rngs::OsRng, RngCore};
+#[cfg(windows)]
+use windows_sys::Win32::{
+    Foundation::{CloseHandle, HANDLE},
+    Security::{GetTokenInformation, TokenElevation, TOKEN_ELEVATION, TOKEN_QUERY},
+    System::Threading::{GetCurrentProcess, OpenProcessToken},
+};
 use serde::{Deserialize, Serialize};
 use server_instance::{
     decide_installation, decide_transition, decide_uninstall, InstallationDecision,
@@ -151,7 +157,7 @@ fn execute() -> Result<(), String> {
             let (from, to) = read_transition_arguments(&mut arguments)?;
             transition_embedded_service(from, to)
         }
-        "stop" => windows_service_host::stop_service(),
+        "stop" => stop_embedded_service(),
         "run" | "service" | "status" | "request-backup" | "seed-baseline" => {
             let config_path = read_config_argument(&mut arguments)?;
             match command.as_str() {
@@ -165,6 +171,47 @@ fn execute() -> Result<(), String> {
         }
         _ => Err(format!("unsupported command {command}")),
     }
+}
+
+fn stop_embedded_service() -> Result<(), String> {
+    #[cfg(windows)]
+    {
+        require_elevated_lifecycle()?;
+    }
+    windows_service_host::stop_service()
+}
+
+#[cfg(windows)]
+fn require_elevated_lifecycle() -> Result<(), String> {
+    let mut token: HANDLE = std::ptr::null_mut();
+    let opened = unsafe { OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &mut token) };
+    if opened == 0 {
+        return Err("inspect the current Windows token before lifecycle mutation".into());
+    }
+
+    let mut elevation = TOKEN_ELEVATION::default();
+    let mut reported_size = 0;
+    let loaded = unsafe {
+        GetTokenInformation(
+            token,
+            TokenElevation,
+            &mut elevation as *mut TOKEN_ELEVATION as *mut std::ffi::c_void,
+            std::mem::size_of::<TOKEN_ELEVATION>() as u32,
+            &mut reported_size,
+        )
+    };
+    unsafe {
+        CloseHandle(token);
+    }
+    if loaded == 0 {
+        return Err("inspect Windows elevation before lifecycle mutation".into());
+    }
+    if elevation.TokenIsElevated == 0 {
+        return Err(
+            "claim, attach, transition, uninstall, and stop require Windows elevation before protected Server data or service configuration can be changed".into(),
+        );
+    }
+    Ok(())
 }
 
 fn read_owner_argument(
@@ -209,6 +256,7 @@ fn read_transition_arguments(
 fn install_embedded_service(owner: ServerProductFlavor) -> Result<(), String> {
     #[cfg(windows)]
     {
+        require_elevated_lifecycle()?;
         let config_path = default_config_path()?;
         let existing_manifest = load_server_instance(&config_path)?;
         if config_path.is_file()
@@ -250,6 +298,7 @@ fn install_embedded_service(owner: ServerProductFlavor) -> Result<(), String> {
 fn attach_embedded_service(owner: ServerProductFlavor) -> Result<(), String> {
     #[cfg(windows)]
     {
+        require_elevated_lifecycle()?;
         let config_path = default_config_path()?;
         match decide_installation(load_server_instance(&config_path)?.as_ref(), owner)? {
             InstallationDecision::AttachAsDesktopManager => windows_service_host::start_service(),
@@ -272,6 +321,7 @@ fn transition_embedded_service(
 ) -> Result<(), String> {
     #[cfg(windows)]
     {
+        require_elevated_lifecycle()?;
         let config_path = default_config_path()?;
         let existing = load_server_instance(&config_path)?
             .ok_or("cannot transition a server instance without a server-instance manifest")?;
@@ -301,6 +351,7 @@ fn transition_embedded_service(
 fn uninstall_embedded_service(owner: ServerProductFlavor) -> Result<(), String> {
     #[cfg(windows)]
     {
+        require_elevated_lifecycle()?;
         let config_path = default_config_path()?;
         let manifest = load_server_instance(&config_path)?
             .ok_or("cannot remove a server instance without a server-instance manifest")?;
