@@ -41,14 +41,14 @@ jobs:
             artifact: server-linux-x64
             runtime_target: linux-x86_64
             agent_target: x86_64-unknown-linux-gnu
-          - platform: macos-latest
+          - platform: macos-15
             flavor: server
             feature: server-product
             args: ""
             artifact: server-macos-arm64
             runtime_target: macos-aarch64
             agent_target: aarch64-apple-darwin
-          - platform: macos-13
+          - platform: macos-15-intel
             flavor: server
             feature: server-product
             args: ""
@@ -93,7 +93,7 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+          targets: ${{ startsWith(matrix.platform, 'macos-') && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - name: Cache Rust build artifacts
         uses: swatinem/rust-cache@v2
@@ -325,11 +325,11 @@ jobs:
             runtime_target: linux-x86_64
             agent_target: x86_64-unknown-linux-gnu
             artifact: server-headless-linux-x64
-          - platform: macos-latest
+          - platform: macos-15
             runtime_target: macos-aarch64
             agent_target: aarch64-apple-darwin
             artifact: server-headless-macos-arm64
-          - platform: macos-13
+          - platform: macos-15-intel
             runtime_target: macos-x86_64
             agent_target: x86_64-apple-darwin
             artifact: server-headless-macos-x64
