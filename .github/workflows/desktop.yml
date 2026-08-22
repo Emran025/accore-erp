@@ -135,6 +135,7 @@ jobs:
           {
             echo "DEVELOPER_DIR=$developer_dir"
             echo "SDKROOT=$sdk_root"
+            echo "ACCORE_MACOS_SDKROOT=$sdk_root"
             echo "CC=$toolchain_bin/clang"
             echo "CXX=$toolchain_bin/clang++"
             echo "CMAKE_PREFIX_PATH=$(brew --prefix boost):$(brew --prefix openssl@3):$(brew --prefix pcre2):$(brew --prefix zstd)"
@@ -370,6 +371,7 @@ jobs:
           {
             echo "DEVELOPER_DIR=$developer_dir"
             echo "SDKROOT=$sdk_root"
+            echo "ACCORE_MACOS_SDKROOT=$sdk_root"
             echo "CC=$toolchain_bin/clang"
             echo "CXX=$toolchain_bin/clang++"
             echo "CMAKE_PREFIX_PATH=$(brew --prefix boost):$(brew --prefix openssl@3):$(brew --prefix pcre2):$(brew --prefix zstd)"

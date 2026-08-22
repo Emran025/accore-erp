@@ -114,8 +114,9 @@ async function buildMariaDbFromSource(source) {
   ];
   const buildEnvironment = { CMAKE_PREFIX_PATH: process.env.CMAKE_PREFIX_PATH ?? '' };
   if (process.platform === 'darwin') {
-    if (process.env.SDKROOT) {
-      cmakeArgs.push(`-DCMAKE_OSX_SYSROOT=${process.env.SDKROOT}`);
+    const macSdkRoot = process.env.ACCORE_MACOS_SDKROOT ?? process.env.SDKROOT;
+    if (macSdkRoot) {
+      cmakeArgs.push(`-DCMAKE_OSX_SYSROOT=${macSdkRoot}`);
     }
 
     // Hosted macOS runners can expose Command Line Tools include flags through
@@ -131,6 +132,7 @@ async function buildMariaDbFromSource(source) {
       CPLUS_INCLUDE_PATH: '',
       OBJC_INCLUDE_PATH: '',
       LIBRARY_PATH: '',
+      SDKROOT: macSdkRoot ?? '',
     });
   }
   await run('cmake', cmakeArgs, buildEnvironment);
