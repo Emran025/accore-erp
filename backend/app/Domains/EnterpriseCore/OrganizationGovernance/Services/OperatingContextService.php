@@ -43,7 +43,6 @@ class OperatingContextService
             $this->check('working_unit', $workingUnitReadiness['ready']),
             $this->check('warehouse', $warehouse !== null && $warehouse->is_active && $warehouse->status === 'active'),
             $this->check('cost_center', $costCenter !== null && $costCenter->is_active),
-            $this->check('profit_center', $profitCenter !== null && $profitCenter->is_active),
             $this->check('pos_terminal', $terminal !== null && $terminal->is_active && $terminal->status === 'active'),
             $this->check('organizational_structure', $structuralReadiness['ready']),
             $this->check('open_fiscal_period', $accountingReadiness['open_fiscal_period']['ready']),
@@ -69,37 +68,58 @@ class OperatingContextService
     public function configure(array $data, ?int $userId): OperatingContext
     {
         return DB::transaction(function () use ($data, $userId) {
-            $warehouseData = Arr::get($data, 'warehouse', []);
-            $warehouse = Warehouse::query()->updateOrCreate(
-                ['code' => $warehouseData['code']],
-                [
-                    'name' => $warehouseData['name'],
-                    'name_en' => $warehouseData['name_en'] ?? null,
-                    'org_node_uuid' => $data['org_node_uuid'] ?? null,
-                    'cost_center_id' => $data['cost_center_id'] ?? null,
-                    'profit_center_id' => $data['profit_center_id'] ?? null,
-                    'status' => 'active',
-                    'is_active' => true,
-                    'description' => $warehouseData['description'] ?? null,
-                    'created_by' => $userId,
-                ]
-            );
+            $terminal = isset($data['pos_terminal_id'])
+                ? PosTerminal::query()
+                    ->whereKey($data['pos_terminal_id'])
+                    ->where('is_active', true)
+                    ->where('status', 'active')
+                    ->firstOrFail()
+                : null;
+            $warehouse = $terminal?->warehouse;
 
-            $terminalData = Arr::get($data, 'pos_terminal', []);
-            $terminal = PosTerminal::query()->updateOrCreate(
-                ['code' => $terminalData['code']],
-                [
-                    'name' => $terminalData['name'],
-                    'name_en' => $terminalData['name_en'] ?? null,
+            if (!$terminal) {
+                $warehouseData = Arr::get($data, 'warehouse', []);
+                $warehouse = Warehouse::query()->updateOrCreate(
+                    ['code' => $warehouseData['code']],
+                    [
+                        'name' => $warehouseData['name'],
+                        'name_en' => $warehouseData['name_en'] ?? null,
+                        'org_node_uuid' => $data['org_node_uuid'] ?? null,
+                        'cost_center_id' => $data['cost_center_id'] ?? null,
+                        'profit_center_id' => $data['profit_center_id'] ?? null,
+                        'status' => 'active',
+                        'is_active' => true,
+                        'description' => $warehouseData['description'] ?? null,
+                        'created_by' => $userId,
+                    ]
+                );
+                $terminalData = Arr::get($data, 'pos_terminal', []);
+                $terminal = PosTerminal::query()->updateOrCreate(
+                    ['code' => $terminalData['code']],
+                    [
+                        'name' => $terminalData['name'],
+                        'name_en' => $terminalData['name_en'] ?? null,
+                        'org_node_uuid' => $data['org_node_uuid'] ?? null,
+                        'warehouse_id' => $warehouse->id,
+                        'cost_center_id' => $data['cost_center_id'] ?? null,
+                        'profit_center_id' => $data['profit_center_id'] ?? null,
+                        'status' => 'active',
+                        'is_active' => true,
+                        'created_by' => $userId,
+                    ]
+                );
+            }
+
+            $terminal->update([
+                'org_node_uuid' => $data['org_node_uuid'] ?? null,
+                'cost_center_id' => $data['cost_center_id'] ?? null,
+            ]);
+            if ($warehouse) {
+                $warehouse->update([
                     'org_node_uuid' => $data['org_node_uuid'] ?? null,
-                    'warehouse_id' => $warehouse->id,
                     'cost_center_id' => $data['cost_center_id'] ?? null,
-                    'profit_center_id' => $data['profit_center_id'] ?? null,
-                    'status' => 'active',
-                    'is_active' => true,
-                    'created_by' => $userId,
-                ]
-            );
+                ]);
+            }
 
             OperatingContext::query()
                 ->where('user_id', $userId)
@@ -110,9 +130,9 @@ class OperatingContextService
                 ['user_id' => $userId, 'pos_terminal_id' => $terminal->id],
                 [
                     'org_node_uuid' => $data['org_node_uuid'] ?? null,
-                    'warehouse_id' => $warehouse->id,
+                    'warehouse_id' => $warehouse?->id,
                     'cost_center_id' => $data['cost_center_id'] ?? null,
-                    'profit_center_id' => $data['profit_center_id'] ?? null,
+                    'profit_center_id' => $data['profit_center_id'] ?? $terminal->profit_center_id,
                     // Status is recalculated from the authoritative readiness
                     // contract below; configuration submission is never proof of readiness.
                     'status' => 'draft',

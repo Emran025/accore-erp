@@ -16,16 +16,37 @@ describe("standalone phased setup onboarding", () => {
     expect(layout).toContain("setup_required");
   });
 
-  it("renders mandatory phase progress before gated module activation", () => {
+  it("renders one guarded guided-setup journey before optional capability activation", () => {
     const page = source("app/setup/page.tsx");
     const moduleSelection = source("app/setup/components/SetupModuleSelection.tsx");
+    const journey = source("app/setup/components/SetupJourneyStepper.tsx");
 
-    expect(page.indexOf("<SetupPhaseProgress")).toBeLessThan(page.indexOf("<SetupModuleSelection"));
-    expect(page).toContain("foundationComplete={onboarding?.phases.foundation.ready === true}");
+    expect(page.indexOf("<SetupJourneyStepper")).toBeLessThan(page.indexOf("<SetupModuleSelection"));
+    expect(page).toContain("journeyStep");
+    expect(page).toContain("optional_capabilities");
+    expect(journey).toContain("onPrevious");
+    expect(journey).toContain("onNext");
     expect(moduleSelection).toContain("coreModuleKeys");
     expect(moduleSelection).toContain("canActivate");
-    expect(moduleSelection).toContain("coreTitle");
+    expect(moduleSelection).toContain("setup-module-group-included");
     expect(moduleSelection).toContain("optionalTitle");
+  });
+
+  it("refreshes readiness after every successful save and edits existing operating links instead of recreating resources", () => {
+    const page = source("app/setup/page.tsx");
+    const scope = source("app/setup/components/SetupOperatingScopeSection.tsx");
+    const accounting = source("app/setup/components/SetupAccountingSection.tsx");
+    const englishCatalog = source("lib/i18n/catalog/en-US.ts");
+
+    expect(page).toContain("await load();");
+    expect(page).toContain("pos_terminal_id: posTerminalId");
+    expect(page).toContain("saveWorkingUnit");
+    expect(scope).toContain("posTerminalId");
+    expect(scope).not.toContain("warehouseCode");
+    expect(scope).not.toContain("profitCenterId");
+    expect(accounting).toContain("chartReady");
+    expect(accounting).toContain("periodReady");
+    expect(englishCatalog).toContain("Profit-center ownership remains on the organizational unit");
   });
 
   it("uses the professional organizational architecture workspace rather than the flat node form", () => {

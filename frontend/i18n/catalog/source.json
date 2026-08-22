@@ -58325,6 +58325,36 @@
       "occurrences": []
     },
     {
+      "id": "enterpriseCore.setup.scope.pointOfSale",
+      "source": "نقطة البيع",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.scope.contextHelper",
+      "source": "اربط وحدة تشغيل قائمة بمركز التكلفة ونقطة البيع. يبقى مركز الربح ضمن إعداد الوحدة التنظيمية ولا يعاد إدخاله هنا.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.scope.workingUnitCode",
+      "source": "رمز وحدة التشغيل",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.scope.workingUnitName",
+      "source": "اسم وحدة التشغيل",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.scope.saveWorkingUnit",
+      "source": "حفظ تفاصيل الوحدة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
       "id": "enterpriseCore.setup.scope.title",
       "source": "٣. وحدة العمل وسياق التشغيل",
       "classification": "user-facing",

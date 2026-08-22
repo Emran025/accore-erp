@@ -128,5 +128,18 @@ class OperatingContextApiTest extends TestCase
         $context = OperatingContext::query()->firstOrFail();
         $this->assertTrue((bool) $context->is_default);
         $this->assertSame('ready', $context->status);
+
+        $existingLinkResponse = $this->authPost(route('v2.operating_context.configure'), [
+            'org_node_uuid' => $company->node_uuid,
+            'cost_center_id' => $costCenter->id,
+            'pos_terminal_id' => $context->pos_terminal_id,
+        ]);
+
+        $this->assertSuccessResponse($existingLinkResponse, 201);
+        $existingLinkResponse->assertJsonPath('data.pos_terminal.code', 'POS-STORE')
+            ->assertJsonPath('data.cost_center.id', $costCenter->id);
+        $this->assertDatabaseCount('warehouses', 1);
+        $this->assertDatabaseCount('pos_terminals', 1);
+        $this->assertDatabaseCount('operating_contexts', 1);
     }
 }

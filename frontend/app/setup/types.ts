@@ -31,6 +31,11 @@ export type Onboarding = {
 
 export type Readiness = {
   ready: boolean;
+  context?: {
+    org_node_uuid?: string | null;
+    cost_center_id?: number | null;
+    pos_terminal_id?: number | null;
+  } | null;
   onboarding?: Onboarding;
   checks?: ReadinessCheck[];
   missing?: Array<{ key: string }>;

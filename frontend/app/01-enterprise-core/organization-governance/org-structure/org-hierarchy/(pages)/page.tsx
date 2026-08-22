@@ -1,6 +1,6 @@
 'use client';
 
-import { useI18n, catalogText, catalogMessage } from "@/lib/i18n";
+import { useI18n, catalogText } from "@/lib/i18n";
 import { MainLayout } from '@/components/layout';
 import {
   Button,
@@ -30,21 +30,13 @@ type OrgTab =
 type SetupForm = {
   org_node_uuid: string | null;
   cost_center_id: number | null;
-  profit_center_id: number | null;
-  warehouse_code: string;
-  warehouse_name: string;
-  pos_code: string;
-  pos_name: string;
+  pos_terminal_id: number | null;
 };
 
 const initialSetupForm: SetupForm = {
   org_node_uuid: null,
   cost_center_id: null,
-  profit_center_id: null,
-  warehouse_code: 'WH-MAIN',
-  warehouse_name: catalogMessage("enterpriseCore.orgHierarchy.mainWarehouse"),
-  pos_code: 'POS-MAIN',
-  pos_name: catalogMessage("enterpriseCore.orgHierarchy.mainPos"),
+  pos_terminal_id: null,
 };
 
 function listFromResponse(response: any): any[] {
@@ -62,19 +54,17 @@ export default function OrganizationalStructurePage() {
   const [setupForm, setSetupForm] = useState<SetupForm>(initialSetupForm);
   const [nodes, setNodes] = useState<any[]>([]);
   const [costCenters, setCostCenters] = useState<any[]>([]);
-  const [profitCenters, setProfitCenters] = useState<any[]>([]);
+  const [posTerminals, setPosTerminals] = useState<any[]>([]);
   const { readiness, loadReadiness } = useOperatingContextStore();
   const readinessLabels: Record<string, string> = {
     warehouse: i18n.catalog["enterpriseCore.orgHierarchy.readinessWarehouse"],
     cost_center: i18n.catalog["enterpriseCore.orgHierarchy.readinessCostCenter"],
-    profit_center: i18n.catalog["enterpriseCore.orgHierarchy.readinessProfitCenter"],
     pos_terminal: i18n.catalog["enterpriseCore.orgHierarchy.readinessPosTerminal"],
     organizational_structure: i18n.catalog["enterpriseCore.orgHierarchy.readinessOrganizationalStructure"],
   };
   const readinessActions: Record<string, string> = {
     warehouse: i18n.catalog["enterpriseCore.orgHierarchy.readinessActionWarehouse"],
     cost_center: i18n.catalog["enterpriseCore.orgHierarchy.readinessActionCostCenter"],
-    profit_center: i18n.catalog["enterpriseCore.orgHierarchy.readinessActionProfitCenter"],
     pos_terminal: i18n.catalog["enterpriseCore.orgHierarchy.readinessActionPosTerminal"],
     organizational_structure: i18n.catalog["enterpriseCore.orgHierarchy.readinessActionOrganizationalStructure"],
   };
@@ -90,16 +80,14 @@ export default function OrganizationalStructurePage() {
 
   useEffect(() => {
     const loadSetupData = async () => {
-      const [nodeResponse, costResponse, profitResponse] = await Promise.all([
+      const [nodeResponse, costResponse, posResponse] = await Promise.all([
         fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES),
         fetchAPI(API_ENDPOINTS.FINANCE.COST_CENTERS.BASE),
-        fetchAPI(API_ENDPOINTS.FINANCE.PROFIT_CENTERS.BASE),
+        fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.OPERATING_CONTEXT.POS_TERMINALS),
       ]);
       setNodes(listFromResponse(nodeResponse));
       setCostCenters(listFromResponse(costResponse).filter((center) => center.is_active !== false));
-      setProfitCenters(
-        listFromResponse(profitResponse).filter((center) => center.is_active !== false)
-      );
+      setPosTerminals(listFromResponse(posResponse).filter((terminal) => terminal.is_active !== false));
       await loadReadiness();
     };
     loadSetupData();
@@ -107,7 +95,7 @@ export default function OrganizationalStructurePage() {
 
   const nodeOptions = useMemo<SelectOption[]>(
     () =>
-      nodes.map((node) => ({
+      nodes.filter((node) => node.node_type_id === 'COMP_CODE').map((node) => ({
         value: node.node_uuid,
         label: node.code || node.node_uuid,
         subtitle: node.status,
@@ -123,14 +111,14 @@ export default function OrganizationalStructurePage() {
       })),
     [costCenters]
   );
-  const profitCenterOptions = useMemo<SelectOption[]>(
+  const posTerminalOptions = useMemo<SelectOption[]>(
     () =>
-      profitCenters.map((center) => ({
-        value: center.id,
-        label: catalogText(i18n, "common.general.notAvailable.alternative10", { value0: center.code, value1: center.name }),
-        subtitle: center.name_en || '',
+      posTerminals.map((terminal) => ({
+        value: terminal.id,
+        label: catalogText(i18n, "common.general.notAvailable.alternative10", { value0: terminal.code, value1: terminal.name }),
+        subtitle: terminal.name_en || '',
       })),
-    [profitCenters]
+    [posTerminals]
   );
 
   const updateSetupField = <K extends keyof SetupForm>(key: K, value: SetupForm[K]) => {
@@ -141,11 +129,7 @@ export default function OrganizationalStructurePage() {
     if (
       !setupForm.org_node_uuid ||
       !setupForm.cost_center_id ||
-      !setupForm.profit_center_id ||
-      !setupForm.warehouse_code ||
-      !setupForm.warehouse_name ||
-      !setupForm.pos_code ||
-      !setupForm.pos_name
+      !setupForm.pos_terminal_id
     ) {
       showAlert(
         'operating-context-alert',
@@ -162,15 +146,7 @@ export default function OrganizationalStructurePage() {
         body: JSON.stringify({
           org_node_uuid: setupForm.org_node_uuid,
           cost_center_id: setupForm.cost_center_id,
-          profit_center_id: setupForm.profit_center_id,
-          warehouse: {
-            code: setupForm.warehouse_code,
-            name: setupForm.warehouse_name,
-          },
-          pos_terminal: {
-            code: setupForm.pos_code,
-            name: setupForm.pos_name,
-          },
+          pos_terminal_id: setupForm.pos_terminal_id,
         }),
       });
       if (!response.success) {
@@ -295,55 +271,13 @@ export default function OrganizationalStructurePage() {
             />
           </div>
           <div className="form-group">
-            <label>{i18n.catalog["enterpriseCore.orgHierarchy.profitCenter"]}</label>
+            <label>{i18n.catalog["enterpriseCore.setup.scope.pointOfSale"]}</label>
             <SearchableSelect
-              options={profitCenterOptions}
-              value={setupForm.profit_center_id}
-              onChange={(value) =>
-                updateSetupField('profit_center_id', typeof value === 'number' ? value : null)
-              }
-              placeholder={i18n.catalog["enterpriseCore.orgHierarchy.selectActiveProfitCenter"]}
+              options={posTerminalOptions}
+              value={setupForm.pos_terminal_id}
+              onChange={(value) => updateSetupField('pos_terminal_id', typeof value === 'number' ? value : null)}
+              placeholder={i18n.catalog["enterpriseCore.orgHierarchy.selectOperatingUnitOptional"]}
               required
-            />
-          </div>
-        </div>
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="warehouse-code">{i18n.catalog["enterpriseCore.orgHierarchy.warehouseCode"]}</label>
-            <input
-              id="warehouse-code"
-              className="form-control"
-              value={setupForm.warehouse_code}
-              onChange={(event) => updateSetupField('warehouse_code', event.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="warehouse-name">{i18n.catalog["enterpriseCore.orgHierarchy.warehouseName"]}</label>
-            <input
-              id="warehouse-name"
-              className="form-control"
-              value={setupForm.warehouse_name}
-              onChange={(event) => updateSetupField('warehouse_name', event.target.value)}
-            />
-          </div>
-        </div>
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="pos-code">{i18n.catalog["enterpriseCore.orgHierarchy.posTerminalCode"]}</label>
-            <input
-              id="pos-code"
-              className="form-control"
-              value={setupForm.pos_code}
-              onChange={(event) => updateSetupField('pos_code', event.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="pos-name">{i18n.catalog["enterpriseCore.orgHierarchy.posTerminalName"]}</label>
-            <input
-              id="pos-name"
-              className="form-control"
-              value={setupForm.pos_name}
-              onChange={(event) => updateSetupField('pos_name', event.target.value)}
             />
           </div>
         </div>

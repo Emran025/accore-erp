@@ -55,10 +55,9 @@ export function SetupModuleSelection({
   onActivate,
 }: SetupModuleSelectionProps) {
   const businessModules = modules.filter((module) => !module.is_configuration_module);
-  const coreModules = businessModules.filter((module) => coreModuleKeys.includes(module.module_key));
   const optionalModules = businessModules.filter((module) => !coreModuleKeys.includes(module.module_key));
 
-  const moduleLabel = (module: SetupModule) => locale === "ar-SA"
+  const moduleLabel = (module: Pick<SetupModule, "module_key" | "module_name_ar" | "module_name_en">) => locale === "ar-SA"
     ? module.module_name_ar || module.module_name_en || module.module_key
     : module.module_name_en || module.module_name_ar || module.module_key;
 
@@ -104,10 +103,10 @@ export function SetupModuleSelection({
     <SetupSection id="setup-modules" title={title} description={description}>
       {!canActivate ? <p className="readiness-notice warning">{baselineRequiredLabel}</p> : null}
       <div className="setup-module-groups">
-        <div className="setup-module-group">
+        <div className="setup-module-group setup-module-group-included">
           <h4 className="setup-module-group-title">{coreTitle}</h4>
           <p className="setup-module-group-description">{coreDescription}</p>
-          {renderGroup(coreModules, true)}
+          <p className="setup-context-summary">{coreModuleKeys.map((key) => moduleLabel(businessModules.find((module) => module.module_key === key) ?? { module_key: key })).join(" · ")}</p>
         </div>
         <div className="setup-module-group">
           <h4 className="setup-module-group-title">{optionalTitle}</h4>

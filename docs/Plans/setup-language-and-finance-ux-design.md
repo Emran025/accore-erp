@@ -24,6 +24,16 @@ A fiscal year is a reporting and inventory/balance-sheet period, normally twelve
 
 ACCORE currently stores operational `FiscalPeriod` records but has no dedicated fiscal-year-variant master entity. The setup field therefore must be renamed from the opaque “Fiscal year variant” label to a clear “Fiscal year structure” field and constrained to explicit supported choices. The initial choices are calendar year (`K4`) and a controlled custom-year configuration. The calendar-year choice is the safe default. A custom year is only a descriptor until the system has a managed variant and period-definition model; the UI makes that status explicit rather than suggesting unsupported automation.
 
+## Guided Setup Journey
+
+The setup page is a gated, sequential journey rather than a vertical collection of unrelated forms. It presents one actionable step at a time: **Foundation**, **Operating links**, and **Optional capabilities**. The user moves with explicit Back and Next controls. A step can advance only when its applicable readiness condition is satisfied; completed steps remain available for review and correction without forcing the user through inactive forms.
+
+Every successful save reloads the readiness, setup state, organizational tree, integrity result, and applicable reference data before the user sees the next action. The summary badges, current-phase card, step availability, and editable controls therefore derive from the same refreshed server response rather than stale local assumptions.
+
+Foundation retains only the legal, accounting, and organizational data required to form the initial operating network. Where an embedded baseline already provides a usable general-ledger structure or another delivered capability, setup shows it as available context rather than requiring the user to recreate it. Additional business modules remain an explicit later choice.
+
+The operating-links step does not recreate a working unit, a profit center, a warehouse, or a point of sale that is already represented in the organizational structure. Instead, it selects an existing active operating unit and lets the administrator maintain the specific cost-center-to-point-of-sale relationship needed for the default context. Profit-center ownership stays with its organizational-unit configuration and is displayed as context, not demanded again as a duplicate entry.
+
 ## References
 
 1. [SAP Help Portal — Fiscal Year and Fiscal Year Variant](https://help.sap.com/docs/SAP_S4HANA_CLOUD/0fa84c9d9c634132b7c4abb9ffdd8f06/7353d7531a4d424de10000000a174cb4.html)
