@@ -855,7 +855,10 @@ fn run_checked_logged(
     let stdout = log
         .try_clone()
         .map_err(|error| format!("clone Laravel provisioning log: {error}"))?;
-    command.stdout(Stdio::from(stdout)).stderr(Stdio::from(log));
+    let stderr = log
+        .try_clone()
+        .map_err(|error| format!("clone Laravel provisioning log: {error}"))?;
+    command.stdout(Stdio::from(stdout)).stderr(Stdio::from(stderr));
 
     let mut child = command
         .spawn()
