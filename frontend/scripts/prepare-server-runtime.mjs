@@ -109,6 +109,7 @@ async function buildMariaDbFromSource(source) {
     '-DPLUGIN_SPHINX=NO',
     '-DWITHOUT_TOKUDB=1',
     '-DWITHOUT_MROONGA=1',
+    '-DWITH_ROCKSDB=OFF',
     '-DWITH_SSL=system',
     '-DWITH_ZLIB=system',
   ];
