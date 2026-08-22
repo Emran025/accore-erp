@@ -202,8 +202,15 @@ jobs:
           }
           finally {
             & $agent uninstall
+            Get-Process -Name 'accore-server-agent','mariadbd','frankenphp' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+            Start-Sleep -Seconds 2
             Remove-Item $agent -Force -ErrorAction SilentlyContinue
-            Remove-Item (Join-Path $env:ProgramData 'ACCORE ERP') -Recurse -Force -ErrorAction SilentlyContinue
+            $cleanupRoot = Join-Path $env:ProgramData 'ACCORE ERP'
+            if (Test-Path $cleanupRoot) {
+              & takeown.exe /F $cleanupRoot /R /D Y | Out-Null
+              & icacls.exe $cleanupRoot /grant "$($env:USERNAME):(OI)(CI)F" /T /C /Q | Out-Null
+              Remove-Item $cleanupRoot -Recurse -Force -ErrorAction SilentlyContinue
+            }
           }
 
       - name: Generate updater configuration for signed release
