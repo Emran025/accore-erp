@@ -58,7 +58,9 @@ describe("standalone phased setup onboarding", () => {
     expect(page).toContain("ORG.TOPOLOGY_RULES");
     expect(page).toContain("ORG.INTEGRITY_CHECK");
     expect(workspace).toContain("ORG.SCOPE_CONTEXT");
-    expect(workspace).toContain("validParentNodes");
+    expect(workspace).toContain("selectedTypeRules");
+    expect(workspace).toContain("linkTargetsByRule");
+    expect(workspace).toContain("links:");
     expect(workspace).toContain("foundation");
     expect(workspace).toContain("core_operations");
     expect(workspace).toContain("extensions");

@@ -62,6 +62,7 @@ function isTechnicalValue(value: string): boolean {
         || /^[a-z]+:\/\//i.test(value)
         || /^[a-z0-9_-]+$/i.test(value)
         || /^\d+(\.\d+)*$/.test(value)
+        || /^(?:[1N]:[1M])$/.test(value)
         || value.includes("var(--")
         || value.includes("@keyframes")
         || value.includes("fa-")

@@ -46,11 +46,11 @@ export type OrganizationIntegrity = {
 export type OrganizationNodeDraft = {
   node_type_id: string;
   code: string;
-  attributes: Record<string, string>;
-  link?: {
+  attributes: Record<string, unknown>;
+  links: Array<{
     target_node_uuid: string;
     validate_constraints: true;
-  };
+  }>;
 };
 
 export type OrganizationWorkspacePhase = "foundation" | "core_operations" | "extensions";

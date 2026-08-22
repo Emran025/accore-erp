@@ -7514,6 +7514,12 @@ body.nav-sidebar-is-collapsed .sidebar-toggle-btn {
 .org-workspace-selected-type span { margin-top: 0.15rem; color: var(--text-secondary); font-size: 0.76rem; line-height: 1.45; }
 .org-workspace-composer-footer { padding-top: 0.8rem; }
 .org-workspace-composer-footer p { max-width: 38rem; margin: 0; color: var(--text-secondary); font-size: 0.75rem; line-height: 1.5; }
+.org-workspace-link-rule { display: grid; gap: 0.45rem; min-width: 0; padding: 0.75rem; margin: 0; border: 1px solid var(--border-color); border-radius: var(--radius-sm); }
+.org-workspace-link-rule legend { padding: 0 0.25rem; color: var(--text-primary); font-size: 0.85rem; font-weight: 700; }
+.org-workspace-link-rule small { color: var(--text-muted); font-size: 0.75rem; line-height: 1.45; }
+.org-workspace-link-options { display: grid; gap: 0.4rem; }
+.org-workspace-link-option { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2rem; color: var(--text-secondary); font-size: 0.82rem; cursor: pointer; }
+.org-workspace-link-option input { width: 1rem; height: 1rem; accent-color: var(--primary-color); }
 .org-workspace-reference-help { display: block; margin-top: 0.35rem; color: var(--text-muted); font-size: 0.72rem; line-height: 1.5; }
 .org-workspace-reference-help.is-actionable { color: var(--primary-color); }
 .org-workspace-domain-enterprise { --domain-color: #475569; --domain-tint: rgba(71, 85, 105, 0.08); }

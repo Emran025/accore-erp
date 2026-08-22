@@ -10,6 +10,8 @@ use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 use App\Domains\Finance\ManagementAccounting\Models\CostCenter;
 use App\Domains\Finance\ManagementAccounting\Models\ProfitCenter;
+use App\Domains\SupplyChain\Inventory\Models\Warehouse;
+use App\Domains\Commercial\SalesLifecycle\Models\PosTerminal;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -170,12 +172,30 @@ class SetupStateApiTest extends TestCase
             ]);
         }
 
-        $configured = $this->authPost(route('v2.operating_context.configure'), [
+        $warehouse = Warehouse::create([
+            'code' => 'TECH-WH',
+            'name' => 'Technology Device Warehouse',
             'org_node_uuid' => $company->node_uuid,
             'cost_center_id' => $costCenter->id,
             'profit_center_id' => $profitCenter->id,
-            'warehouse' => ['code' => 'TECH-WH', 'name' => 'Technology Device Warehouse'],
-            'pos_terminal' => ['code' => 'TECH-POS', 'name' => 'Technology Showroom POS'],
+            'status' => 'active',
+            'is_active' => true,
+        ]);
+        $terminal = PosTerminal::create([
+            'code' => 'TECH-POS',
+            'name' => 'Technology Showroom POS',
+            'org_node_uuid' => $company->node_uuid,
+            'warehouse_id' => $warehouse->id,
+            'cost_center_id' => $costCenter->id,
+            'profit_center_id' => $profitCenter->id,
+            'status' => 'active',
+            'is_active' => true,
+        ]);
+
+        $configured = $this->authPost(route('v2.operating_context.configure'), [
+            'org_node_uuid' => $company->node_uuid,
+            'cost_center_id' => $costCenter->id,
+            'pos_terminal_id' => $terminal->id,
         ]);
 
         $this->assertSuccessResponse($configured, 201);

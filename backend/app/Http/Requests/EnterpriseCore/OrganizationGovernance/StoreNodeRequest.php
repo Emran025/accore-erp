@@ -24,6 +24,13 @@ class StoreNodeRequest extends FormRequest
             'link.target_node_uuid'     => 'nullable|uuid|exists:structure_nodes,node_uuid',
             'link.link_type'            => 'nullable|string|max:32',
             'link.validate_constraints' => 'nullable|boolean',
+            'links'                     => 'nullable|array',
+            'links.*.target_node_uuid'  => 'required|uuid|distinct|exists:structure_nodes,node_uuid',
+            'links.*.link_type'         => 'nullable|string|max:32',
+            'links.*.priority'          => 'nullable|integer|min:0',
+            'links.*.valid_from'        => 'nullable|date',
+            'links.*.valid_to'          => 'nullable|date|after_or_equal:links.*.valid_from',
+            'links.*.validate_constraints' => 'nullable|boolean',
         ];
     }
 }
