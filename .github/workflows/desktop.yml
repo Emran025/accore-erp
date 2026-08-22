@@ -183,11 +183,17 @@ jobs:
               Copy-Item -LiteralPath $source -Destination (Join-Path $destination $name) -Force
             }
           }
-          $provisioningLog = Join-Path $env:ProgramData 'ACCORE ERP\Server\logs\provisioning.log'
-          if (Test-Path $provisioningLog) {
-            Get-Content -LiteralPath $provisioningLog -Tail 250 | ForEach-Object {
-              $_ -replace '(?i)(password|secret|token|app_key)\s*([:=])\s*\S+', '$1$2[REDACTED]'
-            } | Set-Content -LiteralPath (Join-Path $destination 'provisioning.tail.redacted.log')
+          $redactedLogs = @{
+            'provisioning.tail.redacted.log' = Join-Path $env:ProgramData 'ACCORE ERP\Server\logs\provisioning.log'
+            'frankenphp-api.tail.redacted.log' = Join-Path $env:ProgramData 'ACCORE ERP\Server\logs\api.log'
+            'laravel.tail.redacted.log' = Join-Path $env:ProgramData 'ACCORE ERP\Server\laravel-storage\logs\laravel.log'
+          }
+          foreach ($entry in $redactedLogs.GetEnumerator()) {
+            if (Test-Path $entry.Value) {
+              Get-Content -LiteralPath $entry.Value -Tail 250 | ForEach-Object {
+                $_ -replace '(?i)(password|secret|token|app_key)\s*([:=])\s*\S+', '$1$2[REDACTED]'
+              } | Set-Content -LiteralPath (Join-Path $destination $entry.Key)
+            }
           }
 
       - name: Upload redacted server lifecycle diagnostics
