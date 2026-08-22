@@ -42,9 +42,7 @@ Function ProvisionHeadlessService
       SetErrorLevel $AgentExitCode
       Abort
     interactive_failure:
-      MessageBox MB_ICONSTOP "ACCORE ERP Server Headless provisioning failed (exit code $AgentExitCode).$
-$
-$AgentOutput"
+      MessageBox MB_ICONSTOP "ACCORE ERP Server Headless provisioning failed (exit code $AgentExitCode).$\r$\n$AgentOutput"
       SetErrorLevel $AgentExitCode
       Abort
   ${EndIf}
@@ -72,9 +70,7 @@ Section "Uninstall"
       SetErrorLevel $AgentExitCode
       Abort
     interactive_uninstall_failure:
-      MessageBox MB_ICONSTOP "ACCORE ERP Server Headless removal failed (exit code $AgentExitCode).$
-$
-$AgentOutput"
+      MessageBox MB_ICONSTOP "ACCORE ERP Server Headless removal failed (exit code $AgentExitCode).$\r$\n$AgentOutput"
       SetErrorLevel $AgentExitCode
       Abort
   ${EndIf}
