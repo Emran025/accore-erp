@@ -1260,8 +1260,30 @@ fn apply_windows_acl(path: &Path, permit_users_read: bool) -> Result<(), String>
 
 #[cfg(windows)]
 fn harden_windows_acl_tree(path: &Path, permit_users_read: bool) -> Result<(), String> {
-    let metadata = fs::symlink_metadata(path)
-        .map_err(|error| format!("inspect Server Desktop runtime data permissions: {error}"))?;
+    harden_windows_acl_entry_tree(path, permit_users_read, false)
+}
+
+#[cfg(windows)]
+fn harden_windows_acl_entry_tree(
+    path: &Path,
+    permit_users_read: bool,
+    may_disappear: bool,
+) -> Result<(), String> {
+    let metadata = match fs::symlink_metadata(path) {
+        Ok(metadata) => metadata,
+        // Agent-owned processes legitimately create and remove transient control
+        // entries while a service reconciliation re-applies the private ACL.
+        // Only a descendant observed during this traversal may be skipped; a
+        // missing requested root remains a hard failure.
+        Err(error) if may_disappear && error.kind() == std::io::ErrorKind::NotFound => {
+            return Ok(())
+        }
+        Err(error) => {
+            return Err(format!(
+                "inspect Server Desktop runtime data permissions: {error}"
+            ))
+        }
+    };
     if metadata.file_type().is_symlink() {
         return Err(format!(
             "refuse to harden Server Desktop runtime data through symbolic link {}",
@@ -1271,13 +1293,28 @@ fn harden_windows_acl_tree(path: &Path, permit_users_read: bool) -> Result<(), S
     let is_directory = metadata.is_dir();
     apply_windows_acl_entry(path, permit_users_read, is_directory)?;
     if is_directory {
-        for entry in fs::read_dir(path)
-            .map_err(|error| format!("enumerate Server Desktop runtime data permissions: {error}"))?
-        {
-            let entry = entry.map_err(|error| {
-                format!("read Server Desktop runtime data permission entry: {error}")
-            })?;
-            harden_windows_acl_tree(&entry.path(), permit_users_read)?;
+        let entries = match fs::read_dir(path) {
+            Ok(entries) => entries,
+            Err(error) if may_disappear && error.kind() == std::io::ErrorKind::NotFound => {
+                return Ok(())
+            }
+            Err(error) => {
+                return Err(format!(
+                    "enumerate Server Desktop runtime data permissions: {error}"
+                ))
+            }
+        };
+        for entry in entries {
+            let entry = match entry {
+                Ok(entry) => entry,
+                Err(error) if error.kind() == std::io::ErrorKind::NotFound => continue,
+                Err(error) => {
+                    return Err(format!(
+                        "read Server Desktop runtime data permission entry: {error}"
+                    ))
+                }
+            };
+            harden_windows_acl_entry_tree(&entry.path(), permit_users_read, true)?;
         }
     }
     Ok(())
