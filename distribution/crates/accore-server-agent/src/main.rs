@@ -30,6 +30,7 @@ const BACKUP_VALIDATION_PORT: u16 = 3308;
 const READINESS_TIMEOUT: Duration = Duration::from_secs(90);
 const MAX_RESTART_ATTEMPTS: u8 = 3;
 const BACKUP_INTERVAL_SECONDS: u64 = 6 * 60 * 60;
+const PUBLIC_STATUS_READ_PRINCIPAL: &str = "Authenticated Users:(OI)(CI)RX";
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -1195,7 +1196,7 @@ fn apply_windows_acl(path: &Path, permit_users_read: bool) -> Result<(), String>
         "Administrators:(OI)(CI)F",
     ]);
     if permit_users_read {
-        command.args(["/grant:r", "Users:(OI)(CI)RX"]);
+        command.args(["/grant:r", PUBLIC_STATUS_READ_PRINCIPAL]);
     }
     command.args(["/t", "/c", "/q"]);
     run_checked(
@@ -1272,6 +1273,11 @@ mod tests {
         assert!(rendered.contains(
             "root * \"C:/Program Files/ACCORE ERP Server Desktop/runtime/app/public\""
         ));
+    }
+
+    #[test]
+    fn public_status_acl_includes_authenticated_desktop_clients() {
+        assert_eq!(PUBLIC_STATUS_READ_PRINCIPAL, "Authenticated Users:(OI)(CI)RX");
     }
 
     #[test]
