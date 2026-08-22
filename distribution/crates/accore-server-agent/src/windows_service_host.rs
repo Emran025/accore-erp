@@ -74,7 +74,7 @@ pub fn uninstall_service() -> Result<(), String> {
         )
         .map_err(|error| format!("open ACCORE Server Agent service: {error}"))?;
     let _ = service.stop();
-    let stopped = (0..60).any(|_| {
+    let stopped = (0..360).any(|_| {
         if matches!(
             service.query_status().map(|status| status.current_state),
             Ok(ServiceState::Stopped)
@@ -86,7 +86,7 @@ pub fn uninstall_service() -> Result<(), String> {
         }
     });
     if !stopped {
-        return Err("ACCORE Server Agent did not stop within 30 seconds before removal".into());
+        return Err("ACCORE Server Agent did not stop within three minutes before removal".into());
     }
     service
         .delete()

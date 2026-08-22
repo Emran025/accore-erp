@@ -274,7 +274,7 @@ jobs:
           if ($null -eq $uninstaller) { throw 'Headless uninstaller was not registered in Program Files' }
           $uninstallerProcess = Start-Process -FilePath $uninstaller.FullName -ArgumentList @('/S') -Wait -PassThru
           if ($uninstallerProcess.ExitCode -ne 0) { throw "Headless silent uninstaller exited with $($uninstallerProcess.ExitCode)" }
-          $shutdownDeadline = (Get-Date).AddSeconds(45)
+          $shutdownDeadline = (Get-Date).AddSeconds(195)
           while ((Get-Date) -lt $shutdownDeadline) {
             $agentService = Get-Service -Name ACCOREServerAgent -ErrorAction SilentlyContinue
             $runtimeProcesses = Get-Process -Name 'accore-server-agent','mariadbd','frankenphp' -ErrorAction SilentlyContinue
