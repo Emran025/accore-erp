@@ -110,6 +110,7 @@ class OperatingContextService
                 [
                     'org_node_uuid' => $data['org_node_uuid'] ?? null,
                     'warehouse_id' => $warehouse?->id,
+                    'pos_terminal_id' => $terminal->id,
                     'cost_center_id' => $data['cost_center_id'] ?? null,
                     'profit_center_id' => $terminal->profit_center_id,
                     // Status is recalculated from the authoritative readiness

@@ -104,7 +104,7 @@ class SetupStateApiTest extends TestCase
 
     private function configureTechnologyCommerceBaseline(): void
     {
-        foreach (['COMP_CODE', 'CONTROLLING_AREA', 'COST_CENTER', 'PROFIT_CENTER', 'PLANT', 'STORAGE_LOC', 'SALES_ORG', 'PURCH_ORG'] as $type) {
+        foreach (['CLIENT', 'COMP_CODE', 'CONTROLLING_AREA', 'COST_CENTER', 'PROFIT_CENTER', 'PLANT', 'STORAGE_LOC', 'SALES_ORG', 'PURCH_ORG'] as $type) {
             OrgMetaType::create([
                 'id' => $type,
                 'display_name' => $type,
@@ -114,6 +114,7 @@ class SetupStateApiTest extends TestCase
             ]);
         }
 
+        $client = StructureNode::create(['node_type_id' => 'CLIENT', 'code' => 'TECH-CLIENT', 'status' => 'active']);
         $company = StructureNode::create(['node_type_id' => 'COMP_CODE', 'code' => 'TECH-1000', 'status' => 'active']);
         $controlling = StructureNode::create(['node_type_id' => 'CONTROLLING_AREA', 'code' => 'TECH-CA', 'status' => 'active']);
         $costNode = StructureNode::create(['node_type_id' => 'COST_CENTER', 'code' => 'TECH-CC', 'status' => 'active']);
@@ -124,6 +125,7 @@ class SetupStateApiTest extends TestCase
         $purchasing = StructureNode::create(['node_type_id' => 'PURCH_ORG', 'code' => 'TECH-BUY', 'status' => 'active']);
 
         foreach ([
+            [$company, $client],
             [$controlling, $company],
             [$costNode, $controlling],
             [$profitNode, $controlling],

@@ -697,25 +697,17 @@ class OrgStructureService
             }
         }
 
-        // 3. Required parent check — key types must have parent links
-        $requiredParentMap = [
-            'PLANT' => 'COMP_CODE',
-            'SALES_ORG' => 'COMP_CODE',
-            'PURCH_ORG' => 'COMP_CODE',
-            'PERSONNEL_AREA' => 'COMP_CODE',
-            'STORAGE_LOC' => 'PLANT',
-            'COST_CENTER' => 'CONTROLLING_AREA',
-            'PROFIT_CENTER' => 'CONTROLLING_AREA',
-        ];
-
+        // 3. Required parent check — reuse the same topology contract enforced on writes.
         foreach ($nodes as $node) {
-            if (!isset($requiredParentMap[$node->node_type_id])) continue;
-            $requiredTarget = $requiredParentMap[$node->node_type_id];
-            $hasRequiredLink = $node->outgoingLinks->contains(function ($link) use ($requiredTarget) {
-                return $link->isActive() && $link->targetNode && $link->targetNode->node_type_id === $requiredTarget;
-            });
+            foreach ($this->requiredParentTypes($node->node_type_id) as $requiredTarget) {
+                $hasRequiredLink = $node->outgoingLinks->contains(function ($link) use ($requiredTarget) {
+                    return $link->isActive() && $link->targetNode && $link->targetNode->node_type_id === $requiredTarget;
+                });
 
-            if (!$hasRequiredLink) {
+                if ($hasRequiredLink) {
+                    continue;
+                }
+
                 $targetLabel = OrgMetaType::find($requiredTarget)?->display_name_ar ?? $requiredTarget;
                 $issues[] = [
                     'type' => 'WARNING',

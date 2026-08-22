@@ -33,10 +33,10 @@ class OperatingContextApiTest extends TestCase
         $response->assertJsonPath('data.ready', false)
             ->assertJsonPath('data.next_action', 'working_unit')
             ->assertJsonPath('data.checks.0.action_key', 'operating_context.readiness.working_unit')
-            ->assertJsonPath('data.checks.5.key', 'organizational_structure')
-            ->assertJsonPath('data.checks.5.complete', false)
-            ->assertJsonPath('data.checks.6.key', 'open_fiscal_period')
-            ->assertJsonPath('data.checks.7.key', 'chart_of_accounts')
+            ->assertJsonPath('data.checks.4.key', 'organizational_structure')
+            ->assertJsonPath('data.checks.4.complete', false)
+            ->assertJsonPath('data.checks.5.key', 'open_fiscal_period')
+            ->assertJsonPath('data.checks.6.key', 'chart_of_accounts')
             ->assertJsonPath('data.working_unit_readiness.ready', false)
             ->assertJsonPath('data.structural_readiness.ready', false)
             ->assertJsonPath('data.accounting_readiness.ready', false)
@@ -59,6 +59,7 @@ class OperatingContextApiTest extends TestCase
         ]);
 
         foreach ([
+            ['id' => 'CLIENT', 'display_name' => 'Client', 'display_name_ar' => 'العميل', 'level_domain' => 'Enterprise'],
             ['id' => 'COMP_CODE', 'display_name' => 'Company Code', 'display_name_ar' => 'رمز الشركة', 'level_domain' => 'Financial'],
             ['id' => 'CONTROLLING_AREA', 'display_name' => 'Controlling Area', 'display_name_ar' => 'منطقة التحكم', 'level_domain' => 'Financial'],
             ['id' => 'COST_CENTER', 'display_name' => 'Cost Center', 'display_name_ar' => 'مركز التكلفة', 'level_domain' => 'Controlling'],
@@ -67,12 +68,14 @@ class OperatingContextApiTest extends TestCase
             OrgMetaType::create($type + ['is_assignable' => true]);
         }
 
+        $client = StructureNode::create(['node_type_id' => 'CLIENT', 'code' => 'CLIENT-1000', 'status' => 'active']);
         $company = StructureNode::create(['node_type_id' => 'COMP_CODE', 'code' => '1000', 'status' => 'active']);
         $controlling = StructureNode::create(['node_type_id' => 'CONTROLLING_AREA', 'code' => 'CA-1000', 'status' => 'active']);
         $costNode = StructureNode::create(['node_type_id' => 'COST_CENTER', 'code' => 'CC-STORE', 'status' => 'active']);
         $profitNode = StructureNode::create(['node_type_id' => 'PROFIT_CENTER', 'code' => 'PC-STORE', 'status' => 'active']);
 
         foreach ([
+            [$company->node_uuid, $client->node_uuid],
             [$controlling->node_uuid, $company->node_uuid],
             [$costNode->node_uuid, $controlling->node_uuid],
             [$profitNode->node_uuid, $controlling->node_uuid],
