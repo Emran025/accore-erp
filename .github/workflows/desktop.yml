@@ -135,11 +135,21 @@ jobs:
           {
             echo "DEVELOPER_DIR=$developer_dir"
             echo "SDKROOT=$sdk_root"
+            echo "ACCORE_MACOS_DEVELOPER_DIR=$developer_dir"
             echo "ACCORE_MACOS_SDKROOT=$sdk_root"
             echo "CC=$toolchain_bin/clang"
             echo "CXX=$toolchain_bin/clang++"
             echo "CMAKE_PREFIX_PATH=$(brew --prefix boost):$(brew --prefix openssl@3):$(brew --prefix pcre2):$(brew --prefix zstd)"
           } >> "$GITHUB_ENV"
+
+      - name: Lock Xcode SDK for MariaDB source build
+        if: matrix.flavor == 'server' && startsWith(matrix.platform, 'macos-')
+        shell: bash
+        run: |
+          sudo xcode-select --switch "$ACCORE_MACOS_DEVELOPER_DIR"
+          test "$(xcode-select -p)" = "$ACCORE_MACOS_DEVELOPER_DIR"
+          printf '#include <cstddef>\n#include <cstdlib>\nint main() { return 0; }\n' |
+            "$CXX" -isysroot "$ACCORE_MACOS_SDKROOT" -x c++ -std=c++17 -fsyntax-only -
 
       - name: Prepare verified Server Desktop runtime
         if: matrix.flavor == 'server'
@@ -371,6 +381,7 @@ jobs:
           {
             echo "DEVELOPER_DIR=$developer_dir"
             echo "SDKROOT=$sdk_root"
+            echo "ACCORE_MACOS_DEVELOPER_DIR=$developer_dir"
             echo "ACCORE_MACOS_SDKROOT=$sdk_root"
             echo "CC=$toolchain_bin/clang"
             echo "CXX=$toolchain_bin/clang++"
@@ -399,6 +410,15 @@ jobs:
       - name: Install production Laravel dependencies
         working-directory: backend
         run: composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
+
+      - name: Lock Xcode SDK for MariaDB source build
+        if: startsWith(matrix.platform, 'macos-')
+        shell: bash
+        run: |
+          sudo xcode-select --switch "$ACCORE_MACOS_DEVELOPER_DIR"
+          test "$(xcode-select -p)" = "$ACCORE_MACOS_DEVELOPER_DIR"
+          printf '#include <cstddef>\n#include <cstdlib>\nint main() { return 0; }\n' |
+            "$CXX" -isysroot "$ACCORE_MACOS_SDKROOT" -x c++ -std=c++17 -fsyntax-only -
 
       - name: Prepare verified Server Headless runtime
         working-directory: frontend
