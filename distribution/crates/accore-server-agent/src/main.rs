@@ -143,6 +143,8 @@ struct RuntimeStatus {
     #[serde(skip_serializing_if = "Option::is_none")]
     error_code: Option<String>,
     server_id: String,
+    server_instance_id: String,
+    owner_product: String,
     database: ComponentStatus,
     api: ComponentStatus,
     queue: ComponentStatus,
@@ -152,12 +154,15 @@ struct RuntimeStatus {
 
 impl RuntimeStatus {
     fn bootstrapping(config: &RuntimeConfig, detail: impl Into<String>) -> Self {
+        let (server_instance_id, owner_product) = public_instance_identity(config);
         Self {
             state: "bootstrapping".into(),
             detail: detail.into(),
             phase: "initializing".into(),
             error_code: None,
             server_id: config.server_id.clone(),
+            server_instance_id,
+            owner_product,
             database: component("pending", "not started"),
             api: component("pending", "not started"),
             queue: component("pending", "not started"),
@@ -188,6 +193,17 @@ impl RuntimeStatus {
         self.error_code = Some(error_code.into());
         self.detail = detail.into();
         self.updated_at = now();
+    }
+}
+
+fn public_instance_identity(config: &RuntimeConfig) -> (String, String) {
+    let path = config.data_root.join("server-instance.json");
+    match fs::read(&path)
+        .ok()
+        .and_then(|payload| serde_json::from_slice::<ServerInstanceManifest>(&payload).ok())
+    {
+        Some(instance) => (instance.instance_id, instance.owner_product.as_str().into()),
+        None => (String::new(), "unknown".into()),
     }
 }
 

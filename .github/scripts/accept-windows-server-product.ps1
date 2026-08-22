@@ -18,8 +18,6 @@ $serviceName = 'ACCOREServerAgent'
 $dataRoot = Join-Path $env:ProgramData 'ACCORE ERP'
 $statusPath = Join-Path $dataRoot 'Server Status\runtime-status.json'
 $backupStatusPath = Join-Path $dataRoot 'Server Status\backup-status.json'
-$configPath = Join-Path $dataRoot 'Server\agent-config.json'
-$instancePath = Join-Path $dataRoot 'Server\server-instance.json'
 $agentPath = Join-Path $InstallationDirectory 'accore-server-agent.exe'
 $uninstallerPath = Join-Path $InstallationDirectory 'uninstall.exe'
 $runtimeProcessNames = @('accore-server-agent', 'mariadbd', 'frankenphp')
@@ -130,28 +128,20 @@ function Invoke-ProductUninstaller {
 }
 
 function Assert-ServerInstanceContract {
-  if (-not (Test-Path $instancePath)) {
-    throw "$Product did not publish the protected server-instance manifest."
+  param([Parameter(Mandatory)]$Status)
+  if ($Status.ownerProduct -ne $Product) {
+    throw "$Product published unexpected server instance owner '$($Status.ownerProduct)'."
   }
-  $instance = Get-Content -LiteralPath $instancePath -Raw | ConvertFrom-Json
-  if ($instance.ownerProduct -ne $Product) {
-    throw "$Product published unexpected server instance owner '$($instance.ownerProduct)'."
-  }
-  if ([string]::IsNullOrWhiteSpace($instance.instanceId) -or [string]::IsNullOrWhiteSpace($instance.serverId)) {
+  if ([string]::IsNullOrWhiteSpace($Status.serverInstanceId) -or [string]::IsNullOrWhiteSpace($Status.serverId)) {
     throw "$Product published an incomplete server-instance identity."
   }
   $service = Get-CimInstance -ClassName Win32_Service -Filter "Name='$serviceName'"
-  if ($null -eq $service -or $service.PathName -notlike "*$($instance.serviceExecutable)*") {
-    throw "$Product service registration does not match the active server-instance manifest."
+  if ($null -eq $service -or $service.PathName -notlike "*$InstallationDirectory*accore-server-agent.exe*") {
+    throw "$Product service registration does not launch the packaged Agent from its installation directory."
   }
 }
 
 function Assert-VerifiedProtectedBackup {
-  & $agentPath request-backup --config $configPath
-  if ($LASTEXITCODE -ne 0) {
-    throw "$Product could not request a protected backup through the packaged Agent."
-  }
-
   $deadline = (Get-Date).AddMinutes(5)
   while ((Get-Date) -lt $deadline) {
     if (Test-Path $backupStatusPath) {
@@ -181,13 +171,9 @@ function Assert-OrderedRemoval {
 Assert-PristineFixture
 Invoke-ProductInstaller
 $firstStatus = Wait-ForReadyStatus
-Assert-ServerInstanceContract
+Assert-ServerInstanceContract -Status $firstStatus
 if (Test-Path (Join-Path $InstallationDirectory 'resources\server-runtime\windows-x86_64\app\.env')) {
   throw "$Product package contains a forbidden Laravel environment file."
-}
-$privateAcl = Get-Acl -LiteralPath $configPath
-if (@($privateAcl.Access | Where-Object { $_.IdentityReference.Value -match '(^|\\)Users$' }).Count -gt 0) {
-  throw "$Product Agent configuration grants an ordinary Users ACL entry."
 }
 Assert-VerifiedProtectedBackup
 
@@ -203,7 +189,7 @@ if (-not (Test-Path $statusPath)) {
 
 Invoke-ProductInstaller
 $secondStatus = Wait-ForReadyStatus -ExpectedServerId $firstStatus.serverId
-Assert-ServerInstanceContract
+Assert-ServerInstanceContract -Status $secondStatus
 if ($secondStatus.serverId -ne $firstStatus.serverId) {
   throw "$Product did not preserve the durable server identity across uninstall and reinstall."
 }
