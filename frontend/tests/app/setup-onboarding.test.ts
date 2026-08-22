@@ -76,7 +76,7 @@ describe("standalone phased setup onboarding", () => {
     expect(page).toContain("organizationReferenceOptions");
     expect(page).toContain("currency_id: currencies.map");
     expect(page).toContain("PRIMARY_GENERAL_LEDGER_REFERENCE");
-    expect(page).toContain("setAccounts(listFrom(accountsResponse).filter((item) => item.is_active !== false))");
+    expect(page).toMatch(/setAccounts\(listFrom\(accountsResponse\)\.filter\(\(item\) => item\.is_active !== false\)\)/);
     expect(page).toContain("hasGovernedLedger");
     expect(workspace).toContain("referenceOptionsByAttribute");
     expect(workspace).toContain("SearchableSelect");
@@ -92,8 +92,8 @@ describe("standalone phased setup onboarding", () => {
     const englishCatalog = source("lib/i18n/catalog/en-US.ts");
     const arabicCatalog = source("lib/i18n/catalog/ar-SA.ts");
 
-    expect(workspace).toContain('const CALENDAR_YEAR_VARIANT = "K4"');
-    expect(workspace).toContain('attribute.attribute_key === "fiscal_year_variant"');
+    expect(workspace).toMatch(/const CALENDAR_YEAR_VARIANT = ['"]K4['"]/);
+    expect(workspace).toMatch(/attribute\.attribute_key === ['"]fiscal_year_variant['"]/);
     expect(workspace).toContain("fiscalYearVariant.calendarYear");
     expect(englishCatalog).toContain("Fiscal year structure");
     expect(arabicCatalog).toContain("هيكل السنة المالية");
@@ -122,7 +122,7 @@ describe("standalone phased setup onboarding", () => {
     expect(layout).toContain("setup-top-utility");
     expect(layout).toContain("ApplicationLanguageSettingsTab");
     expect(workspace).toContain("SUPPORTED_LANGUAGE_OPTIONS");
-    expect(workspace).toContain('attribute.attribute_key === "language"');
+    expect(workspace).toMatch(/attribute\.attribute_key === ['"]language['"]/);
     expect(englishCatalog).toContain("It does not change the current user's application interface language");
     expect(arabicCatalog).toContain("ولا تغيّر لغة واجهة التطبيق للمستخدم الحالي");
   });

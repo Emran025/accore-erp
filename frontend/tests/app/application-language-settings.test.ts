@@ -14,7 +14,7 @@ describe('application language settings', () => {
       'app/01-enterprise-core/identity-access/user-management/system-settings/components/ApplicationLanguageSettingsTab.tsx'
     );
 
-    expect(page).toContain('key: "language"');
+    expect(page).toMatch(/key:\s*['"]language['"]/);
     expect(page).toContain('<ApplicationLanguageSettingsTab />');
     expect(tab).toContain('getLocaleRegistry');
     expect(tab).toContain('setLocale(candidate.code as SupportedLocale)');
@@ -28,8 +28,8 @@ describe('application language settings', () => {
     const globalMeta = source('components/navigation/TopGlobalBar/components/GlobalMeta.tsx');
 
     expect(tab).toContain('applicationLanguageBoundary');
-    expect(globalMeta).toContain(
-      'router.push("/01-enterprise-core/identity-access/user-management/system-settings")'
+    expect(globalMeta).toMatch(
+      /router\.push\(['"]\/01-enterprise-core\/identity-access\/user-management\/system-settings['"]\)/
     );
   });
 });
