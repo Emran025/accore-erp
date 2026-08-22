@@ -206,12 +206,16 @@ fn require_elevated_lifecycle() -> Result<(), String> {
     if loaded == 0 {
         return Err("inspect Windows elevation before lifecycle mutation".into());
     }
-    if elevation.TokenIsElevated == 0 {
-        return Err(
-            "claim, attach, transition, uninstall, and stop require Windows elevation before protected Server data or service configuration can be changed".into(),
-        );
+    require_elevated_lifecycle_status(elevation.TokenIsElevated != 0)
+}
+
+fn require_elevated_lifecycle_status(is_elevated: bool) -> Result<(), String> {
+    if is_elevated {
+        return Ok(());
     }
-    Ok(())
+    Err(
+        "claim, attach, transition, uninstall, and stop require Windows elevation before protected Server data or service configuration can be changed".into(),
+    )
 }
 
 fn read_owner_argument(
@@ -1355,6 +1359,12 @@ mod tests {
     fn public_status_acl_includes_authenticated_desktop_clients() {
         assert_eq!(PUBLIC_STATUS_READ_PRINCIPAL, "*S-1-5-11:(OI)(CI)RX");
         assert_eq!(PUBLIC_STATUS_FILE_READ_PRINCIPAL, "*S-1-5-11:RX");
+    }
+
+    #[test]
+    fn lifecycle_mutation_rejects_a_limited_token_before_persistence() {
+        assert!(require_elevated_lifecycle_status(false).is_err());
+        assert!(require_elevated_lifecycle_status(true).is_ok());
     }
 
     #[test]
