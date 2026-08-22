@@ -308,7 +308,6 @@ jobs:
 
   build-server-headless-unix:
     name: Build server headless (${{ matrix.platform }})
-    if: startsWith(github.ref, 'refs/tags/desktop-v')
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -396,6 +395,7 @@ jobs:
         run: npm run desktop:build-server-headless-package -- ${{ matrix.runtime_target }}
 
       - name: Upload Server Headless packages
+        if: startsWith(github.ref, 'refs/tags/desktop-v')
         uses: actions/upload-artifact@v4
         with:
           name: accore-${{ matrix.artifact }}-assets
