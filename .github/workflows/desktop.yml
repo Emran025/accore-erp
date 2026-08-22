@@ -240,7 +240,11 @@ jobs:
           $installer = Get-ChildItem -Path 'frontend/src-tauri/target' -Recurse -File -Filter '*Headless*setup.exe' | Select-Object -First 1
           if ($null -eq $installer) { throw 'Headless NSIS installer was not produced' }
           $installerProcess = Start-Process -FilePath $installer.FullName -ArgumentList @('/S') -Wait -PassThru
-          if ($installerProcess.ExitCode -ne 0) { throw "Headless silent installer exited with $($installerProcess.ExitCode)" }
+          if ($installerProcess.ExitCode -ne 0) {
+            $diagnostic = Get-ChildItem -Path $env:ProgramFiles -Recurse -File -Filter 'headless-installer.log' -ErrorAction SilentlyContinue | Select-Object -First 1
+            $detail = if ($null -eq $diagnostic) { 'No Agent diagnostic file was written.' } else { Get-Content -LiteralPath $diagnostic.FullName -Raw }
+            throw "Headless silent installer exited with $($installerProcess.ExitCode): $detail"
+          }
 
           $statusPath = Join-Path $env:ProgramData 'ACCORE ERP\Server Status\runtime-status.json'
           $deadline = (Get-Date).AddMinutes(3)

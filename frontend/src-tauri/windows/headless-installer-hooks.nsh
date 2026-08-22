@@ -15,6 +15,9 @@
   Pop $1
   Pop $0
   ${If} "$0" != "0"
+    FileOpen $2 "$INSTDIR\headless-installer.log" w
+    FileWrite $2 "$1$\r$\n"
+    FileClose $2
     Abort "ACCORE Server Headless could not register the protected Windows service."
   ${EndIf}
 !macroend
