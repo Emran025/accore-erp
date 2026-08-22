@@ -129,11 +129,14 @@ jobs:
           brew install bison boost cmake openssl@3 pcre2 zstd
           developer_dir="$(xcode-select -p)"
           sdk_root="$(DEVELOPER_DIR="$developer_dir" xcrun --sdk macosx --show-sdk-path)"
+          toolchain_bin="$developer_dir/Toolchains/XcodeDefault.xctoolchain/usr/bin"
+          test -x "$toolchain_bin/clang"
+          test -x "$toolchain_bin/clang++"
           {
             echo "DEVELOPER_DIR=$developer_dir"
             echo "SDKROOT=$sdk_root"
-            echo "CC=$(DEVELOPER_DIR="$developer_dir" xcrun --find clang)"
-            echo "CXX=$(DEVELOPER_DIR="$developer_dir" xcrun --find clang++)"
+            echo "CC=$toolchain_bin/clang"
+            echo "CXX=$toolchain_bin/clang++"
             echo "CMAKE_PREFIX_PATH=$(brew --prefix boost):$(brew --prefix openssl@3):$(brew --prefix pcre2):$(brew --prefix zstd)"
           } >> "$GITHUB_ENV"
 
@@ -361,11 +364,14 @@ jobs:
           brew install bison boost cmake openssl@3 pcre2 zstd
           developer_dir="$(xcode-select -p)"
           sdk_root="$(DEVELOPER_DIR="$developer_dir" xcrun --sdk macosx --show-sdk-path)"
+          toolchain_bin="$developer_dir/Toolchains/XcodeDefault.xctoolchain/usr/bin"
+          test -x "$toolchain_bin/clang"
+          test -x "$toolchain_bin/clang++"
           {
             echo "DEVELOPER_DIR=$developer_dir"
             echo "SDKROOT=$sdk_root"
-            echo "CC=$(DEVELOPER_DIR="$developer_dir" xcrun --find clang)"
-            echo "CXX=$(DEVELOPER_DIR="$developer_dir" xcrun --find clang++)"
+            echo "CC=$toolchain_bin/clang"
+            echo "CXX=$toolchain_bin/clang++"
             echo "CMAKE_PREFIX_PATH=$(brew --prefix boost):$(brew --prefix openssl@3):$(brew --prefix pcre2):$(brew --prefix zstd)"
           } >> "$GITHUB_ENV"
 
