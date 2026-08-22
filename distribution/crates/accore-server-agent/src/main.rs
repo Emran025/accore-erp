@@ -677,10 +677,10 @@ fn caddy_path(path: &Path) -> String {
     path.display().to_string().replace('\\', "/")
 }
 
-fn write_caddy_configuration(config: &RuntimeConfig) -> Result<(), String> {
+fn generated_caddy_configuration(config: &RuntimeConfig) -> Result<String, String> {
     let app_root = caddy_path(&app_root(config));
     let mut configuration = format!(
-        "{{\n  auto_https off\n  admin off\n  frankenphp\n}}\n\nhttp://127.0.0.1:{API_PORT} {{\n  root * {app_root}/public\n  encode zstd gzip\n  php_server\n}}\n"
+        "{{\n  auto_https off\n  admin off\n  frankenphp\n}}\n\nhttp://127.0.0.1:{API_PORT} {{\n  root * \"{app_root}/public\"\n  encode zstd gzip\n  php_server\n}}\n"
     );
 
     if config.direct_tls_enabled {
@@ -690,12 +690,16 @@ fn write_caddy_configuration(config: &RuntimeConfig) -> Result<(), String> {
         let certificate = caddy_path(Path::new(&config.tls_certificate_path));
         let private_key = caddy_path(Path::new(&config.tls_private_key_path));
         configuration.push_str(&format!(
-            "\nhttps://0.0.0.0:{} {{\n  tls \"{}\" \"{}\"\n  root * {}/public\n  encode zstd gzip\n  php_server\n}}\n",
+            "\nhttps://0.0.0.0:{} {{\n  tls \"{}\" \"{}\"\n  root * \"{}/public\"\n  encode zstd gzip\n  php_server\n}}\n",
             config.direct_tls_port, certificate, private_key, app_root
         ));
     }
 
-    fs::write(caddy_configuration_path(config), configuration)
+    Ok(configuration)
+}
+
+fn write_caddy_configuration(config: &RuntimeConfig) -> Result<(), String> {
+    fs::write(caddy_configuration_path(config), generated_caddy_configuration(config)?)
         .map_err(|error| format!("write generated Caddy configuration: {error}"))
 }
 
@@ -1350,6 +1354,18 @@ mod tests {
             packaged_runtime_root(&installation_root),
             installation_root.join("resources/server-runtime/windows-x86_64")
         );
+    }
+
+    #[test]
+    fn caddy_configuration_quotes_windows_application_paths_with_spaces() {
+        let configuration =
+            generated_caddy_configuration(&config()).expect("generate Caddy configuration");
+        assert!(configuration.contains(
+            "root * \"C:/Program Files/ACCORE ERP Server Desktop/runtime/app/public\""
+        ));
+        assert!(!configuration.contains(
+            "root * C:/Program Files/ACCORE ERP Server Desktop/runtime/app/public"
+        ));
     }
 
     #[test]
