@@ -33,6 +33,7 @@ const BACKUP_INTERVAL_SECONDS: u64 = 6 * 60 * 60;
 // Use the well-known SID rather than a localized account name. `icacls` accepts
 // numerical SIDs when prefixed with `*`; S-1-5-11 is Authenticated Users.
 const PUBLIC_STATUS_READ_PRINCIPAL: &str = "*S-1-5-11:(OI)(CI)RX";
+const PUBLIC_STATUS_FILE_READ_PRINCIPAL: &str = "*S-1-5-11:RX";
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -881,12 +882,7 @@ fn print_status(config: &RuntimeConfig) -> Result<(), String> {
 }
 
 fn write_status(config: &RuntimeConfig, status: &RuntimeStatus) -> Result<(), String> {
-    let destination = status_path(config);
-    let temporary = destination.with_extension("json.partial");
-    let payload = serde_json::to_vec_pretty(status)
-        .map_err(|error| format!("serialize runtime status: {error}"))?;
-    fs::write(&temporary, payload).map_err(|error| format!("write runtime status: {error}"))?;
-    fs::rename(&temporary, &destination).map_err(|error| format!("publish runtime status: {error}"))
+    write_public_json_atomically(&status_path(config), status, "runtime status")
 }
 
 #[cfg(windows)]
@@ -1054,6 +1050,17 @@ fn write_json_atomically<T: Serialize>(path: &Path, value: &T, description: &str
     fs::rename(&temporary, path).map_err(|error| format!("publish {description}: {error}"))
 }
 
+fn write_public_json_atomically<T: Serialize>(
+    path: &Path,
+    value: &T,
+    description: &str,
+) -> Result<(), String> {
+    write_json_atomically(path, value, description)?;
+    #[cfg(windows)]
+    apply_windows_public_file_acl(path)?;
+    Ok(())
+}
+
 #[cfg(windows)]
 fn write_server_instance(
     config: &RuntimeConfig,
@@ -1097,7 +1104,7 @@ fn write_public_receipt(
     config: &RuntimeConfig,
     receipt: &PublicServerInstanceReceipt,
 ) -> Result<(), String> {
-    write_json_atomically(
+    write_public_json_atomically(
         &public_instance_receipt_path(config),
         receipt,
         "public server instance receipt",
@@ -1208,6 +1215,22 @@ fn apply_windows_acl(path: &Path, permit_users_read: bool) -> Result<(), String>
 }
 
 #[cfg(windows)]
+fn apply_windows_public_file_acl(path: &Path) -> Result<(), String> {
+    let mut command = Command::new("icacls.exe");
+    command.arg(path).args([
+        "/inheritance:r",
+        "/grant:r",
+        "SYSTEM:F",
+        "/grant:r",
+        "Administrators:F",
+        "/grant:r",
+        PUBLIC_STATUS_FILE_READ_PRINCIPAL,
+        "/q",
+    ]);
+    run_checked(&mut command, "publish public Server status file permissions")
+}
+
+#[cfg(windows)]
 fn random_secret(prefix: &str) -> String {
     let mut bytes = [0u8; 32];
     OsRng.fill_bytes(&mut bytes);
@@ -1280,6 +1303,7 @@ mod tests {
     #[test]
     fn public_status_acl_includes_authenticated_desktop_clients() {
         assert_eq!(PUBLIC_STATUS_READ_PRINCIPAL, "*S-1-5-11:(OI)(CI)RX");
+        assert_eq!(PUBLIC_STATUS_FILE_READ_PRINCIPAL, "*S-1-5-11:RX");
     }
 
     #[test]
