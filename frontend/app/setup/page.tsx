@@ -326,9 +326,27 @@ export default function SetupPage() {
         nextLabel={i18n.catalog["common.general.next"]}
         completeLabel={i18n.catalog["enterpriseCore.setup.complete"]}
         steps={[
-          { id: "foundation", title: i18n.catalog["enterpriseCore.setup.phase.foundation"], description: i18n.catalog["enterpriseCore.setup.phase.foundationDescription"], complete: foundationComplete, enabled: true },
-          { id: "operating_links", title: i18n.catalog["enterpriseCore.setup.phase.coreOperations"], description: i18n.catalog["enterpriseCore.setup.phase.coreOperationsDescription"], complete: operatingLinksComplete, enabled: foundationComplete },
-          { id: "optional_capabilities", title: i18n.catalog["enterpriseCore.setup.phase.moduleActivation"], description: i18n.catalog["enterpriseCore.setup.phase.moduleActivationDescription"], complete: onboarding?.starter_bundle_active === true, enabled: operatingLinksComplete },
+          {
+            id: "foundation",
+            title: locale === "ar-SA" ? "تأسيس المنشأة" : "Establish the organization",
+            description: locale === "ar-SA" ? "اختر نموذج العمل وأنشئ الأساس التنظيمي والمحاسبي." : "Choose the business model and establish the organizational and accounting foundation.",
+            complete: foundationComplete,
+            enabled: true,
+          },
+          {
+            id: "operating_links",
+            title: locale === "ar-SA" ? "تجهيز التشغيل اليومي" : "Prepare daily operations",
+            description: locale === "ar-SA" ? "اربط موقع العمل ونقطة البيع ومركز التكلفة عندما يتطلبها نموذج العمل." : "Connect the work site, point of sale, and cost center when the business model requires them.",
+            complete: operatingLinksComplete,
+            enabled: foundationComplete,
+          },
+          {
+            id: "optional_capabilities",
+            title: locale === "ar-SA" ? "وسّع أعمالك" : "Expand your business",
+            description: locale === "ar-SA" ? "فعّل القدرات التي تحتاجها فقط؛ الفروع والقنوات والفرق تُضاف لاحقًا بمسارات موجهة." : "Enable only the capabilities you need; branches, channels, and teams are added later through guided flows.",
+            complete: onboarding?.starter_bundle_active === true,
+            enabled: operatingLinksComplete,
+          },
         ]}
         onPrevious={() => setJourneyStep((current) => current === "optional_capabilities" ? "operating_links" : "foundation")}
         onNext={() => setJourneyStep((current) => current === "foundation" ? "operating_links" : "optional_capabilities")}

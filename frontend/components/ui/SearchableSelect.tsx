@@ -191,7 +191,7 @@ export function SearchableSelect({
     const textDirection = getTextDirection(displayValue);
 
     return (
-        <div className={`searchable-select ${className}`} ref={containerRef}>
+        <div className={`searchable-select ${className}`} ref={containerRef} dir={textDirection}>
             <input
                 ref={inputRef}
                 type="text"
@@ -205,13 +205,11 @@ export function SearchableSelect({
                 disabled={disabled}
                 autoComplete="off"
                 required={required && !value}
+                dir={textDirection}
+                className={`input-direction-aware ${value && !isOpen ? "has-clear-action" : ""}`}
                 style={{
                     paddingTop: paddingVertical ? (paddingVertical + "rem") : undefined,
                     paddingBottom: paddingVertical ? (paddingVertical + "rem") : undefined,
-                    direction: textDirection,
-                    textAlign: textDirection === "rtl" ? "right" : "left",
-                    paddingLeft: "3rem",
-                    paddingRight: (value && !isOpen) ? "2.5rem" : "1rem"
                 }}
             />
             <div className="input-icon">
