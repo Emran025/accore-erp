@@ -21,6 +21,12 @@ function Assert-Contract {
   if (-not $Condition) { throw $Message }
 }
 
+function Assert-ElevatedContractContext {
+  $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+  $principal = [Security.Principal.WindowsPrincipal]::new($identity)
+  Assert-Contract -Condition $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator) -Message 'Lifecycle mutator must run with a full elevated Windows token'
+}
+
 function Invoke-AgentOperation {
   param([Parameter(Mandatory = $true)][string[]]$Arguments)
   & $Agent @Arguments
@@ -75,6 +81,7 @@ function Write-PublicPathDiagnostics {
 }
 
 try {
+  Assert-ElevatedContractContext
   Assert-Contract -Condition (Test-Path -LiteralPath $Agent) -Message "Agent binary is missing: $Agent"
   Assert-Contract -Condition (-not (Get-Service -Name $serviceName -ErrorAction SilentlyContinue)) -Message 'Worker is not fresh: ACCORE Server Agent service already exists'
   Assert-Contract -Condition (-not (Test-Path -LiteralPath $PublicStatusRoot)) -Message 'Worker is not fresh: public Server Status directory already exists'

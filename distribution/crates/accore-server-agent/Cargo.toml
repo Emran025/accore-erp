@@ -17,3 +17,4 @@ sha2 = "0.10"
 
 [target.'cfg(windows)'.dependencies]
 windows-service = "0.8"
+windows-sys = { version = "0.61.2", features = ["Win32_Foundation", "Win32_Security", "Win32_System_Threading"] }
