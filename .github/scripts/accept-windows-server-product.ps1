@@ -70,7 +70,10 @@ function Write-ReadinessDiagnostics {
 function Wait-ForReadyStatus {
   param([string]$ExpectedServerId = '')
 
-  $deadline = (Get-Date).AddMinutes(3)
+  # The Agent owns a five-minute provisioning deadline. CI waits beyond that
+  # contract so a genuine bootstrap stall is observed as the Agent's explicit
+  # unhealthy state rather than as an arbitrary test timeout.
+  $deadline = (Get-Date).AddMinutes(6)
   $lastDetail = 'No public status was published.'
   while ((Get-Date) -lt $deadline) {
     $service = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
@@ -96,7 +99,7 @@ function Wait-ForReadyStatus {
     Start-Sleep -Seconds 2
   }
   Write-ReadinessDiagnostics
-  throw "$Product did not publish a ready local-service status within three minutes. Last detail: $lastDetail"
+  throw "$Product did not publish a ready local-service status within the bounded bootstrap window. Last detail: $lastDetail"
 }
 
 function Invoke-ProductInstaller {

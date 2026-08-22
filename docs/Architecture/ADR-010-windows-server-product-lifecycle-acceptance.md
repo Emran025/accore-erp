@@ -27,6 +27,12 @@ Each Windows server product receives an independent lifecycle acceptance run aft
 
 The runtime status contract now includes the opaque `serverId`. This identifier is generated at initial installation, contains no credential, and is already part of the server trust model. It is suitable for proving durable identity continuity in the public status surface without exposing private configuration or inspecting protected database files.
 
+### Bounded bootstrap contract
+
+Initial Laravel migrations and versioned seed revisions are supervised by the Agent as a single bounded provisioning operation. Each operation has a five-minute execution window. A timeout, non-zero exit, or other provisioning error is terminal for that start attempt: the Agent writes an `unhealthy` public runtime state identifying the failed provisioning stage and exits rather than repeatedly restarting an unchanged migration or seed operation.
+
+The lifecycle acceptance waits six minutes for a fresh installation. This is intentionally longer than the Agent contract so it can observe either a complete `ready` state or the Agent's explicit `unhealthy` state. It is not an unbounded test timeout and it never reads the protected configuration or durable data to diagnose a failure.
+
 ## Consequences
 
 The pipeline no longer runs a pre-bundle smoke test that writes to the production durable root, and it no longer uses ownership takeover or ACL rewriting for test cleanup. A passing acceptance run verifies the packaged installer, service registration, embedded MariaDB and FrankenPHP readiness, ordered shutdown, unregistration, no-window Headless invariant, and data-preserving reinstall path.

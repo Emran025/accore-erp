@@ -6,13 +6,11 @@ use std::{
     path::{Path, PathBuf},
     process::{Child, Command, Stdio},
     thread,
-    time::{Duration, SystemTime, UNIX_EPOCH},
+    time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 
 #[cfg(windows)]
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
-#[cfg(windows)]
-use std::time::Instant;
 #[cfg(windows)]
 use rand::{rngs::OsRng, RngCore};
 use serde::{Deserialize, Serialize};
@@ -24,6 +22,7 @@ const DATABASE_PORT: u16 = 3307;
 const API_PORT: u16 = 8765;
 const BACKUP_VALIDATION_PORT: u16 = 3308;
 const READINESS_TIMEOUT: Duration = Duration::from_secs(90);
+const PROVISIONING_COMMAND_TIMEOUT: Duration = Duration::from_secs(5 * 60);
 const MAX_RESTART_ATTEMPTS: u8 = 3;
 const BACKUP_INTERVAL_SECONDS: u64 = 6 * 60 * 60;
 
@@ -380,6 +379,11 @@ fn run(config: RuntimeConfig) -> Result<(), String> {
         match run_components(&config, &mut status, &mut backup) {
             Ok(()) => return Ok(()),
             Err(error) => {
+                if error.starts_with("initial provisioning failed:") {
+                    status.failed(error.clone());
+                    let _ = write_status(&config, &status);
+                    return Err(error);
+                }
                 restart_attempts += 1;
                 if restart_attempts > MAX_RESTART_ATTEMPTS {
                     status.failed(format!(
@@ -426,7 +430,8 @@ fn run_components(
         status.database = component("ready", "MariaDB is ready on 127.0.0.1:3307");
         write_status(config, status)?;
 
-        provision_application(config, status)?;
+        provision_application(config, status)
+            .map_err(|error| format!("initial provisioning failed: {error}"))?;
         ensure_port_is_free(API_PORT, "ACCORE API")?;
         status.api = component("starting", "starting FrankenPHP API on loopback");
         write_status(config, status)?;
@@ -852,16 +857,38 @@ fn run_checked_logged(
         .map_err(|error| format!("clone Laravel provisioning log: {error}"))?;
     command.stdout(Stdio::from(stdout)).stderr(Stdio::from(log));
 
-    let status = command
-        .status()
+    let mut child = command
+        .spawn()
         .map_err(|error| format!("{description}: {error}"))?;
-    if status.success() {
-        Ok(())
-    } else {
-        Err(format!(
-            "{description} exited with {status}; inspect {}",
-            log_path.display()
-        ))
+    let deadline = Instant::now() + PROVISIONING_COMMAND_TIMEOUT;
+    loop {
+        match child
+            .try_wait()
+            .map_err(|error| format!("inspect {description} process: {error}"))?
+        {
+            Some(status) if status.success() => return Ok(()),
+            Some(status) => {
+                return Err(format!(
+                    "{description} exited with {status}; inspect {}",
+                    log_path.display()
+                ))
+            }
+            None if Instant::now() >= deadline => {
+                let _ = writeln!(
+                    log,
+                    "{description} exceeded the bounded {}-second provisioning window.",
+                    PROVISIONING_COMMAND_TIMEOUT.as_secs()
+                );
+                let _ = child.kill();
+                let _ = child.wait();
+                return Err(format!(
+                    "{description} exceeded the bounded {}-second provisioning window; inspect {}",
+                    PROVISIONING_COMMAND_TIMEOUT.as_secs(),
+                    log_path.display()
+                ));
+            }
+            None => thread::sleep(Duration::from_millis(250)),
+        }
     }
 }
 
