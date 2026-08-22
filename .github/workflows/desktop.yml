@@ -286,7 +286,15 @@ jobs:
           if (Get-Process -Name 'accore-server-agent','mariadbd','frankenphp' -ErrorAction SilentlyContinue) { throw 'Headless uninstaller left a runtime process active' }
           & takeown.exe /F $dataRoot /R /D Y | Out-Null
           & icacls.exe $dataRoot /grant "$($env:USERNAME):(OI)(CI)F" /T /C /Q | Out-Null
-          Remove-Item $dataRoot -Recurse -Force -ErrorAction SilentlyContinue
+          $cleanupDeadline = (Get-Date).AddSeconds(30)
+          while (Test-Path $dataRoot) {
+            try {
+              Remove-Item $dataRoot -Recurse -Force -ErrorAction Stop
+            } catch {
+              if ((Get-Date) -ge $cleanupDeadline) { throw }
+              Start-Sleep -Seconds 1
+            }
+          }
 
       - name: Upload desktop installers and updater signatures
         if: startsWith(github.ref, 'refs/tags/desktop-v')
