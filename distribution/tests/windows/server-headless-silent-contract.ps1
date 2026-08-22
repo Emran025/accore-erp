@@ -49,8 +49,8 @@ try {
   Assert-Contract -Condition (-not (Get-Service -Name $serviceName -ErrorAction SilentlyContinue)) -Message 'Worker is not fresh: ACCORE Server Agent already exists'
   Assert-Contract -Condition (-not (Test-Path -LiteralPath $PublicStatusRoot)) -Message 'Worker is not fresh: public Server Status directory already exists'
 
-  & $Installer '/S'
-  Assert-Contract -Condition ($LASTEXITCODE -eq 0) -Message "Silent Headless installer exited with $LASTEXITCODE"
+  $installProcess = Start-Process -FilePath $Installer -ArgumentList '/S' -Wait -PassThru
+  Assert-Contract -Condition ($installProcess.ExitCode -eq 0) -Message "Silent Headless installer exited with $($installProcess.ExitCode)"
 
   $agentPath = Join-Path $installRoot 'accore-server-agent.exe'
   Assert-Contract -Condition (Test-Path -LiteralPath $agentPath) -Message 'Silent Headless installer did not install the Agent executable'
@@ -70,8 +70,8 @@ try {
   Assert-Contract -Condition ($service.StartMode -eq 'Auto') -Message "Headless service start mode is '$($service.StartMode)', not Auto"
   Assert-Contract -Condition ($service.PathName -match [regex]::Escape($agentPath)) -Message 'Headless service command does not reference the installed Agent'
 
-  & (Join-Path $installRoot 'uninstall.exe') '/S'
-  Assert-Contract -Condition ($LASTEXITCODE -eq 0) -Message "Silent Headless uninstaller exited with $LASTEXITCODE"
+  $uninstallProcess = Start-Process -FilePath (Join-Path $installRoot 'uninstall.exe') -ArgumentList '/S' -Wait -PassThru
+  Assert-Contract -Condition ($uninstallProcess.ExitCode -eq 0) -Message "Silent Headless uninstaller exited with $($uninstallProcess.ExitCode)"
 
   $deadline = (Get-Date).AddSeconds(45)
   while ((Get-Date) -lt $deadline -and $null -ne (Get-Service -Name $serviceName -ErrorAction SilentlyContinue)) {
