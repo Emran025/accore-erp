@@ -118,6 +118,13 @@ async function buildMariaDbFromSource(source) {
     if (macSdkRoot) {
       cmakeArgs.push(`-DCMAKE_OSX_SYSROOT=${macSdkRoot}`);
     }
+    if (process.env.CC && process.env.CXX) {
+      cmakeArgs.push(
+        `-DCMAKE_C_COMPILER=${process.env.CC}`,
+        `-DCMAKE_CXX_COMPILER=${process.env.CXX}`,
+        '-DCMAKE_VERBOSE_MAKEFILE=ON'
+      );
+    }
 
     // Hosted macOS runners can expose Command Line Tools include flags through
     // setup actions. They are incompatible with the selected Xcode SDK when
@@ -136,7 +143,11 @@ async function buildMariaDbFromSource(source) {
     });
   }
   await run('cmake', cmakeArgs, buildEnvironment);
-  await run('cmake', ['--build', buildRoot, '--parallel', process.env.ACCORE_RUNTIME_BUILD_JOBS ?? '3'], buildEnvironment);
+  await run(
+    'cmake',
+    ['--build', buildRoot, '--parallel', process.env.ACCORE_RUNTIME_BUILD_JOBS ?? '3', '--verbose'],
+    buildEnvironment
+  );
   await run('cmake', ['--install', buildRoot], buildEnvironment);
 }
 
