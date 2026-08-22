@@ -162,7 +162,7 @@ jobs:
           $installationDirectory = if ($isHeadless) {
             Join-Path $env:ProgramFiles 'ACCORE ERP Server Headless'
           } else {
-            Join-Path $env:LOCALAPPDATA 'ACCORE ERP Server Desktop'
+            Join-Path $env:ProgramFiles 'ACCORE ERP Server Desktop'
           }
           & .github/scripts/accept-windows-server-product.ps1 `
             -Product '${{ matrix.acceptance }}' `
@@ -185,6 +185,7 @@ jobs:
           }
           $redactedLogs = @{
             'provisioning.tail.redacted.log' = Join-Path $env:ProgramData 'ACCORE ERP\Server\logs\provisioning.log'
+            'api-preflight.tail.redacted.log' = Join-Path $env:ProgramData 'ACCORE ERP\Server\logs\api-preflight.log'
             'frankenphp-api.tail.redacted.log' = Join-Path $env:ProgramData 'ACCORE ERP\Server\logs\api.log'
             'laravel.tail.redacted.log' = Join-Path $env:ProgramData 'ACCORE ERP\Server\laravel-storage\logs\laravel.log'
           }

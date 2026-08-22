@@ -19,13 +19,10 @@ const SERVICE_NAME: &str = "ACCOREServerAgent";
 const SERVICE_DISPLAY_NAME: &str = "ACCORE ERP Server Agent";
 
 #[cfg(windows)]
-pub fn install_service(config_path: String) -> Result<(), String> {
+fn service_info(config_path: String) -> Result<ServiceInfo, String> {
     let executable =
         std::env::current_exe().map_err(|error| format!("resolve Agent executable: {error}"))?;
-    let manager =
-        ServiceManager::local_computer(None::<&str>, ServiceManagerAccess::CREATE_SERVICE)
-            .map_err(|error| format!("open Windows Service Control Manager: {error}"))?;
-    let info = ServiceInfo {
+    Ok(ServiceInfo {
         name: OsString::from(SERVICE_NAME),
         display_name: OsString::from(SERVICE_DISPLAY_NAME),
         service_type: ServiceType::OWN_PROCESS,
@@ -40,26 +37,82 @@ pub fn install_service(config_path: String) -> Result<(), String> {
         dependencies: vec![],
         account_name: None,
         account_password: None,
-    };
+    })
+}
+
+#[cfg(windows)]
+fn service_access() -> ServiceAccess {
+    ServiceAccess::QUERY_STATUS
+        | ServiceAccess::START
+        | ServiceAccess::STOP
+        | ServiceAccess::DELETE
+        | ServiceAccess::CHANGE_CONFIG
+}
+
+#[cfg(windows)]
+fn wait_for_stopped(service: &windows_service::service::Service) -> Result<(), String> {
+    let deadline = std::time::Instant::now() + Duration::from_secs(30);
+    loop {
+        let status = service
+            .query_status()
+            .map_err(|error| format!("query ACCORE Server Agent service: {error}"))?;
+        if status.current_state == ServiceState::Stopped {
+            return Ok(());
+        }
+        if std::time::Instant::now() >= deadline {
+            return Err("ACCORE Server Agent did not stop before service reconciliation".into());
+        }
+        std::thread::sleep(Duration::from_millis(250));
+    }
+}
+
+#[cfg(windows)]
+pub fn reconcile_service(config_path: String) -> Result<(), String> {
+    let manager = ServiceManager::local_computer(
+        None::<&str>,
+        ServiceManagerAccess::CONNECT | ServiceManagerAccess::CREATE_SERVICE,
+    )
+    .map_err(|error| format!("open Windows Service Control Manager: {error}"))?;
+    let info = service_info(config_path)?;
+    match manager.open_service(SERVICE_NAME, service_access()) {
+        Ok(service) => {
+            let status = service
+                .query_status()
+                .map_err(|error| format!("query ACCORE Server Agent before reconciliation: {error}"))?;
+            if status.current_state != ServiceState::Stopped {
+                let _ = service.stop();
+                wait_for_stopped(&service)?;
+            }
+            service
+                .change_config(&info)
+                .map_err(|error| format!("reconcile ACCORE Server Agent service configuration: {error}"))?;
+            service
+                .start::<&str>(&[])
+                .map_err(|error| format!("start reconciled ACCORE Server Agent service: {error}"))
+        }
+        Err(_) => manager
+            .create_service(&info, service_access())
+            .map_err(|error| format!("create ACCORE Server Agent service: {error}"))?
+            .start::<&str>(&[])
+            .map_err(|error| format!("start ACCORE Server Agent service: {error}")),
+    }
+}
+
+#[cfg(windows)]
+pub fn start_service() -> Result<(), String> {
+    let manager = ServiceManager::local_computer(None::<&str>, ServiceManagerAccess::CONNECT)
+        .map_err(|error| format!("open Windows Service Control Manager: {error}"))?;
     let service = manager
-        .create_service(
-            &info,
-            ServiceAccess::QUERY_STATUS
-                | ServiceAccess::START
-                | ServiceAccess::STOP
-                | ServiceAccess::DELETE,
-        )
-        .or_else(|_| {
-            manager.open_service(
-                SERVICE_NAME,
-                ServiceAccess::QUERY_STATUS
-                    | ServiceAccess::START
-                    | ServiceAccess::STOP
-                    | ServiceAccess::DELETE,
-            )
-        })
-        .map_err(|error| format!("install ACCORE Server Agent service: {error}"))?;
-    let _ = service.start::<&str>(&[]);
+        .open_service(SERVICE_NAME, ServiceAccess::QUERY_STATUS | ServiceAccess::START)
+        .map_err(|error| format!("open ACCORE Server Agent service: {error}"))?;
+    let status = service
+        .query_status()
+        .map_err(|error| format!("query ACCORE Server Agent service: {error}"))?;
+    if status.current_state != ServiceState::Running {
+        service
+            .start::<&str>(&[])
+            .map_err(|error| format!("start ACCORE Server Agent service: {error}"))?;
+    }
     Ok(())
 }
 
@@ -178,6 +231,16 @@ fn service_main(_arguments: Vec<OsString>) {
 #[allow(dead_code)]
 pub fn install_service(_config_path: String) -> Result<(), String> {
     Err("Windows Service installation is supported only on Windows".into())
+}
+#[cfg(not(windows))]
+#[allow(dead_code)]
+pub fn reconcile_service(_config_path: String) -> Result<(), String> {
+    Err("Windows Service reconciliation is supported only on Windows".into())
+}
+#[cfg(not(windows))]
+#[allow(dead_code)]
+pub fn start_service() -> Result<(), String> {
+    Err("Windows Service start is supported only on Windows".into())
 }
 #[cfg(not(windows))]
 pub fn uninstall_service() -> Result<(), String> {

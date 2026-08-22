@@ -8,9 +8,9 @@
   ${GetParameters} $0
   ${GetOptions} "$0" "/ACCORE_RESPONSE=" $1
   ${If} "$1" == ""
-    nsExec::ExecToStack '"$INSTDIR\accore-server-agent.exe" install'
+    nsExec::ExecToStack '"$INSTDIR\accore-server-agent.exe" install --owner server-headless'
   ${Else}
-    nsExec::ExecToStack '"$INSTDIR\accore-server-agent.exe" install --response-file "$1"'
+    nsExec::ExecToStack '"$INSTDIR\accore-server-agent.exe" install --owner server-headless --response-file "$1"'
   ${EndIf}
   Pop $0
   Pop $1
@@ -25,7 +25,7 @@
 !macro NSIS_HOOK_PREUNINSTALL
   ; Normal removal stops and unregisters only the service and binaries. The
   ; Agent never deletes customer data, database files, logs, or backups.
-  nsExec::ExecToStack '"$INSTDIR\accore-server-agent.exe" uninstall'
+  nsExec::ExecToStack '"$INSTDIR\accore-server-agent.exe" uninstall --owner server-headless'
   Pop $0
   Pop $1
   ${If} "$0" != "0"

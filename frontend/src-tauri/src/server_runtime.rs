@@ -120,7 +120,11 @@ pub fn server_runtime_start(app: AppHandle) -> Result<ServerRuntimeSnapshot, Str
 fn start_windows_service_agent(agent_binary: &std::path::Path) -> Result<(), String> {
     #[cfg(windows)]
     {
-        return launch_elevated_agent(agent_binary, "install", "install or start the Server Agent");
+        return launch_elevated_agent(
+            agent_binary,
+            "install --owner server-desktop",
+            "install or start the Server Agent",
+        );
     }
 
     #[cfg(not(windows))]

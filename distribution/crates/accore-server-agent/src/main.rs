@@ -25,6 +25,56 @@ const READINESS_TIMEOUT: Duration = Duration::from_secs(90);
 const PROVISIONING_COMMAND_TIMEOUT: Duration = Duration::from_secs(5 * 60);
 const MAX_RESTART_ATTEMPTS: u8 = 3;
 const BACKUP_INTERVAL_SECONDS: u64 = 6 * 60 * 60;
+const SERVER_INSTANCE_SCHEMA_VERSION: u32 = 1;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
+#[serde(rename_all = "kebab-case")]
+enum ServerProductFlavor {
+    ServerDesktop,
+    ServerHeadless,
+}
+
+impl ServerProductFlavor {
+    fn parse(value: &str) -> Result<Self, String> {
+        match value {
+            "server-desktop" => Ok(Self::ServerDesktop),
+            "server-headless" => Ok(Self::ServerHeadless),
+            _ => Err("owner must be server-desktop or server-headless".into()),
+        }
+    }
+
+    fn as_str(self) -> &'static str {
+        match self {
+            Self::ServerDesktop => "server-desktop",
+            Self::ServerHeadless => "server-headless",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ServerInstanceManifest {
+    schema_version: u32,
+    instance_id: String,
+    server_id: String,
+    owner_product: ServerProductFlavor,
+    active_runtime_root: PathBuf,
+    service_executable: PathBuf,
+    service_config_path: PathBuf,
+    updated_at: u64,
+}
+
+#[derive(Debug)]
+struct InstallRequest {
+    owner: ServerProductFlavor,
+    response: InstallResponse,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum InstallDisposition {
+    ClaimOrUpdate,
+    AttachToHeadless,
+}
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -89,6 +139,9 @@ struct ComponentStatus {
 struct RuntimeStatus {
     state: String,
     detail: String,
+    phase: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    error_code: Option<String>,
     server_id: String,
     database: ComponentStatus,
     api: ComponentStatus,
@@ -102,6 +155,8 @@ impl RuntimeStatus {
         Self {
             state: "bootstrapping".into(),
             detail: detail.into(),
+            phase: "initializing".into(),
+            error_code: None,
             server_id: config.server_id.clone(),
             database: component("pending", "not started"),
             api: component("pending", "not started"),
@@ -113,6 +168,24 @@ impl RuntimeStatus {
 
     fn failed(&mut self, detail: impl Into<String>) {
         self.state = "unhealthy".into();
+        self.detail = detail.into();
+        self.phase = "failed".into();
+        self.error_code = Some("runtime_failed".into());
+        self.updated_at = now();
+    }
+
+    fn entering(&mut self, phase: &str, detail: impl Into<String>) {
+        self.state = "bootstrapping".into();
+        self.phase = phase.into();
+        self.detail = detail.into();
+        self.error_code = None;
+        self.updated_at = now();
+    }
+
+    fn failed_at(&mut self, phase: &str, error_code: &str, detail: impl Into<String>) {
+        self.state = "unhealthy".into();
+        self.phase = phase.into();
+        self.error_code = Some(error_code.into());
         self.detail = detail.into();
         self.updated_at = now();
     }
@@ -128,12 +201,16 @@ fn main() {
 fn execute() -> Result<(), String> {
     let mut arguments = env::args().skip(1);
     let command = arguments.next().ok_or(
-        "usage: accore-server-agent <run|service|install|uninstall|status|stop|request-backup|seed-baseline> [--config <path>]",
+        "usage: accore-server-agent <run|service|install|uninstall|transition|status|stop|request-backup|seed-baseline> [--config <path>]",
     )?;
 
     match command.as_str() {
-        "install" => install_embedded_service(read_install_response(&mut arguments)?),
-        "uninstall" => uninstall_embedded_service(),
+        "install" => {
+            let request = read_install_request(&mut arguments)?;
+            install_embedded_service(request.owner, request.response)
+        }
+        "uninstall" => uninstall_embedded_service(read_owner_argument(&mut arguments, ServerProductFlavor::ServerDesktop)?),
+        "transition" => transition_embedded_service(read_owner_argument(&mut arguments, ServerProductFlavor::ServerDesktop)?),
         "stop" => windows_service_host::stop_service(),
         "run" | "service" | "status" | "request-backup" | "seed-baseline" | "issue-initial-pairing" => {
             let config_path = read_config_argument(&mut arguments)?;
@@ -151,24 +228,42 @@ fn execute() -> Result<(), String> {
     }
 }
 
-fn read_install_response(arguments: &mut impl Iterator<Item = String>) -> Result<InstallResponse, String> {
-    let Some(flag) = arguments.next() else {
-        return Ok(InstallResponse::default());
-    };
-    if flag != "--response-file" {
-        return Err("usage: accore-server-agent install [--response-file <path>]".into());
+fn read_install_request(arguments: &mut impl Iterator<Item = String>) -> Result<InstallRequest, String> {
+    let mut owner = ServerProductFlavor::ServerDesktop;
+    let mut response = InstallResponse::default();
+    while let Some(flag) = arguments.next() {
+        match flag.as_str() {
+            "--owner" => owner = ServerProductFlavor::parse(&arguments.next().ok_or("missing owner")?)?,
+            "--response-file" => {
+                let path = arguments.next().ok_or("missing response file path")?;
+                response = serde_json::from_slice(
+                    &fs::read(&path)
+                        .map_err(|error| format!("read non-interactive response file: {error}"))?,
+                )
+                .map_err(|error| format!("parse non-interactive response file: {error}"))?;
+            }
+            _ => return Err("usage: accore-server-agent install [--owner <server-desktop|server-headless>] [--response-file <path>]".into()),
+        }
     }
-    let path = arguments.next().ok_or("missing response file path")?;
-    if arguments.next().is_some() {
-        return Err("usage: accore-server-agent install [--response-file <path>]".into());
-    }
-
-    let response: InstallResponse = serde_json::from_slice(
-        &fs::read(&path).map_err(|error| format!("read non-interactive response file: {error}"))?,
-    )
-    .map_err(|error| format!("parse non-interactive response file: {error}"))?;
     validate_install_response(&response)?;
-    Ok(response)
+    Ok(InstallRequest { owner, response })
+}
+
+fn read_owner_argument(
+    arguments: &mut impl Iterator<Item = String>,
+    default: ServerProductFlavor,
+) -> Result<ServerProductFlavor, String> {
+    let Some(flag) = arguments.next() else {
+        return Ok(default);
+    };
+    if flag != "--owner" {
+        return Err("usage: accore-server-agent <uninstall|transition> [--owner <server-desktop|server-headless>]".into());
+    }
+    let owner = ServerProductFlavor::parse(&arguments.next().ok_or("missing owner")?)?;
+    if arguments.next().is_some() {
+        return Err("usage: accore-server-agent <uninstall|transition> [--owner <server-desktop|server-headless>]".into());
+    }
+    Ok(owner)
 }
 
 fn read_config_argument(arguments: &mut impl Iterator<Item = String>) -> Result<String, String> {
@@ -292,39 +387,80 @@ fn copy_private_file(source: &Path, destination: &Path, label: &str) -> Result<(
     Ok(())
 }
 
-fn install_embedded_service(response: InstallResponse) -> Result<(), String> {
+fn install_disposition(
+    existing_owner: Option<ServerProductFlavor>,
+    requested_owner: ServerProductFlavor,
+) -> Result<InstallDisposition, String> {
+    match existing_owner {
+        None => Ok(InstallDisposition::ClaimOrUpdate),
+        Some(owner) if owner == requested_owner => Ok(InstallDisposition::ClaimOrUpdate),
+        Some(ServerProductFlavor::ServerHeadless)
+            if requested_owner == ServerProductFlavor::ServerDesktop => {
+            Ok(InstallDisposition::AttachToHeadless)
+        }
+        Some(ServerProductFlavor::ServerDesktop) => Err(
+            "Server Desktop currently owns this machine-level server instance; use an explicit transition before installing Server Headless".into(),
+        ),
+        Some(ServerProductFlavor::ServerHeadless) => unreachable!("matching owner returned earlier"),
+    }
+}
+
+fn carry_durable_configuration(target: &mut RuntimeConfig, existing: RuntimeConfig) {
+    target.app_key = existing.app_key;
+    target.database_password = existing.database_password;
+    if existing.database_root_password.is_empty() {
+        target.database_root_password_legacy_blank = true;
+    } else {
+        target.database_root_password = existing.database_root_password;
+    }
+    target.database_name = existing.database_name;
+    if !existing.server_id.is_empty() {
+        target.server_id = existing.server_id;
+    }
+    target.server_name = existing.server_name;
+    target.public_api_base = existing.public_api_base;
+    target.certificate_fingerprint = existing.certificate_fingerprint;
+    target.direct_tls_enabled = existing.direct_tls_enabled;
+    target.allowed_remote_addresses = existing.allowed_remote_addresses;
+    target.tls_certificate_path = existing.tls_certificate_path;
+    target.tls_private_key_path = existing.tls_private_key_path;
+    target.direct_tls_port = existing.direct_tls_port;
+}
+
+fn install_embedded_service(owner: ServerProductFlavor, response: InstallResponse) -> Result<(), String> {
     #[cfg(windows)]
     {
         let config_path = default_config_path()?;
+        let existing_manifest = if config_path.is_file() {
+            load_server_instance(&config_path)?
+        } else {
+            None
+        };
+        let disposition = install_disposition(
+            existing_manifest.as_ref().map(|manifest| manifest.owner_product),
+            owner,
+        )?;
+        if disposition == InstallDisposition::AttachToHeadless {
+            return windows_service_host::start_service();
+        }
+        if config_path.is_file()
+            && existing_manifest.is_none()
+            && owner == ServerProductFlavor::ServerHeadless
+        {
+            return Err("a legacy Server Desktop instance exists without a server-instance manifest; migrate or transition it explicitly before installing Server Headless".into());
+        }
         let mut config = embedded_runtime_config()?;
         if config_path.is_file() {
             let existing = load_config(&config_path)?;
-            config.app_key = existing.app_key;
-            config.database_password = existing.database_password;
-            if existing.database_root_password.is_empty() {
-                config.database_root_password_legacy_blank = true;
-            } else {
-                config.database_root_password = existing.database_root_password;
-            }
-            config.database_name = existing.database_name;
-            if !existing.server_id.is_empty() {
-                config.server_id = existing.server_id;
-            }
-            config.server_name = existing.server_name;
-            config.public_api_base = existing.public_api_base;
-            config.certificate_fingerprint = existing.certificate_fingerprint;
-            config.direct_tls_enabled = existing.direct_tls_enabled;
-            config.allowed_remote_addresses = existing.allowed_remote_addresses;
-            config.tls_certificate_path = existing.tls_certificate_path;
-            config.tls_private_key_path = existing.tls_private_key_path;
-            config.direct_tls_port = existing.direct_tls_port;
+            carry_durable_configuration(&mut config, existing);
         }
         apply_install_response(&mut config, response)?;
         ensure_layout(&config)?;
         harden_runtime_data_access(&config)?;
         write_config(&config_path, &config)?;
         sync_remote_firewall_rule(&config)?;
-        windows_service_host::install_service(config_path.display().to_string())
+        write_server_instance(&config, owner, &config_path)?;
+        windows_service_host::reconcile_service(config_path.display().to_string())
     }
 
     #[cfg(not(windows))]
@@ -333,12 +469,19 @@ fn install_embedded_service(response: InstallResponse) -> Result<(), String> {
     }
 }
 
-fn uninstall_embedded_service() -> Result<(), String> {
+fn uninstall_embedded_service(requested_owner: ServerProductFlavor) -> Result<(), String> {
     #[cfg(windows)]
     {
         if let Ok(path) = default_config_path() {
             if path.is_file() {
                 if let Ok(config) = load_config(&path) {
+                    let manifest = load_server_instance(&path)?;
+                    if manifest
+                        .as_ref()
+                        .is_some_and(|instance| instance.owner_product != requested_owner)
+                    {
+                        return Ok(());
+                    }
                     if status_path(&config).is_file() {
                         request_stop(&config)?;
                         wait_for_runtime_stop(&config)?;
@@ -353,6 +496,34 @@ fn uninstall_embedded_service() -> Result<(), String> {
     #[cfg(not(windows))]
     {
         Err("self-contained Server Desktop installation is supported only on Windows x64".into())
+    }
+}
+
+fn transition_embedded_service(target_owner: ServerProductFlavor) -> Result<(), String> {
+    #[cfg(windows)]
+    {
+        let config_path = default_config_path()?;
+        let existing = load_config(&config_path)?;
+        let manifest = load_server_instance(&config_path)?
+            .ok_or("cannot transition a legacy server without a server-instance manifest")?;
+        if manifest.owner_product == target_owner {
+            return windows_service_host::reconcile_service(config_path.display().to_string());
+        }
+
+        let mut transitioned = embedded_runtime_config()?;
+        carry_durable_configuration(&mut transitioned, existing);
+        ensure_layout(&transitioned)?;
+        harden_runtime_data_access(&transitioned)?;
+        write_config(&config_path, &transitioned)?;
+        sync_remote_firewall_rule(&transitioned)?;
+        write_server_instance(&transitioned, target_owner, &config_path)?;
+        windows_service_host::reconcile_service(config_path.display().to_string())
+    }
+
+    #[cfg(not(windows))]
+    {
+        let _ = target_owner;
+        Err("self-contained Server Desktop transition is supported only on Windows x64".into())
     }
 }
 
@@ -380,7 +551,12 @@ fn run(config: RuntimeConfig) -> Result<(), String> {
             Ok(()) => return Ok(()),
             Err(error) => {
                 if error.starts_with("initial provisioning failed:") {
-                    status.failed(error.clone());
+                    status.failed_at("provisioning", "provisioning_failed", error.clone());
+                    let _ = write_status(&config, &status);
+                    return Err(error);
+                }
+                if error.starts_with("api configuration validation failed:") {
+                    status.failed_at("api-config-validation", "api_config_invalid", error.clone());
                     let _ = write_status(&config, &status);
                     return Err(error);
                 }
@@ -419,8 +595,11 @@ fn run_components(
     let mut api = None;
     let mut queue = None;
     let result = (|| {
+        status.entering("database-initialization", "initializing protected MariaDB data");
+        write_status(config, status)?;
         initialise_database(config)?;
         ensure_port_is_free(DATABASE_PORT, "MariaDB")?;
+        status.entering("database-starting", "starting MariaDB on loopback");
         status.database = component("starting", "starting MariaDB on loopback");
         write_status(config, status)?;
         database = Some(start_database(config)?);
@@ -432,7 +611,15 @@ fn run_components(
 
         provision_application(config, status)
             .map_err(|error| format!("initial provisioning failed: {error}"))?;
+        status.entering(
+            "api-config-validation",
+            "validating generated FrankenPHP configuration",
+        );
+        write_status(config, status)?;
+        validate_caddy_configuration(config)
+            .map_err(|error| format!("api configuration validation failed: {error}"))?;
         ensure_port_is_free(API_PORT, "ACCORE API")?;
+        status.entering("api-starting", "starting FrankenPHP API on loopback");
         status.api = component("starting", "starting FrankenPHP API on loopback");
         write_status(config, status)?;
         api = Some(start_api(config)?);
@@ -441,6 +628,7 @@ fn run_components(
         status.api = component("ready", "API is ready on http://127.0.0.1:8765/up");
         write_status(config, status)?;
 
+        status.entering("queue-starting", "starting Laravel queue worker");
         status.queue = component("starting", "starting Laravel queue worker");
         write_status(config, status)?;
         queue = Some(start_queue(config)?);
@@ -449,6 +637,8 @@ fn run_components(
         status.queue = component("ready", "queue worker is running");
         status.backup = backup.component_status();
         status.state = "ready".into();
+        status.phase = "ready".into();
+        status.error_code = None;
         status.detail = "all local server components are ready".into();
         status.updated_at = now();
         write_status(config, status)?;
@@ -456,12 +646,14 @@ fn run_components(
         loop {
             if stop_requested(config) {
                 status.state = "stopping".into();
+                status.phase = "stopping".into();
                 status.detail = "ordered shutdown requested".into();
                 write_status(config, status)?;
                 terminate_optional(&mut queue);
                 terminate_optional(&mut api);
                 terminate_optional(&mut database);
                 status.state = "stopped".into();
+                status.phase = "stopped".into();
                 status.detail = "local server stopped".into();
                 status.queue = component("stopped", "queue stopped");
                 status.api = component("stopped", "API stopped");
@@ -628,11 +820,14 @@ fn provision_application(config: &RuntimeConfig, status: &mut RuntimeStatus) -> 
         .map_err(|error| format!("reset Laravel provisioning log: {error}"))?;
 
     status.detail = "applying required Laravel migrations".into();
+    status.phase = "migrations".into();
+    status.error_code = None;
     write_status(config, status)?;
     let mut migrate = application_command(config, ["php-cli", "artisan", "migrate", "--force"]);
     run_checked_logged(&mut migrate, "run Laravel migrations", &provisioning_log)?;
 
     status.detail = "applying pending ACCORE desktop seed revisions".into();
+    status.phase = "seed-revisions".into();
     write_status(config, status)?;
     run_desktop_seed_revisions(config, &provisioning_log)?;
     issue_initial_pairing_for_config_data(config, true)
@@ -667,6 +862,22 @@ fn start_api(config: &RuntimeConfig) -> Result<Child, String> {
     command
         .spawn()
         .map_err(|error| format!("start FrankenPHP API: {error}"))
+}
+
+fn validate_caddy_configuration(config: &RuntimeConfig) -> Result<(), String> {
+    let mut command = Command::new(frankenphp(config));
+    command
+        .args(["validate", "--config"])
+        .arg(caddy_configuration_path(config))
+        .args(["--adapter", "caddyfile"])
+        .current_dir(app_root(config))
+        .env("ACCORE_APP_ROOT", app_root(config))
+        .envs(application_environment(config));
+    run_checked_logged(
+        &mut command,
+        "validate generated FrankenPHP configuration",
+        &log_path(config, "api-preflight.log"),
+    )
 }
 
 fn caddy_configuration_path(config: &RuntimeConfig) -> PathBuf {
@@ -1142,6 +1353,53 @@ fn default_config_path() -> Result<PathBuf, String> {
         .join("agent-config.json"))
 }
 
+fn server_instance_path(config_path: &Path) -> PathBuf {
+    config_path.with_file_name("server-instance.json")
+}
+
+fn load_server_instance(config_path: &Path) -> Result<Option<ServerInstanceManifest>, String> {
+    let path = server_instance_path(config_path);
+    if !path.is_file() {
+        return Ok(None);
+    }
+    serde_json::from_slice(
+        &fs::read(&path).map_err(|error| format!("read server instance manifest: {error}"))?,
+    )
+    .map(Some)
+    .map_err(|error| format!("parse server instance manifest: {error}"))
+}
+
+#[cfg(windows)]
+fn write_server_instance(
+    config: &RuntimeConfig,
+    owner_product: ServerProductFlavor,
+    config_path: &Path,
+) -> Result<(), String> {
+    let path = server_instance_path(config_path);
+    let existing = load_server_instance(config_path)?;
+    let service_executable = env::current_exe()
+        .map_err(|error| format!("resolve Server Agent executable for instance manifest: {error}"))?;
+    let manifest = ServerInstanceManifest {
+        schema_version: SERVER_INSTANCE_SCHEMA_VERSION,
+        instance_id: existing
+            .map(|manifest| manifest.instance_id)
+            .unwrap_or_else(|| format!("accore-instance-{}", random_secret(""))),
+        server_id: config.server_id.clone(),
+        owner_product,
+        active_runtime_root: config.runtime_root.clone(),
+        service_executable,
+        service_config_path: config_path.to_path_buf(),
+        updated_at: now(),
+    };
+    let temporary = path.with_extension("json.partial");
+    let payload = serde_json::to_vec_pretty(&manifest)
+        .map_err(|error| format!("serialize server instance manifest: {error}"))?;
+    fs::write(&temporary, payload)
+        .map_err(|error| format!("write server instance manifest: {error}"))?;
+    fs::rename(&temporary, path)
+        .map_err(|error| format!("publish server instance manifest: {error}"))
+}
+
 #[cfg(windows)]
 fn embedded_runtime_config() -> Result<RuntimeConfig, String> {
     let executable =
@@ -1353,6 +1611,42 @@ mod tests {
         assert_eq!(
             packaged_runtime_root(&installation_root),
             installation_root.join("resources/server-runtime/windows-x86_64")
+        );
+    }
+
+    #[test]
+    fn server_instance_ownership_requires_an_explicit_headless_transition() {
+        assert_eq!(
+            install_disposition(None, ServerProductFlavor::ServerHeadless),
+            Ok(InstallDisposition::ClaimOrUpdate)
+        );
+        assert_eq!(
+            install_disposition(
+                Some(ServerProductFlavor::ServerHeadless),
+                ServerProductFlavor::ServerHeadless
+            ),
+            Ok(InstallDisposition::ClaimOrUpdate)
+        );
+        assert_eq!(
+            install_disposition(
+                Some(ServerProductFlavor::ServerHeadless),
+                ServerProductFlavor::ServerDesktop
+            ),
+            Ok(InstallDisposition::AttachToHeadless)
+        );
+        assert!(install_disposition(
+            Some(ServerProductFlavor::ServerDesktop),
+            ServerProductFlavor::ServerHeadless
+        )
+        .is_err());
+    }
+
+    #[test]
+    fn server_instance_manifest_path_is_private_and_adjacent_to_agent_config() {
+        let config_path = PathBuf::from("C:/ProgramData/ACCORE ERP/Server/agent-config.json");
+        assert_eq!(
+            server_instance_path(&config_path),
+            PathBuf::from("C:/ProgramData/ACCORE ERP/Server/server-instance.json")
         );
     }
 

@@ -19,6 +19,7 @@ $dataRoot = Join-Path $env:ProgramData 'ACCORE ERP'
 $statusPath = Join-Path $dataRoot 'Server Status\runtime-status.json'
 $backupStatusPath = Join-Path $dataRoot 'Server Status\backup-status.json'
 $configPath = Join-Path $dataRoot 'Server\agent-config.json'
+$instancePath = Join-Path $dataRoot 'Server\server-instance.json'
 $agentPath = Join-Path $InstallationDirectory 'accore-server-agent.exe'
 $uninstallerPath = Join-Path $InstallationDirectory 'uninstall.exe'
 $runtimeProcessNames = @('accore-server-agent', 'mariadbd', 'frankenphp')
@@ -113,30 +114,35 @@ function Invoke-ProductInstaller {
   if ($installer.ExitCode -ne 0) {
     throw "$Product silent installer exited with $($installer.ExitCode)."
   }
-  if ($Product -eq 'server-desktop') {
-    if (-not (Test-Path $agentPath)) {
-      throw "Server Desktop did not install the Agent at $agentPath."
-    }
-    & $agentPath install
-    if ($LASTEXITCODE -ne 0) {
-      throw "Server Desktop Agent installation exited with $LASTEXITCODE."
-    }
+  if (-not (Test-Path $agentPath)) {
+    throw "$Product did not install the Agent at $agentPath."
   }
 }
 
 function Invoke-ProductUninstaller {
-  if ($Product -eq 'server-desktop') {
-    & $agentPath uninstall
-    if ($LASTEXITCODE -ne 0) {
-      throw "Server Desktop Agent removal exited with $LASTEXITCODE."
-    }
-  }
   if (-not (Test-Path $uninstallerPath)) {
     throw "$Product uninstaller was not installed at $uninstallerPath."
   }
   $uninstaller = Start-Process -FilePath $uninstallerPath -ArgumentList @('/S') -Wait -PassThru
   if ($uninstaller.ExitCode -ne 0) {
     throw "$Product silent uninstaller exited with $($uninstaller.ExitCode)."
+  }
+}
+
+function Assert-ServerInstanceContract {
+  if (-not (Test-Path $instancePath)) {
+    throw "$Product did not publish the protected server-instance manifest."
+  }
+  $instance = Get-Content -LiteralPath $instancePath -Raw | ConvertFrom-Json
+  if ($instance.ownerProduct -ne $Product) {
+    throw "$Product published unexpected server instance owner '$($instance.ownerProduct)'."
+  }
+  if ([string]::IsNullOrWhiteSpace($instance.instanceId) -or [string]::IsNullOrWhiteSpace($instance.serverId)) {
+    throw "$Product published an incomplete server-instance identity."
+  }
+  $service = Get-CimInstance -ClassName Win32_Service -Filter "Name='$serviceName'"
+  if ($null -eq $service -or $service.PathName -notlike "*$($instance.serviceExecutable)*") {
+    throw "$Product service registration does not match the active server-instance manifest."
   }
 }
 
@@ -175,6 +181,7 @@ function Assert-OrderedRemoval {
 Assert-PristineFixture
 Invoke-ProductInstaller
 $firstStatus = Wait-ForReadyStatus
+Assert-ServerInstanceContract
 if (Test-Path (Join-Path $InstallationDirectory 'resources\server-runtime\windows-x86_64\app\.env')) {
   throw "$Product package contains a forbidden Laravel environment file."
 }
@@ -196,6 +203,7 @@ if (-not (Test-Path $statusPath)) {
 
 Invoke-ProductInstaller
 $secondStatus = Wait-ForReadyStatus -ExpectedServerId $firstStatus.serverId
+Assert-ServerInstanceContract
 if ($secondStatus.serverId -ne $firstStatus.serverId) {
   throw "$Product did not preserve the durable server identity across uninstall and reinstall."
 }
