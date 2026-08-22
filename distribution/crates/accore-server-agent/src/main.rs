@@ -12,6 +12,8 @@ use std::{
 #[cfg(windows)]
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
 #[cfg(windows)]
+use std::time::Instant;
+#[cfg(windows)]
 use rand::{rngs::OsRng, RngCore};
 use serde::{Deserialize, Serialize};
 
@@ -336,6 +338,10 @@ fn uninstall_embedded_service() -> Result<(), String> {
         if let Ok(path) = default_config_path() {
             if path.is_file() {
                 if let Ok(config) = load_config(&path) {
+                    if status_path(&config).is_file() {
+                        request_stop(&config)?;
+                        wait_for_runtime_stop(&config)?;
+                    }
                     let _ = remove_remote_firewall_rule(&config);
                 }
             }
@@ -900,6 +906,23 @@ fn write_status(config: &RuntimeConfig, status: &RuntimeStatus) -> Result<(), St
 fn request_stop(config: &RuntimeConfig) -> Result<(), String> {
     fs::write(config.data_root.join("control.stop"), "requested\n")
         .map_err(|error| format!("request runtime stop: {error}"))
+}
+
+#[cfg(windows)]
+fn wait_for_runtime_stop(config: &RuntimeConfig) -> Result<(), String> {
+    let deadline = Instant::now() + Duration::from_secs(180);
+    loop {
+        if fs::read_to_string(status_path(config))
+            .map(|status| status.contains("\"state\": \"stopped\""))
+            .unwrap_or(false)
+        {
+            return Ok(());
+        }
+        if Instant::now() >= deadline {
+            return Err("local server did not publish ordered shutdown within three minutes".into());
+        }
+        thread::sleep(Duration::from_millis(500));
+    }
 }
 
 #[cfg(windows)]
