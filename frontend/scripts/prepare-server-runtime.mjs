@@ -211,11 +211,7 @@ async function downloadVerified(source) {
 
   const temporaryPath = `${archivePath}.partial`;
   await rm(temporaryPath, { force: true });
-  const response = await fetch(source.url, { redirect: 'follow' });
-  if (!response.ok || !response.body) {
-    throw new Error(`failed to download ${source.id}: HTTP ${response.status}`);
-  }
-
+  const response = await fetchWithRetries(source);
   await pipeline(Readable.fromWeb(response.body), createWriteStream(temporaryPath));
   if (!(await hasExpectedDigest(temporaryPath, source.sha256))) {
     await rm(temporaryPath, { force: true });
@@ -223,6 +219,35 @@ async function downloadVerified(source) {
   }
   await rename(temporaryPath, archivePath);
   return archivePath;
+}
+
+async function fetchWithRetries(source) {
+  const maximumAttempts = 4;
+  let lastError;
+  for (let attempt = 1; attempt <= maximumAttempts; attempt += 1) {
+    try {
+      const response = await fetch(source.url, { redirect: 'follow' });
+      if (response.ok && response.body) return response;
+      await response.body?.cancel();
+      if (response.status >= 400 && response.status < 500 && response.status !== 429) {
+        const error = new Error(`failed to download ${source.id}: HTTP ${response.status}`);
+        error.permanent = true;
+        throw error;
+      }
+      lastError = new Error(`failed to download ${source.id}: HTTP ${response.status}`);
+    } catch (error) {
+      if (error?.permanent) throw error;
+      lastError = error;
+    }
+
+    if (attempt < maximumAttempts) {
+      const delayMilliseconds = attempt * 5_000;
+      console.warn(`download attempt ${attempt}/${maximumAttempts} failed for ${source.id}; retrying in ${delayMilliseconds}ms`);
+      await new Promise((resolveDelay) => setTimeout(resolveDelay, delayMilliseconds));
+    }
+  }
+
+  throw new Error(`failed to download ${source.id} after ${maximumAttempts} attempts`, { cause: lastError });
 }
 
 async function hasExpectedDigest(path, expected) {
