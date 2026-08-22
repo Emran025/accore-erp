@@ -13,6 +13,8 @@
     "i18n:check": "tsx scripts/i18n-inventory.ts --check",
     "i18n:coverage": "tsx scripts/i18n-verify-coverage.ts --check",
     "desktop:prepare-server-runtime": "node scripts/prepare-server-runtime.mjs windows-x86_64",
+    "desktop:build-server-headless-installer": "node scripts/build-server-headless-installer.mjs",
+    "desktop:verify-server-headless-installer": "node scripts/verify-server-headless-installer-contract.mjs",
     "desktop:verify-flavor-icons": "node scripts/verify-desktop-flavor-icons.mjs",
     "tauri": "tauri",
     "desktop:dev": "tauri dev",

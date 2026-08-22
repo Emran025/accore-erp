@@ -184,10 +184,89 @@ jobs:
             frontend/src-tauri/target/**/bundle/**/*.tar.gz
             frontend/src-tauri/target/**/bundle/**/*.sig
 
+  build-server-headless:
+    name: Build server headless (windows-latest)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust build artifacts
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: frontend/src-tauri -> target
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Set up PHP build tooling for Server Headless
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer
+          extensions: fileinfo
+
+      - name: Install production Laravel dependencies for Server Headless
+        working-directory: backend
+        run: composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
+
+      - name: Prepare verified Server Headless runtime
+        working-directory: frontend
+        env:
+          ACCORE_RUNTIME_DOWNLOAD_CACHE: ${{ runner.temp }}/accore-runtime-cache
+        run: npm run desktop:prepare-server-runtime
+
+      - name: Build ACCORE Server Agent for Headless package
+        shell: pwsh
+        run: |
+          cargo build --manifest-path distribution/crates/accore-server-agent/Cargo.toml --release
+          New-Item -ItemType Directory -Force -Path frontend/src-tauri/binaries | Out-Null
+          Copy-Item distribution/crates/accore-server-agent/target/release/accore-server-agent.exe frontend/src-tauri/binaries/accore-server-agent-x86_64-pc-windows-msvc.exe
+
+      - name: Verify Server Headless installer source contract
+        working-directory: frontend
+        run: npm run desktop:verify-server-headless-installer
+
+      - name: Build Server Headless NSIS installer
+        working-directory: frontend
+        shell: pwsh
+        env:
+          ACCORE_MAKENSIS_EXECUTABLE: C:\Program Files (x86)\NSIS\makensis.exe
+        run: npm run desktop:build-server-headless-installer
+
+      - name: Validate Server Headless silent installation contract
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $installer = (Resolve-Path 'frontend/src-tauri/target/server-headless/ACCORE.ERP.Server.Headless-x86_64-setup.exe').Path
+          $publicStatusRoot = Join-Path $env:ProgramData 'ACCORE ERP\Server Status'
+          $contract = (Resolve-Path 'distribution/tests/windows/server-headless-silent-contract.ps1').Path
+          & $contract -Installer $installer -PublicStatusRoot $publicStatusRoot
+
+      - name: Upload Server Headless installer
+        if: startsWith(github.ref, 'refs/tags/desktop-v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: accore-server-headless-windows-x64-assets
+          if-no-files-found: error
+          path: frontend/src-tauri/target/server-headless/*.exe
+
   release-desktop:
     name: Create desktop release
     if: startsWith(github.ref, 'refs/tags/desktop-v')
-    needs: build-desktop
+    needs: [build-desktop, build-server-headless]
     runs-on: ubuntu-latest
     permissions:
       contents: write
