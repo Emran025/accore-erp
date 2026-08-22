@@ -19,6 +19,7 @@ use windows_sys::Win32::{
 
 const AGENT_BINARY: &str = "accore-server-agent.exe";
 const RUNTIME_RELATIVE_PATH: &str = "server-runtime/windows-x86_64";
+const SERVER_DESKTOP_CLAIM_ARGUMENTS: &str = "claim --owner server-desktop";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -120,7 +121,11 @@ pub fn server_runtime_start(app: AppHandle) -> Result<ServerRuntimeSnapshot, Str
 fn start_windows_service_agent(agent_binary: &std::path::Path) -> Result<(), String> {
     #[cfg(windows)]
     {
-        return launch_elevated_agent(agent_binary, "install", "install or start the Server Agent");
+        return launch_elevated_agent(
+            agent_binary,
+            SERVER_DESKTOP_CLAIM_ARGUMENTS,
+            "claim or update the Server Desktop Agent",
+        );
     }
 
     #[cfg(not(windows))]
@@ -421,5 +426,10 @@ mod tests {
             arguments,
             "request-backup --config \"C:/ProgramData/ACCORE ERP/Server/agent-config.json\""
         );
+    }
+
+    #[test]
+    fn server_desktop_claims_the_agent_with_an_explicit_owner() {
+        assert_eq!(SERVER_DESKTOP_CLAIM_ARGUMENTS, "claim --owner server-desktop");
     }
 }
