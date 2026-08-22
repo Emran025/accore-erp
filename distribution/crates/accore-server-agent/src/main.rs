@@ -40,6 +40,10 @@ const BACKUP_INTERVAL_SECONDS: u64 = 6 * 60 * 60;
 // numerical SIDs when prefixed with `*`; S-1-5-11 is Authenticated Users.
 const PUBLIC_STATUS_READ_PRINCIPAL: &str = "*S-1-5-11:(OI)(CI)RX";
 const PUBLIC_STATUS_FILE_READ_PRINCIPAL: &str = "*S-1-5-11:RX";
+const SYSTEM_DIRECTORY_FULL_PRINCIPAL: &str = "*S-1-5-18:(OI)(CI)F";
+const SYSTEM_FILE_FULL_PRINCIPAL: &str = "*S-1-5-18:F";
+const ADMINISTRATORS_DIRECTORY_FULL_PRINCIPAL: &str = "*S-1-5-32-544:(OI)(CI)F";
+const ADMINISTRATORS_FILE_FULL_PRINCIPAL: &str = "*S-1-5-32-544:F";
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -1251,38 +1255,73 @@ fn harden_runtime_data_access(config: &RuntimeConfig) -> Result<(), String> {
 
 #[cfg(windows)]
 fn apply_windows_acl(path: &Path, permit_users_read: bool) -> Result<(), String> {
+    harden_windows_acl_tree(path, permit_users_read)
+}
+
+#[cfg(windows)]
+fn harden_windows_acl_tree(path: &Path, permit_users_read: bool) -> Result<(), String> {
+    let metadata = fs::symlink_metadata(path)
+        .map_err(|error| format!("inspect Server Desktop runtime data permissions: {error}"))?;
+    if metadata.file_type().is_symlink() {
+        return Err(format!(
+            "refuse to harden Server Desktop runtime data through symbolic link {}",
+            path.display()
+        ));
+    }
+    let is_directory = metadata.is_dir();
+    apply_windows_acl_entry(path, permit_users_read, is_directory)?;
+    if is_directory {
+        for entry in fs::read_dir(path)
+            .map_err(|error| format!("enumerate Server Desktop runtime data permissions: {error}"))?
+        {
+            let entry = entry.map_err(|error| {
+                format!("read Server Desktop runtime data permission entry: {error}")
+            })?;
+            harden_windows_acl_tree(&entry.path(), permit_users_read)?;
+        }
+    }
+    Ok(())
+}
+
+#[cfg(windows)]
+fn apply_windows_acl_entry(
+    path: &Path,
+    permit_users_read: bool,
+    is_directory: bool,
+) -> Result<(), String> {
+    let system_principal = if is_directory {
+        SYSTEM_DIRECTORY_FULL_PRINCIPAL
+    } else {
+        SYSTEM_FILE_FULL_PRINCIPAL
+    };
+    let administrators_principal = if is_directory {
+        ADMINISTRATORS_DIRECTORY_FULL_PRINCIPAL
+    } else {
+        ADMINISTRATORS_FILE_FULL_PRINCIPAL
+    };
     let mut command = Command::new("icacls.exe");
     command.arg(path).args([
         "/inheritance:r",
         "/grant:r",
-        "SYSTEM:(OI)(CI)F",
+        system_principal,
         "/grant:r",
-        "Administrators:(OI)(CI)F",
+        administrators_principal,
     ]);
     if permit_users_read {
-        command.args(["/grant:r", PUBLIC_STATUS_READ_PRINCIPAL]);
+        let public_read_principal = if is_directory {
+            PUBLIC_STATUS_READ_PRINCIPAL
+        } else {
+            PUBLIC_STATUS_FILE_READ_PRINCIPAL
+        };
+        command.args(["/grant:r", public_read_principal]);
     }
-    command.args(["/t", "/c", "/q"]);
-    run_checked(
-        &mut command,
-        "harden Server Desktop runtime data permissions",
-    )
+    command.arg("/q");
+    run_checked(&mut command, "harden Server Desktop runtime data permissions")
 }
 
 #[cfg(windows)]
 fn apply_windows_public_file_acl(path: &Path) -> Result<(), String> {
-    let mut command = Command::new("icacls.exe");
-    command.arg(path).args([
-        "/inheritance:r",
-        "/grant:r",
-        "SYSTEM:F",
-        "/grant:r",
-        "Administrators:F",
-        "/grant:r",
-        PUBLIC_STATUS_FILE_READ_PRINCIPAL,
-        "/q",
-    ]);
-    run_checked(&mut command, "publish public Server status file permissions")
+    apply_windows_acl_entry(path, true, false)
 }
 
 #[cfg(windows)]
@@ -1359,6 +1398,17 @@ mod tests {
     fn public_status_acl_includes_authenticated_desktop_clients() {
         assert_eq!(PUBLIC_STATUS_READ_PRINCIPAL, "*S-1-5-11:(OI)(CI)RX");
         assert_eq!(PUBLIC_STATUS_FILE_READ_PRINCIPAL, "*S-1-5-11:RX");
+    }
+
+    #[test]
+    fn private_data_acl_uses_builtin_administrator_sid_for_files_and_directories() {
+        assert_eq!(SYSTEM_DIRECTORY_FULL_PRINCIPAL, "*S-1-5-18:(OI)(CI)F");
+        assert_eq!(SYSTEM_FILE_FULL_PRINCIPAL, "*S-1-5-18:F");
+        assert_eq!(
+            ADMINISTRATORS_DIRECTORY_FULL_PRINCIPAL,
+            "*S-1-5-32-544:(OI)(CI)F"
+        );
+        assert_eq!(ADMINISTRATORS_FILE_FULL_PRINCIPAL, "*S-1-5-32-544:F");
     }
 
     #[test]
