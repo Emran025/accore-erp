@@ -37,6 +37,36 @@ function Assert-PristineFixture {
   }
 }
 
+function Write-ReadinessDiagnostics {
+  Write-Host "--- $Product public runtime status ---"
+  if (Test-Path $statusPath) {
+    Get-Content -LiteralPath $statusPath -Raw
+  } else {
+    Write-Host 'No public runtime status was written.'
+  }
+
+  Write-Host "--- $Product public backup status ---"
+  if (Test-Path $backupStatusPath) {
+    Get-Content -LiteralPath $backupStatusPath -Raw
+  } else {
+    Write-Host 'No public backup status was written.'
+  }
+
+  $provisioningLog = Join-Path $dataRoot 'Server\logs\provisioning.log'
+  Write-Host "--- $Product redacted provisioning log tail ---"
+  if (-not (Test-Path $provisioningLog)) {
+    Write-Host 'No provisioning log was written.'
+    return
+  }
+  try {
+    Get-Content -LiteralPath $provisioningLog -Tail 80 | ForEach-Object {
+      $_ -replace '(?i)(password|secret|token|app_key)\s*([:=])\s*\S+', '$1$2[REDACTED]'
+    }
+  } catch {
+    Write-Host "Provisioning log could not be read: $($_.Exception.Message)"
+  }
+}
+
 function Wait-ForReadyStatus {
   param([string]$ExpectedServerId = '')
 
@@ -65,6 +95,7 @@ function Wait-ForReadyStatus {
     }
     Start-Sleep -Seconds 2
   }
+  Write-ReadinessDiagnostics
   throw "$Product did not publish a ready local-service status within three minutes. Last detail: $lastDetail"
 }
 
