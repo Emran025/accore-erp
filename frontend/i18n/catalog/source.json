@@ -58325,6 +58325,36 @@
       "occurrences": []
     },
     {
+      "id": "enterpriseCore.setup.scope.pointOfSale",
+      "source": "نقطة البيع",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.scope.contextHelper",
+      "source": "اربط وحدة تشغيل قائمة بمركز التكلفة ونقطة البيع. يبقى مركز الربح ضمن إعداد الوحدة التنظيمية ولا يعاد إدخاله هنا.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.scope.workingUnitCode",
+      "source": "رمز وحدة التشغيل",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.scope.workingUnitName",
+      "source": "اسم وحدة التشغيل",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.scope.saveWorkingUnit",
+      "source": "حفظ تفاصيل الوحدة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
       "id": "enterpriseCore.setup.scope.title",
       "source": "٣. وحدة العمل وسياق التشغيل",
       "classification": "user-facing",
@@ -58449,6 +58479,54 @@
           "context": "Object label"
         }
       ]
+    },
+    {
+      "id": "enterpriseCore.systemSettings.activeLanguage",
+      "source": "لغة الواجهة المفعّلة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.systemSettings.applicationLanguage",
+      "source": "لغة التطبيق",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.systemSettings.applicationLanguageBoundary",
+      "source": "يغيّر هذا الاختيار واجهة التطبيق وتنسيقاته واتجاهه على هذا الجهاز. ولا يغيّر لغة التشغيل أو لغة البيانات الرئيسية المعينة للعميل أو رمز الشركة.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.systemSettings.applicationLanguageDescription",
+      "source": "اختر اللغة التي تظهر بها قوائم ورسائل وتخطيط أكور على هذا الجهاز. لا تظهر إلا اللغات المهيأة فعلياً في المنتج.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.systemSettings.applicationLanguageTitle",
+      "source": "لغة الواجهة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.systemSettings.availableLanguages",
+      "source": "لغات الواجهة المتاحة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.systemSettings.currentLanguage",
+      "source": "اللغة الحالية",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.systemSettings.useLanguage",
+      "source": "استخدم {value0}",
+      "classification": "user-facing",
+      "occurrences": []
     },
     {
       "id": "enterpriseCore.topologyrules.based",
@@ -90978,13 +91056,67 @@
     },
     {
       "id": "enterpriseCore.orgWorkspace.reference.chartOfAccounts.empty",
-      "source": "لا توجد حسابات نشطة بعد. أنشئ الحسابات في شجرة الحسابات ثم عُد لإكمال هذه الوحدة.",
+      "source": "هيكل دفتر الأستاذ العام الأساسي غير جاهز بعد. أنشئ حسابات نشطة للأصول والالتزامات وحقوق الملكية والإيرادات والمصروفات، ثم عُد لتعيين الهيكل المحكوم.",
       "classification": "user-facing",
       "occurrences": []
     },
     {
       "id": "enterpriseCore.orgWorkspace.reference.chartOfAccounts.help",
-      "source": "اختر مرجعًا قائمًا من شجرة الحسابات؛ تعرض القائمة رمز الحساب واسمه ونوعه لتوضيح الاختيار.",
+      "source": "عيّن هيكل دفتر الأستاذ العام المحكوم المتاح لرمز الشركة. لا يمثل هذا اختيار حساب ترحيل مفرد مثل الأصول أو النقد أو الإيراد.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.reference.chartOfAccounts.primary",
+      "source": "دفتر الأستاذ العام الأساسي لأكور",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.reference.chartOfAccounts.summary",
+      "source": "{value0} حسابات نشطة · {value1} فئات حسابات",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.chartOfAccountsId",
+      "source": "هيكل دفتر الأستاذ العام",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.fiscalYearVariant",
+      "source": "هيكل السنة المالية",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.fiscalYearVariant.calendarYear",
+      "source": "السنة التقويمية (K4) — من يناير إلى ديسمبر",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.fiscalYearVariant.help",
+      "source": "يعرّف نمط الفترات المستخدم لرمز الشركة. يستخدم K4 اثنتي عشرة فترة ترحيل شهرية تقويمية، بينما يبقى فتح الفترات وإغلاقها تحت تحكم مستقل.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.fiscalYearVariant.placeholder",
+      "source": "اختر هيكل السنة المالية",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.companyLanguage.help",
+      "source": "تتحكم في لغة التشغيل والبيانات الرئيسية لهذه الوحدة التنظيمية. ولا تغيّر لغة واجهة التطبيق للمستخدم الحالي.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.companyLanguage.placeholder",
+      "source": "اختر لغة التشغيل",
       "classification": "user-facing",
       "occurrences": []
     },

@@ -227,7 +227,7 @@ class ModuleReadinessService
 
         $context->loadMissing(['warehouse', 'posTerminal', 'costCenter', 'profitCenter']);
 
-        foreach (['costCenter' => 'COST_CENTER', 'profitCenter' => 'PROFIT_CENTER'] as $relation => $expectedType) {
+        foreach (['costCenter' => 'COST_CENTER'] as $relation => $expectedType) {
             $businessRecord = $context->{$relation};
             $nodeUuid = $businessRecord?->structure_node_uuid;
             $node = $nodeUuid ? StructureNode::find($nodeUuid) : null;

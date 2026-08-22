@@ -8,6 +8,7 @@ use App\Domains\EnterpriseCore\OrganizationGovernance\Models\StructureNode;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class ModuleReadinessApiTest extends TestCase
@@ -53,16 +54,35 @@ class ModuleReadinessApiTest extends TestCase
         $this->assertContains('missing_chart_of_accounts', $blockedModule['reason_codes']);
 
         OrgMetaType::create([
+            'id' => 'CLIENT',
+            'display_name' => 'Client',
+            'display_name_ar' => 'العميل',
+            'level_domain' => 'Enterprise',
+            'is_assignable' => true,
+        ]);
+        OrgMetaType::create([
             'id' => 'COMP_CODE',
             'display_name' => 'Company Code',
             'display_name_ar' => 'رمز الشركة',
             'level_domain' => 'Financial',
             'is_assignable' => true,
         ]);
-        StructureNode::create([
+        $client = StructureNode::create([
+            'node_type_id' => 'CLIENT',
+            'code' => 'CLIENT-1000',
+            'status' => 'active',
+        ]);
+        $company = StructureNode::create([
             'node_type_id' => 'COMP_CODE',
             'code' => '1000',
             'status' => 'active',
+        ]);
+        DB::table('structure_links')->insert([
+            'source_node_uuid' => $company->node_uuid,
+            'target_node_uuid' => $client->node_uuid,
+            'link_type' => 'assignment',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
         FiscalPeriod::create([
             'period_name' => 'FY 2026',

@@ -5,10 +5,8 @@ namespace App\Domains\EnterpriseCore\OrganizationGovernance\Services;
 use App\Domains\Commercial\SalesLifecycle\Models\PosTerminal;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\OperatingContext;
 use App\Domains\Finance\ManagementAccounting\Models\CostCenter;
-use App\Domains\Finance\ManagementAccounting\Models\ProfitCenter;
-use App\Domains\SupplyChain\Inventory\Models\Warehouse;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class OperatingContextService
 {
@@ -43,7 +41,6 @@ class OperatingContextService
             $this->check('working_unit', $workingUnitReadiness['ready']),
             $this->check('warehouse', $warehouse !== null && $warehouse->is_active && $warehouse->status === 'active'),
             $this->check('cost_center', $costCenter !== null && $costCenter->is_active),
-            $this->check('profit_center', $profitCenter !== null && $profitCenter->is_active),
             $this->check('pos_terminal', $terminal !== null && $terminal->is_active && $terminal->status === 'active'),
             $this->check('organizational_structure', $structuralReadiness['ready']),
             $this->check('open_fiscal_period', $accountingReadiness['open_fiscal_period']['ready']),
@@ -69,37 +66,39 @@ class OperatingContextService
     public function configure(array $data, ?int $userId): OperatingContext
     {
         return DB::transaction(function () use ($data, $userId) {
-            $warehouseData = Arr::get($data, 'warehouse', []);
-            $warehouse = Warehouse::query()->updateOrCreate(
-                ['code' => $warehouseData['code']],
-                [
-                    'name' => $warehouseData['name'],
-                    'name_en' => $warehouseData['name_en'] ?? null,
-                    'org_node_uuid' => $data['org_node_uuid'] ?? null,
-                    'cost_center_id' => $data['cost_center_id'] ?? null,
-                    'profit_center_id' => $data['profit_center_id'] ?? null,
-                    'status' => 'active',
-                    'is_active' => true,
-                    'description' => $warehouseData['description'] ?? null,
-                    'created_by' => $userId,
-                ]
-            );
+            $costCenter = CostCenter::query()->whereKey($data['cost_center_id'])->where('is_active', true)->first();
+            if (!$costCenter) {
+                throw ValidationException::withMessages(['cost_center_id' => ['The selected cost center must be active.']]);
+            }
+            $terminal = PosTerminal::query()
+                ->whereKey($data['pos_terminal_id'])
+                ->where('is_active', true)
+                ->where('status', 'active')
+                ->firstOrFail();
+            $warehouse = $terminal?->warehouse;
 
-            $terminalData = Arr::get($data, 'pos_terminal', []);
-            $terminal = PosTerminal::query()->updateOrCreate(
-                ['code' => $terminalData['code']],
-                [
-                    'name' => $terminalData['name'],
-                    'name_en' => $terminalData['name_en'] ?? null,
-                    'org_node_uuid' => $data['org_node_uuid'] ?? null,
-                    'warehouse_id' => $warehouse->id,
-                    'cost_center_id' => $data['cost_center_id'] ?? null,
-                    'profit_center_id' => $data['profit_center_id'] ?? null,
-                    'status' => 'active',
-                    'is_active' => true,
-                    'created_by' => $userId,
-                ]
-            );
+            if (!$warehouse || !$warehouse->is_active || $warehouse->status !== 'active') {
+                throw ValidationException::withMessages(['pos_terminal_id' => ['The selected POS terminal must belong to an active warehouse.']]);
+            }
+            if ($terminal->org_node_uuid !== $data['org_node_uuid'] || $warehouse->org_node_uuid !== $data['org_node_uuid']) {
+                throw ValidationException::withMessages(['pos_terminal_id' => ['The selected POS terminal and warehouse must already belong to the chosen operating unit.']]);
+            }
+            if ($terminal->cost_center_id !== $costCenter->id || $warehouse->cost_center_id !== $costCenter->id) {
+                throw ValidationException::withMessages(['cost_center_id' => ['The selected POS terminal and warehouse must already be assigned to the selected active cost center.']]);
+            }
+            $sharedWithAnotherUser = OperatingContext::query()
+                ->where('pos_terminal_id', $terminal->id)
+                ->where(function ($query) use ($userId) {
+                    if ($userId === null) {
+                        $query->whereNotNull('user_id');
+                    } else {
+                        $query->whereNull('user_id')->orWhere('user_id', '!=', $userId);
+                    }
+                })
+                ->exists();
+            if ($sharedWithAnotherUser) {
+                throw ValidationException::withMessages(['pos_terminal_id' => ['The selected POS terminal is already assigned to another user context.']]);
+            }
 
             OperatingContext::query()
                 ->where('user_id', $userId)
@@ -107,12 +106,13 @@ class OperatingContextService
                 ->update(['is_default' => false]);
 
             $context = OperatingContext::query()->updateOrCreate(
-                ['user_id' => $userId, 'pos_terminal_id' => $terminal->id],
+                ['user_id' => $userId, 'org_node_uuid' => $data['org_node_uuid']],
                 [
                     'org_node_uuid' => $data['org_node_uuid'] ?? null,
-                    'warehouse_id' => $warehouse->id,
+                    'warehouse_id' => $warehouse?->id,
+                    'pos_terminal_id' => $terminal->id,
                     'cost_center_id' => $data['cost_center_id'] ?? null,
-                    'profit_center_id' => $data['profit_center_id'] ?? null,
+                    'profit_center_id' => $terminal->profit_center_id,
                     // Status is recalculated from the authoritative readiness
                     // contract below; configuration submission is never proof of readiness.
                     'status' => 'draft',

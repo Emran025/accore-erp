@@ -3,7 +3,7 @@
 import { useI18n, catalogMessage } from "@/lib/i18n";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Icon } from "@/lib/icons";
-import { isArabic as checkIsArabic } from "@/lib/utils";
+import { getTextDirection } from "@/lib/utils";
 
 export interface SelectOption {
     value: string | number;
@@ -59,7 +59,6 @@ export function SearchableSelect({
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [inputValue, setInputValue] = useState("");
-    const [isArabic, setIsArabic] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const internalRef = useRef<HTMLInputElement>(null);
     const inputRef = externalRef ?? internalRef;
@@ -76,12 +75,6 @@ export function SearchableSelect({
     const selectedOption = Array.isArray(options)
         ? options.find((opt) => opt.value === value)
         : null;
-
-    // Detect text direction
-    useEffect(() => {
-        const displayValue = isOpen ? searchTerm : inputValue;
-        setIsArabic(checkIsArabic(displayValue));
-    }, [isOpen, searchTerm, inputValue]);
 
     // Update input value when selection changes
     useEffect(() => {
@@ -194,6 +187,8 @@ export function SearchableSelect({
 
     // Should only display dropdown when search term is not empty and dropdown is open
     const isDropdownVisible = isOpen && searchTerm.trim().length > 0;
+    const displayValue = isOpen ? searchTerm : inputValue;
+    const textDirection = getTextDirection(displayValue);
 
     return (
         <div className={`searchable-select ${className}`} ref={containerRef}>
@@ -213,8 +208,8 @@ export function SearchableSelect({
                 style={{
                     paddingTop: paddingVertical ? (paddingVertical + "rem") : undefined,
                     paddingBottom: paddingVertical ? (paddingVertical + "rem") : undefined,
-                    direction: isArabic ? "rtl" : "ltr",
-                    textAlign: isArabic ? "right" : "left",
+                    direction: textDirection,
+                    textAlign: textDirection === "rtl" ? "right" : "left",
                     paddingLeft: "3rem",
                     paddingRight: (value && !isOpen) ? "2.5rem" : "1rem"
                 }}
@@ -260,5 +255,4 @@ export function SearchableSelect({
         </div>
     );
 }
-
 

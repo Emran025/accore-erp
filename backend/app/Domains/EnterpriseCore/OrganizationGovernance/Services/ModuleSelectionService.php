@@ -104,21 +104,12 @@ final class ModuleSelectionService
         $evaluation = collect($readiness['modules'])->keyBy('module_key');
         $baselineReady = (bool) data_get($readiness, 'onboarding.baseline_ready', false);
         $selected = $this->selectedModuleKeys();
-        $missingStarterModules = array_values(array_diff(self::CORE_STARTER_MODULES, $selected));
         $activated = [];
         $pending = [];
 
         if (!$baselineReady) {
             foreach ($selected as $moduleKey) {
                 $pending[$moduleKey] = ['mandatory_baseline_incomplete'];
-            }
-
-            return compact('activated', 'pending');
-        }
-
-        if ($missingStarterModules !== []) {
-            foreach ($selected as $moduleKey) {
-                $pending[$moduleKey] = ['mandatory_core_module_selection_incomplete'];
             }
 
             return compact('activated', 'pending');
@@ -192,14 +183,12 @@ final class ModuleSelectionService
         $activeBusiness = $selectedBusiness->where('is_operational', true)->values();
         $pendingBusiness = $selectedBusiness->where('is_operational', false)->values();
         $baselineReady = (bool) data_get($readiness, 'onboarding.baseline_ready', false);
-        $missingStarterModules = array_values(array_diff(self::CORE_STARTER_MODULES, $selected));
+        $missingStarterModules = [];
         $activeStarterModules = $activeBusiness
             ->whereIn('module_key', self::CORE_STARTER_MODULES)
             ->pluck('module_key')
             ->all();
-        $starterBundleActive = $baselineReady
-            && $missingStarterModules === []
-            && array_values(array_diff(self::CORE_STARTER_MODULES, $activeStarterModules)) === [];
+        $starterBundleActive = $baselineReady;
 
         return [
             // Core access is only granted after the mandated foundational,

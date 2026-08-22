@@ -20,6 +20,7 @@ use Illuminate\Validation\ValidationException;
  */
 class OrgStructureService
 {
+    private const PRIMARY_GENERAL_LEDGER_REFERENCE = 'ACCORE-PRIMARY-GL';
     // ─── Change History ─────────────────────────────────────────────────
 
     /**
@@ -140,12 +141,163 @@ class OrgStructureService
         }
 
         $chartOfAccountsId = data_get($attributes, 'chart_of_accounts_id');
-        if ($chartOfAccountsId !== null && $chartOfAccountsId !== '' && !ChartOfAccount::query()->whereKey($chartOfAccountsId)->where('is_active', true)->exists()) {
+        if ($chartOfAccountsId === self::PRIMARY_GENERAL_LEDGER_REFERENCE) {
+            $requiredTypes = ['asset', 'liability', 'equity', 'revenue', 'expense'];
+            $activeTypes = ChartOfAccount::query()->where('is_active', true)->pluck('account_type')
+                ->map(fn ($type) => strtolower((string) $type))->unique()->all();
+            if (array_diff($requiredTypes, $activeTypes) !== []) {
+                $errors[] = 'The primary general ledger is incomplete and cannot yet be assigned to a company code.';
+            }
+        } elseif ($chartOfAccountsId !== null && $chartOfAccountsId !== '' && !ChartOfAccount::query()->whereKey($chartOfAccountsId)->where('is_active', true)->exists()) {
             $errors[] = 'The selected chart-of-accounts reference does not exist or is inactive.';
+        }
+
+        $fiscalYearVariant = data_get($attributes, 'fiscal_year_variant');
+        if ($fiscalYearVariant !== null && $fiscalYearVariant !== '' && $fiscalYearVariant !== 'K4') {
+            $errors[] = 'Only the K4 calendar-year structure is available during the current setup workflow.';
+        }
+
+        foreach (['language', 'default_language'] as $languageAttribute) {
+            $language = data_get($attributes, $languageAttribute);
+            if ($language !== null && $language !== '' && !in_array($language, ['ar-SA', 'en-US'], true)) {
+                $errors[] = "The {$languageAttribute} must be one of the supported ACCORE locales.";
+            }
         }
 
         if (!empty($errors)) {
             throw ValidationException::withMessages(['attributes' => $errors]);
+        }
+    }
+
+    /**
+     * Apply metadata defaults and primitive type/rule validation before the
+     * existing domain-specific validation is evaluated.
+     *
+     * @return array<string, mixed>
+     * @throws ValidationException
+     */
+    public function normalizeAndValidateNodeAttributes(string $nodeTypeId, array $attributes): array
+    {
+        $metaType = OrgMetaType::findOrFail($nodeTypeId);
+        $normalized = $attributes;
+        $errors = [];
+
+        foreach ($metaType->attributes()->orderBy('sort_order')->get() as $definition) {
+            $key = $definition->attribute_key;
+            $value = data_get($normalized, $key);
+            if (($value === null || $value === '') && $definition->default_value !== null && $definition->default_value !== '') {
+                $value = $definition->default_value;
+            }
+            if ($value === null || $value === '') {
+                continue;
+            }
+
+            $type = $definition->attribute_type ?: 'string';
+            if ($type === 'integer') {
+                if (filter_var($value, FILTER_VALIDATE_INT) === false) {
+                    $errors[] = "Attribute '{$key}' must be an integer.";
+                    continue;
+                }
+                $value = (int) $value;
+            } elseif ($type === 'decimal') {
+                if (!is_numeric($value)) {
+                    $errors[] = "Attribute '{$key}' must be a decimal number.";
+                    continue;
+                }
+                $value = (float) $value;
+            } elseif ($type === 'boolean') {
+                $value = filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+                if ($value === null) {
+                    $errors[] = "Attribute '{$key}' must be a boolean.";
+                    continue;
+                }
+            } elseif ($type === 'json') {
+                if (is_string($value)) {
+                    $value = json_decode($value, true);
+                }
+                if (!is_array($value)) {
+                    $errors[] = "Attribute '{$key}' must be a JSON object or array.";
+                    continue;
+                }
+            } elseif ($type === 'date') {
+                try {
+                    $value = \Carbon\Carbon::parse((string) $value)->toDateString();
+                } catch (\Throwable) {
+                    $errors[] = "Attribute '{$key}' must be a valid date.";
+                    continue;
+                }
+            } elseif (!is_scalar($value)) {
+                $errors[] = "Attribute '{$key}' must be a scalar value.";
+                continue;
+            } else {
+                $value = trim((string) $value);
+            }
+
+            $rule = $definition->validation_rule ?? [];
+            if (isset($rule['enum']) && !in_array($value, (array) $rule['enum'], true)) {
+                $errors[] = "Attribute '{$key}' is not an allowed value.";
+            }
+            if (isset($rule['min']) && is_numeric($value) && $value < $rule['min']) {
+                $errors[] = "Attribute '{$key}' is below the allowed minimum.";
+            }
+            if (isset($rule['max']) && is_numeric($value) && $value > $rule['max']) {
+                $errors[] = "Attribute '{$key}' exceeds the allowed maximum.";
+            }
+            if (isset($rule['regex']) && is_string($value) && @preg_match($rule['regex'], $value) !== 1) {
+                $errors[] = "Attribute '{$key}' does not match the required format.";
+            }
+            data_set($normalized, $key, $value);
+        }
+
+        if ($nodeTypeId === 'COMP_CODE' && empty(data_get($normalized, 'country_code'))) {
+            $errors[] = 'A Company Code country or region is required before plant assignment can be validated.';
+        }
+        if (!empty($errors)) {
+            throw ValidationException::withMessages(['attributes' => $errors]);
+        }
+
+        $this->validateNodeAttributes($nodeTypeId, $normalized);
+
+        return $normalized;
+    }
+
+    /** @return string[] */
+    private function requiredParentTypes(string $nodeTypeId): array
+    {
+        return [
+            'COMP_CODE' => ['CLIENT'],
+            'CONTROLLING_AREA' => ['COMP_CODE'],
+            'COST_CENTER' => ['CONTROLLING_AREA'],
+            'PROFIT_CENTER' => ['CONTROLLING_AREA'],
+            'PLANT' => ['COMP_CODE'],
+            'STORAGE_LOC' => ['PLANT'],
+            'PURCH_ORG' => ['COMP_CODE'],
+            'SALES_ORG' => ['COMP_CODE'],
+            'PERSONNEL_AREA' => ['COMP_CODE'],
+        ][$nodeTypeId] ?? [];
+    }
+
+    /** @param iterable<StructureLink> $links */
+    public function assertActiveParentConstraints(StructureNode $node, iterable $links): void
+    {
+        $activeLinks = collect($links)->filter(fn (StructureLink $link) => $link->isActive());
+        $parentTypes = $activeLinks
+            ->map(fn (StructureLink $link) => $link->targetNode?->node_type_id)
+            ->filter()
+            ->unique()
+            ->all();
+        $missing = array_values(array_diff($this->requiredParentTypes($node->node_type_id), $parentTypes));
+
+        if ($missing !== []) {
+            throw ValidationException::withMessages([
+                'links' => ['Missing required active relationship(s): '.implode(', ', $missing).'.'],
+            ]);
+        }
+
+        foreach ($activeLinks as $link) {
+            if ($link->targetNode && $link->topologyRule) {
+                $this->evaluateConstraintLogic($link->topologyRule, $node, $link->targetNode);
+            }
         }
     }
 
@@ -201,7 +353,11 @@ class OrgStructureService
         $cardinality = $rule->cardinality; // 1:1, 1:N, N:1, N:M
 
         $activeFilter = function ($q) {
-            $q->whereNull('valid_to')->orWhere('valid_to', '>=', now()->toDateString());
+            $q->where(function ($query) {
+                $query->whereNull('valid_from')->orWhere('valid_from', '<=', now()->toDateString());
+            })->where(function ($query) {
+                $query->whereNull('valid_to')->orWhere('valid_to', '>=', now()->toDateString());
+            });
         };
 
         // Check LEFT side cardinality (source)
@@ -242,49 +398,51 @@ class OrgStructureService
     // ─── Node + Link Creation ───────────────────────────────────────────
 
     /**
-     * Create a node with optional link to a target (create_with_link flow).
-     * @return array{node: StructureNode, link: ?StructureLink}
+     * Backward-compatible single-link wrapper.
+     * @return array{node: StructureNode, link: ?StructureLink, links: array<int, StructureLink>}
      */
     public function createNodeWithLink(array $nodeData, ?array $linkData = null): array
     {
-        return DB::transaction(function () use ($nodeData, $linkData) {
-            $this->validateNodeAttributes(
-                $nodeData['node_type_id'],
-                $nodeData['attributes'] ?? []
-            );
+        return $this->createNodeWithLinks($nodeData, $linkData ? [$linkData] : []);
+    }
 
+    /**
+     * Create a node and all its selected relationships atomically.
+     * @return array{node: StructureNode, link: ?StructureLink, links: array<int, StructureLink>}
+     */
+    public function createNodeWithLinks(array $nodeData, array $linksData = []): array
+    {
+        return DB::transaction(function () use ($nodeData, $linksData) {
+            $attributes = $this->normalizeAndValidateNodeAttributes($nodeData['node_type_id'], $nodeData['attributes'] ?? []);
             $node = StructureNode::create([
                 'node_type_id' => $nodeData['node_type_id'],
                 'code' => $nodeData['code'],
-                'attributes_json' => $nodeData['attributes'] ?? [],
+                'attributes_json' => $attributes,
                 'status' => $nodeData['status'] ?? 'active',
                 'valid_from' => $nodeData['valid_from'] ?? null,
                 'valid_to' => $nodeData['valid_to'] ?? null,
                 'created_by' => auth()->id(),
                 'updated_by' => auth()->id(),
             ]);
-
-            // Record change history
             $this->recordChange('node', $node->node_uuid, 'created', null, $node->toArray());
 
-            $link = null;
-
-            if ($linkData && !empty($linkData['target_node_uuid'])) {
+            $links = [];
+            $targetUuids = [];
+            foreach ($linksData as $linkData) {
+                if (empty($linkData['target_node_uuid'])) continue;
+                if (in_array($linkData['target_node_uuid'], $targetUuids, true)) {
+                    throw ValidationException::withMessages(['links' => ['A target can be linked only once during node creation.']]);
+                }
+                $targetUuids[] = $linkData['target_node_uuid'];
                 $target = StructureNode::findOrFail($linkData['target_node_uuid']);
                 $rule = $this->findTopologyRule($node->node_type_id, $target->node_type_id);
-
                 if (!$rule) {
-                    throw ValidationException::withMessages([
-                        'link' => ['No topology rule exists for this source->target relationship.'],
-                    ]);
+                    throw ValidationException::withMessages(['links' => ['No topology rule exists for this source-to-target relationship.']]);
                 }
-
                 $this->enforceCardinality($rule, $node->node_uuid, $target->node_uuid);
-
-                if (!empty($linkData['validate_constraints'])) {
+                if (($linkData['validate_constraints'] ?? true) === true) {
                     $this->evaluateConstraintLogic($rule, $node, $target);
                 }
-
                 $link = StructureLink::create([
                     'source_node_uuid' => $node->node_uuid,
                     'target_node_uuid' => $target->node_uuid,
@@ -295,11 +453,14 @@ class OrgStructureService
                     'valid_to' => $linkData['valid_to'] ?? null,
                     'created_by' => auth()->id(),
                 ]);
-
+                $link->setRelation('targetNode', $target)->setRelation('topologyRule', $rule);
                 $this->recordChange('link', (string) $link->id, 'created', null, $link->toArray());
+                $links[] = $link;
             }
 
-            return ['node' => $node->fresh(['metaType']), 'link' => $link ? $link->fresh() : null];
+            $this->assertActiveParentConstraints($node, $links);
+
+            return ['node' => $node->fresh(['metaType']), 'link' => $links[0] ?? null, 'links' => $links];
         });
     }
 
@@ -326,6 +487,9 @@ class OrgStructureService
         $exists = StructureLink::where('source_node_uuid', $sourceUuid)
             ->where('target_node_uuid', $targetUuid)
             ->where('link_type', $data['link_type'] ?? 'assignment')
+            ->where(function ($q) {
+                $q->whereNull('valid_from')->orWhere('valid_from', '<=', now()->toDateString());
+            })
             ->where(function ($q) {
                 $q->whereNull('valid_to')->orWhere('valid_to', '>=', now()->toDateString());
             })
@@ -397,6 +561,9 @@ class OrgStructureService
             ];
 
             $parents = StructureLink::where('source_node_uuid', $current->node_uuid)
+                ->where(function ($q) {
+                    $q->whereNull('valid_from')->orWhere('valid_from', '<=', now()->toDateString());
+                })
                 ->where(function ($q) {
                     $q->whereNull('valid_to')->orWhere('valid_to', '>=', now()->toDateString());
                 })
@@ -530,25 +697,17 @@ class OrgStructureService
             }
         }
 
-        // 3. Required parent check — key types must have parent links
-        $requiredParentMap = [
-            'PLANT' => 'COMP_CODE',
-            'SALES_ORG' => 'COMP_CODE',
-            'PURCH_ORG' => 'COMP_CODE',
-            'PERSONNEL_AREA' => 'COMP_CODE',
-            'STORAGE_LOC' => 'PLANT',
-            'COST_CENTER' => 'CONTROLLING_AREA',
-            'PROFIT_CENTER' => 'CONTROLLING_AREA',
-        ];
-
+        // 3. Required parent check — reuse the same topology contract enforced on writes.
         foreach ($nodes as $node) {
-            if (!isset($requiredParentMap[$node->node_type_id])) continue;
-            $requiredTarget = $requiredParentMap[$node->node_type_id];
-            $hasRequiredLink = $node->outgoingLinks->contains(function ($link) use ($requiredTarget) {
-                return $link->targetNode && $link->targetNode->node_type_id === $requiredTarget;
-            });
+            foreach ($this->requiredParentTypes($node->node_type_id) as $requiredTarget) {
+                $hasRequiredLink = $node->outgoingLinks->contains(function ($link) use ($requiredTarget) {
+                    return $link->isActive() && $link->targetNode && $link->targetNode->node_type_id === $requiredTarget;
+                });
 
-            if (!$hasRequiredLink) {
+                if ($hasRequiredLink) {
+                    continue;
+                }
+
                 $targetLabel = OrgMetaType::find($requiredTarget)?->display_name_ar ?? $requiredTarget;
                 $issues[] = [
                     'type' => 'WARNING',

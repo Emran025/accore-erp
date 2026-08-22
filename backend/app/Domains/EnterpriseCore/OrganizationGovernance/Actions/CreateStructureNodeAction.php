@@ -20,7 +20,8 @@ class CreateStructureNodeAction
             throw new \Exception('A node with this type and code already exists.', 422);
         }
 
-        $result = $this->orgService->createNodeWithLink($data, $data['link'] ?? null);
+        $links = $data['links'] ?? (isset($data['link']) ? [$data['link']] : []);
+        $result = $this->orgService->createNodeWithLinks($data, $links);
         $node = $result['node'];
 
         // The configuration workflow owns the organization first. When the

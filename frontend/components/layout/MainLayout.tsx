@@ -8,7 +8,6 @@ import {
   SideNavigationBar,
   TopGlobalBar,
   SearchNavigationBar,
-  StatusNotificationBar,
 } from "@/components/navigation";
 import { FullLogo } from "@/components/ui";
 import { initSystemSettings } from "@/lib/settings";
@@ -168,9 +167,6 @@ export function MainLayout({
           </FullLogo>
         </main>
       </div>
-      <div style={{ alignItems: "stretch" }}>
-        <StatusNotificationBar />
-      </div>
     </div>
   );
 }
@@ -184,4 +180,3 @@ export function useAuth() {
     permissions: store.permissions
   };
 }
-

@@ -16,8 +16,8 @@ test('generates manifests and updater URLs from normalized GitHub asset names', 
   const { privateKey } = generateKeyPairSync('ed25519');
 
   for (const product of ['Client', 'Server']) {
-    await writeFixture(assets, `Accore.${product}_1.0.0_amd64.AppImage`);
-    await writeFixture(assets, `Accore.${product}_1.0.0_amd64.AppImage.sig`, 'linux-signature');
+    await writeFixture(assets, `Accore.${product}_0.0.1_amd64.AppImage`);
+    await writeFixture(assets, `Accore.${product}_0.0.1_amd64.AppImage.sig`, 'linux-signature');
     await writeFixture(assets, `Accore.${product}_aarch64.app.tar.gz`);
     await writeFixture(assets, `Accore.${product}_aarch64.app.tar.gz.sig`, 'arm-signature');
     await writeFixture(assets, `Accore.${product}_x86_64.app.tar.gz`);
@@ -28,30 +28,31 @@ test('generates manifests and updater URLs from normalized GitHub asset names', 
     stdio: 'pipe',
     env: {
       ...process.env,
-      ACCORE_RELEASE_TAG: 'desktop-v1.0.0',
+      ACCORE_RELEASE_TAG: 'desktop-v0.0.1',
       ACCORE_SOURCE_REVISION: 'a'.repeat(40),
       ACCORE_MANIFEST_KEY_ID: 'test-ed25519',
       ACCORE_MANIFEST_PRIVATE_KEY: privateKey.export({ type: 'pkcs8', format: 'pem' }),
-      ACCORE_RELEASE_BASE_URL: 'https://example.test/releases/desktop-v1.0.0',
+      ACCORE_RELEASE_BASE_URL: 'https://example.test/releases/desktop-v0.0.1',
     },
   });
 
   const clientManifest = await readJson(join(output, 'accore-client-manifest.json'));
+  assert.equal(clientManifest.release_version, '0.0.1');
   assert.equal(clientManifest.artifacts[0].download_url.includes('Accore.Client'), true);
 
   const clientUpdater = await readJson(join(output, 'accore-client-updater.json'));
   assert.deepEqual(clientUpdater.platforms, {
     'darwin-aarch64': {
       signature: 'arm-signature',
-      url: 'https://example.test/releases/desktop-v1.0.0/Accore.Client_aarch64.app.tar.gz',
+      url: 'https://example.test/releases/desktop-v0.0.1/Accore.Client_aarch64.app.tar.gz',
     },
     'darwin-x86_64': {
       signature: 'intel-signature',
-      url: 'https://example.test/releases/desktop-v1.0.0/Accore.Client_x86_64.app.tar.gz',
+      url: 'https://example.test/releases/desktop-v0.0.1/Accore.Client_x86_64.app.tar.gz',
     },
     'linux-x86_64': {
       signature: 'linux-signature',
-      url: 'https://example.test/releases/desktop-v1.0.0/Accore.Client_1.0.0_amd64.AppImage',
+      url: 'https://example.test/releases/desktop-v0.0.1/Accore.Client_0.0.1_amd64.AppImage',
     },
   });
 });

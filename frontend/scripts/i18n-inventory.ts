@@ -62,6 +62,7 @@ function isTechnicalValue(value: string): boolean {
         || /^[a-z]+:\/\//i.test(value)
         || /^[a-z0-9_-]+$/i.test(value)
         || /^\d+(\.\d+)*$/.test(value)
+        || /^(?:[1N]:[1M])$/.test(value)
         || value.includes("var(--")
         || value.includes("@keyframes")
         || value.includes("fa-")
@@ -79,7 +80,7 @@ function isTechnicalValue(value: string): boolean {
         || (!hasArabic && /^\{value\d+\}\/\{value\d+\}$/u.test(value))
         || (!hasArabic && /^\{value\d+\}(?:\s*[()|—:-]\s*\{value\d+\})*$/u.test(value))
         || (!hasArabic && /^(?:line|column) \{value\d+\}$/i.test(value))
-        || (!hasArabic && /^(?:operating-readiness|runtime-error|runtime-rejection|fiscal-period-nearing-end|legacy-error):/i.test(value))
+        || (!hasArabic && /^(?:operating-readiness|runtime-error|runtime-rejection|fiscal-period-nearing-end|legacy-error|server-operations):/i.test(value))
         || (!hasArabic && /^(?:err|notification)_[a-z0-9_{}-]+$/i.test(value));
 }
 

@@ -1,8 +1,9 @@
 import { Button, SearchableSelect } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { catalogText, type CatalogKey, useI18n } from "@/lib/i18n";
+import { catalogText, getLocaleRegistry, type CatalogKey, useI18n } from "@/lib/i18n";
 import { getIcon } from "@/lib/icons";
+import { getTextDirection } from "@/lib/utils";
 import { useEffect, useMemo, useState } from "react";
 import { OrganizationIntegrity, OrganizationMetaType, OrganizationNodeDraft, OrganizationTopologyRule, OrganizationWorkspaceNode, OrganizationWorkspacePhase } from "./organizationWorkspace.types";
 
@@ -35,6 +36,18 @@ const PHASE_REQUIREMENTS: Record<OrganizationWorkspacePhase, string[]> = {
   foundation: ["CLIENT", "COMP_CODE", "CONTROLLING_AREA", "COST_CENTER", "PROFIT_CENTER"],
   core_operations: ["PLANT", "STORAGE_LOC", "PURCH_ORG", "SALES_ORG"],
   extensions: [],
+};
+
+const REQUIRED_PARENT_TYPES: Readonly<Record<string, readonly string[]>> = {
+  COMP_CODE: ["CLIENT"],
+  CONTROLLING_AREA: ["COMP_CODE"],
+  COST_CENTER: ["CONTROLLING_AREA"],
+  PROFIT_CENTER: ["CONTROLLING_AREA"],
+  PLANT: ["COMP_CODE"],
+  STORAGE_LOC: ["PLANT"],
+  PURCH_ORG: ["COMP_CODE"],
+  SALES_ORG: ["COMP_CODE"],
+  PERSONNEL_AREA: ["COMP_CODE"],
 };
 
 const DOMAIN_ORDER = ["Enterprise", "Financial", "Controlling", "Logistics", "Sales", "HR", "Project"];
@@ -77,6 +90,13 @@ const ATTRIBUTE_LABEL_KEYS: Readonly<Record<string, CatalogKey>> = {
   valuation_grouping: "enterpriseCore.orgWorkspace.attribute.valuationGrouping",
 };
 
+const CALENDAR_YEAR_VARIANT = "K4";
+const SUPPORTED_LANGUAGE_OPTIONS = Object.values(getLocaleRegistry()).map((item) => ({
+  value: item.code,
+  label: item.nativeName,
+  subtitle: item.displayName,
+}));
+
 function readableAttributeFallback(attributeKey: string): string {
   return attributeKey
     .split("_")
@@ -108,7 +128,7 @@ export function OrganizationArchitectureWorkspace({
   const [selectedTypeId, setSelectedTypeId] = useState("");
   const [nodeCode, setNodeCode] = useState("");
   const [nodeNameValue, setNodeNameValue] = useState("");
-  const [parentUuid, setParentUuid] = useState("");
+  const [linkTargetsByRule, setLinkTargetsByRule] = useState<Record<number, string[]>>({});
   const [attributes, setAttributes] = useState<Record<string, string>>({});
   const [scopeContext, setScopeContext] = useState<Record<string, unknown> | null>(null);
   const [isScopeLoading, setIsScopeLoading] = useState(false);
@@ -143,7 +163,12 @@ export function OrganizationArchitectureWorkspace({
       : i18n.catalog["enterpriseCore.orgWorkspace.reference.chartOfAccounts.empty"];
   };
 
-  const inputTypeForAttribute = (attributeType?: string) => attributeType === "integer" ? "number" : "text";
+  const inputTypeForAttribute = (attributeType?: string) => {
+    if (attributeType === "integer" || attributeType === "decimal") return "number";
+    if (attributeType === "date") return "date";
+    return "text";
+  };
+  const defaultTextDirection = locale === "ar-SA" ? "rtl" : "ltr";
 
   const domainForType = (typeId: string) => metaTypes.find((item) => item.id === typeId)?.level_domain || "";
   const selectedType = metaTypes.find((item) => item.id === selectedTypeId);
@@ -175,13 +200,13 @@ export function OrganizationArchitectureWorkspace({
     })).filter((group) => group.types.length > 0);
   }, [activePhase, metaTypes, suggestedTypes]);
 
-  const validParentNodes = useMemo(() => {
-    if (!selectedTypeId) return [];
-    const allowedParentTypes = topologyRules
-      .filter((rule) => rule.source_node_type_id === selectedTypeId)
-      .map((rule) => rule.target_node_type_id);
-    return nodes.filter((node) => node.status === "active" && allowedParentTypes.includes(node.node_type_id));
-  }, [nodes, selectedTypeId, topologyRules]);
+  const selectedTypeRules = useMemo(
+    () => topologyRules.filter((rule) => rule.source_node_type_id === selectedTypeId),
+    [selectedTypeId, topologyRules],
+  );
+  const linkCandidatesForRule = (rule: OrganizationTopologyRule) => nodes.filter(
+    (node) => node.status === "active" && node.node_type_id === rule.target_node_type_id,
+  );
 
   const tree = useMemo(() => {
     const nodeMap = new Map(nodes.map((node) => [node.node_uuid, node]));
@@ -220,13 +245,13 @@ export function OrganizationArchitectureWorkspace({
     setSelectedTypeId("");
     setNodeCode("");
     setNodeNameValue("");
-    setParentUuid("");
+    setLinkTargetsByRule({});
     setAttributes({});
   };
 
   const chooseType = (typeId: string) => {
     setSelectedTypeId(typeId);
-    setParentUuid("");
+    setLinkTargetsByRule({});
     setAttributes({});
   };
 
@@ -240,7 +265,10 @@ export function OrganizationArchitectureWorkspace({
       node_type_id: selectedTypeId,
       code: nodeCode.trim(),
       attributes: draftAttributes,
-      ...(parentUuid ? { link: { target_node_uuid: parentUuid, validate_constraints: true } } : {}),
+      links: Object.entries(linkTargetsByRule).flatMap(([, targetUuids]) => targetUuids.map((target_node_uuid) => ({
+        target_node_uuid,
+        validate_constraints: true as const,
+      }))),
     });
     if (created) resetComposer();
   };
@@ -269,11 +297,14 @@ export function OrganizationArchitectureWorkspace({
   };
   const phaseTitle = (phase: OrganizationWorkspacePhase) => phaseTitles[phase];
   const phaseDescription = (phase: OrganizationWorkspacePhase) => phaseDescriptions[phase];
-  const parentRequired = topologyRules.some((rule) => rule.source_node_type_id === selectedTypeId);
+  const requiredParentTypes = REQUIRED_PARENT_TYPES[selectedTypeId] ?? [];
+  const requiredRelationshipsComplete = requiredParentTypes.every((targetTypeId) => selectedTypeRules.some(
+    (rule) => rule.target_node_type_id === targetTypeId && (linkTargetsByRule[rule.id] ?? []).length > 0,
+  ));
   const mandatoryAttributesComplete = (selectedType?.attributes ?? [])
     .filter((attribute) => attribute.is_mandatory)
     .every((attribute) => (attributes[attribute.attribute_key] || (attribute.attribute_key === "name" ? nodeNameValue : "")).trim());
-  const isNodeReadyToCreate = Boolean(selectedTypeId && nodeCode.trim() && mandatoryAttributesComplete && (!parentRequired || parentUuid));
+  const isNodeReadyToCreate = Boolean(selectedTypeId && nodeCode.trim() && mandatoryAttributesComplete && requiredRelationshipsComplete);
 
   const renderTree = (treeNode: TreeNode, depth = 0) => {
     const { node, children } = treeNode;
@@ -472,24 +503,57 @@ export function OrganizationArchitectureWorkspace({
             <div className="settings-form-grid setup-form-grid">
               <label className="form-group" htmlFor="org-workspace-code">
                 <span>{i18n.catalog["enterpriseCore.orgWorkspace.composer.code"]}</span>
-                <input id="org-workspace-code" className="setup-input" value={nodeCode} onChange={(event) => setNodeCode(event.target.value)} required />
+                <input id="org-workspace-code" className="setup-input" dir="ltr" value={nodeCode} onChange={(event) => setNodeCode(event.target.value)} required />
               </label>
               <label className="form-group" htmlFor="org-workspace-name">
                 <span>{i18n.catalog["enterpriseCore.orgWorkspace.composer.name"]}</span>
-                <input id="org-workspace-name" className="setup-input" value={nodeNameValue} onChange={(event) => setNodeNameValue(event.target.value)} />
+                <input id="org-workspace-name" className="setup-input" dir={getTextDirection(nodeNameValue, defaultTextDirection)} value={nodeNameValue} onChange={(event) => setNodeNameValue(event.target.value)} />
               </label>
-              {validParentNodes.length ? (
-                <label className="form-group" htmlFor="org-workspace-parent">
-                  <span>{i18n.catalog["enterpriseCore.orgWorkspace.composer.parent"]}</span>
-                  <SearchableSelect
-                    id="org-workspace-parent"
-                    className="setup-select"
-                    value={parentUuid}
-                    onChange={(value) => setParentUuid(String(value || ""))}
-                    options={validParentNodes.map((node) => ({ value: node.node_uuid, label: catalogText(i18n, "enterpriseCore.setup.nodeSummary", { value0: node.code, value1: labelForType(node.node_type_id) }) }))}
-                  />
-                </label>
-              ) : null}
+              {selectedTypeRules.map((rule) => {
+                const candidates = linkCandidatesForRule(rule);
+                const selectedTargets = linkTargetsByRule[rule.id] ?? [];
+                const isRequired = (REQUIRED_PARENT_TYPES[selectedTypeId] ?? []).includes(rule.target_node_type_id);
+                const allowsMultiple = rule.cardinality === "N:M";
+                return (
+                  <fieldset key={rule.id} className="form-group org-workspace-link-rule">
+                    <legend>{labelForType(rule.target_node_type_id)}{isRequired ? " *" : ""}</legend>
+                    <small>{rule.description || labelForType(rule.target_node_type_id)}</small>
+                    {allowsMultiple ? (
+                      <div className="org-workspace-link-options">
+                        {candidates.map((node) => (
+                          <label key={node.node_uuid} className="org-workspace-link-option">
+                            <input
+                              type="checkbox"
+                              checked={selectedTargets.includes(node.node_uuid)}
+                              onChange={() => setLinkTargetsByRule((current) => {
+                                const existing = current[rule.id] ?? [];
+                                return {
+                                  ...current,
+                                  [rule.id]: existing.includes(node.node_uuid)
+                                    ? existing.filter((uuid) => uuid !== node.node_uuid)
+                                    : [...existing, node.node_uuid],
+                                };
+                              })}
+                            />
+                            <span>{node.code}</span>
+                          </label>
+                        ))}
+                      </div>
+                    ) : (
+                      <SearchableSelect
+                        id={`org-workspace-link-${rule.id}`}
+                        className="setup-select"
+                        value={selectedTargets[0] ?? ""}
+                        onChange={(value) => setLinkTargetsByRule((current) => ({
+                          ...current,
+                          [rule.id]: value ? [String(value)] : [],
+                        }))}
+                        options={candidates.map((node) => ({ value: node.node_uuid, label: catalogText(i18n, "enterpriseCore.setup.nodeSummary", { value0: node.code, value1: labelForType(node.node_type_id) }) }))}
+                      />
+                    )}
+                  </fieldset>
+                );
+              })}
               {(selectedType.attributes ?? []).filter((attribute) => attribute.attribute_key !== "name").map((attribute) => {
                 const referenceKey = attribute.attribute_key as ReferenceAttributeKey;
                 const referenceOptions = referenceOptionsByAttribute[referenceKey];
@@ -516,12 +580,70 @@ export function OrganizationArchitectureWorkspace({
                           {referenceHelpForAttribute(referenceKey, hasReferenceOptions)}
                         </small>
                       </>
+                    ) : attribute.attribute_key === "fiscal_year_variant" ? (
+                      <>
+                        <select
+                          id={attribute.attribute_key}
+                          className="setup-input"
+                          value={attributes[attribute.attribute_key] || ""}
+                          required={attribute.is_mandatory}
+                          onChange={(event) => setAttributes((current) => ({ ...current, [attribute.attribute_key]: event.target.value }))}
+                        >
+                          <option value="">{i18n.catalog["enterpriseCore.orgWorkspace.fiscalYearVariant.placeholder"]}</option>
+                          <option value={CALENDAR_YEAR_VARIANT}>{i18n.catalog["enterpriseCore.orgWorkspace.fiscalYearVariant.calendarYear"]}</option>
+                        </select>
+                        <small className="org-workspace-reference-help">
+                          {i18n.catalog["enterpriseCore.orgWorkspace.fiscalYearVariant.help"]}
+                        </small>
+                      </>
+                    ) : attribute.attribute_key === "language" || attribute.attribute_key === "default_language" ? (
+                      <>
+                        <select
+                          id={attribute.attribute_key}
+                          className="setup-input"
+                          value={attributes[attribute.attribute_key] || ""}
+                          required={attribute.is_mandatory}
+                          onChange={(event) => setAttributes((current) => ({ ...current, [attribute.attribute_key]: event.target.value }))}
+                        >
+                          <option value="">{i18n.catalog["enterpriseCore.orgWorkspace.companyLanguage.placeholder"]}</option>
+                          {SUPPORTED_LANGUAGE_OPTIONS.map((option) => (
+                            <option key={option.value} value={option.value}>{option.label} — {option.subtitle}</option>
+                          ))}
+                        </select>
+                        <small className="org-workspace-reference-help">
+                          {i18n.catalog["enterpriseCore.orgWorkspace.companyLanguage.help"]}
+                        </small>
+                      </>
+                    ) : attribute.attribute_type === "boolean" ? (
+                      <select
+                        id={attribute.attribute_key}
+                        className="setup-input"
+                        value={attributes[attribute.attribute_key] || ""}
+                        required={attribute.is_mandatory}
+                        onChange={(event) => setAttributes((current) => ({ ...current, [attribute.attribute_key]: event.target.value }))}
+                      >
+                        <option value="">—</option>
+                        <option value="true">True</option>
+                        <option value="false">False</option>
+                      </select>
+                    ) : attribute.attribute_type === "json" ? (
+                      <textarea
+                        id={attribute.attribute_key}
+                        className="setup-input"
+                        rows={3}
+                        value={attributes[attribute.attribute_key] || ""}
+                        dir="ltr"
+                        required={attribute.is_mandatory}
+                        onChange={(event) => setAttributes((current) => ({ ...current, [attribute.attribute_key]: event.target.value }))}
+                      />
                     ) : (
                       <input
                         id={attribute.attribute_key}
                         className="setup-input"
                         type={inputTypeForAttribute(attribute.attribute_type)}
                         value={attributes[attribute.attribute_key] || ""}
+                        step={attribute.attribute_type === "decimal" ? "any" : undefined}
+                        dir={attribute.attribute_type === "integer" || attribute.attribute_type === "decimal" || attribute.attribute_type === "date" ? "ltr" : getTextDirection(attributes[attribute.attribute_key] || "", defaultTextDirection)}
                         required={attribute.is_mandatory}
                         onChange={(event) => setAttributes((current) => ({ ...current, [attribute.attribute_key]: event.target.value }))}
                       />
@@ -531,7 +653,7 @@ export function OrganizationArchitectureWorkspace({
               })}
             </div>
             <div className="org-workspace-composer-footer">
-              <p>{validParentNodes.length ? i18n.catalog["enterpriseCore.orgWorkspace.composer.parentHelper"] : i18n.catalog["enterpriseCore.orgWorkspace.composer.rootHelper"]}</p>
+              <p>{selectedTypeRules.length ? i18n.catalog["enterpriseCore.orgWorkspace.composer.parentHelper"] : i18n.catalog["enterpriseCore.orgWorkspace.composer.rootHelper"]}</p>
               <div className="setup-actions">
                 <Button type="button" variant="secondary" onClick={resetComposer}>{i18n.catalog["common.general.cancel"]}</Button>
                 <Button type="button" variant="primary" icon="check" onClick={() => void createNode()} isLoading={isSaving} disabled={!isNodeReadyToCreate}>

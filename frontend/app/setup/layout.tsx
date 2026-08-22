@@ -8,6 +8,8 @@ import { API_ENDPOINTS } from "@/lib/endpoints";
 import { initSystemSettings } from "@/lib/settings";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useOperatingContextStore } from "@/stores/useOperatingContextStore";
+import { ApplicationLanguageSettingsTab } from "@/app/01-enterprise-core/identity-access/user-management/system-settings/components/ApplicationLanguageSettingsTab";
+import { getIcon } from "@/lib/icons";
 
 interface SetupLayoutProps {
   children: ReactNode;
@@ -24,6 +26,7 @@ export default function SetupLayout({ children }: SetupLayoutProps) {
   const { checkAuth, sessionExpired } = useAuthStore();
   const { loadReadiness } = useOperatingContextStore();
   const [isVerifying, setIsVerifying] = useState(true);
+  const [isApplicationSettingsOpen, setIsApplicationSettingsOpen] = useState(false);
 
   useEffect(() => {
     const verifySetupAccess = async () => {
@@ -63,5 +66,27 @@ export default function SetupLayout({ children }: SetupLayoutProps) {
     );
   }
 
-  return <main className="setup-shell animate-fade">{children}</main>;
+  return (
+    <main className="setup-shell animate-fade">
+      <header className="setup-top-utility">
+        <span>{i18n.catalog["enterpriseCore.systemSettings.applicationLanguage"]}</span>
+        <button
+          type="button"
+          className="setup-top-utility-action"
+          aria-expanded={isApplicationSettingsOpen}
+          aria-controls="setup-application-settings"
+          onClick={() => setIsApplicationSettingsOpen((current) => !current)}
+        >
+          {getIcon("settings")}
+          {i18n.catalog["components.globalmeta.settings"]}
+        </button>
+      </header>
+      {isApplicationSettingsOpen ? (
+        <div id="setup-application-settings" className="setup-application-settings">
+          <ApplicationLanguageSettingsTab />
+        </div>
+      ) : null}
+      {children}
+    </main>
+  );
 }

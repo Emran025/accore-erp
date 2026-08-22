@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui";
+import { getTextDirection } from "@/lib/utils";
 import { SetupField } from "./SetupField";
 import { SetupSection } from "./SetupSection";
 
@@ -24,6 +25,9 @@ interface SetupAccountingSectionProps {
   periodStart: string;
   periodEnd: string;
   recordSummary: string;
+  chartReady: boolean;
+  periodReady: boolean;
+  completeLabel: string;
   isSaving: boolean;
   onAccountCodeChange: (value: string) => void;
   onAccountNameChange: (value: string) => void;
@@ -55,6 +59,9 @@ export function SetupAccountingSection({
   periodStart,
   periodEnd,
   recordSummary,
+  chartReady,
+  periodReady,
+  completeLabel,
   isSaving,
   onAccountCodeChange,
   onAccountNameChange,
@@ -67,12 +74,14 @@ export function SetupAccountingSection({
 }: SetupAccountingSectionProps) {
   return (
     <SetupSection id="setup-accounting" title={title} description={description}>
+      {chartReady ? <p className="readiness-notice success">{accountNameLabel}: {completeLabel}</p> : null}
+      {!chartReady ? <>
       <div className="settings-form-grid setup-form-grid">
         <SetupField id="setup-account-code" label={accountCodeLabel} required>
-          <input id="setup-account-code" className="setup-input" value={accountCode} onChange={(event) => onAccountCodeChange(event.target.value)} required />
+          <input id="setup-account-code" className="setup-input" dir="ltr" value={accountCode} onChange={(event) => onAccountCodeChange(event.target.value)} required />
         </SetupField>
         <SetupField id="setup-account-name" label={accountNameLabel} required>
-          <input id="setup-account-name" className="setup-input" value={accountName} onChange={(event) => onAccountNameChange(event.target.value)} required />
+          <input id="setup-account-name" className="setup-input" dir={getTextDirection(accountName, "rtl")} value={accountName} onChange={(event) => onAccountNameChange(event.target.value)} required />
         </SetupField>
         <SetupField id="setup-account-type" label={accountTypeLabel}>
           <select id="setup-account-type" className="setup-input" value={accountType} onChange={(event) => onAccountTypeChange(event.target.value as AccountType)}>
@@ -83,9 +92,12 @@ export function SetupAccountingSection({
       <div className="setup-actions">
         <Button type="button" onClick={onCreateAccount} isLoading={isSaving}>{createAccountLabel}</Button>
       </div>
+      </> : null}
+      {periodReady ? <p className="readiness-notice success">{periodNameLabel}: {completeLabel}</p> : null}
+      {!periodReady ? <>
       <div className="settings-form-grid setup-form-grid">
         <SetupField id="setup-period-name" label={periodNameLabel} required>
-          <input id="setup-period-name" className="setup-input" value={periodName} onChange={(event) => onPeriodNameChange(event.target.value)} required />
+          <input id="setup-period-name" className="setup-input" dir={getTextDirection(periodName, "rtl")} value={periodName} onChange={(event) => onPeriodNameChange(event.target.value)} required />
         </SetupField>
         <SetupField id="setup-period-start" label={startDateLabel} required>
           <input id="setup-period-start" className="setup-input" type="date" value={periodStart} onChange={(event) => onPeriodStartChange(event.target.value)} required />
@@ -97,6 +109,7 @@ export function SetupAccountingSection({
       <div className="setup-actions">
         <Button type="button" onClick={onCreatePeriod} isLoading={isSaving}>{createPeriodLabel}</Button>
       </div>
+      </> : null}
       <p className="setup-context-summary">{recordSummary}</p>
     </SetupSection>
   );

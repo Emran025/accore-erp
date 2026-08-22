@@ -50,9 +50,9 @@ class StructureLink extends Model
 
     public function isActive(): bool
     {
-        if ($this->valid_to === null) {
-            return true;
-        }
-        return $this->valid_to->isFuture();
+        $today = now()->startOfDay();
+
+        return ($this->valid_from === null || $this->valid_from->lte($today))
+            && ($this->valid_to === null || $this->valid_to->gte($today));
     }
 }

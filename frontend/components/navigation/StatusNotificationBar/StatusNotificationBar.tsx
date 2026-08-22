@@ -9,6 +9,7 @@ import {
     type NotificationCategory,
     useNotificationStore,
 } from "@/stores/useNotificationStore";
+import { ServerOperationsCenterPanel } from "@/components/platform/ServerOperationsNotificationCenter";
 import { getStatusNotificationCopy } from "./content";
 
 interface StatusNotificationBarProps {
@@ -166,6 +167,8 @@ export function StatusNotificationBar({ text }: StatusNotificationBarProps) {
                             </button>
                         </div>
                     </header>
+
+                    <ServerOperationsCenterPanel />
 
                     <nav className="status-notification-category-tabs" aria-label={copy.centerTitle}>
                         {(["all", ...NOTIFICATION_CATEGORIES] as const).map((category) => {
