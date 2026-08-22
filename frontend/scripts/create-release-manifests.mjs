@@ -43,7 +43,7 @@ if (installers.length === 0)
 
 const generatedAt = new Date().toISOString();
 await mkdir(outputDirectory, { recursive: true });
-for (const product of ['server', 'client']) {
+for (const product of ['server', 'client', 'server-headless']) {
   const artifacts = (
     await Promise.all(
       installers
@@ -78,7 +78,9 @@ for (const product of ['server', 'client']) {
     join(outputDirectory, `accore-${product}-manifest.json`),
     `${JSON.stringify(manifest, null, 2)}\n`
   );
-  await writeTauriUpdaterManifest(product, files, outputDirectory, generatedAt);
+  if (product !== 'server-headless') {
+    await writeTauriUpdaterManifest(product, files, outputDirectory, generatedAt);
+  }
 }
 
 async function writeTauriUpdaterManifest(product, files, destination, generatedAt) {
@@ -133,8 +135,8 @@ async function descriptor(file, product) {
   const { os, architecture } = platformFromName(name);
   const bundleFormat = bundleFormatFromName(name);
   return {
-    id: `${product}-desktop-${os}-${architecture}-${bundleFormat}`,
-    kind: 'desktop_application',
+    id: `${product}-${product === 'server-headless' ? 'service' : 'desktop'}-${os}-${architecture}-${bundleFormat}`,
+    kind: product === 'server-headless' ? 'server_headless_installer' : 'desktop_application',
     product,
     version: releaseVersion,
     os,
@@ -195,6 +197,9 @@ function classifyProduct(file) {
 }
 
 function productFromAssetName(name) {
+  if (/accore(?:[ ._-]+erp)?[ ._-]+server[ ._-]+headless/i.test(name)) {
+    return 'server-headless';
+  }
   const match = /accore(?:[ ._-]+erp)?[ ._-]+(server|client)(?:[ ._-]+desktop)?/i.exec(name);
   return match?.[1].toLowerCase() ?? null;
 }

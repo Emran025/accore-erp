@@ -13,11 +13,13 @@ const MANIFEST_SCHEMA_VERSION: u16 = 1;
 const SHA256_HEX_LENGTH: usize = 64;
 
 /// The product a release artifact can serve. A Server release may contain desktop
-/// and runtime artifacts, while a Client release must never contain database data.
+/// and runtime artifacts, while Server Headless is a dedicated service package and
+/// a Client release must never contain database data.
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum ProductFlavor {
     Server,
+    ServerHeadless,
     Client,
 }
 
@@ -28,6 +30,7 @@ pub enum ArtifactKind {
     Bootstrapper,
     DesktopApplication,
     ServerAgent,
+    ServerHeadlessInstaller,
     ApiRuntime,
     DatabaseRuntime,
     MigrationBundle,

@@ -32,6 +32,7 @@ test('generates manifests and updater URLs from normalized GitHub asset names', 
     await writeFixture(assets, `Accore.${product}_x86_64.app.tar.gz`);
     await writeFixture(assets, `Accore.${product}_x86_64.app.tar.gz.sig`, 'intel-signature');
   }
+  await writeFixture(assets, `Accore.Server.Headless_${releaseVersion}_x86_64-setup.exe`);
 
   execFileSync(process.execPath, [script, assets, output], {
     stdio: 'pipe',
@@ -64,6 +65,12 @@ test('generates manifests and updater URLs from normalized GitHub asset names', 
       url: `https://example.test/releases/${releaseTag}/Accore.Client_${releaseVersion}_amd64.AppImage`,
     },
   });
+
+  const headlessManifest = await readJson(join(output, 'accore-server-headless-manifest.json'));
+  assert.equal(headlessManifest.product, 'server-headless');
+  assert.equal(headlessManifest.artifacts.length, 1);
+  assert.equal(headlessManifest.artifacts[0].kind, 'server_headless_installer');
+  await assert.rejects(readFile(join(output, 'accore-server-headless-updater.json'), 'utf8'));
 });
 
 async function writeFixture(root, relativePath, content = 'fixture') {

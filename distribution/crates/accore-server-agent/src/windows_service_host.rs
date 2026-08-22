@@ -121,9 +121,20 @@ pub fn uninstall_service() -> Result<(), String> {
     let manager = ServiceManager::local_computer(None::<&str>, ServiceManagerAccess::CONNECT)
         .map_err(|error| format!("open Windows Service Control Manager: {error}"))?;
     let service = manager
-        .open_service(SERVICE_NAME, ServiceAccess::STOP | ServiceAccess::DELETE)
+        .open_service(
+            SERVICE_NAME,
+            ServiceAccess::QUERY_STATUS | ServiceAccess::STOP | ServiceAccess::DELETE,
+        )
         .map_err(|error| format!("open ACCORE Server Agent service: {error}"))?;
-    let _ = service.stop();
+    let status = service
+        .query_status()
+        .map_err(|error| format!("query ACCORE Server Agent before removal: {error}"))?;
+    if status.current_state != ServiceState::Stopped {
+        service
+            .stop()
+            .map_err(|error| format!("stop ACCORE Server Agent before removal: {error}"))?;
+        wait_for_stopped(&service)?;
+    }
     service
         .delete()
         .map_err(|error| format!("remove ACCORE Server Agent service: {error}"))
