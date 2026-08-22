@@ -8,6 +8,7 @@ on:
   pull_request:
     paths:
       - "frontend/**"
+      - "distribution/**"
       - ".github/workflows/desktop.yml"
 
 permissions:
@@ -112,7 +113,17 @@ jobs:
           New-Item -ItemType Directory -Force -Path frontend/src-tauri/binaries | Out-Null
           Copy-Item distribution/crates/accore-server-agent/target/release/accore-server-agent.exe frontend/src-tauri/binaries/accore-server-agent-x86_64-pc-windows-msvc.exe
 
-      - name: Smoke test self-contained Server Desktop runtime
+      - name: Test Server Agent decision and data-policy contracts
+        if: matrix.flavor == 'server'
+        shell: pwsh
+        run: cargo test --manifest-path distribution/crates/accore-server-agent/Cargo.toml
+
+      - name: Verify Server Desktop runtime package contract
+        if: matrix.flavor == 'server'
+        working-directory: frontend
+        run: node scripts/verify-server-runtime-package.mjs
+
+      - name: Validate Server Agent lifecycle public contract
         if: matrix.flavor == 'server'
         shell: pwsh
         run: |
@@ -120,84 +131,13 @@ jobs:
           $agentSource = Resolve-Path 'frontend/src-tauri/binaries/accore-server-agent-x86_64-pc-windows-msvc.exe'
           $agent = Join-Path (Resolve-Path 'frontend/src-tauri') 'accore-server-agent.exe'
           Copy-Item $agentSource $agent -Force
-          $runtimeRoot = Resolve-Path 'frontend/src-tauri/resources/server-runtime/windows-x86_64'
-          $dataRoot = Join-Path $env:ProgramData 'ACCORE ERP\Server'
-          $statusPath = Join-Path $env:ProgramData 'ACCORE ERP\Server Status\runtime-status.json'
-          $backupStatusPath = Join-Path $env:ProgramData 'ACCORE ERP\Server Status\backup-status.json'
-          $backupManifestPath = Join-Path $dataRoot 'backups\manifest.json'
-          $agentConfigPath = Join-Path $dataRoot 'agent-config.json'
-          $runtimeEnv = 'frontend/src-tauri/resources/server-runtime/windows-x86_64/app/.env'
           try {
-            $env:PHPRC = $runtimeRoot
-            $extensionProbe = Join-Path $runtimeRoot 'accore-extension-probe.php'
-            Set-Content -LiteralPath $extensionProbe -NoNewline -Value "<?php exit(extension_loaded('pdo_mysql') ? 0 : 1);"
-            & (Join-Path $runtimeRoot 'frankenphp.exe') php-cli $extensionProbe
-            if ($LASTEXITCODE -ne 0) { throw 'Embedded FrankenPHP did not load the required pdo_mysql extension' }
-            Remove-Item $extensionProbe -Force
-            New-Item -ItemType Directory -Force -Path $dataRoot | Out-Null
-            Set-Content -LiteralPath (Join-Path $dataRoot 'control.backup') -NoNewline -Value "requested`n"
-            & $agent install
-            if ($LASTEXITCODE -ne 0) { throw "Agent installation exited with $LASTEXITCODE" }
-            $deadline = (Get-Date).AddMinutes(3)
-            $status = $null
-            while ((Get-Date) -lt $deadline) {
-              if (Test-Path $statusPath) {
-                $status = Get-Content $statusPath -Raw | ConvertFrom-Json
-                if ($status.state -eq 'ready') { break }
-                if ($status.state -eq 'unhealthy') { throw "Server Agent reported unhealthy: $($status.detail)" }
-              }
-              Start-Sleep -Seconds 2
-            }
-            if ($null -eq $status -or $status.state -ne 'ready') { throw 'Server Agent did not become ready within three minutes' }
-            if ($status.database.state -ne 'ready' -or $status.api.state -ne 'ready' -or $status.queue.state -ne 'ready') { throw 'Not every Server Desktop component reached ready state' }
-            if (Test-Path $runtimeEnv) { throw 'Runtime package contains a forbidden Laravel environment file' }
-            $privateAcl = Get-Acl (Join-Path $dataRoot 'agent-config.json')
-            if ($privateAcl.Access.IdentityReference.Value -match 'Users') { throw 'Agent configuration grants an ordinary Users ACL entry' }
-            $backupDeadline = (Get-Date).AddMinutes(5)
-            $backupManifest = $null
-            do {
-              Start-Sleep -Seconds 2
-              if (Test-Path $backupManifestPath) {
-                $backupManifest = Get-Content $backupManifestPath -Raw | ConvertFrom-Json
-              }
-            } while (($null -eq $backupManifest -or $backupManifest.records.Count -lt 1 -or $null -eq $backupManifest.records[0].verifiedAtUnix) -and (Get-Date) -lt $backupDeadline)
-            if ($null -eq $backupManifest -or $backupManifest.records.Count -lt 1) { throw 'Agent did not publish a protected backup manifest' }
-            if ($backupManifest.records[0].verifiedAtUnix -eq $null) { throw 'Latest protected backup was not verified through isolated restore validation' }
-            $backupArchive = Join-Path (Join-Path $dataRoot 'backups') $backupManifest.records[0].artifact
-            if (-not (Test-Path $backupArchive) -or (Get-Item $backupArchive).Length -le 0) { throw 'Protected compressed backup archive is missing or empty' }
-            if (-not (Test-Path $backupStatusPath)) { throw 'Agent did not publish redacted public backup status' }
-          }
-          catch {
-            Write-Host 'Server Desktop smoke-test diagnostics follow.'
-            foreach ($diagnosticPath in @($statusPath, $backupStatusPath, $backupManifestPath)) {
-              if (Test-Path $diagnosticPath) {
-                Write-Host "--- $diagnosticPath ---"
-                Get-Content $diagnosticPath -Raw
-              }
-            }
-            $auditPath = Join-Path $dataRoot 'operations-audit.jsonl'
-            if (Test-Path $auditPath) {
-              Write-Host '--- operations-audit.jsonl, last 80 lines ---'
-              Get-Content $auditPath -Tail 80
-            }
-            $backupsPath = Join-Path $dataRoot 'backups'
-            if (Test-Path $backupsPath) {
-              Write-Host '--- protected backup artifact names and sizes ---'
-              Get-ChildItem $backupsPath -File | Where-Object { $_.Name -notmatch '^\.' } | Select-Object Name, Length
-            }
-            $logsPath = Join-Path $dataRoot 'logs'
-            if (Test-Path $logsPath) {
-              Get-ChildItem $logsPath -File | ForEach-Object {
-                Write-Host "--- $($_.Name), last 80 lines ---"
-                Get-Content $_.FullName -Tail 80
-              }
-            }
-            throw
+            & distribution/tests/windows/server-lifecycle-public-contract.ps1 `
+              -Agent $agent `
+              -PublicStatusRoot (Join-Path $env:ProgramData 'ACCORE ERP\Server Status')
           }
           finally {
-            & $agent uninstall
             Remove-Item $agent -Force -ErrorAction SilentlyContinue
-            Remove-Item (Join-Path $env:ProgramData 'ACCORE ERP') -Recurse -Force -ErrorAction SilentlyContinue
           }
 
       - name: Generate updater configuration for signed release

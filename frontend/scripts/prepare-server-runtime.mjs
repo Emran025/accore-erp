@@ -81,7 +81,7 @@ await writeFile(
 }
 
 http://127.0.0.1:8765 {
-  root * {env.ACCORE_APP_ROOT}/public
+  root * "{env.ACCORE_APP_ROOT}/public"
   encode zstd gzip
   php_server
 }
