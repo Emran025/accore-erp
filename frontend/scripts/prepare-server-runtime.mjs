@@ -112,12 +112,30 @@ async function buildMariaDbFromSource(source) {
     '-DWITH_SSL=system',
     '-DWITH_ZLIB=system',
   ];
-  if (process.platform === 'darwin' && process.env.SDKROOT) {
-    cmakeArgs.push(`-DCMAKE_OSX_SYSROOT=${process.env.SDKROOT}`);
+  const buildEnvironment = { CMAKE_PREFIX_PATH: process.env.CMAKE_PREFIX_PATH ?? '' };
+  if (process.platform === 'darwin') {
+    if (process.env.SDKROOT) {
+      cmakeArgs.push(`-DCMAKE_OSX_SYSROOT=${process.env.SDKROOT}`);
+    }
+
+    // Hosted macOS runners can expose Command Line Tools include flags through
+    // setup actions. They are incompatible with the selected Xcode SDK when
+    // compiling C++ sources, so build only through CMake's explicit SDK/prefix.
+    Object.assign(buildEnvironment, {
+      CFLAGS: '',
+      CXXFLAGS: '',
+      CPPFLAGS: '',
+      LDFLAGS: '',
+      CPATH: '',
+      C_INCLUDE_PATH: '',
+      CPLUS_INCLUDE_PATH: '',
+      OBJC_INCLUDE_PATH: '',
+      LIBRARY_PATH: '',
+    });
   }
-  await run('cmake', cmakeArgs, { CMAKE_PREFIX_PATH: process.env.CMAKE_PREFIX_PATH ?? '' });
-  await run('cmake', ['--build', buildRoot, '--parallel', process.env.ACCORE_RUNTIME_BUILD_JOBS ?? '3']);
-  await run('cmake', ['--install', buildRoot]);
+  await run('cmake', cmakeArgs, buildEnvironment);
+  await run('cmake', ['--build', buildRoot, '--parallel', process.env.ACCORE_RUNTIME_BUILD_JOBS ?? '3'], buildEnvironment);
+  await run('cmake', ['--install', buildRoot], buildEnvironment);
 }
 
 async function stageApplication() {
