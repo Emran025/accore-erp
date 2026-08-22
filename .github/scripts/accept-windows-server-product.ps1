@@ -179,7 +179,7 @@ if (Test-Path (Join-Path $InstallationDirectory 'resources\server-runtime\window
   throw "$Product package contains a forbidden Laravel environment file."
 }
 $privateAcl = Get-Acl -LiteralPath $configPath
-if ($privateAcl.Access.IdentityReference.Value -match 'Users') {
+if (@($privateAcl.Access | Where-Object { $_.IdentityReference.Value -match '(^|\\)Users$' }).Count -gt 0) {
   throw "$Product Agent configuration grants an ordinary Users ACL entry."
 }
 Assert-VerifiedProtectedBackup
