@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
-import { showToast, Button } from "@/components/ui";
+import { showToast } from "@/components/ui";
 import { getIcon } from "@/lib/icons";
 import { PropertyInspector } from "./PropertyInspector";
 import { TemporalRestructureModal } from "./TemporalRestructureModal";
@@ -20,7 +20,7 @@ interface StudioNode {
   display_name?: string;
   status: string;
   facets?: string[];
-  attributes_json?: Record<string, any>;
+  attributes_json?: Record<string, unknown>;
   meta_type?: {
     level_domain: string;
     display_name: string;
@@ -121,6 +121,7 @@ export function OrgStudioWorkspace() {
 
   const [expandedUuids, setExpandedUuids] = useState<Set<string>>(new Set());
   const [selectedNode, setSelectedNode] = useState<StudioNode | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Restructure Modal state
   const [restructureModalOpen, setRestructureModalOpen] = useState(false);
@@ -151,6 +152,39 @@ export function OrgStudioWorkspace() {
   useEffect(() => {
     void loadPerspective(activePerspective);
   }, [activePerspective, loadPerspective]);
+
+  // Keep high-frequency studio actions available to keyboard-first operators.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement;
+      const isEditing = target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName);
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+        return;
+      }
+      if (isEditing) return;
+      if (event.key.toLowerCase() === "f") {
+        event.preventDefault();
+        expandAll();
+        return;
+      }
+      const perspectiveByKey: Record<string, PerspectiveKey> = {
+        "1": "legal",
+        "2": "facilities",
+        "3": "workforce",
+        "4": "financial",
+        "5": "matrix",
+      };
+      const nextPerspective = perspectiveByKey[event.key];
+      if (nextPerspective) {
+        event.preventDefault();
+        setActivePerspective(nextPerspective);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  });
 
   const toggleExpand = (uuid: string) => {
     setExpandedUuids((prev) => {
@@ -383,10 +417,12 @@ export function OrgStudioWorkspace() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-b border-neutral-800/80 pb-3">
             <div className="w-full sm:w-72">
               <input
+                ref={searchInputRef}
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={isArabic ? "بحث في الوحدات والرموز..." : "Filter units by code or name..."}
+                aria-label={isArabic ? "بحث في الوحدات والرموز" : "Filter units by code or name"}
+                placeholder={isArabic ? "بحث في الوحدات والرموز... (⌘K)" : "Filter units by code or name... (⌘K)"}
                 className="w-full bg-neutral-950 border border-neutral-800 p-2 text-xs text-neutral-200 rounded-none focus:border-primary-500 focus:outline-none"
               />
             </div>
