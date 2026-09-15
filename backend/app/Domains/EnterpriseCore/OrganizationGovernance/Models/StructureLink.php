@@ -18,7 +18,9 @@ class StructureLink extends Model
         'target_node_uuid',
         'topology_rule_id',
         'link_type',
+        'plane_type',
         'priority',
+        'weight',
         'valid_from',
         'valid_to',
         'created_by',
@@ -30,7 +32,24 @@ class StructureLink extends Model
             'valid_from' => 'date',
             'valid_to' => 'date',
             'priority' => 'integer',
+            'weight' => 'decimal:2',
         ];
+    }
+
+    public function scopePlane($query, string $planeType)
+    {
+        return $query->where('plane_type', $planeType);
+    }
+
+    public function scopeActiveOnDate($query, ?string $date = null)
+    {
+        $targetDate = $date ?? now()->toDateString();
+
+        return $query->where(function ($q) use ($targetDate) {
+            $q->whereNull('valid_from')->orWhere('valid_from', '<=', $targetDate);
+        })->where(function ($q) use ($targetDate) {
+            $q->whereNull('valid_to')->orWhere('valid_to', '>=', $targetDate);
+        });
     }
 
     public function sourceNode(): BelongsTo

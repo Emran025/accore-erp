@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-08-17T14:51:39.718Z",
-  "itemCount": 4119,
+  "itemCount": 4391,
   "items": [
     {
       "id": "assets.fixedAssetsRegistry.areYouSureYouWantDeleteThisAsset",
@@ -91456,6 +91456,4086 @@
           "column": 47,
           "kind": "string-literal",
           "context": "Unclassified textual literal"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.setup.title",
+      "source": "الإعداد الذكي للمؤسسة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.setup.title",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.setup.subtitle",
+      "source": "صف طبيعة عملك باللغة الطبيعية وسيقوم النظام باستنتاج الهيكل التنظيمي الأمثل",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.setup.subtitle",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.setup.naturalInputPlaceholder",
+      "source": "مثال: نحن شركة تجزئة نملك 4 فروع ومستودعين في الرياض وجدة مع 35 موظفاً ونظام نقاط بيع ومحاسبة مركزية...",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.setup.naturalInputPlaceholder",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.setup.analyzeButton",
+      "source": "تحليل واستنتاج الهيكل",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.setup.analyzeButton",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.setup.analyzing",
+      "source": "جارٍ تحليل الإشارات واستنتاج النمط التنظيمي...",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.setup.analyzing",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.setup.archetypeRecommendation",
+      "source": "النمط التنظيمي الموصى به",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.setup.archetypeRecommendation",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.setup.confidence",
+      "source": "نسبة التطابق والثقة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.setup.confidence",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.setup.complexityGrade",
+      "source": "مستوى تعقيد الهيكل",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.setup.complexityGrade",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.setup.whyThisArchetype",
+      "source": "لماذا هذا النمط؟ (تفسير النظام)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.setup.whyThisArchetype",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.setup.adaptiveQuestionsTitle",
+      "source": "أسئلة توضيحية لتخصيص الهيكل",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.setup.adaptiveQuestionsTitle",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.setup.stageBlueprint",
+      "source": "حفظ مسودة المخطط",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.setup.stageBlueprint",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.setup.publishBlueprint",
+      "source": "اعتماد وبناء المؤسسة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.setup.publishBlueprint",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.setup.publishing",
+      "source": "جارٍ بناء الوحدات ومراكز التكلفة وخطوط التقارير...",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.setup.publishing",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.setup.publishedSuccess",
+      "source": "تم اعتماد وبناء الهيكل التنظيمي بنجاح!",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.setup.publishedSuccess",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.setup.blueprintPreview",
+      "source": "معاينة مخطط المؤسسة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.setup.blueprintPreview",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.setup.unitsCount",
+      "source": "عدد الوحدات الإدارية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.setup.unitsCount",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.setup.relationshipsCount",
+      "source": "خطوط التقارير والربط",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.setup.relationshipsCount",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.setup.positionsCount",
+      "source": "الوظائف الهيكلية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.setup.positionsCount",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.perspectives.title",
+      "source": "استوديو المؤسسة متعدد الأبعاد",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.perspectives.title",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.perspectives.legal",
+      "source": "المنظور القانوني والشركات",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.perspectives.legal",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.perspectives.legalDesc",
+      "source": "الكيانات القانونية والشركات التابعة والحصص الملكية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.perspectives.legalDesc",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.perspectives.facilities",
+      "source": "منظور المرافق واللوجستيات",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.perspectives.facilities",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.perspectives.facilitiesDesc",
+      "source": "الفروع والمستودعات ومراكز التوزيع والمواقع الجغرافية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.perspectives.facilitiesDesc",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.perspectives.workforce",
+      "source": "منظور القوى العاملة والإدارة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.perspectives.workforce",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.perspectives.workforceDesc",
+      "source": "الإدارات والأقسام والوظائف وشبكة الإشراف الإداري",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.perspectives.workforceDesc",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.perspectives.financial",
+      "source": "منظور الرقابة المالية ومراكز التكلفة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.perspectives.financial",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.perspectives.financialDesc",
+      "source": "مراكز التكلفة ومراكز الربحية ونقاط تجميع القوائم المالية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.perspectives.financialDesc",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.perspectives.matrix",
+      "source": "منظور المصفوفة والمشاريع",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.perspectives.matrix",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.perspectives.matrixDesc",
+      "source": "خطوط الإشراف المزدوجة وإدارة المشاريع العابرة للإدارات",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.perspectives.matrixDesc",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.perspectives.all",
+      "source": "جميع الأبعاد الموحدة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.perspectives.all",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.inspector.title",
+      "source": "مفتش خصائص الوحدة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.inspector.title",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.inspector.selectUnit",
+      "source": "اختر وحدة من المخطط لعرض خصائصها وتعديل أبعادها",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.inspector.selectUnit",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.inspector.facetsTitle",
+      "source": "الأبعاد التشغيلية النشطة (Facets)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.inspector.facetsTitle",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.inspector.facetLegalEntity",
+      "source": "كيان قانوني (Legal Entity)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.inspector.facetLegalEntity",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.inspector.facetCostCenter",
+      "source": "مركز تكلفة (Cost Center)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.inspector.facetCostCenter",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.inspector.facetProfitCenter",
+      "source": "مركز ربحية (Profit Center)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.inspector.facetProfitCenter",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.inspector.facetWarehouse",
+      "source": "مستودع (Warehouse)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.inspector.facetWarehouse",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.inspector.facetDepartment",
+      "source": "إدارة / قسم (Department)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.inspector.facetDepartment",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.inspector.facetFacility",
+      "source": "مرفق / فرع (Facility / Branch)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.inspector.facetFacility",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.inspector.facetSalesChannel",
+      "source": "قناة مبيعات (Sales Channel)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.inspector.facetSalesChannel",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.inspector.facetProject",
+      "source": "مشروع (Project Unit)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.inspector.facetProject",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.inspector.saveFacets",
+      "source": "حفظ وتزامن الأبعاد",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.inspector.saveFacets",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.inspector.syncNotice",
+      "source": "يتم تزامن هذه الأبعاد فورياً مع القيود المحاسبية وسلاسل الإمداد ومراكز التكلفة.",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.inspector.syncNotice",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.inspector.unitCode",
+      "source": "رمز الوحدة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.inspector.unitCode",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.inspector.unitNameEn",
+      "source": "الاسم بالإنجليزية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.inspector.unitNameEn",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.inspector.unitNameAr",
+      "source": "الاسم بالعربية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.inspector.unitNameAr",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.inspector.unitType",
+      "source": "نوع الوحدة القياسي",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.inspector.unitType",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.restructure.title",
+      "source": "إعادة هيكلة خط التقارير مع التأريخ الفعال",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.restructure.title",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.restructure.sourceUnit",
+      "source": "الوحدة التابعة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.restructure.sourceUnit",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.restructure.newParent",
+      "source": "الوحدة الرئيسية الجديدة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.restructure.newParent",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.restructure.effectiveDate",
+      "source": "تاريخ السريان الفعال",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.restructure.effectiveDate",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.restructure.reason",
+      "source": "سبب التعديل أو القرار الإداري",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.restructure.reason",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.restructure.confirm",
+      "source": "تنفيذ إعادة الهيكلة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.restructure.confirm",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.restructure.success",
+      "source": "تمت إعادة الهيكلة بنجاح مع الحفاظ الكامل على السجلات التاريخية.",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.restructure.success",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.canvas.zoomIn",
+      "source": "تكبير",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.canvas.zoomIn",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.canvas.zoomOut",
+      "source": "تصغير",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.canvas.zoomOut",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.canvas.resetZoom",
+      "source": "إعادة ضبط العرض",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.canvas.resetZoom",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "orgStudio.canvas.emptyPerspective",
+      "source": "لا توجد وحدات مطابقة لهذا المنظور حالياً.",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:orgStudio.canvas.emptyPerspective",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverRuntimeUnavailableDescription",
+      "source": "خدمة بيئة تشغيل الخادم غير متوفرة حالياً",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverRuntimeUnavailableDescription",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverRuntimeServiceContinuity",
+      "source": "استمرارية الخدمة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverRuntimeServiceContinuity",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverRuntimeUnavailableNextStep",
+      "source": "يرجى التحقق من حالة الخادم أو إعادة تشغيله",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverRuntimeUnavailableNextStep",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverRuntimeApiAction",
+      "source": "إجراء الواجهة البرمجية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverRuntimeApiAction",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverRuntimeTechnicalDetail",
+      "source": "التفاصيل التقنية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverRuntimeTechnicalDetail",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverRuntimeRefreshStatus",
+      "source": "تحديث الحالة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverRuntimeRefreshStatus",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverRuntimeChecking",
+      "source": "جارٍ التحقق...",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverRuntimeChecking",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverRuntimeStartService",
+      "source": "بدء الخدمة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverRuntimeStartService",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverProfileRequiredApiMessage",
+      "source": "ملف تعريف الخادم مطلوب لهذا الإجراء",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverProfileRequiredApiMessage",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "navigation.commercialConfig.marketplace",
+      "source": "السوق الإلكتروني",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:navigation.commercialConfig.marketplace",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "navigation.commercialConfig.marketplaceDescription",
+      "source": "إدارة العروض وحملات السوق الإلكتروني",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:navigation.commercialConfig.marketplaceDescription",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "navigation.commercialConfig.marketplaceOperations",
+      "source": "عمليات السوق",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:navigation.commercialConfig.marketplaceOperations",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverUpdateServerOnly",
+      "source": "تحديث الخادم فقط",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverUpdateServerOnly",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverUpdateShutdown",
+      "source": "إيقاف تشغيل الخادم",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverUpdateShutdown",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverUpdateDownloadingProgress",
+      "source": "جارٍ تنزيل التحديث: {value0}%",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverUpdateDownloadingProgress",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.client",
+      "source": "تطبيق العميل",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.client",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.server",
+      "source": "خادم النظام",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.server",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverProfileRequiredTitle",
+      "source": "ملف تعريف الخادم مطلوب",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverProfileRequiredTitle",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverProfileRequiredDescription",
+      "source": "يتطلب هذا الإجراء تكوين ملف تعريف الخادم بشكل صحيح",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverProfileRequiredDescription",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverProfileRequiredNextStep",
+      "source": "انتقل إلى إعدادات الخادم للتكوين",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverProfileRequiredNextStep",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverRuntimeApiComponent",
+      "source": "مكون الواجهة البرمجية (API)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverRuntimeApiComponent",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverRuntimeDatabaseComponent",
+      "source": "مكون قاعدة البيانات",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverRuntimeDatabaseComponent",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverRuntimeQueueComponent",
+      "source": "مكون طابور المهام",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverRuntimeQueueComponent",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverRuntimeUnavailableTitle",
+      "source": "خدمة الخادم غير متوفرة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverRuntimeUnavailableTitle",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverUpdateChecking",
+      "source": "جارٍ التحقق من التحديثات...",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverUpdateChecking",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverUpdateAvailableVersion",
+      "source": "يتوفر إصدار جديد: {version}",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverUpdateAvailableVersion",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverUpdateDownloading",
+      "source": "جارٍ تنزيل التحديث...",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverUpdateDownloading",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverUpdatePreparing",
+      "source": "جارٍ تجهيز التحديث...",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverUpdatePreparing",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverUpdateInstalling",
+      "source": "جارٍ تثبيت التحديث...",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverUpdateInstalling",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverUpdateRecovering",
+      "source": "جارٍ استعادة الحالة السابقة...",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverUpdateRecovering",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverUpdateNone",
+      "source": "النظام محدث بالكامل",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverUpdateNone",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverOperationsTitle",
+      "source": "عمليات الخادم",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverOperationsTitle",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverOperationRetry",
+      "source": "إعادة المحاولة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverOperationRetry",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverUpdateTitle",
+      "source": "تحديث النظام",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverUpdateTitle",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverBackupRequested",
+      "source": "تم طلب نسخة احتياطية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverBackupRequested",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverBackupTitle",
+      "source": "النسخ الاحتياطي",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverBackupTitle",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverBackupUnavailable",
+      "source": "النسخ الاحتياطي غير متوفر حالياً",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverBackupUnavailable",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverBackupCreate",
+      "source": "إنشاء نسخة احتياطية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverBackupCreate",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.product.serverUpdateCheck",
+      "source": "فحص التحديثات",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.product.serverUpdateCheck",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.title",
+      "source": "اتصال العميل بالخادم",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.title",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.description",
+      "source": "قم بربط التطبيق بالخادم المركزي للوصول إلى البيانات المحدثة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.description",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.setupEyebrow",
+      "source": "إعداد الاتصال",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.setupEyebrow",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.setupTitle",
+      "source": "إقران العميل بالخادم",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.setupTitle",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.setupDescription",
+      "source": "اختر طريقة الإقران المناسبة لربط هذا الجهاز",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.setupDescription",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.methodLabel",
+      "source": "طريقة الإقران",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.methodLabel",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.method.file",
+      "source": "ملف الإقران",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.method.file",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.method.manual",
+      "source": "إدخال يدوي",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.method.manual",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.method.qr",
+      "source": "رمز QR",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.method.qr",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.apiBase",
+      "source": "عنوان الواجهة البرمجية (API)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.apiBase",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.serverIdentity",
+      "source": "هوية الخادم",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.serverIdentity",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.certificateFingerprint",
+      "source": "بصمة الشهادة الرقمية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.certificateFingerprint",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.enrollmentEvidence",
+      "source": "رمز التسجيل / الإثبات",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.enrollmentEvidence",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.enrollmentEvidencePlaceholder",
+      "source": "أدخل رمز التسجيل المعطى من المسؤول",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.enrollmentEvidencePlaceholder",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.qrPayload",
+      "source": "بيانات رمز QR",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.qrPayload",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.pairingFile",
+      "source": "اختر ملف الإقران (.accore)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.pairingFile",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.fileHint",
+      "source": "الملف الذي تم تصديره من إعدادات الخادم",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.fileHint",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.pairingFailedTitle",
+      "source": "فشل الإقران",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.pairingFailedTitle",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.retry",
+      "source": "إعادة محاولة الإقران",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.retry",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.pairing",
+      "source": "جارٍ الإقران...",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.pairing",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.verifyAndPair",
+      "source": "التحقق والإقران",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.verifyAndPair",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.checking",
+      "source": "جارٍ فحص الاتصال...",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.checking",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.checkingDescription",
+      "source": "جارٍ الاتصال بالخادم والتحقق من الشهادات والبيانات",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.checkingDescription",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.trust.encryptedIdentity",
+      "source": "هوية مشفرة وآمنة تماماً",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.trust.encryptedIdentity",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.trust.protectedCredential",
+      "source": "بيانات اعتماد محمية بتشفير عالي",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.trust.protectedCredential",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.trust.compatibilityGuard",
+      "source": "حماية التوافق بين الإصدارات",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.trust.compatibilityGuard",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.error.invalidPairingPayload",
+      "source": "ملف الإقران غير صالح أو تالف",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.error.invalidPairingPayload",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.error.certificateMismatch",
+      "source": "عدم تطابق الشهادة الرقمية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.error.certificateMismatch",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.error.credentialStorageFailed",
+      "source": "فشل حفظ بيانات الاعتماد الآمنة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.error.credentialStorageFailed",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.error.deviceRevoked",
+      "source": "تم إبطال تسجيل هذا الجهاز",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.error.deviceRevoked",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.error.enrollmentRejected",
+      "source": "تم رفض طلب التسجيل من قبل الخادم",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.error.enrollmentRejected",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.error.incompatibleServer",
+      "source": "إصدار الخادم غير متوافق مع العميل",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.error.incompatibleServer",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.error.insecureEndpoint",
+      "source": "نقطة الاتصال غير آمنة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.error.insecureEndpoint",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.error.invalidEndpoint",
+      "source": "عنوان الخادم غير صالح",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.error.invalidEndpoint",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.error.serverIdentityMismatch",
+      "source": "عدم تطابق هوية الخادم",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.error.serverIdentityMismatch",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.error.serverUnreachable",
+      "source": "تعذر الاتصال بالخادم",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.error.serverUnreachable",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.error.unexpectedResponse",
+      "source": "استجابة غير متوقعة من الخادم",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.error.unexpectedResponse",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.error.updateRequired",
+      "source": "يتطلب التطبيق تحديثاً للمتابعة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:platform.connection.error.updateRequired",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.composer.parentHelper",
+      "source": "حدد الوحدة الأصلية لربط التبعية الإدارية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.composer.parentHelper",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.composer.rootHelper",
+      "source": "هذه الوحدة ستكون على قمة الهيكل ككيان رئيسي",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.composer.rootHelper",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.composer.create",
+      "source": "إنشاء الوحدة التنظيمية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.composer.create",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.composer.selectType",
+      "source": "اختر نوع الوحدة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.composer.selectType",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.setup.loading",
+      "source": "جارٍ تحميل إعدادات النظام...",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.setup.loading",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.setup.centerSummary",
+      "source": "{value0} — {value1}",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.setup.centerSummary",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.setup.scope.foundationRequired",
+      "source": "يتطلب استكمال المرحلة الأساسية أولاً",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.setup.scope.foundationRequired",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.setup.modules.coreTitle",
+      "source": "الوحدات الأساسية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.setup.modules.coreTitle",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.setup.modules.coreDescription",
+      "source": "الحزم الأساسية لتشغيل المؤسسة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.setup.modules.coreDescription",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.setup.modules.optionalTitle",
+      "source": "الوحدات التوسعية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.setup.modules.optionalTitle",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.setup.modules.optionalDescription",
+      "source": "الوحدات الإضافية الاختيارية للأعمال المتقدمة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.setup.modules.optionalDescription",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.setup.modules.baselineRequired",
+      "source": "مطلوبة كحزمة أساسية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.setup.modules.baselineRequired",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.empty.title",
+      "source": "الهيكل التنظيمي فارغ",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.empty.title",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.empty.description",
+      "source": "ابدأ بتكوين الكيان الأساسي الأول لإنشاء الهيكل",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.empty.description",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.empty.action",
+      "source": "إنشاء كيان أساسي",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.empty.action",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.scope.title",
+      "source": "النطاق التشغيلي وسياق الوحدة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.scope.title",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.scope.empty",
+      "source": "لا يوجد سياق تشغيلي مسجل لهذه الوحدة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.scope.empty",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.relationships.title",
+      "source": "قواعد الربط المعتمدة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.relationships.title",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.relationships.empty",
+      "source": "لا توجد علاقات تبعية مرتبطة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.relationships.empty",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.inspector.title",
+      "source": "تفاصيل الوحدة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.inspector.title",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.inspector.description",
+      "source": "اختر وحدة من المخطط لعرض مواصفاتها وسياقها",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.inspector.description",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.composer.title",
+      "source": "منشئ الوحدات التنظيمية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.composer.title",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.composer.description",
+      "source": "إضافة وحدة جديدة وفق القواعد الطوبولوجية الصارمة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.composer.description",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.composer.code",
+      "source": "رمز الوحدة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.composer.code",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.composer.name",
+      "source": "اسم الوحدة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.composer.name",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.phase.foundation.title",
+      "source": "المرحلة الأساسية (الكيانات والمحاسبة)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.phase.foundation.title",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.phase.coreOperations.title",
+      "source": "المرحلة التشغيلية (المصانع والمستودعات)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.phase.coreOperations.title",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.phase.extensions.title",
+      "source": "المرحلة التوسعية (المشاريع والوظائف)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.phase.extensions.title",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.phase.foundation.description",
+      "source": "تأسيس الكيان القانوني ومراكز التكلفة والربحية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.phase.foundation.description",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.phase.coreOperations.description",
+      "source": "تكوين المستودعات والمصانع ومراكز الشراء والتوزيع",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.phase.coreOperations.description",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.phase.extensions.description",
+      "source": "إضافة إدارات المشاريع والمناطق الوظيفية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.phase.extensions.description",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.eyebrow",
+      "source": "هندسة الهيكل المؤسسي",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.eyebrow",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.title",
+      "source": "مخطط الهيكل التنظيمي",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.title",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.description",
+      "source": "إدارة الهيكل الهرمي والوحدات والتبعيات التشغيلية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.description",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.refresh",
+      "source": "تحديث المخطط",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.refresh",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.phase.ariaLabel",
+      "source": "مراحل بناء الهيكل",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.phase.ariaLabel",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.complete",
+      "source": "مكتمل",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.complete",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.itemsRemaining",
+      "source": "متبقي {value0} وحدات",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.itemsRemaining",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.plan.ariaLabel",
+      "source": "خطة المرحلة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.plan.ariaLabel",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.extensionsHelper",
+      "source": "يمكن إضافة وحدات اختيارية إضافية حسب حاجة المنشأة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.extensionsHelper",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.recommendedTypes",
+      "source": "الوحدات الموصى بإضافتها",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.recommendedTypes",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.integrity.title",
+      "source": "سلامة الهيكل والتوافق",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.integrity.title",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.integrity.summary",
+      "source": "{value0} أخطاء، {value1} تحذيرات",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.integrity.summary",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.architecture.title",
+      "source": "شجرة الوحدات",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.architecture.title",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.architecture.summary",
+      "source": "{value0} وحدة مسجلة، {value1} نوع قياسي",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.architecture.summary",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.address",
+      "source": "العنوان",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.address",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.buyerName",
+      "source": "اسم المشتري المسؤول",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.buyerName",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.city",
+      "source": "المدينة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.city",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.costCenterCategory",
+      "source": "فئة مركز التكلفة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.costCenterCategory",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.countryCode",
+      "source": "رمز الدولة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.countryCode",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.currencyId",
+      "source": "العملة الأساسية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.currencyId",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.defaultLanguage",
+      "source": "اللغة الافتراضية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.defaultLanguage",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.factoryCalendarId",
+      "source": "تقويم العمل والمصنع",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.factoryCalendarId",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.headcount",
+      "source": "العدد المستهدف للموظفين",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.headcount",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.jobFamily",
+      "source": "عائلة الوظائف",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.jobFamily",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.language",
+      "source": "اللغة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.language",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.manager",
+      "source": "المدير المسؤول",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.manager",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.name",
+      "source": "الاسم",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.name",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.payScaleArea",
+      "source": "منطقة سلم الرواتب",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.payScaleArea",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.payScaleType",
+      "source": "نوع سلم الرواتب",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.payScaleType",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.profitCenterGroup",
+      "source": "مجموعة مراكز الربحية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.profitCenterGroup",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.projectId",
+      "source": "المشروع المرتبط",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.projectId",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.publicHolidayCalendar",
+      "source": "تقويم العطلات الرسمية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.publicHolidayCalendar",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.responsibleCostCenter",
+      "source": "مركز التكلفة المسؤول",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.responsibleCostCenter",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.responsiblePerson",
+      "source": "الشخص المسؤول",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.responsiblePerson",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.riskCategory",
+      "source": "فئة المخاطر",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.riskCategory",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.telephone",
+      "source": "رقم الهاتف",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.telephone",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.vacancyStatus",
+      "source": "حالة الشغور الوظيفي",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.vacancyStatus",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.valuationGrouping",
+      "source": "مجموعة التقييم المخزني",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "app/setup/components/orgStudio:enterpriseCore.orgWorkspace.attribute.valuationGrouping",
+          "file": "app/setup/components/orgStudio",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Organization Studio & Intelligent Setup"
+        }
+      ]
+    },
+    {
+      "id": "enterpriseCore.orgWorkspace.attribute.unknown",
+      "source": "خاصية غير معروفة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:enterpriseCore.orgWorkspace.attribute.unknown",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.apiContract",
+      "source": "عقد واجهة البرمجة (API)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:platform.connection.apiContract",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.profileDescription",
+      "source": "وصف ملف تعريف الربط",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:platform.connection.profileDescription",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.profileTitle",
+      "source": "ملف تعريف الربط",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:platform.connection.profileTitle",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.removeProfile",
+      "source": "إزالة ملف التعريف",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:platform.connection.removeProfile",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.serverName",
+      "source": "اسم الخادم",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:platform.connection.serverName",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "platform.connection.verifiedAt",
+      "source": "تم التحقق في",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:platform.connection.verifiedAt",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.general.title",
+      "source": "سوق المنتجات والعروض",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.general.title",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.general.subtitle",
+      "source": "إدارة المنشورات والعروض الترويجية وطلبات العملاء",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.general.subtitle",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.general.campaignSteps",
+      "source": "خطوات الحملة الترويجية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.general.campaignSteps",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.general.dimensionSeparator",
+      "source": " × ",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.general.dimensionSeparator",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.general.acceptedMediaTypes",
+      "source": "الصور المدعومة: PNG, JPG, WEBP",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.general.acceptedMediaTypes",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.messages.loadFailed",
+      "source": "فشل تحميل بيانات السوق",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.messages.loadFailed",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.actions.addMedia",
+      "source": "إضافة وسائط",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.actions.addMedia",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.actions.assign",
+      "source": "تعيين مسؤول",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.actions.assign",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.actions.convertToQuotation",
+      "source": "تحويل إلى عرض سعر",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.actions.convertToQuotation",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.actions.convertToServiceSale",
+      "source": "تحويل إلى بيع خدمة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.actions.convertToServiceSale",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.actions.createInquiry",
+      "source": "إنشاء استفسار",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.actions.createInquiry",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.actions.createMerchant",
+      "source": "إضافة تاجر",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.actions.createMerchant",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.actions.createOffer",
+      "source": "إنشاء عرض",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.actions.createOffer",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.actions.createPublication",
+      "source": "إنشاء منشور",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.actions.createPublication",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.actions.dispatch",
+      "source": "إرسال / ترحيل",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.actions.dispatch",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.actions.openStudio",
+      "source": "فتح الاستوديو",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.actions.openStudio",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.actions.publish",
+      "source": "نشر",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.actions.publish",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.actions.refresh",
+      "source": "تحديث",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.actions.refresh",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.actions.withdraw",
+      "source": "سحب النشر",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.actions.withdraw",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.analytics.conversionRate",
+      "source": "معدل التحويل",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.analytics.conversionRate",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.analytics.conversions",
+      "source": "التحويلات الناجحة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.analytics.conversions",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.analytics.failedSync",
+      "source": "فشل المزامنة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.analytics.failedSync",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.analytics.impressions",
+      "source": "مرات الظهور",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.analytics.impressions",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.analytics.inquiries",
+      "source": "الاستفسارات",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.analytics.inquiries",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.analytics.openInquiries",
+      "source": "الاستفسارات المفتوحة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.analytics.openInquiries",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.analytics.publishedOffers",
+      "source": "العروض المنشورة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.analytics.publishedOffers",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.analytics.publishedProducts",
+      "source": "المنتجات المنشورة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.analytics.publishedProducts",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.overview.attention",
+      "source": "تنبيهات تتطلب إجراء",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.overview.attention",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.overview.funnel",
+      "source": "مسار التحويل",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.overview.funnel",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.overview.noAttention",
+      "source": "لا توجد تنبيهات معلقة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.overview.noAttention",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.studios.campaign",
+      "source": "استوديو الحملات والعروض",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.studios.campaign",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.studios.catalog",
+      "source": "استوديو الكتالوج والمنشورات",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.studios.catalog",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.studios.media",
+      "source": "مكتبة الوسائط",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.studios.media",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.studios.operations",
+      "source": "عمليات التزامن والترحيل",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.studios.operations",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.studios.orderDesk",
+      "source": "مكتب طلبات واستفسارات العملاء",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.studios.orderDesk",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.studios.overview",
+      "source": "نظرة عامة على السوق",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.studios.overview",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.tabs.inquiries",
+      "source": "الاستفسارات",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.tabs.inquiries",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.tabs.offers",
+      "source": "العروض الترويجية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.tabs.offers",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.tabs.outbox",
+      "source": "صندوق الصادر",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.tabs.outbox",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.tabs.publications",
+      "source": "المنشورات",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.tabs.publications",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.altTextArabic",
+      "source": "النص البديل (عربي)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.altTextArabic",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.altTextEnglish",
+      "source": "النص البديل (إنجليزي)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.altTextEnglish",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.arabicName",
+      "source": "الاسم بالعربية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.arabicName",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.benefitType",
+      "source": "نوع الميزة / الخصم",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.benefitType",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.benefitValue",
+      "source": "قيمة الميزة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.benefitValue",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.customer",
+      "source": "العميل",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.customer",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.customerEmail",
+      "source": "البريد الإلكتروني للعميل",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.customerEmail",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.customerPhone",
+      "source": "رقم هاتف العميل",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.customerPhone",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.endsAt",
+      "source": "ينتهي في",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.endsAt",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.englishName",
+      "source": "الاسم بالإنجليزية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.englishName",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.item",
+      "source": "الصنف / المنتج",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.item",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.media",
+      "source": "الوسائط",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.media",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.mediaRole",
+      "source": "دور الوسائط",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.mediaRole",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.merchant",
+      "source": "التاجر",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.merchant",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.message",
+      "source": "الرسالة",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.message",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.price",
+      "source": "السعر",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.price",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.productId",
+      "source": "معرف المنتج",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.productId",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.quantity",
+      "source": "الكمية",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.quantity",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.slug",
+      "source": "المعرف اللطيف (Slug)",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.slug",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.startsAt",
+      "source": "يبدأ في",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.startsAt",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
+        }
+      ]
+    },
+    {
+      "id": "marketplace.fields.window",
+      "source": "فترة العرض",
+      "classification": "user-facing",
+      "occurrences": [
+        {
+          "id": "missing-key:marketplace.fields.window",
+          "file": "missing",
+          "line": 1,
+          "column": 1,
+          "kind": "string-literal",
+          "context": "Catalog completion"
         }
       ]
     }

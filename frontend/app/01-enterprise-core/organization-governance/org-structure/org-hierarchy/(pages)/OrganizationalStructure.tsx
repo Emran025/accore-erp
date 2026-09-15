@@ -2,7 +2,7 @@
 
 import { ChangeHistoryTab } from "../components/ChangeHistoryTab";
 import { DashboardTab } from "../components/DashboardTab";
-import { HierarchyTab } from "../components/HierarchyTab";
+import { OrgStudioWorkspace } from "../components/OrgStudioWorkspace";
 import { IntegrityTab } from "../components/IntegrityTab";
 import { LinksTab } from "../components/LinksTab";
 import { MetaTypesTab } from "../components/MetaTypesTab";
@@ -21,7 +21,7 @@ export function OrganizationalStructure({ activeTab }: Props) {
     case "dashboard":
       return <DashboardTab />;
     case "hierarchy":
-      return <HierarchyTab />;
+      return <OrgStudioWorkspace />;
     case "nodes":
       return <NodesTab />;
     case "links":

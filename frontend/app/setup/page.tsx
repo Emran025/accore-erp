@@ -12,6 +12,9 @@ import { SetupModuleSelection } from "./components/SetupModuleSelection";
 import { SetupOperatingScopeSection } from "./components/SetupOperatingScopeSection";
 import { SetupOrganizationProfileSection } from "./components/SetupOrganizationProfileSection";
 import { SetupReadinessSummary } from "./components/SetupReadinessSummary";
+import { SetupConversationalPrompt } from "./components/SetupConversationalPrompt";
+import { AdaptiveQuestionStepper, type AdaptiveQuestion } from "./components/AdaptiveQuestionStepper";
+import { BlueprintReviewCard } from "./components/BlueprintReviewCard";
 import { Item, OrganizationProfile, Readiness, SetupState } from "./types";
 
 const accountTypes = ["asset", "liability", "equity", "revenue", "expense"] as const;
@@ -78,6 +81,18 @@ export default function SetupPage() {
   const [workingUnitName, setWorkingUnitName] = useState("");
   const [costCenterId, setCostCenterId] = useState<number | null>(null);
   const [posTerminalId, setPosTerminalId] = useState<number | null>(null);
+
+  // Intelligent Organization Setup state
+  const [isInferenceLoading, setIsInferenceLoading] = useState(false);
+  const [isStaging, setIsStaging] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [lastDescription, setLastDescription] = useState("");
+  const [inferenceEvaluation, setInferenceEvaluation] = useState<any>(null);
+  const [inferenceSignals, setInferenceSignals] = useState<any>(null);
+  const [adaptiveQuestions, setAdaptiveQuestions] = useState<AdaptiveQuestion[]>([]);
+  const [questionAnswers, setQuestionAnswers] = useState<Record<string, any>>({});
+  const [synthesizedBlueprint, setSynthesizedBlueprint] = useState<any>(null);
+  const [stagedBlueprintUuid, setStagedBlueprintUuid] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -180,6 +195,137 @@ export default function SetupPage() {
       return null;
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleAnalyzeInference = async (description: string) => {
+    setIsInferenceLoading(true);
+    setLastDescription(description);
+    try {
+      const res = await fetchAPI<any>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.INFERENCE_ANALYZE, {
+        method: "POST",
+        body: JSON.stringify({
+          description,
+          company_name: organizationProfile.company_name || undefined,
+          country_code: organizationProfile.country_code || "SA",
+          currency_id: organizationProfile.currency_id || undefined,
+        }),
+      });
+
+      if (res.success && res.data) {
+        setInferenceEvaluation(res.data.evaluation);
+        setInferenceSignals(res.data.signals);
+        setAdaptiveQuestions(res.data.adaptive_questions || []);
+        setSynthesizedBlueprint(res.data.blueprint);
+        showToast("Structure inferred successfully", "success");
+      } else {
+        showToast(res.message || "Failed to analyze business signals", "error");
+      }
+    } catch {
+      showToast("Error analyzing business description", "error");
+    } finally {
+      setIsInferenceLoading(false);
+    }
+  };
+
+  const handleApplyAnswers = async () => {
+    if (!lastDescription) return;
+    setIsInferenceLoading(true);
+    try {
+      const res = await fetchAPI<any>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.INFERENCE_ANALYZE, {
+        method: "POST",
+        body: JSON.stringify({
+          description: lastDescription,
+          company_name: organizationProfile.company_name || undefined,
+          structured: questionAnswers,
+        }),
+      });
+
+      if (res.success && res.data) {
+        setInferenceEvaluation(res.data.evaluation);
+        setInferenceSignals(res.data.signals);
+        setAdaptiveQuestions(res.data.adaptive_questions || []);
+        setSynthesizedBlueprint(res.data.blueprint);
+        showToast("Blueprint refined with answers", "success");
+      }
+    } catch {
+      showToast("Failed to refine blueprint", "error");
+    } finally {
+      setIsInferenceLoading(false);
+    }
+  };
+
+  const handleStageBlueprint = async () => {
+    if (!synthesizedBlueprint) return;
+    setIsStaging(true);
+    try {
+      const res = await fetchAPI<any>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.BLUEPRINT_STAGE, {
+        method: "POST",
+        body: JSON.stringify({
+          name: organizationProfile.company_name || synthesizedBlueprint.archetype_id,
+          archetype_id: synthesizedBlueprint.archetype_id,
+          blueprint_json: synthesizedBlueprint,
+        }),
+      });
+
+      if (res.success && res.data) {
+        setStagedBlueprintUuid(res.data.blueprint_uuid);
+        showToast("Blueprint draft saved", "success");
+      } else {
+        showToast(res.message || "Failed to save draft", "error");
+      }
+    } catch {
+      showToast("Error staging blueprint", "error");
+    } finally {
+      setIsStaging(false);
+    }
+  };
+
+  const handlePublishBlueprint = async () => {
+    if (!synthesizedBlueprint) return;
+    setIsPublishing(true);
+    try {
+      let uuid = stagedBlueprintUuid;
+      if (!uuid) {
+        const stageRes = await fetchAPI<any>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.BLUEPRINT_STAGE, {
+          method: "POST",
+          body: JSON.stringify({
+            name: organizationProfile.company_name || synthesizedBlueprint.archetype_id,
+            archetype_id: synthesizedBlueprint.archetype_id,
+            blueprint_json: synthesizedBlueprint,
+          }),
+        });
+        if (stageRes.success && stageRes.data) {
+          uuid = stageRes.data.blueprint_uuid;
+          setStagedBlueprintUuid(uuid);
+        } else {
+          showToast("Failed to stage blueprint before publishing", "error");
+          setIsPublishing(false);
+          return;
+        }
+      }
+
+      const pubRes = await fetchAPI<any>(
+        API_ENDPOINTS.ENTERPRISE_CORE.SETUP.BLUEPRINT_PUBLISH(uuid!),
+        {
+          method: "POST",
+          body: JSON.stringify({
+            clear_existing: false,
+            create_operating_context: true,
+          }),
+        }
+      );
+
+      if (pubRes.success) {
+        showToast(i18n.catalog["orgStudio.setup.publishedSuccess"], "success");
+        await load();
+      } else {
+        showToast(pubRes.message || "Failed to compile organization", "error");
+      }
+    } catch {
+      showToast("Network error during blueprint compilation", "error");
+    } finally {
+      setIsPublishing(false);
     }
   };
 
@@ -352,6 +498,36 @@ export default function SetupPage() {
         onNext={() => setJourneyStep((current) => current === "foundation" ? "operating_links" : "optional_capabilities")}
       />
       {journeyStep === "foundation" ? <>
+        {/* Intelligent Conversational Organization Setup */}
+        <SetupConversationalPrompt
+          onAnalyze={handleAnalyzeInference}
+          isAnalyzing={isInferenceLoading}
+          disabled={templateApplied}
+        />
+
+        {adaptiveQuestions.length > 0 ? (
+          <AdaptiveQuestionStepper
+            questions={adaptiveQuestions}
+            answers={questionAnswers}
+            onAnswerChange={(qid, val) =>
+              setQuestionAnswers((prev) => ({ ...prev, [qid]: val }))
+            }
+            onApplyAnswers={handleApplyAnswers}
+            isLoading={isInferenceLoading}
+          />
+        ) : null}
+
+        {inferenceEvaluation && synthesizedBlueprint ? (
+          <BlueprintReviewCard
+            evaluation={inferenceEvaluation}
+            blueprint={synthesizedBlueprint}
+            onStage={handleStageBlueprint}
+            onPublish={handlePublishBlueprint}
+            isStaging={isStaging}
+            isPublishing={isPublishing}
+          />
+        ) : null}
+
         <SetupOrganizationProfileSection
           templates={templateState?.templates ?? []}
           selectedTemplateKey={selectedTemplateKey}

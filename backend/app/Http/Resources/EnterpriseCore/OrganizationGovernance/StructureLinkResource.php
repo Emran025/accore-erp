@@ -12,6 +12,8 @@ class StructureLinkResource extends JsonResource
             'id'                => $this->id,
             'source_node_uuid'  => $this->source_node_uuid,
             'target_node_uuid'  => $this->target_node_uuid,
+            'plane_type'        => $this->plane_type ?? 'OPERATIONAL_HIERARCHY',
+            'weight'            => (float) ($this->weight ?? 1.00),
             'topology_rule_id'  => $this->topology_rule_id,
             'link_type'         => $this->link_type,
             'priority'          => $this->priority,

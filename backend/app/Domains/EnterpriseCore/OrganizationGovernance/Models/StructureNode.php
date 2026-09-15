@@ -23,10 +23,15 @@ class StructureNode extends Model
 
     protected $fillable = [
         'node_uuid',
+        'legal_entity_uuid',
         'node_type_id',
         'code',
+        'name_en',
+        'name_ar',
         'attributes_json',
+        'facets_json',
         'status',
+        'is_locked',
         'valid_from',
         'valid_to',
         'created_by',
@@ -37,6 +42,8 @@ class StructureNode extends Model
     {
         return [
             'attributes_json' => 'array',
+            'facets_json' => 'array',
+            'is_locked' => 'boolean',
             'valid_from' => 'date',
             'valid_to' => 'date',
         ];
@@ -79,6 +86,44 @@ class StructureNode extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function legalEntity(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'legal_entity_uuid', 'node_uuid');
+    }
+
+    public function ancestorClosures(): HasMany
+    {
+        return $this->hasMany(OrgNodeClosure::class, 'descendant_uuid', 'node_uuid');
+    }
+
+    public function descendantClosures(): HasMany
+    {
+        return $this->hasMany(OrgNodeClosure::class, 'ancestor_uuid', 'node_uuid');
+    }
+
+    public function hasFacet(string $facet): bool
+    {
+        return in_array($facet, $this->facets_json ?? [], true);
+    }
+
+    public function displayName(string $locale = 'ar-SA'): string
+    {
+        if ($locale === 'ar-SA' && filled($this->name_ar)) {
+            return $this->name_ar;
+        }
+
+        if (filled($this->name_en)) {
+            return $this->name_en;
+        }
+
+        $attrName = $this->getOrgAttribute('name');
+        if (filled($attrName)) {
+            return (string) $attrName;
+        }
+
+        return $this->code;
     }
 
     public function getOrgAttribute(string $key, $default = null)

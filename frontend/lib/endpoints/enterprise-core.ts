@@ -45,6 +45,18 @@ export interface EnterpriseCoreEndpoints {
         APPLY_ORGANIZATION_TEMPLATE: string;
         MODULES: string;
         ACTIVATE_SELECTED: string;
+        INFERENCE_ANALYZE: string;
+        ADAPTIVE_QUESTIONS: string;
+        BLUEPRINT_LATEST: string;
+        BLUEPRINT_STAGE: string;
+        BLUEPRINT_VALIDATE: string;
+        BLUEPRINT_PUBLISH: (uuid: string) => string;
+    };
+    ORG_STUDIO: {
+        PERSPECTIVE: (key: string, date?: string) => string;
+        RESTRUCTURE: string;
+        NODE_FACETS: (uuid: string) => string;
+        CLOSURES: (uuid: string, planeType?: string) => string;
     };
     OPERATING_CONTEXT: {
         READINESS: string;
@@ -132,6 +144,18 @@ export const ENTERPRISE_CORE: EnterpriseCoreEndpoints = {
         APPLY_ORGANIZATION_TEMPLATE: "/v2/setup/apply-organization-template",
         MODULES: "/v2/setup/modules",
         ACTIVATE_SELECTED: "/v2/setup/activate-selected",
+        INFERENCE_ANALYZE: "/v2/setup/inference/analyze",
+        ADAPTIVE_QUESTIONS: "/v2/setup/inference/adaptive-questions",
+        BLUEPRINT_LATEST: "/v2/setup/blueprint/latest",
+        BLUEPRINT_STAGE: "/v2/setup/blueprint/stage",
+        BLUEPRINT_VALIDATE: "/v2/setup/blueprint/validate",
+        BLUEPRINT_PUBLISH: (uuid: string) => `/v2/setup/blueprint/${uuid}/publish`,
+    },
+    ORG_STUDIO: {
+        PERSPECTIVE: (key: string, date?: string) => `/v2/org-studio/perspectives/${key}${date ? `?date=${date}` : ""}`,
+        RESTRUCTURE: "/v2/org-studio/restructure",
+        NODE_FACETS: (uuid: string) => `/v2/org-studio/nodes/${uuid}/facets`,
+        CLOSURES: (uuid: string, planeType?: string) => `/v2/org-studio/closures/${uuid}${planeType ? `?plane_type=${planeType}` : ""}`,
     },
     OPERATING_CONTEXT: {
         READINESS: "/v2/operating-context/readiness",

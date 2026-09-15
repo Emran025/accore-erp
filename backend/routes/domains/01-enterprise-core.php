@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V2\EnterpriseCore\SystemOverview\NumberRangeController;
 use App\Http\Controllers\Api\V2\EnterpriseCore\OrganizationGovernance\{
     OrgIntegrationController, OrgStructureController, OperatingContextController, SetupStateController, AuditTrailController,
-    AuditLogController, SettingsController
+    AuditLogController, SettingsController, SetupInferenceController, BlueprintLifecycleController, OrgStudioPerspectiveController
 };
 use App\Http\Controllers\Api\V2\EnterpriseCore\IdentityAccess\{
     PermissionTemplateController, SessionsController, RolesController, 
@@ -101,6 +101,14 @@ use App\Http\Controllers\Api\V2\EnterpriseCore\Automation\SystemTemplateControll
             Route::middleware(['can:settings,create', 'throttle:api-critical'])->post('/apply-organization-template', [SetupStateController::class, 'applyOrganizationTemplate'])->name('v2.setup.organization_template.apply');
             Route::middleware(['can:settings,edit', 'throttle:api-write'])->post('/modules', [SetupStateController::class, 'selectModules'])->name('v2.setup.modules.select');
             Route::middleware(['can:settings,edit', 'throttle:api-critical'])->post('/activate-selected', [SetupStateController::class, 'activateSelected'])->name('v2.setup.modules.activate_selected');
+
+            // Intelligent Organization Setup & Inference
+            Route::middleware(['can:settings,edit', 'throttle:api-write'])->post('/inference/analyze', [SetupInferenceController::class, 'analyze'])->name('v2.setup.inference.analyze');
+            Route::middleware(['can:settings,view'])->post('/inference/adaptive-questions', [SetupInferenceController::class, 'adaptiveQuestions'])->name('v2.setup.inference.adaptive_questions');
+            Route::get('/blueprint/latest', [BlueprintLifecycleController::class, 'latest'])->name('v2.setup.blueprint.latest');
+            Route::middleware(['can:settings,edit', 'throttle:api-write'])->post('/blueprint/stage', [BlueprintLifecycleController::class, 'stage'])->name('v2.setup.blueprint.stage');
+            Route::middleware(['can:settings,view'])->post('/blueprint/validate', [BlueprintLifecycleController::class, 'validateBlueprint'])->name('v2.setup.blueprint.validate');
+            Route::middleware(['can:settings,create', 'throttle:api-critical'])->post('/blueprint/{uuid}/publish', [BlueprintLifecycleController::class, 'publish'])->name('v2.setup.blueprint.publish');
         });
 
         // ── 05. Org Structure (OrganizationGovernance)
@@ -125,6 +133,14 @@ use App\Http\Controllers\Api\V2\EnterpriseCore\Automation\SystemTemplateControll
             Route::get('/module-readiness', [OrgStructureController::class, 'moduleReadiness'])->name('v2.org.module_readiness');
             Route::get('/change-history', [OrgStructureController::class, 'changeHistory'])->name('v2.org.change_history');
             Route::middleware(['can:settings,edit', 'throttle:api-critical'])->post('/bulk-status-update', [OrgStructureController::class, 'bulkStatusUpdate'])->name('v2.org.bulk_status');
+        });
+
+        // ── 06. Org Studio & Multi-Plane Perspectives
+        Route::group(['prefix' => 'org-studio', 'middleware' => 'can:settings,view'], function () {
+            Route::get('/perspectives/{key}', [OrgStudioPerspectiveController::class, 'getPerspective'])->name('v2.org_studio.perspective');
+            Route::middleware(['can:settings,edit', 'throttle:api-write'])->post('/restructure', [OrgStudioPerspectiveController::class, 'restructure'])->name('v2.org_studio.restructure');
+            Route::middleware(['can:settings,edit', 'throttle:api-write'])->put('/nodes/{uuid}/facets', [OrgStudioPerspectiveController::class, 'updateFacets'])->name('v2.org_studio.nodes.facets');
+            Route::get('/closures/{uuid}', [OrgStudioPerspectiveController::class, 'getClosures'])->name('v2.org_studio.closures');
         });
 
         // ── 04. Governance: Audit (OrganizationGovernance)

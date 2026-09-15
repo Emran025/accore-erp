@@ -23,8 +23,8 @@ return new class extends Migration
             $table->char('currency_code', 3)->nullable();
             $table->string('hero_media_url', 2048)->nullable();
             $table->json('targets');
-            $table->timestamp('starts_at')->index();
-            $table->timestamp('ends_at')->index();
+            $table->dateTime('starts_at')->index();
+            $table->dateTime('ends_at')->index();
             $table->string('timezone', 64)->default('UTC');
             $table->enum('status', ['draft', 'in_review', 'approved', 'scheduled', 'published', 'expired', 'withdrawn', 'rejected'])->default('draft')->index();
             $table->timestamp('published_at')->nullable();
