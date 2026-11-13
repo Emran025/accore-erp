@@ -194,7 +194,7 @@ export function BlueprintReviewCard({
         type_id: "PLANT",
         facets: ["OperationalFacilityFacet", "CommercialChannelFacet", "PointOfSaleFacet"],
         attributes: { facility_type: "store", city: isArabic ? "الرياض" : "Riyadh" },
-        is_user_locked: true,
+        // is_user_locked: true,
       };
     } else if (type === "WAREHOUSE") {
       newUnit = {
@@ -205,7 +205,7 @@ export function BlueprintReviewCard({
         type_id: "PLANT",
         facets: ["OperationalFacilityFacet", "InventoryStorageFacet"],
         attributes: { facility_type: "warehouse", city: isArabic ? "الرياض" : "Riyadh" },
-        is_user_locked: true,
+        // is_user_locked: true,
       };
     } else {
       newUnit = {
@@ -216,7 +216,7 @@ export function BlueprintReviewCard({
         type_id: "COST_CENTER",
         facets: ["FinancialResponsibilityFacet"],
         attributes: {},
-        is_user_locked: true,
+        // is_user_locked: true,
       };
     }
 
