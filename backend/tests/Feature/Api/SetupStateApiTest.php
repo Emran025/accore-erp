@@ -269,6 +269,82 @@ class SetupStateApiTest extends TestCase
         $this->assertSame(0, PosTerminal::query()->count());
     }
 
+    public function test_selecting_a_module_does_not_activate_it(): void
+    {
+        $response = $this->authPost(route('v2.setup.modules.select'), [
+            'module_keys' => ['sales', 'purchases', 'products'],
+        ]);
+
+        $this->assertSuccessResponse($response);
+
+        foreach (['sales', 'purchases', 'products'] as $moduleKey) {
+            $this->assertDatabaseHas('modules', ['module_key' => $moduleKey, 'is_active' => false]);
+        }
+    }
+
+    public function test_activation_retry_is_idempotent_and_emits_audit_once(): void
+    {
+        $this->configureTechnologyCommerceBaseline();
+
+        $this->authPost(route('v2.setup.modules.select'), [
+            'module_keys' => ModuleSelectionService::CORE_STARTER_MODULES,
+        ]);
+
+        // First activation
+        $first = $this->authPost(route('v2.setup.modules.activate_selected'));
+        $this->assertSuccessResponse($first);
+        $this->assertEqualsCanonicalizing(
+            ModuleSelectionService::CORE_STARTER_MODULES,
+            $first->json('data.activation.activated')
+        );
+
+        $auditCountAfterFirst = DB::table('org_change_history')
+            ->where('entity_type', 'module')
+            ->where('change_type', 'activated')
+            ->whereIn('entity_id', ModuleSelectionService::CORE_STARTER_MODULES)
+            ->count();
+        $this->assertSame(count(ModuleSelectionService::CORE_STARTER_MODULES), $auditCountAfterFirst);
+
+        // Second activation (retry) — must not add more audit rows
+        $second = $this->authPost(route('v2.setup.modules.activate_selected'));
+        $this->assertSuccessResponse($second);
+        $this->assertEqualsCanonicalizing(
+            ModuleSelectionService::CORE_STARTER_MODULES,
+            $second->json('data.activation.activated')
+        );
+
+        $auditCountAfterRetry = DB::table('org_change_history')
+            ->where('entity_type', 'module')
+            ->where('change_type', 'activated')
+            ->whereIn('entity_id', ModuleSelectionService::CORE_STARTER_MODULES)
+            ->count();
+        $this->assertSame($auditCountAfterFirst, $auditCountAfterRetry,
+            'Retry activation must not emit duplicate audit events');
+    }
+
+    public function test_legacy_installation_adopts_active_modules_without_first_run(): void
+    {
+        // Manually activate some modules without any selection record
+        Module::query()
+            ->whereIn('module_key', ['sales', 'general_ledger'])
+            ->update(['is_active' => true]);
+
+        // No setting record for SELECTED_MODULES_KEY exists
+
+        $state = $this->authGet(route('v2.setup.state'));
+
+        $this->assertSuccessResponse($state);
+
+        $selectedKeys = $state->json('data.selected_module_keys');
+        $this->assertContains('sales', $selectedKeys);
+        $this->assertContains('general_ledger', $selectedKeys);
+
+        // Setup is not reopened solely because of adopted modules — the
+        // baseline readiness (fiscal period, COA, org structure) governs that.
+        // We only assert the modules appear as selected.
+        $this->assertNotEmpty($selectedKeys);
+    }
+
     private function configureTechnologyCommerceBaseline(): void
     {
         foreach (['CLIENT', 'COMP_CODE', 'CONTROLLING_AREA', 'COST_CENTER', 'PROFIT_CENTER', 'PLANT', 'STORAGE_LOC', 'SALES_ORG', 'PURCH_ORG'] as $type) {

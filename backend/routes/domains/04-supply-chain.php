@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 
 // ── Inventory Management
-Route::group(['prefix' => 'inventory', 'middleware' => 'can:products,view'], function () {
+Route::group(['prefix' => 'inventory', 'middleware' => ['can:products,view', 'module.operational:products']], function () {
     
     // Products
     Route::group(['prefix' => 'products'], function () {

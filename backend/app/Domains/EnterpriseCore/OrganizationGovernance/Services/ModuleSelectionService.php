@@ -182,6 +182,7 @@ final class ModuleSelectionService
                         'Readiness checks passed for selected module activation.'
                     );
                 }
+                // If already active, skip write and audit entirely (idempotency on retry).
 
                 $activated[] = $moduleKey;
             }

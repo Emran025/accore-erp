@@ -1,6 +1,20 @@
 import type { SetupJourneyStepId } from "./components/SetupJourneyStepper";
 import type { SetupState } from "./types";
 
+export function detectStaleSetupState(
+  current: SetupState | null,
+  incoming: SetupState | null
+): boolean {
+  if (!current || !incoming) return false;
+  // If policy version changed or selected modules changed, state is stale
+  const currentVersion = current.onboarding?.policy_version;
+  const incomingVersion = incoming.onboarding?.policy_version;
+  if (currentVersion && incomingVersion && currentVersion !== incomingVersion) return true;
+  const currentSelected = JSON.stringify([...(current.selected_module_keys ?? [])].sort());
+  const incomingSelected = JSON.stringify([...(incoming.selected_module_keys ?? [])].sort());
+  return currentSelected !== incomingSelected;
+}
+
 export function hasServerConfirmedModuleSelection(state: SetupState | null): boolean {
   return (state?.selected_module_keys.length ?? 0) > 0;
 }

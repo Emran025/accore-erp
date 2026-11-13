@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/endpoints";
@@ -17,7 +17,7 @@ import { AdaptiveQuestionStepper, type AdaptiveQuestion } from "./components/Ada
 import { BlueprintReviewCard } from "./components/BlueprintReviewCard";
 import { Item, OrganizationProfile, Readiness, SetupState } from "./types";
 import { getIcon } from "@/lib/icons";
-import { areSelectedModuleRequirementsReady, getNextSetupJourneyStep, hasServerConfirmedModuleSelection, isSetupLaunchReady } from "./setup-workflow";
+import { areSelectedModuleRequirementsReady, detectStaleSetupState, getNextSetupJourneyStep, hasServerConfirmedModuleSelection, isSetupLaunchReady } from "./setup-workflow";
 
 const accountTypes = ["asset", "liability", "equity", "revenue", "expense"] as const;
 type AccountType = (typeof accountTypes)[number];
@@ -55,8 +55,10 @@ function text(item: Item, key: string): string {
 export default function SetupPage() {
   const { t: i18n, locale } = useI18n();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [hasDraftData, setHasDraftData] = useState(false);
   const [readiness, setReadiness] = useState<Readiness | null>(null);
   const [setupState, setSetupState] = useState<SetupState | null>(null);
   const [costCenters, setCostCenters] = useState<Item[]>([]);
@@ -110,9 +112,19 @@ export default function SetupPage() {
 
   const clearDraft = () => {
     if (typeof window !== "undefined") localStorage.removeItem(DRAFT_KEY);
+    setHasDraftData(false);
   };
 
   const draft = readDraft();
+
+  // Set hasDraftData on mount: true if any inference key is stored
+  useEffect(() => {
+    const stored = readDraft();
+    setHasDraftData(
+      Boolean(stored.lastDescription || stored.inferenceEvaluation || stored.synthesizedBlueprint || stored.stagedBlueprintUuid)
+    );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [isInferenceLoading, setIsInferenceLoading] = useState(false);
   const [isStaging, setIsStaging] = useState(false);
@@ -507,6 +519,11 @@ export default function SetupPage() {
     await callAndReload(() => fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.ACTIVATE_SELECTED, { method: "POST" }));
   };
 
+  // Protected return destination: validate returnTo to prevent open redirects
+  const returnTo = searchParams.get("returnTo");
+  const isValidReturnTo = (path: string | null): path is string =>
+    typeof path === "string" && path.startsWith("/") && !path.startsWith("//") && !path.includes(":");
+
   const toggleModule = (moduleKey: string) => {
     setSelectedModuleKeys((current) => current.includes(moduleKey)
       ? current.filter((key) => key !== moduleKey)
@@ -615,6 +632,11 @@ export default function SetupPage() {
 
   return (
     <div className="settings-wrapper setup-workflow space-y-6">
+      {hasDraftData ? (
+        <div className="setup-draft-banner" role="status" aria-live="polite">
+          {"You have unsaved work — save and continue to confirm progress"}
+        </div>
+      ) : null}
       <SetupReadinessSummary
         title={i18n.catalog["enterpriseCore.setup.title"]}
         description={i18n.catalog["enterpriseCore.setup.subtitle"]}
@@ -634,7 +656,7 @@ export default function SetupPage() {
         formatCompletedCount={(completedCount, totalCount) => catalogText(i18n, "enterpriseCore.setup.progress.completed", { value0: completedCount, value1: totalCount })}
         canOpenDashboard={launchReady}
         onRefresh={() => void load()}
-        onOpenDashboard={() => router.push("/01-enterprise-core/system-overview/dashboard/global-dashboard")}
+        onOpenDashboard={() => router.push(launchReady && isValidReturnTo(returnTo) ? returnTo : "/01-enterprise-core/system-overview/dashboard/global-dashboard")}
         dynamicChecks={dynamicChecks}
         activeStepTitle={currentStepTitle}
         activeStepIndex={currentStepIndex}

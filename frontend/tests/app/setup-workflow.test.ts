@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { SetupState } from "../../app/setup/types";
 import {
   areSelectedModuleRequirementsReady,
+  detectStaleSetupState,
   getNextSetupJourneyStep,
   hasServerConfirmedModuleSelection,
   isSetupLaunchReady,
@@ -72,5 +73,40 @@ describe("server-driven setup workflow", () => {
       active_module_keys: ["finance"],
       pending_module_keys: ["hr"],
     }))).toBe(false);
+  });
+});
+
+describe("detectStaleSetupState", () => {
+  it("returns false when both states are null", () => {
+    expect(detectStaleSetupState(null, null)).toBe(false);
+  });
+
+  it("returns false when policy version and selected modules are the same", () => {
+    const base = makeState({
+      selected_module_keys: ["finance", "sales"],
+      onboarding: { next_phase: "foundation", policy_version: "v1" } as SetupState["onboarding"],
+    });
+    expect(detectStaleSetupState(base, { ...base })).toBe(false);
+  });
+
+  it("returns true when policy version differs", () => {
+    const current = makeState({
+      selected_module_keys: ["finance"],
+      onboarding: { next_phase: "foundation", policy_version: "v1" } as SetupState["onboarding"],
+    });
+    const incoming = makeState({
+      selected_module_keys: ["finance"],
+      onboarding: { next_phase: "foundation", policy_version: "v2" } as SetupState["onboarding"],
+    });
+    expect(detectStaleSetupState(current, incoming)).toBe(true);
+  });
+
+  it("returns true when selected module keys differ (order-independent)", () => {
+    const current = makeState({ selected_module_keys: ["finance", "sales"] });
+    const incoming = makeState({ selected_module_keys: ["sales", "hr"] });
+    expect(detectStaleSetupState(current, incoming)).toBe(true);
+    // same keys in different order → not stale
+    const incomingReordered = makeState({ selected_module_keys: ["sales", "finance"] });
+    expect(detectStaleSetupState(current, incomingReordered)).toBe(false);
   });
 });

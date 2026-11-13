@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::group(['prefix' => 'projects', 'middleware' => 'can:sales,view'], function () {
+Route::group(['prefix' => 'projects', 'middleware' => ['can:sales,view', 'module.operational:projects']], function () {
     // Placeholder for future Actions: ListProjectsAction, etc.
 });
 

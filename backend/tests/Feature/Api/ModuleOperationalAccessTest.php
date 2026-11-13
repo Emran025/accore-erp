@@ -48,4 +48,17 @@ class ModuleOperationalAccessTest extends TestCase
             ->assertJsonPath('module', 'sales')
             ->assertJsonPath('lifecycle', 'selected_pending_org_setup');
     }
+
+    public function test_purchases_module_guard_denies_access_when_not_active(): void
+    {
+        $this->authenticateUser();
+        Module::query()->where('module_key', 'purchases')->update(['is_active' => false]);
+
+        $response = $this->authGet(route('v2.purchases.index'));
+
+        $response->assertStatus(423)
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('code', 'MODULE_NOT_OPERATIONAL')
+            ->assertJsonPath('module', 'purchases');
+    }
 }

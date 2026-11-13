@@ -19,7 +19,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('v2.dashbo
 Route::get('/analytics/executive-dashboard', [DashboardController::class, 'executive'])->name('v2.dashboard.executive');
 
 // ── Reports
-Route::group(['prefix' => 'analytics/reports', 'middleware' => 'can:general_ledger,view'], function () {
+Route::group(['prefix' => 'analytics/reports', 'middleware' => ['can:general_ledger,view', 'module.operational:reports']], function () {
     Route::get('/balance-sheet', [ReportsController::class, 'balanceSheet'])->name('v2.reports.balance_sheet');
     Route::get('/profit-loss', [ReportsController::class, 'profitLoss'])->name('v2.reports.profit_loss');
     Route::get('/aging', [ReportsController::class, 'aging'])->name('v2.reports.aging');

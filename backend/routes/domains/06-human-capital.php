@@ -46,7 +46,7 @@ use App\Http\Controllers\Api\V2\Assets\EmployeeAssetsController;
 
 
 // ── Performance Goals
-Route::middleware('can:employees,view')->group(function () {
+Route::middleware(['can:employees,view', 'module.operational:hr'])->group(function () {
     Route::get('/performance/goals', [PerformanceController::class, 'indexGoals'])->name('v2.talent_dev.goals.index');
     Route::get('/performance/appraisals', [PerformanceController::class, 'indexAppraisals'])->name('v2.talent_dev.appraisals.index');
     Route::get('/performance/feedback', [PerformanceController::class, 'indexFeedback'])->name('v2.talent_dev.feedback.index');

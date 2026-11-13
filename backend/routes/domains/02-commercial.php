@@ -38,7 +38,7 @@ Route::group(['prefix' => 'ap', 'middleware' => 'can:ap_suppliers,view'], functi
 });
 
 // ── 02. Purchase Lifecycle (SupplyChain/Procurement)
-Route::group(['prefix' => 'purchases', 'middleware' => 'can:purchases,view'], function () {
+Route::group(['prefix' => 'purchases', 'middleware' => ['can:purchases,view', 'module.operational:purchases']], function () {
     Route::get('/', [PurchasesController::class, 'index'])->name('v2.purchases.index');
     Route::get('/show', [PurchasesController::class, 'show'])->name('v2.purchases.show');
     Route::get('/returns/ledger', [PurchasesController::class, 'returnsLedger'])->name('v2.purchases.returns.ledger');

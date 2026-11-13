@@ -41,6 +41,7 @@ export function SetupJourneyStepper({
           <div
             key={step.id}
             className={`setup-journey-step ${step.id === activeStep ? "is-current" : ""} ${step.complete ? "is-complete" : ""} ${!step.enabled ? "is-locked" : ""}`}
+            aria-current={step.id === activeStep ? "step" : undefined}
           >
             <span className="setup-journey-step-index">{index + 1}</span>
             <span>
@@ -51,10 +52,21 @@ export function SetupJourneyStepper({
         ))}
       </div>
       <div className="setup-journey-actions">
-        <Button type="button" variant="secondary" disabled={activeIndex === 0} onClick={onPrevious}>
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={activeIndex === 0}
+          aria-label={`${previousLabel}${steps[activeIndex - 1] ? `: ${steps[activeIndex - 1].title}` : ""}`}
+          onClick={onPrevious}
+        >
           {previousLabel}
         </Button>
-        <Button type="button" disabled={!active?.complete || isFinalStep} onClick={onNext}>
+        <Button
+          type="button"
+          disabled={!active?.complete || isFinalStep}
+          aria-label={`${nextLabel}${steps[activeIndex + 1] ? `: ${steps[activeIndex + 1].title}` : ""}`}
+          onClick={onNext}
+        >
           {nextLabel}
         </Button>
       </div>

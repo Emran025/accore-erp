@@ -454,6 +454,62 @@ class ModuleReadinessService
     }
 
     /**
+     * Validate a single chart-of-accounts entry for journal posting.
+     *
+     * Checks:
+     * 1. Account exists
+     * 2. Account is active
+     * 3. Account is a leaf (not a summary/header) — determined by absence of children
+     * 4. Account type matches the requested capability
+     *
+     * @param  string  $capability  e.g. 'revenue_account', 'expense_account', 'asset_account',
+     *                              'liability_account', 'equity_account'
+     * @return array{valid: bool, reason_code: string|null}
+     */
+    public function validatePostingAccount(int $accountId, string $capability): array
+    {
+        $account = ChartOfAccount::find($accountId);
+
+        if (! $account) {
+            return ['valid' => false, 'reason_code' => 'account_not_found'];
+        }
+
+        if (! $account->is_active) {
+            return ['valid' => false, 'reason_code' => 'account_inactive'];
+        }
+
+        // A header/summary account has children — leaf accounts are postable.
+        $hasChildren = ChartOfAccount::query()
+            ->where('parent_id', $account->id)
+            ->exists();
+
+        if ($hasChildren) {
+            return ['valid' => false, 'reason_code' => 'account_non_postable'];
+        }
+
+        // Derive expected account type from capability key.
+        // Supported: revenue_account, expense_account, asset_account,
+        //            liability_account, equity_account
+        $capabilityTypeMap = [
+            'revenue_account'   => 'revenue',
+            'expense_account'   => 'expense',
+            'asset_account'     => 'asset',
+            'liability_account' => 'liability',
+            'equity_account'    => 'equity',
+        ];
+
+        $expectedType = $capabilityTypeMap[$capability] ?? null;
+        if ($expectedType !== null) {
+            $actualType = strtolower((string) $account->account_type);
+            if ($actualType !== $expectedType) {
+                return ['valid' => false, 'reason_code' => 'account_type_mismatch'];
+            }
+        }
+
+        return ['valid' => true, 'reason_code' => null];
+    }
+
+    /**
      * Phase 1 validates the legal/financial control plane before a user can
      * configure live operations. It deliberately requires complete linked
      * financial dimensions, not merely records with matching labels.

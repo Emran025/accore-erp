@@ -93,6 +93,7 @@ export function SetupModuleSelection({
               type="checkbox"
               checked={selected}
               disabled={!canSelect}
+              aria-label={`${moduleLabel(module)}: ${statusLabel(module)}`}
               onChange={() => onToggle(module.module_key)}
             />
             <span>

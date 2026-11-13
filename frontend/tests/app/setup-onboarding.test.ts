@@ -143,4 +143,19 @@ describe("profile-driven setup onboarding", () => {
 
     expect(virtualRoute).toMatch(/paths\.set\(["']setup["'], \{ virtual: \[["']setup["']\] \}\)/);
   });
+
+  it("page.tsx imports detectStaleSetupState from setup-workflow", () => {
+    const page = source("app/setup/page.tsx");
+    expect(page).toContain("detectStaleSetupState");
+  });
+
+  it("page.tsx uses useSearchParams for protected return destination", () => {
+    const page = source("app/setup/page.tsx");
+    expect(page).toMatch(/returnTo|useSearchParams/);
+  });
+
+  it("setup-workflow.ts exports detectStaleSetupState", () => {
+    const workflow = source("app/setup/setup-workflow.ts");
+    expect(workflow).toContain("export function detectStaleSetupState");
+  });
 });

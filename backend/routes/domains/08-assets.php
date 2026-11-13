@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\V2\Assets\AssetsController;
 */
 
 
-Route::group(['prefix' => 'assets', 'middleware' => 'can:assets,view'], function () {
+Route::group(['prefix' => 'assets', 'middleware' => ['can:assets,view', 'module.operational:assets']], function () {
     Route::get('/', [AssetsController::class, 'index'])->name('v2.assets.index');
     Route::middleware(['can:assets,create', 'throttle:api-write'])->post('/', [AssetsController::class, 'store'])->name('v2.assets.store');
     Route::middleware(['can:assets,edit', 'throttle:api-write'])->put('/{id}', [AssetsController::class, 'update'])->name('v2.assets.update');

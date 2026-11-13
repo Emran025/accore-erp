@@ -26,7 +26,7 @@ use App\Http\Controllers\Api\V2\Finance\GeneralLedger\RecurringTransactionsContr
 
 
 // ── General Ledger & COA
-Route::middleware('can:general_ledger,view')->group(function () {
+Route::middleware(['can:general_ledger,view', 'module.operational:general_ledger'])->group(function () {
     Route::get('/trial-balance', [GeneralLedgerController::class, 'trialBalance'])->name('v2.gl.trial_balance');
     Route::get('/ledger/entries', [GeneralLedgerController::class, 'entries'])->name('v2.gl.entries');
     Route::get('/ledger/account-activity', [GeneralLedgerController::class, 'accountActivity'])->name('v2.gl.account_activity');
@@ -43,7 +43,7 @@ Route::middleware('can:general_ledger,view')->group(function () {
     });
 });
 
-Route::group(['prefix' => 'chart-of-accounts', 'middleware' => 'can:chart_of_accounts,view'], function () {
+Route::group(['prefix' => 'chart-of-accounts', 'middleware' => ['can:chart_of_accounts,view', 'module.operational:general_ledger']], function () {
     Route::get('/', [ChartOfAccountsController::class, 'index'])->name('v2.coa.index');
     Route::get('/balances', [ChartOfAccountsController::class, 'balances'])->name('v2.coa.balances');
     Route::middleware(['can:chart_of_accounts,create', 'throttle:api-write'])->post('/', [ChartOfAccountsController::class, 'store'])->name('v2.coa.store');
@@ -53,7 +53,7 @@ Route::group(['prefix' => 'chart-of-accounts', 'middleware' => 'can:chart_of_acc
 });
 
 // ── Journal Vouchers & Fiscal Periods
-Route::group(['prefix' => 'treasury', 'middleware' => 'can:journal_vouchers,view'], function () {
+Route::group(['prefix' => 'treasury', 'middleware' => ['can:journal_vouchers,view', 'module.operational:general_ledger']], function () {
     Route::get('/', [JournalVouchersController::class, 'index'])->name('v2.journal_vouchers.index');
     Route::get('/{id}', [JournalVouchersController::class, 'show'])->name('v2.journal_vouchers.show');
     Route::middleware(['can:journal_vouchers,create', 'throttle:api-sensitive'])->post('/', [JournalVouchersController::class, 'store'])->name('v2.journal_vouchers.store');
