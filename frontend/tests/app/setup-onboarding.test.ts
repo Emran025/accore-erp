@@ -31,7 +31,7 @@ describe("profile-driven setup onboarding", () => {
     expect(moduleSelection).toContain("coreModuleKeys");
     expect(moduleSelection).toContain("const coreModules = businessModules.filter");
     expect(moduleSelection).toContain("{renderGroup(coreModules, false)}");
-    expect(page).toContain("state?.onboarding?.starter_module_keys");
+    expect(page).toContain("state.onboarding?.starter_module_keys");
     expect(moduleSelection).toContain('mode: "selection" | "activation"');
     expect(moduleSelection).toContain("canActivate");
   });
@@ -41,10 +41,11 @@ describe("profile-driven setup onboarding", () => {
     const workflow = source("app/setup/setup-workflow.ts");
     const queue = source("app/setup/components/SetupRequirementQueue.tsx");
 
-    expect(page).toContain("setJourneyStep(getNextSetupJourneyStep(state))");
+    expect(page).toContain("setJourneyStep(getNextSetupJourneyStep(state, incomingReadiness))");
     expect(page).toContain("<SetupRequirementQueue");
-    expect(page).toContain('requirement.key === "operating_context"');
-    expect(page).toContain('journeyStep === "operating_links" && requiresOperatingContext');
+    expect(page).toContain("getSetupScopeCapabilities(requirementQueue)");
+    expect(page).toContain("scopeCapabilities.requiresPosTerminal");
+    expect(page).toContain('journeyStep === "operating_links" && includeOperatingLinksStep');
     expect(workflow).toContain('case "module_activation"');
     expect(queue).toContain("required_by_module_keys");
     expect(queue).toContain("module_name_ar");
@@ -72,8 +73,12 @@ describe("profile-driven setup onboarding", () => {
     const endpoints = source("lib/endpoints/enterprise-core.ts");
 
     expect(page).toContain("<SetupOrganizationProfileSection");
-    expect(page).toContain("SETUP.ORGANIZATION_PROFILE");
-    expect(page).toContain("SETUP.APPLY_ORGANIZATION_TEMPLATE");
+    const adapter = source("app/setup/setup-api.ts");
+
+    expect(page).toContain("setupApi.saveOrganizationProfile");
+    expect(page).toContain("setupApi.applyOrganizationTemplate");
+    expect(adapter).toContain("API_ENDPOINTS.ENTERPRISE_CORE.SETUP.ORGANIZATION_PROFILE");
+    expect(adapter).toContain("API_ENDPOINTS.ENTERPRISE_CORE.SETUP.APPLY_ORGANIZATION_TEMPLATE");
     expect(page).not.toContain("<OrganizationArchitectureWorkspace");
     expect(profile).toContain("SegmentedToggle");
     expect(profile).toContain("setup-template-card");
@@ -88,22 +93,25 @@ describe("profile-driven setup onboarding", () => {
     const summary = source("app/setup/components/SetupReadinessSummary.tsx");
     const scope = source("app/setup/components/SetupOperatingScopeSection.tsx");
 
-    expect(page).toContain("await load();");
+    expect(page).toContain("await load({ navigate: true, mutationConfirmed: true });");
     expect(page).toContain("templateApplied={templateApplied}");
     expect(page).toContain("onboarding={onboarding}");
     expect(summary).toContain("foundationReady");
     expect(summary).toContain("templateApplied");
     expect(scope).toContain("posTerminalId");
-    expect(scope).not.toContain("warehouseCode");
-    expect(scope).not.toContain("profitCenterId");
+    expect(scope).toContain("warehouseId");
+    expect(scope).toContain("profitCenterId");
+    expect(scope).toContain("requiresPosTerminal");
   });
 
   it("uses controlled reference data for organization profile currency and calendar", () => {
     const page = source("app/setup/page.tsx");
     const profile = source("app/setup/components/SetupOrganizationProfileSection.tsx");
 
-    expect(page).toContain("FINANCE.FOREIGN_EXCHANGE.CURRENCIES.BASE");
-    expect(page).toContain("ORG.FACTORY_CALENDARS");
+    const adapter = source("app/setup/setup-api.ts");
+
+    expect(adapter).toContain("API_ENDPOINTS.FINANCE.FOREIGN_EXCHANGE.CURRENCIES.BASE");
+    expect(adapter).toContain("API_ENDPOINTS.ENTERPRISE_CORE.ORG.FACTORY_CALENDARS");
     expect(page).toContain("currencyOptions");
     expect(page).toContain("calendarOptions");
     expect(profile).toContain("SearchableSelect");

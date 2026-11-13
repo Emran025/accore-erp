@@ -65,16 +65,27 @@ export type OrganizationTemplateState = {
   can_apply: boolean;
 };
 
+export type OperatingContextSnapshot = {
+  id?: number;
+  org_node_uuid?: string | null;
+  warehouse_id?: number | null;
+  pos_terminal_id?: number | null;
+  cost_center_id?: number | null;
+  profit_center_id?: number | null;
+  warehouse?: { id?: number; code?: string; name?: string; name_en?: string | null } | null;
+  pos_terminal?: { id?: number; code?: string; name?: string; name_en?: string | null } | null;
+  cost_center?: { id?: number; code?: string; name?: string; name_en?: string | null } | null;
+  profit_center?: { id?: number; code?: string; name?: string; name_en?: string | null } | null;
+};
+
 export type Readiness = {
   ready: boolean;
-  context?: {
-    org_node_uuid?: string | null;
-    cost_center_id?: number | null;
-    pos_terminal_id?: number | null;
-  } | null;
+  status?: "ready" | "draft" | string;
+  context?: OperatingContextSnapshot | null;
   onboarding?: Onboarding;
   checks?: ReadinessCheck[];
   missing?: Array<{ key: string }>;
+  structural_readiness?: { ready: boolean; reason_codes?: string[] };
   accounting_readiness?: {
     open_fiscal_period: { ready: boolean };
     chart_of_accounts: { ready: boolean; missing_account_types?: string[] };

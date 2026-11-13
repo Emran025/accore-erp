@@ -22,7 +22,7 @@ class ModuleReadinessService
     public const DEFAULT_ONBOARDING_PROFILE = 'guided_setup';
 
     /** @var list<string> */
-    private const FOUNDATION_NODE_TYPES = ['COMP_CODE', 'CONTROLLING_AREA', 'COST_CENTER', 'PROFIT_CENTER'];
+    private const FOUNDATION_NODE_TYPES = ['COMP_CODE', 'CONTROLLING_AREA'];
 
     /** @var list<string> */
     private const CORE_OPERATING_NODE_TYPES = ['PLANT', 'STORAGE_LOC', 'SALES_ORG', 'PURCH_ORG'];
@@ -47,6 +47,16 @@ class ModuleReadinessService
             ->orderBy('sort_order')
             ->orderBy('module_key')
             ->get();
+        $selectedModuleKeys = $selectedModules->pluck('module_key')->all();
+        $liveReadinessRequirements = $selectedModules
+            ->mapWithKeys(fn (Module $module): array => [
+                $module->module_key => is_array($module->readiness_requirements) ? $module->readiness_requirements : [],
+            ])
+            ->all();
+        $requirementKeys = array_column(
+            $this->registry->resolve($selectedModuleKeys, $profileKey, $liveReadinessRequirements),
+            'key',
+        );
         $selectedNodeTypes = $selectedModules
             ->flatMap(function (Module $module): array {
                 $requirements = $module->readiness_requirements ?? [];
@@ -64,20 +74,22 @@ class ModuleReadinessService
             $this->coreOperatingNodeTypes($profileKey),
             $selectedNodeTypes
         ));
-        $requiresOperatingContext = $this->requiresOperatingContext($profileKey)
-            && $selectedModules->contains(function (Module $module): bool {
-                $requirements = $module->readiness_requirements ?? [];
-
-                return (bool) ($requirements['requires_operating_context'] ?? false);
-            });
+        $requiresOperatingContext = in_array('operating_context', $requirementKeys, true);
         $starterModules = $this->starterModules($profileKey);
         $integrityIssues = $this->orgStructureService->runIntegrityCheck();
         $activeNodeTypes = $this->activeNodeTypes();
         $context = $this->defaultContext($userId);
         $workingUnit = $this->validateWorkingUnit($context);
-        $operatingStructure = $this->validateOperatingStructure($context, $integrityIssues);
+        $operatingStructure = $this->validateOperatingStructure($context, $integrityIssues, $requirementKeys);
         $accountingReadiness = $this->accountingReadiness();
-        $foundation = $this->foundationReadiness($activeNodeTypes, $integrityIssues, $accountingReadiness);
+        $foundationNodeTypes = self::FOUNDATION_NODE_TYPES;
+        foreach (['COST_CENTER', 'PROFIT_CENTER'] as $dimension) {
+            if (in_array('node_type:'.$dimension, $requirementKeys, true)) {
+                $foundationNodeTypes[] = $dimension;
+            }
+        }
+        $foundationNodeTypes = array_values(array_unique($foundationNodeTypes));
+        $foundation = $this->foundationReadiness($activeNodeTypes, $integrityIssues, $accountingReadiness, $foundationNodeTypes);
         $coreOperations = $this->coreOperationsReadiness($context, $activeNodeTypes, $integrityIssues, $operatingStructure, $coreOperatingNodeTypes, $requiresOperatingContext);
         $hasActiveStructure = $activeNodeTypes !== [];
         $modules = Module::query()->orderBy('category')->orderBy('sort_order')->get();
@@ -216,10 +228,10 @@ class ModuleReadinessService
     public function resolveRequirementQueue(array $moduleKeys): array
     {
         // Validate against the live Module catalog — unknown keys are dropped.
-        $validKeys = Module::query()
+        $selectedModules = Module::query()
             ->whereIn('module_key', array_values(array_unique($moduleKeys)))
-            ->pluck('module_key')
-            ->all();
+            ->get(['module_key', 'readiness_requirements']);
+        $validKeys = $selectedModules->pluck('module_key')->all();
 
         if ($validKeys === []) {
             return [];
@@ -227,7 +239,13 @@ class ModuleReadinessService
 
         $profileKey = (string) ($this->templates->profile()['template_key'] ?? self::DEFAULT_ONBOARDING_PROFILE);
 
-        return $this->registry->resolve($validKeys, $profileKey);
+        $liveReadinessRequirements = $selectedModules
+            ->mapWithKeys(fn (Module $module): array => [
+                $module->module_key => is_array($module->readiness_requirements) ? $module->readiness_requirements : [],
+            ])
+            ->all();
+
+        return $this->registry->resolve($validKeys, $profileKey, $liveReadinessRequirements);
     }
 
     /**
@@ -272,20 +290,36 @@ class ModuleReadinessService
     /**
      * Validates the selected operational resources and their structural links.
      */
-    public function validateOperatingStructure(?OperatingContext $context, ?array $integrityIssues = null): array
+    public function validateOperatingStructure(?OperatingContext $context, ?array $integrityIssues = null, ?array $requirementKeys = null): array
     {
         $issues = $integrityIssues ?? $this->orgStructureService->runIntegrityCheck();
         $workingUnit = $this->validateWorkingUnit($context);
         $reasonCodes = $workingUnit['reason_codes'];
         $inScopeNodeUuids = $workingUnit['node_uuids'];
+        $requirementKeys ??= ['node_type:COST_CENTER', 'node_type:PROFIT_CENTER', 'warehouse', 'pos_terminal'];
 
         if (! $context) {
+            foreach (['COST_CENTER', 'PROFIT_CENTER'] as $nodeType) {
+                if (in_array('node_type:'.$nodeType, $requirementKeys, true)) {
+                    $reasonCodes[] = strtolower($nodeType).'_not_structurally_linked';
+                }
+            }
+            if (in_array('warehouse', $requirementKeys, true)) {
+                $reasonCodes[] = 'warehouse_not_attached_to_working_unit';
+            }
+            if (in_array('pos_terminal', $requirementKeys, true)) {
+                $reasonCodes[] = 'posTerminal_not_attached_to_working_unit';
+            }
+
             return ['ready' => false, 'reason_codes' => $reasonCodes, 'node_uuids' => []];
         }
 
         $context->loadMissing(['warehouse', 'posTerminal', 'costCenter', 'profitCenter']);
 
-        foreach (['costCenter' => 'COST_CENTER'] as $relation => $expectedType) {
+        foreach (['costCenter' => 'COST_CENTER', 'profitCenter' => 'PROFIT_CENTER'] as $relation => $expectedType) {
+            if (! in_array('node_type:'.$expectedType, $requirementKeys, true)) {
+                continue;
+            }
             $businessRecord = $context->{$relation};
             $nodeUuid = $businessRecord?->structure_node_uuid;
             $node = $nodeUuid ? StructureNode::find($nodeUuid) : null;
@@ -301,10 +335,41 @@ class ModuleReadinessService
             }
         }
 
-        foreach (['warehouse', 'posTerminal'] as $relation) {
+        foreach (['warehouse' => 'warehouse', 'posTerminal' => 'pos_terminal'] as $relation => $requirementKey) {
+            if (! in_array($requirementKey, $requirementKeys, true)) {
+                continue;
+            }
             $record = $context->{$relation};
             if (! $record || ! $context->org_node_uuid || $record->org_node_uuid !== $context->org_node_uuid) {
                 $reasonCodes[] = $relation.'_not_attached_to_working_unit';
+                continue;
+            }
+            if (! $record->is_active || $record->status !== 'active') {
+                $reasonCodes[] = $relation.'_inactive';
+            }
+        }
+
+        if (in_array('warehouse', $requirementKeys, true) && $context->warehouse) {
+            if (in_array('node_type:COST_CENTER', $requirementKeys, true)
+                && (int) $context->warehouse->cost_center_id !== (int) $context->cost_center_id) {
+                $reasonCodes[] = 'warehouse_cost_center_mismatch';
+            }
+            if (in_array('node_type:PROFIT_CENTER', $requirementKeys, true)
+                && (int) $context->warehouse->profit_center_id !== (int) $context->profit_center_id) {
+                $reasonCodes[] = 'warehouse_profit_center_mismatch';
+            }
+        }
+        if (in_array('pos_terminal', $requirementKeys, true) && $context->posTerminal) {
+            if ((int) $context->posTerminal->warehouse_id !== (int) $context->warehouse_id) {
+                $reasonCodes[] = 'pos_terminal_warehouse_mismatch';
+            }
+            if (in_array('node_type:COST_CENTER', $requirementKeys, true)
+                && (int) $context->posTerminal->cost_center_id !== (int) $context->cost_center_id) {
+                $reasonCodes[] = 'pos_terminal_cost_center_mismatch';
+            }
+            if (in_array('node_type:PROFIT_CENTER', $requirementKeys, true)
+                && (int) $context->posTerminal->profit_center_id !== (int) $context->profit_center_id) {
+                $reasonCodes[] = 'pos_terminal_profit_center_mismatch';
             }
         }
 
@@ -449,10 +514,10 @@ class ModuleReadinessService
      * configure live operations. It deliberately requires complete linked
      * financial dimensions, not merely records with matching labels.
      */
-    private function foundationReadiness(array $activeNodeTypes, array $integrityIssues, array $accountingReadiness): array
+    private function foundationReadiness(array $activeNodeTypes, array $integrityIssues, array $accountingReadiness, array $requiredNodeTypes): array
     {
-        $missingNodeTypes = array_values(array_diff(self::FOUNDATION_NODE_TYPES, $activeNodeTypes));
-        $relevantIssues = $this->relevantIntegrityIssues($integrityIssues, self::FOUNDATION_NODE_TYPES);
+        $missingNodeTypes = array_values(array_diff($requiredNodeTypes, $activeNodeTypes));
+        $relevantIssues = $this->relevantIntegrityIssues($integrityIssues, $requiredNodeTypes);
         $reasonCodes = [];
 
         if ($missingNodeTypes !== []) {
@@ -473,7 +538,7 @@ class ModuleReadinessService
         return [
             'id' => 'foundation',
             'ready' => $reasonCodes === [],
-            'required_node_types' => self::FOUNDATION_NODE_TYPES,
+            'required_node_types' => $requiredNodeTypes,
             'missing_node_types' => $missingNodeTypes,
             'integrity_issue_count' => count($relevantIssues),
             'reason_codes' => $reasonCodes,

@@ -84,14 +84,18 @@ final class ModuleSetupRequirementRegistry
 
     /**
      * Resolve a deduplicated, deterministically ordered requirement queue for
-     * the given module selection and profile.
+     * the given module selection and profile. The optional live descriptors
+     * keep financial-center ownership aligned with the selected module catalog.
      *
      * @param  list<string>  $selectedModuleKeys
      * @return list<array{key: string, phase: string, label_key: string, navigation_route_key: string|null, required_by_module_keys: list<string>, order: int, conflicts: list<string>, depends_on: list<string>}>
      */
-    public function resolve(array $selectedModuleKeys, string $profileKey): array
+    public function resolve(array $selectedModuleKeys, string $profileKey, ?array $liveReadinessRequirements = null): array
     {
         $selectedModuleKeys = array_values(array_unique($selectedModuleKeys));
+        if ($selectedModuleKeys === []) {
+            return [];
+        }
 
         /** @var array<string, array{descriptor: RequirementDescriptor, owners: list<string>}> */
         $seen = [];
@@ -111,6 +115,22 @@ final class ModuleSetupRequirementRegistry
                 $owners = array_values(array_intersect($selectedModuleKeys, $descriptor->applicable_modules));
                 if ($owners === []) {
                     // No selected module matches → skip
+                    continue;
+                }
+            }
+
+            if ($liveReadinessRequirements !== null
+                && in_array($descriptor->key, ['node_type:COST_CENTER', 'node_type:PROFIT_CENTER'], true)) {
+                $nodeType = substr($descriptor->key, strlen('node_type:'));
+                $owners = array_values(array_filter(
+                    $owners,
+                    fn (string $moduleKey): bool => $this->moduleRequiresDimension(
+                        $moduleKey,
+                        $nodeType,
+                        $liveReadinessRequirements[$moduleKey] ?? [],
+                    ),
+                ));
+                if ($owners === []) {
                     continue;
                 }
             }
@@ -381,5 +401,33 @@ final class ModuleSetupRequirementRegistry
                 depends_on: ['node_type:PERSONNEL_AREA'],
             ),
         ];
+    }
+
+    /**
+     * Keep dimension requirements tied to selected module contracts. Payroll
+     * and manufacturing allocate to cost center. Profit-center ownership follows the
+     * live module readiness descriptors (e.g. GL, sales, purchasing, projects).
+     *
+     * @param array<string, mixed> $readinessRequirements
+     */
+    private function moduleRequiresDimension(
+        string $moduleKey,
+        string $nodeType,
+        array $readinessRequirements,
+    ): bool {
+        $requiredNodeTypes = $readinessRequirements['required_node_types'] ?? [];
+        if (is_array($requiredNodeTypes) && in_array($nodeType, $requiredNodeTypes, true)) {
+            return true;
+        }
+
+        if ($nodeType !== 'COST_CENTER') {
+            return false;
+        }
+
+        if (in_array($moduleKey, ['hr', 'payroll', 'manufacturing'], true)) {
+            return true;
+        }
+
+        return false;
     }
 }
