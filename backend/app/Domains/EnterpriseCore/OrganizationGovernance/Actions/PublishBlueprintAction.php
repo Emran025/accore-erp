@@ -44,9 +44,12 @@ class PublishBlueprintAction
             ]);
         }
 
-        // Pass the blueprint JSON array and the authenticated user's ID to the compiler.
+        // Pass the blueprint JSON array, the canonical database UUID, and the authenticated
+        // user's ID to the compiler. The database UUID ensures the same staged row is updated
+        // to 'published' rather than a parallel row being created from the JSON's internal id.
         $result = $this->compiler->compile(
             $blueprint->blueprint_json,
+            $blueprint->blueprint_uuid,
             auth()->id()
         );
 

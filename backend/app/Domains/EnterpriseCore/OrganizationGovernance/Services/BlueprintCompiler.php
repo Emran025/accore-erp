@@ -32,19 +32,27 @@ class BlueprintCompiler
     /**
      * Compile a staged blueprint into production records.
      *
-     * @param array<string, mixed> $blueprint
-     * @param int|null $userId
+     * The caller is responsible for passing the canonical database blueprint_uuid so
+     * that this method updates the SAME row that was staged/validated, keeping identity
+     * consistent throughout the lifecycle. The JSON payload may carry an independent
+     * blueprint_id (internal synthesiser key); that value is intentionally ignored here
+     * in favour of the caller-supplied UUID.
+     *
+     * @param array<string, mixed> $blueprint   blueprint_json from the OrgBlueprint row
+     * @param string               $dbUuid      the OrgBlueprint.blueprint_uuid (database identity)
+     * @param int|null             $userId
      * @return array<string, mixed>
      * @throws ValidationException
      */
-    public function compile(array $blueprint, ?int $userId = null): array
+    public function compile(array $blueprint, string $dbUuid, ?int $userId = null): array
     {
-        return DB::transaction(function () use ($blueprint, $userId) {
+        return DB::transaction(function () use ($blueprint, $dbUuid, $userId) {
             $idMap = [
                 'nodes'          => [],
                 'cost_centers'   => [],
                 'profit_centers' => [],
                 'warehouses'     => [],
+                'pos_terminals'  => [],
             ];
 
             // 1. Root CLIENT Node
@@ -159,7 +167,7 @@ class BlueprintCompiler
 
                     if ($targetWarehouseId) {
                         for ($p = 1; $p <= $posCount; $p++) {
-                            PosTerminal::create([
+                            $pos = PosTerminal::create([
                                 'org_node_uuid'    => $nodeUuid,
                                 'warehouse_id'     => $targetWarehouseId,
                                 'cost_center_id'   => $costCenter?->id,
@@ -171,6 +179,10 @@ class BlueprintCompiler
                                 'is_active'        => true,
                                 'created_by'       => $userId,
                             ]);
+                            // Track the first POS terminal created in this run (not the global first).
+                            if (!isset($idMap['pos_terminals']['first'])) {
+                                $idMap['pos_terminals']['first'] = $pos->id;
+                            }
                         }
                     }
                 }
@@ -232,14 +244,15 @@ class BlueprintCompiler
             $firstCostCenterId = reset($idMap['cost_centers']) ?: null;
             $firstProfitCenterId = reset($idMap['profit_centers']) ?: null;
             $firstNodeUuid = reset($idMap['nodes']) ?: null;
-            $firstPos = PosTerminal::first();
+            // Use the first POS terminal created in this run, not PosTerminal::first() globally.
+            $firstPosId = $idMap['pos_terminals']['first'] ?? null;
 
             OperatingContext::updateOrCreate(
                 ['user_id' => $userId, 'is_default' => true],
                 [
                     'org_node_uuid'    => $firstNodeUuid,
                     'warehouse_id'     => $firstWarehouseId,
-                    'pos_terminal_id'  => $firstPos?->id,
+                    'pos_terminal_id'  => $firstPosId,
                     'cost_center_id'   => $firstCostCenterId,
                     'profit_center_id' => $firstProfitCenterId,
                     'status'           => 'ready',
@@ -250,25 +263,24 @@ class BlueprintCompiler
             // 7. Rebuild Transitive Closures
             $this->closureService->rebuildClosures();
 
-            // 8. Persist Blueprint Record as Published
-            $blueprintUuid = $blueprint['blueprint_id'] ?? (string) Str::uuid();
-            OrgBlueprint::updateOrCreate(
-                ['blueprint_uuid' => $blueprintUuid],
-                [
-                    'name'              => $blueprint['business_profile']['company_name'] ?? 'Organization Blueprint',
-                    'status'            => 'published',
-                    'complexity_grade'  => (int) ($blueprint['metadata']['complexity_grade'] ?? 1),
-                    'primary_archetype' => $blueprint['metadata']['primary_archetype'] ?? 'SIMPLE_HIERARCHY',
-                    'blueprint_json'    => $blueprint,
-                    'created_by'        => $userId,
-                    'published_at'      => now(),
-                ]
-            );
+            // 8. Persist Blueprint Record as Published.
+            // Use the caller-supplied $dbUuid (the database row's blueprint_uuid) so that
+            // the SAME staged row is updated to 'published', not a new row keyed on the
+            // JSON-internal blueprint_id. The JSON blueprint_id is an internal synthesiser
+            // identifier and must NOT replace the canonical database identity.
+            OrgBlueprint::where('blueprint_uuid', $dbUuid)->update([
+                'name'             => $blueprint['business_profile']['company_name'] ?? 'Organization Blueprint',
+                'status'           => 'published',
+                'complexity_grade' => (int) ($blueprint['metadata']['complexity_grade'] ?? 1),
+                'primary_archetype' => $blueprint['metadata']['primary_archetype'] ?? 'SIMPLE_HIERARCHY',
+                'blueprint_json'   => $blueprint,
+                'published_at'     => now(),
+            ]);
 
             // 9. Record Change in Audit History
             $this->orgStructureService->recordChange(
                 'blueprint',
-                $blueprintUuid,
+                $dbUuid,
                 'published',
                 null,
                 ['units_compiled' => count($units), 'links_compiled' => count($relationships)],
@@ -277,7 +289,7 @@ class BlueprintCompiler
 
             return [
                 'success'          => true,
-                'blueprint_uuid'   => $blueprintUuid,
+                'blueprint_uuid'   => $dbUuid,
                 'compiled_counts'  => [
                     'nodes'        => count($idMap['nodes']),
                     'cost_centers' => count($idMap['cost_centers']),

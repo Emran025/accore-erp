@@ -13,6 +13,7 @@ use App\Http\Requests\EnterpriseCore\OrganizationGovernance\StageBlueprintReques
 use App\Http\Requests\EnterpriseCore\OrganizationGovernance\ValidateBlueprintRequest;
 use App\Http\Resources\EnterpriseCore\OrganizationGovernance\OrgBlueprintResource;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Manages the full lifecycle of organization blueprints:
@@ -68,6 +69,9 @@ class BlueprintLifecycleController extends Controller
 
     /**
      * Publish and atomically compile the staged blueprint into the live database.
+     *
+     * - ValidationException (domain errors: not found, wrong status) → 422 with project envelope.
+     * - Unexpected compile failures → 500 with the error message.
      */
     public function publish(string $uuid, PublishBlueprintRequest $request, PublishBlueprintAction $action): JsonResponse
     {
@@ -78,6 +82,11 @@ class BlueprintLifecycleController extends Controller
                 $result,
                 'Organization blueprint published and compiled successfully.'
             );
+        } catch (ValidationException $e) {
+            // Domain validation errors (not-found, wrong status) are surfaced as 422
+            // using the project's standard error envelope ({success: false, message: ...}).
+            $firstMessage = collect($e->errors())->flatten()->first() ?? $e->getMessage();
+            return $this->errorResponse($firstMessage, 422);
         } catch (\Throwable $e) {
             return $this->errorResponse(
                 'Failed to compile blueprint: ' . $e->getMessage(),
