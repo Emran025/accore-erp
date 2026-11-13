@@ -12,10 +12,12 @@ import { SetupModuleSelection } from "./components/SetupModuleSelection";
 import { SetupOperatingScopeSection } from "./components/SetupOperatingScopeSection";
 import { SetupOrganizationProfileSection } from "./components/SetupOrganizationProfileSection";
 import { SetupReadinessSummary } from "./components/SetupReadinessSummary";
+import { SetupRequirementQueue } from "./components/SetupRequirementQueue";
 import { AdaptiveQuestionStepper, type AdaptiveQuestion } from "./components/AdaptiveQuestionStepper";
 import { BlueprintReviewCard } from "./components/BlueprintReviewCard";
 import { Item, OrganizationProfile, Readiness, SetupState } from "./types";
 import { getIcon } from "@/lib/icons";
+import { areSelectedModuleRequirementsReady, getNextSetupJourneyStep, hasServerConfirmedModuleSelection, isSetupLaunchReady } from "./setup-workflow";
 
 const accountTypes = ["asset", "liability", "equity", "revenue", "expense"] as const;
 type AccountType = (typeof accountTypes)[number];
@@ -65,7 +67,7 @@ export default function SetupPage() {
   const [posTerminals, setPosTerminals] = useState<Item[]>([]);
   const [nodes, setNodes] = useState<Item[]>([]);
   const [selectedModuleKeys, setSelectedModuleKeys] = useState<string[]>([]);
-  const [journeyStep, setJourneyStep] = useState<SetupJourneyStepId>("foundation");
+  const [journeyStep, setJourneyStep] = useState<SetupJourneyStepId>("module_selection");
   const [organizationProfile, setOrganizationProfile] = useState<OrganizationProfile>(emptyOrganizationProfile);
   const [selectedTemplateKey, setSelectedTemplateKey] = useState("");
 
@@ -157,7 +159,8 @@ export default function SetupPage() {
       setReadiness(readinessResponse.success ? readinessResponse.data ?? null : null);
       const state = setupResponse.success ? setupResponse.data ?? null : null;
       setSetupState(state);
-      setSelectedModuleKeys(state?.selected_module_keys ?? []);
+      setSelectedModuleKeys(state?.selected_module_keys.length ? state.selected_module_keys : state?.onboarding?.starter_module_keys ?? []);
+      setJourneyStep(getNextSetupJourneyStep(state));
       const templateState = state?.organization_template;
       const savedProfile = templateState?.profile;
       if (savedProfile) {
@@ -513,16 +516,31 @@ export default function SetupPage() {
   const [foundationMode, setFoundationMode] = useState<"ai_studio" | "manual_template">("ai_studio");
 
   const onboarding = setupState?.onboarding ?? readiness?.onboarding;
-  const isProfileFilled = Boolean(organizationProfile.company_name && organizationProfile.company_code);
-  const hasBlueprint = Boolean(synthesizedBlueprint || stagedBlueprintUuid);
-  const foundationComplete = onboarding?.phases.foundation.ready === true || templateApplied || Boolean(stagedBlueprintUuid) || isProfileFilled;
-  const operatingLinksComplete = foundationComplete && (onboarding?.phases.core_operations.ready === true || (Boolean(workingUnit) && costCenterId !== null));
-  const canConfigureModules = operatingLinksComplete;
+  const moduleSelectionSaved = hasServerConfirmedModuleSelection(setupState);
+  const requirementQueue = setupState?.requirement_queue ?? [];
+  const requiresOperatingContext = requirementQueue.some((requirement) => requirement.key === "operating_context");
+  const foundationComplete = onboarding?.phases.foundation.ready === true;
+  const operatingLinksComplete = foundationComplete && onboarding?.phases.core_operations.ready === true;
+  const workingUnitRequirementPending = moduleSelectionSaved
+    && requirementQueue.some((requirement) => requirement.key === "working_unit")
+    && readiness?.checks?.find((check) => check.key === "working_unit")?.complete !== true;
+  const includeOperatingLinksStep = requiresOperatingContext
+    || workingUnitRequirementPending
+    || (moduleSelectionSaved && foundationComplete && !operatingLinksComplete);
+  const canActivateModules = moduleSelectionSaved
+    && foundationComplete
+    && operatingLinksComplete
+    && areSelectedModuleRequirementsReady(setupState);
+  const launchReady = isSetupLaunchReady(setupState);
 
   useEffect(() => {
+    if (!moduleSelectionSaved) {
+      if (journeyStep !== "module_selection") setJourneyStep("module_selection");
+      return;
+    }
     if (journeyStep === "operating_links" && !foundationComplete) setJourneyStep("foundation");
     if (journeyStep === "optional_capabilities" && !operatingLinksComplete) setJourneyStep(foundationComplete ? "operating_links" : "foundation");
-  }, [foundationComplete, journeyStep, operatingLinksComplete]);
+  }, [foundationComplete, journeyStep, moduleSelectionSaved, operatingLinksComplete]);
 
   const accountTypeLabels: Record<AccountType, string> = {
     asset: i18n.catalog["enterpriseCore.setup.accountType.asset"],
@@ -540,101 +558,59 @@ export default function SetupPage() {
     organizational_structure: i18n.catalog["enterpriseCore.setup.check.organizationalStructure"],
     open_fiscal_period: i18n.catalog["enterpriseCore.setup.check.openFiscalPeriod"],
     chart_of_accounts: i18n.catalog["enterpriseCore.setup.check.chartOfAccounts"],
+    operating_context: i18n.catalog["enterpriseCore.setup.scope.title"],
   };
 
   const dynamicChecks = useMemo(() => {
-    const hasAccounts = accounts.length > 0 || Boolean(accountCode && accountName);
-    const hasPeriods = periods.length > 0 || Boolean(periodName && periodStart);
-    const hasWorkingUnit = Boolean(workingUnit) || Boolean(organizationProfile.primary_site_name) || Boolean(synthesizedBlueprint?.units?.some((u: any) => (u.type_id || u.type) === "PLANT"));
-    const hasWarehouse = Boolean(organizationProfile.primary_site_name) || Boolean(synthesizedBlueprint?.units?.some((u: any) => (u.attributes?.facility_type === "warehouse" || u.code?.startsWith("WH"))));
-    const hasCostCenter = costCenterId !== null || Boolean(synthesizedBlueprint?.units?.some((u: any) => (u.type_id || u.type) === "COST_CENTER"));
-    const hasPos = posTerminalId !== null || Boolean(synthesizedBlueprint?.units?.some((u: any) => u.facets?.includes("PointOfSaleFacet") || u.attributes?.facility_type === "store"));
+    const requirementKeys = new Set(requirementQueue
+      .map((requirement) => requirement.key)
+      .filter((key) => key !== "organizational_structure" && !key.startsWith("node_type:")));
 
-    const serverChecks = readiness?.checks ?? [];
-    const getCheck = (k: string) => serverChecks.find((c) => c.key === k)?.complete === true;
-
-    return [
-      {
-        key: "organizational_structure",
-        label: readinessLabels["organizational_structure"] || i18n.catalog["enterpriseCore.setup.check.organizationalStructure"],
-        complete: templateApplied || hasBlueprint || getCheck("organizational_structure"),
-      },
-      {
-        key: "working_unit",
-        label: readinessLabels["working_unit"] || i18n.catalog["enterpriseCore.setup.check.workingUnit"],
-        complete: hasWorkingUnit || getCheck("working_unit"),
-      },
-      {
-        key: "warehouse",
-        label: readinessLabels["warehouse"] || i18n.catalog["enterpriseCore.setup.check.warehouse"],
-        complete: hasWarehouse || getCheck("warehouse"),
-      },
-      {
-        key: "cost_center",
-        label: readinessLabels["cost_center"] || i18n.catalog["enterpriseCore.setup.check.costCenter"],
-        complete: hasCostCenter || getCheck("cost_center"),
-      },
-      {
-        key: "pos_terminal",
-        label: readinessLabels["pos_terminal"] || i18n.catalog["enterpriseCore.setup.check.posTerminal"],
-        complete: hasPos || getCheck("pos_terminal"),
-      },
-      {
-        key: "chart_of_accounts",
-        label: readinessLabels["chart_of_accounts"] || i18n.catalog["enterpriseCore.setup.check.chartOfAccounts"],
-        complete: hasAccounts || getCheck("chart_of_accounts"),
-      },
-      {
-        key: "open_fiscal_period",
-        label: readinessLabels["open_fiscal_period"] || i18n.catalog["enterpriseCore.setup.check.openFiscalPeriod"],
-        complete: hasPeriods || getCheck("open_fiscal_period"),
-      },
-    ];
+    return (readiness?.checks ?? [])
+      .filter((check) => requirementKeys.has(check.key))
+      .map((check) => ({
+        key: check.key,
+        label: readinessLabels[check.key] ?? check.key,
+        complete: check.complete,
+      }));
   }, [
-    organizationProfile.primary_site_name,
-    synthesizedBlueprint,
-    stagedBlueprintUuid,
-    accounts.length,
-    accountCode,
-    accountName,
-    periods.length,
-    periodName,
-    periodStart,
-    workingUnit,
-    costCenterId,
-    posTerminalId,
-    templateApplied,
-    hasBlueprint,
+    requirementQueue,
     readiness?.checks,
     readinessLabels,
-    i18n.catalog,
   ]);
 
   const journeySteps = [
+    {
+      id: "module_selection" as const,
+      title: i18n.catalog["enterpriseCore.setup.modules.title"],
+      description: i18n.catalog["enterpriseCore.setup.modules.description"],
+      complete: moduleSelectionSaved,
+      enabled: true,
+    },
     {
       id: "foundation" as const,
       title: i18n.catalog["enterpriseCore.setup.profile.step.foundationTitle"],
       description: i18n.catalog["enterpriseCore.setup.profile.step.foundationDescription"],
       complete: foundationComplete,
-      enabled: true,
+      enabled: moduleSelectionSaved,
     },
-    {
+    ...(includeOperatingLinksStep ? [{
       id: "operating_links" as const,
       title: i18n.catalog["enterpriseCore.setup.profile.step.operationsTitle"],
       description: i18n.catalog["enterpriseCore.setup.profile.step.operationsDescription"],
       complete: operatingLinksComplete,
       enabled: foundationComplete,
-    },
+    }] : []),
     {
       id: "optional_capabilities" as const,
       title: i18n.catalog["enterpriseCore.setup.profile.step.expansionTitle"],
       description: i18n.catalog["enterpriseCore.setup.profile.step.expansionDescription"],
-      complete: onboarding?.starter_bundle_active === true,
-      enabled: operatingLinksComplete,
+      complete: launchReady,
+      enabled: moduleSelectionSaved && operatingLinksComplete,
     },
   ];
 
-  const currentStepIndex = journeyStep === "foundation" ? 1 : journeyStep === "operating_links" ? 2 : 3;
+  const currentStepIndex = Math.max(0, journeySteps.findIndex((step) => step.id === journeyStep)) + 1;
   const currentStepTitle = journeySteps.find((s) => s.id === journeyStep)?.title;
 
   return (
@@ -653,13 +629,25 @@ export default function SetupPage() {
         templateLabel={i18n.catalog["enterpriseCore.setup.profile.step.templateLabel"]}
         readinessLabels={readinessLabels}
         isLoading={isLoading}
-        canOpenDashboard={readiness?.ready === true && setupState?.setup_required === false}
+        isSetupComplete={launchReady}
+        progressLabel={i18n.catalog["enterpriseCore.setup.progress.title"]}
+        formatCompletedCount={(completedCount, totalCount) => catalogText(i18n, "enterpriseCore.setup.progress.completed", { value0: completedCount, value1: totalCount })}
+        canOpenDashboard={launchReady}
         onRefresh={() => void load()}
         onOpenDashboard={() => router.push("/01-enterprise-core/system-overview/dashboard/global-dashboard")}
         dynamicChecks={dynamicChecks}
         activeStepTitle={currentStepTitle}
         activeStepIndex={currentStepIndex}
-        totalSteps={3}
+        totalSteps={journeySteps.length}
+      />
+      <SetupRequirementQueue
+        requirements={requirementQueue}
+        modules={setupState?.modules ?? []}
+        readinessLabels={readinessLabels}
+        locale={locale}
+        title={i18n.catalog["enterpriseCore.setup.requirements.title"]}
+        description={i18n.catalog["enterpriseCore.setup.requirements.description"]}
+        formatRequiredBy={(moduleNames) => catalogText(i18n, "enterpriseCore.setup.requirements.requiredBy", { value0: moduleNames.join(" · ") })}
       />
       <SetupJourneyStepper
         activeStep={journeyStep}
@@ -667,8 +655,16 @@ export default function SetupPage() {
         nextLabel={i18n.catalog["common.general.next"]}
         completeLabel={i18n.catalog["enterpriseCore.setup.complete"]}
         steps={journeySteps}
-        onPrevious={() => setJourneyStep((current) => current === "optional_capabilities" ? "operating_links" : "foundation")}
-        onNext={() => setJourneyStep((current) => current === "foundation" ? "operating_links" : "optional_capabilities")}
+        onPrevious={() => {
+          const index = journeySteps.findIndex((step) => step.id === journeyStep);
+          const previous = journeySteps[index - 1];
+          if (previous) setJourneyStep(previous.id);
+        }}
+        onNext={() => {
+          const index = journeySteps.findIndex((step) => step.id === journeyStep);
+          const next = journeySteps[index + 1];
+          if (next?.enabled) setJourneyStep(next.id);
+        }}
       />
       {journeyStep === "foundation" ? <>
         <div className="space-y-6">
@@ -729,8 +725,8 @@ export default function SetupPage() {
             periodStart={periodStart}
             periodEnd={periodEnd}
             recordSummary={catalogText(i18n, "enterpriseCore.setup.accounting.recordSummary", { value0: accounts.length, value1: periods.length })}
-            chartReady={readiness?.accounting_readiness?.chart_of_accounts.ready === true || accounts.length > 0}
-            periodReady={readiness?.accounting_readiness?.open_fiscal_period.ready === true || periods.length > 0}
+            chartReady={readiness?.accounting_readiness?.chart_of_accounts.ready === true}
+            periodReady={readiness?.accounting_readiness?.open_fiscal_period.ready === true}
             completeLabel={i18n.catalog["enterpriseCore.setup.complete"]}
             isSaving={isSaving}
             onAccountCodeChange={setAccountCode}
@@ -748,7 +744,7 @@ export default function SetupPage() {
           />
         </div>
       </> : null}
-      {journeyStep === "operating_links" ? (
+      {journeyStep === "operating_links" && requiresOperatingContext ? (
         <SetupOperatingScopeSection
           title={i18n.catalog["enterpriseCore.setup.scope.title"]}
           description={i18n.catalog["enterpriseCore.setup.scope.description"]}
@@ -780,15 +776,17 @@ export default function SetupPage() {
           onSave={() => void saveContext()}
         />
       ) : null}
-      {journeyStep === "optional_capabilities" ? (
+      {journeyStep === "module_selection" || journeyStep === "optional_capabilities" ? (
         <SetupModuleSelection
           locale={locale}
           modules={setupState?.modules ?? []}
           selectedModuleKeys={selectedModuleKeys}
           coreModuleKeys={onboarding?.starter_module_keys ?? []}
-          canActivate={canConfigureModules}
-          title={i18n.catalog["enterpriseCore.setup.modules.title"]}
-          description={i18n.catalog["enterpriseCore.setup.modules.description"]}
+          mode={journeyStep === "module_selection" ? "selection" : "activation"}
+          canSelect={journeyStep === "module_selection" && !isSaving}
+          canActivate={journeyStep === "optional_capabilities" && canActivateModules && !isSaving}
+          title={journeyStep === "module_selection" ? i18n.catalog["enterpriseCore.setup.modules.title"] : i18n.catalog["enterpriseCore.setup.profile.step.expansionTitle"]}
+          description={journeyStep === "module_selection" ? i18n.catalog["enterpriseCore.setup.modules.description"] : i18n.catalog["enterpriseCore.setup.profile.step.expansionDescription"]}
           coreTitle={i18n.catalog["enterpriseCore.setup.modules.coreTitle"]}
           coreDescription={i18n.catalog["enterpriseCore.setup.modules.coreDescription"]}
           optionalTitle={i18n.catalog["enterpriseCore.setup.modules.optionalTitle"]}
@@ -798,6 +796,7 @@ export default function SetupPage() {
           activateSelectedLabel={i18n.catalog["enterpriseCore.setup.modules.activateSelected"]}
           notSelectedLabel={i18n.catalog["enterpriseCore.setup.modules.notSelected"]}
           pendingReadinessLabel={i18n.catalog["enterpriseCore.setup.modules.pendingReadiness"]}
+          readyToActivateLabel={i18n.catalog["enterpriseCore.setup.modules.readyToActivate"]}
           activeLabel={i18n.catalog["enterpriseCore.setup.modules.active"]}
           selectionRequiredLabel={i18n.catalog["enterpriseCore.setup.modules.selectionRequired"]}
           noRecordsLabel={i18n.catalog["enterpriseCore.setup.noRecords"]}

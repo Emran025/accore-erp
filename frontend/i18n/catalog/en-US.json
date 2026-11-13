@@ -4177,7 +4177,7 @@
     "enterpriseCore.setup.modules.pendingReadiness": "مختارة — المتطلبات غير مكتملة",
     "enterpriseCore.setup.modules.saveSelection": "حفظ اختيار الوحدات",
     "enterpriseCore.setup.modules.selectionRequired": "اختر وحدة أعمال واحدة على الأقل قبل مغادرة التهيئة.",
-    "enterpriseCore.setup.modules.title": "٤. اختيار وحدات الأعمال",
+    "enterpriseCore.setup.modules.title": "اختيار وحدات الأعمال",
     "enterpriseCore.setup.nodeSummary": "{value0} ({value1})",
     "enterpriseCore.setup.noRecords": "لا توجد سجلات متاحة بعد.",
     "enterpriseCore.setup.openDashboard": "فتح لوحة النظام",
@@ -4291,7 +4291,7 @@
     "enterpriseCore.setup.centerSummary": "{value0} — {value1}",
     "enterpriseCore.setup.scope.foundationRequired": "Foundation setup required first",
     "enterpriseCore.setup.modules.coreTitle": "Core Modules",
-    "enterpriseCore.setup.modules.coreDescription": "Essential operational packages",
+    "enterpriseCore.setup.modules.coreDescription": "Suggested starter modules are selected by default; adjust them to fit your organization.",
     "enterpriseCore.setup.modules.optionalTitle": "Expansion Modules",
     "enterpriseCore.setup.modules.optionalDescription": "Optional expansion modules for advanced workflows",
     "enterpriseCore.setup.modules.baselineRequired": "Required as baseline package",
@@ -4419,7 +4419,11 @@
     "marketplace.fields.quantity": "Quantity",
     "marketplace.fields.slug": "Slug",
     "marketplace.fields.startsAt": "Starts At",
-    "marketplace.fields.window": "Offer Window"
+    "marketplace.fields.window": "Offer Window",
+    "enterpriseCore.setup.modules.readyToActivate": "جاهزة للتفعيل",
+    "enterpriseCore.setup.requirements.title": "متطلبات الوحدات المختارة",
+    "enterpriseCore.setup.requirements.description": "تظهر المتطلبات التي يحددها النظام للوحدات المختارة فقط، وتُحدّث بعد كل حفظ.",
+    "enterpriseCore.setup.requirements.requiredBy": "مطلوب لـ {value0}"
   },
   "generatedAt": "2026-08-17T14:51:39.759Z",
   "messages": {
@@ -4479,7 +4483,7 @@
     "enterpriseCore.setup.check.openFiscalPeriod": "Open fiscal period",
     "enterpriseCore.setup.check.chartOfAccounts": "Chart of accounts",
     "enterpriseCore.setup.nodeSummary": "{value0} ({value1})",
-    "enterpriseCore.setup.modules.title": "4. Select business modules",
+    "enterpriseCore.setup.modules.title": "Select business modules",
     "enterpriseCore.setup.modules.description": "Select the business capabilities that this organization will operate. A selection is not activated until its structural, working-unit, and accounting prerequisites are complete.",
     "enterpriseCore.setup.modules.saveSelection": "Save module selection",
     "enterpriseCore.setup.modules.activateSelected": "Activate ready modules",
@@ -4505,6 +4509,12 @@
     "enterpriseCore.orgWorkspace.reference.factoryCalendar.help": "Select an active factory calendar for the plant country; arbitrary calendar codes are not accepted.",
     "enterpriseCore.orgWorkspace.reference.loading": "Loading reference data…",
     "enterpriseCore.orgWorkspace.reference.noResults": "No matching record was found",
-    "enterpriseCore.orgWorkspace.reference.placeholder": "Search and select from the register"
+    "enterpriseCore.orgWorkspace.reference.placeholder": "Search and select from the register",
+    "enterpriseCore.setup.modules.readyToActivate": "Ready to activate",
+    "enterpriseCore.setup.requirements.title": "Requirements for selected modules",
+    "enterpriseCore.setup.requirements.description": "Only prerequisites returned by the server for selected modules are shown; this list refreshes after each save.",
+    "enterpriseCore.setup.requirements.requiredBy": "Required by: {value0}",
+    "enterpriseCore.setup.progress.title": "Setup and operational readiness progress:",
+    "enterpriseCore.setup.progress.completed": "{value0} of {value1} requirements complete"
   }
 }

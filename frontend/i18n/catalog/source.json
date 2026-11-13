@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-08-17T14:51:39.718Z",
-  "itemCount": 4419,
+  "itemCount": 4425,
   "items": [
     {
       "id": "assets.fixedAssetsRegistry.areYouSureYouWantDeleteThisAsset",
@@ -58481,6 +58481,12 @@
       "occurrences": []
     },
     {
+      "id": "enterpriseCore.setup.modules.readyToActivate",
+      "source": "جاهزة للتفعيل",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
       "id": "enterpriseCore.setup.modules.saveSelection",
       "source": "حفظ اختيار الوحدات",
       "classification": "user-facing",
@@ -58494,7 +58500,7 @@
     },
     {
       "id": "enterpriseCore.setup.modules.title",
-      "source": "٤. اختيار وحدات الأعمال",
+      "source": "اختيار وحدات الأعمال",
       "classification": "user-facing",
       "occurrences": []
     },
@@ -58897,6 +58903,24 @@
     {
       "id": "enterpriseCore.setup.scope.saveWorkingUnit",
       "source": "حفظ تفاصيل الوحدة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.requirements.description",
+      "source": "تظهر المتطلبات التي يحددها النظام للوحدات المختارة فقط، وتُحدّث بعد كل حفظ.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.requirements.requiredBy",
+      "source": "مطلوب لـ {value0}",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.requirements.title",
+      "source": "متطلبات الوحدات المختارة",
       "classification": "user-facing",
       "occurrences": []
     },
@@ -93774,7 +93798,7 @@
     },
     {
       "id": "enterpriseCore.setup.modules.coreDescription",
-      "source": "الحزم الأساسية لتشغيل المؤسسة",
+      "source": "وحدات البداية المقترحة محددة مبدئيًا؛ عدّلها حسب احتياج مؤسستك.",
       "classification": "user-facing",
       "occurrences": [
         {
@@ -95691,6 +95715,18 @@
           "context": "Catalog completion"
         }
       ]
+    },
+    {
+      "id": "enterpriseCore.setup.progress.title",
+      "source": "مؤشر تقدم التهيئة والجاهزية التشغيلية:",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.progress.completed",
+      "source": "{value0} من {value1} متطلبات منجزة",
+      "classification": "user-facing",
+      "occurrences": []
     },
     {
       "id": "marketplace.fields.window",

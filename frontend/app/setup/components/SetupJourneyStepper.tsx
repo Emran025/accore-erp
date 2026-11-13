@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui";
 
-export type SetupJourneyStepId = "foundation" | "operating_links" | "optional_capabilities";
+export type SetupJourneyStepId = "module_selection" | "foundation" | "operating_links" | "optional_capabilities";
 
 type SetupJourneyStep = {
   id: SetupJourneyStepId;
@@ -29,7 +29,8 @@ export function SetupJourneyStepper({
   onPrevious,
   onNext,
 }: SetupJourneyStepperProps) {
-  const activeIndex = steps.findIndex((step) => step.id === activeStep);
+  const foundActiveIndex = steps.findIndex((step) => step.id === activeStep);
+  const activeIndex = foundActiveIndex >= 0 ? foundActiveIndex : 0;
   const active = steps[activeIndex];
   const isFinalStep = activeIndex === steps.length - 1;
 

@@ -105,7 +105,14 @@ export type SetupModule = {
   is_configuration_module: boolean;
   is_selected: boolean;
   is_operational: boolean;
-  lifecycle: "configuration_access" | "not_selected" | "selected_pending_readiness" | "active";
+  requirements_satisfied?: boolean;
+  lifecycle: "configuration_access" | "not_selected" | "selected_pending_org_setup" | "active";
+};
+
+export type SetupRequirement = {
+  key: string;
+  phase: "common_organization" | "cross_family" | "module_specific";
+  required_by_module_keys: string[];
 };
 
 export type SetupState = {
@@ -114,6 +121,7 @@ export type SetupState = {
   selected_module_keys: string[];
   active_module_keys: string[];
   pending_module_keys: string[];
+  requirement_queue?: SetupRequirement[];
   modules: SetupModule[];
   organization_template?: OrganizationTemplateState;
 };

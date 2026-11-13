@@ -2,16 +2,19 @@
 
 namespace Tests\Feature\Api;
 
+use App\Domains\Commercial\SalesLifecycle\Models\PosTerminal;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Module;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\OrgMetaType;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Setting;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\StructureNode;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Services\ModuleReadinessService;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Services\ModuleSelectionService;
+use App\Domains\EnterpriseCore\OrganizationGovernance\Services\OrganizationTemplateService;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 use App\Domains\Finance\ManagementAccounting\Models\CostCenter;
 use App\Domains\Finance\ManagementAccounting\Models\ProfitCenter;
 use App\Domains\SupplyChain\Inventory\Models\Warehouse;
-use App\Domains\Commercial\SalesLifecycle\Models\PosTerminal;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -64,8 +67,11 @@ class SetupStateApiTest extends TestCase
 
         $this->assertSuccessResponse($activated);
         $activated->assertJsonPath('data.activation.activated', [])
-            ->assertJsonPath('data.activation.pending.reports', ['mandatory_baseline_incomplete'])
+            ->assertJsonPath('data.activation.pending.reports.0', 'mandatory_baseline_incomplete')
             ->assertJsonPath('data.state.setup_required', true);
+        $pendingReasons = $activated->json('data.activation.pending.reports');
+        $this->assertContains('missing_foundation_structure', $pendingReasons);
+        $this->assertContains('missing_chart_of_accounts', $pendingReasons);
         $this->assertDatabaseHas('modules', ['module_key' => 'reports', 'is_active' => false]);
     }
 
@@ -96,6 +102,31 @@ class SetupStateApiTest extends TestCase
             $activated->json('data.state.onboarding.active_starter_module_keys')
         );
 
+        $auditCount = DB::table('org_change_history')
+            ->where('entity_type', 'module')
+            ->where('change_type', 'activated')
+            ->whereIn('entity_id', ModuleSelectionService::CORE_STARTER_MODULES)
+            ->count();
+        $this->assertSame(count(ModuleSelectionService::CORE_STARTER_MODULES), $auditCount);
+        $this->assertDatabaseHas('org_change_history', [
+            'entity_type' => 'module',
+            'entity_id' => 'sales',
+            'change_type' => 'activated',
+            'changed_by' => $this->authenticatedUser?->id,
+        ]);
+
+        config()->set('organization.enforce_module_readiness_in_tests', true);
+        $this->authGet(route('v2.invoices.index'))->assertOk();
+
+        $repeatedActivation = $this->authPost(route('v2.setup.modules.activate_selected'));
+        $this->assertSuccessResponse($repeatedActivation);
+        $repeatedActivation->assertJsonPath('data.activation.activated', ModuleSelectionService::CORE_STARTER_MODULES);
+        $this->assertSame($auditCount, DB::table('org_change_history')
+            ->where('entity_type', 'module')
+            ->where('change_type', 'activated')
+            ->whereIn('entity_id', ModuleSelectionService::CORE_STARTER_MODULES)
+            ->count());
+
         foreach (ModuleSelectionService::CORE_STARTER_MODULES as $moduleKey) {
             $this->assertDatabaseHas('modules', ['module_key' => $moduleKey, 'is_active' => true]);
         }
@@ -110,6 +141,132 @@ class SetupStateApiTest extends TestCase
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors('module_keys');
+    }
+
+    public function test_selection_only_persists_intent_without_activating_or_deactivating_modules(): void
+    {
+        Module::query()->where('module_key', 'reports')->update(['is_active' => true]);
+
+        $selected = $this->authPost(route('v2.setup.modules.select'), [
+            'module_keys' => ['sales'],
+        ]);
+
+        $this->assertSuccessResponse($selected);
+        $this->assertEqualsCanonicalizing(['sales', 'reports'], $selected->json('data.selected_module_keys'));
+        $this->assertDatabaseHas('modules', ['module_key' => 'sales', 'is_active' => false]);
+        $this->assertDatabaseHas('modules', ['module_key' => 'reports', 'is_active' => true]);
+    }
+
+    public function test_requirement_queue_is_deterministic_deduplicated_and_conditional(): void
+    {
+        $readiness = app(ModuleReadinessService::class);
+        $queue = $readiness->resolveRequirementQueue(['sales', 'purchases', 'sales']);
+        $this->assertSame($queue, $readiness->resolveRequirementQueue(['sales', 'purchases', 'sales']));
+        $keys = array_column($queue, 'key');
+        $phases = array_values(array_unique(array_column($queue, 'phase')));
+
+        $this->assertCount(count(array_unique($keys)), $keys);
+        $this->assertSame(['common_organization', 'cross_family', 'module_specific'], $phases);
+        $this->assertEqualsCanonicalizing(
+            ['sales', 'purchases'],
+            collect($queue)->firstWhere('key', 'node_type:COMP_CODE')['required_by_module_keys']
+        );
+        $this->assertContains('pos_terminal', $keys);
+        $this->assertContains('warehouse', $keys);
+
+        Setting::updateOrCreate(
+            ['setting_key' => OrganizationTemplateService::PROFILE_KEY],
+            ['setting_value' => json_encode(['template_key' => 'single_store_retail'], JSON_THROW_ON_ERROR)]
+        );
+
+        foreach (['general_ledger', 'hr'] as $moduleKey) {
+            $selected = $this->authPost(route('v2.setup.modules.select'), [
+                'module_keys' => [$moduleKey],
+            ]);
+
+            $this->assertSuccessResponse($selected);
+            $selected->assertJsonPath('data.onboarding.phases.core_operations.ready', true)
+                ->assertJsonPath('data.onboarding.phases.core_operations.required_node_types', []);
+            $selectedQueueKeys = array_column($selected->json('data.requirement_queue'), 'key');
+            $this->assertNotContains('operating_context', $selectedQueueKeys);
+            $this->assertNotContains('warehouse', $selectedQueueKeys);
+            $this->assertNotContains('pos_terminal', $selectedQueueKeys);
+        }
+    }
+
+    public function test_legacy_active_module_is_adopted_when_no_selection_record_exists(): void
+    {
+        Module::query()->where('module_key', 'sales')->update(['is_active' => true]);
+        $this->configureTechnologyCommerceBaseline();
+
+        $state = $this->authGet(route('v2.setup.state'));
+
+        $this->assertSuccessResponse($state);
+        $state->assertJsonPath('data.setup_required', false)
+            ->assertJsonPath('data.selected_module_keys', ['sales']);
+        $this->assertContains('sales', $state->json('data.active_module_keys'));
+    }
+
+    public function test_finance_and_hr_can_activate_without_retail_warehouse_or_pos(): void
+    {
+        Setting::updateOrCreate(
+            ['setting_key' => OrganizationTemplateService::PROFILE_KEY],
+            ['setting_value' => json_encode(['template_key' => 'single_store_retail'], JSON_THROW_ON_ERROR)]
+        );
+        $company = $this->configureFoundationWithoutOperatingResources();
+        $warehouseCount = Warehouse::query()->count();
+        $terminalCount = PosTerminal::query()->count();
+
+        $financeSelection = $this->authPost(route('v2.setup.modules.select'), [
+            'module_keys' => ['general_ledger'],
+        ]);
+        $this->assertSuccessResponse($financeSelection);
+
+        $financeActivation = $this->authPost(route('v2.setup.modules.activate_selected'));
+        $this->assertSuccessResponse($financeActivation);
+        $financeActivation->assertJsonPath('data.activation.activated', ['general_ledger'])
+            ->assertJsonPath('data.activation.pending', []);
+        $this->assertDatabaseHas('modules', ['module_key' => 'general_ledger', 'is_active' => true]);
+        $this->assertSame($warehouseCount, Warehouse::query()->count());
+        $this->assertSame($terminalCount, PosTerminal::query()->count());
+
+        $this->addHrStructure($company);
+
+        $hrSelection = $this->authPost(route('v2.setup.modules.select'), [
+            'module_keys' => ['hr'],
+        ]);
+        $this->assertSuccessResponse($hrSelection);
+
+        $hrActivation = $this->authPost(route('v2.setup.modules.activate_selected'));
+        $this->assertSuccessResponse($hrActivation);
+        $this->assertEqualsCanonicalizing(['general_ledger', 'hr'], $hrActivation->json('data.activation.activated'));
+        $this->assertSame([], $hrActivation->json('data.activation.pending'));
+        $this->assertDatabaseHas('modules', ['module_key' => 'hr', 'is_active' => true]);
+        $this->assertDatabaseHas('modules', ['module_key' => 'general_ledger', 'is_active' => true]);
+        $this->assertSame($warehouseCount, Warehouse::query()->count());
+        $this->assertSame($terminalCount, PosTerminal::query()->count());
+    }
+
+    public function test_hr_only_can_activate_without_retail_warehouse_or_pos(): void
+    {
+        Setting::updateOrCreate(
+            ['setting_key' => OrganizationTemplateService::PROFILE_KEY],
+            ['setting_value' => json_encode(['template_key' => 'single_store_retail'], JSON_THROW_ON_ERROR)]
+        );
+        $company = $this->configureFoundationWithoutOperatingResources();
+        $this->addHrStructure($company);
+
+        $selected = $this->authPost(route('v2.setup.modules.select'), ['module_keys' => ['hr']]);
+        $this->assertSuccessResponse($selected);
+        $activated = $this->authPost(route('v2.setup.modules.activate_selected'));
+
+        $this->assertSuccessResponse($activated);
+        $activated->assertJsonPath('data.activation.activated', ['hr'])
+            ->assertJsonPath('data.activation.pending', []);
+        $this->assertDatabaseHas('modules', ['module_key' => 'hr', 'is_active' => true]);
+        $this->assertDatabaseHas('modules', ['module_key' => 'general_ledger', 'is_active' => false]);
+        $this->assertSame(0, Warehouse::query()->count());
+        $this->assertSame(0, PosTerminal::query()->count());
     }
 
     private function configureTechnologyCommerceBaseline(): void
@@ -211,5 +368,82 @@ class SetupStateApiTest extends TestCase
         ]);
 
         $this->assertSuccessResponse($configured, 201);
+    }
+
+    private function configureFoundationWithoutOperatingResources(): StructureNode
+    {
+        foreach (['CLIENT', 'COMP_CODE', 'CONTROLLING_AREA', 'COST_CENTER', 'PROFIT_CENTER'] as $type) {
+            OrgMetaType::create([
+                'id' => $type,
+                'display_name' => $type,
+                'display_name_ar' => $type,
+                'level_domain' => 'Finance and HR',
+                'is_assignable' => true,
+            ]);
+        }
+
+        $client = StructureNode::create(['node_type_id' => 'CLIENT', 'code' => 'FIN-CLIENT', 'status' => 'active']);
+        $company = StructureNode::create(['node_type_id' => 'COMP_CODE', 'code' => 'FIN-1000', 'status' => 'active']);
+        $controlling = StructureNode::create(['node_type_id' => 'CONTROLLING_AREA', 'code' => 'FIN-CA', 'status' => 'active']);
+        $costCenter = StructureNode::create(['node_type_id' => 'COST_CENTER', 'code' => 'FIN-CC', 'status' => 'active']);
+        $profitCenter = StructureNode::create(['node_type_id' => 'PROFIT_CENTER', 'code' => 'FIN-PC', 'status' => 'active']);
+
+        foreach ([
+            [$company, $client],
+            [$controlling, $company],
+            [$costCenter, $controlling],
+            [$profitCenter, $controlling],
+        ] as [$source, $target]) {
+            DB::table('structure_links')->insert([
+                'source_node_uuid' => $source->node_uuid,
+                'target_node_uuid' => $target->node_uuid,
+                'link_type' => 'assignment',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        foreach (['asset', 'liability', 'equity', 'revenue', 'expense'] as $index => $type) {
+            ChartOfAccount::create([
+                'account_code' => (string) (11000 + $index * 1000),
+                'account_name' => ucfirst($type),
+                'account_type' => $type,
+                'is_active' => true,
+            ]);
+        }
+
+        \App\Domains\EnterpriseCore\OrganizationGovernance\Models\OperatingContext::create([
+            'user_id' => $this->authenticatedUser?->id,
+            'org_node_uuid' => $company->node_uuid,
+            'status' => 'draft',
+            'is_default' => true,
+        ]);
+
+        return $company;
+    }
+
+    private function addHrStructure(StructureNode $company): void
+    {
+        foreach (['PERSONNEL_AREA', 'HR_ORG_UNIT'] as $type) {
+            OrgMetaType::create([
+                'id' => $type,
+                'display_name' => $type,
+                'display_name_ar' => $type,
+                'level_domain' => 'Human Resources',
+                'is_assignable' => true,
+            ]);
+        }
+
+        $personnelArea = StructureNode::create(['node_type_id' => 'PERSONNEL_AREA', 'code' => 'FIN-PA', 'status' => 'active']);
+        $hrOrgUnit = StructureNode::create(['node_type_id' => 'HR_ORG_UNIT', 'code' => 'FIN-HR', 'status' => 'active']);
+        foreach ([[$personnelArea, $company], [$hrOrgUnit, $personnelArea]] as [$source, $target]) {
+            DB::table('structure_links')->insert([
+                'source_node_uuid' => $source->node_uuid,
+                'target_node_uuid' => $target->node_uuid,
+                'link_type' => 'assignment',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 }

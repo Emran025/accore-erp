@@ -16,18 +16,54 @@ describe("profile-driven setup onboarding", () => {
     expect(layout).toContain("setup_required");
   });
 
-  it("renders one guarded journey before optional capability activation", () => {
+  it("starts the guarded journey with module selection before foundation and activation", () => {
     const page = source("app/setup/page.tsx");
     const moduleSelection = source("app/setup/components/SetupModuleSelection.tsx");
     const journey = source("app/setup/components/SetupJourneyStepper.tsx");
 
     expect(page.indexOf("<SetupJourneyStepper")).toBeLessThan(page.indexOf("<SetupModuleSelection"));
+    expect(page).toContain('useState<SetupJourneyStepId>("module_selection")');
+    expect(page).toContain('id: "module_selection" as const');
     expect(page).toContain("journeyStep");
     expect(page).toContain("optional_capabilities");
     expect(journey).toContain("onPrevious");
     expect(journey).toContain("onNext");
     expect(moduleSelection).toContain("coreModuleKeys");
+    expect(moduleSelection).toContain("const coreModules = businessModules.filter");
+    expect(moduleSelection).toContain("{renderGroup(coreModules, false)}");
+    expect(page).toContain("state?.onboarding?.starter_module_keys");
+    expect(moduleSelection).toContain('mode: "selection" | "activation"');
     expect(moduleSelection).toContain("canActivate");
+  });
+
+  it("resumes from server state and shows only the resolved requirement queue for selected modules", () => {
+    const page = source("app/setup/page.tsx");
+    const workflow = source("app/setup/setup-workflow.ts");
+    const queue = source("app/setup/components/SetupRequirementQueue.tsx");
+
+    expect(page).toContain("setJourneyStep(getNextSetupJourneyStep(state))");
+    expect(page).toContain("<SetupRequirementQueue");
+    expect(page).toContain('requirement.key === "operating_context"');
+    expect(page).toContain('journeyStep === "operating_links" && requiresOperatingContext');
+    expect(workflow).toContain('case "module_activation"');
+    expect(queue).toContain("required_by_module_keys");
+    expect(queue).toContain("module_name_ar");
+  });
+
+  it("does not treat unsaved local edits or unrelated module checks as completed readiness", () => {
+    const page = source("app/setup/page.tsx");
+    const summary = source("app/setup/components/SetupReadinessSummary.tsx");
+
+    expect(page).not.toContain("hasAccounts ||");
+    expect(page).not.toContain("Boolean(workingUnit) ||");
+    expect(page).toContain("chartReady={readiness?.accounting_readiness?.chart_of_accounts.ready === true}");
+    expect(page).toContain("periodReady={readiness?.accounting_readiness?.open_fiscal_period.ready === true}");
+    expect(summary).toContain("dynamicChecks !== undefined");
+    expect(summary).toContain("isSetupComplete");
+    expect(summary).toContain("formatCompletedCount(completedCount, totalCount)");
+    expect(summary).not.toContain("مؤشر تقدم التهيئة والجاهزية التشغيلية");
+    expect(page).toContain('progressLabel={i18n.catalog["enterpriseCore.setup.progress.title"]}');
+    expect(summary).not.toContain("readiness?.ready === true");
   });
 
   it("starts from a business profile and safely applies a generated organization template", () => {

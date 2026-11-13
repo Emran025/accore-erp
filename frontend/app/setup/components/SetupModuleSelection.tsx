@@ -8,6 +8,8 @@ interface SetupModuleSelectionProps {
   modules: SetupModule[];
   selectedModuleKeys: string[];
   coreModuleKeys: string[];
+  mode: "selection" | "activation";
+  canSelect: boolean;
   canActivate: boolean;
   title: string;
   description: string;
@@ -20,6 +22,7 @@ interface SetupModuleSelectionProps {
   activateSelectedLabel: string;
   notSelectedLabel: string;
   pendingReadinessLabel: string;
+  readyToActivateLabel: string;
   activeLabel: string;
   selectionRequiredLabel: string;
   noRecordsLabel: string;
@@ -34,6 +37,8 @@ export function SetupModuleSelection({
   modules,
   selectedModuleKeys,
   coreModuleKeys,
+  mode,
+  canSelect,
   canActivate,
   title,
   description,
@@ -46,6 +51,7 @@ export function SetupModuleSelection({
   activateSelectedLabel,
   notSelectedLabel,
   pendingReadinessLabel,
+  readyToActivateLabel,
   activeLabel,
   selectionRequiredLabel,
   noRecordsLabel,
@@ -55,6 +61,7 @@ export function SetupModuleSelection({
   onActivate,
 }: SetupModuleSelectionProps) {
   const businessModules = modules.filter((module) => !module.is_configuration_module);
+  const coreModules = businessModules.filter((module) => coreModuleKeys.includes(module.module_key));
   const optionalModules = businessModules.filter((module) => !coreModuleKeys.includes(module.module_key));
 
   const moduleLabel = (module: Pick<SetupModule, "module_key" | "module_name_ar" | "module_name_en">) => locale === "ar-SA"
@@ -63,12 +70,13 @@ export function SetupModuleSelection({
 
   const statusLabel = (module: SetupModule) => {
     if (module.is_operational) return activeLabel;
+    if (selectedModuleKeys.includes(module.module_key) && module.requirements_satisfied === true) return readyToActivateLabel;
     if (selectedModuleKeys.includes(module.module_key)) return pendingReadinessLabel;
     return notSelectedLabel;
   };
 
   const renderGroup = (groupModules: SetupModule[], required: boolean) => (
-    <fieldset className="setup-module-grid" disabled={!canActivate}>
+    <fieldset className="setup-module-grid" disabled={!canSelect}>
       <legend className="sr-only">{required ? coreTitle : optionalTitle}</legend>
       {groupModules.length === 0 ? <p className="setup-empty-state">{noRecordsLabel}</p> : null}
       {groupModules.map((module) => {
@@ -76,7 +84,7 @@ export function SetupModuleSelection({
         const className = [
           "setup-module-card",
           required ? "is-required" : "",
-          !canActivate ? "is-disabled" : "",
+          !canSelect ? "is-disabled" : "",
         ].filter(Boolean).join(" ");
 
         return (
@@ -84,12 +92,12 @@ export function SetupModuleSelection({
             <input
               type="checkbox"
               checked={selected}
-              disabled={!canActivate}
+              disabled={!canSelect}
               onChange={() => onToggle(module.module_key)}
             />
             <span>
               <strong className="setup-module-name">{moduleLabel(module)}</strong>
-              <span className={`setup-module-status ${module.is_operational ? "is-operational" : ""}`.trim()}>
+              <span className={`setup-module-status ${module.is_operational ? "is-operational" : selected && module.requirements_satisfied === true ? "is-ready-to-activate" : ""}`.trim()}>
                 {statusLabel(module)}
               </span>
             </span>
@@ -101,12 +109,12 @@ export function SetupModuleSelection({
 
   return (
     <SetupSection id="setup-modules" title={title} description={description}>
-      {!canActivate ? <p className="readiness-notice warning">{baselineRequiredLabel}</p> : null}
+      {mode === "activation" && !canActivate ? <p className="readiness-notice warning">{baselineRequiredLabel}</p> : null}
       <div className="setup-module-groups">
         <div className="setup-module-group setup-module-group-included">
           <h4 className="setup-module-group-title">{coreTitle}</h4>
           <p className="setup-module-group-description">{coreDescription}</p>
-          <p className="setup-context-summary">{coreModuleKeys.map((key) => moduleLabel(businessModules.find((module) => module.module_key === key) ?? { module_key: key })).join(" · ")}</p>
+          {renderGroup(coreModules, false)}
         </div>
         <div className="setup-module-group">
           <h4 className="setup-module-group-title">{optionalTitle}</h4>
@@ -115,13 +123,17 @@ export function SetupModuleSelection({
         </div>
       </div>
       <div className="setup-actions">
-        <Button type="button" onClick={onSave} isLoading={isSaving} disabled={!canActivate}>
-          {saveSelectionLabel}
-        </Button>
-        <Button type="button" variant="secondary" onClick={onActivate} isLoading={isSaving} disabled={!canActivate || selectedModuleKeys.length === 0}>
-          {activateSelectedLabel}
-        </Button>
-        {canActivate && selectedModuleKeys.length === 0 ? <p id="setup-modules-hint" className="setup-helper-text">{selectionRequiredLabel}</p> : null}
+        {mode === "selection" ? (
+          <Button type="button" onClick={onSave} isLoading={isSaving} disabled={!canSelect || selectedModuleKeys.length === 0}>
+            {saveSelectionLabel}
+          </Button>
+        ) : null}
+        {mode === "activation" ? (
+          <Button type="button" variant="secondary" onClick={onActivate} isLoading={isSaving} disabled={!canActivate || selectedModuleKeys.length === 0}>
+            {activateSelectedLabel}
+          </Button>
+        ) : null}
+        {mode === "selection" && selectedModuleKeys.length === 0 ? <p id="setup-modules-hint" className="setup-helper-text">{selectionRequiredLabel}</p> : null}
       </div>
     </SetupSection>
   );

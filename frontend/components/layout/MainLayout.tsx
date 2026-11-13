@@ -55,17 +55,36 @@ export function MainLayout({
         return;
       }
 
-      const readinessState = await loadReadiness();
-      const setupResponse = await fetchAPI<{ setup_required: boolean }>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.STATE);
+      await loadReadiness();
+      const setupResponse = await fetchAPI<{
+        setup_required: boolean;
+        modules?: Array<{
+          module_key: string;
+          is_configuration_module: boolean;
+          is_selected: boolean;
+          is_operational: boolean;
+        }>;
+      }>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.STATE);
       const setupRequired = !setupResponse.success || setupResponse.data?.setup_required !== false;
       const isSetupRoute = typeof window !== "undefined" && window.location.pathname === "/setup";
 
-      if ((!readinessState?.ready || setupRequired) && !isSetupRoute) {
+      if (setupRequired && !isSetupRoute) {
         router.replace("/setup");
         return;
       }
 
       if (requiredModule) {
+        const moduleState = setupResponse.data?.modules?.find(
+          (module) => module.module_key === requiredModule,
+        );
+        const moduleOperational =
+          moduleState?.is_configuration_module ||
+          (moduleState?.is_selected && moduleState.is_operational);
+        if (!moduleOperational) {
+          router.replace("/setup");
+          return;
+        }
+
         const hasAccess = useAuthStore.getState().canAccess(requiredModule, requiredAction);
         if (!hasAccess) {
           router.push("/navigation");

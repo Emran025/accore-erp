@@ -18,6 +18,7 @@ use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 class ModuleReadinessService
 {
     public const ONBOARDING_POLICY_VERSION = '2026-08-profile-driven-setup-v1';
+
     public const DEFAULT_ONBOARDING_PROFILE = 'guided_setup';
 
     /** @var list<string> */
@@ -32,15 +33,42 @@ class ModuleReadinessService
     public function __construct(
         private readonly OrgStructureService $orgStructureService,
         private readonly OrganizationTemplateService $templates,
-    ) {
-    }
+    ) {}
 
-    public function evaluate(?int $userId = null): array
+    public function evaluate(?int $userId = null, ?array $selectedModuleKeys = null): array
     {
+        $selectedModuleKeys ??= ModuleSelectionService::selectedModuleKeysFromStore();
         $templateProfile = $this->templates->profile();
         $profileKey = (string) ($templateProfile['template_key'] ?? self::DEFAULT_ONBOARDING_PROFILE);
-        $coreOperatingNodeTypes = $this->coreOperatingNodeTypes($profileKey);
-        $requiresOperatingContext = $this->requiresOperatingContext($profileKey);
+        $selectedModules = Module::query()
+            ->whereIn('module_key', $selectedModuleKeys)
+            ->orderBy('category')
+            ->orderBy('sort_order')
+            ->orderBy('module_key')
+            ->get();
+        $selectedNodeTypes = $selectedModules
+            ->flatMap(function (Module $module): array {
+                $requirements = $module->readiness_requirements ?? [];
+                $nodeTypes = $requirements['required_node_types'] ?? [];
+
+                return array_values(array_filter(
+                    is_array($nodeTypes) ? $nodeTypes : [],
+                    static fn (mixed $nodeType): bool => is_string($nodeType) && $nodeType !== ''
+                ));
+            })
+            ->unique()
+            ->values()
+            ->all();
+        $coreOperatingNodeTypes = array_values(array_intersect(
+            $this->coreOperatingNodeTypes($profileKey),
+            $selectedNodeTypes
+        ));
+        $requiresOperatingContext = $this->requiresOperatingContext($profileKey)
+            && $selectedModules->contains(function (Module $module): bool {
+                $requirements = $module->readiness_requirements ?? [];
+
+                return (bool) ($requirements['requires_operating_context'] ?? false);
+            });
         $starterModules = $this->starterModules($profileKey);
         $integrityIssues = $this->orgStructureService->runIntegrityCheck();
         $activeNodeTypes = $this->activeNodeTypes();
@@ -75,10 +103,10 @@ class ModuleReadinessService
             $relevantIssues = $this->relevantIntegrityIssues($integrityIssues, $requiredNodeTypes);
 
             $reasons = [];
-            if (!$module->is_active) {
+            if (! $module->is_active) {
                 $reasons[] = 'module_inactive';
             }
-            if ($requiresOrgStructure && !$hasActiveStructure) {
+            if ($requiresOrgStructure && ! $hasActiveStructure) {
                 $reasons[] = 'missing_organizational_structure';
             }
             if ($missingNodeTypes !== []) {
@@ -87,16 +115,16 @@ class ModuleReadinessService
             if ($relevantIssues !== []) {
                 $reasons[] = 'structure_integrity_failure';
             }
-            if ($requiresWorkingUnit && !$workingUnit['ready']) {
+            if ($requiresWorkingUnit && ! $workingUnit['ready']) {
                 $reasons = [...$reasons, ...$workingUnit['reason_codes']];
             }
-            if ($requiresOperatingContext && !$operatingStructure['ready']) {
+            if ($requiresOperatingContext && ! $operatingStructure['ready']) {
                 $reasons = [...$reasons, ...$operatingStructure['reason_codes']];
             }
-            if ($requiresOpenFiscalPeriod && !$accountingReadiness['open_fiscal_period']['ready']) {
+            if ($requiresOpenFiscalPeriod && ! $accountingReadiness['open_fiscal_period']['ready']) {
                 $reasons[] = $accountingReadiness['open_fiscal_period']['reason_code'];
             }
-            if ($requiresChartOfAccounts && !$accountingReadiness['chart_of_accounts']['ready']) {
+            if ($requiresChartOfAccounts && ! $accountingReadiness['chart_of_accounts']['ready']) {
                 $reasons[] = $accountingReadiness['chart_of_accounts']['reason_code'];
             }
 
@@ -119,7 +147,7 @@ class ModuleReadinessService
                 'required_node_types' => $requiredNodeTypes,
                 'missing_node_types' => $missingNodeTypes,
                 'integrity_issue_count' => count($relevantIssues),
-                'status' => !$module->is_active ? 'inactive' : ($ready ? 'ready' : 'blocked'),
+                'status' => ! $module->is_active ? 'inactive' : ($ready ? 'ready' : 'blocked'),
                 'requirements_satisfied' => $requirementsSatisfied,
                 'ready' => $ready,
                 'reason_codes' => $reasons,
@@ -138,9 +166,9 @@ class ModuleReadinessService
                 'foundation' => $foundation,
                 'core_operations' => $coreOperations,
             ],
-            'next_phase' => !$foundation['ready']
+            'next_phase' => ! $foundation['ready']
                 ? 'foundation'
-                : (!$coreOperations['ready'] ? 'core_operations' : 'module_activation'),
+                : (! $coreOperations['ready'] ? 'core_operations' : 'module_activation'),
             'starter_module_keys' => $starterModules,
         ];
 
@@ -173,6 +201,101 @@ class ModuleReadinessService
     }
 
     /**
+     * Resolve one stable, deduplicated setup queue from the canonical module
+     * catalog. The foundation items reflect the existing global launch gate;
+     * module-specific scope is added only when a selected module declares it.
+     *
+     * @param  list<string>  $moduleKeys
+     * @return list<array{key: string, phase: string, required_by_module_keys: list<string>}>
+     */
+    public function resolveRequirementQueue(array $moduleKeys): array
+    {
+        $modules = Module::query()
+            ->whereIn('module_key', array_values(array_unique($moduleKeys)))
+            ->orderBy('category')
+            ->orderBy('sort_order')
+            ->orderBy('module_key')
+            ->get();
+
+        if ($modules->isEmpty()) {
+            return [];
+        }
+
+        $selectedKeys = $modules->pluck('module_key')->all();
+        $queue = [];
+        $addRequirement = function (string $key, string $phase, array $requiredBy) use (&$queue): void {
+            if (! isset($queue[$key])) {
+                $queue[$key] = [
+                    'key' => $key,
+                    'phase' => $phase,
+                    'required_by_module_keys' => [],
+                ];
+            }
+
+            $owners = array_values(array_filter(
+                $requiredBy,
+                static fn (mixed $moduleKey): bool => is_string($moduleKey) && $moduleKey !== ''
+            ));
+            $queue[$key]['required_by_module_keys'] = array_values(array_unique([
+                ...$queue[$key]['required_by_module_keys'],
+                ...$owners,
+            ]));
+        };
+
+        $addRequirement('organizational_structure', 'common_organization', $selectedKeys);
+        foreach (self::FOUNDATION_NODE_TYPES as $nodeType) {
+            $addRequirement('node_type:'.$nodeType, 'common_organization', $selectedKeys);
+        }
+        $addRequirement('chart_of_accounts', 'cross_family', $selectedKeys);
+        $addRequirement('open_fiscal_period', 'cross_family', $selectedKeys);
+
+        $nodeTypeOwners = [];
+        foreach ($modules as $module) {
+            $moduleKey = (string) $module->module_key;
+            $requirements = $module->readiness_requirements ?? $this->defaultRequirements();
+
+            if ((bool) ($requirements['requires_org_structure'] ?? false)) {
+                $addRequirement('organizational_structure', 'common_organization', [$moduleKey]);
+            }
+            foreach (['requires_open_fiscal_period' => 'open_fiscal_period', 'requires_chart_of_accounts' => 'chart_of_accounts'] as $flag => $key) {
+                if ((bool) ($requirements[$flag] ?? false)) {
+                    $addRequirement($key, 'cross_family', [$moduleKey]);
+                }
+            }
+            if ((bool) ($requirements['requires_working_unit'] ?? false)) {
+                $addRequirement('working_unit', 'cross_family', [$moduleKey]);
+            }
+            if ((bool) ($requirements['requires_operating_context'] ?? false)) {
+                $addRequirement('operating_context', 'cross_family', [$moduleKey]);
+                $addRequirement('cost_center', 'cross_family', [$moduleKey]);
+                $addRequirement('warehouse', 'cross_family', [$moduleKey]);
+                $addRequirement('pos_terminal', 'cross_family', [$moduleKey]);
+            }
+
+            $requiredNodeTypes = $requirements['required_node_types'] ?? [];
+            foreach (is_array($requiredNodeTypes) ? $requiredNodeTypes : [] as $nodeType) {
+                if (is_string($nodeType) && $nodeType !== '') {
+                    $nodeTypeOwners[$nodeType][] = $moduleKey;
+                }
+            }
+        }
+
+        foreach ($nodeTypeOwners as $nodeType => $owners) {
+            $phase = in_array($nodeType, self::FOUNDATION_NODE_TYPES, true)
+                ? 'common_organization'
+                : 'module_specific';
+            $addRequirement('node_type:'.$nodeType, $phase, $owners);
+        }
+
+        foreach ($queue as &$requirement) {
+            sort($requirement['required_by_module_keys']);
+        }
+        unset($requirement);
+
+        return array_values($queue);
+    }
+
+    /**
      * Validates the explicit organizational unit selected as the user's working
      * scope. Selecting a warehouse or a financial center alone is insufficient.
      */
@@ -181,7 +304,7 @@ class ModuleReadinessService
         $reasonCodes = [];
         $nodeUuids = [];
 
-        if (!$context) {
+        if (! $context) {
             return [
                 'ready' => false,
                 'reason_codes' => ['missing_selected_working_unit'],
@@ -192,12 +315,12 @@ class ModuleReadinessService
         }
 
         $anchor = $context->org_node_uuid ? StructureNode::find($context->org_node_uuid) : null;
-        if (!$anchor || !$this->isActiveNode($anchor)) {
+        if (! $anchor || ! $this->isActiveNode($anchor)) {
             $reasonCodes[] = 'missing_or_inactive_working_unit';
         } else {
             $nodeUuids[] = $anchor->node_uuid;
             $scope = $this->orgStructureService->resolveScopeContext($anchor->node_uuid);
-            if (!isset($scope['resolved']['COMP_CODE'])) {
+            if (! isset($scope['resolved']['COMP_CODE'])) {
                 $reasonCodes[] = 'working_unit_missing_company_code_path';
             }
         }
@@ -221,7 +344,7 @@ class ModuleReadinessService
         $reasonCodes = $workingUnit['reason_codes'];
         $inScopeNodeUuids = $workingUnit['node_uuids'];
 
-        if (!$context) {
+        if (! $context) {
             return ['ready' => false, 'reason_codes' => $reasonCodes, 'node_uuids' => []];
         }
 
@@ -231,26 +354,27 @@ class ModuleReadinessService
             $businessRecord = $context->{$relation};
             $nodeUuid = $businessRecord?->structure_node_uuid;
             $node = $nodeUuid ? StructureNode::find($nodeUuid) : null;
-            if (!$node || !$this->isActiveNode($node) || $node->node_type_id !== $expectedType) {
-                $reasonCodes[] = strtolower($expectedType) . '_not_structurally_linked';
+            if (! $node || ! $this->isActiveNode($node) || $node->node_type_id !== $expectedType) {
+                $reasonCodes[] = strtolower($expectedType).'_not_structurally_linked';
+
                 continue;
             }
             $inScopeNodeUuids[] = $node->node_uuid;
             $scope = $this->orgStructureService->resolveScopeContext($node->node_uuid);
-            if (!isset($scope['resolved']['COMP_CODE'])) {
-                $reasonCodes[] = strtolower($expectedType) . '_missing_company_code_path';
+            if (! isset($scope['resolved']['COMP_CODE'])) {
+                $reasonCodes[] = strtolower($expectedType).'_missing_company_code_path';
             }
         }
 
         foreach (['warehouse', 'posTerminal'] as $relation) {
             $record = $context->{$relation};
-            if (!$record || !$context->org_node_uuid || $record->org_node_uuid !== $context->org_node_uuid) {
-                $reasonCodes[] = $relation . '_not_attached_to_working_unit';
+            if (! $record || ! $context->org_node_uuid || $record->org_node_uuid !== $context->org_node_uuid) {
+                $reasonCodes[] = $relation.'_not_attached_to_working_unit';
             }
         }
 
         $scopedIntegrityIssues = array_filter($issues, function (array $issue) use ($inScopeNodeUuids): bool {
-            if (!in_array($issue['type'], ['ERROR', 'WARNING'], true)) {
+            if (! in_array($issue['type'], ['ERROR', 'WARNING'], true)) {
                 return false;
             }
 
@@ -280,8 +404,8 @@ class ModuleReadinessService
             ->orderByDesc('start_date')
             ->first();
 
-        $periodReady = $period && !$period->is_closed && !$period->is_locked;
-        $periodReason = !$period
+        $periodReady = $period && ! $period->is_closed && ! $period->is_locked;
+        $periodReason = ! $period
             ? 'missing_open_fiscal_period'
             : ($period->is_closed ? 'current_fiscal_period_closed' : ($period->is_locked ? 'current_fiscal_period_locked' : null));
 
@@ -346,10 +470,10 @@ class ModuleReadinessService
         if ($relevantIssues !== []) {
             $reasonCodes[] = 'foundation_structure_integrity_failure';
         }
-        if (!$accountingReadiness['chart_of_accounts']['ready']) {
+        if (! $accountingReadiness['chart_of_accounts']['ready']) {
             $reasonCodes[] = $accountingReadiness['chart_of_accounts']['reason_code'];
         }
-        if (!$accountingReadiness['open_fiscal_period']['ready']) {
+        if (! $accountingReadiness['open_fiscal_period']['ready']) {
             $reasonCodes[] = $accountingReadiness['open_fiscal_period']['reason_code'];
         }
 
@@ -381,7 +505,7 @@ class ModuleReadinessService
         $unlinkedNodeTypes = array_values(array_diff($coreOperatingNodeTypes, $validNodeTypes));
         $reasonCodes = [];
 
-        if ($requiresOperatingContext && !$operatingStructure['ready']) {
+        if ($requiresOperatingContext && ! $operatingStructure['ready']) {
             $reasonCodes = [...$reasonCodes, ...$operatingStructure['reason_codes']];
         }
         if ($missingNodeTypes !== []) {
@@ -410,13 +534,13 @@ class ModuleReadinessService
     /** @return list<string> */
     private function validCoreOperatingNodeTypes(?OperatingContext $context, array $coreOperatingNodeTypes): array
     {
-        if (!$context?->org_node_uuid) {
+        if (! $context?->org_node_uuid) {
             return [];
         }
 
         $workingScope = $this->orgStructureService->resolveScopeContext($context->org_node_uuid);
         $companyUuid = $workingScope['resolved']['COMP_CODE']['node_uuid'] ?? null;
-        if (!$companyUuid) {
+        if (! $companyUuid) {
             return [];
         }
 
@@ -505,8 +629,8 @@ class ModuleReadinessService
     private function isActiveNode(StructureNode $node): bool
     {
         return $node->status === 'active'
-            && (!$node->valid_from || $node->valid_from->isPast() || $node->valid_from->isToday())
-            && (!$node->valid_to || $node->valid_to->isFuture() || $node->valid_to->isToday());
+            && (! $node->valid_from || $node->valid_from->isPast() || $node->valid_from->isToday())
+            && (! $node->valid_to || $node->valid_to->isFuture() || $node->valid_to->isToday());
     }
 
     private function relevantIntegrityIssues(array $issues, array $requiredNodeTypes): array
@@ -516,7 +640,7 @@ class ModuleReadinessService
         }
 
         return array_values(array_filter($issues, function (array $issue) use ($requiredNodeTypes): bool {
-            if (!in_array($issue['node_type'] ?? null, $requiredNodeTypes, true)) {
+            if (! in_array($issue['node_type'] ?? null, $requiredNodeTypes, true)) {
                 return false;
             }
 

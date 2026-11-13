@@ -29,4 +29,23 @@ class ModuleOperationalAccessTest extends TestCase
             ->assertJsonPath('module', 'sales')
             ->assertJsonPath('lifecycle', 'not_selected');
     }
+
+    public function test_selected_but_pending_sales_module_remains_inaccessible(): void
+    {
+        $this->authenticateUser();
+
+        $selected = $this->authPost(route('v2.setup.modules.select'), [
+            'module_keys' => ['sales'],
+        ]);
+        $this->assertSuccessResponse($selected);
+        $this->assertDatabaseHas('modules', ['module_key' => 'sales', 'is_active' => false]);
+
+        $response = $this->authGet(route('v2.invoices.index'));
+
+        $response->assertStatus(423)
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('code', 'MODULE_NOT_OPERATIONAL')
+            ->assertJsonPath('module', 'sales')
+            ->assertJsonPath('lifecycle', 'selected_pending_org_setup');
+    }
 }

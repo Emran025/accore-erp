@@ -24,6 +24,9 @@ interface SetupReadinessSummaryProps {
   templateLabel: string;
   readinessLabels: Record<string, string>;
   isLoading: boolean;
+  isSetupComplete: boolean;
+  progressLabel: string;
+  formatCompletedCount: (completedCount: number, totalCount: number) => string;
   canOpenDashboard: boolean;
   onRefresh: () => void;
   onOpenDashboard: () => void;
@@ -47,6 +50,9 @@ export function SetupReadinessSummary({
   templateLabel,
   readinessLabels,
   isLoading,
+  isSetupComplete,
+  progressLabel,
+  formatCompletedCount,
   canOpenDashboard,
   onRefresh,
   onOpenDashboard,
@@ -57,8 +63,9 @@ export function SetupReadinessSummary({
 }: SetupReadinessSummaryProps) {
   const foundationReady = onboarding?.phases.foundation.ready;
 
-  // Resolve checks: if dynamicChecks are provided, use them; otherwise fallback to static readiness?.checks
-  const items: DynamicCheckItem[] = dynamicChecks && dynamicChecks.length > 0
+  // An explicitly empty, server-filtered list stays empty; it must not broaden
+  // the UI back to unrelated readiness checks for unselected modules.
+  const items: DynamicCheckItem[] = dynamicChecks !== undefined
     ? dynamicChecks
     : (readiness?.checks ?? []).map((c) => ({
         key: c.key,
@@ -72,8 +79,9 @@ export function SetupReadinessSummary({
     (foundationReady ? 1 : 0) +
     (templateApplied ? 1 : 0);
 
-  const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
-  const isAllReady = progressPercent === 100 || readiness?.ready === true;
+  const calculatedProgressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  const progressPercent = isSetupComplete ? 100 : Math.min(calculatedProgressPercent, 99);
+  const isAllReady = isSetupComplete;
   const statusClass = isAllReady ? "is-ready" : "is-blocked";
 
   return (
@@ -106,12 +114,10 @@ export function SetupReadinessSummary({
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-2 font-bold text-slate-800">
             <span className="text-blue-600">{getIcon("chart-line", "w-4 h-4")}</span>
-            <span>مؤشر تقدم التهيئة والجاهزية التشغيلية:</span>
+            <span>{progressLabel}</span>
             <span className="text-blue-700 font-mono">{progressPercent}%</span>
           </div>
-          <span className="text-[11px] font-mono text-slate-500 font-medium">
-            {completedCount} من {totalCount} متطلبات منجزة
-          </span>
+          <span className="text-[11px] font-mono text-slate-500 font-medium">{formatCompletedCount(completedCount, totalCount)}</span>
         </div>
 
         <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">

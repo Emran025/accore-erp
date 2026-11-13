@@ -36,29 +36,54 @@ final class ModuleSelectionService
     public function __construct(
         private readonly ModuleReadinessService $readiness,
         private readonly OrganizationTemplateService $templates,
-    ) {
-    }
+        private readonly OrgStructureService $orgStructureService,
+    ) {}
 
     /** @return list<string> */
     public function selectedModuleKeys(): array
     {
-        $raw = Setting::query()
-            ->where('setting_key', self::SELECTED_MODULES_KEY)
-            ->value('setting_value');
+        return self::selectedModuleKeysFromStore();
+    }
 
-        if (!is_string($raw) || trim($raw) === '') {
-            return [];
+    /**
+     * Resolve explicit setup intent, falling back to already-active business
+     * modules only when no selection record exists (legacy installation).
+     *
+     * @return list<string>
+     */
+    public static function selectedModuleKeysFromStore(bool $lockForUpdate = false): array
+    {
+        $query = Setting::query()->where('setting_key', self::SELECTED_MODULES_KEY);
+        if ($lockForUpdate) {
+            $query->lockForUpdate();
         }
 
-        $decoded = json_decode($raw, true);
-        if (!is_array($decoded)) {
-            return [];
+        $setting = $query->first();
+        $selected = [];
+        if ($setting) {
+            $decoded = json_decode((string) $setting->setting_value, true);
+            if (is_array($decoded)) {
+                $selected = array_values(array_unique(array_filter(
+                    $decoded,
+                    static fn (mixed $key): bool => is_string($key)
+                        && $key !== ''
+                        && ! in_array($key, self::CONFIGURATION_MODULES, true)
+                )));
+            }
         }
 
-        return array_values(array_unique(array_filter(
-            $decoded,
-            static fn (mixed $key): bool => is_string($key) && $key !== ''
-        )));
+        // Preserve previously active business modules until an explicit,
+        // separately scoped deactivation workflow exists.
+        $activeModuleKeys = Module::query()
+            ->where('is_active', true)
+            ->whereNotIn('module_key', self::CONFIGURATION_MODULES)
+            ->orderBy('category')
+            ->orderBy('sort_order')
+            ->orderBy('module_key')
+            ->pluck('module_key')
+            ->all();
+
+        return array_values(array_unique([...$selected, ...$activeModuleKeys]));
     }
 
     /** @param list<string> $moduleKeys */
@@ -87,13 +112,6 @@ final class ModuleSelectionService
                 ['setting_key' => self::SELECTED_MODULES_KEY],
                 ['setting_value' => json_encode($selected, JSON_THROW_ON_ERROR)]
             );
-
-            // Deselected business modules cannot remain operational. This
-            // prevents a stale activation from bypassing a later setup choice.
-            Module::query()
-                ->whereNotIn('module_key', self::CONFIGURATION_MODULES)
-                ->whereNotIn('module_key', $selected)
-                ->update(['is_active' => false]);
         });
 
         return $this->state($userId);
@@ -102,45 +120,74 @@ final class ModuleSelectionService
     /** @return array{activated: list<string>, pending: array<string, list<string>>} */
     public function activateSelected(?int $userId): array
     {
-        $readiness = $this->readiness->evaluate($userId);
-        $evaluation = collect($readiness['modules'])->keyBy('module_key');
-        $baselineReady = (bool) data_get($readiness, 'onboarding.baseline_ready', false);
-        $selected = $this->selectedModuleKeys();
-        $activated = [];
-        $pending = [];
+        return DB::transaction(function () use ($userId): array {
+            $selected = self::selectedModuleKeysFromStore(lockForUpdate: true);
+            if ($selected === []) {
+                return ['activated' => [], 'pending' => []];
+            }
 
-        if (!$baselineReady) {
+            $modules = Module::query()
+                ->whereIn('module_key', $selected)
+                ->orderBy('id')
+                ->lockForUpdate()
+                ->get()
+                ->keyBy('module_key');
+            $readiness = $this->readiness->evaluate($userId, $selected);
+            $evaluation = collect($readiness['modules'])->keyBy('module_key');
+            $baselineReady = (bool) data_get($readiness, 'onboarding.baseline_ready', false);
+            $activated = [];
+            $pending = [];
+
+            if (! $baselineReady) {
+                $baselineReasons = array_values(array_unique(array_filter([
+                    'mandatory_baseline_incomplete',
+                    ...data_get($readiness, 'onboarding.phases.foundation.reason_codes', []),
+                    ...data_get($readiness, 'onboarding.phases.core_operations.reason_codes', []),
+                ], static fn (mixed $reason): bool => is_string($reason) && $reason !== '')));
+
+                foreach ($selected as $moduleKey) {
+                    $pending[$moduleKey] = $baselineReasons;
+                }
+
+                return compact('activated', 'pending');
+            }
+
             foreach ($selected as $moduleKey) {
-                $pending[$moduleKey] = ['mandatory_baseline_incomplete'];
+                $module = $modules->get($moduleKey);
+                $status = $evaluation->get($moduleKey);
+
+                if (! $module || ! $status) {
+                    $pending[$moduleKey] = ['module_unknown'];
+
+                    continue;
+                }
+
+                if (! $status['requirements_satisfied']) {
+                    $pending[$moduleKey] = array_values(array_filter(
+                        $status['reason_codes'],
+                        static fn (string $reason): bool => $reason !== 'module_inactive'
+                    ));
+
+                    continue;
+                }
+
+                if (! $module->is_active) {
+                    $module->update(['is_active' => true]);
+                    $this->orgStructureService->recordChange(
+                        'module',
+                        $moduleKey,
+                        'activated',
+                        ['is_active' => false],
+                        ['is_active' => true],
+                        'Readiness checks passed for selected module activation.'
+                    );
+                }
+
+                $activated[] = $moduleKey;
             }
 
             return compact('activated', 'pending');
-        }
-
-        foreach ($selected as $moduleKey) {
-            $module = Module::query()->where('module_key', $moduleKey)->first();
-            $status = $evaluation->get($moduleKey);
-
-            if (!$module || !$status) {
-                $pending[$moduleKey] = ['module_unknown'];
-                continue;
-            }
-
-            if (!$status['requirements_satisfied']) {
-                $pending[$moduleKey] = array_values(array_filter(
-                    $status['reason_codes'],
-                    static fn (string $reason): bool => $reason !== 'module_inactive'
-                ));
-                continue;
-            }
-
-            if (!$module->is_active) {
-                $module->update(['is_active' => true]);
-            }
-            $activated[] = $moduleKey;
-        }
-
-        return compact('activated', 'pending');
+        });
     }
 
     /**
@@ -155,7 +202,7 @@ final class ModuleSelectionService
     public function state(?int $userId = null): array
     {
         $selected = $this->selectedModuleKeys();
-        $readiness = $this->readiness->evaluate($userId);
+        $readiness = $this->readiness->evaluate($userId, $selected);
         $evaluated = collect($readiness['modules']);
         $moduleNames = Module::query()
             ->get(['module_key', 'module_name_ar', 'module_name_en'])
@@ -164,6 +211,7 @@ final class ModuleSelectionService
             $catalogModule = $moduleNames->get($module['module_key']);
             $isConfigurationModule = in_array($module['module_key'], self::CONFIGURATION_MODULES, true);
             $isSelected = $isConfigurationModule || in_array($module['module_key'], $selected, true);
+            $isOperational = $isConfigurationModule || ($isSelected && (bool) $module['ready']);
 
             return [
                 ...$module,
@@ -171,10 +219,10 @@ final class ModuleSelectionService
                 'module_name_en' => $catalogModule?->module_name_en,
                 'is_configuration_module' => $isConfigurationModule,
                 'is_selected' => $isSelected,
-                'is_operational' => $module['ready'],
+                'is_operational' => $isOperational,
                 'lifecycle' => $isConfigurationModule
                     ? 'configuration_access'
-                    : (!$isSelected ? 'not_selected' : ($module['ready'] ? 'active' : 'selected_pending_readiness')),
+                    : (! $isSelected ? 'not_selected' : ($isOperational ? 'active' : 'selected_pending_org_setup')),
             ];
         })->values();
 
@@ -195,7 +243,7 @@ final class ModuleSelectionService
         return [
             // Core access is only granted after the mandated foundational,
             // operating, and cross-domain starter-bundle controls are ready.
-            'setup_required' => !$starterBundleActive,
+            'setup_required' => ! $starterBundleActive,
             'onboarding' => [
                 ...($readiness['onboarding'] ?? []),
                 'starter_bundle_active' => $starterBundleActive,
@@ -205,6 +253,7 @@ final class ModuleSelectionService
             'selected_module_keys' => $selected,
             'active_module_keys' => $activeBusiness->pluck('module_key')->all(),
             'pending_module_keys' => $pendingBusiness->pluck('module_key')->all(),
+            'requirement_queue' => $this->readiness->resolveRequirementQueue($selected),
             'modules' => $modules->all(),
             'organization_template' => $this->templates->state(),
         ];
