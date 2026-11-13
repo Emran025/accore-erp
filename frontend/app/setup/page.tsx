@@ -12,10 +12,10 @@ import { SetupModuleSelection } from "./components/SetupModuleSelection";
 import { SetupOperatingScopeSection } from "./components/SetupOperatingScopeSection";
 import { SetupOrganizationProfileSection } from "./components/SetupOrganizationProfileSection";
 import { SetupReadinessSummary } from "./components/SetupReadinessSummary";
-import { SetupConversationalPrompt } from "./components/SetupConversationalPrompt";
 import { AdaptiveQuestionStepper, type AdaptiveQuestion } from "./components/AdaptiveQuestionStepper";
 import { BlueprintReviewCard } from "./components/BlueprintReviewCard";
 import { Item, OrganizationProfile, Readiness, SetupState } from "./types";
+import { getIcon } from "@/lib/icons";
 
 const accountTypes = ["asset", "liability", "equity", "revenue", "expense"] as const;
 type AccountType = (typeof accountTypes)[number];
@@ -82,17 +82,62 @@ export default function SetupPage() {
   const [costCenterId, setCostCenterId] = useState<number | null>(null);
   const [posTerminalId, setPosTerminalId] = useState<number | null>(null);
 
-  // Intelligent Organization Setup state
+  // ── Intelligent Organization Setup state ────────────────────────────────────
+  // Draft persistence: read stored values from localStorage on first render so
+  // that a page refresh or accidental tab close does not lose the user's work.
+  const DRAFT_KEY = "accore_erp_setup_inference_draft";
+
+  const readDraft = () => {
+    if (typeof window === "undefined") return {};
+    try {
+      return JSON.parse(localStorage.getItem(DRAFT_KEY) ?? "{}") as Record<string, unknown>;
+    } catch {
+      return {};
+    }
+  };
+
+  const saveDraft = (patch: Record<string, unknown>) => {
+    if (typeof window === "undefined") return;
+    try {
+      const current = readDraft();
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({ ...current, ...patch }));
+    } catch {
+      // quota or private-mode error — silently ignore
+    }
+  };
+
+  const clearDraft = () => {
+    if (typeof window !== "undefined") localStorage.removeItem(DRAFT_KEY);
+  };
+
+  const draft = readDraft();
+
   const [isInferenceLoading, setIsInferenceLoading] = useState(false);
   const [isStaging, setIsStaging] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
-  const [lastDescription, setLastDescription] = useState("");
-  const [inferenceEvaluation, setInferenceEvaluation] = useState<any>(null);
-  const [inferenceSignals, setInferenceSignals] = useState<any>(null);
-  const [adaptiveQuestions, setAdaptiveQuestions] = useState<AdaptiveQuestion[]>([]);
-  const [questionAnswers, setQuestionAnswers] = useState<Record<string, any>>({});
-  const [synthesizedBlueprint, setSynthesizedBlueprint] = useState<any>(null);
-  const [stagedBlueprintUuid, setStagedBlueprintUuid] = useState<string | null>(null);
+  const [lastDescription, setLastDescription] = useState<string>((draft.lastDescription as string) ?? "");
+  const [inferenceEvaluation, setInferenceEvaluation] = useState<any>(draft.inferenceEvaluation ?? null);
+  const [inferenceSignals, setInferenceSignals] = useState<any>(draft.inferenceSignals ?? null);
+  const [adaptiveQuestions, setAdaptiveQuestions] = useState<AdaptiveQuestion[]>((draft.adaptiveQuestions as AdaptiveQuestion[]) ?? []);
+  const [questionAnswers, setQuestionAnswers] = useState<Record<string, any>>((draft.questionAnswers as Record<string, any>) ?? {});
+  const [synthesizedBlueprint, setSynthesizedBlueprint] = useState<any>(draft.synthesizedBlueprint ?? null);
+  const [stagedBlueprintUuid, setStagedBlueprintUuid] = useState<string | null>((draft.stagedBlueprintUuid as string) ?? null);
+
+  // Persist draft whenever any inference state changes
+  useEffect(() => {
+    if (lastDescription || inferenceEvaluation) {
+      saveDraft({
+        lastDescription,
+        inferenceEvaluation,
+        inferenceSignals,
+        adaptiveQuestions,
+        questionAnswers,
+        synthesizedBlueprint,
+        stagedBlueprintUuid,
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastDescription, inferenceEvaluation, inferenceSignals, adaptiveQuestions, questionAnswers, synthesizedBlueprint, stagedBlueprintUuid]);
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -317,6 +362,7 @@ export default function SetupPage() {
       );
 
       if (pubRes.success) {
+        clearDraft();
         showToast(i18n.catalog["orgStudio.setup.publishedSuccess"], "success");
         await load();
       } else {
@@ -371,6 +417,52 @@ export default function SetupPage() {
     }
   };
 
+  const handleApproveDefaultChart = async () => {
+    await callAndReload(() => fetchAPI(API_ENDPOINTS.FINANCE.ACCOUNTS.STANDARD, { method: "POST" }));
+  };
+
+  const handleGenerateFiscalPeriods = async (year: number, variant: "calendar" | "quarterly" | "hijri") => {
+    setIsSaving(true);
+    try {
+      if (variant === "quarterly") {
+        const quarters = [
+          { period_name: `${year}-Q1`, start_date: `${year}-01-01`, end_date: `${year}-03-31` },
+          { period_name: `${year}-Q2`, start_date: `${year}-04-01`, end_date: `${year}-06-30` },
+          { period_name: `${year}-Q3`, start_date: `${year}-07-01`, end_date: `${year}-09-30` },
+          { period_name: `${year}-Q4`, start_date: `${year}-10-01`, end_date: `${year}-12-31` },
+        ];
+        for (const q of quarters) {
+          await fetchAPI(API_ENDPOINTS.FINANCE.FISCAL_PERIODS.BASE, {
+            method: "POST",
+            body: JSON.stringify(q),
+          }).catch(() => null);
+        }
+      } else {
+        // Standard 12 monthly calendar periods
+        for (let m = 1; m <= 12; m++) {
+          const mStr = String(m).padStart(2, "0");
+          const lastDay = new Date(year, m, 0).getDate();
+          const p = {
+            period_name: `${year}-M${mStr}`,
+            start_date: `${year}-${mStr}-01`,
+            end_date: `${year}-${mStr}-${String(lastDay).padStart(2, "0")}`,
+          };
+          await fetchAPI(API_ENDPOINTS.FINANCE.FISCAL_PERIODS.BASE, {
+            method: "POST",
+            body: JSON.stringify(p),
+          }).catch(() => null);
+        }
+      }
+
+      showToast(i18n.catalog["enterpriseCore.setup.createdSuccessfully"] || "Fiscal periods generated", "success");
+      await load();
+    } catch {
+      showToast(i18n.catalog["enterpriseCore.setup.failedToSave"] || "Error generating periods", "error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const saveContext = async () => {
     if (!workingUnit || !costCenterId || !posTerminalId) {
       showToast(i18n.catalog["enterpriseCore.setup.failedToSave"], "error");
@@ -418,9 +510,13 @@ export default function SetupPage() {
       : [...current, moduleKey]);
   };
 
+  const [foundationMode, setFoundationMode] = useState<"ai_studio" | "manual_template">("ai_studio");
+
   const onboarding = setupState?.onboarding ?? readiness?.onboarding;
-  const foundationComplete = onboarding?.phases.foundation.ready === true;
-  const operatingLinksComplete = onboarding?.phases.core_operations.ready === true;
+  const isProfileFilled = Boolean(organizationProfile.company_name && organizationProfile.company_code);
+  const hasBlueprint = Boolean(synthesizedBlueprint || stagedBlueprintUuid);
+  const foundationComplete = onboarding?.phases.foundation.ready === true || templateApplied || Boolean(stagedBlueprintUuid) || isProfileFilled;
+  const operatingLinksComplete = foundationComplete && (onboarding?.phases.core_operations.ready === true || (Boolean(workingUnit) && costCenterId !== null));
   const canConfigureModules = operatingLinksComplete;
 
   useEffect(() => {
@@ -446,8 +542,103 @@ export default function SetupPage() {
     chart_of_accounts: i18n.catalog["enterpriseCore.setup.check.chartOfAccounts"],
   };
 
+  const dynamicChecks = useMemo(() => {
+    const hasAccounts = accounts.length > 0 || Boolean(accountCode && accountName);
+    const hasPeriods = periods.length > 0 || Boolean(periodName && periodStart);
+    const hasWorkingUnit = Boolean(workingUnit) || Boolean(organizationProfile.primary_site_name) || Boolean(synthesizedBlueprint?.units?.some((u: any) => (u.type_id || u.type) === "PLANT"));
+    const hasWarehouse = Boolean(organizationProfile.primary_site_name) || Boolean(synthesizedBlueprint?.units?.some((u: any) => (u.attributes?.facility_type === "warehouse" || u.code?.startsWith("WH"))));
+    const hasCostCenter = costCenterId !== null || Boolean(synthesizedBlueprint?.units?.some((u: any) => (u.type_id || u.type) === "COST_CENTER"));
+    const hasPos = posTerminalId !== null || Boolean(synthesizedBlueprint?.units?.some((u: any) => u.facets?.includes("PointOfSaleFacet") || u.attributes?.facility_type === "store"));
+
+    const serverChecks = readiness?.checks ?? [];
+    const getCheck = (k: string) => serverChecks.find((c) => c.key === k)?.complete === true;
+
+    return [
+      {
+        key: "organizational_structure",
+        label: readinessLabels["organizational_structure"] || i18n.catalog["enterpriseCore.setup.check.organizationalStructure"],
+        complete: templateApplied || hasBlueprint || getCheck("organizational_structure"),
+      },
+      {
+        key: "working_unit",
+        label: readinessLabels["working_unit"] || i18n.catalog["enterpriseCore.setup.check.workingUnit"],
+        complete: hasWorkingUnit || getCheck("working_unit"),
+      },
+      {
+        key: "warehouse",
+        label: readinessLabels["warehouse"] || i18n.catalog["enterpriseCore.setup.check.warehouse"],
+        complete: hasWarehouse || getCheck("warehouse"),
+      },
+      {
+        key: "cost_center",
+        label: readinessLabels["cost_center"] || i18n.catalog["enterpriseCore.setup.check.costCenter"],
+        complete: hasCostCenter || getCheck("cost_center"),
+      },
+      {
+        key: "pos_terminal",
+        label: readinessLabels["pos_terminal"] || i18n.catalog["enterpriseCore.setup.check.posTerminal"],
+        complete: hasPos || getCheck("pos_terminal"),
+      },
+      {
+        key: "chart_of_accounts",
+        label: readinessLabels["chart_of_accounts"] || i18n.catalog["enterpriseCore.setup.check.chartOfAccounts"],
+        complete: hasAccounts || getCheck("chart_of_accounts"),
+      },
+      {
+        key: "open_fiscal_period",
+        label: readinessLabels["open_fiscal_period"] || i18n.catalog["enterpriseCore.setup.check.openFiscalPeriod"],
+        complete: hasPeriods || getCheck("open_fiscal_period"),
+      },
+    ];
+  }, [
+    organizationProfile.primary_site_name,
+    synthesizedBlueprint,
+    stagedBlueprintUuid,
+    accounts.length,
+    accountCode,
+    accountName,
+    periods.length,
+    periodName,
+    periodStart,
+    workingUnit,
+    costCenterId,
+    posTerminalId,
+    templateApplied,
+    hasBlueprint,
+    readiness?.checks,
+    readinessLabels,
+    i18n.catalog,
+  ]);
+
+  const journeySteps = [
+    {
+      id: "foundation" as const,
+      title: i18n.catalog["enterpriseCore.setup.profile.step.foundationTitle"],
+      description: i18n.catalog["enterpriseCore.setup.profile.step.foundationDescription"],
+      complete: foundationComplete,
+      enabled: true,
+    },
+    {
+      id: "operating_links" as const,
+      title: i18n.catalog["enterpriseCore.setup.profile.step.operationsTitle"],
+      description: i18n.catalog["enterpriseCore.setup.profile.step.operationsDescription"],
+      complete: operatingLinksComplete,
+      enabled: foundationComplete,
+    },
+    {
+      id: "optional_capabilities" as const,
+      title: i18n.catalog["enterpriseCore.setup.profile.step.expansionTitle"],
+      description: i18n.catalog["enterpriseCore.setup.profile.step.expansionDescription"],
+      complete: onboarding?.starter_bundle_active === true,
+      enabled: operatingLinksComplete,
+    },
+  ];
+
+  const currentStepIndex = journeyStep === "foundation" ? 1 : journeyStep === "operating_links" ? 2 : 3;
+  const currentStepTitle = journeySteps.find((s) => s.id === journeyStep)?.title;
+
   return (
-    <div className="settings-wrapper setup-workflow">
+    <div className="settings-wrapper setup-workflow space-y-6">
       <SetupReadinessSummary
         title={i18n.catalog["enterpriseCore.setup.title"]}
         description={i18n.catalog["enterpriseCore.setup.subtitle"]}
@@ -465,122 +656,97 @@ export default function SetupPage() {
         canOpenDashboard={readiness?.ready === true && setupState?.setup_required === false}
         onRefresh={() => void load()}
         onOpenDashboard={() => router.push("/01-enterprise-core/system-overview/dashboard/global-dashboard")}
+        dynamicChecks={dynamicChecks}
+        activeStepTitle={currentStepTitle}
+        activeStepIndex={currentStepIndex}
+        totalSteps={3}
       />
       <SetupJourneyStepper
         activeStep={journeyStep}
         previousLabel={i18n.catalog["common.general.previous"]}
         nextLabel={i18n.catalog["common.general.next"]}
         completeLabel={i18n.catalog["enterpriseCore.setup.complete"]}
-        steps={[
-          {
-            id: "foundation",
-            title: i18n.catalog["enterpriseCore.setup.profile.step.foundationTitle"],
-            description: i18n.catalog["enterpriseCore.setup.profile.step.foundationDescription"],
-            complete: foundationComplete,
-            enabled: true,
-          },
-          {
-            id: "operating_links",
-            title: i18n.catalog["enterpriseCore.setup.profile.step.operationsTitle"],
-            description: i18n.catalog["enterpriseCore.setup.profile.step.operationsDescription"],
-            complete: operatingLinksComplete,
-            enabled: foundationComplete,
-          },
-          {
-            id: "optional_capabilities",
-            title: i18n.catalog["enterpriseCore.setup.profile.step.expansionTitle"],
-            description: i18n.catalog["enterpriseCore.setup.profile.step.expansionDescription"],
-            complete: onboarding?.starter_bundle_active === true,
-            enabled: operatingLinksComplete,
-          },
-        ]}
+        steps={journeySteps}
         onPrevious={() => setJourneyStep((current) => current === "optional_capabilities" ? "operating_links" : "foundation")}
         onNext={() => setJourneyStep((current) => current === "foundation" ? "operating_links" : "optional_capabilities")}
       />
       {journeyStep === "foundation" ? <>
-        {/* Intelligent Conversational Organization Setup */}
-        <SetupConversationalPrompt
-          onAnalyze={handleAnalyzeInference}
-          isAnalyzing={isInferenceLoading}
-          disabled={templateApplied}
-        />
-
-        {adaptiveQuestions.length > 0 ? (
-          <AdaptiveQuestionStepper
-            questions={adaptiveQuestions}
-            answers={questionAnswers}
-            onAnswerChange={(qid, val) =>
-              setQuestionAnswers((prev) => ({ ...prev, [qid]: val }))
-            }
-            onApplyAnswers={handleApplyAnswers}
-            isLoading={isInferenceLoading}
+        <div className="space-y-6">
+          <SetupOrganizationProfileSection
+            templates={templateState?.templates ?? []}
+            selectedTemplateKey={selectedTemplateKey}
+            draft={organizationProfile}
+            currencyOptions={currencyOptions}
+            calendarOptions={calendarOptions}
+            isSaving={isSaving}
+            isApplied={templateApplied}
+            canApply={templateState?.can_apply === true && Boolean(selectedTemplateKey)}
+            onTemplateChange={(templateKey) => {
+              setSelectedTemplateKey(templateKey);
+              setOrganizationProfile((current) => ({ ...current, template_key: templateKey }));
+            }}
+            onChange={(changes) => setOrganizationProfile((current) => ({ ...current, ...changes }))}
+            onSave={() => void saveOrganizationProfile()}
+            onApply={() => void applyOrganizationTemplate()}
           />
-        ) : null}
 
-        {inferenceEvaluation && synthesizedBlueprint ? (
-          <BlueprintReviewCard
-            evaluation={inferenceEvaluation}
-            blueprint={synthesizedBlueprint}
-            onStage={handleStageBlueprint}
-            onPublish={handlePublishBlueprint}
-            isStaging={isStaging}
-            isPublishing={isPublishing}
+          {inferenceEvaluation && synthesizedBlueprint ? (
+            <BlueprintReviewCard
+              evaluation={inferenceEvaluation}
+              blueprint={synthesizedBlueprint}
+              onUpdateBlueprint={(updated) => setSynthesizedBlueprint(updated)}
+              onStage={handleStageBlueprint}
+              onPublish={handlePublishBlueprint}
+              isStaging={isStaging}
+              isPublishing={isPublishing}
+              deferredQuestions={adaptiveQuestions
+                .filter((q) => questionAnswers[q.id] === null)
+                .map((q) => ({ id: q.id, question: q.question, question_ar: q.question_ar }))}
+            />
+          ) : null}
+
+          {templateApplied ? <p className="readiness-notice success">
+            {i18n.catalog["enterpriseCore.setup.profile.appliedNotice"]}
+          </p> : null}
+
+          <SetupAccountingSection
+            title={i18n.catalog["enterpriseCore.setup.accounting.title"]}
+            description={i18n.catalog["enterpriseCore.setup.accounting.description"]}
+            accountCodeLabel={i18n.catalog["enterpriseCore.setup.accounting.accountCode"]}
+            accountNameLabel={i18n.catalog["enterpriseCore.setup.accounting.accountName"]}
+            accountTypeLabel={i18n.catalog["enterpriseCore.setup.accounting.accountType"]}
+            createAccountLabel={i18n.catalog["enterpriseCore.setup.accounting.createAccount"]}
+            periodNameLabel={i18n.catalog["enterpriseCore.setup.accounting.periodName"]}
+            startDateLabel={i18n.catalog["enterpriseCore.setup.accounting.startDate"]}
+            endDateLabel={i18n.catalog["enterpriseCore.setup.accounting.endDate"]}
+            createPeriodLabel={i18n.catalog["enterpriseCore.setup.accounting.createPeriod"]}
+            accountCode={accountCode}
+            accountName={accountName}
+            accountType={accountType}
+            accountTypes={accountTypes}
+            accountTypeLabels={accountTypeLabels}
+            periodName={periodName}
+            periodStart={periodStart}
+            periodEnd={periodEnd}
+            recordSummary={catalogText(i18n, "enterpriseCore.setup.accounting.recordSummary", { value0: accounts.length, value1: periods.length })}
+            chartReady={readiness?.accounting_readiness?.chart_of_accounts.ready === true || accounts.length > 0}
+            periodReady={readiness?.accounting_readiness?.open_fiscal_period.ready === true || periods.length > 0}
+            completeLabel={i18n.catalog["enterpriseCore.setup.complete"]}
+            isSaving={isSaving}
+            onAccountCodeChange={setAccountCode}
+            onAccountNameChange={setAccountName}
+            onAccountTypeChange={setAccountType}
+            onPeriodNameChange={setPeriodName}
+            onPeriodStartChange={setPeriodStart}
+            onPeriodEndChange={setPeriodEnd}
+            onCreateAccount={() => void createAccount()}
+            onCreatePeriod={() => void createPeriod()}
+            onApproveDefaultChart={handleApproveDefaultChart}
+            onGenerateFiscalPeriods={handleGenerateFiscalPeriods}
+            existingAccounts={accounts as any}
+            existingPeriods={periods as any}
           />
-        ) : null}
-
-        <SetupOrganizationProfileSection
-          templates={templateState?.templates ?? []}
-          selectedTemplateKey={selectedTemplateKey}
-          draft={organizationProfile}
-          currencyOptions={currencyOptions}
-          calendarOptions={calendarOptions}
-          isSaving={isSaving}
-          isApplied={templateApplied}
-          canApply={templateState?.can_apply === true && Boolean(selectedTemplateKey)}
-          onTemplateChange={(templateKey) => {
-            setSelectedTemplateKey(templateKey);
-            setOrganizationProfile((current) => ({ ...current, template_key: templateKey }));
-          }}
-          onChange={(changes) => setOrganizationProfile((current) => ({ ...current, ...changes }))}
-          onSave={() => void saveOrganizationProfile()}
-          onApply={() => void applyOrganizationTemplate()}
-        />
-        {templateApplied ? <p className="readiness-notice success">
-          {i18n.catalog["enterpriseCore.setup.profile.appliedNotice"]}
-        </p> : null}
-        <SetupAccountingSection
-          title={i18n.catalog["enterpriseCore.setup.accounting.title"]}
-          description={i18n.catalog["enterpriseCore.setup.accounting.description"]}
-          accountCodeLabel={i18n.catalog["enterpriseCore.setup.accounting.accountCode"]}
-          accountNameLabel={i18n.catalog["enterpriseCore.setup.accounting.accountName"]}
-          accountTypeLabel={i18n.catalog["enterpriseCore.setup.accounting.accountType"]}
-          createAccountLabel={i18n.catalog["enterpriseCore.setup.accounting.createAccount"]}
-          periodNameLabel={i18n.catalog["enterpriseCore.setup.accounting.periodName"]}
-          startDateLabel={i18n.catalog["enterpriseCore.setup.accounting.startDate"]}
-          endDateLabel={i18n.catalog["enterpriseCore.setup.accounting.endDate"]}
-          createPeriodLabel={i18n.catalog["enterpriseCore.setup.accounting.createPeriod"]}
-          accountCode={accountCode}
-          accountName={accountName}
-          accountType={accountType}
-          accountTypes={accountTypes}
-          accountTypeLabels={accountTypeLabels}
-          periodName={periodName}
-          periodStart={periodStart}
-          periodEnd={periodEnd}
-          recordSummary={catalogText(i18n, "enterpriseCore.setup.accounting.recordSummary", { value0: accounts.length, value1: periods.length })}
-          chartReady={readiness?.accounting_readiness?.chart_of_accounts.ready === true}
-          periodReady={readiness?.accounting_readiness?.open_fiscal_period.ready === true}
-          completeLabel={i18n.catalog["enterpriseCore.setup.complete"]}
-          isSaving={isSaving}
-          onAccountCodeChange={setAccountCode}
-          onAccountNameChange={setAccountName}
-          onAccountTypeChange={setAccountType}
-          onPeriodNameChange={setPeriodName}
-          onPeriodStartChange={setPeriodStart}
-          onPeriodEndChange={setPeriodEnd}
-          onCreateAccount={() => void createAccount()}
-          onCreatePeriod={() => void createPeriod()}
-        />
+        </div>
       </> : null}
       {journeyStep === "operating_links" ? (
         <SetupOperatingScopeSection

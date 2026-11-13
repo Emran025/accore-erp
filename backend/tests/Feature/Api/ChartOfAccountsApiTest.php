@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Api;
 
-use Tests\TestCase;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Models\GeneralLedger;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class ChartOfAccountsApiTest extends TestCase
 {
@@ -29,7 +29,7 @@ class ChartOfAccountsApiTest extends TestCase
 
     public function test_can_search_accounts()
     {
-        $response = $this->authGet(route('v2.coa.index') . '?search=Cash');
+        $response = $this->authGet(route('v2.coa.index').'?search=Cash');
 
         $response->assertStatus(200)
             ->assertJson(['success' => true]);
@@ -63,6 +63,31 @@ class ChartOfAccountsApiTest extends TestCase
         $response = $this->authPost(route('v2.coa.store'), $data);
 
         $response->assertStatus(422);
+    }
+
+    public function test_standard_chart_endpoint_restores_missing_accounts_without_overwriting_existing_accounts(): void
+    {
+        $cashAccount = ChartOfAccount::where('account_code', '1110')->firstOrFail();
+        $cashAccount->update(['account_name' => 'Customized cash account']);
+        ChartOfAccount::where('account_code', '5300')->delete();
+
+        $response = $this->authPost(route('v2.coa.standard'));
+
+        $this->assertSuccessResponse($response);
+        $response->assertJsonPath('data.account_count', 34);
+        $this->assertDatabaseHas('chart_of_accounts', [
+            'account_code' => '1110',
+            'account_name' => 'Customized cash account',
+        ]);
+        $this->assertDatabaseHas('chart_of_accounts', [
+            'account_code' => '5300',
+            'account_name' => 'مصروف الإهلاك',
+            'account_type' => 'Expense',
+        ]);
+
+        $countAfterFirstEnsure = ChartOfAccount::count();
+        $this->authPost(route('v2.coa.standard'))->assertJsonPath('data.account_count', 34);
+        $this->assertSame($countAfterFirstEnsure, ChartOfAccount::count());
     }
 
     public function test_can_update_account()
@@ -126,7 +151,7 @@ class ChartOfAccountsApiTest extends TestCase
 
     public function test_can_filter_balances_by_type()
     {
-        $response = $this->authGet(route('v2.coa.balances') . '?account_type=Asset');
+        $response = $this->authGet(route('v2.coa.balances').'?account_type=Asset');
 
         $response->assertStatus(200)
             ->assertJson(['success' => true]);

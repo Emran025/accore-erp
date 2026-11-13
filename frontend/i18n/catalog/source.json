@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-08-17T14:51:39.718Z",
-  "itemCount": 4391,
+  "itemCount": 4419,
   "items": [
     {
       "id": "assets.fixedAssetsRegistry.areYouSureYouWantDeleteThisAsset",
@@ -58115,6 +58115,12 @@
       "occurrences": []
     },
     {
+      "id": "enterpriseCore.setup.accounting.accountCodePlaceholder",
+      "source": "مثال: 1110",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
       "id": "enterpriseCore.setup.accounting.accountName",
       "source": "اسم الحساب",
       "classification": "user-facing",
@@ -58205,6 +58211,66 @@
       "occurrences": []
     },
     {
+      "id": "enterpriseCore.setup.coa.addCustomAccount",
+      "source": "+ إضافة حساب مخصص",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.coa.approveButton",
+      "source": "اعتماد دليل الحسابات القياسي",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.coa.approveStandard",
+      "source": "اعتماد دليل الحسابات القياسي الموحد (موصى به)",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.coa.approveStandardDesc",
+      "source": "يحتوي على كافة الحسابات الأساسية للتشغيل (الأصول، الخصوم، حقوق الملكية، الإيرادات، المصروفات، ضريبة القيمة المضافة).",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.coa.approvedBadge",
+      "source": "دليل الحسابات: معتمد",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.coa.customManagement",
+      "source": "تخصيص وإدارة الحسابات",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.coa.hideCustomAccountForm",
+      "source": "إخفاء نموذج الإضافة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.coa.stageDescription",
+      "source": "اختر بين اعتماد دليل الحسابات القياسي الموصى به للمنشأة أو تخصيص وتعديل شجرة الحسابات.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.coa.stageTitle",
+      "source": "دليل الحسابات المعتمد",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.coa.statusApproved",
+      "source": "تم اعتماد دليل الحسابات بنجاح ({value0} حساب مسجل)",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
       "id": "enterpriseCore.setup.check.chartOfAccounts",
       "source": "دليل الحسابات",
       "classification": "user-facing",
@@ -58249,6 +58315,108 @@
     {
       "id": "enterpriseCore.setup.check.workingUnit",
       "source": "وحدة العمل",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.periods.autoClosePolicy",
+      "source": "الإقفال الآلي للفترة السابقة بنهاية الشهر",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.periods.autoGenerate",
+      "source": "توليد فترات السنة آلياً",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.periods.autoOpenPolicy",
+      "source": "الفتح التلقائي للفترة الجديدة عند الاستحقاق",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.periods.calcMethod",
+      "source": "طريقة احتساب الفترات المالية",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.periods.fiscalYear",
+      "source": "السنة المالية",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.periods.generateHint",
+      "source": "اضغط على الزر لتوليد وتفعيل فترات السنة المالية تلقائياً",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.periods.generating",
+      "source": "جارٍ توليد الفترات...",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.periods.lockPolicy",
+      "source": "حظر القيود المحاسبية على الفترات المقفلة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.periods.manualEntryTitle",
+      "source": "إدخال فترة مخصصة يدوياً",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.periods.periodNamePlaceholder",
+      "source": "مثال: 2026-M01",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.periods.policyHeading",
+      "source": "سياسات الإقفال والفتح الآلي:",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.periods.stageDescription",
+      "source": "حدد طريقة احتساب الفترات المحاسبية وتوليدها آلياً، وضبط سياسات الفتح والإقفال التلقائي.",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.periods.stageTitle",
+      "source": "تهيئة الفترات المالية وسياسة الإقفال",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.periods.statusActive",
+      "source": "الفترات المالية مهيأة ونشطة",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.periods.variantCalendar",
+      "source": "سنة تقويمية قياسية (12 شهراً ميلادياً)",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.periods.variantHijri",
+      "source": "سنة مالية هجرية (12 شهراً)",
+      "classification": "user-facing",
+      "occurrences": []
+    },
+    {
+      "id": "enterpriseCore.setup.periods.variantQuarterly",
+      "source": "فترات ربع سنوية (4 فترات)",
       "classification": "user-facing",
       "occurrences": []
     },

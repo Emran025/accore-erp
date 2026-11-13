@@ -51,6 +51,7 @@ export interface FinanceEndpoints {
     };
     ACCOUNTS: {
         BASE: string;
+        STANDARD: string;
         withId: (id: string | number) => string;
         BALANCES: string;
     };
@@ -135,6 +136,7 @@ export const FINANCE: FinanceEndpoints = {
     },
     ACCOUNTS: {
         BASE: "/v2/chart-of-accounts",
+        STANDARD: "/v2/chart-of-accounts/standard",
         withId: (id: string | number) => `/v2/chart-of-accounts/${id}`,
         BALANCES: "/v2/chart-of-accounts/balances",
     },

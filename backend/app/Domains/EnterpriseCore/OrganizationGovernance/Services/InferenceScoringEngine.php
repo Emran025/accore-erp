@@ -187,41 +187,59 @@ class InferenceScoringEngine
                 'summary_ar' => "تم ترشيح {$archetypeMeta['label_ar']} بناءً على نطاق أعمالك وطبيعة مرافقك التشغيلية.",
                 'reasons'    => $reasons,
             ],
-            'adaptive_questions'      => $this->generateAdaptiveQuestions($signals, $primary, $confidence),
+            'adaptive_questions'      => $this->generateAdaptiveQuestions($this->buildEvalPartial($primary, $confidence), $signals),
         ];
     }
 
     /**
-     * Determine follow-up questions when uncertainty or deeper expansion is detected.
+     * Generate targeted adaptive follow-up questions based on current signals and evaluation.
+     *
+     * Accepts the full $evaluation array (as returned by evaluate()) and $signals, so this
+     * method can be called both internally from evaluate() and externally from actions
+     * such as GetAdaptiveQuestionsAction.
+     *
+     * @param array<string, mixed> $evaluation
+     * @param array<string, mixed> $signals
+     * @return list<array<string, mixed>>
      */
-    private function generateAdaptiveQuestions(array $signals, string $primary, float $confidence): array
+    public function generateAdaptiveQuestions(array $evaluation, array $signals): array
     {
         $questions = [];
 
         if (empty($signals['company_name'])) {
             $questions[] = [
-                'id'          => 'company_name',
-                'type'        => 'text',
-                'question_en' => 'What is the registered trade name of your company?',
-                'question_ar' => 'ما هو الاسم التجاري المسجل لمنشأتك؟',
-                'mandatory'   => true,
+                'id'           => 'company_name',
+                'type'         => 'text',
+                'question_en'  => 'What is the registered trade name of your company?',
+                'question_ar'  => 'ما هو الاسم التجاري المسجل لمنشأتك؟',
+                'help_text_en' => 'This name will be used as the root legal entity in your organization chart and will appear on all official documents and invoices.',
+                'help_text_ar' => 'سيُستخدم هذا الاسم كجهة قانونية جذرية في هيكلك التنظيمي وسيظهر على جميع المستندات والفواتير الرسمية.',
+                'mandatory'    => true,
             ];
         }
 
-        if ($signals['store_count'] > 1 && empty($signals['governance_purchasing'])) {
+        if (($signals['store_count'] ?? 0) > 1 && empty($signals['governance_purchasing'])) {
             $questions[] = [
-                'id'          => 'governance_purchasing',
-                'type'        => 'choice',
-                'question_en' => 'How are inventory purchases negotiated with suppliers?',
-                'question_ar' => 'كيف تتم مفاوضات شراء المخزون مع الموردين؟',
-                'options'     => [
+                'id'           => 'governance_purchasing',
+                'type'         => 'choice',
+                'question_en'  => 'How are inventory purchases negotiated with suppliers?',
+                'question_ar'  => 'كيف تتم مفاوضات شراء المخزون مع الموردين؟',
+                'help_text_en' => 'This determines whether each branch can issue its own purchase orders directly to suppliers, or whether all procurement is managed centrally by headquarters. Centralized purchasing gives you better pricing leverage and a unified view of cash commitments.',
+                'help_text_ar' => 'يحدد هذا ما إذا كان بإمكان كل فرع إصدار أوامر شراء مباشرةً من الموردين، أم تُدار جميع المشتريات مركزيًا من المقر الرئيسي. يمنحك الشراء المركزي قدرةً تفاوضية أفضل ورؤية موحدة للالتزامات النقدية.',
+                'options'      => [
                     ['value' => 'centralized', 'label_en' => 'Centralized at Headquarters (Recommended)', 'label_ar' => 'مركزياً من المقر الرئيسي (موصى به)'],
                     ['value' => 'per_site',    'label_en' => 'Independently by each branch', 'label_ar' => 'بشكل مستقل لكل فرع'],
                 ],
-                'mandatory'   => false,
+                'mandatory'    => false,
             ];
         }
 
         return $questions;
+    }
+
+    /** @return array{primary_archetype: string, confidence_score: float} */
+    private function buildEvalPartial(string $primary, float $confidence): array
+    {
+        return ['primary_archetype' => $primary, 'confidence_score' => $confidence];
     }
 }

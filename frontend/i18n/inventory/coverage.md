@@ -2,16 +2,16 @@
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 476 |
-| Candidate literals scanned | 27934 |
-| Files passing | 476 |
+| Files scanned | 495 |
+| Candidate literals scanned | 29397 |
+| Files passing | 495 |
 | Files failing | 0 |
 
 ## Per-file verification
 
 | File | Candidates | Pending | Technical | Passed |
 |---|---:|---:|---:|---|
-| `app/[...virtual]/page.tsx` | 7 | 0 | 7 | Yes |
+| `app/[...virtual]/page.tsx` | 9 | 0 | 9 | Yes |
 | `app/[...virtual]/VirtualNavigationClient.tsx` | 40 | 0 | 40 | Yes |
 | `app/01-enterprise-core/automation/recurring/batch-processing/(pages)/page.tsx` | 191 | 0 | 191 | Yes |
 | `app/01-enterprise-core/automation/recurring/batch-processing/index.ts` | 1 | 0 | 1 | Yes |
@@ -31,16 +31,16 @@
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/ui/MetaItem.tsx` | 15 | 0 | 15 | Yes |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/ui/SharedWidgets.tsx` | 64 | 0 | 64 | Yes |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/(pages)/ui/StatusWidgets.tsx` | 35 | 0 | 35 | Yes |
-| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/ChangeHistoryTab.tsx` | 230 | 0 | 230 | Yes |
+| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/ChangeHistoryTab.tsx` | 233 | 0 | 233 | Yes |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/DashboardTab.tsx` | 101 | 0 | 101 | Yes |
-| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/HierarchyTab.tsx` | 173 | 0 | 173 | Yes |
+| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/HierarchyTab.tsx` | 174 | 0 | 174 | Yes |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/IntegrityTab.tsx` | 96 | 0 | 96 | Yes |
-| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/LinksTab.tsx` | 218 | 0 | 218 | Yes |
+| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/LinksTab.tsx` | 223 | 0 | 223 | Yes |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/MetaTypesTab.tsx` | 88 | 0 | 88 | Yes |
-| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/NodeFormPanel.tsx` | 316 | 0 | 316 | Yes |
-| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/NodesTab.tsx` | 168 | 0 | 168 | Yes |
-| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/ScopeContextTab.tsx` | 108 | 0 | 108 | Yes |
-| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/TopologyRulesTab.tsx` | 81 | 0 | 81 | Yes |
+| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/NodeFormPanel.tsx` | 318 | 0 | 318 | Yes |
+| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/NodesTab.tsx` | 169 | 0 | 169 | Yes |
+| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/ScopeContextTab.tsx` | 109 | 0 | 109 | Yes |
+| `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/components/TopologyRulesTab.tsx` | 83 | 0 | 83 | Yes |
 | `app/01-enterprise-core/organization-governance/org-structure/org-hierarchy/index.ts` | 1 | 0 | 1 | Yes |
 | `app/01-enterprise-core/system-overview/dashboard/global-dashboard/(pages)/page.tsx` | 193 | 0 | 193 | Yes |
 | `app/01-enterprise-core/system-overview/dashboard/global-dashboard/components/ExchangeRatesWidget.tsx` | 40 | 0 | 40 | Yes |
@@ -74,10 +74,10 @@
 | `app/02-commercial/instant-services/services-core/credit-services/(pages)/page.tsx` | 3 | 0 | 3 | Yes |
 | `app/02-commercial/instant-services/services-core/credit-services/index.ts` | 1 | 0 | 1 | Yes |
 | `app/02-commercial/instant-services/services-core/service-returns/(pages)/page.tsx` | 64 | 0 | 64 | Yes |
-| `app/02-commercial/instant-services/services-core/service-returns/components/ServiceInvoiceSelectionTab.tsx` | 54 | 0 | 54 | Yes |
+| `app/02-commercial/instant-services/services-core/service-returns/components/ServiceInvoiceSelectionTab.tsx` | 55 | 0 | 55 | Yes |
 | `app/02-commercial/instant-services/services-core/service-returns/components/ServiceReturnsFilterDialog.tsx` | 17 | 0 | 17 | Yes |
 | `app/02-commercial/instant-services/services-core/service-returns/components/ServiceReturnsStatsCards.tsx` | 18 | 0 | 18 | Yes |
-| `app/02-commercial/instant-services/services-core/service-returns/components/ServiceReturnsTable.tsx` | 91 | 0 | 91 | Yes |
+| `app/02-commercial/instant-services/services-core/service-returns/components/ServiceReturnsTable.tsx` | 96 | 0 | 96 | Yes |
 | `app/02-commercial/instant-services/services-core/service-returns/index.ts` | 1 | 0 | 1 | Yes |
 | `app/02-commercial/marketing-distribution/representatives/reps-ledger/(pages)/page.tsx` | 97 | 0 | 97 | Yes |
 | `app/02-commercial/marketing-distribution/representatives/reps-ledger/components/InvoiceDetailsDialog.tsx` | 54 | 0 | 54 | Yes |
@@ -97,7 +97,7 @@
 | `app/02-commercial/sales-governance/templates/template-manager/(pages)/page.tsx` | 4 | 0 | 4 | Yes |
 | `app/02-commercial/sales-governance/templates/template-manager/(pages)/preview/page.tsx` | 38 | 0 | 38 | Yes |
 | `app/02-commercial/sales-governance/templates/template-manager/(pages)/SystemTemplates.tsx` | 101 | 0 | 101 | Yes |
-| `app/02-commercial/sales-governance/templates/template-manager/(pages)/templates-data.ts` | 175 | 0 | 175 | Yes |
+| `app/02-commercial/sales-governance/templates/template-manager/(pages)/templates-data.ts` | 202 | 0 | 202 | Yes |
 | `app/02-commercial/sales-governance/templates/template-manager/index.ts` | 1 | 0 | 1 | Yes |
 | `app/02-commercial/sales-lifecycle/direct-sales/deferred-sales/(pages)/page.tsx` | 3 | 0 | 3 | Yes |
 | `app/02-commercial/sales-lifecycle/direct-sales/deferred-sales/index.ts` | 1 | 0 | 1 | Yes |
@@ -105,10 +105,10 @@
 | `app/02-commercial/sales-lifecycle/direct-sales/sales-invoices/(pages)/page.tsx` | 3 | 0 | 3 | Yes |
 | `app/02-commercial/sales-lifecycle/direct-sales/sales-invoices/index.ts` | 1 | 0 | 1 | Yes |
 | `app/02-commercial/sales-lifecycle/direct-sales/sales-returns/(pages)/page.tsx` | 64 | 0 | 64 | Yes |
-| `app/02-commercial/sales-lifecycle/direct-sales/sales-returns/components/InvoiceSelectionTab.tsx` | 54 | 0 | 54 | Yes |
+| `app/02-commercial/sales-lifecycle/direct-sales/sales-returns/components/InvoiceSelectionTab.tsx` | 55 | 0 | 55 | Yes |
 | `app/02-commercial/sales-lifecycle/direct-sales/sales-returns/components/ReturnsFilterDialog.tsx` | 17 | 0 | 17 | Yes |
 | `app/02-commercial/sales-lifecycle/direct-sales/sales-returns/components/ReturnsStatsCards.tsx` | 18 | 0 | 18 | Yes |
-| `app/02-commercial/sales-lifecycle/direct-sales/sales-returns/components/ReturnsTable.tsx` | 91 | 0 | 91 | Yes |
+| `app/02-commercial/sales-lifecycle/direct-sales/sales-returns/components/ReturnsTable.tsx` | 96 | 0 | 96 | Yes |
 | `app/02-commercial/sales-lifecycle/direct-sales/sales-returns/index.ts` | 1 | 0 | 1 | Yes |
 | `app/02-commercial/sales-lifecycle/sales-orders/purchase-requests-sales/(pages)/page.tsx` | 50 | 0 | 50 | Yes |
 | `app/02-commercial/sales-lifecycle/sales-orders/purchase-requests-sales/components/AddRequestDialog.tsx` | 34 | 0 | 34 | Yes |
@@ -143,9 +143,9 @@
 | `app/03-finance/general-ledger/ledger-core/fiscal-periods/index.ts` | 1 | 0 | 1 | Yes |
 | `app/03-finance/general-ledger/ledger-core/general-ledger-book/(pages)/page.tsx` | 161 | 0 | 161 | Yes |
 | `app/03-finance/general-ledger/ledger-core/general-ledger-book/index.ts` | 1 | 0 | 1 | Yes |
-| `app/03-finance/management-accounting/cost-profit-centers/cost-centers/(pages)/page.tsx` | 264 | 0 | 264 | Yes |
+| `app/03-finance/management-accounting/cost-profit-centers/cost-centers/(pages)/page.tsx` | 266 | 0 | 266 | Yes |
 | `app/03-finance/management-accounting/cost-profit-centers/cost-centers/index.ts` | 1 | 0 | 1 | Yes |
-| `app/03-finance/management-accounting/cost-profit-centers/profit-centers/(pages)/page.tsx` | 283 | 0 | 283 | Yes |
+| `app/03-finance/management-accounting/cost-profit-centers/profit-centers/(pages)/page.tsx` | 284 | 0 | 284 | Yes |
 | `app/03-finance/management-accounting/cost-profit-centers/profit-centers/index.ts` | 1 | 0 | 1 | Yes |
 | `app/03-finance/tax-compliance/cash-management/bank-reconciliation/(pages)/page.tsx` | 120 | 0 | 120 | Yes |
 | `app/03-finance/tax-compliance/cash-management/bank-reconciliation/index.ts` | 1 | 0 | 1 | Yes |
@@ -161,16 +161,16 @@
 | `app/03-finance/treasury/cash-management/journal-vouchers/(pages)/page.tsx` | 223 | 0 | 223 | Yes |
 | `app/03-finance/treasury/cash-management/journal-vouchers/index.ts` | 1 | 0 | 1 | Yes |
 | `app/04-supply-chain/inventory/products-inventory/inventory-reports/(pages)/page.tsx` | 2 | 0 | 2 | Yes |
-| `app/04-supply-chain/inventory/products-inventory/products/(pages)/page.tsx` | 226 | 0 | 226 | Yes |
+| `app/04-supply-chain/inventory/products-inventory/products/(pages)/page.tsx` | 260 | 0 | 260 | Yes |
 | `app/04-supply-chain/inventory/products-inventory/products/(pages)/types.ts` | 3 | 0 | 3 | Yes |
 | `app/04-supply-chain/inventory/products-inventory/products/index.ts` | 1 | 0 | 1 | Yes |
 | `app/04-supply-chain/payables-expenses/expense-management/expenses/(pages)/page.tsx` | 161 | 0 | 161 | Yes |
 | `app/04-supply-chain/payables-expenses/expense-management/expenses/index.ts` | 1 | 0 | 1 | Yes |
 | `app/04-supply-chain/payables-expenses/expense-management/purchase-returns/(pages)/page.tsx` | 66 | 0 | 66 | Yes |
-| `app/04-supply-chain/payables-expenses/expense-management/purchase-returns/components/InvoiceSelectionTab.tsx` | 38 | 0 | 38 | Yes |
+| `app/04-supply-chain/payables-expenses/expense-management/purchase-returns/components/InvoiceSelectionTab.tsx` | 39 | 0 | 39 | Yes |
 | `app/04-supply-chain/payables-expenses/expense-management/purchase-returns/components/ReturnsFilterDialog.tsx` | 9 | 0 | 9 | Yes |
 | `app/04-supply-chain/payables-expenses/expense-management/purchase-returns/components/ReturnsStatsCards.tsx` | 18 | 0 | 18 | Yes |
-| `app/04-supply-chain/payables-expenses/expense-management/purchase-returns/components/ReturnsTable.tsx` | 78 | 0 | 78 | Yes |
+| `app/04-supply-chain/payables-expenses/expense-management/purchase-returns/components/ReturnsTable.tsx` | 83 | 0 | 83 | Yes |
 | `app/04-supply-chain/payables-expenses/expense-management/purchase-returns/index.ts` | 1 | 0 | 1 | Yes |
 | `app/04-supply-chain/procurement/purchase-invoices/deferred-invoices/(pages)/page.tsx` | 3 | 0 | 3 | Yes |
 | `app/04-supply-chain/procurement/purchase-invoices/deferred-invoices/(pages)/types.ts` | 3 | 0 | 3 | Yes |
@@ -265,10 +265,10 @@
 | `app/06-human-capital/services-wellness/employee-services/wellness/index.ts` | 1 | 0 | 1 | Yes |
 | `app/06-human-capital/talent-recruitment/recruitment/administration/(pages)/HrAdministration.tsx` | 40 | 0 | 40 | Yes |
 | `app/06-human-capital/talent-recruitment/recruitment/administration/(pages)/page.tsx` | 4 | 0 | 4 | Yes |
-| `app/06-human-capital/talent-recruitment/recruitment/administration/components/CapacityPlanningTab.tsx` | 88 | 0 | 88 | Yes |
-| `app/06-human-capital/talent-recruitment/recruitment/administration/components/EmployeePositionTab.tsx` | 171 | 0 | 171 | Yes |
-| `app/06-human-capital/talent-recruitment/recruitment/administration/components/PermissionTemplatesTab.tsx` | 56 | 0 | 56 | Yes |
-| `app/06-human-capital/talent-recruitment/recruitment/administration/components/PositionsTab.tsx` | 228 | 0 | 228 | Yes |
+| `app/06-human-capital/talent-recruitment/recruitment/administration/components/CapacityPlanningTab.tsx` | 90 | 0 | 90 | Yes |
+| `app/06-human-capital/talent-recruitment/recruitment/administration/components/EmployeePositionTab.tsx` | 175 | 0 | 175 | Yes |
+| `app/06-human-capital/talent-recruitment/recruitment/administration/components/PermissionTemplatesTab.tsx` | 57 | 0 | 57 | Yes |
+| `app/06-human-capital/talent-recruitment/recruitment/administration/components/PositionsTab.tsx` | 238 | 0 | 238 | Yes |
 | `app/06-human-capital/talent-recruitment/recruitment/administration/components/RolesTab.tsx` | 136 | 0 | 136 | Yes |
 | `app/06-human-capital/talent-recruitment/recruitment/administration/index.ts` | 1 | 0 | 1 | Yes |
 | `app/06-human-capital/talent-recruitment/recruitment/ats/(pages)/page.tsx` | 3 | 0 | 3 | Yes |
@@ -277,13 +277,13 @@
 | `app/06-human-capital/talent-recruitment/recruitment/contingent-workers/(pages)/ContingentWorkers.tsx` | 86 | 0 | 86 | Yes |
 | `app/06-human-capital/talent-recruitment/recruitment/contingent-workers/(pages)/page.tsx` | 5 | 0 | 5 | Yes |
 | `app/06-human-capital/talent-recruitment/recruitment/contingent-workers/index.ts` | 1 | 0 | 1 | Yes |
-| `app/06-human-capital/talent-recruitment/recruitment/onboarding/(pages)/Onboarding.tsx` | 182 | 0 | 182 | Yes |
+| `app/06-human-capital/talent-recruitment/recruitment/onboarding/(pages)/Onboarding.tsx` | 183 | 0 | 183 | Yes |
 | `app/06-human-capital/talent-recruitment/recruitment/onboarding/(pages)/page.tsx` | 5 | 0 | 5 | Yes |
 | `app/06-human-capital/talent-recruitment/recruitment/onboarding/index.ts` | 1 | 0 | 1 | Yes |
 | `app/06-human-capital/time-productivity/attendance-scheduling/attendance/(pages)/Attendance.tsx` | 158 | 0 | 158 | Yes |
 | `app/06-human-capital/time-productivity/attendance-scheduling/attendance/(pages)/page.tsx` | 4 | 0 | 4 | Yes |
 | `app/06-human-capital/time-productivity/attendance-scheduling/attendance/index.ts` | 1 | 0 | 1 | Yes |
-| `app/06-human-capital/time-productivity/attendance-scheduling/biometric/(pages)/BiometricControl.tsx` | 213 | 0 | 213 | Yes |
+| `app/06-human-capital/time-productivity/attendance-scheduling/biometric/(pages)/BiometricControl.tsx` | 218 | 0 | 218 | Yes |
 | `app/06-human-capital/time-productivity/attendance-scheduling/biometric/(pages)/page.tsx` | 4 | 0 | 4 | Yes |
 | `app/06-human-capital/time-productivity/attendance-scheduling/biometric/index.ts` | 1 | 0 | 1 | Yes |
 | `app/06-human-capital/time-productivity/attendance-scheduling/leave/(pages)/LeaveRequests.tsx` | 181 | 0 | 181 | Yes |
@@ -337,23 +337,28 @@
 | `app/auth/login/(pages)/page.tsx` | 13 | 0 | 13 | Yes |
 | `app/auth/login/components/LoginForm.tsx` | 32 | 0 | 32 | Yes |
 | `app/auth/login/index.ts` | 1 | 0 | 1 | Yes |
-| `app/layout.tsx` | 17 | 0 | 17 | Yes |
+| `app/connection/page.tsx` | 42 | 0 | 42 | Yes |
+| `app/layout.tsx` | 14 | 0 | 14 | Yes |
 | `app/navigation/(pages)/page.tsx` | 8 | 0 | 8 | Yes |
 | `app/navigation/components/NavigationGridContent.tsx` | 26 | 0 | 26 | Yes |
 | `app/navigation/index.ts` | 1 | 0 | 1 | Yes |
 | `app/page.tsx` | 2 | 0 | 2 | Yes |
+| `app/setup/components/OrganizationArchitectureWorkspace.tsx` | 250 | 0 | 250 | Yes |
+| `app/setup/components/organizationWorkspace.types.ts` | 8 | 0 | 8 | Yes |
 | `app/setup/components/SetupAccountingSection.tsx` | 36 | 0 | 36 | Yes |
 | `app/setup/components/SetupField.tsx` | 4 | 0 | 4 | Yes |
-| `app/setup/components/SetupModuleSelection.tsx` | 21 | 0 | 21 | Yes |
-| `app/setup/components/SetupOperatingScopeSection.tsx` | 31 | 0 | 31 | Yes |
+| `app/setup/components/SetupModuleSelection.tsx` | 30 | 0 | 30 | Yes |
+| `app/setup/components/SetupOperatingScopeSection.tsx` | 33 | 0 | 33 | Yes |
 | `app/setup/components/SetupOrganizationSection.tsx` | 24 | 0 | 24 | Yes |
+| `app/setup/components/SetupPhaseProgress.tsx` | 9 | 0 | 9 | Yes |
 | `app/setup/components/SetupReadinessSummary.tsx` | 17 | 0 | 17 | Yes |
-| `app/setup/components/SetupSection.tsx` | 6 | 0 | 6 | Yes |
-| `app/setup/page.tsx` | 120 | 0 | 120 | Yes |
-| `app/setup/types.ts` | 4 | 0 | 4 | Yes |
+| `app/setup/components/SetupSection.tsx` | 6 | 0 | 5 | Yes |
+| `app/setup/layout.tsx` | 18 | 0 | 18 | Yes |
+| `app/setup/page.tsx` | 138 | 0 | 138 | Yes |
+| `app/setup/types.ts` | 9 | 0 | 9 | Yes |
 | `components/layout/index.ts` | 2 | 0 | 2 | Yes |
-| `components/layout/MainLayout.tsx` | 59 | 0 | 59 | Yes |
-| `components/layout/NotificationRuntimeBridge.tsx` | 18 | 0 | 18 | Yes |
+| `components/layout/MainLayout.tsx` | 60 | 0 | 60 | Yes |
+| `components/layout/NotificationRuntimeBridge.tsx` | 19 | 0 | 19 | Yes |
 | `components/layout/PageHeader.tsx` | 29 | 0 | 29 | Yes |
 | `components/navigation/index.ts` | 7 | 0 | 7 | Yes |
 | `components/navigation/NavigationCard.tsx` | 99 | 0 | 99 | Yes |
@@ -377,20 +382,24 @@
 | `components/navigation/TopGlobalBar/components/GlobalMeta.tsx` | 36 | 0 | 36 | Yes |
 | `components/navigation/TopGlobalBar/TopGlobalBar.tsx` | 16 | 0 | 16 | Yes |
 | `components/number-range/components/DomainFullnessPanel.tsx` | 84 | 0 | 84 | Yes |
-| `components/number-range/components/ExpansionLogsPanel.tsx` | 51 | 0 | 51 | Yes |
+| `components/number-range/components/ExpansionLogsPanel.tsx` | 53 | 0 | 53 | Yes |
 | `components/number-range/components/NrObjectHeader.tsx` | 110 | 0 | 110 | Yes |
 | `components/number-range/index.ts` | 6 | 0 | 6 | Yes |
-| `components/number-range/NumberRangeManager.tsx` | 409 | 0 | 409 | Yes |
+| `components/number-range/NumberRangeManager.tsx` | 410 | 0 | 410 | Yes |
 | `components/number-range/types.ts` | 3 | 0 | 3 | Yes |
 | `components/number-range/useNumberRange.ts` | 72 | 0 | 72 | Yes |
+| `components/platform/ClientConnectionGate.tsx` | 171 | 0 | 171 | Yes |
+| `components/platform/DesktopInteractionPolicy.tsx` | 14 | 0 | 14 | Yes |
+| `components/platform/ProductConnectionGate.tsx` | 36 | 0 | 36 | Yes |
+| `components/platform/ServerRuntimeGate.tsx` | 126 | 0 | 126 | Yes |
 | `components/readiness/ReadinessNotice.tsx` | 11 | 0 | 11 | Yes |
-| `components/tax/compliance-editor/ComplianceProfileEditor.tsx` | 422 | 0 | 422 | Yes |
+| `components/tax/compliance-editor/ComplianceProfileEditor.tsx` | 423 | 0 | 423 | Yes |
 | `components/tax/compliance-editor/FormatEditor.tsx` | 114 | 0 | 114 | Yes |
 | `components/tax/compliance-editor/index.ts` | 5 | 0 | 5 | Yes |
 | `components/tax/compliance-editor/types.ts` | 25 | 0 | 25 | Yes |
 | `components/tax/compliance-editor/utils.ts` | 67 | 0 | 67 | Yes |
 | `components/tax/index.ts` | 4 | 0 | 4 | Yes |
-| `components/tax/TaxBreakdown.tsx` | 34 | 0 | 34 | Yes |
+| `components/tax/TaxBreakdown.tsx` | 35 | 0 | 35 | Yes |
 | `components/template-editor/index.ts` | 4 | 0 | 4 | Yes |
 | `components/template-editor/TemplateEditor.tsx` | 248 | 0 | 248 | Yes |
 | `components/template-editor/types.ts` | 6 | 0 | 6 | Yes |
@@ -400,6 +409,7 @@
 | `components/ui/BadgeLabel.tsx` | 18 | 0 | 18 | Yes |
 | `components/ui/Button.tsx` | 38 | 0 | 38 | Yes |
 | `components/ui/checkbox.tsx` | 5 | 0 | 5 | Yes |
+| `components/ui/DataImportWorkspace.tsx` | 245 | 0 | 244 | Yes |
 | `components/ui/DatePicker.tsx` | 83 | 0 | 83 | Yes |
 | `components/ui/Dialog.tsx` | 31 | 0 | 31 | Yes |
 | `components/ui/DocumentPreview.tsx` | 24 | 0 | 24 | Yes |
@@ -409,7 +419,7 @@
 | `components/ui/FilterSection.tsx` | 10 | 0 | 10 | Yes |
 | `components/ui/FloatingActionBar.tsx` | 16 | 0 | 16 | Yes |
 | `components/ui/GroupPassword.tsx` | 11 | 0 | 11 | Yes |
-| `components/ui/index.ts` | 52 | 0 | 52 | Yes |
+| `components/ui/index.ts` | 54 | 0 | 54 | Yes |
 | `components/ui/input-error.tsx` | 3 | 0 | 3 | Yes |
 | `components/ui/Input.tsx` | 39 | 0 | 39 | Yes |
 | `components/ui/InvoiceDetailsDialog.tsx` | 86 | 0 | 86 | Yes |
@@ -417,13 +427,13 @@
 | `components/ui/Label.tsx` | 3 | 0 | 3 | Yes |
 | `components/ui/Logo.tsx` | 30 | 0 | 30 | Yes |
 | `components/ui/NumberInput.tsx` | 16 | 0 | 16 | Yes |
-| `components/ui/OperationalReportsWorkspace.tsx` | 261 | 0 | 261 | Yes |
+| `components/ui/OperationalReportsWorkspace.tsx` | 306 | 0 | 306 | Yes |
 | `components/ui/Pagination.tsx` | 15 | 0 | 15 | Yes |
 | `components/ui/PasswordInput.tsx` | 37 | 0 | 37 | Yes |
 | `components/ui/ProductPurchases.tsx` | 394 | 0 | 394 | Yes |
 | `components/ui/ProductSales.tsx` | 459 | 0 | 459 | Yes |
 | `components/ui/PurchaseReturnDialog.tsx` | 97 | 0 | 97 | Yes |
-| `components/ui/QuotationWorkspace.tsx` | 218 | 0 | 218 | Yes |
+| `components/ui/QuotationWorkspace.tsx` | 220 | 0 | 220 | Yes |
 | `components/ui/RadioGroup.tsx` | 13 | 0 | 13 | Yes |
 | `components/ui/SalesReturnDialog.tsx` | 97 | 0 | 97 | Yes |
 | `components/ui/SearchableSelect.tsx` | 36 | 0 | 36 | Yes |
@@ -431,7 +441,7 @@
 | `components/ui/select.tsx` | 18 | 0 | 18 | Yes |
 | `components/ui/SelectableInvoiceTable.tsx` | 62 | 0 | 62 | Yes |
 | `components/ui/SelectableTable.tsx` | 30 | 0 | 30 | Yes |
-| `components/ui/ServiceSales.tsx` | 433 | 0 | 433 | Yes |
+| `components/ui/ServiceSales.tsx` | 434 | 0 | 434 | Yes |
 | `components/ui/SessionExpiredModal.tsx` | 25 | 0 | 25 | Yes |
 | `components/ui/StatsCard.tsx` | 20 | 0 | 20 | Yes |
 | `components/ui/switch.tsx` | 40 | 0 | 40 | Yes |
@@ -442,20 +452,24 @@
 | `components/ui/Toggle.tsx` | 23 | 0 | 23 | Yes |
 | `components/ui/ToggleGroup.tsx` | 23 | 0 | 23 | Yes |
 | `components/ui/Tooltip.tsx` | 13 | 0 | 13 | Yes |
-| `lib/api.ts` | 42 | 0 | 42 | Yes |
+| `lib/api.ts` | 43 | 0 | 43 | Yes |
 | `lib/auth.ts` | 62 | 0 | 62 | Yes |
+| `lib/connection/client-connection.ts` | 117 | 0 | 117 | Yes |
+| `lib/connection/desktop-credential-vault.ts` | 21 | 0 | 21 | Yes |
 | `lib/endpoints.ts` | 2 | 0 | 2 | Yes |
 | `lib/endpoints/assets.ts` | 1 | 0 | 1 | Yes |
-| `lib/endpoints/auth.ts` | 3 | 0 | 3 | Yes |
+| `lib/endpoints/auth.ts` | 5 | 0 | 5 | Yes |
 | `lib/endpoints/commercial.ts` | 41 | 0 | 41 | Yes |
-| `lib/endpoints/enterprise-core.ts` | 58 | 0 | 58 | Yes |
+| `lib/endpoints/enterprise-core.ts` | 59 | 0 | 59 | Yes |
 | `lib/endpoints/finance.ts` | 51 | 0 | 51 | Yes |
 | `lib/endpoints/human-capital.ts` | 128 | 0 | 128 | Yes |
 | `lib/endpoints/index.ts` | 20 | 0 | 20 | Yes |
 | `lib/endpoints/intelligence.ts` | 7 | 0 | 7 | Yes |
 | `lib/endpoints/platform.ts` | 27 | 0 | 27 | Yes |
-| `lib/endpoints/supply-chain.ts` | 6 | 0 | 6 | Yes |
+| `lib/endpoints/supply-chain.ts` | 7 | 0 | 7 | Yes |
 | `lib/icons.tsx` | 184 | 0 | 184 | Yes |
+| `lib/imports/import-model.ts` | 19 | 0 | 19 | Yes |
+| `lib/imports/product-field-registry.ts` | 100 | 0 | 99 | Yes |
 | `lib/invoice-utils.ts` | 44 | 0 | 44 | Yes |
 | `lib/navigation/assets.config.ts` | 33 | 0 | 33 | Yes |
 | `lib/navigation/commercial.config.ts` | 210 | 0 | 210 | Yes |
@@ -468,11 +482,16 @@
 | `lib/navigation/platform.config.ts` | 48 | 0 | 48 | Yes |
 | `lib/navigation/projects.config.ts` | 55 | 0 | 55 | Yes |
 | `lib/navigation/supply-chain.config.ts` | 193 | 0 | 193 | Yes |
+| `lib/product-flavor.ts` | 29 | 0 | 29 | Yes |
+| `lib/server-desktop-updater.ts` | 12 | 0 | 12 | Yes |
+| `lib/server-readiness.ts` | 14 | 0 | 14 | Yes |
+| `lib/server-runtime.ts` | 8 | 0 | 8 | Yes |
 | `lib/settings.ts` | 1 | 0 | 1 | Yes |
 | `lib/utils.ts` | 96 | 0 | 96 | Yes |
 | `stores/factories/createCRUDStore.ts` | 30 | 0 | 30 | Yes |
 | `stores/index.ts` | 14 | 0 | 14 | Yes |
-| `stores/useAuthStore.ts` | 40 | 0 | 40 | Yes |
+| `stores/useAuthStore.ts` | 28 | 0 | 28 | Yes |
+| `stores/useClientConnectionStore.ts` | 21 | 0 | 21 | Yes |
 | `stores/useCustomerStore.ts` | 11 | 0 | 11 | Yes |
 | `stores/useEmployeeStore.ts` | 30 | 0 | 30 | Yes |
 | `stores/useErrorStore.ts` | 15 | 0 | 15 | Yes |

@@ -8,9 +8,13 @@ const sourcePath = path.join(root, "i18n", "catalog", "source.json");
 const englishPath = path.join(root, "i18n", "catalog", "en-US.json");
 const outputDirectory = path.join(root, "lib", "i18n", "catalog");
 const source = JSON.parse(fs.readFileSync(sourcePath, "utf8")) as { items: CatalogItem[] };
-const english = JSON.parse(fs.readFileSync(englishPath, "utf8")) as { translations: Record<string, string> };
+const english = JSON.parse(fs.readFileSync(englishPath, "utf8")) as {
+    translations: Record<string, string>;
+    messages?: Record<string, string>;
+};
+const englishTranslations = { ...english.translations, ...english.messages };
 
-const missing = source.items.filter((item) => !english.translations[item.id]);
+const missing = source.items.filter((item) => !englishTranslations[item.id]);
 if (missing.length > 0) throw new Error(`Cannot generate dictionaries: ${missing.length} English translations are missing.`);
 
 const ordered = [...source.items].sort((a, b) => a.id.localeCompare(b.id));
@@ -19,6 +23,6 @@ const render = (name: string, values: Record<string, string>) => `/* AUTO-GENERA
 const arabicValues = Object.fromEntries(ordered.map((item) => [item.id, item.source]));
 fs.mkdirSync(outputDirectory, { recursive: true });
 fs.writeFileSync(path.join(outputDirectory, "ar-SA.ts"), render("arCatalog", arabicValues));
-fs.writeFileSync(path.join(outputDirectory, "en-US.ts"), render("enCatalog", english.translations));
+fs.writeFileSync(path.join(outputDirectory, "en-US.ts"), render("enCatalog", englishTranslations));
 fs.writeFileSync(path.join(outputDirectory, "index.ts"), `export { arCatalog } from "./ar-SA";\nexport { enCatalog } from "./en-US";\nexport type CatalogKey = keyof typeof import("./ar-SA").arCatalog;\nexport type CatalogDictionary = Readonly<Record<CatalogKey, string>>;\n`);
 console.log(`i18n dictionaries: generated ${ordered.length} Arabic and English catalog entries`);

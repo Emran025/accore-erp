@@ -47,6 +47,7 @@ Route::group(['prefix' => 'chart-of-accounts', 'middleware' => 'can:chart_of_acc
     Route::get('/', [ChartOfAccountsController::class, 'index'])->name('v2.coa.index');
     Route::get('/balances', [ChartOfAccountsController::class, 'balances'])->name('v2.coa.balances');
     Route::middleware(['can:chart_of_accounts,create', 'throttle:api-write'])->post('/', [ChartOfAccountsController::class, 'store'])->name('v2.coa.store');
+    Route::middleware(['can:chart_of_accounts,create', 'throttle:api-write'])->post('/standard', [ChartOfAccountsController::class, 'ensureStandard'])->name('v2.coa.standard');
     Route::middleware(['can:chart_of_accounts,edit', 'throttle:api-write'])->put('/{id}', [ChartOfAccountsController::class, 'update'])->name('v2.coa.update');
     Route::middleware(['can:chart_of_accounts,delete', 'throttle:api-delete'])->delete('/{id}', [ChartOfAccountsController::class, 'destroy'])->name('v2.coa.destroy');
 });
@@ -171,4 +172,3 @@ Route::group(['prefix' => 'zatca'], function () {
     Route::post('/invoices/{id}/submit', [ZATCAInvoiceController::class, 'submit'])->name('v2.zatca.submit');
     Route::get('/invoices/{id}/status', [ZATCAInvoiceController::class, 'getStatus'])->name('v2.zatca.status');
 });
-

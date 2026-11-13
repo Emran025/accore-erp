@@ -301,10 +301,10 @@ export function GovernmentFeesTab() {
                         {i18n.catalog["finance.governmentfees.addNewTaxFeeCondition"]}</Button>
                 }
             />
-            {authorities.length === 0 && !isLoading && (
+            {/* {authorities.length === 0 && !isLoading && (
                 <div className="alert alert-warning">
                     {i18n.catalog["finance.governmentfees.pleaseFirstEnsureTaxAuthorityIsEnabledConfigured"]}</div>
-            )}
+            )} */}
 
             <Table
                 columns={columns}

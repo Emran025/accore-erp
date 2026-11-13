@@ -23,20 +23,17 @@ class AnalyzeInferenceAction
         // 1. Extract signals from text and structured inputs
         $signals = $this->signalExtractor->extract($data);
 
-        // 2. Score archetypes and formulate explainability rationale
+        // 2. Score archetypes, formulate explainability rationale, and generate adaptive questions.
+        // Note: evaluate() already embeds 'adaptive_questions' in its return value.
         $evaluation = $this->scoringEngine->evaluate($signals);
 
-        // 3. Formulate adaptive follow-up questions
-        $adaptiveQuestions = $this->scoringEngine->generateAdaptiveQuestions($evaluation, $signals);
-
-        // 4. Synthesize initial organization blueprint
-        $orgName = $signals['company_name'] ?: ($data['company_name'] ?? 'Enterprise Organization');
-        $blueprint = $this->synthesizer->synthesize($evaluation, $signals, $orgName);
+        // 3. Synthesize initial organization blueprint
+        $blueprint = $this->synthesizer->synthesize($signals, $evaluation);
 
         return [
             'signals'            => $signals,
             'evaluation'         => $evaluation,
-            'adaptive_questions' => $adaptiveQuestions,
+            'adaptive_questions' => $evaluation['adaptive_questions'] ?? [],
             'blueprint'          => $blueprint,
         ];
     }

@@ -119,57 +119,59 @@ export function SetupOrganizationProfileSection({
             <p>{i18n.catalog["enterpriseCore.setup.profile.companyDetails.description"]}</p>
           </div>
         </div>
-        <div className="settings-form-grid setup-form-grid">
-          <SetupField id="setup-organization-size" label={i18n.catalog["enterpriseCore.setup.profile.field.organizationSize"]} required>
+        <div className="space-y-4">
+          <SetupField id="setup-organization-size" label={i18n.catalog["enterpriseCore.setup.profile.field.organizationSize"]} required className="full-width">
             <SegmentedToggle
               value={draft.organization_size}
               options={sizeLabels}
               onChange={(value) => onChange({ organization_size: value as OrganizationSize })}
             />
           </SetupField>
-          <SetupField id="setup-company-name" label={i18n.catalog["enterpriseCore.setup.profile.field.companyName"]} required>
-            <Input
-              id="setup-company-name"
-              className="setup-input"
-              value={draft.company_name}
-              onChange={(event) => onChange({ company_name: event.target.value })}
-              disabled={isApplied}
-              required
-            />
-          </SetupField>
-          <SetupField id="setup-company-code" label={i18n.catalog["enterpriseCore.setup.profile.field.companyCode"]} required>
-            <Input
-              id="setup-company-code"
-              className="setup-input"
-              dir="ltr"
-              value={draft.company_code}
-              onChange={(event) => onChange({ company_code: normalizeCode(event.target.value) })}
-              disabled={isApplied}
-              required
-            />
-          </SetupField>
-          <SetupField id="setup-country-code" label={i18n.catalog["enterpriseCore.setup.profile.field.country"]} required>
-            <Input
-              id="setup-country-code"
-              className="setup-input"
-              dir="ltr"
-              maxLength={2}
-              value={draft.country_code}
-              onChange={(event) => onChange({ country_code: event.target.value.toUpperCase() })}
-              disabled={isApplied}
-              required
-            />
-          </SetupField>
-          <SetupField id="setup-profile-currency" label={i18n.catalog["enterpriseCore.setup.profile.field.currency"]} required>
-            <SearchableSelect
-              id="setup-profile-currency"
-              className="setup-select"
-              value={draft.currency_id || null}
-              options={currencyOptions}
-              onChange={(value) => onChange({ currency_id: typeof value === "number" ? value : Number(value) || 0 })}
-              disabled={isApplied}
-            />
-          </SetupField>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <SetupField id="setup-company-name" label={i18n.catalog["enterpriseCore.setup.profile.field.companyName"]} required>
+              <Input
+                id="setup-company-name"
+                className="setup-input"
+                value={draft.company_name}
+                onChange={(event) => onChange({ company_name: event.target.value })}
+                disabled={isApplied}
+                required
+              />
+            </SetupField>
+            <SetupField id="setup-company-code" label={i18n.catalog["enterpriseCore.setup.profile.field.companyCode"]} required>
+              <Input
+                id="setup-company-code"
+                className="setup-input"
+                dir="ltr"
+                value={draft.company_code}
+                onChange={(event) => onChange({ company_code: normalizeCode(event.target.value) })}
+                disabled={isApplied}
+                required
+              />
+            </SetupField>
+            <SetupField id="setup-country-code" label={i18n.catalog["enterpriseCore.setup.profile.field.country"]} required>
+              <Input
+                id="setup-country-code"
+                className="setup-input"
+                dir="ltr"
+                maxLength={2}
+                value={draft.country_code}
+                onChange={(event) => onChange({ country_code: event.target.value.toUpperCase() })}
+                disabled={isApplied}
+                required
+              />
+            </SetupField>
+            <SetupField id="setup-profile-currency" label={i18n.catalog["enterpriseCore.setup.profile.field.currency"]} required>
+              <SearchableSelect
+                id="setup-profile-currency"
+                className="setup-select"
+                value={draft.currency_id || null}
+                options={currencyOptions}
+                onChange={(value) => onChange({ currency_id: typeof value === "number" ? value : Number(value) || 0 })}
+                disabled={isApplied}
+              />
+            </SetupField>
+          </div>
         </div>
       </section>
 
@@ -182,7 +184,7 @@ export function SetupOrganizationProfileSection({
               <p>{i18n.catalog["enterpriseCore.setup.profile.siteDetails.description"]}</p>
             </div>
           </div>
-          <div className="settings-form-grid setup-form-grid">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <SetupField id="setup-primary-site-name" label={i18n.catalog["enterpriseCore.setup.profile.field.siteName"]} required>
               <Input
                 id="setup-primary-site-name"
