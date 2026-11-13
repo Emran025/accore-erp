@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { showToast } from "@/components/ui";
 import { fetchAPI } from "@/lib/api";
@@ -59,6 +59,8 @@ export default function SetupPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [hasDraftData, setHasDraftData] = useState(false);
+  const [isStaleState, setIsStaleState] = useState(false);
+  const prevSetupStateRef = useRef<SetupState | null>(null);
   const [readiness, setReadiness] = useState<Readiness | null>(null);
   const [setupState, setSetupState] = useState<SetupState | null>(null);
   const [costCenters, setCostCenters] = useState<Item[]>([]);
@@ -170,6 +172,10 @@ export default function SetupPage() {
 
       setReadiness(readinessResponse.success ? readinessResponse.data ?? null : null);
       const state = setupResponse.success ? setupResponse.data ?? null : null;
+      if (detectStaleSetupState(prevSetupStateRef.current, state)) {
+        setIsStaleState(true);
+      }
+      prevSetupStateRef.current = state;
       setSetupState(state);
       setSelectedModuleKeys(state?.selected_module_keys.length ? state.selected_module_keys : state?.onboarding?.starter_module_keys ?? []);
       setJourneyStep(getNextSetupJourneyStep(state));
@@ -632,9 +638,14 @@ export default function SetupPage() {
 
   return (
     <div className="settings-wrapper setup-workflow space-y-6">
+      {isStaleState ? (
+        <div className="setup-stale-banner" role="alert" aria-live="assertive">
+          {i18n.catalog["enterpriseCore.setup.staleStateBanner"]}
+        </div>
+      ) : null}
       {hasDraftData ? (
         <div className="setup-draft-banner" role="status" aria-live="polite">
-          {"You have unsaved work — save and continue to confirm progress"}
+          {i18n.catalog["enterpriseCore.setup.draftBanner"]}
         </div>
       ) : null}
       <SetupReadinessSummary

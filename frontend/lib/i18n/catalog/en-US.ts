@@ -1923,6 +1923,8 @@ export const enCatalog = {
     "enterpriseCore.setup.coa.statusApproved": "Chart of Accounts approved successfully ({value0} accounts registered)",
     "enterpriseCore.setup.complete": "Complete",
     "enterpriseCore.setup.createdSuccessfully": "Configuration saved successfully.",
+    "enterpriseCore.setup.draftBanner": "You have unsaved work — save and continue to confirm progress",
+    "enterpriseCore.setup.staleStateBanner": "Setup data has changed since you last loaded this page. Refresh to continue with the latest state.",
     "enterpriseCore.setup.failedToLoad": "Unable to load configuration data.",
     "enterpriseCore.setup.failedToSave": "Unable to save configuration. Review the required fields and structural links.",
     "enterpriseCore.setup.incomplete": "Incomplete",

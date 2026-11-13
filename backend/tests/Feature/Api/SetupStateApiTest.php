@@ -160,25 +160,42 @@ class SetupStateApiTest extends TestCase
     public function test_requirement_queue_is_deterministic_deduplicated_and_conditional(): void
     {
         $readiness = app(ModuleReadinessService::class);
+
+        // With the default guided_setup profile, sales+purchases do NOT trigger
+        // retail-conditional requirements (warehouse, pos_terminal, PLANT, etc.)
         $queue = $readiness->resolveRequirementQueue(['sales', 'purchases', 'sales']);
         $this->assertSame($queue, $readiness->resolveRequirementQueue(['sales', 'purchases', 'sales']));
         $keys = array_column($queue, 'key');
         $phases = array_values(array_unique(array_column($queue, 'phase')));
 
+        // No duplicates
         $this->assertCount(count(array_unique($keys)), $keys);
-        $this->assertSame(['common_organization', 'cross_family', 'module_specific'], $phases);
+        // With guided_setup profile, only common_organization and cross_family phases appear
+        // (working_unit is cross_family; module_specific only appears for retail/service profiles)
+        $this->assertContains('common_organization', $phases);
+        $this->assertContains('cross_family', $phases);
+        // warehouse and pos_terminal are retail-conditional; not present for guided_setup
+        $this->assertNotContains('pos_terminal', $keys);
+        $this->assertNotContains('warehouse', $keys);
         $this->assertEqualsCanonicalizing(
             ['sales', 'purchases'],
             collect($queue)->firstWhere('key', 'node_type:COMP_CODE')['required_by_module_keys']
         );
-        $this->assertContains('pos_terminal', $keys);
-        $this->assertContains('warehouse', $keys);
 
+        // Now switch to single_store_retail — retail requirements appear
         Setting::updateOrCreate(
             ['setting_key' => OrganizationTemplateService::PROFILE_KEY],
             ['setting_value' => json_encode(['template_key' => 'single_store_retail'], JSON_THROW_ON_ERROR)]
         );
+        $retailQueue = $readiness->resolveRequirementQueue(['sales', 'purchases']);
+        $retailKeys  = array_column($retailQueue, 'key');
+        $retailPhases = array_values(array_unique(array_column($retailQueue, 'phase')));
+        $this->assertContains('pos_terminal', $retailKeys);
+        $this->assertContains('warehouse', $retailKeys);
+        $this->assertSame(['common_organization', 'cross_family', 'module_specific'], $retailPhases);
 
+        // Finance-only and HR-only should never surface retail/supply requirements
+        // even when the profile is retail (non-applicable modules filter them out)
         foreach (['general_ledger', 'hr'] as $moduleKey) {
             $selected = $this->authPost(route('v2.setup.modules.select'), [
                 'module_keys' => [$moduleKey],

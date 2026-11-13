@@ -1923,6 +1923,8 @@ export const arCatalog = {
     "enterpriseCore.setup.coa.statusApproved": "تم اعتماد دليل الحسابات بنجاح ({value0} حساب مسجل)",
     "enterpriseCore.setup.complete": "مكتمل",
     "enterpriseCore.setup.createdSuccessfully": "تم حفظ التهيئة بنجاح.",
+    "enterpriseCore.setup.draftBanner": "لديك عمل غير محفوظ — احفظ وتابع لتأكيد التقدم",
+    "enterpriseCore.setup.staleStateBanner": "تغيّرت بيانات الإعداد منذ آخر تحميل للصفحة. أعد التحميل للمتابعة بأحدث حالة.",
     "enterpriseCore.setup.failedToLoad": "تعذر تحميل بيانات التهيئة.",
     "enterpriseCore.setup.failedToSave": "تعذر حفظ التهيئة. راجع الحقول المطلوبة والروابط الهيكلية.",
     "enterpriseCore.setup.incomplete": "غير مكتمل",

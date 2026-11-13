@@ -158,4 +158,31 @@ describe("profile-driven setup onboarding", () => {
     const workflow = source("app/setup/setup-workflow.ts");
     expect(workflow).toContain("export function detectStaleSetupState");
   });
+
+  it("page.tsx calls detectStaleSetupState at a call site inside the load callback", () => {
+    const page = source("app/setup/page.tsx");
+    // Must be a real call site, not just an import
+    expect(page).toContain("detectStaleSetupState(prevSetupStateRef.current");
+  });
+
+  it("page.tsx uses i18n catalog key for draft banner — no hardcoded English string", () => {
+    const page = source("app/setup/page.tsx");
+    expect(page).toContain('i18n.catalog["enterpriseCore.setup.draftBanner"]');
+    expect(page).not.toContain('"You have unsaved work');
+  });
+
+  it("page.tsx uses i18n catalog key for stale-state banner", () => {
+    const page = source("app/setup/page.tsx");
+    expect(page).toContain('i18n.catalog["enterpriseCore.setup.staleStateBanner"]');
+  });
+
+  it("en-US catalog contains enterpriseCore.setup.draftBanner key", () => {
+    const catalog = source("lib/i18n/catalog/en-US.ts");
+    expect(catalog).toContain('"enterpriseCore.setup.draftBanner"');
+  });
+
+  it("ar-SA catalog contains enterpriseCore.setup.draftBanner key", () => {
+    const catalog = source("lib/i18n/catalog/ar-SA.ts");
+    expect(catalog).toContain('"enterpriseCore.setup.draftBanner"');
+  });
 });

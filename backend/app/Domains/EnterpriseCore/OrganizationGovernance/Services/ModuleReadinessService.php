@@ -33,6 +33,7 @@ class ModuleReadinessService
     public function __construct(
         private readonly OrgStructureService $orgStructureService,
         private readonly OrganizationTemplateService $templates,
+        private readonly ModuleSetupRequirementRegistry $registry = new ModuleSetupRequirementRegistry(),
     ) {}
 
     public function evaluate(?int $userId = null, ?array $selectedModuleKeys = null): array
@@ -201,98 +202,32 @@ class ModuleReadinessService
     }
 
     /**
-     * Resolve one stable, deduplicated setup queue from the canonical module
-     * catalog. The foundation items reflect the existing global launch gate;
-     * module-specific scope is added only when a selected module declares it.
+     * Resolve one stable, deduplicated setup queue using the canonical
+     * ModuleSetupRequirementRegistry. Delegates entirely to the registry so
+     * that descriptor shape, phase order, conditions, and ownership are
+     * maintained in a single authoritative location.
+     *
+     * Unknown module keys are silently dropped by the Module query below,
+     * which prevents invalid keys from appearing in the queue.
      *
      * @param  list<string>  $moduleKeys
-     * @return list<array{key: string, phase: string, required_by_module_keys: list<string>}>
+     * @return list<array{key: string, phase: string, label_key: string, navigation_route_key: string|null, required_by_module_keys: list<string>, order: int, conflicts: list<string>, depends_on: list<string>}>
      */
     public function resolveRequirementQueue(array $moduleKeys): array
     {
-        $modules = Module::query()
+        // Validate against the live Module catalog — unknown keys are dropped.
+        $validKeys = Module::query()
             ->whereIn('module_key', array_values(array_unique($moduleKeys)))
-            ->orderBy('category')
-            ->orderBy('sort_order')
-            ->orderBy('module_key')
-            ->get();
+            ->pluck('module_key')
+            ->all();
 
-        if ($modules->isEmpty()) {
+        if ($validKeys === []) {
             return [];
         }
 
-        $selectedKeys = $modules->pluck('module_key')->all();
-        $queue = [];
-        $addRequirement = function (string $key, string $phase, array $requiredBy) use (&$queue): void {
-            if (! isset($queue[$key])) {
-                $queue[$key] = [
-                    'key' => $key,
-                    'phase' => $phase,
-                    'required_by_module_keys' => [],
-                ];
-            }
+        $profileKey = (string) ($this->templates->profile()['template_key'] ?? self::DEFAULT_ONBOARDING_PROFILE);
 
-            $owners = array_values(array_filter(
-                $requiredBy,
-                static fn (mixed $moduleKey): bool => is_string($moduleKey) && $moduleKey !== ''
-            ));
-            $queue[$key]['required_by_module_keys'] = array_values(array_unique([
-                ...$queue[$key]['required_by_module_keys'],
-                ...$owners,
-            ]));
-        };
-
-        $addRequirement('organizational_structure', 'common_organization', $selectedKeys);
-        foreach (self::FOUNDATION_NODE_TYPES as $nodeType) {
-            $addRequirement('node_type:'.$nodeType, 'common_organization', $selectedKeys);
-        }
-        $addRequirement('chart_of_accounts', 'cross_family', $selectedKeys);
-        $addRequirement('open_fiscal_period', 'cross_family', $selectedKeys);
-
-        $nodeTypeOwners = [];
-        foreach ($modules as $module) {
-            $moduleKey = (string) $module->module_key;
-            $requirements = $module->readiness_requirements ?? $this->defaultRequirements();
-
-            if ((bool) ($requirements['requires_org_structure'] ?? false)) {
-                $addRequirement('organizational_structure', 'common_organization', [$moduleKey]);
-            }
-            foreach (['requires_open_fiscal_period' => 'open_fiscal_period', 'requires_chart_of_accounts' => 'chart_of_accounts'] as $flag => $key) {
-                if ((bool) ($requirements[$flag] ?? false)) {
-                    $addRequirement($key, 'cross_family', [$moduleKey]);
-                }
-            }
-            if ((bool) ($requirements['requires_working_unit'] ?? false)) {
-                $addRequirement('working_unit', 'cross_family', [$moduleKey]);
-            }
-            if ((bool) ($requirements['requires_operating_context'] ?? false)) {
-                $addRequirement('operating_context', 'cross_family', [$moduleKey]);
-                $addRequirement('cost_center', 'cross_family', [$moduleKey]);
-                $addRequirement('warehouse', 'cross_family', [$moduleKey]);
-                $addRequirement('pos_terminal', 'cross_family', [$moduleKey]);
-            }
-
-            $requiredNodeTypes = $requirements['required_node_types'] ?? [];
-            foreach (is_array($requiredNodeTypes) ? $requiredNodeTypes : [] as $nodeType) {
-                if (is_string($nodeType) && $nodeType !== '') {
-                    $nodeTypeOwners[$nodeType][] = $moduleKey;
-                }
-            }
-        }
-
-        foreach ($nodeTypeOwners as $nodeType => $owners) {
-            $phase = in_array($nodeType, self::FOUNDATION_NODE_TYPES, true)
-                ? 'common_organization'
-                : 'module_specific';
-            $addRequirement('node_type:'.$nodeType, $phase, $owners);
-        }
-
-        foreach ($queue as &$requirement) {
-            sort($requirement['required_by_module_keys']);
-        }
-        unset($requirement);
-
-        return array_values($queue);
+        return $this->registry->resolve($validKeys, $profileKey);
     }
 
     /**

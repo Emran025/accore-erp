@@ -97,4 +97,55 @@ class FiscalPeriodsApiTest extends TestCase
         $this->assertSuccessResponse($response);
         $this->assertFalse($period->fresh()->is_locked);
     }
+
+    public function test_overlapping_period_is_rejected(): void
+    {
+        $response1 = $this->authPost(route('v2.fiscal_periods.store'), [
+            'period_name' => 'FY2028',
+            'start_date'  => '2028-01-01',
+            'end_date'    => '2028-12-31',
+        ]);
+        $this->assertSuccessResponse($response1);
+
+        // Attempt to create a period that fully overlaps
+        $response2 = $this->authPost(route('v2.fiscal_periods.store'), [
+            'period_name' => 'FY2028-DUP',
+            'start_date'  => '2028-01-01',
+            'end_date'    => '2028-12-31',
+        ]);
+
+        $response2->assertStatus(409);
+    }
+
+    public function test_adjacent_non_overlapping_periods_are_allowed(): void
+    {
+        $response1 = $this->authPost(route('v2.fiscal_periods.store'), [
+            'period_name' => 'FY2029-H1',
+            'start_date'  => '2029-01-01',
+            'end_date'    => '2029-06-30',
+        ]);
+        $this->assertSuccessResponse($response1);
+
+        // Immediately adjacent — start one day after the previous end
+        $response2 = $this->authPost(route('v2.fiscal_periods.store'), [
+            'period_name' => 'FY2029-H2',
+            'start_date'  => '2029-07-01',
+            'end_date'    => '2029-12-31',
+        ]);
+        $this->assertSuccessResponse($response2);
+
+        $this->assertDatabaseHas('fiscal_periods', ['period_name' => 'FY2029-H1']);
+        $this->assertDatabaseHas('fiscal_periods', ['period_name' => 'FY2029-H2']);
+    }
+
+    public function test_start_date_equal_to_or_after_end_date_is_rejected(): void
+    {
+        $response = $this->authPost(route('v2.fiscal_periods.store'), [
+            'period_name' => 'FY2030-INVALID',
+            'start_date'  => '2030-06-01',
+            'end_date'    => '2030-06-01',  // same day — end must be after start
+        ]);
+
+        $response->assertStatus(422);
+    }
 }

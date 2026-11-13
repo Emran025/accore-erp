@@ -61,4 +61,69 @@ class ModuleOperationalAccessTest extends TestCase
             ->assertJsonPath('code', 'MODULE_NOT_OPERATIONAL')
             ->assertJsonPath('module', 'purchases');
     }
+
+    public function test_hr_learning_route_is_blocked_when_hr_module_not_operational(): void
+    {
+        $this->authenticateUser();
+        Module::query()->where('module_key', 'hr')->update(['is_active' => false]);
+
+        $response = $this->authGet(route('v2.talent_dev.courses.index'));
+
+        $response->assertStatus(423)
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('code', 'MODULE_NOT_OPERATIONAL')
+            ->assertJsonPath('module', 'hr');
+    }
+
+    public function test_hr_leave_requests_route_is_blocked_when_hr_module_not_operational(): void
+    {
+        $this->authenticateUser();
+        Module::query()->where('module_key', 'hr')->update(['is_active' => false]);
+
+        $response = $this->authGet(route('v2.leave_requests.index'));
+
+        $response->assertStatus(423)
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('code', 'MODULE_NOT_OPERATIONAL')
+            ->assertJsonPath('module', 'hr');
+    }
+
+    public function test_hr_payroll_route_is_blocked_when_hr_module_not_operational(): void
+    {
+        $this->authenticateUser();
+        Module::query()->where('module_key', 'hr')->update(['is_active' => false]);
+
+        $response = $this->authGet(route('v2.payroll.cycles.index'));
+
+        $response->assertStatus(423)
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('code', 'MODULE_NOT_OPERATIONAL')
+            ->assertJsonPath('module', 'hr');
+    }
+
+    public function test_hr_employees_route_is_blocked_when_hr_module_not_operational(): void
+    {
+        $this->authenticateUser();
+        Module::query()->where('module_key', 'hr')->update(['is_active' => false]);
+
+        $response = $this->authGet(route('v2.employees.index'));
+
+        $response->assertStatus(423)
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('code', 'MODULE_NOT_OPERATIONAL')
+            ->assertJsonPath('module', 'hr');
+    }
+
+    public function test_hr_succession_route_is_blocked_when_hr_module_not_operational(): void
+    {
+        $this->authenticateUser();
+        Module::query()->where('module_key', 'hr')->update(['is_active' => false]);
+
+        $response = $this->authGet(route('v2.talent_dev.succession.index'));
+
+        $response->assertStatus(423)
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('code', 'MODULE_NOT_OPERATIONAL')
+            ->assertJsonPath('module', 'hr');
+    }
 }
