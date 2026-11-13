@@ -19,6 +19,7 @@
 | **[08](./08_ERP_INTEGRATION_AND_CAPABILITY_ARCHITECTURE.md)** | **ERP Integration & Capability Architecture** | Tri-layer decoupling: Organization Structure vs ERP Capabilities vs Operational Configuration. Cross-domain integration (GL, Sales, Inventory, HR, ZATCA). |
 | **[09](./09_TECHNICAL_ARCHITECTURE_PERSISTENCE_AND_VERSIONING.md)** | **Technical Architecture, Persistence, Versioning & Change Management** | Database DDL enhancements, transitive closure tables, recursive CTEs, temporal effective-dating algorithm, and RESTful v2 API contracts. |
 | **[10](./10_IMPLEMENTATION_MASTER_PLAN_AND_ACCEPTANCE_SPEC.md)** | **Implementation Master Plan & Acceptance Specification** | Phased engineering roadmap (Phases 1–5), WBS, formal acceptance criteria for Scenarios A through H, backward compatibility and migration. |
+| **[11](./11_SETUP_CONFIGURATION_BRANCH_REVIEW.md)** | **Setup Configuration Branch Review & Delivery Plan** | Reality check for `update-application-config`, remaining organization/finance/UI gaps, corrected architecture constraints, test evidence, and issue ownership. |
 
 ---
 
