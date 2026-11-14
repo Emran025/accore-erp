@@ -33,6 +33,7 @@ interface SetupAccountingSectionProps {
   periodReady: boolean;
   completeLabel: string;
   isSaving: boolean;
+  fieldErrors?: Record<string, string[]>;
   onAccountCodeChange: (value: string) => void;
   onAccountNameChange: (value: string) => void;
   onAccountTypeChange: (value: AccountType) => void;
@@ -71,6 +72,7 @@ export function SetupAccountingSection({
   periodReady,
   completeLabel,
   isSaving,
+  fieldErrors = {},
   onAccountCodeChange,
   onAccountNameChange,
   onAccountTypeChange,
@@ -85,6 +87,7 @@ export function SetupAccountingSection({
   existingPeriods = [],
 }: SetupAccountingSectionProps) {
   const { t: i18n } = useI18n();
+  const firstError = (field: string) => fieldErrors[field]?.[0];
 
   const [activeTab, setActiveTab] = useState<"chart" | "periods">("chart");
   const [calcMethod, setCalcMethod] = useState<"calendar" | "quarterly" | "hijri">("calendar");
@@ -215,7 +218,7 @@ export function SetupAccountingSection({
                 {i18n.catalog["enterpriseCore.setup.coa.customManagement"]}
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <SetupField id="setup-account-code" label={accountCodeLabel} required>
+                <SetupField id="setup-account-code" label={accountCodeLabel} required error={firstError("code")}>
                   <input
                     id="setup-account-code"
                     className="setup-input font-mono"
@@ -226,7 +229,7 @@ export function SetupAccountingSection({
                     required
                   />
                 </SetupField>
-                <SetupField id="setup-account-name" label={accountNameLabel} required>
+                <SetupField id="setup-account-name" label={accountNameLabel} required error={firstError("name")}>
                   <input
                     id="setup-account-name"
                     className="setup-input"
@@ -236,7 +239,7 @@ export function SetupAccountingSection({
                     required
                   />
                 </SetupField>
-                <SetupField id="setup-account-type" label={accountTypeLabel}>
+                <SetupField id="setup-account-type" label={accountTypeLabel} error={firstError("type")}>
                   <select
                     id="setup-account-type"
                     className="setup-input"
@@ -384,7 +387,7 @@ export function SetupAccountingSection({
               {i18n.catalog["enterpriseCore.setup.periods.manualEntryTitle"]}
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <SetupField id="setup-period-name" label={periodNameLabel} required>
+              <SetupField id="setup-period-name" label={periodNameLabel} required error={firstError("period_name")}>
                 <input
                   id="setup-period-name"
                   className="setup-input"
@@ -394,7 +397,7 @@ export function SetupAccountingSection({
                   required
                 />
               </SetupField>
-              <SetupField id="setup-period-start" label={startDateLabel} required>
+              <SetupField id="setup-period-start" label={startDateLabel} required error={firstError("start_date")}>
                 <input
                   id="setup-period-start"
                   className="setup-input"
@@ -404,7 +407,7 @@ export function SetupAccountingSection({
                   required
                 />
               </SetupField>
-              <SetupField id="setup-period-end" label={endDateLabel} required>
+              <SetupField id="setup-period-end" label={endDateLabel} required error={firstError("end_date")}>
                 <input
                   id="setup-period-end"
                   className="setup-input"

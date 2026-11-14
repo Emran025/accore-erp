@@ -40,6 +40,8 @@ export interface APIResponse<T = any> {
   message?: string;
   /** Stable semantic API message key, when the endpoint uses the shared localized response contract. */
   message_key?: string;
+  /** Field-level validation messages returned by Laravel. */
+  errors?: Record<string, string[]> | number;
   /** Response metadata, including the resolved endpoint locale. */
   meta?: { locale?: string; language_tag?: string; [key: string]: unknown };
   /** Primary record ID if applicable */
@@ -93,6 +95,20 @@ export function createApiRequestHeaders(options?: FetchOptions): Record<string, 
 
 function activeApiBase(): string | undefined {
   return PRODUCT_FLAVOR === 'client' ? getRuntimeClientApiBase() : API_BASE;
+}
+
+function validationErrorMap(value: unknown): Record<string, string[]> | undefined {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return undefined;
+  const result: Record<string, string[]> = {};
+  for (const [field, messages] of Object.entries(value)) {
+    if (Array.isArray(messages)) {
+      const strings = messages.filter((message): message is string => typeof message === 'string');
+      if (strings.length > 0) result[field] = strings;
+    } else if (typeof messages === 'string') {
+      result[field] = [messages];
+    }
+  }
+  return Object.keys(result).length > 0 ? result : undefined;
 }
 
 export async function fetchAPI<T = unknown>(
@@ -181,6 +197,7 @@ export async function fetchAPI<T = unknown>(
           message:
             errData.message ||
             catalogMessage('common.general.httpError', { value0: response.status }),
+          errors: validationErrorMap(errData.errors),
         };
       } catch {
         return {

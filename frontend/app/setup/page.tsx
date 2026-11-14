@@ -14,10 +14,11 @@ import { SetupReadinessSummary } from "./components/SetupReadinessSummary";
 import { SetupRequirementQueue } from "./components/SetupRequirementQueue";
 import { AdaptiveQuestionStepper, type AdaptiveQuestion } from "./components/AdaptiveQuestionStepper";
 import { BlueprintReviewCard, type BlueprintData, type EvaluationData } from "./components/BlueprintReviewCard";
-import type { AccountOption, CenterOption, FiscalPeriodOption, PosTerminalOption, WarehouseOption } from "./setup-api";
+import type { AccountOption, CenterOption, CurrencyOption, FactoryCalendarOption, FiscalPeriodOption, PosTerminalOption, WarehouseOption } from "./setup-api";
 import { setupApi, type SetupListPayload } from "./setup-api";
+import { omitSetupDraftSection, readSetupFormDraft, writeSetupFormDraft, type SetupFormDraft } from "./setup-draft";
 import type { Item, OrganizationProfile, OrgNode, Readiness, SetupState } from "./types";
-import { areSelectedModuleRequirementsReady, createSetupLoadSequence, detectStaleSetupState, getNextSetupJourneyStep, getSetupDirection, getSetupScopeCapabilities, hasServerConfirmedModuleSelection, isSetupLaunchReady } from "./setup-workflow";
+import { canNavigateToSetupStep, createSetupLoadSequence, detectStaleSetupState, getNextSetupJourneyStep, getSetupDirection, getSetupInferenceContextSignature, getSetupScopeCapabilities, hasActivatableSelectedModule, hasServerConfirmedModuleSelection, isSetupLaunchReady, resolveSetupReturnDestination } from "./setup-workflow";
 
 const accountTypes = ["asset", "liability", "equity", "revenue", "expense"] as const;
 type AccountType = (typeof accountTypes)[number];
@@ -50,6 +51,10 @@ function text<T extends object>(item: T, key: string): string {
   return typeof value === "string" || typeof value === "number" ? String(value) : "";
 }
 
+function answerSignature(answers: Record<string, unknown>): string {
+  return JSON.stringify(Object.fromEntries(Object.entries(answers).sort(([left], [right]) => left.localeCompare(right))));
+}
+
 export default function SetupPage() {
   const { t: i18n, locale } = useI18n();
   const router = useRouter();
@@ -59,40 +64,45 @@ export default function SetupPage() {
   const [hasDraftData, setHasDraftData] = useState(false);
   const [isStaleState, setIsStaleState] = useState(false);
   const [requestError, setRequestError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
+  const [formDraft, setFormDraft] = useState<SetupFormDraft>(() => readSetupFormDraft());
+  const formDraftRef = useRef(formDraft);
   const prevSetupStateRef = useRef<SetupState | null>(null);
   const prevReadinessRef = useRef<Readiness | null>(null);
   const loadSequenceRef = useRef(createSetupLoadSequence());
+  const inferenceRequestSequenceRef = useRef(0);
+  const pendingStepFocusRef = useRef(false);
   const [readiness, setReadiness] = useState<Readiness | null>(null);
   const [setupState, setSetupState] = useState<SetupState | null>(null);
   const [costCenters, setCostCenters] = useState<CenterOption[]>([]);
   const [profitCenters, setProfitCenters] = useState<CenterOption[]>([]);
   const [warehouses, setWarehouses] = useState<WarehouseOption[]>([]);
-  const [currencies, setCurrencies] = useState<Item[]>([]);
-  const [factoryCalendars, setFactoryCalendars] = useState<Item[]>([]);
+  const [currencies, setCurrencies] = useState<CurrencyOption[]>([]);
+  const [factoryCalendars, setFactoryCalendars] = useState<FactoryCalendarOption[]>([]);
   const [accounts, setAccounts] = useState<AccountOption[]>([]);
   const [periods, setPeriods] = useState<FiscalPeriodOption[]>([]);
   const [posTerminals, setPosTerminals] = useState<PosTerminalOption[]>([]);
   const [nodes, setNodes] = useState<OrgNode[]>([]);
-  const [selectedModuleKeys, setSelectedModuleKeys] = useState<string[]>([]);
+  const [selectedModuleKeys, setSelectedModuleKeys] = useState<string[]>(() => formDraft.moduleSelection?.selectedModuleKeys ?? []);
   const [journeyStep, setJourneyStep] = useState<SetupJourneyStepId>("module_selection");
-  const [organizationProfile, setOrganizationProfile] = useState<OrganizationProfile>(emptyOrganizationProfile);
-  const [selectedTemplateKey, setSelectedTemplateKey] = useState("");
+  const [organizationProfile, setOrganizationProfile] = useState<OrganizationProfile>(() => formDraft.organizationProfile?.profile ?? emptyOrganizationProfile);
+  const [selectedTemplateKey, setSelectedTemplateKey] = useState(() => formDraft.organizationProfile?.selectedTemplateKey ?? "");
 
-  const [accountCode, setAccountCode] = useState("");
-  const [accountName, setAccountName] = useState("");
-  const [accountType, setAccountType] = useState<AccountType>("asset");
-  const [periodName, setPeriodName] = useState("");
-  const [periodStart, setPeriodStart] = useState("");
-  const [periodEnd, setPeriodEnd] = useState("");
+  const [accountCode, setAccountCode] = useState(() => formDraft.account?.accountCode ?? "");
+  const [accountName, setAccountName] = useState(() => formDraft.account?.accountName ?? "");
+  const [accountType, setAccountType] = useState<AccountType>(() => formDraft.account?.accountType ?? "asset");
+  const [periodName, setPeriodName] = useState(() => formDraft.fiscalPeriod?.periodName ?? "");
+  const [periodStart, setPeriodStart] = useState(() => formDraft.fiscalPeriod?.periodStart ?? "");
+  const [periodEnd, setPeriodEnd] = useState(() => formDraft.fiscalPeriod?.periodEnd ?? "");
 
-  const [workingUnit, setWorkingUnit] = useState("");
+  const [workingUnit, setWorkingUnit] = useState(() => formDraft.operatingScope?.workingUnit ?? "");
   const lastAutoPopulatedWorkingUnitRef = useRef<string | null>(null);
-  const [workingUnitCode, setWorkingUnitCode] = useState("");
-  const [workingUnitName, setWorkingUnitName] = useState("");
-  const [warehouseId, setWarehouseId] = useState<number | null>(null);
-  const [costCenterId, setCostCenterId] = useState<number | null>(null);
-  const [profitCenterId, setProfitCenterId] = useState<number | null>(null);
-  const [posTerminalId, setPosTerminalId] = useState<number | null>(null);
+  const [workingUnitCode, setWorkingUnitCode] = useState(() => formDraft.workingUnitDetails?.workingUnitCode ?? "");
+  const [workingUnitName, setWorkingUnitName] = useState(() => formDraft.workingUnitDetails?.workingUnitName ?? "");
+  const [warehouseId, setWarehouseId] = useState<number | null>(() => formDraft.operatingScope?.warehouseId ?? null);
+  const [costCenterId, setCostCenterId] = useState<number | null>(() => formDraft.operatingScope?.costCenterId ?? null);
+  const [profitCenterId, setProfitCenterId] = useState<number | null>(() => formDraft.operatingScope?.profitCenterId ?? null);
+  const [posTerminalId, setPosTerminalId] = useState<number | null>(() => formDraft.operatingScope?.posTerminalId ?? null);
 
   // ── Intelligent Organization Setup state ────────────────────────────────────
   // Draft persistence: read stored values from localStorage on first render so
@@ -118,21 +128,49 @@ export default function SetupPage() {
     }
   };
 
+  const updateFormDraft = <K extends keyof SetupFormDraft,>(section: K, value: SetupFormDraft[K] | undefined) => {
+    setFormDraft((current) => value === undefined
+      ? omitSetupDraftSection(current, section)
+      : { ...current, [section]: value });
+  };
+
   const clearDraft = () => {
     if (typeof window !== "undefined") localStorage.removeItem(DRAFT_KEY);
-    setHasDraftData(false);
+    setLastDescription("");
+    setInferenceEvaluation(null);
+    setInferenceSignals(null);
+    setAdaptiveQuestions([]);
+    setQuestionAnswers({});
+    setSynthesizedBlueprint(null);
+    setStagedBlueprintUuid(null);
+    setInferenceContextSnapshot("");
+    setInferenceDescriptionSnapshot("");
+    setInferenceAnswersSnapshot("{}");
+    setHasDraftData(Object.keys(formDraftRef.current).length > 0);
   };
 
   const draft = readDraft();
 
-  // Set hasDraftData on mount: true if any inference key is stored
+  // Restore the saved-draft notice for both inference and ordinary setup forms.
   useEffect(() => {
     const stored = readDraft();
     setHasDraftData(
       Boolean(stored.lastDescription || stored.inferenceEvaluation || stored.synthesizedBlueprint || stored.stagedBlueprintUuid)
+        || Object.keys(readSetupFormDraft()).length > 0,
     );
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    formDraftRef.current = formDraft;
+    writeSetupFormDraft(formDraft);
+    const stored = readDraft();
+    setHasDraftData(
+      Object.keys(formDraft).length > 0
+        || Boolean(stored.lastDescription || stored.inferenceEvaluation || stored.synthesizedBlueprint || stored.stagedBlueprintUuid),
+    );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formDraft]);
 
   const [isInferenceLoading, setIsInferenceLoading] = useState(false);
   const [isStaging, setIsStaging] = useState(false);
@@ -144,6 +182,9 @@ export default function SetupPage() {
   const [questionAnswers, setQuestionAnswers] = useState<Record<string, unknown>>((draft.questionAnswers as Record<string, unknown>) ?? {});
   const [synthesizedBlueprint, setSynthesizedBlueprint] = useState<BlueprintData | null>((draft.synthesizedBlueprint as BlueprintData | undefined) ?? null);
   const [stagedBlueprintUuid, setStagedBlueprintUuid] = useState<string | null>((draft.stagedBlueprintUuid as string) ?? null);
+  const [inferenceContextSnapshot, setInferenceContextSnapshot] = useState<string>((draft.inferenceContextSnapshot as string | undefined) ?? "");
+  const [inferenceDescriptionSnapshot, setInferenceDescriptionSnapshot] = useState<string>((draft.inferenceDescriptionSnapshot as string | undefined) ?? "");
+  const [inferenceAnswersSnapshot, setInferenceAnswersSnapshot] = useState<string>((draft.inferenceAnswersSnapshot as string | undefined) ?? "{}");
 
   // Persist draft whenever any inference state changes
   useEffect(() => {
@@ -156,10 +197,17 @@ export default function SetupPage() {
         questionAnswers,
         synthesizedBlueprint,
         stagedBlueprintUuid,
+        inferenceContextSnapshot,
+        inferenceDescriptionSnapshot,
+        inferenceAnswersSnapshot,
       });
     }
+    setHasDraftData(
+      Object.keys(formDraftRef.current).length > 0
+        || Boolean(lastDescription || inferenceEvaluation || synthesizedBlueprint || stagedBlueprintUuid),
+    );
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lastDescription, inferenceEvaluation, inferenceSignals, adaptiveQuestions, questionAnswers, synthesizedBlueprint, stagedBlueprintUuid]);
+  }, [lastDescription, inferenceEvaluation, inferenceSignals, adaptiveQuestions, questionAnswers, synthesizedBlueprint, stagedBlueprintUuid, inferenceContextSnapshot, inferenceDescriptionSnapshot, inferenceAnswersSnapshot]);
 
   const load = useCallback(async (options: { navigate?: boolean; acknowledgeStale?: boolean; mutationConfirmed?: boolean } = {}) => {
     const requestId = loadSequenceRef.current.begin();
@@ -206,7 +254,7 @@ export default function SetupPage() {
 
       const firstSnapshot = prevSetupStateRef.current === null;
       const changed = detectStaleSetupState(prevSetupStateRef.current, state, prevReadinessRef.current, incomingReadiness);
-      if (changed && !options.mutationConfirmed) setIsStaleState(true);
+      if (changed && !options.mutationConfirmed && !options.acknowledgeStale) setIsStaleState(true);
       else if (options.acknowledgeStale || options.mutationConfirmed) setIsStaleState(false);
       setRequestError(null);
       prevSetupStateRef.current = state;
@@ -215,21 +263,45 @@ export default function SetupPage() {
       setSetupState(state);
       const hydrateDraftForms = firstSnapshot || options.navigate === true;
       if (hydrateDraftForms) {
-        setSelectedModuleKeys(state.selected_module_keys.length ? state.selected_module_keys : state.onboarding?.starter_module_keys ?? []);
+        const savedFormDraft = options.mutationConfirmed ? {} : formDraftRef.current;
+        setSelectedModuleKeys(savedFormDraft.moduleSelection?.selectedModuleKeys
+          ?? (state.selected_module_keys.length ? state.selected_module_keys : state.onboarding?.starter_module_keys ?? []));
         setJourneyStep(getNextSetupJourneyStep(state, incomingReadiness));
         const savedProfile = state.organization_template?.profile;
-        if (savedProfile) {
+        if (savedFormDraft.organizationProfile) {
+          setOrganizationProfile(savedFormDraft.organizationProfile.profile);
+          setSelectedTemplateKey(savedFormDraft.organizationProfile.selectedTemplateKey);
+        } else if (savedProfile) {
           setOrganizationProfile({ ...emptyOrganizationProfile, ...savedProfile });
           setSelectedTemplateKey(savedProfile.template_key);
         } else if (state.organization_template?.templates[0]) {
           setSelectedTemplateKey((current) => current || state.organization_template!.templates[0].key);
         }
         const context = incomingReadiness.context;
-        setWorkingUnit(context?.org_node_uuid ?? "");
-        setWarehouseId(context?.warehouse_id ?? null);
-        setCostCenterId(context?.cost_center_id ?? null);
-        setProfitCenterId(context?.profit_center_id ?? null);
-        setPosTerminalId(context?.pos_terminal_id ?? null);
+        const savedScope = savedFormDraft.operatingScope;
+        const restoredWorkingUnit = savedScope?.workingUnit ?? context?.org_node_uuid ?? "";
+        setWorkingUnit(restoredWorkingUnit);
+        setWarehouseId(savedScope ? savedScope.warehouseId : context?.warehouse_id ?? null);
+        setCostCenterId(savedScope ? savedScope.costCenterId : context?.cost_center_id ?? null);
+        setProfitCenterId(savedScope ? savedScope.profitCenterId : context?.profit_center_id ?? null);
+        setPosTerminalId(savedScope ? savedScope.posTerminalId : context?.pos_terminal_id ?? null);
+        if (savedFormDraft.workingUnitDetails) {
+          setWorkingUnitCode(savedFormDraft.workingUnitDetails.workingUnitCode);
+          setWorkingUnitName(savedFormDraft.workingUnitDetails.workingUnitName);
+          lastAutoPopulatedWorkingUnitRef.current = restoredWorkingUnit;
+        } else {
+          lastAutoPopulatedWorkingUnitRef.current = null;
+        }
+        if (savedFormDraft.account) {
+          setAccountCode(savedFormDraft.account.accountCode);
+          setAccountName(savedFormDraft.account.accountName);
+          setAccountType(savedFormDraft.account.accountType);
+        }
+        if (savedFormDraft.fiscalPeriod) {
+          setPeriodName(savedFormDraft.fiscalPeriod.periodName);
+          setPeriodStart(savedFormDraft.fiscalPeriod.periodStart);
+          setPeriodEnd(savedFormDraft.fiscalPeriod.periodEnd);
+        }
       }
       if (nodesResponse.success) setNodes(listFrom(nodesResponse).filter((node) => node.status === "active"));
       if (costsResponse.success) setCostCenters(listFrom(costsResponse).filter((item) => item.is_active !== false));
@@ -285,6 +357,23 @@ export default function SetupPage() {
 
   const templateState = setupState?.organization_template;
   const templateApplied = templateState?.is_applied === true;
+  const currentInferenceContextSignature = getSetupInferenceContextSignature(organizationProfile, selectedTemplateKey);
+  const serverProfile = templateState?.profile;
+  const serverInferenceContextSignature = serverProfile
+    ? getSetupInferenceContextSignature({ ...emptyOrganizationProfile, ...serverProfile }, serverProfile.template_key)
+    : null;
+  const currentInferenceContextRef = useRef(currentInferenceContextSignature);
+  useEffect(() => {
+    currentInferenceContextRef.current = currentInferenceContextSignature;
+  }, [currentInferenceContextSignature]);
+  const hasInferencePreview = Boolean(inferenceEvaluation || synthesizedBlueprint);
+  const inferenceContextIsStale = hasInferencePreview && (
+    inferenceContextSnapshot !== currentInferenceContextSignature
+    || (serverInferenceContextSignature !== null && inferenceContextSnapshot !== serverInferenceContextSignature)
+  );
+  const inferenceDescriptionIsStale = hasInferencePreview && inferenceDescriptionSnapshot !== lastDescription;
+  const inferenceAnswersAreStale = hasInferencePreview && inferenceAnswersSnapshot !== answerSignature(questionAnswers);
+  const inferencePreviewIsStale = inferenceContextIsStale || inferenceDescriptionIsStale || inferenceAnswersAreStale;
   const requirementQueue = useMemo(() => setupState?.requirement_queue ?? [], [setupState?.requirement_queue]);
   const scopeCapabilities = getSetupScopeCapabilities(requirementQueue);
   const activeNodes = useMemo(() => nodes.filter((node) => text(node, "node_type_id") === "COMP_CODE"), [nodes]);
@@ -355,22 +444,90 @@ export default function SetupPage() {
   const linkedCostCenterSummary = centerSummary(selectedCostCenterForScope, costCenters);
   const linkedProfitCenterSummary = centerSummary(selectedProfitCenterForScope, profitCenters);
   const currencyOptions = useMemo(() => currencies.map((currency) => ({
-    value: Number(currency.id),
-    label: [text(currency, "code"), text(currency, "name")].filter(Boolean).join(" — "),
+    value: currency.id,
+    label: [currency.code, currency.name].filter(Boolean).join(" — "),
   })), [currencies]);
   const calendarOptions = useMemo(() => factoryCalendars.map((calendar) => ({
-    value: Number(calendar.id),
-    label: [text(calendar, "code"), text(calendar, locale === "ar-SA" ? "name_ar" : "name")].filter(Boolean).join(" — "),
+    value: calendar.id,
+    label: [calendar.code, locale === "ar-SA" ? calendar.name_ar || calendar.name : calendar.name].filter(Boolean).join(" — "),
   })), [factoryCalendars, locale]);
 
-  const callAndReload = async <T,>(action: () => Promise<{ success?: boolean; message?: string; data?: T }>): Promise<T | null> => {
+  const clearFieldError = (field: string) => {
+    setFieldErrors((current) => {
+      if (!(field in current)) return current;
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
+  };
+
+  const updateOrganizationProfile = (changes: Partial<OrganizationProfile>) => {
+    const next = { ...organizationProfile, ...changes };
+    setOrganizationProfile(next);
+    updateFormDraft("organizationProfile", { profile: next, selectedTemplateKey });
+    Object.keys(changes).forEach(clearFieldError);
+  };
+
+  const updateOperatingScope = (changes: Partial<NonNullable<SetupFormDraft["operatingScope"]>>) => {
+    const next = {
+      workingUnit,
+      warehouseId,
+      costCenterId,
+      profitCenterId,
+      posTerminalId,
+      ...changes,
+    };
+    updateFormDraft("operatingScope", next);
+    if ("workingUnit" in changes) clearFieldError("org_node_uuid");
+    if ("warehouseId" in changes) clearFieldError("warehouse_id");
+    if ("costCenterId" in changes) clearFieldError("cost_center_id");
+    if ("profitCenterId" in changes) clearFieldError("profit_center_id");
+    if ("posTerminalId" in changes) clearFieldError("pos_terminal_id");
+  };
+
+  const updateWorkingUnitDetails = (changes: Partial<NonNullable<SetupFormDraft["workingUnitDetails"]>>) => {
+    const next = { workingUnitCode, workingUnitName, ...changes };
+    updateFormDraft("workingUnitDetails", next);
+    if ("workingUnitCode" in changes) clearFieldError("code");
+    if ("workingUnitName" in changes) clearFieldError("attributes.name");
+  };
+
+  const updateAccountDraft = (changes: Partial<NonNullable<SetupFormDraft["account"]>>) => {
+    updateFormDraft("account", { accountCode, accountName, accountType, ...changes });
+    if ("accountCode" in changes) clearFieldError("code");
+    if ("accountName" in changes) clearFieldError("name");
+    if ("accountType" in changes) clearFieldError("type");
+  };
+
+  const updateFiscalPeriodDraft = (changes: Partial<NonNullable<SetupFormDraft["fiscalPeriod"]>>) => {
+    updateFormDraft("fiscalPeriod", { periodName, periodStart, periodEnd, ...changes });
+    if ("periodName" in changes) clearFieldError("period_name");
+    if ("periodStart" in changes) clearFieldError("start_date");
+    if ("periodEnd" in changes) clearFieldError("end_date");
+  };
+
+  const callAndReload = async <T,>(
+    action: () => Promise<{ success?: boolean; message?: string; data?: T; errors?: Record<string, string[]> | number }>,
+    savedSection?: keyof SetupFormDraft,
+  ): Promise<T | null> => {
     setIsSaving(true);
     try {
       const response = await action();
-      if (!response.success) throw new Error(response.message);
+      if (!response.success) {
+        const validationErrors = typeof response.errors === "object" && response.errors !== null
+          ? response.errors
+          : {};
+        setFieldErrors(validationErrors);
+        if (Object.keys(validationErrors).length > 0 && typeof window !== "undefined") {
+          window.setTimeout(() => document.getElementById("setup-field-error-summary")?.focus(), 0);
+        }
+        throw new Error(response.message);
+      }
+      setFieldErrors({});
+      if (savedSection) updateFormDraft(savedSection, undefined);
       setRequestError(null);
       showToast(i18n.catalog["enterpriseCore.setup.createdSuccessfully"], "success");
-      await load({ navigate: true, mutationConfirmed: true });
+      await load({ mutationConfirmed: true });
       return response.data ?? null;
     } catch (error) {
       const message = error instanceof Error && error.message ? error.message : i18n.catalog["enterpriseCore.setup.failedToSave"];
@@ -383,8 +540,13 @@ export default function SetupPage() {
   };
 
   const handleAnalyzeInference = async (description: string) => {
+    const requestId = ++inferenceRequestSequenceRef.current;
+    const contextSnapshot = currentInferenceContextSignature;
     setIsInferenceLoading(true);
     setLastDescription(description);
+    setQuestionAnswers({});
+    setAdaptiveQuestions([]);
+    setRequestError(null);
     try {
       const res = await setupApi.analyzeSetup({
         description,
@@ -393,14 +555,23 @@ export default function SetupPage() {
         currency_id: organizationProfile.currency_id || undefined,
       });
 
+      if (requestId !== inferenceRequestSequenceRef.current) return;
+      if (contextSnapshot !== currentInferenceContextRef.current) {
+        setRequestError(i18n.catalog["enterpriseCore.setup.staleStateBanner"]);
+        return;
+      }
       if (res.success && res.data) {
         setInferenceEvaluation(res.data.evaluation);
         setInferenceSignals(res.data.signals);
         setAdaptiveQuestions(res.data.adaptive_questions || []);
         setSynthesizedBlueprint(res.data.blueprint ?? null);
+        setInferenceContextSnapshot(contextSnapshot);
+        setInferenceDescriptionSnapshot(description);
+        setInferenceAnswersSnapshot("{}");
         showToast("Structure inferred successfully", "success");
       } else {
         const message = res.message || "Failed to analyze business signals";
+        setFieldErrors(typeof res.errors === "object" && res.errors !== null ? res.errors : {});
         setRequestError(message);
         showToast(message, "error");
       }
@@ -409,28 +580,44 @@ export default function SetupPage() {
       setRequestError(message);
       showToast(message, "error");
     } finally {
-      setIsInferenceLoading(false);
+      if (requestId === inferenceRequestSequenceRef.current) setIsInferenceLoading(false);
     }
   };
 
   const handleApplyAnswers = async () => {
     if (!lastDescription) return;
+    const requestId = ++inferenceRequestSequenceRef.current;
+    const contextSnapshot = currentInferenceContextSignature;
+    const descriptionSnapshot = lastDescription;
+    const answersSnapshot = answerSignature(questionAnswers);
     setIsInferenceLoading(true);
+    setRequestError(null);
     try {
       const res = await setupApi.analyzeSetup({
         description: lastDescription,
         company_name: organizationProfile.company_name || undefined,
+        country_code: organizationProfile.country_code || "SA",
+        currency_id: organizationProfile.currency_id || undefined,
         structured: questionAnswers,
       });
 
+      if (requestId !== inferenceRequestSequenceRef.current) return;
+      if (contextSnapshot !== currentInferenceContextRef.current) {
+        setRequestError(i18n.catalog["enterpriseCore.setup.staleStateBanner"]);
+        return;
+      }
       if (res.success && res.data) {
         setInferenceEvaluation(res.data.evaluation);
         setInferenceSignals(res.data.signals);
         setAdaptiveQuestions(res.data.adaptive_questions || []);
         setSynthesizedBlueprint(res.data.blueprint ?? null);
+        setInferenceContextSnapshot(contextSnapshot);
+        setInferenceDescriptionSnapshot(descriptionSnapshot);
+        setInferenceAnswersSnapshot(answersSnapshot);
         showToast("Blueprint refined with answers", "success");
       } else {
         const message = res.message || "Failed to refine blueprint";
+        setFieldErrors(typeof res.errors === "object" && res.errors !== null ? res.errors : {});
         setRequestError(message);
         showToast(message, "error");
       }
@@ -439,12 +626,16 @@ export default function SetupPage() {
       setRequestError(message);
       showToast(message, "error");
     } finally {
-      setIsInferenceLoading(false);
+      if (requestId === inferenceRequestSequenceRef.current) setIsInferenceLoading(false);
     }
   };
 
   const handleStageBlueprint = async () => {
     if (!synthesizedBlueprint) return;
+    if (inferencePreviewIsStale || isStaleState) {
+      setRequestError(i18n.catalog["enterpriseCore.setup.staleStateBanner"]);
+      return;
+    }
     setIsStaging(true);
     try {
       const res = await setupApi.stageBlueprint({
@@ -472,6 +663,10 @@ export default function SetupPage() {
 
   const handlePublishBlueprint = async () => {
     if (!synthesizedBlueprint) return;
+    if (inferencePreviewIsStale || isStaleState) {
+      setRequestError(i18n.catalog["enterpriseCore.setup.staleStateBanner"]);
+      return;
+    }
     setIsPublishing(true);
     try {
       let uuid = stagedBlueprintUuid;
@@ -500,7 +695,7 @@ export default function SetupPage() {
         clearDraft();
         setRequestError(null);
         showToast(i18n.catalog["orgStudio.setup.publishedSuccess"], "success");
-        await load({ navigate: true, mutationConfirmed: true });
+        await load({ mutationConfirmed: true });
       } else {
         const message = pubRes.message || "Failed to compile organization";
         setRequestError(message);
@@ -516,11 +711,11 @@ export default function SetupPage() {
   };
 
   const saveOrganizationProfile = async () => {
-    await callAndReload(() => setupApi.saveOrganizationProfile({ ...organizationProfile, template_key: selectedTemplateKey }));
+    await callAndReload(() => setupApi.saveOrganizationProfile({ ...organizationProfile, template_key: selectedTemplateKey }), "organizationProfile");
   };
 
   const applyOrganizationTemplate = async () => {
-    await callAndReload(() => setupApi.applyOrganizationTemplate());
+    await callAndReload(() => setupApi.applyOrganizationTemplate(), "organizationProfile");
   };
 
   const createAccount = async () => {
@@ -532,7 +727,7 @@ export default function SetupPage() {
       code: accountCode.trim(),
       name: accountName.trim(),
       type: accountType,
-    }));
+    }), "account");
     if (saved) {
       setAccountCode("");
       setAccountName("");
@@ -548,7 +743,7 @@ export default function SetupPage() {
       period_name: periodName.trim(),
       start_date: periodStart,
       end_date: periodEnd,
-    }));
+    }), "fiscalPeriod");
     if (saved) {
       setPeriodName("");
       setPeriodStart("");
@@ -622,7 +817,7 @@ export default function SetupPage() {
       showToast(message, "error");
       return;
     }
-    await callAndReload(() => setupApi.configureOperatingContext(contextRequest));
+    await callAndReload(() => setupApi.configureOperatingContext(contextRequest), "operatingScope");
   };
 
   const saveWorkingUnit = async () => {
@@ -634,11 +829,11 @@ export default function SetupPage() {
     await callAndReload(() => setupApi.updateOrganizationNode(text(selectedWorkingUnitNode, "node_uuid"), {
       code: workingUnitCode.trim(),
       attributes: { ...currentAttributes, ...(workingUnitName.trim() ? { name: workingUnitName.trim() } : {}) },
-    }));
+    }), "workingUnitDetails");
   };
 
   const saveModuleSelection = async () => {
-    await callAndReload(() => setupApi.selectModules(selectedModuleKeys));
+    await callAndReload(() => setupApi.selectModules(selectedModuleKeys), "moduleSelection");
   };
 
   const activateSelectedModules = async () => {
@@ -648,7 +843,7 @@ export default function SetupPage() {
       const ready = Boolean(fresh)
         && fresh!.state.onboarding?.phases.foundation.ready === true
         && fresh!.state.onboarding?.phases.core_operations.ready === true
-        && areSelectedModuleRequirementsReady(fresh!.state);
+        && hasActivatableSelectedModule(fresh!.state);
       if (!fresh || !ready) {
         const message = i18n.catalog["enterpriseCore.setup.modules.pendingReadiness"];
         setRequestError(message);
@@ -659,7 +854,7 @@ export default function SetupPage() {
       if (!response.success) throw new Error(response.message);
       setRequestError(null);
       showToast(i18n.catalog["enterpriseCore.setup.createdSuccessfully"], "success");
-      await load({ navigate: true, mutationConfirmed: true });
+      await load({ mutationConfirmed: true });
     } catch (error) {
       const message = error instanceof Error && error.message ? error.message : i18n.catalog["enterpriseCore.setup.failedToSave"];
       setRequestError(message);
@@ -669,10 +864,7 @@ export default function SetupPage() {
     }
   };
 
-  // Protected return destination: validate returnTo to prevent open redirects
   const returnTo = searchParams.get("returnTo");
-  const isValidReturnTo = (path: string | null): path is string =>
-    typeof path === "string" && path.startsWith("/") && !path.startsWith("//") && !path.includes(":");
 
   const openDashboard = async () => {
     const fresh = await load();
@@ -682,13 +874,15 @@ export default function SetupPage() {
       showToast(message, "error");
       return;
     }
-    router.push(isValidReturnTo(returnTo) ? returnTo : "/01-enterprise-core/system-overview/dashboard/global-dashboard");
+    router.push(resolveSetupReturnDestination(returnTo, fresh.state));
   };
 
   const toggleModule = (moduleKey: string) => {
-    setSelectedModuleKeys((current) => current.includes(moduleKey)
-      ? current.filter((key) => key !== moduleKey)
-      : [...current, moduleKey]);
+    const next = selectedModuleKeys.includes(moduleKey)
+      ? selectedModuleKeys.filter((key) => key !== moduleKey)
+      : [...selectedModuleKeys, moduleKey];
+    setSelectedModuleKeys(next);
+    updateFormDraft("moduleSelection", { selectedModuleKeys: next });
   };
 
   const [foundationMode, setFoundationMode] = useState<"ai_studio" | "manual_template">("ai_studio");
@@ -715,7 +909,7 @@ export default function SetupPage() {
   const canActivateModules = moduleSelectionSaved
     && foundationComplete
     && operatingLinksComplete
-    && areSelectedModuleRequirementsReady(setupState);
+    && hasActivatableSelectedModule(setupState);
   const launchReady = isSetupLaunchReady(setupState);
 
   useEffect(() => {
@@ -726,6 +920,30 @@ export default function SetupPage() {
     if (journeyStep === "operating_links" && !foundationComplete) setJourneyStep("foundation");
     if (journeyStep === "optional_capabilities" && !operatingLinksComplete) setJourneyStep(foundationComplete ? "operating_links" : "foundation");
   }, [foundationComplete, journeyStep, moduleSelectionSaved, operatingLinksComplete]);
+
+  const navigateToStep = async (target: SetupJourneyStepId) => {
+    const fresh = await load();
+    if (!fresh) return;
+    if (!canNavigateToSetupStep(target, fresh.state, fresh.readiness)) {
+      const message = i18n.catalog["enterpriseCore.setup.modules.pendingReadiness"];
+      setRequestError(message);
+      showToast(message, "error");
+      return;
+    }
+    pendingStepFocusRef.current = true;
+    setJourneyStep(target);
+  };
+
+  useEffect(() => {
+    if (!pendingStepFocusRef.current) return;
+    pendingStepFocusRef.current = false;
+    const headingId = journeyStep === "foundation"
+      ? "setup-organization-profile-title"
+      : journeyStep === "operating_links"
+        ? "setup-operating-scope-title"
+        : "setup-modules-title";
+    window.requestAnimationFrame(() => document.getElementById(headingId)?.focus());
+  }, [journeyStep]);
 
   const accountTypeLabels = useMemo<Record<AccountType, string>>(() => ({
     asset: i18n.catalog["enterpriseCore.setup.accountType.asset"],
@@ -764,6 +982,63 @@ export default function SetupPage() {
     readinessLabels,
   ]);
 
+  const fieldErrorLabels = useMemo<Record<string, string>>(() => ({
+    template_key: i18n.catalog["enterpriseCore.setup.profile.templateChoice.title"],
+    organization_size: i18n.catalog["enterpriseCore.setup.profile.field.organizationSize"],
+    company_name: i18n.catalog["enterpriseCore.setup.profile.field.companyName"],
+    company_code: i18n.catalog["enterpriseCore.setup.profile.field.companyCode"],
+    country_code: i18n.catalog["enterpriseCore.setup.profile.field.country"],
+    currency_id: i18n.catalog["enterpriseCore.setup.profile.field.currency"],
+    primary_site_name: i18n.catalog["enterpriseCore.setup.profile.field.siteName"],
+    primary_site_code: i18n.catalog["enterpriseCore.setup.profile.field.siteCode"],
+    factory_calendar_id: i18n.catalog["enterpriseCore.setup.profile.field.siteCalendar"],
+    org_node_uuid: i18n.catalog["enterpriseCore.setup.scope.workingUnit"],
+    warehouse_id: i18n.catalog["enterpriseCore.setup.scope.warehouse"],
+    pos_terminal_id: i18n.catalog["enterpriseCore.setup.scope.pointOfSale"],
+    cost_center_id: i18n.catalog["enterpriseCore.setup.scope.costCenter"],
+    profit_center_id: i18n.catalog["enterpriseCore.setup.scope.profitCenter"],
+    period_name: i18n.catalog["enterpriseCore.setup.accounting.periodName"],
+    start_date: i18n.catalog["enterpriseCore.setup.accounting.startDate"],
+    end_date: i18n.catalog["enterpriseCore.setup.accounting.endDate"],
+    code: journeyStep === "operating_links"
+      ? i18n.catalog["enterpriseCore.setup.scope.workingUnitCode"]
+      : i18n.catalog["enterpriseCore.setup.accounting.accountCode"],
+    name: journeyStep === "operating_links"
+      ? i18n.catalog["enterpriseCore.setup.scope.workingUnitName"]
+      : i18n.catalog["enterpriseCore.setup.accounting.accountName"],
+    type: i18n.catalog["enterpriseCore.setup.accounting.accountType"],
+    "attributes.name": i18n.catalog["enterpriseCore.setup.scope.workingUnitName"],
+  }), [i18n.catalog, journeyStep]);
+
+  const focusFieldError = (field: string) => {
+    const targets: Record<string, string> = {
+      template_key: "setup-template-choice-heading",
+      organization_size: "setup-organization-size",
+      company_name: "setup-company-name",
+      company_code: "setup-company-code",
+      country_code: "setup-country-code",
+      currency_id: "setup-profile-currency",
+      primary_site_name: "setup-primary-site-name",
+      primary_site_code: "setup-primary-site-code",
+      factory_calendar_id: "setup-profile-calendar",
+      org_node_uuid: "setup-working-unit",
+      warehouse_id: scopeCapabilities.requiresPosTerminal ? "setup-pos-terminal" : "setup-warehouse",
+      pos_terminal_id: "setup-pos-terminal",
+      cost_center_id: scopeCapabilities.requiresWarehouse || scopeCapabilities.requiresPosTerminal ? "setup-pos-terminal" : "setup-cost-center",
+      profit_center_id: scopeCapabilities.requiresWarehouse || scopeCapabilities.requiresPosTerminal ? "setup-pos-terminal" : "setup-profit-center",
+      period_name: "setup-period-name",
+      start_date: "setup-period-start",
+      end_date: "setup-period-end",
+      code: journeyStep === "operating_links" ? "setup-working-unit-code" : "setup-account-code",
+      name: journeyStep === "operating_links" ? "setup-working-unit-name" : "setup-account-name",
+      type: "setup-account-type",
+      "attributes.name": "setup-working-unit-name",
+    };
+    const target = document.getElementById(targets[field] ?? "");
+    if (target instanceof HTMLElement) target.focus();
+    else document.getElementById("setup-field-error-summary")?.focus();
+  };
+
   const journeySteps = [
     {
       id: "module_selection" as const,
@@ -801,9 +1076,15 @@ export default function SetupPage() {
   return (
     <div className="settings-wrapper setup-workflow space-y-6" dir={getSetupDirection(locale)}>
       <SetupFeedbackMessages
-        staleMessage={isStaleState ? i18n.catalog["enterpriseCore.setup.staleStateBanner"] : undefined}
+        staleMessage={isStaleState
+          ? i18n.catalog["enterpriseCore.setup.staleStateBanner"]
+          : inferencePreviewIsStale ? i18n.catalog["enterpriseCore.setup.previewStale"] : undefined}
         draftMessage={hasDraftData ? i18n.catalog["enterpriseCore.setup.draftBanner"] : undefined}
         errorMessage={requestError}
+        fieldErrors={fieldErrors}
+        fieldErrorsTitle={i18n.catalog["enterpriseCore.setup.validation.summaryTitle"]}
+        fieldLabels={fieldErrorLabels}
+        onFocusField={focusFieldError}
       />
       <SetupReadinessSummary
         title={i18n.catalog["enterpriseCore.setup.title"]}
@@ -823,7 +1104,7 @@ export default function SetupPage() {
         progressLabel={i18n.catalog["enterpriseCore.setup.progress.title"]}
         formatCompletedCount={(completedCount, totalCount) => catalogText(i18n, "enterpriseCore.setup.progress.completed", { value0: completedCount, value1: totalCount })}
         canOpenDashboard={launchReady}
-        onRefresh={() => void load({ acknowledgeStale: true })}
+        onRefresh={() => void load({ navigate: true, acknowledgeStale: true })}
         onOpenDashboard={() => void openDashboard()}
         dynamicChecks={dynamicChecks}
         activeStepTitle={currentStepTitle}
@@ -845,16 +1126,16 @@ export default function SetupPage() {
         nextLabel={i18n.catalog["common.general.next"]}
         completeLabel={i18n.catalog["enterpriseCore.setup.complete"]}
         steps={journeySteps}
-        onStepSelect={setJourneyStep}
+        onStepSelect={navigateToStep}
         onPrevious={() => {
           const index = journeySteps.findIndex((step) => step.id === journeyStep);
           const previous = journeySteps[index - 1];
-          if (previous) setJourneyStep(previous.id);
+          if (previous) void navigateToStep(previous.id);
         }}
         onNext={() => {
           const index = journeySteps.findIndex((step) => step.id === journeyStep);
           const next = journeySteps[index + 1];
-          if (next?.enabled) setJourneyStep(next.id);
+          if (next?.enabled) void navigateToStep(next.id);
         }}
       />
       {journeyStep === "foundation" ? <>
@@ -868,11 +1149,15 @@ export default function SetupPage() {
             isSaving={isSaving}
             isApplied={templateApplied}
             canApply={templateState?.can_apply === true && Boolean(selectedTemplateKey)}
+            fieldErrors={fieldErrors}
             onTemplateChange={(templateKey) => {
               setSelectedTemplateKey(templateKey);
-              setOrganizationProfile((current) => ({ ...current, template_key: templateKey }));
+              const nextProfile = { ...organizationProfile, template_key: templateKey };
+              setOrganizationProfile(nextProfile);
+              updateFormDraft("organizationProfile", { profile: nextProfile, selectedTemplateKey: templateKey });
+              clearFieldError("template_key");
             }}
-            onChange={(changes) => setOrganizationProfile((current) => ({ ...current, ...changes }))}
+            onChange={updateOrganizationProfile}
             onSave={() => void saveOrganizationProfile()}
             onApply={() => void applyOrganizationTemplate()}
           />
@@ -886,6 +1171,8 @@ export default function SetupPage() {
               onPublish={handlePublishBlueprint}
               isStaging={isStaging}
               isPublishing={isPublishing}
+              isPreviewStale={inferencePreviewIsStale || isStaleState}
+              previewStaleMessage={i18n.catalog["enterpriseCore.setup.previewStale"]}
               deferredQuestions={adaptiveQuestions
                 .filter((q) => questionAnswers[q.id] === null)
                 .map((q) => ({ id: q.id, question: q.question, question_ar: q.question_ar }))}
@@ -920,12 +1207,13 @@ export default function SetupPage() {
             periodReady={readiness?.accounting_readiness?.open_fiscal_period.ready === true}
             completeLabel={i18n.catalog["enterpriseCore.setup.complete"]}
             isSaving={isSaving}
-            onAccountCodeChange={setAccountCode}
-            onAccountNameChange={setAccountName}
-            onAccountTypeChange={setAccountType}
-            onPeriodNameChange={setPeriodName}
-            onPeriodStartChange={setPeriodStart}
-            onPeriodEndChange={setPeriodEnd}
+            fieldErrors={fieldErrors}
+            onAccountCodeChange={(value) => { setAccountCode(value); updateAccountDraft({ accountCode: value }); }}
+            onAccountNameChange={(value) => { setAccountName(value); updateAccountDraft({ accountName: value }); }}
+            onAccountTypeChange={(value) => { setAccountType(value); updateAccountDraft({ accountType: value }); }}
+            onPeriodNameChange={(value) => { setPeriodName(value); updateFiscalPeriodDraft({ periodName: value }); }}
+            onPeriodStartChange={(value) => { setPeriodStart(value); updateFiscalPeriodDraft({ periodStart: value }); }}
+            onPeriodEndChange={(value) => { setPeriodEnd(value); updateFiscalPeriodDraft({ periodEnd: value }); }}
             onCreateAccount={() => void createAccount()}
             onCreatePeriod={() => void createPeriod()}
             onApproveDefaultChart={handleApproveDefaultChart}
@@ -986,17 +1274,20 @@ export default function SetupPage() {
           warehouseOptions={warehouseOptions}
           posOptions={posOptions}
           isSaving={isSaving}
+          fieldErrors={fieldErrors}
           onWorkingUnitChange={(value) => {
             setWorkingUnit(value);
+            updateOperatingScope({ workingUnit: value });
+            updateFormDraft("workingUnitDetails", undefined);
             if (!value) lastAutoPopulatedWorkingUnitRef.current = null;
           }}
-          onWorkingUnitCodeChange={setWorkingUnitCode}
-          onWorkingUnitNameChange={setWorkingUnitName}
+          onWorkingUnitCodeChange={(value) => { setWorkingUnitCode(value); updateWorkingUnitDetails({ workingUnitCode: value }); }}
+          onWorkingUnitNameChange={(value) => { setWorkingUnitName(value); updateWorkingUnitDetails({ workingUnitName: value }); }}
           onSaveWorkingUnit={() => void saveWorkingUnit()}
-          onWarehouseChange={setWarehouseId}
-          onCostCenterChange={setCostCenterId}
-          onProfitCenterChange={setProfitCenterId}
-          onPosTerminalChange={setPosTerminalId}
+          onWarehouseChange={(value) => { setWarehouseId(value); updateOperatingScope({ warehouseId: value }); }}
+          onCostCenterChange={(value) => { setCostCenterId(value); updateOperatingScope({ costCenterId: value }); }}
+          onProfitCenterChange={(value) => { setProfitCenterId(value); updateOperatingScope({ profitCenterId: value }); }}
+          onPosTerminalChange={(value) => { setPosTerminalId(value); updateOperatingScope({ posTerminalId: value }); }}
           onSave={() => void saveContext()}
         />
       ) : null}

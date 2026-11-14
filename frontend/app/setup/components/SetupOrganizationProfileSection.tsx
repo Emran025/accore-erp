@@ -17,6 +17,7 @@ interface SetupOrganizationProfileSectionProps {
   isSaving: boolean;
   isApplied: boolean;
   canApply: boolean;
+  fieldErrors?: Record<string, string[]>;
   onTemplateChange: (templateKey: string) => void;
   onChange: (changes: Partial<ProfileDraft>) => void;
   onSave: () => void;
@@ -55,6 +56,7 @@ export function SetupOrganizationProfileSection({
   isSaving,
   isApplied,
   canApply,
+  fieldErrors = {},
   onTemplateChange,
   onChange,
   onSave,
@@ -65,6 +67,7 @@ export function SetupOrganizationProfileSection({
   const selectedTemplate = templates.find((template) => template.key === selectedTemplateKey) ?? null;
   const requiresInventory = selectedTemplate?.requires_inventory === true;
   const templateLabel = (template: OrganizationTemplate) => isArabic ? template.label_ar : template.label_en;
+  const firstError = (field: string) => fieldErrors[field]?.[0];
   const sizeLabels = sizeOptions.map((option) => ({
     value: option.value,
     label: i18n.catalog[option.key],
@@ -84,10 +87,11 @@ export function SetupOrganizationProfileSection({
         <div className="setup-profile-heading">
           <span className="setup-profile-step">1</span>
           <div>
-            <h3 id="setup-template-choice-heading">{i18n.catalog["enterpriseCore.setup.profile.templateChoice.title"]}</h3>
+            <h3 id="setup-template-choice-heading" tabIndex={-1}>{i18n.catalog["enterpriseCore.setup.profile.templateChoice.title"]}</h3>
             <p>{i18n.catalog["enterpriseCore.setup.profile.templateChoice.description"]}</p>
           </div>
         </div>
+        {firstError("template_key") ? <p className="setup-field-error" role="alert">{firstError("template_key")}</p> : null}
         <div className="setup-template-grid" aria-label={i18n.catalog["enterpriseCore.setup.profile.templateChoice.ariaLabel"]}>
           {templates.map((template) => {
             const active = template.key === selectedTemplateKey;
@@ -120,7 +124,7 @@ export function SetupOrganizationProfileSection({
           </div>
         </div>
         <div className="space-y-4">
-          <SetupField id="setup-organization-size" label={i18n.catalog["enterpriseCore.setup.profile.field.organizationSize"]} required className="full-width">
+          <SetupField id="setup-organization-size" label={i18n.catalog["enterpriseCore.setup.profile.field.organizationSize"]} required className="full-width" error={firstError("organization_size")}>
             <SegmentedToggle
               value={draft.organization_size}
               options={sizeLabels}
@@ -128,7 +132,7 @@ export function SetupOrganizationProfileSection({
             />
           </SetupField>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <SetupField id="setup-company-name" label={i18n.catalog["enterpriseCore.setup.profile.field.companyName"]} required>
+            <SetupField id="setup-company-name" label={i18n.catalog["enterpriseCore.setup.profile.field.companyName"]} required error={firstError("company_name")}>
               <Input
                 id="setup-company-name"
                 className="setup-input"
@@ -138,7 +142,7 @@ export function SetupOrganizationProfileSection({
                 required
               />
             </SetupField>
-            <SetupField id="setup-company-code" label={i18n.catalog["enterpriseCore.setup.profile.field.companyCode"]} required>
+            <SetupField id="setup-company-code" label={i18n.catalog["enterpriseCore.setup.profile.field.companyCode"]} required error={firstError("company_code")}>
               <Input
                 id="setup-company-code"
                 className="setup-input"
@@ -149,7 +153,7 @@ export function SetupOrganizationProfileSection({
                 required
               />
             </SetupField>
-            <SetupField id="setup-country-code" label={i18n.catalog["enterpriseCore.setup.profile.field.country"]} required>
+            <SetupField id="setup-country-code" label={i18n.catalog["enterpriseCore.setup.profile.field.country"]} required error={firstError("country_code")}>
               <Input
                 id="setup-country-code"
                 className="setup-input"
@@ -161,7 +165,7 @@ export function SetupOrganizationProfileSection({
                 required
               />
             </SetupField>
-            <SetupField id="setup-profile-currency" label={i18n.catalog["enterpriseCore.setup.profile.field.currency"]} required>
+            <SetupField id="setup-profile-currency" label={i18n.catalog["enterpriseCore.setup.profile.field.currency"]} required error={firstError("currency_id")}>
               <SearchableSelect
                 id="setup-profile-currency"
                 className="setup-select"
@@ -185,7 +189,7 @@ export function SetupOrganizationProfileSection({
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <SetupField id="setup-primary-site-name" label={i18n.catalog["enterpriseCore.setup.profile.field.siteName"]} required>
+            <SetupField id="setup-primary-site-name" label={i18n.catalog["enterpriseCore.setup.profile.field.siteName"]} required error={firstError("primary_site_name")}>
               <Input
                 id="setup-primary-site-name"
                 className="setup-input"
@@ -195,7 +199,7 @@ export function SetupOrganizationProfileSection({
                 required
               />
             </SetupField>
-            <SetupField id="setup-primary-site-code" label={i18n.catalog["enterpriseCore.setup.profile.field.siteCode"]} required>
+            <SetupField id="setup-primary-site-code" label={i18n.catalog["enterpriseCore.setup.profile.field.siteCode"]} required error={firstError("primary_site_code")}>
               <Input
                 id="setup-primary-site-code"
                 className="setup-input"
@@ -206,7 +210,7 @@ export function SetupOrganizationProfileSection({
                 required
               />
             </SetupField>
-            <SetupField id="setup-profile-calendar" label={i18n.catalog["enterpriseCore.setup.profile.field.siteCalendar"]} required>
+            <SetupField id="setup-profile-calendar" label={i18n.catalog["enterpriseCore.setup.profile.field.siteCalendar"]} required error={firstError("factory_calendar_id")}>
               <SearchableSelect
                 id="setup-profile-calendar"
                 className="setup-select"

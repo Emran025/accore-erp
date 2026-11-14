@@ -7420,8 +7420,21 @@ body.nav-sidebar-is-collapsed .sidebar-toggle-btn {
 .setup-module-card.is-disabled { cursor: not-allowed; opacity: 0.62; }
 .setup-module-status.is-ready-to-activate { color: var(--primary-color); font-weight: 700; }
 .setup-module-card.is-disabled:hover { border-color: var(--border-color); box-shadow: none; }
+.setup-stale-banner, .setup-error-banner, .setup-draft-banner { overflow-wrap: anywhere; padding: 0.8rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.84rem; line-height: 1.55; }
+.setup-stale-banner, .setup-error-banner { border-color: rgba(220, 38, 38, 0.35); background: rgba(220, 38, 38, 0.07); color: #991b1b; }
+.setup-draft-banner { border-color: rgba(37, 99, 235, 0.28); background: var(--primary-subtle); color: var(--primary-dark); }
+.setup-error-summary { display: grid; gap: 0.55rem; padding: 1rem; border: 1px solid rgba(220, 38, 38, 0.4); border-inline-start-width: 4px; border-radius: var(--radius-md); background: rgba(220, 38, 38, 0.055); color: var(--text-primary); }
+.setup-error-summary:focus, .setup-section-header h3:focus, .setup-profile-heading h3:focus { outline: 2px solid var(--primary-color); outline-offset: 3px; }
+.setup-error-summary h2 { margin: 0; color: #991b1b; font-size: 0.95rem; }
+.setup-error-summary ul { display: grid; gap: 0.3rem; margin: 0; padding-inline-start: 1.25rem; }
+.setup-error-summary li { color: #991b1b; }
+.setup-error-summary button { padding: 0.15rem 0; border: 0; background: transparent; color: inherit; font: inherit; text-align: start; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.setup-error-summary button:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+.setup-field-error { margin: 0.35rem 0 0; color: #b91c1c; font-size: 0.78rem; line-height: 1.45; }
+.setup-field input[aria-invalid="true"], .setup-field select[aria-invalid="true"] { border-color: #dc2626; box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.14); }
+.setup-field [role="combobox"][aria-invalid="true"] { border-color: #dc2626; box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.14); }
 @keyframes setup-spin { to { transform: rotate(360deg); } }
-@media (max-width: 768px) { .setup-shell { padding: 0.75rem; } .setup-phase-progress, .setup-journey-progress { grid-template-columns: 1fr; } .setup-journey-actions .btn { flex: 1 1 auto; } }
+@media (max-width: 768px) { .setup-shell { padding: 0.75rem; } .setup-phase-progress, .setup-journey-progress { grid-template-columns: 1fr; } .setup-journey-actions .btn { flex: 1 1 auto; } .setup-error-summary { padding: 0.75rem; } .setup-error-summary button { min-height: 2.25rem; } }
 @media (prefers-reduced-motion: reduce) { .setup-access-gate-spinner { animation: none; } }
 
 /* Organizational architecture workspace */

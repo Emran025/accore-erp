@@ -43,6 +43,7 @@ interface SetupOperatingScopeSectionProps {
   warehouseOptions: SelectOption[];
   posOptions: SelectOption[];
   isSaving: boolean;
+  fieldErrors?: Record<string, string[]>;
   onWorkingUnitChange: (value: string) => void;
   onWorkingUnitCodeChange: (value: string) => void;
   onWorkingUnitNameChange: (value: string) => void;
@@ -93,6 +94,7 @@ export function SetupOperatingScopeSection({
   warehouseOptions,
   posOptions,
   isSaving,
+  fieldErrors = {},
   onWorkingUnitChange,
   onWorkingUnitCodeChange,
   onWorkingUnitNameChange,
@@ -108,6 +110,7 @@ export function SetupOperatingScopeSection({
     && (!requiresCostCenter || costCenterId !== null)
     && (!requiresProfitCenter || profitCenterId !== null);
   const linkedCenterSource = requiresWarehouse || requiresPosTerminal;
+  const firstError = (field: string) => fieldErrors[field]?.[0];
 
   return (
     <SetupSection id="setup-operating-scope" title={title} description={description}>
@@ -115,23 +118,23 @@ export function SetupOperatingScopeSection({
       <p className="setup-context-summary">{contextHelper}</p>
       <fieldset className="settings-form-grid setup-form-grid" disabled={!foundationComplete}>
         <legend className="sr-only">{title}</legend>
-        <SetupField id="setup-working-unit" label={workingUnitLabel} required>
+        <SetupField id="setup-working-unit" label={workingUnitLabel} required error={firstError("org_node_uuid")}>
           <SearchableSelect id="setup-working-unit" className="setup-select" options={nodeOptions} value={workingUnit} onChange={(value) => onWorkingUnitChange(String(value || ""))} />
         </SetupField>
-        <SetupField id="setup-working-unit-code" label={workingUnitCodeLabel} required>
+        <SetupField id="setup-working-unit-code" label={workingUnitCodeLabel} required error={firstError("code")}>
           <input id="setup-working-unit-code" className="setup-input" dir="ltr" value={workingUnitCode} onChange={(event) => onWorkingUnitCodeChange(event.target.value)} required />
         </SetupField>
-        <SetupField id="setup-working-unit-name" label={workingUnitNameLabel}>
+        <SetupField id="setup-working-unit-name" label={workingUnitNameLabel} error={firstError("attributes.name")}>
           <input id="setup-working-unit-name" className="setup-input" value={workingUnitName} onChange={(event) => onWorkingUnitNameChange(event.target.value)} />
         </SetupField>
 
         {requiresWarehouse && !requiresPosTerminal ? (
-          <SetupField id="setup-warehouse" label={warehouseLabel} required>
+          <SetupField id="setup-warehouse" label={warehouseLabel} required error={firstError("warehouse_id")}>
             <SearchableSelect id="setup-warehouse" className="setup-select" options={warehouseOptions} value={warehouseId} onChange={(value) => onWarehouseChange(typeof value === "number" ? value : null)} />
           </SetupField>
         ) : null}
         {requiresPosTerminal ? (
-          <SetupField id="setup-pos-terminal" label={pointOfSaleLabel} required>
+          <SetupField id="setup-pos-terminal" label={pointOfSaleLabel} required error={firstError("pos_terminal_id")}>
             <SearchableSelect id="setup-pos-terminal" className="setup-select" options={posOptions} value={posTerminalId} onChange={(value) => onPosTerminalChange(typeof value === "number" ? value : null)} />
           </SetupField>
         ) : null}
@@ -149,14 +152,17 @@ export function SetupOperatingScopeSection({
             {requiresProfitCenter || linkedProfitCenterSummary ? <><br /><strong>{linkedProfitCenterLabel}:</strong> {linkedProfitCenterSummary || missingLinkedResourceLabel}</> : null}
           </div>
         ) : null}
+        {requiresPosTerminal && (firstError("warehouse_id") || firstError("cost_center_id") || firstError("profit_center_id")) ? (
+          <p className="setup-field-error" role="alert">{firstError("warehouse_id") || firstError("cost_center_id") || firstError("profit_center_id")}</p>
+        ) : null}
 
         {requiresCostCenter && !linkedCenterSource ? (
-          <SetupField id="setup-cost-center" label={costCenterLabel} required>
+          <SetupField id="setup-cost-center" label={costCenterLabel} required error={firstError("cost_center_id")}>
             <SearchableSelect id="setup-cost-center" className="setup-select" options={costOptions} value={costCenterId} onChange={(value) => onCostCenterChange(typeof value === "number" ? value : null)} />
           </SetupField>
         ) : null}
         {requiresProfitCenter && !linkedCenterSource ? (
-          <SetupField id="setup-profit-center" label={profitCenterLabel} required>
+          <SetupField id="setup-profit-center" label={profitCenterLabel} required error={firstError("profit_center_id")}>
             <SearchableSelect id="setup-profit-center" className="setup-select" options={profitOptions} value={profitCenterId} onChange={(value) => onProfitCenterChange(typeof value === "number" ? value : null)} />
           </SetupField>
         ) : null}

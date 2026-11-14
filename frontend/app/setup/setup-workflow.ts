@@ -1,5 +1,5 @@
 import type { SetupJourneyStepId } from "./components/SetupJourneyStepper";
-import type { Readiness, SetupRequirement, SetupState } from "./types";
+import type { OrganizationProfile, Readiness, SetupRequirement, SetupState } from "./types";
 
 export type SetupScopeCapabilities = {
   requiresWorkingUnit: boolean;
@@ -35,6 +35,24 @@ export function getSetupDirection(locale: string): "rtl" | "ltr" {
   return locale.startsWith("ar") ? "rtl" : "ltr";
 }
 
+export function getSetupInferenceContextSignature(profile: OrganizationProfile, selectedTemplateKey: string): string {
+  return JSON.stringify({
+    selectedTemplateKey,
+    templateKey: profile.template_key,
+    industry: profile.industry,
+    organizationSize: profile.organization_size,
+    companyName: profile.company_name,
+    companyCode: profile.company_code,
+    countryCode: profile.country_code,
+    currencyId: profile.currency_id,
+    primarySiteName: profile.primary_site_name ?? "",
+    primarySiteCode: profile.primary_site_code ?? "",
+    factoryCalendarId: profile.factory_calendar_id ?? null,
+    language: profile.language ?? null,
+    inventoryEnabled: profile.inventory_enabled,
+  });
+}
+
 export function detectStaleSetupState(
   current: SetupState | null,
   incoming: SetupState | null,
@@ -57,6 +75,17 @@ export function detectStaleSetupState(
     template: {
       key: state.organization_template?.profile?.template_key ?? null,
       applied: state.organization_template?.is_applied ?? null,
+      industry: state.organization_template?.profile?.industry ?? null,
+      organizationSize: state.organization_template?.profile?.organization_size ?? null,
+      companyName: state.organization_template?.profile?.company_name ?? null,
+      companyCode: state.organization_template?.profile?.company_code ?? null,
+      countryCode: state.organization_template?.profile?.country_code ?? null,
+      currencyId: state.organization_template?.profile?.currency_id ?? null,
+      primarySiteName: state.organization_template?.profile?.primary_site_name ?? null,
+      primarySiteCode: state.organization_template?.profile?.primary_site_code ?? null,
+      factoryCalendarId: state.organization_template?.profile?.factory_calendar_id ?? null,
+      language: state.organization_template?.profile?.language ?? null,
+      inventoryEnabled: state.organization_template?.profile?.inventory_enabled ?? null,
     },
     modules: (state.modules ?? []).map((module) => [
       module.module_key,
@@ -86,6 +115,28 @@ export function detectStaleSetupState(
 
 export function hasServerConfirmedModuleSelection(state: SetupState | null): boolean {
   return (state?.selected_module_keys.length ?? 0) > 0;
+}
+
+export function canNavigateToSetupStep(
+  target: SetupJourneyStepId,
+  state: SetupState | null,
+  readiness?: Readiness | null,
+): boolean {
+  if (target === "module_selection") return true;
+  if (!hasServerConfirmedModuleSelection(state)) return false;
+
+  const onboarding = state?.onboarding ?? readiness?.onboarding;
+  if (target === "foundation") return true;
+  const foundationReady = onboarding?.phases?.foundation?.ready === true;
+  if (!foundationReady) return false;
+  const coreOperationsReady = onboarding?.phases?.core_operations?.ready === true;
+
+  if (target === "operating_links") {
+    const scope = getSetupScopeCapabilities(state?.requirement_queue ?? []);
+    return !coreOperationsReady || scope.requiresWorkingUnit || scope.requiresOperatingContext
+      || scope.requiresWarehouse || scope.requiresPosTerminal || scope.requiresCostCenter || scope.requiresProfitCenter;
+  }
+  return coreOperationsReady;
 }
 
 export function getNextSetupJourneyStep(state: SetupState | null, readiness?: Readiness | null): SetupJourneyStepId {
@@ -122,12 +173,88 @@ export function areSelectedModuleRequirementsReady(state: SetupState | null): bo
   });
 }
 
+export function hasActivatableSelectedModule(state: SetupState | null): boolean {
+  const selectedKeys = state?.selected_module_keys ?? [];
+  const modulesByKey = new Map((state?.modules ?? []).map((module) => [module.module_key, module]));
+
+  return selectedKeys.some((moduleKey) => {
+    const setupModule = modulesByKey.get(moduleKey);
+    return Boolean(setupModule && !setupModule.is_configuration_module && !setupModule.is_operational && setupModule.requirements_satisfied === true);
+  });
+}
+
+export const DEFAULT_SETUP_DASHBOARD_ROUTE = "/01-enterprise-core/system-overview/dashboard/global-dashboard";
+
+const moduleReturnPrefixes: Array<{ prefix: string; moduleKey: string }> = [
+  { prefix: "/01-enterprise-core/organization-governance/", moduleKey: "org_structure" },
+  { prefix: "/02-commercial/sales-lifecycle/", moduleKey: "sales" },
+  { prefix: "/02-commercial/instant-services/", moduleKey: "sales" },
+  { prefix: "/02-commercial/crm/", moduleKey: "ar_customers" },
+  { prefix: "/02-commercial/marketing-distribution/", moduleKey: "representatives" },
+  { prefix: "/02-commercial/marketplace/", moduleKey: "marketplace" },
+  { prefix: "/02-commercial/revenue-receivables/", moduleKey: "revenues" },
+  { prefix: "/03-finance/general-ledger/", moduleKey: "general_ledger" },
+  { prefix: "/03-finance/foreign-exchange/", moduleKey: "currency" },
+  { prefix: "/03-finance/audit-compliance/", moduleKey: "audit_trail" },
+  { prefix: "/03-finance/tax-compliance/", moduleKey: "vat_zatca" },
+  { prefix: "/03-finance/management-accounting/", moduleKey: "reports" },
+  { prefix: "/04-supply-chain/inventory/", moduleKey: "products" },
+  { prefix: "/04-supply-chain/procurement/", moduleKey: "purchases" },
+  { prefix: "/04-supply-chain/payables-expenses/", moduleKey: "expenses" },
+  { prefix: "/04-supply-chain/supplier-sourcing/", moduleKey: "purchases" },
+  { prefix: "/05-manufacturing/", moduleKey: "manufacturing" },
+  { prefix: "/06-human-capital/workforce-admin/", moduleKey: "employees" },
+  { prefix: "/06-human-capital/talent-recruitment/", moduleKey: "recruitment" },
+  { prefix: "/06-human-capital/payroll-benefits/", moduleKey: "payroll" },
+  { prefix: "/06-human-capital/time-productivity/", moduleKey: "attendance" },
+  { prefix: "/06-human-capital/performance-development/", moduleKey: "performance" },
+  { prefix: "/06-human-capital/services-wellness/", moduleKey: "wellness" },
+  { prefix: "/06-human-capital/knowledge-portal/", moduleKey: "knowledge" },
+  { prefix: "/06-human-capital/hr-compliance/", moduleKey: "compliance" },
+  { prefix: "/06-human-capital/hr-advanced/", moduleKey: "hr" },
+  { prefix: "/07-projects/", moduleKey: "projects" },
+  { prefix: "/08-assets/", moduleKey: "assets" },
+  { prefix: "/09-intelligence/", moduleKey: "intelligence" },
+  { prefix: "/10-platform/", moduleKey: "platform" },
+];
+
+export function resolveSetupReturnDestination(returnTo: string | null, state: SetupState | null): string {
+  if (!returnTo || !returnTo.startsWith("/") || returnTo.startsWith("//") || returnTo.includes(":") || returnTo.includes("\\")) {
+    return DEFAULT_SETUP_DASHBOARD_ROUTE;
+  }
+
+  let url: URL;
+  try {
+    url = new URL(returnTo, "https://setup.invalid");
+  } catch {
+    return DEFAULT_SETUP_DASHBOARD_ROUTE;
+  }
+  if (url.origin !== "https://setup.invalid") return DEFAULT_SETUP_DASHBOARD_ROUTE;
+
+  const path = url.pathname;
+  if (path === "/01-enterprise-core/system-overview/dashboard" || path.startsWith("/01-enterprise-core/system-overview/dashboard/")) {
+    return `${url.pathname}${url.search}${url.hash}`;
+  }
+
+  const destination = moduleReturnPrefixes.find(({ prefix }) => path.startsWith(prefix));
+  if (!destination) return DEFAULT_SETUP_DASHBOARD_ROUTE;
+
+  const destinationModule = state?.modules.find((item) => item.module_key === destination.moduleKey);
+  const active = state?.active_module_keys.includes(destination.moduleKey) === true;
+  const available = destinationModule?.is_configuration_module === true || destinationModule?.is_operational === true;
+  return active && available
+    ? `${url.pathname}${url.search}${url.hash}`
+    : DEFAULT_SETUP_DASHBOARD_ROUTE;
+}
+
 export function isSetupLaunchReady(state: SetupState | null): boolean {
   const selectedKeys = state?.selected_module_keys ?? [];
-  if (!state || state.setup_required || selectedKeys.length === 0 || state.pending_module_keys.length > 0) {
+  const starterKeys = state?.onboarding?.starter_module_keys ?? [];
+  if (!state || state.setup_required || selectedKeys.length === 0 || starterKeys.length === 0) {
     return false;
   }
 
   const activeKeys = new Set(state.active_module_keys);
-  return selectedKeys.every((moduleKey) => activeKeys.has(moduleKey));
+  return state.onboarding?.starter_bundle_active === true
+    && starterKeys.every((moduleKey) => activeKeys.has(moduleKey));
 }

@@ -4,7 +4,6 @@ import { API_ENDPOINTS } from "@/lib/endpoints";
 import type { AdaptiveQuestion } from "./components/AdaptiveQuestionStepper";
 import type { BlueprintData, EvaluationData } from "./components/BlueprintReviewCard";
 import type {
-  Item,
   OrganizationProfile,
   OrganizationTemplateState,
   OrgNode,
@@ -21,6 +20,21 @@ export type CenterOption = {
   name_en?: string | null;
   is_active?: boolean;
   structure_node_uuid?: string | null;
+};
+
+export type CurrencyOption = {
+  id: number;
+  code: string;
+  name: string;
+  is_active: boolean;
+};
+
+export type FactoryCalendarOption = {
+  id: number;
+  code: string;
+  name: string;
+  name_ar?: string | null;
+  is_active: boolean;
 };
 
 export type WarehouseOption = {
@@ -149,6 +163,12 @@ export type BlueprintPublishRequest = {
   create_operating_context: boolean;
 };
 
+export type BlueprintPublishResponse = {
+  blueprint_uuid: string;
+  status: "published";
+  result: unknown;
+};
+
 function post<T>(endpoint: string, payload: unknown): Promise<APIResponse<T>> {
   return fetchAPI<T>(endpoint, { method: "POST", body: JSON.stringify(payload) });
 }
@@ -185,10 +205,10 @@ export const setupApi = {
     fetchAPI<SetupListPayload<CenterOption>>(`${API_ENDPOINTS.FINANCE.COST_CENTERS.BASE}?limit=500`),
   getProfitCenters: (): Promise<APIResponse<SetupListPayload<CenterOption>>> =>
     fetchAPI<SetupListPayload<CenterOption>>(`${API_ENDPOINTS.FINANCE.PROFIT_CENTERS.BASE}?limit=500`),
-  getCurrencies: (): Promise<APIResponse<SetupListPayload<Item>>> =>
-    fetchAPI<SetupListPayload<Item>>(API_ENDPOINTS.FINANCE.FOREIGN_EXCHANGE.CURRENCIES.BASE),
-  getFactoryCalendars: (): Promise<APIResponse<SetupListPayload<Item>>> =>
-    fetchAPI<SetupListPayload<Item>>(API_ENDPOINTS.ENTERPRISE_CORE.ORG.FACTORY_CALENDARS),
+  getCurrencies: (): Promise<APIResponse<SetupListPayload<CurrencyOption>>> =>
+    fetchAPI<SetupListPayload<CurrencyOption>>(API_ENDPOINTS.FINANCE.FOREIGN_EXCHANGE.CURRENCIES.BASE),
+  getFactoryCalendars: (): Promise<APIResponse<SetupListPayload<FactoryCalendarOption>>> =>
+    fetchAPI<SetupListPayload<FactoryCalendarOption>>(API_ENDPOINTS.ENTERPRISE_CORE.ORG.FACTORY_CALENDARS),
   getAccounts: (): Promise<APIResponse<SetupListPayload<AccountOption>>> =>
     fetchAPI<SetupListPayload<AccountOption>>(`${API_ENDPOINTS.FINANCE.ACCOUNTS.BASE}?limit=500`),
   getFiscalPeriods: (): Promise<APIResponse<SetupListPayload<FiscalPeriodOption>>> =>
@@ -203,6 +223,6 @@ export const setupApi = {
     post<SetupInferenceResponse>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.INFERENCE_ANALYZE, request),
   stageBlueprint: (request: BlueprintStageRequest): Promise<APIResponse<BlueprintStageResponse>> =>
     post<BlueprintStageResponse>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.BLUEPRINT_STAGE, request),
-  publishBlueprint: (uuid: string, request: BlueprintPublishRequest): Promise<APIResponse<Record<string, unknown>>> =>
-    post<Record<string, unknown>>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.BLUEPRINT_PUBLISH(uuid), request),
+  publishBlueprint: (uuid: string, request: BlueprintPublishRequest): Promise<APIResponse<BlueprintPublishResponse>> =>
+    post<BlueprintPublishResponse>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.BLUEPRINT_PUBLISH(uuid), request),
 };

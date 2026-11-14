@@ -12,7 +12,7 @@ export function SetupSection({ id, title, description, children, className = "" 
   return (
     <section className={`sales-card setup-section ${className}`.trim()} aria-labelledby={`${id}-title`}>
       <header className="setup-section-header">
-        <h3 id={`${id}-title`}>{title}</h3>
+        <h3 id={`${id}-title`} tabIndex={-1}>{title}</h3>
         <p className="setup-section-description">{description}</p>
       </header>
       {children}

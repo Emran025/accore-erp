@@ -1,7 +1,7 @@
 "use client";
 
 import { useI18n, catalogMessage } from "@/lib/i18n";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useId } from "react";
 import { Icon } from "@/lib/icons";
 import { getTextDirection } from "@/lib/utils";
 
@@ -33,6 +33,14 @@ interface SearchableSelectProps {
     onAutoSelect?: () => void;
     /** External ref for programmatic focus */
     inputRef?: React.RefObject<HTMLInputElement | null>;
+    "aria-invalid"?: boolean;
+    "aria-describedby"?: string;
+}
+
+export function moveSearchableSelectIndex(current: number, optionCount: number, direction: 1 | -1): number {
+    if (optionCount <= 0) return -1;
+    if (current < 0 || current >= optionCount) return direction > 0 ? 0 : optionCount - 1;
+    return (current + direction + optionCount) % optionCount;
 }
 
 export function SearchableSelect({
@@ -53,12 +61,17 @@ export function SearchableSelect({
     autoFocus = false,
     onAutoSelect,
     inputRef: externalRef,
+    "aria-invalid": ariaInvalid,
+    "aria-describedby": ariaDescribedBy,
 }: SearchableSelectProps) {
     const { t: i18n } = useI18n();
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [inputValue, setInputValue] = useState("");
+    const [activeOptionIndex, setActiveOptionIndex] = useState(0);
     const containerRef = useRef<HTMLDivElement>(null);
+    const generatedId = useId();
+    const listboxId = `${id ?? generatedId}-options`;
     const internalRef = useRef<HTMLInputElement>(null);
     const inputRef = externalRef ?? internalRef;
 
@@ -80,7 +93,7 @@ export function SearchableSelect({
         if (selectedOption) {
             setInputValue(selectedOption.label);
             setSearchTerm("");
-        } else if (!value && !onSearch) {
+        } else if ((value === null || value === undefined || value === "") && !onSearch) {
             setInputValue("");
             setSearchTerm("");
         }
@@ -102,17 +115,18 @@ export function SearchableSelect({
             if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
                 setIsOpen(false);
                 setSearchTerm("");
+                setInputValue(selectedOption?.label ?? "");
             }
         };
 
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+    }, [selectedOption]);
 
     // ── Barcode exact-match auto-select ──────────────────────────────────
     useEffect(() => {
         if (!searchTerm || searchTerm.length < 3) return;
-        if (value) return; // already selected
+        if (value !== null && value !== undefined && value !== "") return; // already selected
 
         const exactMatch = Array.isArray(options)
             ? options.find((opt) =>
@@ -126,6 +140,7 @@ export function SearchableSelect({
             setInputValue(exactMatch.label);
             setSearchTerm("");
             setIsOpen(false);
+            setActiveOptionIndex(0);
             if (onAutoSelect) {
                 setTimeout(() => onAutoSelect(), 50);
             }
@@ -140,14 +155,14 @@ export function SearchableSelect({
         if (onSearch) {
             onSearch(val);
         }
-        setIsOpen(val.trim().length > 0);
+        setActiveOptionIndex(0);
+        setIsOpen(true);
     };
 
     const handleInputFocus = () => {
-        // Only open dropdown if there is an active search term typed
-        if (searchTerm.trim().length > 0) {
-            setIsOpen(true);
-        }
+        setIsOpen(true);
+        const selectedIndex = filteredOptions.findIndex((option) => option.value === value);
+        setActiveOptionIndex(selectedIndex >= 0 ? selectedIndex : 0);
     };
 
     const handleOptionClick = useCallback(
@@ -156,22 +171,41 @@ export function SearchableSelect({
             setInputValue(option.label);
             setSearchTerm("");
             setIsOpen(false);
+            setActiveOptionIndex(0);
         },
         [onChange]
     );
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+            e.preventDefault();
+            setIsOpen(true);
+            setActiveOptionIndex((current) => moveSearchableSelectIndex(current, filteredOptions.length, e.key === "ArrowDown" ? 1 : -1));
+            return;
+        }
+        if (e.key === "Escape") {
+            if (isOpen) {
+                e.preventDefault();
+                setIsOpen(false);
+                setSearchTerm("");
+                setInputValue(selectedOption?.label ?? "");
+            }
+            return;
+        }
+        if (e.key === "Tab") {
+            setIsOpen(false);
+            setSearchTerm("");
+            return;
+        }
         if (e.key === "Enter") {
             e.preventDefault();
-            // If an option is already selected or filtered options exist
-            if (!value && filteredOptions.length > 0 && searchTerm.trim().length > 0) {
-                const topOption = filteredOptions[0];
-                handleOptionClick(topOption);
-            }
-            setIsOpen(false);
-            if (onAutoSelect) {
+            if (isDropdownVisible && filteredOptions.length > 0) {
+                const active = filteredOptions[activeOptionIndex] ?? filteredOptions[0];
+                handleOptionClick(active);
+            } else if (onAutoSelect) {
                 setTimeout(() => onAutoSelect(), 50);
             }
+            setIsOpen(false);
         }
     };
 
@@ -184,9 +218,8 @@ export function SearchableSelect({
         inputRef.current?.focus();
     };
 
-    // Should only display dropdown when search term is not empty and dropdown is open
-    const isDropdownVisible = isOpen && searchTerm.trim().length > 0;
-    const displayValue = isOpen ? searchTerm : inputValue;
+    const isDropdownVisible = isOpen;
+    const displayValue = isOpen && searchTerm.trim().length > 0 ? searchTerm : inputValue;
     const textDirection = getTextDirection(displayValue);
 
     return (
@@ -202,6 +235,13 @@ export function SearchableSelect({
                 onKeyDown={handleKeyDown}
                 placeholder={placeholder}
                 disabled={disabled}
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded={isDropdownVisible}
+                aria-controls={listboxId}
+                aria-activedescendant={isDropdownVisible && activeOptionIndex >= 0 ? `${listboxId}-option-${activeOptionIndex}` : undefined}
+                aria-invalid={ariaInvalid}
+                aria-describedby={ariaDescribedBy}
                 autoComplete="off"
                 required={required && !value}
                 style={{
@@ -216,24 +256,33 @@ export function SearchableSelect({
             <div className="input-icon">
                 <Icon name="search" size={18} />
             </div>
-            {value && !isOpen && (
+            {value !== null && value !== undefined && value !== "" && !isOpen && (
                 <button
                     type="button"
                     onClick={handleClear}
                     className="clear-btn"
                     title={i18n.catalog["common.general.clear"]}
+                    aria-label={i18n.catalog["common.general.clear"]}
                 >
                     <Icon name="x" size={16} />
                 </button>
             )}
-            <div className={`options-list ${isDropdownVisible ? "active" : ""}`}>
+            <div
+                id={listboxId}
+                className={`options-list ${isDropdownVisible ? "active" : ""}`}
+                role="listbox"
+                aria-hidden={!isDropdownVisible}
+            >
                 {filteredOptions.length === 0 ? (
-                    <div className="no-results">{noResultsText}</div>
+                    <div className="no-results" role="status">{noResultsText}</div>
                 ) : (
-                    filteredOptions.map((option) => (
+                    filteredOptions.map((option, index) => (
                         <div
                             key={option.value}
-                            className={`option-item ${value === option.value ? "selected" : ""}`}
+                            id={`${listboxId}-option-${index}`}
+                            role="option"
+                            aria-selected={value === option.value}
+                            className={`option-item ${value === option.value ? "selected" : ""} ${activeOptionIndex === index && isDropdownVisible ? "is-active" : ""}`}
                             onClick={() => handleOptionClick(option)}
                         >
                             {renderOption ? (
@@ -254,4 +303,3 @@ export function SearchableSelect({
         </div>
     );
 }
-

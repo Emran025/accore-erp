@@ -53,10 +53,14 @@ class ModuleReadinessService
                 $module->module_key => is_array($module->readiness_requirements) ? $module->readiness_requirements : [],
             ])
             ->all();
-        $requirementKeys = array_column(
-            $this->registry->resolve($selectedModuleKeys, $profileKey, $liveReadinessRequirements),
-            'key',
-        );
+        $resolvedRequirements = $this->registry->resolve($selectedModuleKeys, $profileKey, $liveReadinessRequirements);
+        $requirementKeys = array_column($resolvedRequirements, 'key');
+        $requirementsByModule = [];
+        foreach ($resolvedRequirements as $requirement) {
+            foreach ($requirement['required_by_module_keys'] as $moduleKey) {
+                $requirementsByModule[$moduleKey][] = $requirement['key'];
+            }
+        }
         $selectedNodeTypes = $selectedModules
             ->flatMap(function (Module $module): array {
                 $requirements = $module->readiness_requirements ?? [];
@@ -98,22 +102,40 @@ class ModuleReadinessService
             $activeNodeTypes,
             $integrityIssues,
             $workingUnit,
-            $operatingStructure,
             $accountingReadiness,
-            $hasActiveStructure
+            $hasActiveStructure,
+            $requirementsByModule,
+            $context
         ) {
             $requirements = $module->readiness_requirements ?? $this->defaultRequirements();
             $requiresOrgStructure = (bool) ($requirements['requires_org_structure'] ?? false);
-            $requiresOperatingContext = (bool) ($requirements['requires_operating_context'] ?? false);
+            $moduleRequirementKeys = $requirementsByModule[$module->module_key] ?? [];
+            $requiresOperatingContext = (bool) ($requirements['requires_operating_context'] ?? false)
+                || array_intersect($moduleRequirementKeys, [
+                    'operating_context',
+                    'warehouse',
+                    'pos_terminal',
+                ]) !== [];
             // Legacy/custom module definitions without the new explicit flag
             // preserve their prior behavior. Seeded production modules are
             // migrated to require a selected working unit explicitly.
-            $requiresWorkingUnit = (bool) ($requirements['requires_working_unit'] ?? $requiresOperatingContext);
+            $requiresWorkingUnit = (bool) ($requirements['requires_working_unit'] ?? $requiresOperatingContext)
+                || in_array('working_unit', $moduleRequirementKeys, true);
             $requiresOpenFiscalPeriod = (bool) ($requirements['requires_open_fiscal_period'] ?? false);
             $requiresChartOfAccounts = (bool) ($requirements['requires_chart_of_accounts'] ?? false);
-            $requiredNodeTypes = array_values($requirements['required_node_types'] ?? []);
+            $liveCenterNodeTypes = array_values(array_map(
+                static fn (string $key): string => substr($key, strlen('node_type:')),
+                array_intersect($moduleRequirementKeys, ['node_type:COST_CENTER', 'node_type:PROFIT_CENTER']),
+            ));
+            $requiredNodeTypes = array_values(array_unique([
+                ...($requirements['required_node_types'] ?? []),
+                ...$liveCenterNodeTypes,
+            ]));
             $missingNodeTypes = array_values(array_diff($requiredNodeTypes, $activeNodeTypes));
             $relevantIssues = $this->relevantIntegrityIssues($integrityIssues, $requiredNodeTypes);
+            $moduleOperatingStructure = $requiresOperatingContext
+                ? $this->validateOperatingStructure($context, $integrityIssues, $moduleRequirementKeys)
+                : ['ready' => true, 'reason_codes' => []];
 
             $reasons = [];
             if (! $module->is_active) {
@@ -131,8 +153,8 @@ class ModuleReadinessService
             if ($requiresWorkingUnit && ! $workingUnit['ready']) {
                 $reasons = [...$reasons, ...$workingUnit['reason_codes']];
             }
-            if ($requiresOperatingContext && ! $operatingStructure['ready']) {
-                $reasons = [...$reasons, ...$operatingStructure['reason_codes']];
+            if ($requiresOperatingContext && ! $moduleOperatingStructure['ready']) {
+                $reasons = [...$reasons, ...$moduleOperatingStructure['reason_codes']];
             }
             if ($requiresOpenFiscalPeriod && ! $accountingReadiness['open_fiscal_period']['ready']) {
                 $reasons[] = $accountingReadiness['open_fiscal_period']['reason_code'];

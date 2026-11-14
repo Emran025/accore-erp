@@ -1,14 +1,19 @@
 import { describe, expect, it } from "vitest";
-import type { Readiness, SetupState } from "../../app/setup/types";
+import type { OrganizationProfile, Readiness, SetupState } from "../../app/setup/types";
 import {
   areSelectedModuleRequirementsReady,
+  canNavigateToSetupStep,
   createSetupLoadSequence,
   detectStaleSetupState,
   getNextSetupJourneyStep,
   getSetupDirection,
+  getSetupInferenceContextSignature,
   getSetupScopeCapabilities,
+  hasActivatableSelectedModule,
   hasServerConfirmedModuleSelection,
   isSetupLaunchReady,
+  resolveSetupReturnDestination,
+  DEFAULT_SETUP_DASHBOARD_ROUTE,
 } from "../../app/setup/setup-workflow";
 
 function makeState(overrides: Partial<SetupState> = {}): SetupState {
@@ -59,6 +64,42 @@ describe("server-driven setup workflow", () => {
     expect(getSetupDirection("en-US")).toBe("ltr");
   });
 
+  it("navigates only to steps supported by the latest server-confirmed phases", () => {
+    const readyState = makeState({
+      selected_module_keys: ["general_ledger"],
+      onboarding: {
+        next_phase: "module_activation",
+        phases: { foundation: { ready: true }, core_operations: { ready: true } },
+      } as SetupState["onboarding"],
+    });
+    expect(canNavigateToSetupStep("foundation", readyState)).toBe(true);
+    expect(canNavigateToSetupStep("optional_capabilities", readyState)).toBe(true);
+    expect(canNavigateToSetupStep("operating_links", readyState)).toBe(false);
+    expect(canNavigateToSetupStep("operating_links", {
+      ...readyState,
+      requirement_queue: [{ key: "warehouse", phase: "cross_family", required_by_module_keys: ["products"] }],
+    })).toBe(true);
+    expect(canNavigateToSetupStep("optional_capabilities", makeState({ selected_module_keys: [] }))).toBe(false);
+    expect(canNavigateToSetupStep("module_selection", makeState({ selected_module_keys: [] }))).toBe(true);
+  });
+
+  it("signs all inference-relevant company fields so profile changes invalidate previews", () => {
+    const profile: OrganizationProfile = {
+      template_key: "services",
+      industry: "services",
+      organization_size: "small",
+      company_name: "Example Company",
+      company_code: "EX-01",
+      country_code: "YE",
+      currency_id: 1,
+      inventory_enabled: false,
+    };
+    const original = getSetupInferenceContextSignature(profile, "services");
+    expect(getSetupInferenceContextSignature({ ...profile, country_code: "SA" }, "services")).not.toBe(original);
+    expect(getSetupInferenceContextSignature({ ...profile, currency_id: 2 }, "services")).not.toBe(original);
+    expect(getSetupInferenceContextSignature(profile, "retail")).not.toBe(original);
+  });
+
   it("derives retail controls from live requirements and omits them for Finance/HR", () => {
     const financeHr = getSetupScopeCapabilities([
       { key: "working_unit", phase: "cross_family", required_by_module_keys: ["general_ledger"] },
@@ -92,12 +133,44 @@ describe("server-driven setup workflow", () => {
     expect(areSelectedModuleRequirementsReady(makeState({ modules: [] }))).toBe(false);
   });
 
-  it("opens the operational system only when all selected modules are active and none are pending", () => {
-    expect(isSetupLaunchReady(makeState({
+  it("opens on the required starter bundle even when an optional selected module remains pending", () => {
+    const state = makeState({
       setup_required: false,
-      active_module_keys: ["finance"],
-      pending_module_keys: [],
-    }))).toBe(true);
+      selected_module_keys: ["general_ledger", "projects"],
+      active_module_keys: ["general_ledger"],
+      pending_module_keys: ["projects"],
+      modules: [
+        {
+          module_key: "general_ledger",
+          is_configuration_module: false,
+          is_selected: true,
+          is_operational: true,
+          requirements_satisfied: true,
+          lifecycle: "active",
+        },
+        {
+          module_key: "projects",
+          is_configuration_module: false,
+          is_selected: true,
+          is_operational: false,
+          requirements_satisfied: false,
+          lifecycle: "selected_pending_org_setup",
+        },
+      ],
+      onboarding: {
+        next_phase: "module_activation",
+        starter_module_keys: ["general_ledger"],
+        starter_bundle_active: true,
+      } as SetupState["onboarding"],
+    });
+    expect(isSetupLaunchReady(state)).toBe(true);
+    expect(hasActivatableSelectedModule(state)).toBe(false);
+    expect(hasActivatableSelectedModule({
+      ...state,
+      modules: state.modules.map((module) => module.module_key === "projects"
+        ? { ...module, requirements_satisfied: true }
+        : module),
+    })).toBe(true);
     expect(isSetupLaunchReady(makeState({
       setup_required: false,
       active_module_keys: [],
@@ -105,9 +178,37 @@ describe("server-driven setup workflow", () => {
     }))).toBe(false);
     expect(isSetupLaunchReady(makeState({
       setup_required: false,
-      active_module_keys: ["finance"],
-      pending_module_keys: ["hr"],
+      selected_module_keys: ["general_ledger"],
+      active_module_keys: ["general_ledger"],
+      onboarding: {
+        next_phase: "module_activation",
+        starter_module_keys: ["general_ledger", "sales"],
+        starter_bundle_active: false,
+      } as SetupState["onboarding"],
     }))).toBe(false);
+  });
+
+  it("allows only internal return paths owned by an operational module", () => {
+    const state = makeState({
+      setup_required: false,
+      selected_module_keys: ["general_ledger", "projects"],
+      active_module_keys: ["general_ledger"],
+      pending_module_keys: ["projects"],
+      modules: [
+        { module_key: "general_ledger", is_configuration_module: false, is_selected: true, is_operational: true, requirements_satisfied: true, lifecycle: "active" },
+        { module_key: "projects", is_configuration_module: false, is_selected: true, is_operational: false, requirements_satisfied: false, lifecycle: "selected_pending_org_setup" },
+      ],
+      onboarding: { next_phase: "module_activation", starter_module_keys: ["general_ledger"], starter_bundle_active: true } as SetupState["onboarding"],
+    });
+
+    expect(resolveSetupReturnDestination("/03-finance/general-ledger/ledger-core/chart-of-accounts", state))
+      .toBe("/03-finance/general-ledger/ledger-core/chart-of-accounts");
+    expect(resolveSetupReturnDestination("/07-projects/project-planning", state)).toBe(DEFAULT_SETUP_DASHBOARD_ROUTE);
+    expect(resolveSetupReturnDestination("//attacker.example/path", state)).toBe(DEFAULT_SETUP_DASHBOARD_ROUTE);
+    expect(resolveSetupReturnDestination("/unmapped/internal/path", state)).toBe(DEFAULT_SETUP_DASHBOARD_ROUTE);
+    expect(resolveSetupReturnDestination("/03-finance/general-ledger/ledger-core/chart-of-accounts?tab=accounts#root", state))
+      .toBe("/03-finance/general-ledger/ledger-core/chart-of-accounts?tab=accounts#root");
+    expect(resolveSetupReturnDestination("/03-finance/general-ledger/../platform/setup", state)).toBe(DEFAULT_SETUP_DASHBOARD_ROUTE);
   });
 });
 
@@ -133,6 +234,26 @@ describe("detectStaleSetupState", () => {
       selected_module_keys: ["finance"],
       onboarding: { next_phase: "foundation", policy_version: "v2" } as SetupState["onboarding"],
     });
+    expect(detectStaleSetupState(current, incoming)).toBe(true);
+  });
+
+  it("detects cross-tab profile country and currency changes", () => {
+    const current = makeState({
+      organization_template: {
+        profile: {
+          template_key: "services", industry: "services", organization_size: "small", company_name: "Example",
+          company_code: "EX", country_code: "YE", currency_id: 1, inventory_enabled: false,
+        },
+        templates: [], is_applied: false, can_apply: true,
+      },
+    });
+    const incoming = {
+      ...current,
+      organization_template: {
+        ...current.organization_template!,
+        profile: { ...current.organization_template!.profile!, country_code: "SA", currency_id: 2 },
+      },
+    };
     expect(detectStaleSetupState(current, incoming)).toBe(true);
   });
 

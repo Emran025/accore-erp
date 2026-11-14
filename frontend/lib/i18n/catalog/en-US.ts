@@ -1924,6 +1924,8 @@ export const enCatalog = {
     "enterpriseCore.setup.complete": "Complete",
     "enterpriseCore.setup.createdSuccessfully": "Configuration saved successfully.",
     "enterpriseCore.setup.draftBanner": "You have unsaved work — save and continue to confirm progress",
+    "enterpriseCore.setup.validation.summaryTitle": "Review the following fields",
+    "enterpriseCore.setup.previewStale": "Company context or answers changed. Re-run the analysis before staging or publishing.",
     "enterpriseCore.setup.staleStateBanner": "Setup data has changed since you last loaded this page. Refresh to continue with the latest state.",
     "enterpriseCore.setup.failedToLoad": "Unable to load configuration data.",
     "enterpriseCore.setup.failedToSave": "Unable to save configuration. Review the required fields and structural links.",

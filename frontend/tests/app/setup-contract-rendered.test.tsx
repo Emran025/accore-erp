@@ -1,7 +1,9 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
+import { SearchableSelect, moveSearchableSelectIndex } from "@/components/ui/SearchableSelect";
 import { SetupFeedbackMessages } from "../../app/setup/components/SetupFeedbackMessages";
+import { SetupField } from "../../app/setup/components/SetupField";
 import { SetupJourneyStepper, type SetupJourneyStep } from "../../app/setup/components/SetupJourneyStepper";
 import { SetupOperatingScopeSection } from "../../app/setup/components/SetupOperatingScopeSection";
 import { getSetupDirection, getSetupScopeCapabilities } from "../../app/setup/setup-workflow";
@@ -104,14 +106,66 @@ describe("setup UI contract and accessibility", () => {
     expect(markup).toContain(nextLabel);
   });
 
-  it("renders error, stale-state, and saved-draft notices with announced roles", () => {
+  it("renders error, stale-state, saved-draft, and focusable validation summaries with announced roles", () => {
     const markup = renderToStaticMarkup(
-      <SetupFeedbackMessages staleMessage="Server state changed" draftMessage="Unsaved draft" errorMessage="Unable to load setup" />,
+      <SetupFeedbackMessages
+        staleMessage="Server state changed"
+        draftMessage="Unsaved draft"
+        errorMessage="Unable to load setup"
+        fieldErrors={{ company_name: ["The company name is required."] }}
+        fieldErrorsTitle="Review the following fields"
+        fieldLabels={{ company_name: "Company name" }}
+      />,
     );
 
     expect(markup).toContain("role=\"alert\" aria-live=\"assertive\">Server state changed");
     expect(markup).toContain("role=\"status\" aria-live=\"polite\">Unsaved draft");
     expect(markup).toContain("role=\"alert\" aria-live=\"assertive\">Unable to load setup");
+    expect(markup).toContain("id=\"setup-field-error-summary\"");
+    expect(markup).toContain("The company name is required.");
+    expect(markup).toContain("<strong>Company name:</strong>");
+    expect(markup).toContain("type=\"button\"");
+  });
+
+  it("associates a validation message with the actual form control", () => {
+    const markup = renderToStaticMarkup(
+      <SetupField id="company-name" label="Company name" required error="Enter a name">
+        <input id="company-name" value="" readOnly />
+      </SetupField>,
+    );
+
+    expect(markup).toContain("role=\"group\" aria-labelledby=\"company-name-label\" aria-invalid=\"true\" aria-describedby=\"company-name-error\"");
+    expect(markup).toContain("id=\"company-name\" readOnly=\"\" aria-invalid=\"true\" aria-describedby=\"company-name-error\"");
+    expect(markup).toContain("id=\"company-name-error\" class=\"setup-field-error\" role=\"alert\"");
+  });
+
+  it("renders the searchable selector as a keyboard-described combobox/listbox", () => {
+    const markup = renderToStaticMarkup(
+      <LocaleProvider initialLocale="en-US">
+        <SearchableSelect
+          id="setup-currency"
+          value={null}
+          options={[{ value: 1, label: "YER — Yemeni rial" }]}
+          onChange={() => undefined}
+          aria-invalid
+          aria-describedby="setup-currency-error"
+        />
+      </LocaleProvider>,
+    );
+
+    expect(markup).toContain("role=\"combobox\"");
+    expect(markup).toContain("aria-autocomplete=\"list\"");
+    expect(markup).toContain("aria-controls=\"setup-currency-options\"");
+    expect(markup).toContain("aria-invalid=\"true\"");
+    expect(markup).toContain("role=\"listbox\"");
+    expect(markup).toContain("role=\"option\"");
+  });
+
+  it("wraps arrow-key selection through available searchable options", () => {
+    expect(moveSearchableSelectIndex(-1, 3, 1)).toBe(0);
+    expect(moveSearchableSelectIndex(2, 3, 1)).toBe(0);
+    expect(moveSearchableSelectIndex(0, 3, -1)).toBe(2);
+    expect(moveSearchableSelectIndex(0, 0, 1)).toBe(-1);
   });
 
   it("renders inventory-only scope with a warehouse selector but no point-of-sale or center prompts", () => {

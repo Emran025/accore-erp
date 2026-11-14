@@ -67,6 +67,8 @@ interface BlueprintReviewCardProps {
   onPublish: () => Promise<void>;
   isStaging: boolean;
   isPublishing: boolean;
+  isPreviewStale?: boolean;
+  previewStaleMessage?: string;
   deferredQuestions?: Array<{ id: string; question: string; question_ar?: string }>;
 }
 
@@ -93,6 +95,8 @@ export function BlueprintReviewCard({
   onPublish,
   isStaging,
   isPublishing,
+  isPreviewStale = false,
+  previewStaleMessage,
   deferredQuestions = [],
 }: BlueprintReviewCardProps) {
   const { t: i18n, locale } = useI18n();
@@ -622,12 +626,18 @@ export function BlueprintReviewCard({
         </div>
       )}
 
+      {isPreviewStale ? (
+        <div className="setup-stale-banner" role="alert" aria-live="assertive">
+          {previewStaleMessage ?? i18n.catalog["enterpriseCore.setup.previewStale"]}
+        </div>
+      ) : null}
+
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-100">
         <Button
           type="button"
           onClick={onStage}
-          disabled={isStaging || isPublishing}
+          disabled={isStaging || isPublishing || isPreviewStale}
           variant="secondary"
           className="w-full sm:w-auto px-5 py-2.5 text-xs font-bold rounded-lg"
         >
@@ -644,7 +654,7 @@ export function BlueprintReviewCard({
         <Button
           type="button"
           onClick={onPublish}
-          disabled={isPublishing || isStaging}
+          disabled={isPublishing || isStaging || isPreviewStale}
           className="w-full sm:w-auto px-7 py-2.5 text-xs font-bold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm"
         >
           {isPublishing ? (

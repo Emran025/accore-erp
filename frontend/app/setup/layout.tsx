@@ -3,11 +3,8 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
-import { fetchAPI } from "@/lib/api";
-import { API_ENDPOINTS } from "@/lib/endpoints";
 import { initSystemSettings } from "@/lib/settings";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { useOperatingContextStore } from "@/stores/useOperatingContextStore";
 import { ApplicationLanguageSettingsTab } from "@/app/01-enterprise-core/identity-access/user-management/system-settings/components/ApplicationLanguageSettingsTab";
 import { getIcon } from "@/lib/icons";
 
@@ -24,7 +21,6 @@ export default function SetupLayout({ children }: SetupLayoutProps) {
   const { t: i18n } = useI18n();
   const router = useRouter();
   const { checkAuth, sessionExpired } = useAuthStore();
-  const { loadReadiness } = useOperatingContextStore();
   const [isVerifying, setIsVerifying] = useState(true);
   const [isApplicationSettingsOpen, setIsApplicationSettingsOpen] = useState(false);
 
@@ -38,22 +34,11 @@ export default function SetupLayout({ children }: SetupLayoutProps) {
         }
         return;
       }
-
-      const [readiness, setupResponse] = await Promise.all([
-        loadReadiness(),
-        fetchAPI<{ setup_required: boolean }>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.STATE),
-      ]);
-      const setupComplete = setupResponse.success && setupResponse.data?.setup_required === false;
-      if (readiness?.ready === true && setupComplete) {
-        router.replace("/01-enterprise-core/system-overview/dashboard/global-dashboard");
-        return;
-      }
-
       setIsVerifying(false);
     };
 
-    void verifySetupAccess();
-  }, [checkAuth, loadReadiness, router]);
+    void verifySetupAccess().catch(() => setIsVerifying(false));
+  }, [checkAuth, router]);
 
   if (isVerifying || sessionExpired) {
     return (

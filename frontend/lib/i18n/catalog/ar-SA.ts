@@ -1924,6 +1924,8 @@ export const arCatalog = {
     "enterpriseCore.setup.complete": "مكتمل",
     "enterpriseCore.setup.createdSuccessfully": "تم حفظ التهيئة بنجاح.",
     "enterpriseCore.setup.draftBanner": "لديك عمل غير محفوظ — احفظ وتابع لتأكيد التقدم",
+    "enterpriseCore.setup.validation.summaryTitle": "راجع الحقول التالية",
+    "enterpriseCore.setup.previewStale": "تغيّر سياق المنشأة أو الإجابات؛ أعد التحليل قبل الحفظ أو النشر.",
     "enterpriseCore.setup.staleStateBanner": "تغيّرت بيانات الإعداد منذ آخر تحميل للصفحة. أعد التحميل للمتابعة بأحدث حالة.",
     "enterpriseCore.setup.failedToLoad": "تعذر تحميل بيانات التهيئة.",
     "enterpriseCore.setup.failedToSave": "تعذر حفظ التهيئة. راجع الحقول المطلوبة والروابط الهيكلية.",

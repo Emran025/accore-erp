@@ -13,7 +13,9 @@ describe("profile-driven setup onboarding", () => {
     expect(page).not.toContain("MainLayout");
     expect(layout).not.toContain("SideNavigationBar");
     expect(layout).toContain("verifySetupAccess");
-    expect(layout).toContain("setup_required");
+    expect(layout).not.toContain("setup_required");
+    expect(page).toContain("!isSetupLaunchReady(fresh.state)");
+    expect(page).toContain("router.push(resolveSetupReturnDestination(returnTo, fresh.state))");
   });
 
   it("starts the guarded journey with module selection before foundation and activation", () => {
@@ -93,7 +95,8 @@ describe("profile-driven setup onboarding", () => {
     const summary = source("app/setup/components/SetupReadinessSummary.tsx");
     const scope = source("app/setup/components/SetupOperatingScopeSection.tsx");
 
-    expect(page).toContain("await load({ navigate: true, mutationConfirmed: true });");
+    expect(page).toContain("await load({ mutationConfirmed: true });");
+    expect(page).toContain("const callAndReload = async <T,>");
     expect(page).toContain("templateApplied={templateApplied}");
     expect(page).toContain("onboarding={onboarding}");
     expect(summary).toContain("foundationReady");

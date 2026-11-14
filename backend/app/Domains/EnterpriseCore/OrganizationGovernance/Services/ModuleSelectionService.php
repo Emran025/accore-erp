@@ -234,16 +234,32 @@ final class ModuleSelectionService
         $activeBusiness = $selectedBusiness->where('is_operational', true)->values();
         $pendingBusiness = $selectedBusiness->where('is_operational', false)->values();
         $baselineReady = (bool) data_get($readiness, 'onboarding.baseline_ready', false);
-        $missingStarterModules = [];
+        $starterModuleKeys = array_values(array_unique(array_filter(
+            data_get($readiness, 'onboarding.starter_module_keys', self::CORE_STARTER_MODULES),
+            static fn (mixed $moduleKey): bool => is_string($moduleKey) && $moduleKey !== ''
+        )));
         $activeStarterModules = $activeBusiness
-            ->whereIn('module_key', self::CORE_STARTER_MODULES)
+            ->whereIn('module_key', $starterModuleKeys)
             ->pluck('module_key')
             ->all();
-        $starterBundleActive = $baselineReady;
+        $missingStarterModules = array_values(array_diff($starterModuleKeys, $activeStarterModules));
+        $hasExplicitSelection = Setting::query()
+            ->where('setting_key', self::SELECTED_MODULES_KEY)
+            ->exists();
+        $legacyInstallationHasActiveBusiness = ! $hasExplicitSelection
+            && $selectedBusiness->contains(static fn (array $module): bool => (bool) ($module['is_active'] ?? false));
+        if ($legacyInstallationHasActiveBusiness) {
+            $missingStarterModules = [];
+        }
+        $starterBundleActive = $baselineReady && (
+            $legacyInstallationHasActiveBusiness
+            || ($starterModuleKeys !== [] && $missingStarterModules === [])
+        );
 
         return [
-            // Core access is only granted after the mandated foundational,
-            // operating, and cross-domain starter-bundle controls are ready.
+            // New installs must activate the profile's mandatory starter set;
+            // pending optional additions do not reopen an already launched baseline.
+            // Legacy installations without explicit setup intent are preserved.
             'setup_required' => ! $starterBundleActive,
             'onboarding' => [
                 ...($readiness['onboarding'] ?? []),

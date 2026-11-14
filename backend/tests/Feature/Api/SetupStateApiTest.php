@@ -146,6 +146,32 @@ class SetupStateApiTest extends TestCase
             ->assertJsonValidationErrors('module_keys');
     }
 
+    public function test_first_launch_waits_for_the_profile_starter_modules_not_only_the_foundation(): void
+    {
+        $this->configureTechnologyCommerceBaseline();
+        $selectedFinance = $this->authPost(route('v2.setup.modules.select'), ['module_keys' => ['general_ledger']]);
+        $this->assertSuccessResponse($selectedFinance);
+
+        $activation = $this->authPost(route('v2.setup.modules.activate_selected'));
+        $this->assertSuccessResponse($activation);
+        $activation->assertJsonPath('data.activation.activated', ['general_ledger'])
+            ->assertJsonPath('data.state.setup_required', true)
+            ->assertJsonPath('data.state.onboarding.starter_bundle_active', false);
+        $this->assertEqualsCanonicalizing(
+            ['sales', 'products', 'purchases'],
+            $activation->json('data.state.onboarding.missing_starter_module_keys'),
+        );
+
+        $selectedStarters = $this->authPost(route('v2.setup.modules.select'), [
+            'module_keys' => ModuleSelectionService::CORE_STARTER_MODULES,
+        ]);
+        $this->assertSuccessResponse($selectedStarters);
+        $completed = $this->authPost(route('v2.setup.modules.activate_selected'));
+        $this->assertSuccessResponse($completed);
+        $completed->assertJsonPath('data.state.setup_required', false)
+            ->assertJsonPath('data.state.onboarding.starter_bundle_active', true);
+    }
+
     public function test_selection_only_persists_intent_without_activating_or_deactivating_modules(): void
     {
         Module::query()->where('module_key', 'reports')->update(['is_active' => true]);
@@ -407,6 +433,57 @@ class SetupStateApiTest extends TestCase
         $this->assertSame($terminalCount, PosTerminal::query()->count());
     }
 
+    public function test_live_retail_profile_rechecks_active_inventory_against_its_owned_warehouse_requirement(): void
+    {
+        Setting::updateOrCreate(
+            ['setting_key' => OrganizationTemplateService::PROFILE_KEY],
+            ['setting_value' => json_encode(['template_key' => 'enterprise_blueprint'], JSON_THROW_ON_ERROR)]
+        );
+        $this->configureTechnologyCommerceBaseline();
+        $company = StructureNode::query()->where('code', 'TECH-1000')->firstOrFail();
+
+        $selection = $this->authPost(route('v2.setup.modules.select'), ['module_keys' => ['products']]);
+        $this->assertSuccessResponse($selection);
+        $activation = $this->authPost(route('v2.setup.modules.activate_selected'));
+        $this->assertSuccessResponse($activation);
+        $activation->assertJsonPath('data.activation.activated', ['products']);
+        $this->assertDatabaseHas('modules', ['module_key' => 'products', 'is_active' => true]);
+
+        Setting::updateOrCreate(
+            ['setting_key' => OrganizationTemplateService::PROFILE_KEY],
+            ['setting_value' => json_encode(['template_key' => 'single_store_retail'], JSON_THROW_ON_ERROR)]
+        );
+        OperatingContext::query()
+            ->where('user_id', $this->authenticatedUser?->id)
+            ->update(['warehouse_id' => null, 'pos_terminal_id' => null]);
+
+        $retailState = $this->authGet(route('v2.setup.state'));
+        $this->assertSuccessResponse($retailState);
+        $product = collect($retailState->json('data.modules'))->firstWhere('module_key', 'products');
+        $this->assertIsArray($product);
+        $this->assertTrue($product['is_active']);
+        $this->assertFalse($product['is_operational']);
+        $this->assertSame('selected_pending_org_setup', $product['lifecycle']);
+        $this->assertContains('products', $retailState->json('data.pending_module_keys'));
+        $retailKeys = array_column($retailState->json('data.requirement_queue'), 'key');
+        $this->assertContains('warehouse', $retailKeys);
+        $this->assertNotContains('pos_terminal', $retailKeys);
+
+        $warehouse = Warehouse::query()->firstOrFail();
+        $saved = $this->authPost(route('v2.operating_context.configure'), [
+            'org_node_uuid' => $company->node_uuid,
+            'warehouse_id' => $warehouse->id,
+        ]);
+        $this->assertSuccessResponse($saved, 201);
+
+        $readyState = $this->authGet(route('v2.setup.state'));
+        $this->assertSuccessResponse($readyState);
+        $readyProduct = collect($readyState->json('data.modules'))->firstWhere('module_key', 'products');
+        $this->assertIsArray($readyProduct);
+        $this->assertTrue($readyProduct['is_operational']);
+        $this->assertNotContains('products', $readyState->json('data.pending_module_keys'));
+    }
+
     public function test_hr_only_readiness_does_not_require_a_profit_center_but_general_ledger_does(): void
     {
         $company = $this->configureFoundationWithoutOperatingResources(false);
@@ -519,13 +596,20 @@ class SetupStateApiTest extends TestCase
 
     public function test_later_retail_inventory_and_hr_additions_preserve_existing_resources_and_context(): void
     {
+        Setting::updateOrCreate(
+            ['setting_key' => OrganizationTemplateService::PROFILE_KEY],
+            ['setting_value' => json_encode(['template_key' => 'enterprise_blueprint'], JSON_THROW_ON_ERROR)]
+        );
         $this->configureTechnologyCommerceBaseline();
         $company = StructureNode::query()->where('code', 'TECH-1000')->firstOrFail();
 
-        $this->authPost(route('v2.setup.modules.select'), ['module_keys' => ['general_ledger']]);
+        $initialSelection = $this->authPost(route('v2.setup.modules.select'), ['module_keys' => ['general_ledger']]);
+        $this->assertSuccessResponse($initialSelection);
         $initialActivation = $this->authPost(route('v2.setup.modules.activate_selected'));
         $this->assertSuccessResponse($initialActivation);
-        $initialActivation->assertJsonPath('data.activation.activated', ['general_ledger']);
+        $initialActivation->assertJsonPath('data.activation.activated', ['general_ledger'])
+            ->assertJsonPath('data.state.setup_required', false)
+            ->assertJsonPath('data.state.onboarding.starter_module_keys', ['general_ledger']);
 
         $snapshot = static fn (): array => [
             'warehouse_ids' => Warehouse::query()->orderBy('id')->pluck('id')->all(),
@@ -540,30 +624,45 @@ class SetupStateApiTest extends TestCase
         ];
         $existingResources = $snapshot();
 
+        $optionalSelection = $this->authPost(route('v2.setup.modules.select'), [
+            'module_keys' => ['general_ledger', 'projects'],
+        ]);
+        $this->assertSuccessResponse($optionalSelection);
+        $optionalSelection->assertJsonPath('data.setup_required', false);
+        $optionalActivation = $this->authPost(route('v2.setup.modules.activate_selected'));
+        $this->assertSuccessResponse($optionalActivation);
+        $optionalActivation->assertJsonPath('data.activation.pending.projects.0', 'missing_required_structure')
+            ->assertJsonPath('data.state.setup_required', false);
+        $this->assertSame($existingResources, $snapshot());
+
         Setting::updateOrCreate(
             ['setting_key' => OrganizationTemplateService::PROFILE_KEY],
             ['setting_value' => json_encode(['template_key' => 'single_store_retail'], JSON_THROW_ON_ERROR)]
         );
         $retailSelection = $this->authPost(route('v2.setup.modules.select'), [
-            'module_keys' => ['general_ledger', 'sales', 'products', 'purchases'],
+            'module_keys' => ['general_ledger', 'sales', 'products', 'purchases', 'projects'],
         ]);
         $this->assertSuccessResponse($retailSelection);
+        $retailSelection->assertJsonPath('data.setup_required', true);
         $retailActivation = $this->authPost(route('v2.setup.modules.activate_selected'));
         $this->assertSuccessResponse($retailActivation);
         $this->assertEqualsCanonicalizing(
-            ['sales', 'products', 'purchases'],
-            array_values(array_intersect(['sales', 'products', 'purchases'], $retailActivation->json('data.activation.activated'))),
+            ModuleSelectionService::CORE_STARTER_MODULES,
+            array_values(array_intersect(ModuleSelectionService::CORE_STARTER_MODULES, $retailActivation->json('data.activation.activated'))),
         );
+        $retailActivation->assertJsonPath('data.activation.pending.projects.0', 'missing_required_structure')
+            ->assertJsonPath('data.state.setup_required', false);
         $this->assertSame($existingResources, $snapshot());
 
         $this->addHrStructure($company);
         $hrSelection = $this->authPost(route('v2.setup.modules.select'), [
-            'module_keys' => ['general_ledger', 'sales', 'products', 'purchases', 'hr'],
+            'module_keys' => ['general_ledger', 'sales', 'products', 'purchases', 'projects', 'hr'],
         ]);
         $this->assertSuccessResponse($hrSelection);
         $hrActivation = $this->authPost(route('v2.setup.modules.activate_selected'));
         $this->assertSuccessResponse($hrActivation);
         $this->assertContains('hr', $hrActivation->json('data.activation.activated'));
+        $hrActivation->assertJsonPath('data.state.setup_required', false);
         $this->assertSame($existingResources, $snapshot());
     }
 
