@@ -577,4 +577,49 @@ class BlueprintLifecycleTest extends TestCase
         // Full org-level tenant isolation requires a tenancy model not yet present in the schema.
         // That remaining risk is documented in BLUEPRINT_LIFECYCLE_SLICE_REPORT.md.
     }
+
+    public function test_publish_rejects_a_blueprint_revision_changed_after_review(): void
+    {
+        $this->authenticateUser();
+        $blueprintUuid = (string) Str::uuid();
+        $stageUrl = route('v2.setup.blueprint.stage');
+
+        $firstStage = $this->authPost($stageUrl, [
+            'blueprint_uuid' => $blueprintUuid,
+            'name' => 'Reviewed version',
+            'archetype_id' => 'SIMPLE_HIERARCHY',
+            'blueprint_json' => $this->compilableBlueprintJson('u_reviewed', 'REVIEWED'),
+        ]);
+        $this->assertSuccessResponse($firstStage);
+        $reviewedBlueprintRevision = $firstStage->json('data.blueprint_revision');
+        $this->assertIsString($reviewedBlueprintRevision);
+        $this->assertSame(64, strlen($reviewedBlueprintRevision));
+
+        $changedJson = $this->compilableBlueprintJson('u_changed', 'CHANGED');
+        $secondStage = $this->authPost($stageUrl, [
+            'blueprint_uuid' => $blueprintUuid,
+            'name' => 'Changed version',
+            'archetype_id' => 'SIMPLE_HIERARCHY',
+            'blueprint_json' => $changedJson,
+        ]);
+        $this->assertSuccessResponse($secondStage);
+        $currentBlueprintRevision = $secondStage->json('data.blueprint_revision');
+        $this->assertNotSame($reviewedBlueprintRevision, $currentBlueprintRevision);
+
+        $nodeCountBefore = StructureNode::count();
+        $publish = $this->authPost(route('v2.setup.blueprint.publish', ['uuid' => $blueprintUuid]), [
+            'blueprint_revision' => $reviewedBlueprintRevision,
+        ]);
+
+        $publish->assertStatus(409)
+            ->assertJsonPath('code', 'setup_state_conflict')
+            ->assertJsonPath('conflict_scope', 'blueprint')
+            ->assertJsonPath('current_blueprint_revision', $currentBlueprintRevision);
+        $this->assertSame($nodeCountBefore, StructureNode::count());
+        $this->assertDatabaseHas('org_blueprints', [
+            'blueprint_uuid' => $blueprintUuid,
+            'name' => 'Changed version',
+            'status' => 'staged',
+        ]);
+    }
 }

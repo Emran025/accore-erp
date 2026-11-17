@@ -86,29 +86,29 @@ use App\Http\Controllers\Api\V2\EnterpriseCore\Automation\SystemTemplateControll
 
         // ── 03. Operating Context (OrganizationGovernance)
         Route::group(['prefix' => 'operating-context', 'middleware' => 'can:settings,view'], function () {
-            Route::get('/readiness', [OperatingContextController::class, 'readiness'])->name('v2.operating_context.readiness');
+            Route::get('/readiness', [OperatingContextController::class, 'readiness'])->middleware('setup.revision:read')->name('v2.operating_context.readiness');
             Route::get('/warehouses', [OperatingContextController::class, 'warehouses'])->name('v2.operating_context.warehouses');
             Route::get('/pos-terminals', [OperatingContextController::class, 'posTerminals'])->name('v2.operating_context.pos_terminals');
-            Route::middleware(['can:settings,create', 'throttle:api-write'])->post('/configure', [OperatingContextController::class, 'configure'])->name('v2.operating_context.configure');
-            Route::middleware(['can:settings,edit', 'throttle:api-write'])->post('/{id}/select', [OperatingContextController::class, 'select'])->name('v2.operating_context.select');
+            Route::middleware(['can:settings,create', 'throttle:api-write', 'setup.revision:write'])->post('/configure', [OperatingContextController::class, 'configure'])->name('v2.operating_context.configure');
+            Route::middleware(['can:settings,edit', 'throttle:api-write', 'setup.revision:write'])->post('/{id}/select', [OperatingContextController::class, 'select'])->name('v2.operating_context.select');
         });
 
         // ── 04. Setup lifecycle (OrganizationGovernance)
         Route::group(['prefix' => 'setup', 'middleware' => 'can:settings,view'], function () {
-            Route::get('/state', [SetupStateController::class, 'show'])->name('v2.setup.state');
-            Route::get('/organization-templates', [SetupStateController::class, 'organizationTemplates'])->name('v2.setup.organization_templates');
-            Route::middleware(['can:settings,edit', 'throttle:api-write'])->post('/organization-profile', [SetupStateController::class, 'saveOrganizationProfile'])->name('v2.setup.organization_profile.save');
-            Route::middleware(['can:settings,create', 'throttle:api-critical'])->post('/apply-organization-template', [SetupStateController::class, 'applyOrganizationTemplate'])->name('v2.setup.organization_template.apply');
-            Route::middleware(['can:settings,edit', 'throttle:api-write'])->post('/modules', [SetupStateController::class, 'selectModules'])->name('v2.setup.modules.select');
-            Route::middleware(['can:settings,edit', 'throttle:api-critical'])->post('/activate-selected', [SetupStateController::class, 'activateSelected'])->name('v2.setup.modules.activate_selected');
+            Route::get('/state', [SetupStateController::class, 'show'])->middleware('setup.revision:read')->name('v2.setup.state');
+            Route::get('/organization-templates', [SetupStateController::class, 'organizationTemplates'])->middleware('setup.revision:read')->name('v2.setup.organization_templates');
+            Route::middleware(['can:settings,edit', 'throttle:api-write', 'setup.revision:write'])->post('/organization-profile', [SetupStateController::class, 'saveOrganizationProfile'])->name('v2.setup.organization_profile.save');
+            Route::middleware(['can:settings,create', 'throttle:api-critical', 'setup.revision:write'])->post('/apply-organization-template', [SetupStateController::class, 'applyOrganizationTemplate'])->name('v2.setup.organization_template.apply');
+            Route::middleware(['can:settings,edit', 'throttle:api-write', 'setup.revision:write'])->post('/modules', [SetupStateController::class, 'selectModules'])->name('v2.setup.modules.select');
+            Route::middleware(['can:settings,edit', 'throttle:api-critical', 'setup.revision:write'])->post('/activate-selected', [SetupStateController::class, 'activateSelected'])->name('v2.setup.modules.activate_selected');
 
             // Intelligent Organization Setup & Inference
             Route::middleware(['can:settings,edit', 'throttle:api-write'])->post('/inference/analyze', [SetupInferenceController::class, 'analyze'])->name('v2.setup.inference.analyze');
             Route::middleware(['can:settings,view'])->post('/inference/adaptive-questions', [SetupInferenceController::class, 'adaptiveQuestions'])->name('v2.setup.inference.adaptive_questions');
-            Route::get('/blueprint/latest', [BlueprintLifecycleController::class, 'latest'])->name('v2.setup.blueprint.latest');
-            Route::middleware(['can:settings,edit', 'throttle:api-write'])->post('/blueprint/stage', [BlueprintLifecycleController::class, 'stage'])->name('v2.setup.blueprint.stage');
+            Route::get('/blueprint/latest', [BlueprintLifecycleController::class, 'latest'])->middleware('setup.revision:read')->name('v2.setup.blueprint.latest');
+            Route::middleware(['can:settings,edit', 'throttle:api-write', 'setup.revision:write'])->post('/blueprint/stage', [BlueprintLifecycleController::class, 'stage'])->name('v2.setup.blueprint.stage');
             Route::middleware(['can:settings,view'])->post('/blueprint/validate', [BlueprintLifecycleController::class, 'validateBlueprint'])->name('v2.setup.blueprint.validate');
-            Route::middleware(['can:settings,create', 'throttle:api-critical'])->post('/blueprint/{uuid}/publish', [BlueprintLifecycleController::class, 'publish'])->name('v2.setup.blueprint.publish');
+            Route::middleware(['can:settings,create', 'throttle:api-critical', 'setup.revision:blueprint'])->post('/blueprint/{uuid}/publish', [BlueprintLifecycleController::class, 'publish'])->name('v2.setup.blueprint.publish');
         });
 
         // ── 05. Org Structure (OrganizationGovernance)
@@ -116,30 +116,30 @@ use App\Http\Controllers\Api\V2\EnterpriseCore\Automation\SystemTemplateControll
             Route::get('/meta-types', [OrgStructureController::class, 'metaTypes'])->name('v2.org.meta_types');
             Route::get('/topology-rules', [OrgStructureController::class, 'topologyRules'])->name('v2.org.topology_rules');
             Route::get('/factory-calendars', [OrgStructureController::class, 'factoryCalendars'])->name('v2.org.factory_calendars');
-            Route::get('/nodes', [OrgStructureController::class, 'nodes'])->name('v2.org.nodes');
-            Route::get('/nodes/{uuid}', [OrgStructureController::class, 'showNode'])->name('v2.org.nodes.show');
-            Route::middleware(['can:settings,create', 'throttle:api-write'])->post('/nodes', [OrgStructureController::class, 'storeNode'])->name('v2.org.nodes.store');
-            Route::middleware(['can:settings,edit', 'throttle:api-write'])->put('/nodes/{uuid}', [OrgStructureController::class, 'updateNode'])->name('v2.org.nodes.update');
-            Route::middleware(['can:settings,delete', 'throttle:api-delete'])->delete('/nodes/{uuid}', [OrgStructureController::class, 'destroyNode'])->name('v2.org.nodes.destroy');
+            Route::get('/nodes', [OrgStructureController::class, 'nodes'])->middleware('setup.revision:read')->name('v2.org.nodes');
+            Route::get('/nodes/{uuid}', [OrgStructureController::class, 'showNode'])->middleware('setup.revision:read')->name('v2.org.nodes.show');
+            Route::middleware(['can:settings,create', 'throttle:api-write', 'setup.revision:write'])->post('/nodes', [OrgStructureController::class, 'storeNode'])->name('v2.org.nodes.store');
+            Route::middleware(['can:settings,edit', 'throttle:api-write', 'setup.revision:write'])->put('/nodes/{uuid}', [OrgStructureController::class, 'updateNode'])->name('v2.org.nodes.update');
+            Route::middleware(['can:settings,delete', 'throttle:api-delete', 'setup.revision:write'])->delete('/nodes/{uuid}', [OrgStructureController::class, 'destroyNode'])->name('v2.org.nodes.destroy');
 
-            Route::get('/links', [OrgStructureController::class, 'links'])->name('v2.org.links');
-            Route::middleware(['can:settings,create', 'throttle:api-write'])->post('/links', [OrgStructureController::class, 'storeLink'])->name('v2.org.links.store');
-            Route::middleware(['can:settings,edit', 'throttle:api-write'])->put('/links/{id}', [OrgStructureController::class, 'updateLink'])->name('v2.org.links.update');
-            Route::middleware(['can:settings,delete', 'throttle:api-delete'])->delete('/links/{id}', [OrgStructureController::class, 'destroyLink'])->name('v2.org.links.destroy');
+            Route::get('/links', [OrgStructureController::class, 'links'])->middleware('setup.revision:read')->name('v2.org.links');
+            Route::middleware(['can:settings,create', 'throttle:api-write', 'setup.revision:write'])->post('/links', [OrgStructureController::class, 'storeLink'])->name('v2.org.links.store');
+            Route::middleware(['can:settings,edit', 'throttle:api-write', 'setup.revision:write'])->put('/links/{id}', [OrgStructureController::class, 'updateLink'])->name('v2.org.links.update');
+            Route::middleware(['can:settings,delete', 'throttle:api-delete', 'setup.revision:write'])->delete('/links/{id}', [OrgStructureController::class, 'destroyLink'])->name('v2.org.links.destroy');
 
             Route::get('/scope-context/{uuid}', [OrgStructureController::class, 'scopeContext'])->name('v2.org.scope_context');
             Route::get('/statistics', [OrgStructureController::class, 'statistics'])->name('v2.org.statistics');
             Route::get('/integrity-check', [OrgStructureController::class, 'integrityCheck'])->name('v2.org.integrity_check');
             Route::get('/module-readiness', [OrgStructureController::class, 'moduleReadiness'])->name('v2.org.module_readiness');
             Route::get('/change-history', [OrgStructureController::class, 'changeHistory'])->name('v2.org.change_history');
-            Route::middleware(['can:settings,edit', 'throttle:api-critical'])->post('/bulk-status-update', [OrgStructureController::class, 'bulkStatusUpdate'])->name('v2.org.bulk_status');
+            Route::middleware(['can:settings,edit', 'throttle:api-critical', 'setup.revision:write'])->post('/bulk-status-update', [OrgStructureController::class, 'bulkStatusUpdate'])->name('v2.org.bulk_status');
         });
 
         // ── 06. Org Studio & Multi-Plane Perspectives
         Route::group(['prefix' => 'org-studio', 'middleware' => 'can:settings,view'], function () {
-            Route::get('/perspectives/{key}', [OrgStudioPerspectiveController::class, 'getPerspective'])->name('v2.org_studio.perspective');
-            Route::middleware(['can:settings,edit', 'throttle:api-write'])->post('/restructure', [OrgStudioPerspectiveController::class, 'restructure'])->name('v2.org_studio.restructure');
-            Route::middleware(['can:settings,edit', 'throttle:api-write'])->put('/nodes/{uuid}/facets', [OrgStudioPerspectiveController::class, 'updateFacets'])->name('v2.org_studio.nodes.facets');
+            Route::get('/perspectives/{key}', [OrgStudioPerspectiveController::class, 'getPerspective'])->middleware('setup.revision:read')->name('v2.org_studio.perspective');
+            Route::middleware(['can:settings,edit', 'throttle:api-write', 'setup.revision:write'])->post('/restructure', [OrgStudioPerspectiveController::class, 'restructure'])->name('v2.org_studio.restructure');
+            Route::middleware(['can:settings,edit', 'throttle:api-write', 'setup.revision:write'])->put('/nodes/{uuid}/facets', [OrgStudioPerspectiveController::class, 'updateFacets'])->name('v2.org_studio.nodes.facets');
             Route::get('/closures/{uuid}', [OrgStudioPerspectiveController::class, 'getClosures'])->name('v2.org_studio.closures');
         });
 

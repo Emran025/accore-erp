@@ -68,6 +68,8 @@ export default function SetupPage() {
   const [formDraft, setFormDraft] = useState<SetupFormDraft>(() => readSetupFormDraft());
   const formDraftRef = useRef(formDraft);
   const prevSetupStateRef = useRef<SetupState | null>(null);
+  const setupRevisionRef = useRef<number | null>(null);
+  const prevSetupRevisionRef = useRef<number | null>(null);
   const prevReadinessRef = useRef<Readiness | null>(null);
   const loadSequenceRef = useRef(createSetupLoadSequence());
   const inferenceRequestSequenceRef = useRef(0);
@@ -143,10 +145,17 @@ export default function SetupPage() {
     setQuestionAnswers({});
     setSynthesizedBlueprint(null);
     setStagedBlueprintUuid(null);
+    setStagedBlueprintRevision(null);
     setInferenceContextSnapshot("");
     setInferenceDescriptionSnapshot("");
     setInferenceAnswersSnapshot("{}");
     setHasDraftData(Object.keys(formDraftRef.current).length > 0);
+  };
+
+  const invalidateStagedBlueprint = () => {
+    setStagedBlueprintUuid(null);
+    setStagedBlueprintRevision(null);
+    saveDraft({ stagedBlueprintUuid: null, stagedBlueprintRevision: null });
   };
 
   const draft = readDraft();
@@ -182,6 +191,7 @@ export default function SetupPage() {
   const [questionAnswers, setQuestionAnswers] = useState<Record<string, unknown>>((draft.questionAnswers as Record<string, unknown>) ?? {});
   const [synthesizedBlueprint, setSynthesizedBlueprint] = useState<BlueprintData | null>((draft.synthesizedBlueprint as BlueprintData | undefined) ?? null);
   const [stagedBlueprintUuid, setStagedBlueprintUuid] = useState<string | null>((draft.stagedBlueprintUuid as string) ?? null);
+  const [stagedBlueprintRevision, setStagedBlueprintRevision] = useState<string | null>((draft.stagedBlueprintRevision as string | undefined) ?? null);
   const [inferenceContextSnapshot, setInferenceContextSnapshot] = useState<string>((draft.inferenceContextSnapshot as string | undefined) ?? "");
   const [inferenceDescriptionSnapshot, setInferenceDescriptionSnapshot] = useState<string>((draft.inferenceDescriptionSnapshot as string | undefined) ?? "");
   const [inferenceAnswersSnapshot, setInferenceAnswersSnapshot] = useState<string>((draft.inferenceAnswersSnapshot as string | undefined) ?? "{}");
@@ -197,6 +207,7 @@ export default function SetupPage() {
         questionAnswers,
         synthesizedBlueprint,
         stagedBlueprintUuid,
+        stagedBlueprintRevision,
         inferenceContextSnapshot,
         inferenceDescriptionSnapshot,
         inferenceAnswersSnapshot,
@@ -207,13 +218,13 @@ export default function SetupPage() {
         || Boolean(lastDescription || inferenceEvaluation || synthesizedBlueprint || stagedBlueprintUuid),
     );
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lastDescription, inferenceEvaluation, inferenceSignals, adaptiveQuestions, questionAnswers, synthesizedBlueprint, stagedBlueprintUuid, inferenceContextSnapshot, inferenceDescriptionSnapshot, inferenceAnswersSnapshot]);
+  }, [lastDescription, inferenceEvaluation, inferenceSignals, adaptiveQuestions, questionAnswers, synthesizedBlueprint, stagedBlueprintUuid, stagedBlueprintRevision, inferenceContextSnapshot, inferenceDescriptionSnapshot, inferenceAnswersSnapshot]);
 
   const load = useCallback(async (options: { navigate?: boolean; acknowledgeStale?: boolean; mutationConfirmed?: boolean } = {}) => {
     const requestId = loadSequenceRef.current.begin();
     setIsLoading(true);
     try {
-      const [readinessResponse, setupResponse, templateResponse, nodesResponse, costsResponse, profitsResponse, currenciesResponse, factoryCalendarsResponse, accountsResponse, periodsResponse] = await Promise.all([
+      const fetchSnapshot = () => Promise.all([
         setupApi.getReadiness(),
         setupApi.getState(),
         setupApi.getOrganizationTemplates(),
@@ -225,6 +236,7 @@ export default function SetupPage() {
         setupApi.getAccounts(),
         setupApi.getFiscalPeriods(),
       ]);
+      let [readinessResponse, setupResponse, templateResponse, nodesResponse, costsResponse, profitsResponse, currenciesResponse, factoryCalendarsResponse, accountsResponse, periodsResponse] = await fetchSnapshot();
 
       if (!loadSequenceRef.current.isCurrent(requestId)) return null;
       if (!readinessResponse.success || !readinessResponse.data || !setupResponse.success || !setupResponse.data) {
@@ -234,8 +246,42 @@ export default function SetupPage() {
         return null;
       }
 
+      const readRevisions = [
+        readinessResponse.setup_revision,
+        setupResponse.setup_revision,
+        templateResponse.setup_revision,
+        nodesResponse.setup_revision,
+      ].filter((revision): revision is number => typeof revision === "number");
+      if (new Set(readRevisions).size > 1) {
+        [readinessResponse, setupResponse, templateResponse, nodesResponse, costsResponse, profitsResponse, currenciesResponse, factoryCalendarsResponse, accountsResponse, periodsResponse] = await fetchSnapshot();
+        if (!loadSequenceRef.current.isCurrent(requestId)) return null;
+        if (!readinessResponse.success || !readinessResponse.data || !setupResponse.success || !setupResponse.data) {
+          const message = readinessResponse.message || setupResponse.message || i18n.catalog["enterpriseCore.setup.failedToLoad"];
+          setRequestError(message);
+          showToast(message, "error");
+          return null;
+        }
+        const retryRevisions = [
+          readinessResponse.setup_revision,
+          setupResponse.setup_revision,
+          templateResponse.setup_revision,
+          nodesResponse.setup_revision,
+        ].filter((revision): revision is number => typeof revision === "number");
+        if (new Set(retryRevisions).size > 1) {
+          const message = i18n.catalog["enterpriseCore.setup.staleStateBanner"];
+          setIsStaleState(true);
+          setRequestError(message);
+          showToast(message, "error");
+          return null;
+        }
+      }
+
       const incomingReadiness = readinessResponse.data;
       const baseState = setupResponse.data;
+      const incomingRevision = setupResponse.setup_revision;
+      const revisionChanged = typeof incomingRevision === "number"
+        && prevSetupRevisionRef.current !== null
+        && incomingRevision !== prevSetupRevisionRef.current;
       const templateState = baseState.organization_template
         ?? (templateResponse.success ? templateResponse.data : undefined);
       const state: SetupState = templateState
@@ -253,11 +299,15 @@ export default function SetupPage() {
       if (!loadSequenceRef.current.isCurrent(requestId)) return null;
 
       const firstSnapshot = prevSetupStateRef.current === null;
-      const changed = detectStaleSetupState(prevSetupStateRef.current, state, prevReadinessRef.current, incomingReadiness);
+      const changed = revisionChanged || detectStaleSetupState(prevSetupStateRef.current, state, prevReadinessRef.current, incomingReadiness);
       if (changed && !options.mutationConfirmed && !options.acknowledgeStale) setIsStaleState(true);
       else if (options.acknowledgeStale || options.mutationConfirmed) setIsStaleState(false);
       setRequestError(null);
       prevSetupStateRef.current = state;
+      if (typeof incomingRevision === "number") {
+        setupRevisionRef.current = incomingRevision;
+        prevSetupRevisionRef.current = incomingRevision;
+      }
       prevReadinessRef.current = incomingReadiness;
       setReadiness(incomingReadiness);
       setSetupState(state);
@@ -507,13 +557,17 @@ export default function SetupPage() {
   };
 
   const callAndReload = async <T,>(
-    action: () => Promise<{ success?: boolean; message?: string; data?: T; errors?: Record<string, string[]> | number }>,
+    action: () => Promise<{ success?: boolean; message?: string; data?: T; errors?: Record<string, string[]> | number; httpStatus?: number; code?: string; setup_revision?: number }>,
     savedSection?: keyof SetupFormDraft,
   ): Promise<T | null> => {
     setIsSaving(true);
     try {
       const response = await action();
       if (!response.success) {
+        if (response.httpStatus === 409 || response.httpStatus === 428 || response.code === "setup_state_conflict" || response.code === "setup_revision_required") {
+          await load();
+          setIsStaleState(true);
+        }
         const validationErrors = typeof response.errors === "object" && response.errors !== null
           ? response.errors
           : {};
@@ -523,6 +577,7 @@ export default function SetupPage() {
         }
         throw new Error(response.message);
       }
+      if (typeof response.setup_revision === "number") setupRevisionRef.current = response.setup_revision;
       setFieldErrors({});
       if (savedSection) updateFormDraft(savedSection, undefined);
       setRequestError(null);
@@ -642,12 +697,19 @@ export default function SetupPage() {
         name: organizationProfile.company_name || synthesizedBlueprint.archetype_id,
         archetype_id: synthesizedBlueprint.archetype_id,
         blueprint_json: synthesizedBlueprint,
-      });
+      }, setupRevisionRef.current ?? undefined);
 
       if (res.success && res.data) {
         setStagedBlueprintUuid(res.data.blueprint_uuid);
+        setStagedBlueprintRevision(res.data.blueprint_revision);
+        if (typeof res.setup_revision === "number") setupRevisionRef.current = res.setup_revision;
         showToast("Blueprint draft saved", "success");
       } else {
+        if (res.httpStatus === 409 || res.httpStatus === 428) {
+          invalidateStagedBlueprint();
+          await load();
+          setIsStaleState(true);
+        }
         const message = res.message || "Failed to save draft";
         setRequestError(message);
         showToast(message, "error");
@@ -670,17 +732,26 @@ export default function SetupPage() {
     setIsPublishing(true);
     try {
       let uuid = stagedBlueprintUuid;
-      if (!uuid) {
+      let blueprintRevision = stagedBlueprintRevision;
+      if (!uuid || !blueprintRevision) {
         const stageRes = await setupApi.stageBlueprint({
           name: organizationProfile.company_name || synthesizedBlueprint.archetype_id,
           archetype_id: synthesizedBlueprint.archetype_id,
           blueprint_json: synthesizedBlueprint,
-        });
+        }, setupRevisionRef.current ?? undefined);
         if (stageRes.success && stageRes.data) {
           uuid = stageRes.data.blueprint_uuid;
+          blueprintRevision = stageRes.data.blueprint_revision;
           setStagedBlueprintUuid(uuid);
+          setStagedBlueprintRevision(blueprintRevision);
+          if (typeof stageRes.setup_revision === "number") setupRevisionRef.current = stageRes.setup_revision;
         } else {
-          showToast("Failed to stage blueprint before publishing", "error");
+          if (stageRes.httpStatus === 409 || stageRes.httpStatus === 428) {
+            invalidateStagedBlueprint();
+            await load();
+            setIsStaleState(true);
+          }
+          showToast(stageRes.message || "Failed to stage blueprint before publishing", "error");
           setIsPublishing(false);
           return;
         }
@@ -689,14 +760,21 @@ export default function SetupPage() {
       const pubRes = await setupApi.publishBlueprint(uuid!, {
         clear_existing: false,
         create_operating_context: true,
-      });
+        blueprint_revision: blueprintRevision!,
+      }, setupRevisionRef.current ?? undefined);
 
       if (pubRes.success) {
+        if (typeof pubRes.setup_revision === "number") setupRevisionRef.current = pubRes.setup_revision;
         clearDraft();
         setRequestError(null);
         showToast(i18n.catalog["orgStudio.setup.publishedSuccess"], "success");
         await load({ mutationConfirmed: true });
       } else {
+        if (pubRes.httpStatus === 409 || pubRes.httpStatus === 428) {
+          invalidateStagedBlueprint();
+          await load();
+          setIsStaleState(true);
+        }
         const message = pubRes.message || "Failed to compile organization";
         setRequestError(message);
         showToast(message, "error");
@@ -711,11 +789,11 @@ export default function SetupPage() {
   };
 
   const saveOrganizationProfile = async () => {
-    await callAndReload(() => setupApi.saveOrganizationProfile({ ...organizationProfile, template_key: selectedTemplateKey }), "organizationProfile");
+    await callAndReload(() => setupApi.saveOrganizationProfile({ ...organizationProfile, template_key: selectedTemplateKey }, setupRevisionRef.current ?? undefined), "organizationProfile");
   };
 
   const applyOrganizationTemplate = async () => {
-    await callAndReload(() => setupApi.applyOrganizationTemplate(), "organizationProfile");
+    await callAndReload(() => setupApi.applyOrganizationTemplate(setupRevisionRef.current ?? undefined), "organizationProfile");
   };
 
   const createAccount = async () => {
@@ -817,7 +895,7 @@ export default function SetupPage() {
       showToast(message, "error");
       return;
     }
-    await callAndReload(() => setupApi.configureOperatingContext(contextRequest), "operatingScope");
+    await callAndReload(() => setupApi.configureOperatingContext(contextRequest, setupRevisionRef.current ?? undefined), "operatingScope");
   };
 
   const saveWorkingUnit = async () => {
@@ -829,11 +907,11 @@ export default function SetupPage() {
     await callAndReload(() => setupApi.updateOrganizationNode(text(selectedWorkingUnitNode, "node_uuid"), {
       code: workingUnitCode.trim(),
       attributes: { ...currentAttributes, ...(workingUnitName.trim() ? { name: workingUnitName.trim() } : {}) },
-    }), "workingUnitDetails");
+    }, setupRevisionRef.current ?? undefined), "workingUnitDetails");
   };
 
   const saveModuleSelection = async () => {
-    await callAndReload(() => setupApi.selectModules(selectedModuleKeys), "moduleSelection");
+    await callAndReload(() => setupApi.selectModules(selectedModuleKeys, setupRevisionRef.current ?? undefined), "moduleSelection");
   };
 
   const activateSelectedModules = async () => {
@@ -850,8 +928,15 @@ export default function SetupPage() {
         showToast(message, "error");
         return;
       }
-      const response = await setupApi.activateSelectedModules();
-      if (!response.success) throw new Error(response.message);
+      const response = await setupApi.activateSelectedModules(setupRevisionRef.current ?? undefined);
+      if (!response.success) {
+        if (response.httpStatus === 409 || response.httpStatus === 428) {
+          await load();
+          setIsStaleState(true);
+        }
+        throw new Error(response.message);
+      }
+      if (typeof response.setup_revision === "number") setupRevisionRef.current = response.setup_revision;
       setRequestError(null);
       showToast(i18n.catalog["enterpriseCore.setup.createdSuccessfully"], "success");
       await load({ mutationConfirmed: true });

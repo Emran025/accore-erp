@@ -27,8 +27,9 @@ interface ClosuresData {
 
 interface PropertyInspectorProps {
   node: NodeData | null;
+  setupRevision: number | null;
   onClose: () => void;
-  onFacetsUpdated: () => void;
+  onFacetsUpdated: () => void | Promise<void>;
   onOpenRestructure: (node: NodeData) => void;
 }
 
@@ -45,6 +46,7 @@ const AVAILABLE_FACETS = [
 
 export function PropertyInspector({
   node,
+  setupRevision,
   onClose,
   onFacetsUpdated,
   onOpenRestructure,
@@ -52,19 +54,15 @@ export function PropertyInspector({
   const { t: i18n, locale } = useI18n();
   const isArabic = locale === "ar-SA";
 
-  const [selectedFacets, setSelectedFacets] = useState<string[]>([]);
+  const [facetDrafts, setFacetDrafts] = useState<Record<string, string[]>>({});
   const [isSaving, setIsSaving] = useState(false);
-  const [closures, setClosures] = useState<ClosuresData | null>(null);
+  const [loadedClosures, setLoadedClosures] = useState<{ nodeUuid: string; data: ClosuresData } | null>(null);
   const [isLoadingClosures, setIsLoadingClosures] = useState(false);
+  const selectedFacets = node ? facetDrafts[node.node_uuid] ?? node.facets ?? [] : [];
+  const closures = node && loadedClosures && node.node_uuid === loadedClosures.nodeUuid ? loadedClosures.data : null;
 
   useEffect(() => {
-    if (!node) {
-      setSelectedFacets([]);
-      setClosures(null);
-      return;
-    }
-
-    setSelectedFacets(node.facets || []);
+    if (!node) return;
 
     const loadClosures = async () => {
       setIsLoadingClosures(true);
@@ -75,13 +73,16 @@ export function PropertyInspector({
         if (res.success) {
           const closurePayload = (res.data ?? res) as Partial<ClosuresData> | null;
 
-          setClosures({
-            ancestors: Array.isArray(closurePayload?.ancestors)
-              ? (closurePayload.ancestors as NodeData[])
-              : [],
-            descendants: Array.isArray(closurePayload?.descendants)
-              ? (closurePayload.descendants as NodeData[])
-              : [],
+          setLoadedClosures({
+            nodeUuid: node.node_uuid,
+            data: {
+              ancestors: Array.isArray(closurePayload?.ancestors)
+                ? (closurePayload.ancestors as NodeData[])
+                : [],
+              descendants: Array.isArray(closurePayload?.descendants)
+                ? (closurePayload.descendants as NodeData[])
+                : [],
+            },
           });
         }
       } catch {
@@ -105,11 +106,16 @@ export function PropertyInspector({
   }
 
   const toggleFacet = (facetKey: string) => {
-    setSelectedFacets((prev) =>
-      prev.includes(facetKey)
-        ? prev.filter((f) => f !== facetKey)
-        : [...prev, facetKey]
-    );
+    if (!node) return;
+    setFacetDrafts((previous) => {
+      const current = previous[node.node_uuid] ?? node.facets ?? [];
+      return {
+        ...previous,
+        [node.node_uuid]: current.includes(facetKey)
+          ? current.filter((facet) => facet !== facetKey)
+          : [...current, facetKey],
+      };
+    });
   };
 
   const handleSaveFacets = async () => {
@@ -120,13 +126,15 @@ export function PropertyInspector({
         {
           method: "PUT",
           body: JSON.stringify({ facets: selectedFacets }),
+          headers: setupRevision === null ? {} : { "If-Match": `"${setupRevision}"` },
         }
       );
 
       if (res.success) {
         showToast(i18n.catalog["orgStudio.inspector.syncNotice"], "success");
-        onFacetsUpdated();
+        await onFacetsUpdated();
       } else {
+        if (res.httpStatus === 409 || res.httpStatus === 428) await onFacetsUpdated();
         showToast(res.message || "Failed to save facets", "error");
       }
     } catch {

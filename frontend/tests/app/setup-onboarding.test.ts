@@ -104,7 +104,23 @@ describe("profile-driven setup onboarding", () => {
     expect(scope).toContain("posTerminalId");
     expect(scope).toContain("warehouseId");
     expect(scope).toContain("profitCenterId");
-    expect(scope).toContain("requiresPosTerminal");
+    expect(scope).toContain("requiresProfitCenter");
+  });
+
+  it("refreshes on a conditional-write conflict while preserving the editable draft until a confirmed mutation", () => {
+    const page = source("app/setup/page.tsx");
+
+    expect(page).toContain("response.httpStatus === 409 || response.httpStatus === 428");
+    expect(page).toContain("await load();\n          setIsStaleState(true);");
+    expect(page).toContain("const savedFormDraft = options.mutationConfirmed ? {} : formDraftRef.current;");
+    expect(page).toContain("if (changed && !options.mutationConfirmed && !options.acknowledgeStale) setIsStaleState(true)");
+    expect(page).toContain("setupRevisionRef.current = incomingRevision");
+    expect(page).toContain("const fetchSnapshot = () => Promise.all([");
+    expect(page).toContain("new Set(readRevisions).size > 1");
+    expect(page).toContain("new Set(retryRevisions).size > 1");
+    expect(page).toContain("const invalidateStagedBlueprint = () => {");
+    expect(page).toContain("stagedBlueprintRevision");
+    expect(page).toContain("blueprint_revision: blueprintRevision!");
   });
 
   it("uses controlled reference data for organization profile currency and calendar", () => {

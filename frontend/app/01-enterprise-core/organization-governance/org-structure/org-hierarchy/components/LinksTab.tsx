@@ -27,6 +27,7 @@ export function LinksTab() {
     const [metaTypes, setMetaTypes] = useState<MetaType[]>([]);
     const [topologyRules, setTopologyRules] = useState<TopologyRule[]>([]);
     const [links, setLinks] = useState<StructureLink[]>([]);
+    const [setupRevision, setSetupRevision] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [addDialog, setAddDialog] = useState(false);
     const [editDialog, setEditDialog] = useState(false);
@@ -42,6 +43,7 @@ export function LinksTab() {
     const [filterTargetType, setFilterTargetType] = useState("");
     const [filterLinkType, setFilterLinkType] = useState("");
     const [showActiveOnly, setShowActiveOnly] = useState(false);
+    const revisionHeaders = (): Record<string, string> => setupRevision === null ? {} : { "If-Match": `"${setupRevision}"` };
 
     const loadAll = useCallback(async () => {
         try {
@@ -52,12 +54,29 @@ export function LinksTab() {
             if (filterLinkType) params.set("link_type", filterLinkType);
             if (showActiveOnly) params.set("active_only", "1");
 
-            const [linksRes, nodesRes, metaRes, rulesRes] = await Promise.all([
+            const fetchStructureSnapshot = () => Promise.all([
                 fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.ORG.LINKS}?${params}`),
                 fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES),
                 fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.META_TYPES),
                 fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.TOPOLOGY_RULES),
             ]);
+            let [linksRes, nodesRes, metaRes, rulesRes] = await fetchStructureSnapshot();
+            const revisions = [linksRes.setup_revision, nodesRes.setup_revision]
+                .filter((revision): revision is number => typeof revision === "number");
+            if (new Set(revisions).size > 1) {
+                [linksRes, nodesRes, metaRes, rulesRes] = await fetchStructureSnapshot();
+                const retryRevisions = [linksRes.setup_revision, nodesRes.setup_revision]
+                    .filter((revision): revision is number => typeof revision === "number");
+                if (new Set(retryRevisions).size > 1) {
+                    showToast(i18n.catalog["enterpriseCore.setup.staleStateBanner"], "error");
+                    return;
+                }
+            }
+            if (typeof linksRes.setup_revision === "number") setSetupRevision(linksRes.setup_revision);
+            if (!linksRes.success || !nodesRes.success || !metaRes.success || !rulesRes.success) {
+                showToast(linksRes.message || nodesRes.message || metaRes.message || rulesRes.message || i18n.catalog["common.general.errorLoadingData"], "error");
+                return;
+            }
             setLinks((linksRes.data as StructureLink[]) || []);
             setNodes((nodesRes.data as StructureNode[]) || []);
             setMetaTypes((metaRes.data as MetaType[]) || []);
@@ -94,14 +113,20 @@ export function LinksTab() {
     const handleCreateLink = async () => {
         if (!sourceUuid || !targetUuid) { showToast(i18n.catalog["enterpriseCore.links.pleaseSelectSourceDestination"], "error"); return; }
         try {
-            await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.LINKS, {
+            const response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.LINKS, {
                 method: "POST",
                 body: JSON.stringify({
                     source_node_uuid: sourceUuid, target_node_uuid: targetUuid,
                     link_type: linkType, priority: parseInt(priority) || 0,
                     valid_from: validFrom || null, valid_to: validTo || null,
                 }),
+                headers: revisionHeaders(),
             });
+            if (!response.success) {
+                if (response.httpStatus === 409 || response.httpStatus === 428) await loadAll();
+                throw new Error(response.message || i18n.catalog["enterpriseCore.links.creationError"]);
+            }
+            if (typeof response.setup_revision === "number") setSetupRevision(response.setup_revision);
             showToast(i18n.catalog["enterpriseCore.links.linkCreated"], "success");
             resetForm(); setAddDialog(false); loadAll();
         } catch (e: unknown) {
@@ -121,13 +146,19 @@ export function LinksTab() {
     const handleUpdateLink = async () => {
         if (!selectedLink) return;
         try {
-            await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.LINK(selectedLink.id), {
+            const response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.LINK(selectedLink.id), {
                 method: "PUT",
                 body: JSON.stringify({
                     link_type: linkType, priority: parseInt(priority) || 0,
                     valid_from: validFrom || null, valid_to: validTo || null,
                 }),
+                headers: revisionHeaders(),
             });
+            if (!response.success) {
+                if (response.httpStatus === 409 || response.httpStatus === 428) await loadAll();
+                throw new Error(response.message || i18n.catalog["common.general.updateError"]);
+            }
+            if (typeof response.setup_revision === "number") setSetupRevision(response.setup_revision);
             showToast(i18n.catalog["enterpriseCore.links.linkUpdated"], "success");
             setEditDialog(false); setSelectedLink(null); loadAll();
         } catch (e: unknown) {
@@ -143,7 +174,12 @@ export function LinksTab() {
     const handleDeleteLink = async () => {
         if (!selectedLink) return;
         try {
-            await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.LINK(selectedLink.id), { method: "DELETE" });
+            const response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.LINK(selectedLink.id), { method: "DELETE", headers: revisionHeaders() });
+            if (!response.success) {
+                if (response.httpStatus === 409 || response.httpStatus === 428) await loadAll();
+                throw new Error(response.message || i18n.catalog["common.general.deletionError"]);
+            }
+            if (typeof response.setup_revision === "number") setSetupRevision(response.setup_revision);
             showToast(i18n.catalog["enterpriseCore.links.linkRemoved"], "success");
             setDeleteDialog(false); setSelectedLink(null); loadAll();
         } catch (e: unknown) {

@@ -116,6 +116,7 @@ export function OrgStudioWorkspace() {
 
   const [activePerspective, setActivePerspective] = useState<PerspectiveKey>("all");
   const [data, setData] = useState<PerspectivePayload | null>(null);
+  const [setupRevision, setSetupRevision] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -136,6 +137,13 @@ export function OrgStudioWorkspace() {
 
       if (res.success && res.data) {
         setData(res.data);
+        if (typeof res.setup_revision === "number") setSetupRevision(res.setup_revision);
+        setSelectedNode((current) => current
+          ? res.data?.nodes.find((node) => node.node_uuid === current.node_uuid) ?? null
+          : null);
+        setNodeToRestructure((current) => current
+          ? res.data?.nodes.find((node) => node.node_uuid === current.node_uuid) ?? null
+          : null);
         // Expand all roots by default
         const roots = res.data.root_nodes || [];
         setExpandedUuids(new Set(roots.map((r) => r.node_uuid)));
@@ -198,10 +206,10 @@ export function OrgStudioWorkspace() {
     });
   };
 
-  const expandAll = () => {
+  function expandAll() {
     if (!data) return;
     setExpandedUuids(new Set(data.nodes.map((n) => n.node_uuid)));
-  };
+  }
 
   const collapseAll = () => {
     setExpandedUuids(new Set());
@@ -478,8 +486,9 @@ export function OrgStudioWorkspace() {
         <div className="lg:col-span-1">
           <PropertyInspector
             node={selectedNode}
+            setupRevision={setupRevision}
             onClose={() => setSelectedNode(null)}
-            onFacetsUpdated={() => void loadPerspective(activePerspective)}
+            onFacetsUpdated={() => loadPerspective(activePerspective)}
             onOpenRestructure={(node) => {
               setNodeToRestructure(node);
               setRestructureModalOpen(true);
@@ -497,8 +506,9 @@ export function OrgStudioWorkspace() {
         }}
         sourceNode={nodeToRestructure}
         allNodes={data?.nodes || []}
+        setupRevision={setupRevision}
         currentPlane={activePerspective === "financial" ? "FINANCIAL_ROLLUP" : activePerspective === "facilities" ? "GEOGRAPHIC_CONTAINMENT" : "OPERATIONAL_HIERARCHY"}
-        onSuccess={() => void loadPerspective(activePerspective)}
+        onSuccess={() => loadPerspective(activePerspective)}
       />
     </div>
   );

@@ -41,6 +41,7 @@ interface TopologyRule {
 export function NodesTab() {
     const { t: i18n } = useI18n();
     const [nodes, setNodes] = useState<StructureNode[]>([]);
+    const [setupRevision, setSetupRevision] = useState<number | null>(null);
     const [metaTypes, setMetaTypes] = useState<MetaType[]>([]);
     const [topologyRules, setTopologyRules] = useState<TopologyRule[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -64,6 +65,8 @@ export function NodesTab() {
         valid_from: "", valid_to: "",
     });
 
+    const revisionHeaders = (): Record<string, string> => setupRevision === null ? {} : { "If-Match": `"${setupRevision}"` };
+
     const loadNodes = useCallback(async () => {
         try {
             setIsLoading(true);
@@ -73,6 +76,11 @@ export function NodesTab() {
             if (filterStatus) params.set("status", filterStatus);
             if (filterDomain) params.set("level_domain", filterDomain);
             const response = await fetchAPI(`${API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES}?${params}`);
+            if (typeof response.setup_revision === "number") setSetupRevision(response.setup_revision);
+            if (!response.success) {
+                showToast(response.message || i18n.catalog["enterpriseCore.nodes.errorLoadingOrganizationalUnits"], "error");
+                return;
+            }
             setNodes((response.data as StructureNode[]) || []);
             setInitialDataLoaded(true);
         } catch { showToast(i18n.catalog["enterpriseCore.nodes.errorLoadingOrganizationalUnits"], "error"); }
@@ -139,18 +147,24 @@ export function NodesTab() {
             payload.link = { target_node_uuid: formData.target_node_uuid, validate_constraints: formData.validate_constraints };
         }
         try {
+            let response;
             if (selectedNode) {
-                await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODE(selectedNode.node_uuid), {
+                response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODE(selectedNode.node_uuid), {
                     method: "PUT", body: JSON.stringify({
                         code: formData.code, attributes: attrs, status: formData.status,
                         valid_from: formData.valid_from || null, valid_to: formData.valid_to || null,
                     }),
+                    headers: revisionHeaders(),
                 });
-                showToast(i18n.catalog["enterpriseCore.nodes.unitUpdatedSuccessfully"], "success");
             } else {
-                await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES, { method: "POST", body: JSON.stringify(payload) });
-                showToast(i18n.catalog["enterpriseCore.nodes.unitAddedSuccessfully"], "success");
+                response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES, { method: "POST", body: JSON.stringify(payload), headers: revisionHeaders() });
             }
+            if (!response.success) {
+                if (response.httpStatus === 409 || response.httpStatus === 428) await loadNodes();
+                throw new Error(response.message || i18n.catalog["common.general.errorSaving"]);
+            }
+            if (typeof response.setup_revision === "number") setSetupRevision(response.setup_revision);
+            showToast(selectedNode ? i18n.catalog["enterpriseCore.nodes.unitUpdatedSuccessfully"] : i18n.catalog["enterpriseCore.nodes.unitAddedSuccessfully"], "success");
             setFormDialog(false); loadNodes();
         } catch (e: unknown) {
             const err = e as { message?: string };
@@ -165,7 +179,12 @@ export function NodesTab() {
     const handleDelete = async () => {
         if (!deleteUuid) return;
         try {
-            await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODE(deleteUuid), { method: "DELETE" });
+            const response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODE(deleteUuid), { method: "DELETE", headers: revisionHeaders() });
+            if (!response.success) {
+                if (response.httpStatus === 409 || response.httpStatus === 428) await loadNodes();
+                throw new Error(response.message || i18n.catalog["common.general.deletionError"]);
+            }
+            if (typeof response.setup_revision === "number") setSetupRevision(response.setup_revision);
             showToast(i18n.catalog["enterpriseCore.nodes.unitDeleted"], "success"); loadNodes();
         } catch (e: unknown) {
             const err = e as { message?: string };
@@ -197,10 +216,16 @@ export function NodesTab() {
     const handleBulkStatus = async () => {
         if (selectedUuids.size === 0) return;
         try {
-            await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.BULK_STATUS, {
+            const response = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.BULK_STATUS, {
                 method: "POST",
                 body: JSON.stringify({ node_uuids: Array.from(selectedUuids), status: bulkStatus }),
+                headers: revisionHeaders(),
             });
+            if (!response.success) {
+                if (response.httpStatus === 409 || response.httpStatus === 428) await loadNodes();
+                throw new Error(response.message || i18n.catalog["enterpriseCore.nodes.bulkUpdateError"]);
+            }
+            if (typeof response.setup_revision === "number") setSetupRevision(response.setup_revision);
             showToast(catalogText(i18n, "enterpriseCore.nodes.moduleUpdated", { value0: selectedUuids.size }), "success");
             setSelectedUuids(new Set());
             setBulkDialog(false);

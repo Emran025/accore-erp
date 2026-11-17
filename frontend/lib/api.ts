@@ -42,6 +42,12 @@ export interface APIResponse<T = any> {
   message_key?: string;
   /** Field-level validation messages returned by Laravel. */
   errors?: Record<string, string[]> | number;
+  /** HTTP status and stable server error code, including conditional-write conflicts. */
+  httpStatus?: number;
+  code?: string;
+  /** Current and next server-issued setup revisions. */
+  current_revision?: number;
+  setup_revision?: number;
   /** Response metadata, including the resolved endpoint locale. */
   meta?: { locale?: string; language_tag?: string; [key: string]: unknown };
   /** Primary record ID if applicable */
@@ -194,14 +200,19 @@ export async function fetchAPI<T = unknown>(
         const errData = await response.json();
         return {
           success: false,
+          httpStatus: response.status,
+          code: typeof errData.code === 'string' ? errData.code : undefined,
           message:
             errData.message ||
             catalogMessage('common.general.httpError', { value0: response.status }),
           errors: validationErrorMap(errData.errors),
+          current_revision: typeof errData.current_revision === 'number' ? errData.current_revision : undefined,
+          setup_revision: typeof errData.setup_revision === 'number' ? errData.setup_revision : undefined,
         };
       } catch {
         return {
           success: false,
+          httpStatus: response.status,
           message: catalogMessage('common.general.httpError', { value0: response.status }),
         };
       }

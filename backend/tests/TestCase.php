@@ -10,6 +10,7 @@ use App\Domains\EnterpriseCore\IdentityAccess\Models\Session;
 use App\Domains\Finance\GeneralLedger\Models\ChartOfAccount;
 use App\Domains\Finance\GeneralLedger\Models\FiscalPeriod;
 use App\Domains\EnterpriseCore\OrganizationGovernance\Models\Module;
+use Illuminate\Support\Facades\DB;
 
 use Carbon\Carbon;
 
@@ -136,6 +137,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function authPost(string $uri, array $data = [], array $headers = [])
     {
+        $headers = $this->withCurrentSetupRevision($uri, $headers);
         return $this->withHeaders(array_merge($this->authHeaders(), $headers))
             ->postJson($uri, $data);
     }
@@ -145,6 +147,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function authPut(string $uri, array $data = [], array $headers = [])
     {
+        $headers = $this->withCurrentSetupRevision($uri, $headers);
         return $this->withHeaders(array_merge($this->authHeaders(), $headers))
             ->putJson($uri, $data);
     }
@@ -154,8 +157,37 @@ abstract class TestCase extends BaseTestCase
      */
     protected function authDelete(string $uri, array $data = [], array $headers = [])
     {
+        $headers = $this->withCurrentSetupRevision($uri, $headers);
         return $this->withHeaders(array_merge($this->authHeaders(), $headers))
             ->deleteJson($uri, $data);
+    }
+
+    /**
+     * Existing feature tests use these helpers as a current client. Add the
+     * latest validator only for endpoints that now require conditional writes;
+     * stale and missing-validator tests pass explicit raw headers or use
+     * authenticated requests directly.
+     */
+    private function withCurrentSetupRevision(string $uri, array $headers): array
+    {
+        if (array_key_exists('If-Match', $headers)) {
+            return $headers;
+        }
+
+        $path = parse_url($uri, PHP_URL_PATH) ?: $uri;
+        $isCoveredWrite = preg_match(
+            '#/v2/(?:setup/(?:organization-profile|apply-organization-template|modules|activate-selected|blueprint/stage|blueprint/[^/]+/publish)|operating-context/(?:configure|[0-9]+/select)|org-structure/(?:nodes(?:/[^/]+)?|links(?:/[0-9]+)?|bulk-status-update)|org-studio/(?:restructure|nodes/[^/]+/facets))$#',
+            $path,
+        ) === 1;
+
+        if (!$isCoveredWrite || !\Illuminate\Support\Facades\Schema::hasTable('settings')) {
+            return $headers;
+        }
+
+        $revision = DB::table('settings')->where('setting_key', 'setup.revision')->value('setting_value') ?? '1';
+        $headers['If-Match'] = '"' . $revision . '"';
+
+        return $headers;
     }
 
     /**

@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'can' => \App\Http\Middleware\CheckPermission::class,
             'module.operational' => \App\Http\Middleware\EnsureModuleOperational::class,
             'marketplace.inbound.signature' => \App\Http\Middleware\VerifyMarketplaceInboundSignature::class,
+            'setup.revision' => \App\Http\Middleware\SetupRevisionMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

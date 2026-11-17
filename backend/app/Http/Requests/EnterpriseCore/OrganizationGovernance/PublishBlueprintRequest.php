@@ -16,6 +16,7 @@ class PublishBlueprintRequest extends FormRequest
         return [
             'clear_existing'           => 'nullable|boolean',
             'create_operating_context' => 'nullable|boolean',
+            'blueprint_revision'       => ['nullable', 'string', 'size:64', 'regex:/^[a-f0-9]{64}$/'],
         ];
     }
 }

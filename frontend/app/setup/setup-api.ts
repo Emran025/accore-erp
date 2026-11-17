@@ -156,11 +156,12 @@ export type BlueprintStageRequest = {
   blueprint_json: SetupBlueprint;
 };
 
-export type BlueprintStageResponse = { blueprint_uuid: string };
+export type BlueprintStageResponse = { blueprint_uuid: string; blueprint_revision: string };
 
 export type BlueprintPublishRequest = {
   clear_existing: boolean;
   create_operating_context: boolean;
+  blueprint_revision: string;
 };
 
 export type BlueprintPublishResponse = {
@@ -169,8 +170,16 @@ export type BlueprintPublishResponse = {
   result: unknown;
 };
 
-function post<T>(endpoint: string, payload: unknown): Promise<APIResponse<T>> {
-  return fetchAPI<T>(endpoint, { method: "POST", body: JSON.stringify(payload) });
+function revisionHeaders(revision?: number): Record<string, string> {
+  return typeof revision === "number" ? { "If-Match": `"${revision}"` } : {};
+}
+
+function post<T>(endpoint: string, payload: unknown, revision?: number): Promise<APIResponse<T>> {
+  return fetchAPI<T>(endpoint, {
+    method: "POST",
+    body: JSON.stringify(payload),
+    ...(typeof revision === "number" ? { headers: revisionHeaders(revision) } : {}),
+  });
 }
 
 export const setupApi = {
@@ -178,25 +187,26 @@ export const setupApi = {
     fetchAPI<SetupState>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.STATE),
   getOrganizationTemplates: (): Promise<APIResponse<OrganizationTemplateState>> =>
     fetchAPI<OrganizationTemplateState>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.ORGANIZATION_TEMPLATES),
-  saveOrganizationProfile: (profile: OrganizationProfile): Promise<APIResponse<OrganizationProfile>> =>
-    post<OrganizationProfile>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.ORGANIZATION_PROFILE, profile),
-  applyOrganizationTemplate: (): Promise<APIResponse<ApplyOrganizationTemplateResponse>> =>
-    fetchAPI<ApplyOrganizationTemplateResponse>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.APPLY_ORGANIZATION_TEMPLATE, { method: "POST" }),
-  selectModules: (moduleKeys: string[]): Promise<APIResponse<ModuleSelectionResponse>> =>
-    post<ModuleSelectionResponse>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.MODULES, { module_keys: moduleKeys }),
-  activateSelectedModules: (): Promise<APIResponse<ModuleActivationResponse>> =>
-    fetchAPI<ModuleActivationResponse>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.ACTIVATE_SELECTED, { method: "POST" }),
+  saveOrganizationProfile: (profile: OrganizationProfile, revision?: number): Promise<APIResponse<OrganizationProfile>> =>
+    post<OrganizationProfile>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.ORGANIZATION_PROFILE, profile, revision),
+  applyOrganizationTemplate: (revision?: number): Promise<APIResponse<ApplyOrganizationTemplateResponse>> =>
+    fetchAPI<ApplyOrganizationTemplateResponse>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.APPLY_ORGANIZATION_TEMPLATE, { method: "POST", headers: revisionHeaders(revision) }),
+  selectModules: (moduleKeys: string[], revision?: number): Promise<APIResponse<ModuleSelectionResponse>> =>
+    post<ModuleSelectionResponse>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.MODULES, { module_keys: moduleKeys }, revision),
+  activateSelectedModules: (revision?: number): Promise<APIResponse<ModuleActivationResponse>> =>
+    fetchAPI<ModuleActivationResponse>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.ACTIVATE_SELECTED, { method: "POST", headers: revisionHeaders(revision) }),
   getReadiness: (): Promise<APIResponse<Readiness>> =>
     fetchAPI<Readiness>(API_ENDPOINTS.ENTERPRISE_CORE.OPERATING_CONTEXT.READINESS),
   getOrganizationNodes: (): Promise<APIResponse<SetupListPayload<OrgNode>>> =>
     fetchAPI<SetupListPayload<OrgNode>>(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES),
-  updateOrganizationNode: (uuid: string, request: OrganizationNodeUpdateRequest): Promise<APIResponse<OrgNode>> =>
+  updateOrganizationNode: (uuid: string, request: OrganizationNodeUpdateRequest, revision?: number): Promise<APIResponse<OrgNode>> =>
     fetchAPI<OrgNode>(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODE(uuid), {
       method: "PUT",
       body: JSON.stringify(request),
+      headers: revisionHeaders(revision),
     }),
-  configureOperatingContext: (request: OperatingContextRequest): Promise<APIResponse<OperatingContextRecord>> =>
-    post<OperatingContextRecord>(API_ENDPOINTS.ENTERPRISE_CORE.OPERATING_CONTEXT.CONFIGURE, request),
+  configureOperatingContext: (request: OperatingContextRequest, revision?: number): Promise<APIResponse<OperatingContextRecord>> =>
+    post<OperatingContextRecord>(API_ENDPOINTS.ENTERPRISE_CORE.OPERATING_CONTEXT.CONFIGURE, request, revision),
   getWarehouses: (): Promise<APIResponse<SetupListPayload<WarehouseOption>>> =>
     fetchAPI<SetupListPayload<WarehouseOption>>(`${API_ENDPOINTS.ENTERPRISE_CORE.OPERATING_CONTEXT.WAREHOUSES}?active_only=1`),
   getPosTerminals: (): Promise<APIResponse<SetupListPayload<PosTerminalOption>>> =>
@@ -221,8 +231,8 @@ export const setupApi = {
     fetchAPI<{ data: { account_count: number } }>(API_ENDPOINTS.FINANCE.ACCOUNTS.STANDARD, { method: "POST" }),
   analyzeSetup: (request: SetupInferenceRequest): Promise<APIResponse<SetupInferenceResponse>> =>
     post<SetupInferenceResponse>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.INFERENCE_ANALYZE, request),
-  stageBlueprint: (request: BlueprintStageRequest): Promise<APIResponse<BlueprintStageResponse>> =>
-    post<BlueprintStageResponse>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.BLUEPRINT_STAGE, request),
-  publishBlueprint: (uuid: string, request: BlueprintPublishRequest): Promise<APIResponse<BlueprintPublishResponse>> =>
-    post<BlueprintPublishResponse>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.BLUEPRINT_PUBLISH(uuid), request),
+  stageBlueprint: (request: BlueprintStageRequest, revision?: number): Promise<APIResponse<BlueprintStageResponse>> =>
+    post<BlueprintStageResponse>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.BLUEPRINT_STAGE, request, revision),
+  publishBlueprint: (uuid: string, request: BlueprintPublishRequest, revision?: number): Promise<APIResponse<BlueprintPublishResponse>> =>
+    post<BlueprintPublishResponse>(API_ENDPOINTS.ENTERPRISE_CORE.SETUP.BLUEPRINT_PUBLISH(uuid), request, revision),
 };

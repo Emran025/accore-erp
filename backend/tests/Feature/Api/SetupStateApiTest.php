@@ -39,11 +39,121 @@ class SetupStateApiTest extends TestCase
         $response = $this->authGet(route('v2.setup.state'));
 
         $this->assertSuccessResponse($response);
+        $response->assertJsonPath('setup_revision', 1);
         $response->assertJsonPath('data.setup_required', true)
             ->assertJsonPath('data.selected_module_keys', [])
             ->assertJsonPath('data.active_module_keys', [])
             ->assertJsonPath('data.onboarding.next_phase', 'foundation')
             ->assertJsonPath('data.onboarding.starter_bundle_active', false);
+    }
+
+    public function test_setup_revision_rejects_missing_and_stale_module_writes_without_side_effects(): void
+    {
+        $loaded = $this->authGet(route('v2.setup.state'));
+        $revision = $loaded->json('setup_revision');
+        $this->assertSame(1, $revision);
+
+        $selected = $this->authPost(route('v2.setup.modules.select'), [
+            'module_keys' => ['reports'],
+        ], ['If-Match' => '"' . $revision . '"']);
+        $this->assertSuccessResponse($selected);
+        $selected->assertJsonPath('setup_revision', 2)
+            ->assertJsonPath('data.selected_module_keys', ['reports']);
+
+        $staleSelection = $this->authPost(route('v2.setup.modules.select'), [
+            'module_keys' => ['hr'],
+        ], ['If-Match' => '"' . $revision . '"']);
+        $staleSelection->assertStatus(409)
+            ->assertJsonPath('code', 'setup_state_conflict')
+            ->assertJsonPath('current_revision', 2)
+            ->assertJsonPath('reload_required', true);
+
+        $staleActivation = $this->authPost(route('v2.setup.modules.activate_selected'), [], [
+            'If-Match' => '"' . $revision . '"',
+        ]);
+        $staleActivation->assertStatus(409)->assertJsonPath('code', 'setup_state_conflict');
+
+        $missingValidator = $this->withHeaders($this->authHeaders())
+            ->postJson(route('v2.setup.modules.select'), ['module_keys' => ['hr']]);
+        $missingValidator->assertStatus(428)
+            ->assertJsonPath('code', 'setup_revision_required')
+            ->assertJsonPath('current_revision', 2);
+
+        $state = $this->authGet(route('v2.setup.state'));
+        $state->assertJsonPath('data.selected_module_keys', ['reports'])
+            ->assertJsonPath('data.active_module_keys', []);
+        $this->assertDatabaseHas('modules', ['module_key' => 'reports', 'is_active' => false]);
+        $this->assertSame(0, DB::table('org_change_history')
+            ->where('entity_type', 'module')
+            ->where('change_type', 'activated')
+            ->count());
+    }
+
+    public function test_all_setup_mutation_families_reject_a_second_write_using_the_same_revision(): void
+    {
+        $initial = $this->authGet(route('v2.setup.state'));
+        $revision = $initial->json('setup_revision');
+        $this->assertSame(1, $revision);
+
+        $firstWrite = $this->authPost(route('v2.setup.modules.select'), [
+            'module_keys' => ['reports'],
+        ], ['If-Match' => '"' . $revision . '"']);
+        $this->assertSuccessResponse($firstWrite);
+        $this->assertSame(2, $firstWrite->json('setup_revision'));
+
+        $uuid = (string) \Illuminate\Support\Str::uuid();
+        $cases = [
+            ['post', route('v2.setup.organization_profile.save'), []],
+            ['post', route('v2.setup.organization_template.apply'), []],
+            ['post', route('v2.setup.modules.select'), ['module_keys' => ['hr']]],
+            ['post', route('v2.setup.modules.activate_selected'), []],
+            ['post', route('v2.setup.blueprint.stage'), []],
+            ['post', route('v2.setup.blueprint.publish', ['uuid' => $uuid]), []],
+            ['post', route('v2.operating_context.configure'), []],
+            ['post', route('v2.operating_context.select', ['id' => 999]), []],
+            ['post', route('v2.org.nodes.store'), []],
+            ['put', route('v2.org.nodes.update', ['uuid' => $uuid]), []],
+            ['delete', route('v2.org.nodes.destroy', ['uuid' => $uuid]), []],
+            ['post', route('v2.org.links.store'), []],
+            ['put', route('v2.org.links.update', ['id' => 999]), []],
+            ['delete', route('v2.org.links.destroy', ['id' => 999]), []],
+            ['post', route('v2.org.bulk_status'), []],
+            ['post', route('v2.org_studio.restructure'), []],
+            ['put', route('v2.org_studio.nodes.facets', ['uuid' => $uuid]), []],
+        ];
+
+        $headers = array_merge($this->authHeaders(), ['If-Match' => '"' . $revision . '"']);
+        $historyBefore = DB::table('org_change_history')->count();
+
+        foreach ($cases as [$verb, $url, $body]) {
+            $method = $verb . 'Json';
+            $response = $this->withHeaders($headers)->{$method}($url, $body);
+            $response->assertStatus(409)
+                ->assertJsonPath('code', 'setup_state_conflict')
+                ->assertJsonPath('current_revision', 2);
+        }
+
+        $this->assertSame('2', (string) DB::table('settings')
+            ->where('setting_key', 'setup.revision')
+            ->value('setting_value'));
+        $this->assertSame($historyBefore, DB::table('org_change_history')->count());
+        $this->assertDatabaseHas('modules', ['module_key' => 'reports', 'is_active' => false]);
+        $this->authGet(route('v2.setup.state'))->assertJsonPath('data.selected_module_keys', ['reports']);
+    }
+
+    public function test_generic_settings_endpoint_cannot_bypass_setup_revision_protection(): void
+    {
+        $this->authGet(route('v2.setup.state'))->assertJsonPath('setup_revision', 1);
+
+        $response = $this->authPost(route('v2.settings.update'), [
+            ModuleSelectionService::SELECTED_MODULES_KEY => json_encode(['reports'], JSON_THROW_ON_ERROR),
+        ]);
+
+        $response->assertStatus(422);
+        $this->assertDatabaseMissing('settings', ['setting_key' => ModuleSelectionService::SELECTED_MODULES_KEY]);
+        $this->assertSame('1', (string) DB::table('settings')
+            ->where('setting_key', 'setup.revision')
+            ->value('setting_value'));
     }
 
     public function test_organization_template_catalog_is_available_before_the_profile_is_saved(): void

@@ -79,6 +79,7 @@ export default function OrganizationalStructurePage() {
   const [activeTab, setActiveTab] = useState<OrgTab>('dashboard');
   const [setupOpen, setSetupOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [setupRevision, setSetupRevision] = useState<number | null>(null);
   const [setupForm, setSetupForm] = useState<SetupForm>(initialSetupForm);
   const [nodes, setNodes] = useState<OrganizationNode[]>([]);
   const [costCenters, setCostCenters] = useState<CostCenter[]>([]);
@@ -113,6 +114,7 @@ export default function OrganizationalStructurePage() {
         fetchAPI(API_ENDPOINTS.FINANCE.COST_CENTERS.BASE),
         fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.OPERATING_CONTEXT.POS_TERMINALS),
       ]);
+      if (typeof nodeResponse.setup_revision === "number") setSetupRevision(nodeResponse.setup_revision);
       setNodes(listFromResponse<OrganizationNode>(nodeResponse));
       setCostCenters(listFromResponse<CostCenter>(costResponse).filter((center) => center.is_active !== false));
       setPosTerminals(listFromResponse<PosTerminal>(posResponse).filter((terminal) => terminal.is_active !== false));
@@ -176,8 +178,15 @@ export default function OrganizationalStructurePage() {
           cost_center_id: setupForm.cost_center_id,
           pos_terminal_id: setupForm.pos_terminal_id,
         }),
+        headers: setupRevision === null ? {} : { "If-Match": `"${setupRevision}"` },
       });
       if (!response.success) {
+        if (response.httpStatus === 409 || response.httpStatus === 428) {
+          const current = await fetchAPI(API_ENDPOINTS.ENTERPRISE_CORE.ORG.NODES);
+          setNodes(listFromResponse<OrganizationNode>(current));
+          if (typeof current.setup_revision === "number") setSetupRevision(current.setup_revision);
+          await loadReadiness();
+        }
         showAlert(
           'operating-context-alert',
           response.message || i18n.catalog["common.general.unableConfigureOperatingContext"],
@@ -185,6 +194,7 @@ export default function OrganizationalStructurePage() {
         );
         return;
       }
+      if (typeof response.setup_revision === "number") setSetupRevision(response.setup_revision);
       await loadReadiness();
       setSetupOpen(false);
       showAlert('operating-context-alert', i18n.catalog["enterpriseCore.orgHierarchy.operatingContextConfiguredSuccessfully"], 'success');

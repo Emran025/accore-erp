@@ -22,7 +22,8 @@ interface TemporalRestructureModalProps {
   sourceNode: NodeItem | null;
   allNodes: NodeItem[];
   currentPlane?: string;
-  onSuccess: () => void;
+  setupRevision: number | null;
+  onSuccess: () => void | Promise<void>;
 }
 
 export function TemporalRestructureModal({
@@ -31,6 +32,7 @@ export function TemporalRestructureModal({
   sourceNode,
   allNodes,
   currentPlane = "OPERATIONAL_HIERARCHY",
+  setupRevision,
   onSuccess,
 }: TemporalRestructureModalProps) {
   const { t: i18n, locale } = useI18n();
@@ -69,13 +71,15 @@ export function TemporalRestructureModal({
           link_type: "line_management",
           reason: reason.trim() || undefined,
         }),
+        headers: setupRevision === null ? {} : { "If-Match": `"${setupRevision}"` },
       });
 
       if (response.success) {
         showToast(i18n.catalog["orgStudio.restructure.success"], "success");
-        onSuccess();
+        await onSuccess();
         onClose();
       } else {
+        if (response.httpStatus === 409 || response.httpStatus === 428) await onSuccess();
         showToast(response.message || "Failed to restructure link", "error");
       }
     } catch {

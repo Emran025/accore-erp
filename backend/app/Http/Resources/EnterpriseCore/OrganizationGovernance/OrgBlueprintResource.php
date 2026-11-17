@@ -18,6 +18,7 @@ class OrgBlueprintResource extends JsonResource
             'status'           => $this->status,
             'blueprint_json'   => $this->blueprint_json ?? [],
             'created_by'       => $this->created_by,
+            'blueprint_revision' => $this->resource->revisionToken(),
             // Column name in org_blueprints is published_at (see migration 2026_09_15_000001)
             'published_at'     => $this->published_at?->toDateTimeString(),
             'created_at'       => $this->created_at?->toDateTimeString(),

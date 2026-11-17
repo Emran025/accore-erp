@@ -43,6 +43,21 @@ class OrgBlueprint extends Model
         'published_at' => 'datetime',
     ];
 
+    /** Opaque validator for the exact staged content and lifecycle state. */
+    public function revisionToken(): string
+    {
+        $payload = [
+            'blueprint_uuid' => $this->blueprint_uuid,
+            'name' => $this->name,
+            'status' => $this->status,
+            'complexity_grade' => $this->complexity_grade,
+            'primary_archetype' => $this->primary_archetype,
+            'blueprint_json' => $this->blueprint_json ?? [],
+        ];
+
+        return hash('sha256', json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR));
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
